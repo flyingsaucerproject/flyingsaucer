@@ -32,11 +32,10 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserInterface;
-import org.xhtmlrenderer.layout.Boxing;
+import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
@@ -127,8 +126,8 @@ public class ITextRenderer {
     
     public void layout() {
         LayoutContext c = newLayoutContext();
-        BlockBox root = Boxing.constructBox(c, new DomToplevelNode(_doc));
-        Boxing.layout(c, root, new DomToplevelNode(_doc));
+        BlockBox root = BoxBuilder.createRootBox(c, _doc);
+        root.layout(c);
         Dimension dim = root.getLayer().getPaintingDimension(c);
         root.getLayer().trimEmptyPages(c, dim.height);
         _root = root;

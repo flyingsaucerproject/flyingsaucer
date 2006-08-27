@@ -24,7 +24,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.Uu;
 
 public class InlineText {
-    private InlineBox parent;
+    private InlineLayoutBox parent;
     
     private int x;
     
@@ -102,11 +102,11 @@ public class InlineText {
         c.getOutputDevice().drawText(c, this);
     }
 
-    public InlineBox getParent() {
+    public InlineLayoutBox getParent() {
         return parent;
     }
 
-    public void setParent(InlineBox parent) {
+    public void setParent(InlineLayoutBox parent) {
         this.parent = parent;
     }
 

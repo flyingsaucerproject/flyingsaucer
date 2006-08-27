@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjï¿½rn Gannholm
  * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -23,63 +23,52 @@ package org.xhtmlrenderer.layout;
 import java.awt.Rectangle;
 import java.util.List;
 
-import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.content.FloatedBlockContent;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
-import org.xhtmlrenderer.render.Style;
 
 public class LayoutUtil {
 
-    public static BlockBox generateAbsolute(LayoutContext c, Content content, LineBox currentLine) {
+    public static boolean layoutAbsolute(
+            LayoutContext c, LineBox currentLine, BlockBox box) {
+        boolean result = true;
+        
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
         
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
         
-        BlockBox box = Boxing.constructBox(c, content);
         box.setContainingBlock(c.getLayer().getMaster());
         box.setStaticEquivalent(currentLine);
         
         // If printing, don't layout until we know where its going
         if (! c.isPrint()) {
-            if (! isAlternateFlow(c, content)) {
-                Boxing.layout(c, box, content);
+            if (! box.getStyle().getCalculatedStyle().isAlternateFlow()) {
+                box.layout(c);
             } else {
-                box = null;
+                result = false;
             }
         } else {
-            c.pushStyle(content.getStyle());
-            box.setStyle(new Style(c.getCurrentStyle(), 
-                    c.getLayer().getMaster().getContentWidth()));
+            box.getStyle().setContainingBlockWidth(c.getLayer().getMaster().getContentWidth());
             c.pushLayer(box);
             c.getLayer().setRequiresLayout(true);
             c.getLayer().setLayoutData(
-                    new AbsoluteContentLayoutData(content, c.getCurrentStyle()));
+                    new AbsoluteContentLayoutData(box, c.getCurrentStyle()));
             c.popLayer();
-            c.popStyle();
         }
         
         c.setCurrentMarkerData(markerData);
         
         c.setExtents(oe);
         
-        return box;
-    }
-    
-    private static boolean isAlternateFlow(LayoutContext c, Content content) {
-        c.pushStyle(content.getStyle());
-        boolean result = c.getCurrentStyle().isAlternateFlow();
-        c.popStyle();
         return result;
     }
-
-    public static FloatLayoutResult generateFloated(
-            final LayoutContext c, FloatedBlockContent content, int avail, 
-            LineBox curr_line, List pendingFloats) {
+    
+    public static FloatLayoutResult layoutFloated(
+            final LayoutContext c, LineBox currentLine, FloatedBlockBox block, 
+            int avail, List pendingFloats) {
         FloatLayoutResult result = new FloatLayoutResult();
         
         Rectangle oe = c.getExtents();
@@ -88,48 +77,44 @@ public class LayoutUtil {
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
     
-        FloatedBlockBox block = new FloatedBlockBox();
-        block.setContainingBlock(curr_line.getParent());
-        block.setContainingLayer(curr_line.getContainingLayer());
+        block.setContainingBlock(currentLine.getParent());
+        block.setContainingLayer(currentLine.getContainingLayer());
         
         if (pendingFloats != null) {
-            block.y = curr_line.y + content.getMarginFromPrevious();
+            block.y = currentLine.y + block.getMarginFromPrevious();
         } else {
-            block.y = curr_line.y + curr_line.height;
+            block.y = currentLine.y + currentLine.height;
         }
         
         block.calcInitialCanvasLocation(c);
         
         int initialY = block.y;
         
-        block.element = content.getElement();
+        block.layout(c);
         
-        Boxing.layout(c, block, content);
         c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
 
         if (pendingFloats != null && 
                 (pendingFloats.size() > 0 || block.getWidth() > avail)) {
-            block.detach(c);
+            block.reset(c);
             result.setPending(true);
-            result.setPendingContent(content);
         } else {
             if (c.isPrint()) {
-                positionFloatOnPage(c, content, curr_line, block, initialY != block.y);
+                positionFloatOnPage(c, currentLine, block, initialY != block.y);
                 c.getRootLayer().ensureHasPage(c, block);
             }
-            result.setBlock(block);
         }
         
+        result.setBlock(block);
         c.setCurrentMarkerData(markerData);
-    
         c.setExtents(oe);
         
         return result;
     }
 
     private static void positionFloatOnPage(
-            final LayoutContext c, FloatedBlockContent content, 
-            LineBox curr_line, FloatedBlockBox block, boolean movedVertically) {
+            final LayoutContext c, LineBox currentLine, FloatedBlockBox block, 
+            boolean movedVertically) {
         boolean clearedPage = false;
         int clearDelta = 0;
         
@@ -139,8 +124,9 @@ public class LayoutUtil {
             clearDelta = block.moveToNextPage(c);
             clearedPage = true;
             block.calcCanvasLocation();
-            block.detach(c);
-            Boxing.layout(c, block, content);
+            block.reset(c);
+            block.setContainingLayer(currentLine.getContainingLayer());
+            block.layout(c);
             c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         }
         
@@ -151,8 +137,9 @@ public class LayoutUtil {
                 block.y -= clearDelta;
                 block.calcCanvasLocation();
             }
-            block.detach(c);
-            Boxing.layout(c, block, content);
+            block.reset(c);
+            block.setContainingLayer(currentLine.getContainingLayer());
+            block.layout(c);
             c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         }
     }

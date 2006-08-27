@@ -26,21 +26,10 @@ import java.util.List;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
-import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.content.FirstLetterStyle;
-import org.xhtmlrenderer.layout.content.FirstLineStyle;
-import org.xhtmlrenderer.layout.content.FloatedBlockContent;
-import org.xhtmlrenderer.layout.content.InlineBlockContent;
-import org.xhtmlrenderer.layout.content.StylePop;
-import org.xhtmlrenderer.layout.content.StylePush;
-import org.xhtmlrenderer.layout.content.TextContent;
-import org.xhtmlrenderer.layout.content.WhitespaceStripper;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -48,6 +37,7 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.FloatDistances;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
@@ -57,33 +47,32 @@ import org.xhtmlrenderer.render.TextDecoration;
 
 public class InlineBoxing {
 
-    public static void layoutContent(LayoutContext c, BlockBox box, List contentList) {
+    public static void layoutContent(LayoutContext c, BlockBox box) {
         int maxAvailableWidth = c.getExtents().width;
         int remainingWidth = maxAvailableWidth;
-
-        int minimumLineHeight = (int) c.getCurrentStyle().getLineHeight(c);
 
         LineBox currentLine = newLine(c, null, box);
         LineBox previousLine = null;
 
-        InlineBox currentIB = null;
-        InlineBox previousIB = null;
+        InlineLayoutBox currentIB = null;
+        InlineLayoutBox previousIB = null;
         
         int contentStart = 0;
 
         List elementStack = new ArrayList();
         if (box instanceof AnonymousBlockBox) {
-            List pending = ((BlockBox) box.getParent()).getPendingInlineElements();
-            if (pending != null) {
-                currentIB = addNestedInlineBoxes(c, currentLine, pending, 
-                        maxAvailableWidth);
-                elementStack = pending;
+            List openParents = ((AnonymousBlockBox)box).getOpenParents();
+            if (openParents != null) {
+                elementStack = addOpenParents(c, currentLine, openParents, maxAvailableWidth);
+                InlineBoxInfo last = (InlineBoxInfo)elementStack.get(elementStack.size()-1);
+                currentIB = last.getInlineBox();
             }
         }
         
         remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
 
-        CalculatedStyle parentStyle = c.getCurrentStyle();
+        CalculatedStyle parentStyle = box.getStyle().getCalculatedStyle();
+        int minimumLineHeight = (int) parentStyle.getLineHeight(c);
         int indent = (int) parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, maxAvailableWidth, c);
         remainingWidth -= indent;
         contentStart += indent;
@@ -101,144 +90,66 @@ public class InlineBoxing {
         int pendingLeftMBP = 0;
         int pendingRightMBP = 0;
 
-        boolean hasFirstLinePCs = false;
+        boolean hasFirstLinePEs = false;
         List pendingInlineLayers = new ArrayList();
         
         if (c.getFirstLinesTracker().hasStyles()) {
             c.getFirstLinesTracker().pushStyles(c);
-            hasFirstLinePCs = true;
+            hasFirstLinePEs = true;
         }
 
         boolean needFirstLetter = c.getFirstLettersTracker().hasStyles();
         
-        Iterator contentIterator = contentList.iterator();
-        while (contentIterator.hasNext()) {
-            Object o = contentIterator.next();
+        for (Iterator i = box.getInlineContent().iterator(); i.hasNext(); ) {
+            Styleable node = (Styleable)i.next();
             
-            if (o instanceof FirstLineStyle || o instanceof FirstLetterStyle) {
-                continue;
-            }
-
-            if (o instanceof StylePush) {
-                StylePush sp = (StylePush) o;
-                CascadedStyle cascaded = sp.getStyle(c);
-
-                c.pushStyle(cascaded);
-
-                CalculatedStyle style = c.getCurrentStyle();
-
-                previousIB = currentIB;
-                currentIB = new InlineBox(sp.getElement(), style, maxAvailableWidth);
-                currentIB.calculateHeight(c);
-
-                elementStack.add(new InlineBoxInfo(cascaded, currentIB));
-
-                if (previousIB == null) {
-                    currentLine.addChild(c, currentIB);
-                } else {
-                    previousIB.addInlineChild(c, currentIB);
-                }
+            if (node.getStyle().isInline()) {
+                InlineBox iB = (InlineBox)node;
                 
-                if (currentIB.element != null) {
-                    // FIXME Clean this up.  Name and id should be in same namespace
-                    // Also, only current use of id is for links.  Make that explicit
-                    // in the API?
-                    String name = c.getNamespaceHandler().getAnchorName(currentIB.element);
-                    if (name != null) {
-                        c.addNamedAnchor(name, currentIB);
+                CalculatedStyle style = iB.getStyle().getCalculatedStyle();
+                if (iB.isStartsHere()) {
+                    previousIB = currentIB;
+                    // XXX Share Style Object
+                    currentIB = new InlineLayoutBox(c, iB.getElement(), style, maxAvailableWidth);
+
+                    elementStack.add(new InlineBoxInfo(currentIB));
+
+                    if (previousIB == null) {
+                        currentLine.addChildForLayout(c, currentIB);
+                    } else {
+                        previousIB.addInlineChild(c, currentIB);
                     }
-                    String id = c.getNamespaceHandler().getID(currentIB.element);
-                    if (id != null && ! id.equals("")) {
-                        c.addIDBox(id, currentIB);
-                    }
-                }
-                
-                //To break the line well, assume we don't just want to paint padding on next line
-                pendingLeftMBP += style.getMarginBorderPadding(
-                        c, maxAvailableWidth, CalculatedStyle.LEFT);
-                pendingRightMBP += style.getMarginBorderPadding(
-                        c, maxAvailableWidth, CalculatedStyle.RIGHT);
-                continue;
-            }
-
-            if (o instanceof StylePop) {
-                CalculatedStyle style = c.getCurrentStyle();
-                int rightMBP = style.getMarginBorderPadding(
-                        c, maxAvailableWidth, CalculatedStyle.RIGHT);
-
-                pendingRightMBP -= rightMBP;
-                remainingWidth -= rightMBP;
-
-                elementStack.remove(elementStack.size() - 1);
-
-                currentIB.setEndsHere(true);
-                
-                if (currentIB.getStyle().requiresLayer()) {
-                    if (currentIB.element == null || 
-                            currentIB.element != c.getLayer().getMaster().element) {
-                        throw new RuntimeException("internal error");
-                    }
-                    c.getLayer().setEnd(currentIB);
-                    c.popLayer();
-                    pendingInlineLayers.add(currentIB.getContainingLayer());
-                }
-
-                previousIB = currentIB;
-                currentIB = currentIB.getParent() instanceof LineBox ?
-                        null : (InlineBox) currentIB.getParent();
-
-                c.popStyle();
-                continue;
-            }
-
-            Content content = (Content) o;
-
-            if (mustBeTakenOutOfFlow(content)) {
-                remainingWidth -= processOutOfFlowContent(c, content, currentLine, 
-                        remainingWidth, pendingFloats);
-            } else if (isInlineBlock(content)) {
-                Box inlineBlock = layoutInlineBlock(c, box, content);
-
-                if (inlineBlock.getWidth() > remainingWidth && currentLine.isContainsContent()) {
-                    saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                            maxAvailableWidth, elementStack, pendingFloats, 
-                            hasFirstLinePCs, pendingInlineLayers, markerData,
-                            contentStart);
-                    markerData = null;
-                    contentStart = 0;
-                    previousLine = currentLine;
-                    currentLine = newLine(c, previousLine, box);
-                    currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
-                            maxAvailableWidth);
-                    previousIB = currentIB == null || currentIB.getParent() instanceof LineBox ?
-                            null : (InlineBox) currentIB.getParent();
-                    remainingWidth = maxAvailableWidth;
-                    remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
                     
-                    inlineBlock.detach(c);
-                    inlineBlock = layoutInlineBlock(c, box, content);
+                    if (currentIB.element != null) {
+                        // FIXME Clean this up.  Name and id should be in same namespace
+                        // Also, only current use of id is for links.  Make that explicit
+                        // in the API?
+                        String name = c.getNamespaceHandler().getAnchorName(currentIB.element);
+                        if (name != null) {
+                            c.addNamedAnchor(name, currentIB);
+                        }
+                        String id = c.getNamespaceHandler().getID(currentIB.element);
+                        if (id != null && ! id.equals("")) {
+                            c.addIDBox(id, currentIB);
+                        }
+                    }
+                    
+                    //To break the line well, assume we don't just want to paint padding on next line
+                    pendingLeftMBP += style.getMarginBorderPadding(
+                            c, maxAvailableWidth, CalculatedStyle.LEFT);
+                    pendingRightMBP += style.getMarginBorderPadding(
+                            c, maxAvailableWidth, CalculatedStyle.RIGHT);
                 }
-
-                if (currentIB == null) {
-                    currentLine.addChild(c, inlineBlock);
-                } else {
-                    currentIB.addInlineChild(c, inlineBlock);
-                }
-
-                currentLine.setContainsContent(true);
-                currentLine.setContainsBlockLevelContent(true);
-
-                remainingWidth -= inlineBlock.getWidth();
                 
-                needFirstLetter = false;
-            } else {
-                TextContent text = (TextContent) content;
+                // XXX Handle functions (part of handling dynamic content [:before, :after}
+                
                 LineBreakContext lbContext = new LineBreakContext();
-                lbContext.setMaster(TextUtil.transformText(text.getText(), c.getCurrentStyle()));
+                lbContext.setMaster(TextUtil.transformText(iB.getText(), style));
                 
-                if (text.isDynamicFunction()) {
-                    lbContext.setMaster(text.getContentFunction().getLayoutReplacementText());
+                if (iB.isDynamicFunction()) {
+                    lbContext.setMaster(iB.getContentFunction().getLayoutReplacementText());
                 }
+                
                 do {
                     lbContext.reset();
 
@@ -247,13 +158,12 @@ public class InlineBoxing {
                         fit += pendingLeftMBP;
                     }
 
-                    if (hasTrimmableLeadingSpace(currentLine, c.getCurrentStyle(),
-                            lbContext)) {
+                    if (hasTrimmableLeadingSpace(currentLine, style, lbContext)) {
                         lbContext.setStart(lbContext.getStart() + 1);
                     }
 
                     if (needFirstLetter && !lbContext.isFinished()) {
-                        InlineBox firstLetter =
+                        InlineLayoutBox firstLetter =
                             addFirstLetterBox(c, currentLine, currentIB, lbContext, 
                                     maxAvailableWidth, remainingWidth);
                         remainingWidth -= firstLetter.getInlineWidth();
@@ -261,12 +171,12 @@ public class InlineBoxing {
                     } else {
                         lbContext.saveEnd();
                         InlineText inlineText = layoutText(
-                                c, remainingWidth - fit, lbContext, false);
+                                c, iB, remainingWidth - fit, lbContext, false);
                         if (!lbContext.isUnbreakable() ||
                                 (lbContext.isUnbreakable() && ! currentLine.isContainsContent())) {
-                            if (text.isDynamicFunction()) {
+                            if (iB.isDynamicFunction()) {
                                 inlineText.setFunctionData(new FunctionData(
-                                        text.getContentFunction(), text.getText()));
+                                        iB.getContentFunction(), iB.getText()));
                             }
                             currentLine.setContainsDynamicFunction(inlineText.isDynamicFunction());
                             currentIB.addInlineChild(c, inlineText);
@@ -281,59 +191,121 @@ public class InlineBoxing {
                     if (lbContext.isNeedsNewLine()) {
                         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, elementStack, pendingFloats, 
-                                hasFirstLinePCs, pendingInlineLayers, markerData,
+                                hasFirstLinePEs, pendingInlineLayers, markerData,
                                 contentStart);
                         markerData = null;
                         contentStart = 0;
-                        if (currentLine.isFirstLine() && hasFirstLinePCs) {
-                            lbContext.setMaster(TextUtil.transformText(
-                                    text.getText(), c.getCurrentStyle()));
+                        if (currentLine.isFirstLine() && hasFirstLinePEs) {
+                            lbContext.setMaster(TextUtil.transformText(iB.getText(), style));
                         }
                         previousLine = currentLine;
                         currentLine = newLine(c, previousLine, box);
                         currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
                                 maxAvailableWidth);
                         previousIB = currentIB.getParent() instanceof LineBox ?
-                                null : (InlineBox) currentIB.getParent();
+                                null : (InlineLayoutBox) currentIB.getParent();
                         remainingWidth = maxAvailableWidth;
                         remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
                     }
                 } while (!lbContext.isFinished());
+                
+                if (iB.isEndsHere()) {
+                    int rightMBP = style.getMarginBorderPadding(
+                            c, maxAvailableWidth, CalculatedStyle.RIGHT);
+
+                    pendingRightMBP -= rightMBP;
+                    remainingWidth -= rightMBP;
+
+                    elementStack.remove(elementStack.size() - 1);
+
+                    currentIB.setEndsHere(true);
+                    
+                    if (currentIB.getStyle().requiresLayer()) {
+                        if (currentIB.element == null || 
+                                currentIB.element != c.getLayer().getMaster().element) {
+                            throw new RuntimeException("internal error");
+                        }
+                        c.getLayer().setEnd(currentIB);
+                        c.popLayer();
+                        pendingInlineLayers.add(currentIB.getContainingLayer());
+                    }
+
+                    previousIB = currentIB;
+                    currentIB = currentIB.getParent() instanceof LineBox ?
+                            null : (InlineLayoutBox) currentIB.getParent();
+                }
+            } else {
+               BlockBox child = (BlockBox)node;
+               
+               if (child.getStyle().isNonFlowContent()) {
+                   remainingWidth -= processOutOfFlowContent(
+                           c, currentLine, child, remainingWidth, pendingFloats);
+               } else if (child.getStyle().isInlineBlock()) {
+                   layoutInlineBlock(c, box, child);
+
+                   if (child.getWidth() > remainingWidth && currentLine.isContainsContent()) {
+                       saveLine(currentLine, previousLine, c, box, minimumLineHeight,
+                               maxAvailableWidth, elementStack, pendingFloats, 
+                               hasFirstLinePEs, pendingInlineLayers, markerData,
+                               contentStart);
+                       markerData = null;
+                       contentStart = 0;
+                       previousLine = currentLine;
+                       currentLine = newLine(c, previousLine, box);
+                       currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
+                               maxAvailableWidth);
+                       previousIB = currentIB == null || currentIB.getParent() instanceof LineBox ?
+                               null : (InlineLayoutBox) currentIB.getParent();
+                       remainingWidth = maxAvailableWidth;
+                       remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
+                       
+                       child.reset(c);
+                       layoutInlineBlock(c, box, child);
+                   }
+
+                   if (currentIB == null) {
+                       currentLine.addChildForLayout(c, child);
+                   } else {
+                       currentIB.addInlineChild(c, child);
+                   }
+
+                   currentLine.setContainsContent(true);
+                   currentLine.setContainsBlockLevelContent(true);
+
+                   remainingWidth -= child.getWidth();
+                   
+                   needFirstLetter = false;
+               }
             }
         }
 
         currentLine.maybeTrimTrailingSpace(c);
         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs,
+                maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePEs,
                 pendingInlineLayers, markerData, contentStart);
         if (currentLine.isFirstLine() && currentLine.height == 0 && markerData != null) {
             c.setCurrentMarkerData(markerData);
         }
         markerData = null;
 
-        if (box instanceof AnonymousBlockBox) {
-            ((BlockBox) box.getParent()).setPendingInlineElements(elementStack.size() == 0 ? null : elementStack);
-        }
-        
         if (!c.shrinkWrap()) box.contentWidth = maxAvailableWidth;
         
         box.setHeight(currentLine.y + currentLine.getHeight());
     }
     
-    private static InlineBox addFirstLetterBox(LayoutContext c, LineBox current, 
-            InlineBox currentIB, LineBreakContext lbContext, int maxAvailableWidth, 
+    private static InlineLayoutBox addFirstLetterBox(LayoutContext c, LineBox current, 
+            InlineLayoutBox currentIB, LineBreakContext lbContext, int maxAvailableWidth, 
             int remainingWidth) {
         c.getFirstLettersTracker().pushStyles(c);
         
-        InlineBox iB = new InlineBox(null, c.getCurrentStyle(), maxAvailableWidth);
-        iB.calculateHeight(c);
+        InlineLayoutBox iB = new InlineLayoutBox(c, null, c.getCurrentStyle(), maxAvailableWidth);
         iB.setStartsHere(true);
         iB.setEndsHere(true);
         
         currentIB.addInlineChild(c, iB);
         current.setContainsContent(true);
         
-        InlineText text = layoutText(c, remainingWidth, lbContext, true);
+        InlineText text = layoutText(c, null, remainingWidth, lbContext, true);
         iB.addInlineChild(c, text);
         iB.setInlineWidth(text.getWidth());
         
@@ -345,29 +317,26 @@ public class InlineBoxing {
         return iB;
     }
 
-    private static Box layoutInlineBlock(LayoutContext c, 
-            Box containingBlock, Content content) {
-        BlockBox inlineBlock = Boxing.constructBox(c, content);
+    private static void layoutInlineBlock(LayoutContext c, BlockBox containingBlock, BlockBox inlineBlock) {
         inlineBlock.setContainingBlock(containingBlock);
         inlineBlock.setContainingLayer(c.getLayer());
-        Boxing.layout(c, inlineBlock, content);
-        return inlineBlock;
+        inlineBlock.layout(c);
     }
 
     public static int positionHorizontally(CssContext c, Box current, int start) {
         int x = start;
 
-        InlineBox currentIB = null;
+        InlineLayoutBox currentIB = null;
 
-        if (current instanceof InlineBox) {
-            currentIB = (InlineBox) currentIB;
+        if (current instanceof InlineLayoutBox) {
+            currentIB = (InlineLayoutBox) currentIB;
             x += currentIB.getLeftMarginBorderPadding(c);
         }
 
         for (int i = 0; i < current.getChildCount(); i++) {
             Box b = current.getChild(i);
-            if (b instanceof InlineBox) {
-                InlineBox iB = (InlineBox) current.getChild(i);
+            if (b instanceof InlineLayoutBox) {
+                InlineLayoutBox iB = (InlineLayoutBox) current.getChild(i);
                 iB.x = x;
                 x += positionHorizontally(c, iB, x);
             } else {
@@ -384,15 +353,15 @@ public class InlineBoxing {
         return x - start;
     }
 
-    private static int positionHorizontally(CssContext c, InlineBox current, int start) {
+    private static int positionHorizontally(CssContext c, InlineLayoutBox current, int start) {
         int x = start;
 
         x += current.getLeftMarginBorderPadding(c);
 
         for (int i = 0; i < current.getInlineChildCount(); i++) {
             Object child = current.getInlineChild(i);
-            if (child instanceof InlineBox) {
-                InlineBox iB = (InlineBox) child;
+            if (child instanceof InlineLayoutBox) {
+                InlineLayoutBox iB = (InlineLayoutBox) child;
                 iB.x = x;
                 x += positionHorizontally(c, iB, x);
             } else if (child instanceof InlineText) {
@@ -471,7 +440,7 @@ public class InlineBoxing {
     }
 
     private static void positionInlineVertically(LayoutContext c, 
-            VerticalAlignContext vaContext, InlineBox iB) {
+            VerticalAlignContext vaContext, InlineLayoutBox iB) {
         InlineBoxMeasurements iBMeasurements = calculateInlineMeasurements(c, iB, vaContext);
         vaContext.pushMeasurements(iBMeasurements);
         positionInlineChildrenVertically(c, iB, vaContext);
@@ -493,26 +462,26 @@ public class InlineBoxing {
         for (int i = 0; i < current.getChildCount(); i++) {
             Box child = (Box) current.getChild(i);
             child.y += ty;
-            if (child instanceof InlineBox) {
-                moveInlineContents((InlineBox) child, ty);
+            if (child instanceof InlineLayoutBox) {
+                moveInlineContents((InlineLayoutBox) child, ty);
             }
         }
     }
 
-    private static void moveInlineContents(InlineBox box, int ty) {
+    private static void moveInlineContents(InlineLayoutBox box, int ty) {
         for (int i = 0; i < box.getInlineChildCount(); i++) {
             Object obj = (Object) box.getInlineChild(i);
             if (obj instanceof Box) {
                 ((Box) obj).y += ty;
 
-                if (obj instanceof InlineBox) {
-                    moveInlineContents((InlineBox) obj, ty);
+                if (obj instanceof InlineLayoutBox) {
+                    moveInlineContents((InlineLayoutBox) obj, ty);
                 }
             }
         }
     }
 
-    private static InlineBoxMeasurements calculateInlineMeasurements(LayoutContext c, InlineBox iB,
+    private static InlineBoxMeasurements calculateInlineMeasurements(LayoutContext c, InlineLayoutBox iB,
                                                                      VerticalAlignContext vaContext) {
         FSFontMetrics fm = iB.getStyle().getFSFontMetrics(c);
 
@@ -649,7 +618,7 @@ public class InlineBoxing {
         return measurements;
     }
 
-    private static void positionInlineChildrenVertically(LayoutContext c, InlineBox current,
+    private static void positionInlineChildrenVertically(LayoutContext c, InlineLayoutBox current,
                                                VerticalAlignContext vaContext) {
         for (int i = 0; i < current.getInlineChildCount(); i++) {
             Object child = current.getInlineChild(i);
@@ -667,8 +636,8 @@ public class InlineBoxing {
         if (vAlign == IdentValue.TOP || vAlign == IdentValue.BOTTOM) {
             vaTarget = vaContext.createChild(child);
         }
-        if (child instanceof InlineBox) {
-            InlineBox iB = (InlineBox) child;
+        if (child instanceof InlineLayoutBox) {
+            InlineLayoutBox iB = (InlineLayoutBox) child;
             positionInlineVertically(c, vaTarget, iB);
         } else if (child instanceof Box) {
             positionInlineBlockVertically(c, vaTarget, (Box) child);
@@ -705,7 +674,7 @@ public class InlineBoxing {
         
         current.calcChildLocations();
         
-        block.addChild(c, current);
+        block.addChildForLayout(c, current);
         
         if (pendingInlineLayers.size() > 0) {
             finishPendingInlineLayers(c, pendingInlineLayers);
@@ -720,7 +689,9 @@ public class InlineBoxing {
             c.getFirstLinesTracker().clearStyles();
             for (Iterator i = elementStack.iterator(); i.hasNext(); ) {
                 InlineBoxInfo iBInfo = (InlineBoxInfo)i.next();
+                /*
                 c.pushStyle(iBInfo.getCascadedStyle());
+                */
                 iBInfo.setCalculatedStyle(c.getCurrentStyle());
             }
         }
@@ -728,10 +699,8 @@ public class InlineBoxing {
         if (pendingFloats.size() > 0) {
             for (Iterator i = pendingFloats.iterator(); i.hasNext(); ) {
                 FloatLayoutResult layoutResult = (FloatLayoutResult)i.next();
-                FloatedBlockBox floater =
-                    LayoutUtil.generateFloated(c, layoutResult.getPendingContent(), 
-                        maxAvailableWidth, current, null).getBlock();
-                current.addNonFlowContent(floater);
+                LayoutUtil.layoutFloated(c, current, layoutResult.getBlock(), maxAvailableWidth, null);
+                current.addNonFlowContent(layoutResult.getBlock());
             }
             pendingFloats.clear();
         }
@@ -782,18 +751,19 @@ public class InlineBoxing {
         }
     }
     
-    private static InlineText layoutText(LayoutContext c, int remainingWidth,
+    private static InlineText layoutText(LayoutContext c, InlineBox iB, int remainingWidth,
                                          LineBreakContext lbContext, boolean needFirstLetter) {
         InlineText result = null;
 
         result = new InlineText();
         result.setMasterText(lbContext.getMaster());
 
+        CalculatedStyle style = iB.getStyle().getCalculatedStyle();
+        
         if (needFirstLetter) {
-            Breaker.breakFirstLetter(c, lbContext, remainingWidth, c.getCurrentStyle());
+            Breaker.breakFirstLetter(c, lbContext, remainingWidth, style);
         } else {
-            Breaker.breakText(c, lbContext, remainingWidth,
-                    c.getCurrentStyle().getWhitespace(), c.getCurrentStyle());
+            Breaker.breakText(c, lbContext, remainingWidth, style);
         }
 
         result.setSubstring(lbContext.getStart(), lbContext.getEnd());
@@ -802,26 +772,19 @@ public class InlineBoxing {
         return result;
     }
 
-    private static boolean mustBeTakenOutOfFlow(Content content) {
-        return content instanceof FloatedBlockContent ||
-                content instanceof AbsolutelyPositionedContent;
-    }
-
-    private static boolean isInlineBlock(Content content) {
-        return content instanceof InlineBlockContent;
-    }
-
-    private static int processOutOfFlowContent(LayoutContext c, Content content, LineBox current, int available, List pendingFloats) {
+    private static int processOutOfFlowContent(
+            LayoutContext c, LineBox current, BlockBox block,  
+            int available, List pendingFloats) {
         int result = 0;
-        c.pushStyle(content.getStyle());
-        if (content instanceof AbsolutelyPositionedContent) {
-            BlockBox abs = LayoutUtil.generateAbsolute(c, content, current);
-            if (abs != null) {
-                current.addNonFlowContent(abs);
+        Style style = block.getStyle();
+        if (style.isAbsolute() || style.isFixed()) {
+            boolean added = LayoutUtil.layoutAbsolute(c, current, block);
+            if (added) {
+                current.addNonFlowContent(block);
             }
-        } else if (content instanceof FloatedBlockContent) {
-            FloatLayoutResult layoutResult = LayoutUtil.generateFloated(
-                    c, (FloatedBlockContent)content, available, current, pendingFloats);
+        } else if (style.isFloated()) {
+            FloatLayoutResult layoutResult = LayoutUtil.layoutFloated(
+                    c, current, (FloatedBlockBox)block, available, pendingFloats);
             if (layoutResult.isPending()) {
                 pendingFloats.add(layoutResult);
             } else {
@@ -829,14 +792,13 @@ public class InlineBoxing {
                 current.addNonFlowContent(layoutResult.getBlock());
             }
         }
-        c.popStyle();
 
         return result;
     }
 
     private static boolean hasTrimmableLeadingSpace(LineBox line, CalculatedStyle style,
                                                     LineBreakContext lbContext) {
-        if (!line.isContainsContent() && lbContext.getStartSubstring().startsWith(WhitespaceStripper.SPACE)) {
+        if (!line.isContainsContent() && lbContext.getStartSubstring().startsWith(WhitespaceStripper2.SPACE)) {
             IdentValue whitespace = style.getWhitespace();
             if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
                 return true;
@@ -847,7 +809,7 @@ public class InlineBoxing {
 
     private static LineBox newLine(LayoutContext c, LineBox previousLine, Box box) {
         LineBox result = new LineBox();
-        result.createDefaultStyle(c);
+        result.setStyle(box.getStyle().createAnonymousStyle());
         result.setParent(box);
         result.initContainingLayer(c);
 
@@ -860,10 +822,10 @@ public class InlineBoxing {
         return result;
     }
 
-    private static InlineBox addNestedInlineBoxes(LayoutContext c, LineBox line, 
+    private static InlineLayoutBox addNestedInlineBoxes(LayoutContext c, LineBox line, 
             List elementStack, int cbWidth) {
-        InlineBox currentIB = null;
-        InlineBox previousIB = null;
+        InlineLayoutBox currentIB = null;
+        InlineLayoutBox previousIB = null;
 
         boolean first = true;
         for (Iterator i = elementStack.iterator(); i.hasNext();) {
@@ -879,7 +841,7 @@ public class InlineBoxing {
             }
             
             if (first) {
-                line.addChild(c, currentIB);
+                line.addChildForLayout(c, currentIB);
                 first = false;
             } else {
                 previousIB.addInlineChild(c, currentIB, false);
@@ -888,33 +850,48 @@ public class InlineBoxing {
         }
         return currentIB;
     }
+    
+    private static List addOpenParents(LayoutContext c, LineBox line, List openParents, int cbWidth) {
+        ArrayList result = new ArrayList();
+        
+        InlineLayoutBox currentIB = null;
+        InlineLayoutBox previousIB = null;
+
+        boolean first = true;
+        for (Iterator i = openParents.iterator(); i.hasNext();) {
+            InlineBox iB = (InlineBox)i.next();
+            currentIB = new InlineLayoutBox(
+                    c, iB.getElement(), iB.getStyle().getCalculatedStyle(), cbWidth);
+            
+            result.add(new InlineBoxInfo(currentIB));
+            
+            if (first) {
+                line.addChildForLayout(c, currentIB);
+                first = false;
+            } else {
+                previousIB.addInlineChild(c, currentIB, false);
+            }
+            previousIB = currentIB;
+        }
+        return result;
+    }    
 
     private static class InlineBoxInfo {
-        private CascadedStyle cascadedStyle;
         private CalculatedStyle calculatedStyle;
-        private InlineBox inlineBox;
+        private InlineLayoutBox inlineBox;
 
-        public InlineBoxInfo(CascadedStyle cascadedStyle, InlineBox inlineBox) {
-            this.cascadedStyle = cascadedStyle;
+        public InlineBoxInfo(InlineLayoutBox inlineBox) {
             this.inlineBox = inlineBox;
         }
 
         public InlineBoxInfo() {
         }
 
-        public CascadedStyle getCascadedStyle() {
-            return cascadedStyle;
-        }
-
-        public void setCascadedStyle(CascadedStyle cascadedStyle) {
-            this.cascadedStyle = cascadedStyle;
-        }
-
-        public InlineBox getInlineBox() {
+        public InlineLayoutBox getInlineBox() {
             return inlineBox;
         }
 
-        public void setInlineBox(InlineBox inlineBox) {
+        public void setInlineBox(InlineLayoutBox inlineBox) {
             this.inlineBox = inlineBox;
         }
 

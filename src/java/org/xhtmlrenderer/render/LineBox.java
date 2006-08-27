@@ -125,8 +125,8 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         if (getChildCount() > 0) {
             for (int i = 0; i < getChildCount(); i++) {
                 Box b = (Box)getChild(i);
-                if (b instanceof InlineBox) {
-                    ((InlineBox)b).lookForDynamicFunctions(c);
+                if (b instanceof InlineLayoutBox) {
+                    ((InlineLayoutBox)b).lookForDynamicFunctions(c);
                 }
             }
         }
@@ -141,10 +141,10 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         if (getChildCount() > 0) {
             for (int i = getChildCount() - 1; i >= 0; i--) {
                 Box b = (Box)getChild(i);
-                if (! (b instanceof InlineBox)) {
+                if (! (b instanceof InlineLayoutBox)) {
                     break;
                 }
-                InlineBox iB = (InlineBox)b;
+                InlineLayoutBox iB = (InlineLayoutBox)b;
                 iB.prunePending();
                 if (iB.isPending()) {
                     removeChild(i);
@@ -219,6 +219,12 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     }
     
     private boolean intersectsLine(CssContext cssCtx, Shape clip) {
+        Rectangle result = getPaintingClipEdge(cssCtx);
+        return clip.intersects(result);
+    }
+
+    public Rectangle getPaintingClipEdge(CssContext cssCtx)
+    {
         Box parent = getParent();
         Rectangle result = null;
         if (parent.getStyle().getCalculatedStyle().isIdent(
@@ -231,14 +237,14 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             result = new Rectangle(
                     getAbsX(), getAbsY() + paintingTop, contentWidth, paintingHeight);
         }
-        return clip.intersects(result);
+        return result;
     }
     
     private boolean intersectsInlineBlocks(CssContext cssCtx, Shape clip) {
         for (int i = 0; i < getChildCount(); i++) {
             Box child = (Box)getChild(i);
-            if (child instanceof InlineBox) {
-                boolean possibleResult = ((InlineBox)child).intersectsInlineBlocks(
+            if (child instanceof InlineLayoutBox) {
+                boolean possibleResult = ((InlineLayoutBox)child).intersectsInlineBlocks(
                         cssCtx, clip);
                 if (possibleResult) {
                     return true;
@@ -284,8 +290,8 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             Box child = getChild(i);
             if (getContainingLayer() == layer) {
                 list.add(child);
-                if (child instanceof InlineBox) {
-                    ((InlineBox)child).addAllChildren(list, layer);
+                if (child instanceof InlineLayoutBox) {
+                    ((InlineLayoutBox)child).addAllChildren(list, layer);
                 }
             }
         }
@@ -303,15 +309,15 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         nonFlowContent.add(box);
     }
     
-    public void detach(LayoutContext c) {
+    public void reset(LayoutContext c) {
         for (int i = 0; i < getNonFlowContent().size(); i++) {
             Box content = (Box)getNonFlowContent().get(i);
-            content.detach(c);
+            content.reset(c);
         }
         if (this.markerData != null) {
             this.markerData.restorePreviousReferenceLine(this);
         }
-        super.detach(c);
+        super.reset(c);
     }
     
     public void calcCanvasLocation() {
@@ -368,8 +374,8 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         
         for (int offset = getChildCount() - 1; offset >= 0; offset--) {
             Box child = getChild(offset);
-            if (child instanceof InlineBox) {
-                InlineText result = ((InlineBox)child).findTrailingText();
+            if (child instanceof InlineLayoutBox) {
+                InlineText result = ((InlineLayoutBox)child).findTrailingText();
                 if (result != null && result.isEmpty()) {
                     continue;
                 }
@@ -386,7 +392,7 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         InlineText text = findTrailingText();
         
         if (text != null) {
-            InlineBox iB = text.getParent();
+            InlineLayoutBox iB = text.getParent();
             IdentValue whitespace = iB.getStyle().getCalculatedStyle().getWhitespace();
             if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
                 text.maybeTrimTrailingSpace(c);
@@ -412,6 +418,9 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.55  2006/08/27 00:36:36  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.54  2006/04/02 22:22:34  peterbrant
  * Add function interface for generated content / Implement page counters in terms of this, removing previous hack / Add custom page numbering functions
  *

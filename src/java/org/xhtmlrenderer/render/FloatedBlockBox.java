@@ -27,8 +27,8 @@ import org.xhtmlrenderer.layout.LayoutContext;
 
 public class FloatedBlockBox extends BlockBox {
     private Layer drawingLayer;
-    
     private FloatManager manager;
+    private int marginFromPrevious;
     
     public FloatedBlockBox() {
     }
@@ -45,8 +45,8 @@ public class FloatedBlockBox extends BlockBox {
         this.drawingLayer = drawingLayer;
     }
     
-    public void detach(LayoutContext c) {
-        super.detach(c);
+    public void reset(LayoutContext c) {
+        super.reset(c);
         manager.removeFloat(this);
         drawingLayer.removeFloat(this);
     }
@@ -75,5 +75,13 @@ public class FloatedBlockBox extends BlockBox {
     
     public void setAbsY(int y) {
         super.setAbsY(y);
+    }
+
+    public int getMarginFromPrevious() {
+        return marginFromPrevious;
+    }
+
+    public void setMarginFromPrevious(int marginFromPrevious) {
+        this.marginFromPrevious = marginFromPrevious;
     }
 }

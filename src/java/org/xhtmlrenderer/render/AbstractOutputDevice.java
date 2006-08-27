@@ -36,7 +36,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     protected abstract void drawLine(int x1, int y1, int x2, int y2);
     
     public void drawText(RenderingContext c, InlineText inlineText) {
-        InlineBox iB = inlineText.getParent();
+        InlineLayoutBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
 
         if (text != null && text.length() > 0) {
@@ -54,7 +54,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     }
 
     private void drawFontMetrics(RenderingContext c, InlineText inlineText) {
-        InlineBox iB = inlineText.getParent();
+        InlineLayoutBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
         
         setColor(new Color(0xFF, 0x33, 0xFF));
@@ -76,7 +76,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         drawLine(x, y, x + width, y);
     }
     
-    public void drawTextDecoration(RenderingContext c, InlineBox iB) {
+    public void drawTextDecoration(RenderingContext c, InlineLayoutBox iB) {
         setColor(iB.getStyle().getCalculatedStyle().getColor());
         
         Rectangle edge = iB.getContentAreaEdge(iB.getAbsX(), iB.getAbsY(), c);

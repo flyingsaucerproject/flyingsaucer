@@ -1,24 +1,11 @@
 package org.xhtmlrenderer.swing;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.UserInterface;
-import org.xhtmlrenderer.extend.ReplacedElementFactory;
-import org.xhtmlrenderer.layout.Boxing;
-import org.xhtmlrenderer.layout.Layer;
-import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.layout.content.DomToplevelNode;
-import org.xhtmlrenderer.render.*;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -26,6 +13,31 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.ReplacedElementFactory;
+import org.xhtmlrenderer.extend.UserInterface;
+import org.xhtmlrenderer.layout.BoxBuilder;
+import org.xhtmlrenderer.layout.Layer;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Java2DFontContext;
+import org.xhtmlrenderer.render.PageBox;
+import org.xhtmlrenderer.render.ReflowEvent;
+import org.xhtmlrenderer.render.RenderQueue;
+import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 
 
 public class RootPanel extends JPanel implements ComponentListener, UserInterface {
@@ -56,6 +68,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     private Thread layoutThread;
     private Thread renderThread;
+    
+    private boolean pendingResize = false;
 
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
         resetScrollPosition();
@@ -68,6 +82,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         } else {
             getSharedContext().getCss().flushAllStyleSheets();
         }
+        getSharedContext().reset();
         getSharedContext().setBaseURL(url);
         getSharedContext().setNamespaceHandler(nsh);
         getSharedContext().getCss().setDocumentContext(getSharedContext(), getSharedContext().getNamespaceHandler(), doc, this);
@@ -294,10 +309,15 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         
         long start = System.currentTimeMillis();
         
-        BlockBox root = Boxing.constructBox(c, new DomToplevelNode(doc));
-        setRootBox(root);
+        BlockBox root = (BlockBox)getRootBox(); 
+        if (root != null && isPendingResize()) {
+            root.reset(c);
+        } else {
+            root = BoxBuilder.createRootBox(c, doc);
+            setRootBox(root);            
+        }
         
-        Boxing.layout(c, root, new DomToplevelNode(doc));
+        root.layout(c);
         
         long end = System.currentTimeMillis();
         
@@ -442,7 +462,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                 queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,
                         viewportSize));
             } else {
-                setRootBox(null);
+                setPendingResize(true);
                 repaint();
             }
         }
@@ -493,5 +513,13 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             return l.find(layout_context, x, y);
         }
         return null;
+    }
+
+    protected synchronized boolean isPendingResize() {
+        return pendingResize;
+    }
+
+    protected synchronized void setPendingResize(boolean pendingResize) {
+        this.pendingResize = pendingResize;
     }
 }

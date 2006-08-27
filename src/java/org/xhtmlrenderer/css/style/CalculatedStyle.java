@@ -19,6 +19,13 @@
  */
 package org.xhtmlrenderer.css.style;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.RGBColor;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -35,15 +42,8 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
-import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xhtmlrenderer.util.XRLog;
-
-import java.awt.Color;
-import java.awt.Point;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
@@ -60,7 +60,7 @@ import java.util.logging.Level;
  * will retrieve properties using a {@link org.xhtmlrenderer.context.StyleReference}
  * implementation.
  *
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  * @author Patrick Wright
  */
 public class CalculatedStyle {
@@ -74,13 +74,6 @@ public class CalculatedStyle {
      * The parent-style we inherit from
      */
     private CalculatedStyle _parent;
-
-    /**
-     * A key for this style; names each of the properties defined in the style,
-     * so is a "unique" identifier for the style, matching any other style
-     * which have the same properties defined.
-     */
-    private String _styleKey;
 
     private BorderPropertySet _border;
     private RectPropertySet _margin;
@@ -137,7 +130,6 @@ public class CalculatedStyle {
         _parent = parent;
 
         derive(matched);
-        this._styleKey = genStyleKey();
     }
 
     /**
@@ -182,7 +174,7 @@ public class CalculatedStyle {
      * @return The borderWidth value
      */
     public String toString() {
-        return _styleKey;
+        return genStyleKey();
     }
 
     public Color asColor(CSSName cssName) {
@@ -721,6 +713,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.68  2006/08/27 00:36:16  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.67  2006/05/15 05:46:51  pdoubleya
  * Return value from abs value check never assigned!
  *

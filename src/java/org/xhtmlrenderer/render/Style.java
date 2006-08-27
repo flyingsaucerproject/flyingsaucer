@@ -2,6 +2,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -63,6 +64,58 @@ public class Style {
     public boolean isFixedBackground() {
         return calculatedStyle.getIdent(CSSName.BACKGROUND_ATTACHMENT) == IdentValue.FIXED;
     }
+    
+    public boolean isInline() {
+        return calculatedStyle.isIdent(CSSName.DISPLAY, IdentValue.INLINE) &&
+            ! (isFloated() || isAbsolute() || isFixed());
+    }
+    
+    public boolean isInlineBlock() {
+        return calculatedStyle.isIdent(CSSName.DISPLAY, IdentValue.INLINE_BLOCK);
+    }
+    
+    public boolean isTable() {
+        return calculatedStyle.isIdent(CSSName.DISPLAY, IdentValue.TABLE);
+    }
+    
+    public boolean isHidden() {
+        return calculatedStyle.isIdent(CSSName.DISPLAY, IdentValue.NONE);
+    }
+    
+    /*
+     * inline | block | list-item | run-in | inline-block | table | inline-table | 
+     * table-row-group | table-header-group | table-footer-group | table-row | 
+     * table-column-group | 
+     * table-column | table-cell | table-caption | none | inherit 
+     */
+    public boolean isBlockEquivalent() {
+        if (isFloated() || isAbsolute() || isFixed()) {
+            return true;
+        }
+        else {
+            IdentValue display = calculatedStyle.getIdent(CSSName.DISPLAY);
+            if (display == IdentValue.INLINE) {
+                return false;
+            }
+            else {
+                return display == IdentValue.BLOCK || display == IdentValue.LIST_ITEM ||
+                    display == IdentValue.RUN_IN || display == IdentValue.INLINE_BLOCK ||
+                    display == IdentValue.TABLE || display == IdentValue.INLINE_TABLE;
+            }
+        }
+    }
+    
+    public boolean isLayedOutInInlineContext()
+    {
+        if (isFloated() || isAbsolute() || isFixed()) {
+            return true;
+        } else {
+            IdentValue display = calculatedStyle.getIdent(CSSName.DISPLAY);
+            return display == IdentValue.INLINE || display == IdentValue.INLINE_BLOCK ||
+                    display == IdentValue.INLINE_TABLE;
+        }
+    }
+    
 
     public boolean isAbsolute() {
         return calculatedStyle.isIdent(CSSName.POSITION, IdentValue.ABSOLUTE);
@@ -234,5 +287,37 @@ public class Style {
     
     public boolean isAlternateFlow() {
         return getCalculatedStyle().isAlternateFlow();
+    }
+    
+    public Style createAnonymousStyle() {
+        Style result = new Style(
+                calculatedStyle.deriveStyle(
+                        CascadedStyle.emptyCascadedStyle), 
+                containingBlockWidth);
+        return result;
+    }
+    
+    public boolean mayHaveFirstLine() {
+        IdentValue display = calculatedStyle.getIdent(CSSName.DISPLAY);
+        return display == IdentValue.BLOCK ||
+                display == IdentValue.LIST_ITEM ||
+                display == IdentValue.RUN_IN ||
+                display == IdentValue.TABLE ||
+                display == IdentValue.TABLE_CELL ||
+                display == IdentValue.TABLE_CAPTION ||
+                display == IdentValue.INLINE_BLOCK;
+    }  
+    
+    public boolean mayHaveFirstLetter() {
+        IdentValue display = calculatedStyle.getIdent(CSSName.DISPLAY);
+        return display == IdentValue.BLOCK ||
+                display == IdentValue.LIST_ITEM ||
+                display == IdentValue.TABLE_CELL ||
+                display == IdentValue.TABLE_CAPTION ||
+                display == IdentValue.INLINE_BLOCK;
+    } 
+    
+    public boolean isNonFlowContent() {
+        return isFloated() || isAbsolute() || isFixed();
     }
 }

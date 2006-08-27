@@ -1,6 +1,6 @@
 /*
  * StylePush.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -26,7 +26,7 @@ import org.xhtmlrenderer.render.Style;
 
 
 /**
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  */
 public class StylePush {
     private String _pseudo;

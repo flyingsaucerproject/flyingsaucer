@@ -26,8 +26,13 @@ import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.AWTFontResolver;
 import org.xhtmlrenderer.context.StyleReference;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.FontResolver;
@@ -39,6 +44,7 @@ import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -78,7 +84,9 @@ public class SharedContext {
     private boolean print;
     
     private int dotsPerPixel = 1;
-
+    
+    private Map styleMap;
+    
     /**
      * Constructor for the Context object
      */
@@ -631,12 +639,47 @@ public class SharedContext {
     public void setDotsPerPixel(int pixelsPerDot) {
         this.dotsPerPixel = pixelsPerDot;
     }
+    
+    
+    public Style getStyle(Element e) {
+        if (styleMap == null) {
+            styleMap = new HashMap(1024, 0.75f);
+        }
+        
+        Style result = (Style)styleMap.get(e);
+        if (result == null) {
+            Node parent = e.getParentNode();
+            CalculatedStyle parentCalculatedStyle;
+            if (parent instanceof Document) {
+                parentCalculatedStyle = new EmptyStyle();
+            } else {
+                parentCalculatedStyle = getStyle((Element)parent).getCalculatedStyle();
+            }
+            
+            result = new Style(
+                    parentCalculatedStyle.deriveStyle(getCss().getCascadedStyle(e, false)),
+                    0);
+            
+            styleMap.put(e, result);
+        }
+        
+        return result;
+    }
+    
+    public void reset() {
+       styleMap = null;
+       id_map = null;
+       namedAnchors = null;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2006/08/27 00:35:38  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.29  2006/03/01 00:42:52  peterbrant
  * Provide ability to remove named anchors
  *

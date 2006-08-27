@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Torbjörn Gannholm
+ * Copyright (c) 2005 Torbjï¿½rn Gannholm
  * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.LineBox;
 
 /**
@@ -78,8 +78,8 @@ public class Restyling {
             if (c.getFirstLinesTracker().hasStyles() && line.isFirstLine()) {
                 c.getFirstLinesTracker().pushStyles(c);
             }
-            if (child instanceof InlineBox) {
-                restyle(c, (InlineBox)child);
+            if (child instanceof InlineLayoutBox) {
+                restyle(c, (InlineLayoutBox)child);
             } else {
                 restyle(c, (BlockBox)child);
             }
@@ -96,7 +96,7 @@ public class Restyling {
         }
     }
 
-    private static void restyle(LayoutContext c, InlineBox iB) {
+    private static void restyle(LayoutContext c, InlineLayoutBox iB) {
         c.pushStyle(c.getCss().getCascadedStyle(iB.element, true));
         iB.getStyle().setCalculatedStyle(c.getCurrentStyle());
         
@@ -104,8 +104,8 @@ public class Restyling {
        
         for (int i = 0; i < iB.getInlineChildCount(); i++) {
             Object child = iB.getInlineChild(i);
-            if (child instanceof InlineBox) {
-                restyle(c, (InlineBox)child);
+            if (child instanceof InlineLayoutBox) {
+                restyle(c, (InlineLayoutBox)child);
             } else if (child instanceof BlockBox) {
                 restyle(c, (BlockBox)child);
             }

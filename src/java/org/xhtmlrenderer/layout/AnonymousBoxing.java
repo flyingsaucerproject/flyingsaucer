@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjšrn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjï¿½rn Gannholm
+ * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,36 +20,16 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.render.AnonymousBlockBox;
+import java.awt.Rectangle;
+
 import org.xhtmlrenderer.render.BlockBox;
 
-import java.awt.Rectangle;
-import java.util.List;
-
-
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class AnonymousBoxing {
 
-    /**
-     * Constructor for the AnonymousBoxLayout object
-     */
     private AnonymousBoxing() {
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param c       PARAM
-     * @param content PARAM
-     * @return Returns
-     */
-    public static BlockBox layout(LayoutContext c, BlockBox block, Content content) {
+    public static BlockBox layout(LayoutContext c, BlockBox block) {
         // copy the extents
         Rectangle oe = c.getExtents();
         // save height incase fixed height
@@ -56,10 +37,7 @@ public class AnonymousBoxing {
 
         // do children's layout
         c.setExtents(new Rectangle(c.getExtents()));
-        List contentList = content.getChildContent(c);
-        if (contentList != null && contentList.size() != 0) {
-            InlineBoxing.layoutContent(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
-        }
+        InlineBoxing.layoutContent(c, block);//when this is really an anonymous, InlineLayout.layoutChildren is called
 
         // restore height incase fixed height
         if (!block.getStyle().isAutoHeight()) {
@@ -72,18 +50,15 @@ public class AnonymousBoxing {
 
         return block;
     }
-
-    public static BlockBox createBox(LayoutContext c, Content content) {
-        BlockBox block = new AnonymousBlockBox(content);
-        block.createDefaultStyle(c);
-        return block;
-    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2006/08/27 00:35:43  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.13  2006/01/03 23:55:55  peterbrant
  * Add support for proper page breaking of floats / More bug fixes to pagination support
  *

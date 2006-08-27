@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
  * Copyright (c) 2004, 2005 Joshua Marinacci
+ * Copyright (c) 2005, 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -37,10 +39,10 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.util.XRLog;
 
-public abstract class Box {
-
+public abstract class Box implements Styleable {
     public Element element;
 
     // dimensions stuff
@@ -93,7 +95,9 @@ public abstract class Box {
     private Box containingBlock;
     
     private Dimension relativeOffset;
-
+    
+    private Rectangle aggregateBounds;
+    
     public Box() {
     }
 
@@ -125,7 +129,13 @@ public abstract class Box {
         return sb.toString();
     }
 
-    public void addChild(LayoutContext c, Box child) {
+    public void addChildForLayout(LayoutContext c, Box child) {
+        addChild(child);
+        
+        child.initContainingLayer(c);
+    }
+    
+    public void addChild(Box child) {
         if (boxes == null) {
             boxes = new ArrayList();
         }
@@ -134,8 +144,13 @@ public abstract class Box {
         }
         child.setParent(this);
         boxes.add(child);
-        
-        child.initContainingLayer(c);
+    }
+    
+    public void addAllChildren(List children) {
+        for (Iterator i = children.iterator(); i.hasNext(); ) {
+            Box box = (Box)i.next();
+            addChild(box);
+        }
     }
 
     public void removeAllChildren() {
@@ -181,11 +196,11 @@ public abstract class Box {
     }
 
     public Iterator getChildIterator() {
-        if (boxes == null) {
-            return Collections.EMPTY_LIST.iterator();
-        } else {
-            return boxes.iterator();
-        }
+        return boxes == null ? Collections.EMPTY_LIST.iterator() : boxes.iterator();
+    }
+    
+    public List getChildren() {
+        return boxes == null ? Collections.EMPTY_LIST : boxes;
     }
 
     /**
@@ -225,7 +240,7 @@ public abstract class Box {
         sb.append(" " + this.hashCode() + " ");
         if (this instanceof LineBox) {
             sb.append("line:");
-        } else if (this instanceof InlineBox) {
+        } else if (this instanceof InlineLayoutBox) {
             sb.append("inline:");
         } else {
             sb.append("box:");
@@ -333,12 +348,16 @@ public abstract class Box {
     public Rectangle getPaintingBorderEdge(CssContext cssCtx) {
         return getBorderEdge(getAbsX(), getAbsY(), cssCtx);
     }
-
+    
+    public Rectangle getPaintingClipEdge(CssContext cssCtx) {
+        return getPaintingBorderEdge(cssCtx);
+    }
+    
     /**
      * <B>NOTE</B>: This method does not consider any children of this box
      */
     public boolean intersects(CssContext cssCtx, Shape clip) {
-        return clip == null || clip.intersects(getBorderEdge(getAbsX(), getAbsY(), cssCtx));
+        return clip == null || clip.intersects(getPaintingClipEdge(cssCtx));
     }
 
     private void addBackMargins(CssContext cssCtx, Rectangle bounds) {
@@ -438,6 +457,9 @@ public abstract class Box {
     // HACK If a box doesn't have a Style object, NPEs are the likely result
     // However, it begs the question if a Style object is being used in places
     // it doesn't make sense (e.g. line boxes)
+    /**
+     * @deprecated
+     */
     public void createDefaultStyle(LayoutContext c) {
         c.pushStyle(CascadedStyle.emptyCascadedStyle);
         setStyle(new Style(c.getCurrentStyle(), 0));
@@ -503,7 +525,7 @@ public abstract class Box {
             // between anonymous block boxes)
             if (c.getLayer().isInline()) {
                 List content = 
-                    ((InlineBox)c.getLayer().getMaster()).getElementWithContent();
+                    ((InlineLayoutBox)c.getLayer().getMaster()).getElementWithContent();
                 if (content.contains(this)) {
                     setContainingLayer(c.getLayer());
                 }
@@ -532,34 +554,41 @@ public abstract class Box {
         return result;
     }
     
-    public void detach(LayoutContext c) {
-        detachChildren(c);
+    public void reset(LayoutContext c) {
+        resetChildren(c);
         if (this.layer != null) {
             this.layer.detach();
             this.layer = null;
         }
-        if (getParent() != null) {
-            getParent().removeChild(this);
-        }
+        this.containingLayer = null;
+        this.layer = null;
         String anchorName = c.getNamespaceHandler().getAnchorName(this.element);
         if (anchorName != null) {
             c.removeNamedAnchor(anchorName);
         }
-        setParent(null);
     }
     
-    public void detachChildren(LayoutContext c, int start, int end) {
-        for (int i = start; i <= end; i++) {
-            Box box = getChild(start);
-            box.detach(c);
+    public void detach(LayoutContext c) {
+        reset(c);
+        
+        if (getParent() != null) {
+            getParent().removeChild(this);
+            setParent(null);
         }
     }
     
-    protected void detachChildren(LayoutContext c) {
+    public void resetChildren(LayoutContext c, int start, int end) {
+        for (int i = start; i <= end; i++) {
+            Box box = getChild(start);
+            box.reset(c);
+        }
+    }
+    
+    protected void resetChildren(LayoutContext c) {
         int remaining = getChildCount();
-        while (remaining-- > 0) {
-            Box box = getChild(0);
-            box.detach(c);
+        for (int i = 0; i < remaining; i++) {
+            Box box = getChild(i);
+            box.reset(c);
         }
     }
     
@@ -644,12 +673,35 @@ public abstract class Box {
         Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), cssCtx);
         return edge.contains(absX, absY) ? this : null;
     }
+    
+    public boolean isRoot() {
+        return element != null && element.getParentNode().getNodeType() == Node.DOCUMENT_NODE;
+    }
+
+    public Element getElement() {
+        return element;
+    }
+
+    public void setElement(Element element) {
+        this.element = element;
+    }
+
+    public Rectangle getAggregateBounds() {
+        return aggregateBounds;
+    }
+
+    public void setAggregateBounds(Rectangle aggregateBounds) {
+        this.aggregateBounds = aggregateBounds;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.112  2006/08/27 00:36:44  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.111  2006/03/01 00:45:02  peterbrant
  * Provide LayoutContext when calling detach() and friends
  *

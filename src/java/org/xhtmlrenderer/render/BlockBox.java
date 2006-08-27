@@ -22,18 +22,24 @@ package org.xhtmlrenderer.render;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Shape;
 import java.util.List;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
+import org.xhtmlrenderer.layout.BlockBoxing;
+import org.xhtmlrenderer.layout.BoxBuilder;
+import org.xhtmlrenderer.layout.Boxing;
+import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PersistentBFC;
+import org.xhtmlrenderer.layout.content.TableContent;
+import org.xhtmlrenderer.table.TableBoxing;
 
 public class BlockBox extends Box implements Renderable, InlinePaintable {
 
@@ -41,9 +47,13 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public static final int POSITION_HORIZONTALLY = 2;
     public static final int POSITION_BOTH = POSITION_VERTICALLY | POSITION_HORIZONTALLY;
     
+    public static final int CONTENT_UNKNOWN = 0;
+    public static final int CONTENT_INLINE = 1;
+    public static final int CONTENT_BLOCK = 2;
+    public static final int CONTENT_EMPTY = 4;
+    
     public int renderIndex;
     
-    private List pendingInlineElements;
     private MarkerData markerData;
     
     private int listCounter;
@@ -56,7 +66,11 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     private boolean needPageClear;
     
     private ReplacedElement replacedElement;
-
+    
+    private int childrenContentType;
+    
+    private List inlineContent;
+    
     public BlockBox() {
         super();
     }
@@ -111,32 +125,20 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         }
     }
 
-    public List getPendingInlineElements() {
-        return pendingInlineElements;
-    }
-
-    public void setPendingInlineElements(List pendingInlineElements) {
-        this.pendingInlineElements = pendingInlineElements;
-    }
-    
-    public boolean intersects(CssContext cssCtx, Shape clip) {
-        if (! getStyle().isListItem()) {
-            return super.intersects(cssCtx, clip);
-        } else {
-            // HACK Don't know how wide the list marker is (or even where it is)
-            // so extend the bounding box all the way over to the left edge of
-            // the canvas
-            if (clip == null) {
-                return true;
-            }
-            
-            Rectangle borderEdge = getBorderEdge(getAbsX(), getAbsY(), cssCtx);
-            int delta = borderEdge.x;
-            borderEdge.x = 0;
-            borderEdge.width += delta;
-            
-            return clip.intersects(borderEdge);
+    public Rectangle getPaintingClipEdge(CssContext cssCtx)
+    {
+        Rectangle result = super.getPaintingClipEdge(cssCtx);
+        
+        // HACK Don't know how wide the list marker is (or even where it is)
+        // so extend the bounding box all the way over to the left edge of
+        // the canvas
+        if (getStyle().isListItem()) {
+            int delta = result.x;
+            result.x = 0;
+            result.width += delta;
         }
+        
+        return result;
     }
     
     public void paintInline(RenderingContext c) {
@@ -149,7 +151,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     
     public boolean isInline() {
         Box parent = getParent();
-        return parent instanceof LineBox || parent instanceof InlineBox;
+        return parent instanceof LineBox || parent instanceof InlineLayoutBox;
     }
     
     public LineBox getLineBox() {
@@ -234,21 +236,23 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     private MarkerData.TextMarker makeTextMarker(LayoutContext c, IdentValue listStyle) {
-        String text = "";
+        String text;
 
         if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
-            text = toLatin(getListCounter()).toLowerCase() + ".";
+            text = toLatin(getListCounter()).toLowerCase();
         } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
-            text = toLatin(getListCounter()).toUpperCase() + ".";
+            text = toLatin(getListCounter()).toUpperCase();
         } else if (listStyle == IdentValue.LOWER_ROMAN) {
-            text = toRoman(getListCounter()).toLowerCase() + ".";
+            text = toRoman(getListCounter()).toLowerCase();
         } else if (listStyle == IdentValue.UPPER_ROMAN) {
-            text = toRoman(getListCounter()).toUpperCase() + ".";
+            text = toRoman(getListCounter()).toUpperCase();
+        } else if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
+            text = (getListCounter() >= 10 ? "" : "0") + getListCounter();
         } else /* if (listStyle == IdentValue.DECIMAL) */ {
-            text = getListCounter() + ".";
+            text = Integer.toString(getListCounter());
         }
         
-        text += "  ";
+        text += ".  ";
 
         int w = c.getTextRenderer().getWidth(
                 c.getFontContext(),
@@ -438,11 +442,60 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         return this.getChildCount() > 0 && getChild(0) instanceof LineBox;
     }
     
-    public void detach(LayoutContext c) {
-        super.detach(c);
+    public void reset(LayoutContext c) {
+        super.reset(c);
         if (isReplaced()) {
             getReplacedElement().detach(c);
         }
+        if (getChildrenContentType() == BlockBox.CONTENT_INLINE) {
+            removeAllChildren();
+        }
+    }
+    
+    public void layout(LayoutContext c) {
+        if (getStyle().isTable()) {
+            if (getChildCount() > 0) {
+                getChild(0).detach(c);
+            }
+            CascadedStyle cascadedStyle = c.getCss().getCascadedStyle(getElement(), false);
+            c.initializeStyles(getStyle().getCalculatedStyle().getParent());
+            TableBoxing.layout(c, this, new TableContent(getElement(), cascadedStyle), null);
+        } else {
+            Boxing.layout(c, this);
+        }
+    }
+    
+    public void layoutChildren(LayoutContext c) {
+        setState(Box.CHILDREN_FLUX);
+        if (getChildrenContentType() == CONTENT_UNKNOWN) {
+            BoxBuilder.createChildren(c, this);
+        }
+        
+        switch (getChildrenContentType()) {
+            case CONTENT_INLINE:
+                InlineBoxing.layoutContent(c, this);
+                break;
+            case CONTENT_BLOCK:
+                BlockBoxing.layoutContent(c, this);
+                break;
+        }
+        setState(Box.DONE);
+    }
+
+    public int getChildrenContentType() {
+        return childrenContentType;
+    }
+
+    public void setChildrenContentType(int contentType) {
+        this.childrenContentType = contentType;
+    }
+
+    public List getInlineContent() {
+        return inlineContent;
+    }
+
+    public void setInlineContent(List inlineContent) {
+        this.inlineContent = inlineContent;
     }
 }
 
@@ -450,6 +503,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2006/08/27 00:36:47  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.44  2006/03/01 00:45:03  peterbrant
  * Provide LayoutContext when calling detach() and friends
  *

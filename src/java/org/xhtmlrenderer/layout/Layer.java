@@ -35,7 +35,7 @@ import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBlockBox;
-import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.MarginBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -229,7 +229,7 @@ public class Layer {
     }
     
     public Dimension getPaintingDimension(LayoutContext c) {
-        return calcPaintingDimension(c);
+        return calcPaintingDimension(c).outerMarginCorner;
     }
     
     public void paint(RenderingContext c, int originX, int originY) {
@@ -411,6 +411,11 @@ public class Layer {
         return getParent() == null && isStackingContext();
     }
     
+    private static class PaintingInfo {
+        public Dimension outerMarginCorner;
+        public Rectangle aggregateBounds;
+    }
+    
     private void moveIfGreater(Dimension result, Dimension test) {
         if (test.width > result.width) {
             result.width = test.width;
@@ -420,8 +425,8 @@ public class Layer {
         }
     }
     
-    private Dimension calcPaintingDimension(LayoutContext c) {
-        Dimension result = scanLayer(c);
+    private PaintingInfo calcPaintingDimension(LayoutContext c) {
+        PaintingInfo result = scanLayer(c);
         
         List children = getChildren();
         for (int i = 0; i < children.size(); i++) {
@@ -430,8 +435,8 @@ public class Layer {
             if (child.getMaster().getStyle().isFixed()) {
                 continue;
             } else if (child.getMaster().getStyle().isAbsolute()) {
-                Dimension dim = child.scanLayer(c);
-                moveIfGreater(result, dim);
+                PaintingInfo info = child.scanLayer(c);
+                moveIfGreater(result.outerMarginCorner, info.outerMarginCorner);
             } 
         }
         
@@ -439,41 +444,49 @@ public class Layer {
     }
 
     // TODO block.renderIndex = c.getNewRenderIndex();
-    private Dimension scanLayer(LayoutContext c) {
+    private PaintingInfo scanLayer(LayoutContext c) {
         return scanLayerHelper(c, getMaster());
     }
     
-    private Dimension scanLayerHelper(final LayoutContext c, final Box box) {
+    private PaintingInfo scanLayerHelper(final LayoutContext c, final Box box) {
+        final PaintingInfo result = new PaintingInfo();
+        
         Rectangle bounds = box.getBounds(box.getAbsX(), box.getAbsY(), c, 0, 0);
-        final Dimension result = 
+        result.outerMarginCorner =
             new Dimension(bounds.x + bounds.width, bounds.y + bounds.height);
         
-        if (! (box instanceof InlineBox)) {
+        result.aggregateBounds = box.getPaintingClipEdge(c);
+        
+        if (! (box instanceof InlineLayoutBox)) {
             if (box instanceof BlockBox && ((BlockBox)box).getPersistentBFC() != null) {
                 ((BlockBox)box).getPersistentBFC().getFloatManager().performFloatOperation(
                         new FloatManager.FloatOperation() {
                             public void operate(Box floater) {
-                                Dimension dim = scanLayerHelper(c, floater);
-                                moveIfGreater(result, dim);
+                                PaintingInfo info = scanLayerHelper(c, floater);
+                                moveIfGreater(result.outerMarginCorner, info.outerMarginCorner);
                             }
                         });
             }
             
             for (int i = 0; i < box.getChildCount(); i++) {
                 Box child = (Box) box.getChild(i);
-                Dimension offset = scanLayerHelper(c, child);
-                moveIfGreater(result, offset);
+                PaintingInfo info = scanLayerHelper(c, child);
+                moveIfGreater(result.outerMarginCorner, info.outerMarginCorner);
+                result.aggregateBounds.add(info.aggregateBounds);
             }
         } else {
-            InlineBox iB = (InlineBox)box;
+            InlineLayoutBox iB = (InlineLayoutBox)box;
             for (int i = 0; i < iB.getInlineChildCount(); i++) {
                 Object obj = iB.getInlineChild(i);
                 if (obj instanceof Box) {
-                    Dimension offset = scanLayerHelper(c, (Box)obj);
-                    moveIfGreater(result, offset);
+                    PaintingInfo info = scanLayerHelper(c, (Box)obj);
+                    moveIfGreater(result.outerMarginCorner, info.outerMarginCorner);
+                    result.aggregateBounds.add(info.aggregateBounds);
                 } 
             }
         }
+        
+        box.setAggregateBounds(result.aggregateBounds);
         
         return result;
     }
@@ -648,11 +661,11 @@ public class Layer {
                     if (child.getMaster().getStyle().isAvoidPageBreakInside() &&
                             child.getMaster().crossesPageBreak(c)) {
                         ((BlockBox)child.getMaster()).setNeedPageClear(true);
-                        child.getMaster().detach(c);
+                        child.getMaster().reset(c);
                         layoutAbsoluteChild(c, child);
                         ((BlockBox)child.getMaster()).setNeedPageClear(false);
                         if (child.getMaster().crossesPageBreak(c)) {
-                            child.getMaster().detach(c);
+                            child.getMaster().reset(c);
                             layoutAbsoluteChild(c, child);
                         }
                     }
@@ -673,8 +686,7 @@ public class Layer {
             master.positionAbsoluteOnPage(c);
             c.reInit(child.getLayoutData().getParentStyle());
             c.setExtents(getExtents(c));
-            Boxing.layout(c, (BlockBox)child.getMaster(), 
-                    child.getLayoutData().getContent());
+            ((BlockBox)child.getMaster()).layout(c);
             // Set right
             master.positionAbsolute(c, BlockBox.POSITION_HORIZONTALLY);
         } else {
@@ -684,17 +696,15 @@ public class Layer {
             // so just guess for now
             c.reInit(child.getLayoutData().getParentStyle());
             c.setExtents(getExtents(c));
-            Boxing.layout(c, (BlockBox)child.getMaster(), 
-                    child.getLayoutData().getContent());
+            ((BlockBox)child.getMaster()).layout(c);
             
-            child.getMaster().detach(c);
+            child.getMaster().reset(c);
             master.positionAbsolute(c, BlockBox.POSITION_BOTH);
             master.positionAbsoluteOnPage(c);
             
             c.reInit(child.getLayoutData().getParentStyle());
             c.setExtents(getExtents(c));
-            Boxing.layout(c, (BlockBox)child.getMaster(), 
-                    child.getLayoutData().getContent());
+            ((BlockBox)child.getMaster()).layout(c);
         }
     }
     
@@ -704,8 +714,7 @@ public class Layer {
         master.positionAbsolute(c, BlockBox.POSITION_BOTH);
         c.reInit(child.getLayoutData().getParentStyle());
         c.setExtents(child.getMaster().getContainingBlock().getPaddingEdge(0, 0, c));
-        Boxing.layout(c, (BlockBox)child.getMaster(), 
-                child.getLayoutData().getContent());
+        ((BlockBox)child.getMaster()).layout(c);
         // Set bottom, right
         master.positionAbsolute(c, BlockBox.POSITION_BOTH);
     }

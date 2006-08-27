@@ -20,26 +20,18 @@
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.render.BlockBox;
 
 public class AbsoluteContentLayoutData {
-    private Content _content;
+    private BlockBox _block;
     private CalculatedStyle _parentStyle;
     
     public AbsoluteContentLayoutData() {
     }
     
-    public AbsoluteContentLayoutData(Content content, CalculatedStyle parent) {
-        _content = content;
+    public AbsoluteContentLayoutData(BlockBox block, CalculatedStyle parent) {
+        _block = block;
         _parentStyle = parent;
-    }
-    
-    public Content getContent() {
-        return _content;
-    }
-    
-    public void setContent(Content content) {
-        _content = content;
     }
     
     public CalculatedStyle getParentStyle() {
@@ -48,6 +40,14 @@ public class AbsoluteContentLayoutData {
     
     public void setParentStyle(CalculatedStyle parent) {
         _parentStyle = parent;
+    }
+
+    public BlockBox getBlock() {
+        return _block;
+    }
+
+    public void setBlock(BlockBox block) {
+        _block = block;
     }
     
 }

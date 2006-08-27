@@ -1,6 +1,6 @@
 /*
  * TableContent.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -36,7 +36,7 @@ import java.util.NoSuchElementException;
 /**
  * Represents the content of a "block"-display element
  *
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  */
 public class TableContent extends AbstractCollapsableContent implements CollapsableContent {
     /**
@@ -61,7 +61,7 @@ public class TableContent extends AbstractCollapsableContent implements Collapsa
      * @param e     PARAM
      * @param style PARAM
      */
-    TableContent(Element e, CascadedStyle style) {
+    public TableContent(Element e, CascadedStyle style) {
         _elem = e;
         _style = style;
         _children = null;

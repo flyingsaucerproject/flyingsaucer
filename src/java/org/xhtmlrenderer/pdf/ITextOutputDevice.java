@@ -54,7 +54,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
-import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -623,8 +623,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
     
     private int getBookmarkRefY(Box box) {
-        if (box instanceof InlineBox) {
-            InlineBox iB = (InlineBox)box;
+        if (box instanceof InlineLayoutBox) {
+            InlineLayoutBox iB = (InlineLayoutBox)box;
             return iB.getAbsY() + iB.getBaseline();
         } else {
             return box.getAbsY();

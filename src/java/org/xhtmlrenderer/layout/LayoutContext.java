@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjšrn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -429,5 +429,9 @@ public class LayoutContext implements CssContext {
     
     public ContentFunctionFactory getContentFunctionFactory() {
         return contentFunctionFactory;
+    }
+    
+    public SharedContext getSharedContext() {
+        return sharedContext;
     }
 }

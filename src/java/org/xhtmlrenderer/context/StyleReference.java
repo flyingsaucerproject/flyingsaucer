@@ -1,6 +1,6 @@
 /*
  * StyleReference.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,6 +19,10 @@
  */
 package org.xhtmlrenderer.context;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,13 +40,9 @@ import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 
 /**
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  */
 public class StyleReference {
     /**
@@ -74,7 +74,7 @@ public class StyleReference {
 
     /** */
     private UserAgentCallback _uac;
-
+    
     /**
      * Default constructor for initializing members.
      *
@@ -264,6 +264,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2006/08/27 00:36:14  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.8  2006/01/03 23:02:37  peterbrant
  * Remove unused variable
  *

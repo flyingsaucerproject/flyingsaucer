@@ -29,7 +29,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
-import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -40,7 +40,7 @@ public interface OutputDevice {
     public void drawText(RenderingContext c, InlineText inlineText);
     
     public void drawTextDecoration(RenderingContext c, LineBox lineBox);
-    public void drawTextDecoration(RenderingContext c, InlineBox inlineBox);
+    public void drawTextDecoration(RenderingContext c, InlineLayoutBox inlineBox);
     
     public void paintBorder(RenderingContext c, Box box);
     public void paintBorder(RenderingContext c, CalculatedStyle style, 

@@ -26,7 +26,7 @@ import java.util.List;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineLayoutBox;
 
 public class VerticalAlignContext {
     private List measurements = new ArrayList();
@@ -222,8 +222,8 @@ public class VerticalAlignContext {
         private void moveInlineContents(Box box, int ty) {
             if (canBeMoved(box)) { 
                 box.y += ty;
-                if (box instanceof InlineBox) {
-                    InlineBox iB = (InlineBox)box;
+                if (box instanceof InlineLayoutBox) {
+                    InlineLayoutBox iB = (InlineLayoutBox)box;
                     for (int i = 0; i < iB.getInlineChildCount(); i++) {
                         Object child = iB.getInlineChild(i);
                         if (child instanceof Box) {

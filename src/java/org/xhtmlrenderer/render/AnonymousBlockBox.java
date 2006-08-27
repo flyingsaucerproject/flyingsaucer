@@ -19,10 +19,19 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.util.List;
+
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.content.Content;
 
 public class AnonymousBlockBox extends BlockBox {
+    private List openParents;
+    
+    public AnonymousBlockBox(Element element) {
+        this.element = element;
+    }
+    
     public AnonymousBlockBox(Content content) {
         super();
         this.element = content.getElement();
@@ -52,12 +61,25 @@ public class AnonymousBlockBox extends BlockBox {
             return result;
         }
     }
+
+    public List getOpenParents()
+    {
+        return openParents;
+    }
+
+    public void setOpenParents(List openParents)
+    {
+        this.openParents = openParents;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2006/08/27 00:36:39  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.16  2006/02/22 02:20:18  peterbrant
  * Links and hover work again
  *

@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjšrn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjï¿½rn Gannholm
  * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -20,186 +20,132 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.layout.Boxing.StyleSetListener;
-import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
-import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.content.FirstLetterStyle;
-import org.xhtmlrenderer.layout.content.FirstLineStyle;
-import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.ReflowEvent;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
-
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.RandomAccess;
-import java.util.logging.Level;
+
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.ReflowEvent;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
 
 public class BlockBoxing {
     private BlockBoxing() {
     }
 
+    /**
+     * @deprecated
+     */
     public static void layoutContent(final LayoutContext c, final BlockBox block, 
             List contentList) {
-        Boxing.StyleSetListener styleSetListener = new Boxing.StyleSetListener() {
-            public void onStyleSet(BlockBox child) {
-                boolean moved = false;
-                if (child.getStyle().isRelative()) {
-                    Dimension delta = child.positionRelative(c);
-                    c.translate(delta.width, delta.height);
-                    moved = true;
-                }
-                if (c.isPrint() && 
-                        (child.isNeedPageClear() || 
-                                child.getStyle().isForcePageBreakBefore())) {
-                    int delta = child.moveToNextPage(c);
-                    c.translate(0, delta);
-                    moved = true;
-                    child.setNeedPageClear(false);
-                }
-                if (child.getStyle().isCleared()) {
-                    c.translate(0, -child.y);
-                    c.getBlockFormattingContext().clear(c, child);
-                    c.translate(0, child.y);
-                    moved = true;
-                }
-                if (moved) {
-                    child.calcCanvasLocation();
-                }
-            }
-        };
-        
+        layoutContent(c, block);
+    }
+    
+    public static void layoutContent(final LayoutContext c, final BlockBox block) {
         boolean resetMargins = false;
         int listIndex = 0;
         int offset = -1;
         
-        List localContentList = contentList;
-        if (c.isPrint() && ! (localContentList instanceof RandomAccess)) {
-            localContentList = new ArrayList(localContentList);
+        List localChildren = block.getChildren();
+        if (c.isPrint() && ! (localChildren instanceof RandomAccess)) {
+            localChildren = new ArrayList(localChildren);
         }
         
-        Iterator contentIterator = localContentList.iterator();
         RelayoutDataList relayoutDataList = null;
         if (c.isPrint()) {
-            relayoutDataList = new RelayoutDataList(localContentList.size());
+            relayoutDataList = new RelayoutDataList(localChildren.size());
         }
         
         BlockBox previousChildBox = null;
-        while (contentIterator.hasNext()) {
-            Object o = contentIterator.next();
+        for (Iterator i = localChildren.iterator(); i.hasNext(); ) {
+            BlockBox child = (BlockBox)i.next();
             offset++;
-            
-            if (o instanceof FirstLineStyle || o instanceof FirstLetterStyle) {
-                continue;
-            }
             
             listIndex++;
             
-            Content currentContent = (Content) o;
             RelayoutData relayoutData = null;
             
             if (c.isPrint()) {
                 relayoutData = relayoutDataList.get(offset);
                 relayoutData.setLayoutState(c.copyStateForRelayout());
                 relayoutData.setInitialParentHeight(block.height);
-                relayoutData.setContent(currentContent);
                 relayoutData.setListIndex(listIndex);
                 relayoutData.setResetMargins(resetMargins);
-                if (o instanceof AnonymousBlockContent && 
-                        block.getPendingInlineElements() != null) {
-                    relayoutData.setHasPendingInlines(true);
-                }
             }
 
-            BlockBox childBox = null;
             //TODO:handle run-ins. For now, treat them as blocks
             
-            childBox = layoutBlockChild(
-                    c, block, styleSetListener, listIndex, 
-                   resetMargins, false, currentContent);
+            layoutBlockChild(
+                    c, block, child, listIndex, resetMargins, false);
             
-            if (c.isPrint() && o instanceof AnonymousBlockContent && 
-                    block.getPendingInlineElements() != null) {
-                relayoutData.setHasPendingInlines(true);
-            }
-            
-            if (c.isPrint() && childBox.getStyle().isAvoidPageBreakInside() &&
-                    childBox.crossesPageBreak(c)) {
-                if (o instanceof AnonymousBlockContent && relayoutData.isHasPendingInlines()) {
-                    XRLog.layout(Level.WARNING, 
-                            "Unable to relayout anonymous block with pending inlines. Dropping rule.");
-                } else {
+            if (c.isPrint() && child.getStyle().isAvoidPageBreakInside() &&
+                    child.crossesPageBreak(c)) {
+                c.restoreStateForRelayout(relayoutData.getLayoutState());
+                child.reset(c);
+                layoutBlockChild(
+                        c, block, child, listIndex, resetMargins, true);
+                
+                if (child.crossesPageBreak(c)) {
                     c.restoreStateForRelayout(relayoutData.getLayoutState());
-                    childBox.detach(c);
-                    childBox = layoutBlockChild(
-                            c, block, styleSetListener, listIndex, resetMargins, 
-                            true, currentContent);
-                    
-                    if (childBox.crossesPageBreak(c)) {
-                        c.restoreStateForRelayout(relayoutData.getLayoutState());
-                        childBox.detach(c);
-                        childBox = layoutBlockChild(
-                                c, block, styleSetListener, listIndex, resetMargins, 
-                                false, currentContent);
-                    }
+                    child.reset(c);
+                    layoutBlockChild(
+                            c, block, child, listIndex, resetMargins, false);
                 }
-
             }
             
             if (c.isPrint()) {
-                c.getRootLayer().ensureHasPage(c, childBox);
+                c.getRootLayer().ensureHasPage(c, child);
             }
             
-            if (! childBox.getStyle().isListItem()) {
+            if (! child.getStyle().isListItem()) {
                 listIndex--;
             }
 
             // increase the final layout height by the height of the child
-            Dimension relativeOffset = childBox.getRelativeOffset();
+            Dimension relativeOffset = child.getRelativeOffset();
             if (relativeOffset == null) {
-                block.height = childBox.y + childBox.height;
+                block.height = child.y + child.height;
             } else {
-                block.height = childBox.y - relativeOffset.height + childBox.height;
+                block.height = child.y - relativeOffset.height + child.height;
             }
 
             if (c.isPrint()) {
-                if (childBox.getStyle().isForcePageBreakAfter()) {
+                if (child.getStyle().isForcePageBreakAfter()) {
                     block.expandToPageBottom(c);
                 }
                 
                 if (previousChildBox != null) {
-                    relayoutDataList.markRun(offset, previousChildBox, childBox);
+                    relayoutDataList.markRun(offset, previousChildBox, child);
                 }
                 
-                processPageBreakAvoidRun(c, block, contentList, 
-                        styleSetListener, offset, relayoutDataList, relayoutData, childBox);
-                resetMargins = childBox.getStyle().isForcePageBreakBefore();
+                processPageBreakAvoidRun(c, block, localChildren, 
+                        offset, relayoutDataList, relayoutData, child);
+                resetMargins = child.getStyle().isForcePageBreakBefore();
             }
             
             if (c.shouldStop()) {
                 break;
             }
             
-            previousChildBox = childBox;
+            previousChildBox = child;
 
             dispatchRepaintEvent(c, block);
         }
     }
 
     private static void processPageBreakAvoidRun(final LayoutContext c, final BlockBox block, 
-            List contentList, Boxing.StyleSetListener styleSetListener, int offset, 
+            List localChildren, int offset, 
             RelayoutDataList relayoutDataList, RelayoutData relayoutData, 
             BlockBox childBox) {
         if (offset > 0) {
             boolean mightNeedRelayout = false;
             int runEnd = -1;
-            if (offset == contentList.size() - 1 && relayoutData.isEndsRun()) {
+            if (offset == localChildren.size() - 1 && relayoutData.isEndsRun()) {
                 mightNeedRelayout = true;
                 runEnd = offset;
             } else if (offset > 0){
@@ -214,39 +160,26 @@ public class BlockBoxing {
                 Box runEndChild = block.getChild(runEnd);
                 if (c.getRootLayer().crossesPageBreak(c, 
                         block.getChild(runStart).getAbsY(),
-                            runEndChild.getAbsY() + runEndChild.getHeight()) &&
-                        ! checkForPendingInlines(relayoutDataList, runStart, offset)) {
-                    block.detachChildren(c, runStart, offset);
-                    relayoutRun(c, contentList, block, 
-                            styleSetListener, relayoutDataList, runStart, offset, true);
+                            runEndChild.getAbsY() + runEndChild.getHeight())) {
+                    block.resetChildren(c, runStart, offset);
+                    relayoutRun(c, localChildren, block, 
+                            relayoutDataList, runStart, offset, true);
                     runEndChild = block.getChild(runEnd);
                     if (c.getRootLayer().crossesPageBreak(c,
                             block.getChild(runStart).getAbsY(),
                                 runEndChild.getAbsY() + runEndChild.getHeight())) {
-                        block.detachChildren(c, runStart, offset);
-                        relayoutRun(c, contentList, block, 
-                                styleSetListener, relayoutDataList, runStart, offset, false);
+                        block.resetChildren(c, runStart, offset);
+                        relayoutRun(c, localChildren, block, 
+                                relayoutDataList, runStart, offset, false);
                     }
                 }
             }
         }
     }
     
-    private static boolean checkForPendingInlines(RelayoutDataList relayoutDataList, 
-            int start, int end) {
-        boolean result = relayoutDataList.get(start).isHasPendingInlines() ||
-            relayoutDataList.get(end).isHasPendingInlines();
-        if (result) {
-            XRLog.layout(Level.WARNING, 
-                "Unable to relayout run with pending inlines. Dropping rule.");
-        }
-        return result;
-    }
-    
     private static void relayoutRun(
-            LayoutContext c, List contentList, BlockBox block, 
-            StyleSetListener styleSetListener, RelayoutDataList relayoutDataList, 
-            int start, int end, boolean onNewPage) {
+            LayoutContext c, List localChildren, BlockBox block, 
+            RelayoutDataList relayoutDataList, int start, int end, boolean onNewPage) {
         block.height = relayoutDataList.get(start).getInitialParentHeight();
         
         if (onNewPage) {
@@ -254,82 +187,96 @@ public class BlockBoxing {
         }
         
         for (int i = start; i <= end; i++) {
-            Content currentContent = (Content)contentList.get(i);
+            BlockBox child = (BlockBox)localChildren.get(i);
             
             RelayoutData relayoutData = relayoutDataList.get(i);
 
-            BlockBox childBox = null;
             //TODO:handle run-ins. For now, treat them as blocks
             
             c.restoreStateForRelayout(relayoutData.getLayoutState());
-            childBox = layoutBlockChild(
-                    c, block, styleSetListener, relayoutData.getListIndex(),
-                   relayoutData.isResetMargins(), false, currentContent);
+            layoutBlockChild(
+                    c, block, child, relayoutData.getListIndex(),
+                   relayoutData.isResetMargins(), false);
             
-            if (childBox.getStyle().isAvoidPageBreakInside() &&
-                    childBox.crossesPageBreak(c)) {
-                if (currentContent instanceof AnonymousBlockContent 
-                        && relayoutData.isHasPendingInlines()) {
-                    XRLog.layout(Level.WARNING, 
-                            "Unable to relayout anonymous block with pending inlines. Dropping rule.");
-                } else {
+            if (child.getStyle().isAvoidPageBreakInside() &&
+                    child.crossesPageBreak(c)) {
+                c.restoreStateForRelayout(relayoutData.getLayoutState());
+                child.reset(c);
+                layoutBlockChild(
+                        c, block, child, relayoutData.getListIndex(), 
+                        relayoutData.isResetMargins(), true);
+                
+                if (child.crossesPageBreak(c)) {
                     c.restoreStateForRelayout(relayoutData.getLayoutState());
-                    childBox.detach(c);
-                    childBox = layoutBlockChild(
-                            c, block, styleSetListener, relayoutData.getListIndex(), 
-                            relayoutData.isResetMargins(), true, currentContent);
-                    
-                    if (childBox.crossesPageBreak(c)) {
-                        c.restoreStateForRelayout(relayoutData.getLayoutState());
-                        childBox.detach(c);
-                        childBox = layoutBlockChild(
-                                c, block, styleSetListener, relayoutData.getListIndex(), 
-                                relayoutData.isResetMargins(), false, currentContent);
-                    }                    
-                }
+                    child.reset(c);
+                    layoutBlockChild(
+                            c, block, child, relayoutData.getListIndex(), 
+                            relayoutData.isResetMargins(), false);
+                }                    
             }
             
-            c.getRootLayer().ensureHasPage(c, childBox);
+            c.getRootLayer().ensureHasPage(c, child);
             
-            Dimension relativeOffset = childBox.getRelativeOffset();
+            Dimension relativeOffset = child.getRelativeOffset();
             if (relativeOffset == null) {
-                block.height = childBox.y + childBox.height;
+                block.height = child.y + child.height;
             } else {
-                block.height = childBox.y - relativeOffset.height + childBox.height;
+                block.height = child.y - relativeOffset.height + child.height;
             }
             
-            if (childBox.getStyle().isForcePageBreakAfter()) {
+            if (child.getStyle().isForcePageBreakAfter()) {
                 block.expandToPageBottom(c);
             }
         }
     }
 
-    private static BlockBox layoutBlockChild(
-            LayoutContext c, Box block, 
-            Boxing.StyleSetListener styleSetListener,
-            int listIndex, boolean resetMargins, boolean needPageClear, 
-            Content currentContent) {
-        BlockBox childBox;
-        childBox = Boxing.constructBox(c, currentContent);
-        childBox.setResetMargins(resetMargins);
-        childBox.setNeedPageClear(needPageClear);
+    private static void layoutBlockChild(
+            LayoutContext c, BlockBox parent, BlockBox child, 
+            int listIndex, boolean resetMargins, boolean needPageClear) {
+        child.setResetMargins(resetMargins);
+        child.setNeedPageClear(needPageClear);
         
         // update the counter for printing OL list items
         //TODO:handle counters correctly
         
-        childBox.setListCounter(listIndex);
+        child.setListCounter(listIndex);
         
-        childBox.x = 0;
-        childBox.y = block.height;
+        child.x = 0;
+        child.y = parent.height;
         
-        block.addChild(c, childBox);
-        childBox.calcCanvasLocation();
+        child.initContainingLayer(c);
+        child.calcCanvasLocation();
         
-        c.translate(0, block.height);
-        Boxing.layout(c, childBox, currentContent, styleSetListener);
-        c.translate(-childBox.x, -childBox.y);
-        
-        return childBox;
+        c.translate(0, parent.height);
+        repositionBox(c, child);
+        child.layout(c);
+        c.translate(-child.x, -child.y);
+    }
+    
+    private static void repositionBox(LayoutContext c, BlockBox child) {
+        boolean moved = false;
+        if (child.getStyle().isRelative()) {
+            Dimension delta = child.positionRelative(c);
+            c.translate(delta.width, delta.height);
+            moved = true;
+        }
+        if (c.isPrint() && 
+                (child.isNeedPageClear() || 
+                        child.getStyle().isForcePageBreakBefore())) {
+            int delta = child.moveToNextPage(c);
+            c.translate(0, delta);
+            moved = true;
+            child.setNeedPageClear(false);
+        }
+        if (child.getStyle().isCleared()) {
+            c.translate(0, -child.y);
+            c.getBlockFormattingContext().clear(c, child);
+            c.translate(0, child.y);
+            moved = true;
+        }
+        if (moved) {
+            child.calcCanvasLocation();
+        }
     }
 
     private static void dispatchRepaintEvent(final LayoutContext c, final Box box) {
@@ -411,7 +358,6 @@ public class BlockBoxing {
     private static class RelayoutData {
         private LayoutState _layoutState;
         private boolean _resetMargins;
-        private Content _content;
         private int _listIndex;
         
         private boolean _startsRun;
@@ -419,8 +365,6 @@ public class BlockBoxing {
         private boolean _inRun;
         
         private int _initialParentHeight;
-        
-        private boolean _hasPendingInlines;
         
         public RelayoutData() {
         }
@@ -465,14 +409,6 @@ public class BlockBoxing {
             _initialParentHeight = initialParentHeight;
         }
 
-        public Content getContent() {
-            return _content;
-        }
-
-        public void setContent(Content content) {
-            _content = content;
-        }
-
         public boolean isResetMargins() {
             return _resetMargins;
         }
@@ -488,14 +424,6 @@ public class BlockBoxing {
         public void setListIndex(int listIndex) {
             _listIndex = listIndex;
         }
-
-        public boolean isHasPendingInlines() {
-            return _hasPendingInlines;
-        }
-
-        public void setHasPendingInlines(boolean hasPendingInlineElements) {
-            _hasPendingInlines = hasPendingInlineElements;
-        }
     }
 }
 
@@ -503,6 +431,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2006/08/27 00:35:42  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.48  2006/03/01 00:45:03  peterbrant
  * Provide LayoutContext when calling detach() and friends
  *

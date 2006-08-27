@@ -36,6 +36,11 @@
   */
 package org.xhtmlrenderer.table;
 
+import java.awt.Rectangle;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -46,7 +51,6 @@ import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.VerticalMarginCollapser;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.TableCellContent;
 import org.xhtmlrenderer.layout.content.TableContent;
@@ -56,11 +60,6 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.swing.SwingReplacedElement;
 import org.xhtmlrenderer.util.XRLog;
-
-import java.awt.Rectangle;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
 
 public class TableBoxing {
 
@@ -105,10 +104,12 @@ public class TableBoxing {
         outerBox.contentWidth = c.getExtents().width;
         outerBox.height = c.getExtents().height;
 
+        /*
         outerBox.createDefaultStyle(c);
+        */
 
         TableBox tableBox = new TableBox();
-        outerBox.addChild(c, tableBox);
+        outerBox.addChildForLayout(c, tableBox);
         tableBox.element = content.getElement();
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
@@ -124,7 +125,9 @@ public class TableBoxing {
             listener.onStyleSet(tableBox);
         }
 
+        /*
         VerticalMarginCollapser.collapseVerticalMargins(c, tableBox, content, (float) oe.getWidth());
+        */
 
         TableContent tableContent = (TableContent) content;
         if (tableContent.isTopMarginCollapsed()) {
@@ -429,7 +432,7 @@ public class TableBoxing {
                 RowBox row = layoutRow(c, (TableRowContent) o, tableBox, fixed, borderSpacingHorizontal, borderSpacingVertical);
                 c.translate(0, -tableBox.height);
 
-                tableBox.addChild(c, row);
+                tableBox.addChildForLayout(c, row);
                 row.setParent(tableBox);
                 row.element = ((TableRowContent) o).getElement();
                 // set the child_box location
@@ -541,7 +544,7 @@ public class TableBoxing {
             cellBox.height = 0;
             //have to do this late in the game
             /* if (cellBox.rowspan > 1) row.setChildrenExceedBounds(true); */
-            row.addChild(c, cellBox);
+            row.addChildForLayout(c, cellBox);
         }
         for (int j = 0; j < table.columns.length; j++) {
             // increase the final layout height if the child was greater
@@ -607,6 +610,7 @@ public class TableBoxing {
 
         // a cell defines a new bfc
         cell.setStyle(new Style(c.getCurrentStyle(), (int) c.getExtents().width));
+        cell.setElement(content.getElement());
         BlockFormattingContext bfc = new BlockFormattingContext(cell, c);
         c.pushBFC(bfc);
 
@@ -664,7 +668,7 @@ public class TableBoxing {
         Rectangle extents =
             c.shrinkExtents(tx + (int) border.right() + (int) padding.right(), ty + (int) border.bottom() + (int) padding.bottom());
         if (! cell.isReplaced())
-            Boxing.layoutChildren(c, cell, content);
+            cell.layoutChildren(c);
         else {
             if (c.isInteractive()) {
                 c.getCanvas().add(
@@ -713,6 +717,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.63  2006/08/27 00:37:10  peterbrant
+   Initial commit of (initial) R7 work
+
    Revision 1.62  2006/04/26 15:43:10  peterbrant
    Bandaid for issue reported by Dan Blanks
 

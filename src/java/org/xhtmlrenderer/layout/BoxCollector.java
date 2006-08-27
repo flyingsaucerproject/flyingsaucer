@@ -19,13 +19,14 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.List;
 
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.LineBox;
 
 public class BoxCollector {
@@ -46,14 +47,14 @@ public class BoxCollector {
     
     private void collectInlineLayer(
             CssContext c, Shape clip, Layer layer, List blockContent, List inlineContent) {
-        InlineBox iB = (InlineBox)layer.getMaster();
+        InlineLayoutBox iB = (InlineLayoutBox)layer.getMaster();
         List content = iB.getElementWithContent();
         
         for (int i = 0; i < content.size(); i++) {
             Box b = (Box)content.get(i);
             
             if (b.intersects(c, clip)) {
-                if (b instanceof InlineBox) {
+                if (b instanceof InlineLayoutBox) {
                     inlineContent.add(b);
                 } else { 
                     BlockBox bb = (BlockBox)b;
@@ -69,6 +70,14 @@ public class BoxCollector {
         }
     }
     
+    private boolean intersectsAggregateBounds(Shape clip, Box box) {
+        if (clip == null) {
+            return true;
+        }
+        Rectangle bounds = box.getAggregateBounds();
+        return bounds != null && clip.intersects(bounds);
+    }
+    
     public void collect(
             CssContext c, Shape clip, 
             Layer layer, Box container, 
@@ -78,21 +87,25 @@ public class BoxCollector {
         }
         
         if (container instanceof LineBox) {
-            if (container.intersects(c, clip)) {
+            if (intersectsAggregateBounds(clip, container) ||
+                    container.intersects(c, clip)) {
                 inlineContent.add(container);
                 ((LineBox)container).addAllChildren(inlineContent, layer);
             }
         } else {
+            boolean intersectsAggregateBounds = intersectsAggregateBounds(clip, container);
             if (container.getLayer() == null || !(container instanceof BlockBox)) {
-                if (container.intersects(c, clip)) {
+                if (intersectsAggregateBounds || container.intersects(c, clip)) {
                     blockContent.add(container);
                 }
             }
 
-            if (container.getLayer() == null || container == layer.getMaster()) {
-                for (int i = 0; i < container.getChildCount(); i++) {
-                    Box child = container.getChild(i);
-                    collect(c, clip, layer, child, blockContent, inlineContent);
+            if (container.getAggregateBounds() == null || intersectsAggregateBounds) {
+                if (container.getLayer() == null || container == layer.getMaster()) {
+                    for (int i = 0; i < container.getChildCount(); i++) {
+                        Box child = container.getChild(i);
+                        collect(c, clip, layer, child, blockContent, inlineContent);
+                    }
                 }
             }
         }

@@ -159,10 +159,11 @@ public abstract class BasicPanel extends RootPanel {
         
         // if this is the first time painting this document, then calc layout
         Layer root = getRootLayer();
-        if (root == null && !isUseThreads()) {
+        if ((root == null || isPendingResize()) && !isUseThreads()) {
             doActualLayout(getGraphics());
             root = getRootLayer();
         }
+        setPendingResize(false);
         if (root == null) {
             //Uu.p("dispatching an initial resize event");
             //queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
@@ -712,6 +713,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.105  2006/08/27 00:37:06  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.104  2006/08/03 14:12:36  pdoubleya
  * Interactivity flag now belongs to shared context, should not be a private field anymore.
  *

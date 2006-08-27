@@ -1,6 +1,6 @@
 /*
  * Breaker.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm, 
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm, 
  * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -22,12 +22,10 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.content.WhitespaceStripper;
 import org.xhtmlrenderer.render.FSFont;
 
 /**
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  */
 public class Breaker {
 
@@ -66,8 +64,9 @@ public class Breaker {
     }    
     
     public static void breakText(LayoutContext c, 
-            LineBreakContext context, int avail, IdentValue whitespace, CalculatedStyle style) {
+            LineBreakContext context, int avail, CalculatedStyle style) {
         FSFont font = style.getFSFont(c);
+        IdentValue whitespace = style.getWhitespace();
         
         // ====== handle nowrap
         if (whitespace == IdentValue.NOWRAP) {
@@ -81,7 +80,7 @@ public class Breaker {
         if (whitespace == IdentValue.PRE ||
                 whitespace == IdentValue.PRE_WRAP ||
                 whitespace == IdentValue.PRE_LINE) {
-            int n = context.getStartSubstring().indexOf(WhitespaceStripper.EOL);
+            int n = context.getStartSubstring().indexOf(WhitespaceStripper2.EOL);
             if (n > -1) {
                 context.setEnd(context.getStart() + n + 1);
                 context.setWidth(c.getTextRenderer().getWidth(
@@ -101,7 +100,7 @@ public class Breaker {
 
         String currentString = context.getStartSubstring();
         int left = 0;
-        int right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+        int right = currentString.indexOf(WhitespaceStripper2.SPACE, left + 1);
         int lastWrap = 0;
         int graphicsLength = 0;
         int lastGraphicsLength = 0;
@@ -112,7 +111,7 @@ public class Breaker {
                     c.getFontContext(), font, currentString.substring(left, right));
             lastWrap = left;
             left = right;
-            right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+            right = currentString.indexOf(WhitespaceStripper2.SPACE, left + 1);
         }
 
         if (graphicsLength <= avail) {

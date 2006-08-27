@@ -5,7 +5,7 @@ import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -410,8 +410,8 @@ public class BoxFinder {
             }
 
             int tty = y;
-            if (bx instanceof InlineBox) {
-                InlineBox ibx = (InlineBox) bx;
+            if (bx instanceof InlineLayoutBox) {
+                InlineLayoutBox ibx = (InlineLayoutBox) bx;
                 LineBox lbx = (LineBox) box;
                 XRLog.layout(Level.FINEST, "inline = " + ibx);
                 XRLog.layout(Level.FINEST, "inline y = " + ibx.y);

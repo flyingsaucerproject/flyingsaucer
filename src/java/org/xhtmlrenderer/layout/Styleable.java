@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2005 Wisconsin Court System
+ * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -19,25 +19,14 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.render.FloatedBlockBox;
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.render.Style;
 
-public class FloatLayoutResult {
-    private boolean _pending;
-    private FloatedBlockBox _block;
+public interface Styleable {
+    public Style getStyle();
+    public void setStyle(Style style);
     
-    public boolean isPending() {
-        return _pending;
-    }
-
-    public void setPending(boolean pending) {
-        _pending = pending;
-    }
-
-    public FloatedBlockBox getBlock() {
-        return _block;
-    }
-
-    public void setBlock(FloatedBlockBox block) {
-        _block = block;
-    }
+    public Element getElement();
+    public void setElement(Element e);
+    
 }

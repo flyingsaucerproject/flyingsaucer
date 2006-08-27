@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjšrn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -24,16 +24,12 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.content.ContentUtil;
-import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.layout.content.FirstLetterStyle;
 import org.xhtmlrenderer.layout.content.FirstLineStyle;
 import org.xhtmlrenderer.layout.content.TableContent;
@@ -43,16 +39,20 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.table.TableBoxing;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 public class Boxing {
     private Boxing() {
     }
     
+    /**
+     * @deprecated
+     */
     public static BlockBox constructBox(LayoutContext c, Content content) {
         BlockBox block = null;
         if (content instanceof AnonymousBlockContent) {
-            return AnonymousBoxing.createBox(c, content);
+            throw new XRRuntimeException("API isn't there any more! Check me!");
         } else if (content instanceof TableContent) {
             //tables have an anonymous outer box that nevertheless represents the table
             block = TableBoxing.createBox(c, content);
@@ -71,47 +71,48 @@ public class Boxing {
         return block;
     }
     
+    /**
+     * @deprecated
+     */
     public static Box layout(LayoutContext c, BlockBox block, Content content) {
         return layout(c, block, content, null);
     }
 
+    /**
+     * @deprecated
+     */
     public static Box layout(LayoutContext c, BlockBox block, Content content, 
             StyleSetListener listener) {
         if (content instanceof AnonymousBlockContent) {
-            return AnonymousBoxing.layout(c, block, content);
+            return AnonymousBoxing.layout(c, block);
         } else if (content instanceof TableContent) {
             return TableBoxing.layout(c, (BlockBox) block, content, listener);
         } else
-            return layoutBlock(c, block, content, listener);
+            return layoutBlock(c, block);
     }
-
-    private static Box layoutBlock(LayoutContext c, BlockBox block, Content content, StyleSetListener listener) {
-        //OK, first set up the current style. All depends on this...
-        CascadedStyle pushed = content.getStyle();
-        if (pushed != null) {
-            c.pushStyle(pushed);
-        }
-
+    
+    public static void layout(LayoutContext c, BlockBox block) {
+        layoutBlock(c, block);
+    }
+    
+    private static Box layoutBlock(LayoutContext c, BlockBox block) {
         Rectangle oe = c.getExtents();
 
-        if (block.getStyle() == null) {
-            block.setStyle(new Style(c.getCurrentStyle(), (int) oe.getWidth()));
-        }
+        Style style = block.getStyle();
+        CalculatedStyle calculatedStyle = style.getCalculatedStyle();
         
-        if (listener != null ) {
-            listener.onStyleSet(block);
-        }
-
-        if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
+        block.getStyle().setContainingBlockWidth((int)oe.getWidth());
+        
+        if (style.isFixedBackground()) {
             c.getRootLayer().setFixedBackground(true);
         }
         
         boolean pushedLayer = false;
-        if ((content instanceof DomToplevelNode || block.getStyle().requiresLayer())) {
+        if (block.isRoot() || block.getStyle().requiresLayer()) {
             pushedLayer = true;
             if (block.getLayer() == null) {
                 c.pushLayer(block);
-                if (c.isPrint() && content instanceof DomToplevelNode) {
+                if (c.isPrint() && block.isRoot()) {
                     c.getLayer().addPage(c);
                 }
             } else {
@@ -119,7 +120,7 @@ public class Boxing {
             }
         }
 
-        if (content instanceof DomToplevelNode || block.getStyle().establishesBFC()) {
+        if (block.isRoot() || block.getStyle().establishesBFC()) {
             BlockFormattingContext bfc = new BlockFormattingContext(block, c);
             c.pushBFC(bfc);
         }
@@ -127,35 +128,35 @@ public class Boxing {
         // copy the extents
         c.setExtents(new Rectangle(oe));
 
+        /*
         VerticalMarginCollapser.collapseVerticalMargins(c, block, content, (float) oe.getWidth());
+        */
         
         if (block.isResetMargins()) {
             block.getStyle().resetCollapsedMargin();
             block.setResetMargins(false);
         }
 
-        BorderPropertySet border = c.getCurrentStyle().getBorder(c);
+        BorderPropertySet border = calculatedStyle.getBorder(c);
         //note: percentages here refer to width of containing block
         RectPropertySet margin = block.getStyle().getMarginWidth(c);
-        RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
+        RectPropertySet padding = calculatedStyle.getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
         // CLEAN: cast to int
         block.leftMBP = (int) margin.left() + (int) border.left() + (int) padding.left();
         block.rightMBP = (int) padding.right() + (int) border.right() + (int) margin.right();
         block.contentWidth = (int) (c.getExtents().getWidth() - block.leftMBP - block.rightMBP);
-
-        CalculatedStyle style = c.getCurrentStyle();
 
         // calculate the width and height as much as possible
         if (!(block instanceof AnonymousBlockBox)) {
             int setHeight = -1;//means height is not set by css
             int setWidth = -1;//means width is not set by css
             if (!block.getStyle().isAutoWidth()) {
-                setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c);
+                setWidth = (int) calculatedStyle.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c);
                 block.contentWidth = setWidth;
                 c.getExtents().width = block.getWidth();
             }
             if (!block.getStyle().isAutoHeight()) {
-                setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c);
+                setHeight = (int) calculatedStyle.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c);
                 // CLEAN: cast to int
                 c.getExtents().height = (int) margin.top() + (int) border.top() + (int) padding.top() +
                         setHeight + (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom();
@@ -198,7 +199,7 @@ public class Boxing {
         Rectangle extents = c.shrinkExtents(
                 tx + (int) margin.right() + (int) border.right() + (int) padding.right(), ty + (int) margin.bottom() + (int) border.bottom() + (int) padding.bottom());
         if (! block.isReplaced())
-            layoutChildren(c, block, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
+            block.layoutChildren(c);
         else {
             block.setState(Box.DONE);
         }
@@ -211,7 +212,7 @@ public class Boxing {
             block.height = original_height;
         }
 
-        if (content instanceof DomToplevelNode || block.getStyle().establishesBFC()) {
+        if (block.isRoot() || block.getStyle().establishesBFC()) {
             if (block.getStyle().isAutoHeight()) {
                 int delta = 
                     c.getBlockFormattingContext().getFloatManager().getClearDelta(
@@ -240,41 +241,9 @@ public class Boxing {
         //restore the extents
         c.setExtents(oe);
         
-        //and now, back to previous style
-        if (pushed != null) {
-            c.popStyle();
-        }
-
         // Uu.p("BoxLayout: finished with block: " + block);
         return block;
     }
-
-    public static Box layoutChildren(LayoutContext c, BlockBox box, Content content) {
-        List contentList = content.getChildContent(c);
-        box.setState(Box.CHILDREN_FLUX);
-
-        if (contentList != null && contentList.size() > 0) {
-            Content parent = c.getParentContent();
-            c.setParentContent(content);
-            PseudoClassPushStatus status = pushPseudoClasses(c, contentList);
-            if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
-                BlockBoxing.layoutContent(c, box, contentList);
-            } else {
-                InlineBoxing.layoutContent(c, box, contentList);
-            }
-            if (status.isPushedFirstLine()) {
-                c.getFirstLinesTracker().removeLast();
-            }
-            if (status.isPushedFirstLetter()) {
-                c.getFirstLettersTracker().removeLast();
-            }
-            c.setParentContent(parent);
-        }
-
-        box.setState(Box.DONE);
-        return box;
-    }
-    
 
     public static PseudoClassPushStatus pushPseudoClasses(LayoutContext c, List contentList) {
         PseudoClassPushStatus status = new PseudoClassPushStatus();
@@ -297,18 +266,6 @@ public class Boxing {
         return status;
     }    
     
-    /**
-     * HACK If a class implementing this interface is passed to {@link Boxing#layout(LayoutContext, Box, Content)}
-     * {@link #onStyleSet(Box)} is invoked once the {@link Style} object has been set on 
-     * the box.  It's basically a chance for the caller to manipulate the box after this
-     * has occurred.  Ugly, but seems better than the obvious alternatives (e.g. 
-     * pushing the style in {@link Boxing#constructBox(LayoutContext, Content)} [who
-     * does the pop then?])
-     */ 
-    public interface StyleSetListener {
-        public void onStyleSet(BlockBox box);
-    }
-    
     private static class PseudoClassPushStatus {
         private boolean pushedFirstLine;
         private boolean pushedFirstLetter;
@@ -326,16 +283,22 @@ public class Boxing {
             this.pushedFirstLine = pushedFirstLine;
         }
     }
-
-    // calculate the width based on css and available space
-
-    // calculate the height based on css and available space
+    
+    /**
+     * @deprecated
+     */
+    public interface StyleSetListener {
+        public void onStyleSet(BlockBox box);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.78  2006/08/27 00:35:56  peterbrant
+ * Initial commit of (initial) R7 work
+ *
  * Revision 1.77  2006/03/01 00:40:54  peterbrant
  * Remove reference to SwingReplacedElement / Adjust to detach() API change
  *
