@@ -236,21 +236,23 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     private MarkerData.TextMarker makeTextMarker(LayoutContext c, IdentValue listStyle) {
-        String text = "";
+        String text;
 
         if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
-            text = toLatin(getListCounter()).toLowerCase() + ".";
+            text = toLatin(getListCounter()).toLowerCase();
         } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
-            text = toLatin(getListCounter()).toUpperCase() + ".";
+            text = toLatin(getListCounter()).toUpperCase();
         } else if (listStyle == IdentValue.LOWER_ROMAN) {
-            text = toRoman(getListCounter()).toLowerCase() + ".";
+            text = toRoman(getListCounter()).toLowerCase();
         } else if (listStyle == IdentValue.UPPER_ROMAN) {
-            text = toRoman(getListCounter()).toUpperCase() + ".";
+            text = toRoman(getListCounter()).toUpperCase();
+        } else if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
+            text = (getListCounter() >= 10 ? "" : "0") + getListCounter();
         } else /* if (listStyle == IdentValue.DECIMAL) */ {
-            text = getListCounter() + ".";
+            text = Integer.toString(getListCounter());
         }
         
-        text += "  ";
+        text += ".  ";
 
         int w = c.getTextRenderer().getWidth(
                 c.getFontContext(),
@@ -262,7 +264,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         result.setLayoutWidth(w);
         
         return result;
-    } 
+    }
 
     private static String toLatin(int val) {
         if (val > 26) {
@@ -501,6 +503,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.47  2006/08/27 01:16:20  peterbrant
+ * decimal-leading-zero patch from Thomas Palmer
+ *
  * Revision 1.46  2006/08/27 01:15:00  peterbrant
  * Revert makeTextMarker() change to commit with proper attribution
  *
