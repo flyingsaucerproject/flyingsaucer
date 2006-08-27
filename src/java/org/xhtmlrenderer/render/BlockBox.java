@@ -236,23 +236,21 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     private MarkerData.TextMarker makeTextMarker(LayoutContext c, IdentValue listStyle) {
-        String text;
+        String text = "";
 
         if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
-            text = toLatin(getListCounter()).toLowerCase();
+            text = toLatin(getListCounter()).toLowerCase() + ".";
         } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
-            text = toLatin(getListCounter()).toUpperCase();
+            text = toLatin(getListCounter()).toUpperCase() + ".";
         } else if (listStyle == IdentValue.LOWER_ROMAN) {
-            text = toRoman(getListCounter()).toLowerCase();
+            text = toRoman(getListCounter()).toLowerCase() + ".";
         } else if (listStyle == IdentValue.UPPER_ROMAN) {
-            text = toRoman(getListCounter()).toUpperCase();
-        } else if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
-            text = (getListCounter() >= 10 ? "" : "0") + getListCounter();
+            text = toRoman(getListCounter()).toUpperCase() + ".";
         } else /* if (listStyle == IdentValue.DECIMAL) */ {
-            text = Integer.toString(getListCounter());
+            text = getListCounter() + ".";
         }
         
-        text += ".  ";
+        text += "  ";
 
         int w = c.getTextRenderer().getWidth(
                 c.getFontContext(),
@@ -503,6 +501,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2006/08/27 01:15:00  peterbrant
+ * Revert makeTextMarker() change to commit with proper attribution
+ *
  * Revision 1.45  2006/08/27 00:36:47  peterbrant
  * Initial commit of (initial) R7 work
  *
