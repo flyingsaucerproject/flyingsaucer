@@ -29,12 +29,12 @@
     <p class="link right-link"><a href="demoNav:forward">Next Page</a></p>
 	<p id="fslogo">Flying Saucer XML/CSS2 Renderer</p>
 	<span id="pagebyline">CSS Z-index Support</span><br />
-    <p><b>Z-index support includes</b>: assigning the z-index to any block-level element. In this example,
+    <p><b>Z-index support includes</b>: assigning the z-index to any positioned block-level element. In this example,
 	we have a series of divisions, each with a colored background, with a decreasing index so that each
-	subsequent element shows up on top of the previous one. There is then a fixed element in the middle of
+	subsequent element shows below (behind) the previous one. There is then a fixed element in the middle of
 	the page which has z-index of 0, and shows up behind all the others. If you resize the page to enable
 	the scrollbars, you can scroll and watch the fixed-position divisions scroll nicely <em>behind</em>
-	the colored boxes.</p>
+	the colored boxes. z-index works on any positioned content, including relative inline layers.</p>
 	<div class="zlayer" style="background-color: aqua; top: 275; left: 25; z-index: 200;" />
 	<div class="zlayer" style="background-color: black; top: 300; left: 50; z-index: 195;" />
 	<div class="zlayer" style="background-color: blue; top: 325; left: 75; z-index: 190;" />
