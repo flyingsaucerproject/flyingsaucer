@@ -37,7 +37,6 @@ import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.StrutMetrics;
-import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -98,10 +97,9 @@ public class Boxing {
     private static Box layoutBlock(LayoutContext c, BlockBox block) {
         Rectangle oe = c.getExtents();
 
-        Style style = block.getStyle();
-        CalculatedStyle calculatedStyle = style.getCalculatedStyle();
+        CalculatedStyle style = block.getStyle();
         
-        block.getStyle().setContainingBlockWidth((int)oe.getWidth());
+        block.setContainingBlockWidth((int)oe.getWidth());
         
         if (style.isFixedBackground()) {
             c.getRootLayer().setFixedBackground(true);
@@ -133,14 +131,14 @@ public class Boxing {
         */
         
         if (block.isResetMargins()) {
-            block.getStyle().resetCollapsedMargin();
+            block.resetCollapsedMargin();
             block.setResetMargins(false);
         }
 
-        BorderPropertySet border = calculatedStyle.getBorder(c);
+        BorderPropertySet border = style.getBorder(c);
         //note: percentages here refer to width of containing block
-        RectPropertySet margin = block.getStyle().getMarginWidth(c);
-        RectPropertySet padding = calculatedStyle.getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
+        RectPropertySet margin = block.getMarginWidth(c);
+        RectPropertySet padding = style.getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
         // CLEAN: cast to int
         block.leftMBP = (int) margin.left() + (int) border.left() + (int) padding.left();
         block.rightMBP = (int) padding.right() + (int) border.right() + (int) margin.right();
@@ -151,12 +149,12 @@ public class Boxing {
             int setHeight = -1;//means height is not set by css
             int setWidth = -1;//means width is not set by css
             if (!block.getStyle().isAutoWidth()) {
-                setWidth = (int) calculatedStyle.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c);
+                setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c);
                 block.contentWidth = setWidth;
                 c.getExtents().width = block.getWidth();
             }
             if (!block.getStyle().isAutoHeight()) {
-                setHeight = (int) calculatedStyle.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c);
+                setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c);
                 // CLEAN: cast to int
                 c.getExtents().height = (int) margin.top() + (int) border.top() + (int) padding.top() +
                         setHeight + (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom();
@@ -296,6 +294,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.79  2006/08/29 17:29:10  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.78  2006/08/27 00:35:56  peterbrant
  * Initial commit of (initial) R7 work
  *

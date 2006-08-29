@@ -20,11 +20,11 @@
 package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.render.Style;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 public interface Styleable {
-    public Style getStyle();
-    public void setStyle(Style style);
+    public CalculatedStyle getStyle();
+    public void setStyle(CalculatedStyle style);
     
     public Element getElement();
     public void setElement(Element e);

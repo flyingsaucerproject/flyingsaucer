@@ -37,7 +37,7 @@ public class AnonymousBoxing {
 
         // do children's layout
         c.setExtents(new Rectangle(c.getExtents()));
-        InlineBoxing.layoutContent(c, block);//when this is really an anonymous, InlineLayout.layoutChildren is called
+        InlineBoxing.layoutContent(c, block);
 
         // restore height incase fixed height
         if (!block.getStyle().isAutoHeight()) {
@@ -56,6 +56,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2006/08/29 17:29:10  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.14  2006/08/27 00:35:43  peterbrant
  * Initial commit of (initial) R7 work
  *

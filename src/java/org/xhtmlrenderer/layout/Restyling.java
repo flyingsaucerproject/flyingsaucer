@@ -33,7 +33,7 @@ import org.xhtmlrenderer.render.LineBox;
 public class Restyling {
     public static void restyleAll(LayoutContext c, BlockBox box) {
         if (box.element != null) {
-            CalculatedStyle parentStyle = box.getStyle().getCalculatedStyle().getParent();
+            CalculatedStyle parentStyle = box.getStyle().getParent();
             c.initializeStyles(parentStyle);
         }//else root box, already initialized
         restyle(c, box);
@@ -46,7 +46,7 @@ public class Restyling {
         }
         c.pushStyle(style);
         CalculatedStyle calculatedStyle = c.getCurrentStyle();
-        box.getStyle().setCalculatedStyle(calculatedStyle);
+        box.setStyle(calculatedStyle);
             
         CascadedStyle firstLine = null;
         if (ContentUtil.mayHaveFirstLine(calculatedStyle)) {
@@ -98,7 +98,7 @@ public class Restyling {
 
     private static void restyle(LayoutContext c, InlineLayoutBox iB) {
         c.pushStyle(c.getCss().getCascadedStyle(iB.element, true));
-        iB.getStyle().setCalculatedStyle(c.getCurrentStyle());
+        iB.setStyle(c.getCurrentStyle());
         
         iB.calculateTextDecoration(c);
        

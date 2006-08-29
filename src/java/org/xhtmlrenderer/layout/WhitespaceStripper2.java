@@ -25,8 +25,8 @@ import java.util.regex.Pattern;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.Style;
 
 /**
  * @author Torbj�rn Gannholm
@@ -82,7 +82,7 @@ public class WhitespaceStripper2 {
     }
     
     private static boolean canCollapseThrough(Styleable styleable) {
-        Style style = styleable.getStyle();
+        CalculatedStyle style = styleable.getStyle();
         return style.isFloated() || style.isAbsolute() || style.isFixed();
     }
 
@@ -109,7 +109,7 @@ public class WhitespaceStripper2 {
      */
     private static boolean stripWhitespace(InlineBox iB, boolean collapseLeading) {
 
-        IdentValue whitespace = iB.getStyle().getCalculatedStyle().getIdent(CSSName.WHITE_SPACE);
+        IdentValue whitespace = iB.getStyle().getIdent(CSSName.WHITE_SPACE);
         
         String text = iB.getText();
 

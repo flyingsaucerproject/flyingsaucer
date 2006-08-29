@@ -45,13 +45,13 @@ public class LayoutUtil {
         
         // If printing, don't layout until we know where its going
         if (! c.isPrint()) {
-            if (! box.getStyle().getCalculatedStyle().isAlternateFlow()) {
+            if (! box.getStyle().isAlternateFlow()) {
                 box.layout(c);
             } else {
                 result = false;
             }
         } else {
-            box.getStyle().setContainingBlockWidth(c.getLayer().getMaster().getContentWidth());
+            box.setContainingBlockWidth(c.getLayer().getMaster().getContentWidth());
             c.pushLayer(box);
             c.getLayer().setRequiresLayout(true);
             c.getLayer().setLayoutData(

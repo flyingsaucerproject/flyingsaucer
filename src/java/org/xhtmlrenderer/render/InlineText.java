@@ -40,7 +40,7 @@ public class InlineText {
         if (! isEmpty() && masterText.charAt(end-1) == ' ') {
             end--;
             setWidth(c.getTextRenderer().getWidth(c.getFontContext(), 
-                    getParent().getStyle().getCalculatedStyle().getFSFont(c),
+                    getParent().getStyle().getFSFont(c),
                     getSubstring()));
         }
     }
@@ -129,7 +129,7 @@ public class InlineText {
         this.end = value.length();
         this.masterText = value;
         this.width = c.getTextRenderer().getWidth(
-                c.getFontContext(), getParent().getStyle().getCalculatedStyle().getFSFont(c),
+                c.getFontContext(), getParent().getStyle().getFSFont(c),
                 value);
     }
 }

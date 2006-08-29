@@ -639,7 +639,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             if (box != null) {
                 PageBox page = root.getLayer().getPage(c,  getBookmarkRefY(box));
                 int distanceFromTop =
-                    page.getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP);
+                    page.getMarginBorderPadding(c, CalculatedStyle.TOP);
                 distanceFromTop += box.getAbsY() - page.getTop();
                 target = new PdfDestination(PdfDestination.FITH, 
                         normalizeY(distanceFromTop / _dotsPerPoint));

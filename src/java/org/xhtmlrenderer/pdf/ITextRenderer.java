@@ -223,9 +223,9 @@ public class ITextRenderer {
         
         
         int top = -page.getPaintingTop() + 
-            page.getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP);
+            page.getMarginBorderPadding(c, CalculatedStyle.TOP);
         
-        int left = page.getStyle().getMarginBorderPadding(c, CalculatedStyle.LEFT);
+        int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
         
         _outputDevice.translate(left, top);
         _root.getLayer().paint(c, 0, 0);

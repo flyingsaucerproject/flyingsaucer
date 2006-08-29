@@ -19,6 +19,11 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -26,14 +31,15 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.content.*;
+import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
+import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
+import org.xhtmlrenderer.layout.content.BlockContent;
+import org.xhtmlrenderer.layout.content.CachingContent;
+import org.xhtmlrenderer.layout.content.CollapsableContent;
+import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.layout.content.ContentUtil;
+import org.xhtmlrenderer.layout.content.FloatedBlockContent;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Style;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Exposes a utility method to collapse vertical margins (8.3.1)
@@ -105,10 +111,6 @@ public class VerticalMarginCollapser {
         }
     }
 
-    /**
-     * Be sure to use it or call {@link Box#getMarginWidth(org.xhtmlrenderer.css.style.CssContext, float)} to pick
-     * up modified margins.
-     */
     public static void collapseVerticalMargins(LayoutContext c, Box block, Content content, float parentWidth) {
         if (content instanceof CollapsableContent) {
             Element elem = content.getElement();
@@ -129,31 +131,33 @@ public class VerticalMarginCollapser {
                 }
             }
 
+            /*
             Style style = block.getStyle();
 
             if (collapsableContent.isTopMarginCollapsed()) {
-                style.setMarginTopOverride(0);
+                style.setCollapsedMarginTop(0);
             } else if (mayCollapseInto(c, collapsableContent)) {
                 Float collapsedTopMargin = collapseTopMargin(c, collapsableContent, parentWidth);
                 if (collapsedTopMargin != null) {
-                    style.setMarginTopOverride(collapsedTopMargin.intValue());
+                    style.setCollapsedMarginTop(collapsedTopMargin.intValue());
                 }
             } else {
                 Float collapsedTopMargin = calculateCollapsedTop(c, content, parentWidth);
-                style.setMarginTopOverride(collapsedTopMargin.intValue());
+                style.setCollapsedMarginTop(collapsedTopMargin.intValue());
             }
 
             if (collapsableContent.isBottomMarginCollapsed()) {
-                style.setMarginBottomOverride(0);
+                style.setCollapsedMarginBottom(0);
             } else if (mayCollapseInto(c, collapsableContent)) {
                 Float collapsedBottomMargin = collapseBottomMargin(c, collapsableContent, parentWidth);
                 if (collapsedBottomMargin != null) {
-                    style.setMarginBottomOverride(collapsedBottomMargin.intValue());
+                    style.setCollapsedMarginBottom(collapsedBottomMargin.intValue());
                 }
             } else {
                 Float collapsedBottomMargin = calculateAdjustedMarginBottom(c, content, parentWidth);
-                style.setMarginBottomOverride(collapsedBottomMargin.intValue());
+                style.setCollapsedMarginBottom(collapsedBottomMargin.intValue());
             }
+            */
         }
     }
 
@@ -165,9 +169,11 @@ public class VerticalMarginCollapser {
             ((CollapsableContent) sibling).setMarginToCollapse(result);
             return false;
         } else {
+            /*
             Style style = block.getStyle();
-            style.setMarginTopOverride(0f);
-            style.setMarginBottomOverride(result.getValue());
+            style.setCollapsedMarginTop(0f);
+            style.setCollapsedMarginBottom(result.getValue());
+            */
             return true;
         }
     }

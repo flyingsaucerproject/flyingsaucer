@@ -39,7 +39,6 @@ import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.MarginBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.render.ViewportBox;
 
 public class Layer {
@@ -90,7 +89,7 @@ public class Layer {
     }
 
     public int getZIndex() {
-        return (int) master.getStyle().getCalculatedStyle().asFloat(CSSName.Z_INDEX);
+        return (int) master.getStyle().asFloat(CSSName.Z_INDEX);
     }
     
     public boolean isAlternateFlow() {
@@ -535,7 +534,7 @@ public class Layer {
         for (Iterator i = children.iterator(); i.hasNext(); ) {
             Layer child = (Layer)i.next();
             if (child.getMaster().getStyle().isAlternateFlow()) {
-                CalculatedStyle cs = child.getMaster().getStyle().getCalculatedStyle();
+                CalculatedStyle cs = child.getMaster().getStyle();
                 if (cs.getStringProperty(CSSName.FS_MOVE_TO_FLOW).equals(name)) {
                     return child;
                 }
@@ -620,7 +619,7 @@ public class Layer {
             for (int i = 0; i < children.size(); i++) {
                 Layer child = (Layer)children.get(i);
                 if (child.isRequiresLayout() && child.isAlternateFlow()) {
-                    CalculatedStyle cs = child.getMaster().getStyle().getCalculatedStyle();
+                    CalculatedStyle cs = child.getMaster().getStyle();
                     MarginBox cb = createMarginBox(c, 
                             cs.getStringProperty(CSSName.FS_MOVE_TO_FLOW));
                     if (cb != null) {
@@ -767,8 +766,8 @@ public class Layer {
         PageBox result = new PageBox();
         CalculatedStyle cs = new EmptyStyle().deriveStyle(
                 c.getCss().getPageStyle(pseudoPage));
-        result.setStyle(new Style(cs, 0));
-        result.getStyle().setContainingBlockWidth(result.getWidth(c));
+        result.setStyle(cs);
+        result.setOuterPageWidth(result.getWidth(c));
         
         return result;
     }

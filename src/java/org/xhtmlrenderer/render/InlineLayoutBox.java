@@ -57,9 +57,10 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     public InlineLayoutBox(LayoutContext c, Element elem, CalculatedStyle style, int cbWidth) {
         this();
         this.element = elem;
-        setStyle(new Style(style, cbWidth));
-        getStyle().setMarginTopOverride(0.0f);
-        getStyle().setMarginBottomOverride(0.0f);
+        setStyle(style);
+        setContainingBlockWidth(cbWidth);
+        setCollapsedMarginTop(0.0f);
+        setCollapsedMarginBottom(0.0f);
         markPending();
         calculateHeight(c);
     }
@@ -83,8 +84,8 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public void calculateHeight(LayoutContext c) {
-        BorderPropertySet border = getStyle().getCalculatedStyle().getBorder(c);
-        RectPropertySet padding = getStyle().getPaddingWidth(c);
+        BorderPropertySet border = getStyle().getBorder(c);
+        RectPropertySet padding = getPaddingWidth(c);
         
         FSFontMetrics metrics = getStyle().getFSFontMetrics(c);
         
@@ -236,7 +237,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         
         if (textDecoration != null) {
             IdentValue val = 
-                getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_DECORATION);
+                getStyle().getIdent(CSSName.TEXT_DECORATION);
             if (val == IdentValue.UNDERLINE || val == IdentValue.OVERLINE) {
                 c.getOutputDevice().drawTextDecoration(c, this);
             }
@@ -251,7 +252,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         
         if (textDecoration != null) {
             IdentValue val = 
-                getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_DECORATION);
+                getStyle().getIdent(CSSName.TEXT_DECORATION);
             if (val == IdentValue.LINE_THROUGH) {
                 c.getOutputDevice().drawTextDecoration(c, this);
             }
@@ -278,7 +279,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         float marginLeft = 0;
         float marginRight = 0;
         if (startsHere || endsHere) {
-            RectPropertySet margin = (RectPropertySet)getStyle().getMarginWidth(cssCtx);
+            RectPropertySet margin = (RectPropertySet)getMarginWidth(cssCtx);
             if (startsHere) {
                 marginLeft = margin.left();
             } 
@@ -286,8 +287,8 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
                 marginRight = margin.right();
             }
         }
-        BorderPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
-        RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
+        BorderPropertySet border = getStyle().getBorder(cssCtx);
+        RectPropertySet padding = getPaddingWidth(cssCtx);
         
         Rectangle result = new Rectangle(
                 (int)(left + marginLeft), 
@@ -302,7 +303,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         float marginLeft = 0;
         float marginRight = 0;
         if (startsHere || endsHere) {
-            RectPropertySet margin = (RectPropertySet)getStyle().getMarginWidth(cssCtx);
+            RectPropertySet margin = (RectPropertySet)getMarginWidth(cssCtx);
             if (startsHere) {
                 marginLeft = margin.left();
             } 
@@ -322,8 +323,8 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }    
     
     public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
-        BorderPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
-        RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
+        BorderPropertySet border = getStyle().getBorder(cssCtx);
+        RectPropertySet padding = getPaddingWidth(cssCtx);
         
         float marginLeft = 0;
         float marginRight = 0;
@@ -335,7 +336,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         float paddingRight = 0;
         
         if (startsHere || endsHere) {
-            RectPropertySet margin = (RectPropertySet)getStyle().getMarginWidth(cssCtx);
+            RectPropertySet margin = (RectPropertySet)getMarginWidth(cssCtx);
             if (startsHere) {
                 marginLeft = margin.left();
                 borderLeft = border.left();
@@ -359,7 +360,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     
     public int getLeftMarginBorderPadding(CssContext cssCtx) {
         if (startsHere) {
-            return getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT);
+            return getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT);
         } else {
             return 0;
         }
@@ -367,7 +368,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     
     public int getRightMarginPaddingBorder(CssContext cssCtx) {
         if (endsHere) {
-            return getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.RIGHT);
+            return getMarginBorderPadding(cssCtx, CalculatedStyle.RIGHT);
         } else {
             return 0;
         }

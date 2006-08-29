@@ -42,7 +42,6 @@ import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.StrutMetrics;
-import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.render.TextDecoration;
 
 public class InlineBoxing {
@@ -71,7 +70,7 @@ public class InlineBoxing {
         
         remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
 
-        CalculatedStyle parentStyle = box.getStyle().getCalculatedStyle();
+        CalculatedStyle parentStyle = box.getStyle();
         int minimumLineHeight = (int) parentStyle.getLineHeight(c);
         int indent = (int) parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, maxAvailableWidth, c);
         remainingWidth -= indent;
@@ -79,7 +78,7 @@ public class InlineBoxing {
         
         MarkerData markerData = c.getCurrentMarkerData();
         if (markerData != null && 
-                box.getStyle().getCalculatedStyle().isIdent(
+                box.getStyle().isIdent(
                         CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
             remainingWidth -= markerData.getLayoutWidth();
             contentStart += markerData.getLayoutWidth();
@@ -106,7 +105,7 @@ public class InlineBoxing {
             if (node.getStyle().isInline()) {
                 InlineBox iB = (InlineBox)node;
                 
-                CalculatedStyle style = iB.getStyle().getCalculatedStyle();
+                CalculatedStyle style = iB.getStyle();
                 if (iB.isStartsHere()) {
                     previousIB = currentIB;
                     // XXX Share Style Object
@@ -485,7 +484,7 @@ public class InlineBoxing {
                                                                      VerticalAlignContext vaContext) {
         FSFontMetrics fm = iB.getStyle().getFSFontMetrics(c);
 
-        CalculatedStyle style = iB.getStyle().getCalculatedStyle();
+        CalculatedStyle style = iB.getStyle();
         float lineHeight = style.getLineHeight(c);
 
         int halfLeading = Math.round((lineHeight - 
@@ -506,7 +505,7 @@ public class InlineBoxing {
         result.setTextTop(iB.y);
         result.setTextBottom((int) (result.getBaseline() + fm.getDescent()));
         
-        RectPropertySet padding = iB.getStyle().getPaddingWidth(c);
+        RectPropertySet padding = iB.getPaddingWidth(c);
         BorderPropertySet border = style.getBorder(c);
         
         result.setPaintingTop((int)Math.floor(iB.y - border.top() - padding.top()));
@@ -521,7 +520,7 @@ public class InlineBoxing {
     
     public static TextDecoration calculateTextDecoration(Box box, int baseline, 
             FSFontMetrics fm) {
-        CalculatedStyle style = box.getStyle().getCalculatedStyle();
+        CalculatedStyle style = box.getStyle();
         
         IdentValue val = style.getIdent(CSSName.TEXT_DECORATION);
         
@@ -572,7 +571,7 @@ public class InlineBoxing {
                                            float ascent, float descent, VerticalAlignContext vaContext) {
         InlineBoxMeasurements measurements = vaContext.getParentMeasurements();
 
-        CalculatedStyle style = box.getStyle().getCalculatedStyle();
+        CalculatedStyle style = box.getStyle();
 
         if (style.isLengthValue(CSSName.VERTICAL_ALIGN)) {
             box.y = (int) (measurements.getBaseline() - ascent -
@@ -602,8 +601,7 @@ public class InlineBoxing {
 
     private static InlineBoxMeasurements getInitialMeasurements(
             LayoutContext c, Box container, FSFontMetrics strutM) {
-        Style style = container.getStyle();
-        float lineHeight = style.getCalculatedStyle().getLineHeight(c);
+        float lineHeight = container.getStyle().getLineHeight(c);
 
         int halfLeading = Math.round((lineHeight - 
                 (strutM.getAscent() + strutM.getDescent())) / 2);
@@ -631,7 +629,7 @@ public class InlineBoxing {
     private static void positionInlineContentVertically(LayoutContext c, 
             VerticalAlignContext vaContext, Box child) {
         VerticalAlignContext vaTarget = vaContext;
-        IdentValue vAlign = child.getStyle().getCalculatedStyle().getIdent(
+        IdentValue vAlign = child.getStyle().getIdent(
                 CSSName.VERTICAL_ALIGN);
         if (vAlign == IdentValue.TOP || vAlign == IdentValue.BOTTOM) {
             vaTarget = vaContext.createChild(child);
@@ -758,7 +756,7 @@ public class InlineBoxing {
         result = new InlineText();
         result.setMasterText(lbContext.getMaster());
 
-        CalculatedStyle style = iB.getStyle().getCalculatedStyle();
+        CalculatedStyle style = iB.getStyle();
         
         if (needFirstLetter) {
             Breaker.breakFirstLetter(c, lbContext, remainingWidth, style);
@@ -776,7 +774,7 @@ public class InlineBoxing {
             LayoutContext c, LineBox current, BlockBox block,  
             int available, List pendingFloats) {
         int result = 0;
-        Style style = block.getStyle();
+        CalculatedStyle style = block.getStyle();
         if (style.isAbsolute() || style.isFixed()) {
             boolean added = LayoutUtil.layoutAbsolute(c, current, block);
             if (added) {
@@ -834,7 +832,8 @@ public class InlineBoxing {
             
             // :first-line transition
             if (info.getCalculatedStyle() != null) {
-                currentIB.setStyle(new Style(info.getCalculatedStyle(), cbWidth));
+                currentIB.setStyle(info.getCalculatedStyle());
+                currentIB.setContainingBlockWidth(cbWidth);
                 currentIB.calculateHeight(c);
                 info.setCalculatedStyle(null);
                 info.setInlineBox(currentIB);
@@ -861,7 +860,7 @@ public class InlineBoxing {
         for (Iterator i = openParents.iterator(); i.hasNext();) {
             InlineBox iB = (InlineBox)i.next();
             currentIB = new InlineLayoutBox(
-                    c, iB.getElement(), iB.getStyle().getCalculatedStyle(), cbWidth);
+                    c, iB.getElement(), iB.getStyle(), cbWidth);
             
             result.add(new InlineBoxInfo(currentIB));
             

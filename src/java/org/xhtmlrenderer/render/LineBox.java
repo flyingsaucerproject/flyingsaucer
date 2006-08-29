@@ -168,7 +168,7 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     		return;
     	}
     	
-        IdentValue align = getParent().getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_ALIGN);
+        IdentValue align = getParent().getStyle().getIdent(CSSName.TEXT_ALIGN);
         
         // TODO implement text-align: justify
         
@@ -227,7 +227,7 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     {
         Box parent = getParent();
         Rectangle result = null;
-        if (parent.getStyle().getCalculatedStyle().isIdent(
+        if (parent.getStyle().isIdent(
                 CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
             result = new Rectangle(
                     getAbsX(), getAbsY() + paintingTop, 
@@ -393,7 +393,7 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         
         if (text != null) {
             InlineLayoutBox iB = text.getParent();
-            IdentValue whitespace = iB.getStyle().getCalculatedStyle().getWhitespace();
+            IdentValue whitespace = iB.getStyle().getWhitespace();
             if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
                 text.maybeTrimTrailingSpace(c);
             }
@@ -418,6 +418,9 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.56  2006/08/29 17:29:12  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.55  2006/08/27 00:36:36  peterbrant
  * Initial commit of (initial) R7 work
  *

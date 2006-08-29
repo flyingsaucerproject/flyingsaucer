@@ -248,9 +248,9 @@ public abstract class BasicPanel extends RootPanel {
                 g.clip(content);
                 
                 int left = PAGE_PAINTING_CLEARANCE +
-                    page.getStyle().getMarginBorderPadding(c, CalculatedStyle.LEFT);
+                    page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
                 int top = page.getPaintingTop() 
-                    + page.getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP)
+                    + page.getMarginBorderPadding(c, CalculatedStyle.TOP)
                     - page.getTop();
                 
                 g.translate(left, top);
@@ -290,9 +290,9 @@ public abstract class BasicPanel extends RootPanel {
         g.clip(content);
         
         int top = -page.getPaintingTop() + 
-            page.getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP);
+            page.getMarginBorderPadding(c, CalculatedStyle.TOP);
         
-        int left = page.getStyle().getMarginBorderPadding(c, CalculatedStyle.LEFT);
+        int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
         
         g.translate(left, top);
         root.paint(c, 0, 0);
@@ -713,6 +713,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.106  2006/08/29 17:29:14  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.105  2006/08/27 00:37:06  peterbrant
  * Initial commit of (initial) R7 work
  *

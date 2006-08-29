@@ -21,8 +21,8 @@ package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.render.Style;
 
 
 /**
@@ -32,7 +32,7 @@ public class StylePush {
     private String _pseudo;
     private Element _elem;//needed for dynamic stuff
 
-    private Style _style;
+    private CalculatedStyle _style;
 
     StylePush(String pseudo, Element e) {
         _pseudo = pseudo;
@@ -47,11 +47,11 @@ public class StylePush {
         return _elem;
     }
 
-    public Style getStyle() {
+    public CalculatedStyle getStyle() {
         return _style;
     }
 
-    public void setStyle(Style style) {
+    public void setStyle(CalculatedStyle style) {
         _style = style;
     }
     

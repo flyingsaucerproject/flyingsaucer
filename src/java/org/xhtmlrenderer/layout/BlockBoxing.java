@@ -317,11 +317,9 @@ public class BlockBoxing {
             RelayoutData currentData = get(offset);
             
             IdentValue previousAfter = 
-                previous.getStyle().getCalculatedStyle().getIdent(
-                    CSSName.PAGE_BREAK_AFTER);
+                previous.getStyle().getIdent(CSSName.PAGE_BREAK_AFTER);
             IdentValue currentBefore = 
-                current.getStyle().getCalculatedStyle().getIdent(
-                    CSSName.PAGE_BREAK_BEFORE);
+                current.getStyle().getIdent(CSSName.PAGE_BREAK_BEFORE);
             
             if ( (previousAfter == IdentValue.AVOID && currentBefore == IdentValue.AUTO) ||
                  (previousAfter == IdentValue.AUTO && currentBefore == IdentValue.AVOID) ||
@@ -431,6 +429,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2006/08/29 17:29:11  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.49  2006/08/27 00:35:42  peterbrant
  * Initial commit of (initial) R7 work
  *

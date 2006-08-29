@@ -57,7 +57,6 @@ import org.xhtmlrenderer.layout.content.TableContent;
 import org.xhtmlrenderer.layout.content.TableRowContent;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.swing.SwingReplacedElement;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -119,7 +118,8 @@ public class TableBoxing {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
 
-        tableBox.setStyle(new Style(c.getCurrentStyle(), (int) oe.getWidth()));
+        tableBox.setStyle(c.getCurrentStyle());
+        tableBox.setContainingBlockWidth((int)oe.getWidth());
         
         if (listener != null) {
             listener.onStyleSet(tableBox);
@@ -131,16 +131,15 @@ public class TableBoxing {
 
         TableContent tableContent = (TableContent) content;
         if (tableContent.isTopMarginCollapsed()) {
-            tableBox.getStyle().setMarginTopOverride(0f);
+            tableBox.setCollapsedMarginTop(0f);
         }
         if (tableContent.isBottomMarginCollapsed()) {
-            tableBox.getStyle().setMarginBottomOverride(0f);
+            tableBox.setCollapsedMarginBottom(0f);
         }
-
-        tableBox.setStyle(new Style(c.getCurrentStyle(), (int) oe.getWidth()));
+        
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //note: percentages here refer to width of containing block
-        RectPropertySet margin = tableBox.getStyle().getMarginWidth(c);
+        RectPropertySet margin = tableBox.getMarginWidth(c);
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
         // CLEAN: cast to int
         int tx = (int) margin.left() + (int) border.left() + (int) padding.left();
@@ -270,11 +269,9 @@ public class TableBoxing {
                 RowBox previous = (RowBox)table.getChild(offset-1);
                 RowBox current = (RowBox)table.getChild(offset);
                 
-                IdentValue after = previous.getStyle().getCalculatedStyle().getIdent(
-                        CSSName.PAGE_BREAK_AFTER);
+                IdentValue after = previous.getStyle().getIdent(CSSName.PAGE_BREAK_AFTER);
                 IdentValue before = 
-                    current.getStyle().getCalculatedStyle().getIdent(
-                        CSSName.PAGE_BREAK_BEFORE);
+                    current.getStyle().getIdent(CSSName.PAGE_BREAK_BEFORE);
                 
                 if ( (after == IdentValue.AVOID && before == IdentValue.AUTO) ||
                         (after == IdentValue.AUTO && before == IdentValue.AVOID) ||
@@ -461,7 +458,8 @@ public class TableBoxing {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
 
-        row.setStyle(new Style(c.getCurrentStyle(), (int) oe.getWidth()));
+        row.setStyle(c.getCurrentStyle());
+        row.setContainingBlockWidth((int)oe.getWidth());
 
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //rows have no margin or padding
@@ -609,7 +607,8 @@ public class TableBoxing {
         }
 
         // a cell defines a new bfc
-        cell.setStyle(new Style(c.getCurrentStyle(), (int) c.getExtents().width));
+        cell.setStyle(c.getCurrentStyle());
+        cell.setContainingBlockWidth(c.getExtents().width);
         cell.setElement(content.getElement());
         BlockFormattingContext bfc = new BlockFormattingContext(cell, c);
         c.pushBFC(bfc);
@@ -717,6 +716,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.64  2006/08/29 17:29:14  peterbrant
+   Make Style object a thing of the past
+
    Revision 1.63  2006/08/27 00:37:10  peterbrant
    Initial commit of (initial) R7 work
 

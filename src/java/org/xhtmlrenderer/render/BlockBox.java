@@ -70,6 +70,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     private int childrenContentType;
     
     private List inlineContent;
+    private boolean verticalMarginsCalculated = false;
     
     public BlockBox() {
         super();
@@ -184,7 +185,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         MarkerData result = new MarkerData();
         result.setStructMetrics(strutMetrics);
         
-        CalculatedStyle style = getStyle().getCalculatedStyle();
+        CalculatedStyle style = getStyle();
         IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
         
         String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
@@ -256,7 +257,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
 
         int w = c.getTextRenderer().getWidth(
                 c.getFontContext(),
-                getStyle().getCalculatedStyle().getFSFont(c), 
+                getStyle().getFSFont(c), 
                 text);
         
         MarkerData.TextMarker result = new MarkerData.TextMarker();
@@ -378,7 +379,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
 
     // TODO Finish this!
     public void positionAbsolute(CssContext cssCtx, int direction) {
-        CalculatedStyle style = getStyle().getCalculatedStyle();
+        CalculatedStyle style = getStyle();
 
         Rectangle boundingBox = null;
         
@@ -458,18 +459,22 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
                 getChild(0).detach(c);
             }
             CascadedStyle cascadedStyle = c.getCss().getCascadedStyle(getElement(), false);
-            c.initializeStyles(getStyle().getCalculatedStyle().getParent());
+            c.initializeStyles(getStyle().getParent());
             TableBoxing.layout(c, this, new TableContent(getElement(), cascadedStyle), null);
         } else {
             Boxing.layout(c, this);
         }
     }
     
-    public void layoutChildren(LayoutContext c) {
-        setState(Box.CHILDREN_FLUX);
+    private void ensureChildren(LayoutContext c) {
         if (getChildrenContentType() == CONTENT_UNKNOWN) {
             BoxBuilder.createChildren(c, this);
         }
+    }
+    
+    public void layoutChildren(LayoutContext c) {
+        setState(Box.CHILDREN_FLUX);
+        ensureChildren(c);
         
         switch (getChildrenContentType()) {
             case CONTENT_INLINE:
@@ -497,12 +502,47 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public void setInlineContent(List inlineContent) {
         this.inlineContent = inlineContent;
     }
+    
+    public boolean isSkipWhenCollapsing() {
+        return false;
+    }
+    
+    public boolean isMayCollapseWithChildren() {
+        return (! isRoot()) && getStyle().isMayCollapseWithChildren();
+    }
+    
+    public void collapseMargins(LayoutContext c) {
+        collapseMargins(c, true);
+    }
+    
+    private void collapseMargins(LayoutContext c, boolean calculationRoot) {
+        if (! isVerticalMarginsCalculated() && isMayCollapseWithChildren()) {
+            ensureChildren(c);
+            
+            if (getChildrenContentType() == CONTENT_BLOCK) {
+                
+            }
+            
+            setVerticalMarginsCalculated(true);
+        }
+    }
+
+    public boolean isVerticalMarginsCalculated() {
+        return verticalMarginsCalculated;
+    }
+
+    public void setVerticalMarginsCalculated(boolean verticalMarginsCalculated) {
+        this.verticalMarginsCalculated = verticalMarginsCalculated;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2006/08/29 17:29:12  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.47  2006/08/27 01:16:20  peterbrant
  * decimal-leading-zero patch from Thomas Palmer
  *

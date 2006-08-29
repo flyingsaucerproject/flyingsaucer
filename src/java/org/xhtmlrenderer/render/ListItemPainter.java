@@ -38,7 +38,7 @@ public class ListItemPainter {
         if (markerData.getImageMarker() != null) {
             drawImage(c, box, markerData);
         } else {
-            CalculatedStyle style = box.getStyle().getCalculatedStyle();
+            CalculatedStyle style = box.getStyle();
             IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
             
             c.getOutputDevice().setColor(style.getColor());
@@ -73,7 +73,7 @@ public class ListItemPainter {
         if (markerData.getReferenceLine() != null) {
             return markerData.getReferenceLine().getAbsX();
         } else {
-            return box.getAbsX() + (int)box.getStyle().getMarginWidth(c).left();
+            return box.getAbsX() + (int)box.getMarginWidth(c).left();
         }
     }
     
@@ -123,8 +123,8 @@ public class ListItemPainter {
         x += -text.getLayoutWidth();
         int y = getReferenceBaseline(c, box);
         
-        c.getOutputDevice().setColor(box.getStyle().getCalculatedStyle().getColor());
-        c.getOutputDevice().setFont(box.getStyle().getCalculatedStyle().getFSFont(c));
+        c.getOutputDevice().setColor(box.getStyle().getColor());
+        c.getOutputDevice().setFont(box.getStyle().getFSFont(c));
         c.getTextRenderer().drawString(
                 c.getOutputDevice(), text.getText(), x, y);
     }
@@ -134,6 +134,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2006/08/29 17:29:12  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.33  2006/02/02 02:47:34  peterbrant
  * Support non-AWT images
  *

@@ -40,8 +40,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         String text = inlineText.getSubstring();
 
         if (text != null && text.length() > 0) {
-            setColor(iB.getStyle().getCalculatedStyle().getColor());
-            setFont(iB.getStyle().getCalculatedStyle().getFSFont(c));
+            setColor(iB.getStyle().getColor());
+            setFont(iB.getStyle().getFSFont(c));
             c.getTextRenderer().drawString(
                     c.getOutputDevice(),
                     text,
@@ -62,7 +62,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         FSFontMetrics fm = iB.getStyle().getFSFontMetrics(null);
         int width = c.getTextRenderer().getWidth(
                 c.getFontContext(), 
-                iB.getStyle().getCalculatedStyle().getFSFont(c), text);
+                iB.getStyle().getFSFont(c), text);
         int x = iB.getAbsX() + inlineText.getX();
         int y = iB.getAbsY() + iB.getBaseline();
         
@@ -77,7 +77,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     }
     
     public void drawTextDecoration(RenderingContext c, InlineLayoutBox iB) {
-        setColor(iB.getStyle().getCalculatedStyle().getColor());
+        setColor(iB.getStyle().getColor());
         
         Rectangle edge = iB.getContentAreaEdge(iB.getAbsX(), iB.getAbsY(), c);
         
@@ -86,10 +86,10 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     }
     
     public void drawTextDecoration(RenderingContext c, LineBox lineBox) {
-        setColor(lineBox.getStyle().getCalculatedStyle().getColor());
+        setColor(lineBox.getStyle().getColor());
         Box parent = lineBox.getParent();
         TextDecoration textDecoration = lineBox.getTextDecoration();
-        if (parent.getStyle().getCalculatedStyle().isIdent(
+        if (parent.getStyle().isIdent(
                 CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
             fillRect(
                 lineBox.getAbsX(), 
@@ -123,8 +123,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             borderBounds.height += c.getCanvas().getHeight();
         }
     
-        BorderPainter.paint(borderBounds, box.getBorderSides(),
-                box.getStyle().getCalculatedStyle(), c, 0);
+        BorderPainter.paint(borderBounds, box.getBorderSides(), box.getStyle(), c, 0);
     }
     
     public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
@@ -132,7 +131,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     }
     
     private FSImage getBackgroundImage(RenderingContext c, Box box) {
-        String uri = box.getStyle().getCalculatedStyle().getStringProperty(CSSName.BACKGROUND_IMAGE);
+        String uri = box.getStyle().getStringProperty(CSSName.BACKGROUND_IMAGE);
         if (! uri.equals("none")) {
             try {
                 return c.getUac().getImageResource(uri).getImage();
@@ -153,7 +152,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             return;
         }
         
-        Color backgroundColor = box.getStyle().getCalculatedStyle().getBackgroundColor();
+        Color backgroundColor = box.getStyle().getBackgroundColor();
         FSImage backgroundImage = getBackgroundImage(c, box);
         
         if ( (backgroundColor == null || backgroundColor.equals(TRANSPARENT)) &&
@@ -187,7 +186,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             int imageWidth = backgroundImage.getWidth();
             int imageHeight = backgroundImage.getHeight();
     
-            Point bgOffset = box.getStyle().getCalculatedStyle().getBackgroundPosition(backgroundBounds.width - imageWidth,
+            Point bgOffset = box.getStyle().getBackgroundPosition(backgroundBounds.width - imageWidth,
                     backgroundBounds.height - imageHeight, c);
             xoff += bgOffset.x;
             yoff -= bgOffset.y;

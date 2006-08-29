@@ -275,7 +275,7 @@ public class FloatManager {
         // possibly, since the line doesn't know how long it should be until it's already
         // done float adjustments
         if (line.height == 0) {
-            bounds.height = (int)line.getStyle().getCalculatedStyle().getLineHeight(cssCtx);
+            bounds.height = (int)line.getStyle().getLineHeight(cssCtx);
         }
     }
 

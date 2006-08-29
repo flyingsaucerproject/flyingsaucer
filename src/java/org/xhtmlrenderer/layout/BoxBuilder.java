@@ -42,7 +42,6 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.Style;
 
 public class BoxBuilder {
     private static final Pattern CONTENT_NEWLINE = Pattern.compile("\\\\A");
@@ -93,7 +92,7 @@ public class BoxBuilder {
     }
     
     private static void insertGeneratedContent(
-            LayoutContext c, Element element, Style style, String peName, List children) {
+            LayoutContext c, Element element, CalculatedStyle parentStyle, String peName, List children) {
         CascadedStyle before = c.getCss().getPseudoElementStyle(element, peName);
         if (before != null && before.hasProperty(CSSName.CONTENT)) {
             String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
@@ -102,7 +101,7 @@ public class BoxBuilder {
             // TODO: need to handle hex values in CSS--\2192 is the Unicode for an arrow (HTML &8594;), though this
             // is a general string problem, anywhere strings can appear in CSS, not just content
             if (! content.equals("")) {
-                CalculatedStyle calculatedStyle = style.getCalculatedStyle().deriveStyle(before);
+                CalculatedStyle calculatedStyle = parentStyle.deriveStyle(before);
                 children.add(createGeneratedContent(c, element, calculatedStyle, content));
             }
         }
@@ -131,16 +130,15 @@ public class BoxBuilder {
         iB.setStartsHere(true);
         iB.setEndsHere(true);
         
-        Style style = new Style(calculatedStyle, 0);
-        if (style.isInline()) {
-            iB.setStyle(style);
+        if (calculatedStyle.isInline()) {
+            iB.setStyle(calculatedStyle);
             
             return iB;
         } else {
-            iB.setStyle(style.createAnonymousStyle());
+            iB.setStyle(calculatedStyle.createAnonymousStyle());
             
-            BlockBox result = createBlockBox(style);
-            result.setStyle(style);
+            BlockBox result = createBlockBox(calculatedStyle);
+            result.setStyle(calculatedStyle);
             result.setInlineContent(Collections.singletonList(iB));
             result.setElement(element);
             result.setChildrenContentType(BlockBox.CONTENT_INLINE);
@@ -149,7 +147,7 @@ public class BoxBuilder {
         }
     }
     
-    private static BlockBox createBlockBox(Style style) {
+    private static BlockBox createBlockBox(CalculatedStyle style) {
         if (style.isFloated() && ! (style.isAbsolute() || style.isFixed())) {
             return new FloatedBlockBox();
         } else {
@@ -160,7 +158,7 @@ public class BoxBuilder {
     private static void createChildren(LayoutContext c, Element parent, List children) {
         SharedContext sharedContext = c.getSharedContext();
         
-        Style parentStyle = sharedContext.getStyle(parent);
+        CalculatedStyle parentStyle = sharedContext.getStyle(parent);
         insertGeneratedContent(c, parent, parentStyle, "before", children);
         
         /*
@@ -180,7 +178,7 @@ public class BoxBuilder {
                 Styleable child = null;
                 if (working.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element)working;
-                    Style style = sharedContext.getStyle(element);
+                    CalculatedStyle style = sharedContext.getStyle(element);
                     
                     if (style.isHidden()) {
                         continue;

@@ -235,14 +235,13 @@ public class VerticalAlignContext {
         }
         
         private boolean canBeMoved(Box box) {
-            IdentValue vAlign = box.getStyle().getCalculatedStyle().getIdent(
-                    CSSName.VERTICAL_ALIGN);
+            IdentValue vAlign = box.getStyle().getIdent(CSSName.VERTICAL_ALIGN);
             return box == this.root ||
                 ! (vAlign == IdentValue.TOP || vAlign == IdentValue.BOTTOM);
         }
         
         public void align() {
-            IdentValue vAlign = this.root.getStyle().getCalculatedStyle().getIdent(
+            IdentValue vAlign = this.root.getStyle().getIdent(
                     CSSName.VERTICAL_ALIGN);
             int delta = 0;
             if (vAlign == IdentValue.TOP) {

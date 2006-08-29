@@ -706,6 +706,222 @@ public class CalculatedStyle {
     public boolean isAlternateFlow() {
         return ! getStringProperty(CSSName.FS_MOVE_TO_FLOW).equals("none");
     }
+    
+    public boolean isClearLeft() {
+        IdentValue clear = getIdent(CSSName.CLEAR);
+        return clear == IdentValue.LEFT || clear == IdentValue.BOTH;
+    }
+
+    public boolean isClearRight() {
+        IdentValue clear = getIdent(CSSName.CLEAR);
+        return clear == IdentValue.RIGHT || clear == IdentValue.BOTH;
+    }
+
+    public boolean isCleared() {
+        return ! isIdent(CSSName.CLEAR, IdentValue.NONE);
+    }
+
+    public IdentValue getBackgroundRepeat() {
+        return getIdent(CSSName.BACKGROUND_REPEAT);
+    }
+
+    public IdentValue getBackgroundAttachment() {
+        return getIdent(CSSName.BACKGROUND_ATTACHMENT);
+    }
+    
+    public boolean isFixedBackground() {
+        return getIdent(CSSName.BACKGROUND_ATTACHMENT) == IdentValue.FIXED;
+    }
+    
+    public boolean isInline() {
+        return isIdent(CSSName.DISPLAY, IdentValue.INLINE) &&
+            ! (isFloated() || isAbsolute() || isFixed());
+    }
+    
+    public boolean isInlineBlock() {
+        return isIdent(CSSName.DISPLAY, IdentValue.INLINE_BLOCK);
+    }
+    
+    public boolean isTable() {
+        return isIdent(CSSName.DISPLAY, IdentValue.TABLE);
+    }
+    
+    public boolean isHidden() {
+        return isIdent(CSSName.DISPLAY, IdentValue.NONE);
+    }
+    
+    /*
+     * inline | block | list-item | run-in | inline-block | table | inline-table | 
+     * table-row-group | table-header-group | table-footer-group | table-row | 
+     * table-column-group | 
+     * table-column | table-cell | table-caption | none | inherit 
+     */
+    public boolean isBlockEquivalent() {
+        if (isFloated() || isAbsolute() || isFixed()) {
+            return true;
+        }
+        else {
+            IdentValue display = getIdent(CSSName.DISPLAY);
+            if (display == IdentValue.INLINE) {
+                return false;
+            }
+            else {
+                return display == IdentValue.BLOCK || display == IdentValue.LIST_ITEM ||
+                    display == IdentValue.RUN_IN || display == IdentValue.INLINE_BLOCK ||
+                    display == IdentValue.TABLE || display == IdentValue.INLINE_TABLE;
+            }
+        }
+    }
+    
+    public boolean isLayedOutInInlineContext()
+    {
+        if (isFloated() || isAbsolute() || isFixed()) {
+            return true;
+        } else {
+            IdentValue display = getIdent(CSSName.DISPLAY);
+            return display == IdentValue.INLINE || display == IdentValue.INLINE_BLOCK ||
+                    display == IdentValue.INLINE_TABLE;
+        }
+    }
+    
+
+    public boolean isAbsolute() {
+        return isIdent(CSSName.POSITION, IdentValue.ABSOLUTE);
+    }
+
+    public boolean isFixed() {
+        return isIdent(CSSName.POSITION, IdentValue.FIXED);
+    }
+
+    public boolean isFloated() {
+        IdentValue floatVal = getIdent(CSSName.FLOAT);
+        return floatVal == IdentValue.LEFT || floatVal == IdentValue.RIGHT;
+    }
+    
+    public boolean isFloatedLeft() {
+        return isIdent(CSSName.FLOAT, IdentValue.LEFT);
+    }
+    
+    public boolean isFloatedRight() {
+        return isIdent(CSSName.FLOAT, IdentValue.RIGHT);
+    }
+
+    public boolean isRelative() {
+        return isIdent(CSSName.POSITION, IdentValue.RELATIVE);
+    }
+
+    public boolean isPostionedOrFloated() {
+        return isAbsolute() || isFixed() || isFloated() || isRelative();
+    }
+
+    public boolean isAutoWidth() {
+        return isIdent(CSSName.WIDTH, IdentValue.AUTO);
+    }
+
+    public boolean isAutoHeight() {
+        // HACK: assume containing block height is auto, so percentages become
+        // auto
+        return isIdent(CSSName.HEIGHT, IdentValue.AUTO)
+                || ! hasAbsoluteUnit(CSSName.HEIGHT);
+    }
+    
+    public boolean isAutoZIndex() {
+        return isIdent(CSSName.Z_INDEX, IdentValue.AUTO);
+    }
+
+    public boolean establishesBFC() {
+        IdentValue display = getIdent(CSSName.DISPLAY);
+        IdentValue position = getIdent(CSSName.POSITION);
+        
+        return isFloated() || 
+            position == IdentValue.ABSOLUTE || position == IdentValue.FIXED ||
+            display == IdentValue.INLINE_BLOCK || display == IdentValue.TABLE_CELL ||
+            ! isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
+    }
+    
+    public boolean requiresLayer() {
+        IdentValue position = getIdent(CSSName.POSITION);
+        
+        return position == IdentValue.ABSOLUTE || position == IdentValue.RELATIVE ||
+            position == IdentValue.FIXED;
+    }
+    
+    public boolean isHorizontalBackgroundRepeat() {
+        IdentValue value = getIdent(CSSName.BACKGROUND_REPEAT);
+        return value == IdentValue.REPEAT_X || value == IdentValue.REPEAT;
+    }
+    
+    public boolean isVerticalBackgroundRepeat() {
+        IdentValue value = getIdent(CSSName.BACKGROUND_REPEAT);
+        return value == IdentValue.REPEAT_Y || value == IdentValue.REPEAT;
+    }
+    
+    public boolean isTopAuto() {
+        return isIdent(CSSName.TOP, IdentValue.AUTO);
+        
+    }
+    
+    public boolean isBottomAuto() {
+        return isIdent(CSSName.BOTTOM, IdentValue.AUTO);   
+    }
+    
+    public boolean isListItem() {
+        return isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM);
+    } 
+    
+    public boolean isVisible() {
+        return isIdent(CSSName.VISIBILITY, IdentValue.VISIBLE);
+    }
+    
+    public boolean isForcePageBreakBefore() {
+        IdentValue val = getIdent(CSSName.PAGE_BREAK_BEFORE);
+        return val == IdentValue.ALWAYS || val == IdentValue.LEFT 
+            || val == IdentValue.RIGHT;
+    }
+    
+    public boolean isForcePageBreakAfter() {
+        IdentValue val = getIdent(CSSName.PAGE_BREAK_AFTER);
+        return val == IdentValue.ALWAYS || val == IdentValue.LEFT 
+            || val == IdentValue.RIGHT;
+    }
+    
+    public boolean isAvoidPageBreakInside() {
+        return isIdent(CSSName.PAGE_BREAK_INSIDE, IdentValue.AVOID);
+    }
+
+    public CalculatedStyle createAnonymousStyle() {
+        return deriveStyle(CascadedStyle.emptyCascadedStyle);
+    }
+    
+    public boolean mayHaveFirstLine() {
+        IdentValue display = getIdent(CSSName.DISPLAY);
+        return display == IdentValue.BLOCK ||
+                display == IdentValue.LIST_ITEM ||
+                display == IdentValue.RUN_IN ||
+                display == IdentValue.TABLE ||
+                display == IdentValue.TABLE_CELL ||
+                display == IdentValue.TABLE_CAPTION ||
+                display == IdentValue.INLINE_BLOCK;
+    }  
+    
+    public boolean mayHaveFirstLetter() {
+        IdentValue display = getIdent(CSSName.DISPLAY);
+        return display == IdentValue.BLOCK ||
+                display == IdentValue.LIST_ITEM ||
+                display == IdentValue.TABLE_CELL ||
+                display == IdentValue.TABLE_CAPTION ||
+                display == IdentValue.INLINE_BLOCK;
+    } 
+    
+    public boolean isNonFlowContent() {
+        return isFloated() || isAbsolute() || isFixed();
+    }
+    
+    public boolean isMayCollapseWithChildren() {
+        // Will only be called when collapsing block content so need to worry
+        // about other items from 8.3.1 (e.g. inline-block, floats, etc.)
+        return isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
+    }    
 
 }// end class
 
@@ -713,6 +929,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.69  2006/08/29 17:29:14  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.68  2006/08/27 00:36:16  peterbrant
  * Initial commit of (initial) R7 work
  *

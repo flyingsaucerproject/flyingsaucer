@@ -20,6 +20,7 @@ package org.xhtmlrenderer.render;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.extend.ContentFunction;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Styleable;
 
 public class InlineBox implements Styleable
@@ -31,7 +32,7 @@ public class InlineBox implements Styleable
     private boolean _startsHere;
     private boolean _endsHere;
     
-    private Style _style;
+    private CalculatedStyle _style;
     
     private ContentFunction _contentFunction;
     
@@ -71,11 +72,11 @@ public class InlineBox implements Styleable
         _startsHere = startsHere;
     }
 
-    public Style getStyle() {
+    public CalculatedStyle getStyle() {
         return _style;
     }
 
-    public void setStyle(Style style) {
+    public void setStyle(CalculatedStyle style) {
         _style = style;
     }
 

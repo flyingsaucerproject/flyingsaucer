@@ -33,7 +33,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -91,12 +90,19 @@ public abstract class Box implements Styleable {
     public int tx;
     public int ty;
 
-    private Style style;
+    private CalculatedStyle style;
     private Box containingBlock;
     
     private Dimension relativeOffset;
     
     private Rectangle aggregateBounds;
+    
+    private float collapsedMarginTop;
+    private boolean collapsedMarginTopSet = false;
+    private float collapsedMarginBottom;
+    private boolean collapsedMarginBottomSet = false;
+
+    private int containingBlockWidth;    
     
     public Box() {
     }
@@ -316,11 +322,11 @@ public abstract class Box implements Styleable {
         }
     }
 
-    public final Style getStyle() {
+    public final CalculatedStyle getStyle() {
         return this.style;
     }
 
-    public void setStyle(Style style) {
+    public void setStyle(CalculatedStyle style) {
         this.style = style;
     }
 
@@ -361,7 +367,7 @@ public abstract class Box implements Styleable {
     }
 
     private void addBackMargins(CssContext cssCtx, Rectangle bounds) {
-        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
+        RectPropertySet margin = getMarginWidth(cssCtx);
         if (margin.top() > 0) {
             bounds.y -= margin.top();
             bounds.height += margin.top();
@@ -379,7 +385,7 @@ public abstract class Box implements Styleable {
     }
 
     protected Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
-        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
+        RectPropertySet margin = getMarginWidth(cssCtx);
         Rectangle result = new Rectangle(left + (int) margin.left(),
                 top + (int) margin.top(),
                 getWidth() - (int) margin.left() - (int) margin.right(),
@@ -388,8 +394,8 @@ public abstract class Box implements Styleable {
     }
 
     public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
-        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
-        RectPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
+        RectPropertySet margin = getMarginWidth(cssCtx);
+        RectPropertySet border = getStyle().getBorder(cssCtx);
         Rectangle result = new Rectangle(left + (int) margin.left() + (int) border.left(),
                 top + (int) margin.top() + (int) border.top(),
                 getWidth() - (int) margin.width() - (int) border.width(),
@@ -398,9 +404,9 @@ public abstract class Box implements Styleable {
     }
     
     public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
-        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
-        RectPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
-        RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
+        RectPropertySet margin = getMarginWidth(cssCtx);
+        RectPropertySet border = getStyle().getBorder(cssCtx);
+        RectPropertySet padding = getPaddingWidth(cssCtx);
         
         Rectangle result = new Rectangle(
                 left + (int)margin.left() + (int)border.left() + (int)padding.left(),
@@ -426,7 +432,7 @@ public abstract class Box implements Styleable {
         int initialX = this.x;
         int initialY = this.y;
         
-        CalculatedStyle style = getStyle().getCalculatedStyle();
+        CalculatedStyle style = getStyle();
         if (! style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
             this.x += style.getFloatPropertyProportionalWidth(
                     CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
@@ -437,7 +443,7 @@ public abstract class Box implements Styleable {
         
         int cbContentHeight = 0;
         if (! getContainingBlock().getStyle().isAutoHeight()) {
-            CalculatedStyle cbStyle = getContainingBlock().getStyle().getCalculatedStyle();
+            CalculatedStyle cbStyle = getContainingBlock().getStyle();
             cbContentHeight = (int)cbStyle.getFloatPropertyProportionalHeight(
                     CSSName.HEIGHT, 0, cssCtx);
         }
@@ -454,18 +460,6 @@ public abstract class Box implements Styleable {
         return getRelativeOffset();
     }
     
-    // HACK If a box doesn't have a Style object, NPEs are the likely result
-    // However, it begs the question if a Style object is being used in places
-    // it doesn't make sense (e.g. line boxes)
-    /**
-     * @deprecated
-     */
-    public void createDefaultStyle(LayoutContext c) {
-        c.pushStyle(CascadedStyle.emptyCascadedStyle);
-        setStyle(new Style(c.getCurrentStyle(), 0));
-        c.popStyle();
-    }
-
     public void setAbsY(int absY) {
         this.absY = absY;
     }
@@ -632,7 +626,7 @@ public abstract class Box implements Styleable {
         
         PageBox page = c.getRootLayer().getLastPage(c, this);
         int delta = page.getBottom() - (getAbsY() + 
-                getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP) + this.height);
+                getMarginBorderPadding(c, CalculatedStyle.TOP) + this.height);
         this.height += delta;
         if (page == c.getRootLayer().getLastPage()) {   
             c.getRootLayer().addPage(c);
@@ -693,12 +687,75 @@ public abstract class Box implements Styleable {
     public void setAggregateBounds(Rectangle aggregateBounds) {
         this.aggregateBounds = aggregateBounds;
     }
+    
+    public float getCollapsedMarginTop() {
+        return this.collapsedMarginTop;
+    }
+
+    public void setCollapsedMarginTop(float marginTopOverride) {
+        if (! this.collapsedMarginTopSet) {
+            this.collapsedMarginTop = marginTopOverride;
+            this.collapsedMarginTopSet = true;
+        }
+    }
+
+    public float getCollapsedMarginBottom() {
+        return this.collapsedMarginBottom;
+    }
+
+    public void setCollapsedMarginBottom(float marginBottomOverride) {
+        if (! this.collapsedMarginBottomSet) {
+            this.collapsedMarginBottom = marginBottomOverride;
+            this.collapsedMarginBottomSet = true;
+        }
+    }
+
+    public RectPropertySet getMarginWidth(CssContext cssContext) {
+        RectPropertySet rect = 
+            getStyle().getMarginRect(containingBlockWidth, containingBlockWidth, cssContext);
+
+        if (collapsedMarginTopSet || collapsedMarginBottomSet) {
+            rect = rect.copyOf();
+            if (collapsedMarginTopSet) {
+                rect.setTop((int)collapsedMarginTop);
+            }
+            if (collapsedMarginBottomSet) {
+                rect.setBottom((int)collapsedMarginBottom);
+            }
+        }
+
+        return rect;
+    }
+    
+    public RectPropertySet getPaddingWidth(CssContext cssCtx) {
+        return getStyle().getPaddingRect(containingBlockWidth, containingBlockWidth, cssCtx);
+    }
+    
+    public int getMarginBorderPadding(CssContext cssCtx, int which) {
+        return getStyle().getMarginBorderPadding(
+                cssCtx, (int)containingBlockWidth, which);
+    } 
+    
+    public void setContainingBlockWidth(int containingBlockWidth) {
+        this.containingBlockWidth = containingBlockWidth;
+    }
+    
+    public void resetCollapsedMargin() {
+        this.collapsedMarginBottom = 0.0f;
+        this.collapsedMarginBottomSet = false;
+        
+        this.collapsedMarginTop = 0.0f;
+        this.collapsedMarginTopSet = false;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.113  2006/08/29 17:29:13  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.112  2006/08/27 00:36:44  peterbrant
  * Initial commit of (initial) R7 work
  *

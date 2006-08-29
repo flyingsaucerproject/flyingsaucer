@@ -19,10 +19,13 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.layout.content.Content;
 
 public class AnonymousBlockBox extends BlockBox {
@@ -62,14 +65,28 @@ public class AnonymousBlockBox extends BlockBox {
         }
     }
 
-    public List getOpenParents()
-    {
+    public List getOpenParents() {
         return openParents;
     }
 
-    public void setOpenParents(List openParents)
-    {
+    public void setOpenParents(List openParents) {
         this.openParents = openParents;
+    }
+    
+    public boolean isSkipWhenCollapsing() {
+        // An anonymous block will already have its children provided to it
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            Styleable styleable = (Styleable)i.next();
+            CalculatedStyle style = styleable.getStyle();
+            if (! (style.isFloated() || style.isAbsolute() || style.isFixed())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public boolean isMayCollapseWithChildren() {
+        return false;
     }
 }
 
@@ -77,6 +94,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2006/08/29 17:29:13  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.17  2006/08/27 00:36:39  peterbrant
  * Initial commit of (initial) R7 work
  *

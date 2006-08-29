@@ -44,7 +44,6 @@ import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -641,24 +640,22 @@ public class SharedContext {
     }
     
     
-    public Style getStyle(Element e) {
+    public CalculatedStyle getStyle(Element e) {
         if (styleMap == null) {
             styleMap = new HashMap(1024, 0.75f);
         }
         
-        Style result = (Style)styleMap.get(e);
+        CalculatedStyle result = (CalculatedStyle)styleMap.get(e);
         if (result == null) {
             Node parent = e.getParentNode();
             CalculatedStyle parentCalculatedStyle;
             if (parent instanceof Document) {
                 parentCalculatedStyle = new EmptyStyle();
             } else {
-                parentCalculatedStyle = getStyle((Element)parent).getCalculatedStyle();
+                parentCalculatedStyle = getStyle((Element)parent);
             }
             
-            result = new Style(
-                    parentCalculatedStyle.deriveStyle(getCss().getCascadedStyle(e, false)),
-                    0);
+            result = parentCalculatedStyle.deriveStyle(getCss().getCascadedStyle(e, false));
             
             styleMap.put(e, result);
         }
@@ -677,6 +674,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2006/08/29 17:29:10  peterbrant
+ * Make Style object a thing of the past
+ *
  * Revision 1.30  2006/08/27 00:35:38  peterbrant
  * Initial commit of (initial) R7 work
  *
