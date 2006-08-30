@@ -116,7 +116,7 @@ public class Restyling {
 
     private static void restyleBlockContext(LayoutContext c, BlockBox box) {
         if (! box.isReplaced()) {
-            for (int i = 0; i <= box.getChildCount(); i++) {
+            for (int i = 0; i < box.getChildCount(); i++) {
                 Box child = (Box) box.getChild(i);
                 restyle(c, (BlockBox) child);
             }
