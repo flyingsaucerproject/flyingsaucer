@@ -131,15 +131,15 @@ public class TableBoxing {
 
         TableContent tableContent = (TableContent) content;
         if (tableContent.isTopMarginCollapsed()) {
-            tableBox.setCollapsedMarginTop(0f);
+            tableBox.setCollapsedMarginTop(0);
         }
         if (tableContent.isBottomMarginCollapsed()) {
-            tableBox.setCollapsedMarginBottom(0f);
+            tableBox.setCollapsedMarginBottom(0);
         }
         
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //note: percentages here refer to width of containing block
-        RectPropertySet margin = tableBox.getMarginWidth(c);
+        RectPropertySet margin = tableBox.getMargin(c);
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
         // CLEAN: cast to int
         int tx = (int) margin.left() + (int) border.left() + (int) padding.left();
@@ -716,6 +716,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.65  2006/08/30 18:25:42  peterbrant
+   Further refactoring / Bug fix for problem reported by Mike Curtis
+
    Revision 1.64  2006/08/29 17:29:14  peterbrant
    Make Style object a thing of the past
 

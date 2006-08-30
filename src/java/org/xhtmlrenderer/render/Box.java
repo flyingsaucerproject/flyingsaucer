@@ -97,12 +97,14 @@ public abstract class Box implements Styleable {
     
     private Rectangle aggregateBounds;
     
-    private float collapsedMarginTop;
+    private int collapsedMarginTop;
     private boolean collapsedMarginTopSet = false;
-    private float collapsedMarginBottom;
+    private int collapsedMarginBottom;
     private boolean collapsedMarginBottomSet = false;
 
-    private int containingBlockWidth;    
+    private int containingBlockWidth;
+    
+    private int index;
     
     public Box() {
     }
@@ -149,6 +151,7 @@ public abstract class Box implements Styleable {
             throw new NullPointerException("trying to add null child");
         }
         child.setParent(this);
+        child.setIndex(boxes.size());
         boxes.add(child);
     }
     
@@ -165,15 +168,41 @@ public abstract class Box implements Styleable {
         }
     }
 
-    public void removeChild(Box child) {
+    public void removeChild(Box target) {
         if (boxes != null) {
-            boxes.remove(child);
+            boolean found = false;
+            for (Iterator i = getChildIterator(); i.hasNext(); ) {
+                Box child = (Box)i.next();
+                if (child.equals(target)) {
+                    i.remove();
+                    found = true;
+                } else if (found) {
+                    child.setIndex(child.getIndex()-1);
+                }
+            }
+        }
+    }
+    
+    public Box getPreviousSibling() {
+        if (getParent() == null) {
+            return null;
+        } else {
+            return getIndex() == 0 ? null : getParent().getChild(getIndex()-1);
+        }
+    }
+    
+    public Box getNextSibling() {
+        Box parent = getParent();
+        if (parent == null) {
+            return null;
+        } else {
+            return getIndex() == parent.getChildCount() - 1 ? null : parent.getChild(getIndex()+1);
         }
     }
     
     public void removeChild(int i) {
         if (boxes != null) {
-            boxes.remove(i);
+            removeChild(getChild(i));
         }
     }
 
@@ -367,7 +396,7 @@ public abstract class Box implements Styleable {
     }
 
     private void addBackMargins(CssContext cssCtx, Rectangle bounds) {
-        RectPropertySet margin = getMarginWidth(cssCtx);
+        RectPropertySet margin = getMargin(cssCtx);
         if (margin.top() > 0) {
             bounds.y -= margin.top();
             bounds.height += margin.top();
@@ -385,7 +414,7 @@ public abstract class Box implements Styleable {
     }
 
     protected Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
-        RectPropertySet margin = getMarginWidth(cssCtx);
+        RectPropertySet margin = getMargin(cssCtx);
         Rectangle result = new Rectangle(left + (int) margin.left(),
                 top + (int) margin.top(),
                 getWidth() - (int) margin.left() - (int) margin.right(),
@@ -394,7 +423,7 @@ public abstract class Box implements Styleable {
     }
 
     public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
-        RectPropertySet margin = getMarginWidth(cssCtx);
+        RectPropertySet margin = getMargin(cssCtx);
         RectPropertySet border = getStyle().getBorder(cssCtx);
         Rectangle result = new Rectangle(left + (int) margin.left() + (int) border.left(),
                 top + (int) margin.top() + (int) border.top(),
@@ -404,9 +433,9 @@ public abstract class Box implements Styleable {
     }
     
     public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
-        RectPropertySet margin = getMarginWidth(cssCtx);
+        RectPropertySet margin = getMargin(cssCtx);
         RectPropertySet border = getStyle().getBorder(cssCtx);
-        RectPropertySet padding = getPaddingWidth(cssCtx);
+        RectPropertySet padding = getPadding(cssCtx);
         
         Rectangle result = new Rectangle(
                 left + (int)margin.left() + (int)border.left() + (int)padding.left(),
@@ -556,6 +585,8 @@ public abstract class Box implements Styleable {
         }
         this.containingLayer = null;
         this.layer = null;
+        this.collapsedMarginBottomSet = false;
+        this.collapsedMarginTopSet = false;
         String anchorName = c.getNamespaceHandler().getAnchorName(this.element);
         if (anchorName != null) {
             c.removeNamedAnchor(anchorName);
@@ -692,25 +723,21 @@ public abstract class Box implements Styleable {
         return this.collapsedMarginTop;
     }
 
-    public void setCollapsedMarginTop(float marginTopOverride) {
-        if (! this.collapsedMarginTopSet) {
-            this.collapsedMarginTop = marginTopOverride;
-            this.collapsedMarginTopSet = true;
-        }
+    public void setCollapsedMarginTop(int marginTop) {
+        this.collapsedMarginTop = marginTop;
+        this.collapsedMarginTopSet = true;
     }
 
     public float getCollapsedMarginBottom() {
         return this.collapsedMarginBottom;
     }
 
-    public void setCollapsedMarginBottom(float marginBottomOverride) {
-        if (! this.collapsedMarginBottomSet) {
-            this.collapsedMarginBottom = marginBottomOverride;
-            this.collapsedMarginBottomSet = true;
-        }
+    public void setCollapsedMarginBottom(int marginBottom) {
+        this.collapsedMarginBottom = marginBottom;
+        this.collapsedMarginBottomSet = true;
     }
 
-    public RectPropertySet getMarginWidth(CssContext cssContext) {
+    public RectPropertySet getMargin(CssContext cssContext) {
         RectPropertySet rect = 
             getStyle().getMarginRect(containingBlockWidth, containingBlockWidth, cssContext);
 
@@ -727,7 +754,7 @@ public abstract class Box implements Styleable {
         return rect;
     }
     
-    public RectPropertySet getPaddingWidth(CssContext cssCtx) {
+    public RectPropertySet getPadding(CssContext cssCtx) {
         return getStyle().getPaddingRect(containingBlockWidth, containingBlockWidth, cssCtx);
     }
     
@@ -741,11 +768,21 @@ public abstract class Box implements Styleable {
     }
     
     public void resetCollapsedMargin() {
-        this.collapsedMarginBottom = 0.0f;
+        this.collapsedMarginBottom = 0;
         this.collapsedMarginBottomSet = false;
         
-        this.collapsedMarginTop = 0.0f;
+        this.collapsedMarginTop = 0;
         this.collapsedMarginTopSet = false;
+    }
+
+    protected int getIndex()
+    {
+        return index;
+    }
+
+    protected void setIndex(int index)
+    {
+        this.index = index;
     }
 }
 
@@ -753,6 +790,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.114  2006/08/30 18:25:41  peterbrant
+ * Further refactoring / Bug fix for problem reported by Mike Curtis
+ *
  * Revision 1.113  2006/08/29 17:29:13  peterbrant
  * Make Style object a thing of the past
  *

@@ -73,7 +73,7 @@ public class ListItemPainter {
         if (markerData.getReferenceLine() != null) {
             return markerData.getReferenceLine().getAbsX();
         } else {
-            return box.getAbsX() + (int)box.getMarginWidth(c).left();
+            return box.getAbsX() + (int)box.getMargin(c).left();
         }
     }
     
@@ -134,6 +134,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2006/08/30 18:25:41  peterbrant
+ * Further refactoring / Bug fix for problem reported by Mike Curtis
+ *
  * Revision 1.34  2006/08/29 17:29:12  peterbrant
  * Make Style object a thing of the past
  *

@@ -22,6 +22,7 @@ package org.xhtmlrenderer.render;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.Iterator;
 import java.util.List;
 
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -29,6 +30,8 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.BlockBoxing;
@@ -454,6 +457,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     public void layout(LayoutContext c) {
+        // HACK call old table layout
         if (getStyle().isTable()) {
             if (getChildCount() > 0) {
                 getChild(0).detach(c);
@@ -512,21 +516,92 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     public void collapseMargins(LayoutContext c) {
-        collapseMargins(c, true);
+        /*
+        MarginCollapseResult result = new MarginCollapseResult();
+        collapseMargins(c, true, result);
+        
+        RectPropertySet margin = getMargin(c);
+        if ((int)margin.top() != result.getCollapsedTop()) {
+            setCollapsedMarginTop(result.getCollapsedTop());
+        }
+        */
     }
     
-    private void collapseMargins(LayoutContext c, boolean calculationRoot) {
-        if (! isVerticalMarginsCalculated() && isMayCollapseWithChildren()) {
-            ensureChildren(c);
+    private void collapseMargins(
+            LayoutContext c, boolean calculationRoot, MarginCollapseResult result) {
+        if (! isVerticalMarginsCalculated()) {
             
-            if (getChildrenContentType() == CONTENT_BLOCK) {
-                
+            RectPropertySet margin = getMargin(c);
+            result.updateTop((int)margin.top());
+            
+            if (! calculationRoot) {
+                setCollapsedMarginTop(0);
             }
             
-            setVerticalMarginsCalculated(true);
+            if (isMayCollapseWithChildren() && 
+                    ! getStyle().isTable() && isNoTopPaddingOrBorder(c)) {
+                ensureChildren(c);
+                if (getChildrenContentType() == CONTENT_BLOCK) {
+                    for (Iterator i = getChildIterator(); i.hasNext(); ) {
+                        BlockBox child = (BlockBox)i.next();
+                        
+                        if (child.isSkipWhenCollapsing()) {
+                            continue;
+                        }
+                        
+                        child.collapseMargins(c, false, result);
+                        break;
+                    }
+                }
+            }
         }
+        
+        setVerticalMarginsCalculated(true);
     }
-
+    
+    private boolean isNoTopPaddingOrBorder(LayoutContext c) {
+        RectPropertySet padding = getPadding(c);
+        BorderPropertySet border = getStyle().getBorder(c);
+        
+        return (int)padding.top() == 0 && (int)border.top() == 0;
+    }
+    
+    private boolean isNoBottomPaddingOrBorder(LayoutContext c) {
+        RectPropertySet padding = getPadding(c);
+        BorderPropertySet border = getStyle().getBorder(c);
+        
+        return (int)padding.bottom() == 0 && (int)border.bottom() == 0;
+    }
+    
+    private boolean isVerticalMarginsAdjoin(LayoutContext c) {
+        CalculatedStyle style = getStyle();
+        
+        ensureChildren(c);
+        
+        if (getChildrenContentType() == CONTENT_INLINE) {
+            return false;
+        } else if (getChildrenContentType() == CONTENT_BLOCK) {
+            for (Iterator i = getChildIterator(); i.hasNext(); ) {
+                BlockBox child = (BlockBox)i.next();
+                if (child.isSkipWhenCollapsing()) {
+                    continue;
+                }
+                if (! child.isVerticalMarginsAdjoin(c)) {
+                    return false;
+                }
+            }
+        }
+        
+        BorderPropertySet borderWidth = style.getBorder(c);
+        RectPropertySet padding = getPadding(c);
+        
+        return (int)borderWidth.top() == 0 && (int)borderWidth.bottom() == 0 &&
+                    (int)padding.top() == 0 && (int)padding.bottom() == 0 &&
+                    style.asFloat(CSSName.MIN_HEIGHT) == 0 &&
+                    (style.isIdent(CSSName.HEIGHT, IdentValue.AUTO) ||
+                            style.asFloat(CSSName.HEIGHT) == 0);
+    }
+    
     public boolean isVerticalMarginsCalculated() {
         return verticalMarginsCalculated;
     }
@@ -534,12 +609,51 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public void setVerticalMarginsCalculated(boolean verticalMarginsCalculated) {
         this.verticalMarginsCalculated = verticalMarginsCalculated;
     }
+    
+    private static class MarginCollapseResult {
+        int topMaxPositive;
+        int topMaxNegative;
+        
+        int bottomMaxPositive;
+        int bottomMaxNegative;
+        
+        public void updateTop(int value) {
+            if (value < 0 && value < topMaxNegative) {
+                topMaxNegative = value;
+            }
+            
+            if (value > 0 && value > topMaxPositive) {
+                topMaxPositive = value;
+            }
+        }
+        
+        public int getCollapsedTop() {
+            return topMaxPositive + topMaxNegative;
+        }
+        
+        public void updateBottom(int value) {
+            if (value < 0 && value < bottomMaxNegative) {
+                bottomMaxNegative = value;
+            }
+            
+            if (value > 0 && value > bottomMaxPositive) {
+                bottomMaxPositive = value;
+            }
+        }
+        
+        public int getCollapsedBottom() {
+            return bottomMaxPositive + bottomMaxNegative;
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2006/08/30 18:25:41  peterbrant
+ * Further refactoring / Bug fix for problem reported by Mike Curtis
+ *
  * Revision 1.48  2006/08/29 17:29:12  peterbrant
  * Make Style object a thing of the past
  *

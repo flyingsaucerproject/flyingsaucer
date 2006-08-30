@@ -505,7 +505,7 @@ public class InlineBoxing {
         result.setTextTop(iB.y);
         result.setTextBottom((int) (result.getBaseline() + fm.getDescent()));
         
-        RectPropertySet padding = iB.getPaddingWidth(c);
+        RectPropertySet padding = iB.getPadding(c);
         BorderPropertySet border = style.getBorder(c);
         
         result.setPaintingTop((int)Math.floor(iB.y - border.top() - padding.top()));
@@ -629,10 +629,12 @@ public class InlineBoxing {
     private static void positionInlineContentVertically(LayoutContext c, 
             VerticalAlignContext vaContext, Box child) {
         VerticalAlignContext vaTarget = vaContext;
-        IdentValue vAlign = child.getStyle().getIdent(
-                CSSName.VERTICAL_ALIGN);
-        if (vAlign == IdentValue.TOP || vAlign == IdentValue.BOTTOM) {
-            vaTarget = vaContext.createChild(child);
+        if (! child.getStyle().isLengthValue(CSSName.VERTICAL_ALIGN)) {
+            IdentValue vAlign = child.getStyle().getIdent(
+                    CSSName.VERTICAL_ALIGN);
+            if (vAlign == IdentValue.TOP || vAlign == IdentValue.BOTTOM) {
+                vaTarget = vaContext.createChild(child);
+            }
         }
         if (child instanceof InlineLayoutBox) {
             InlineLayoutBox iB = (InlineLayoutBox) child;

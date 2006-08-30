@@ -129,7 +129,7 @@ public class PageBox {
         return result;
     }
     
-    public RectPropertySet getMarginWidth(CssContext cssCtx) {
+    public RectPropertySet getMargin(CssContext cssCtx) {
         return getStyle().getMarginRect(_outerPageWidth, _outerPageWidth, cssCtx);
     }
     
@@ -141,8 +141,8 @@ public class PageBox {
             if (name.equals(flow)) {
                 return new Rectangle(
                         0, 0,
-                        getWidth(cssCtx) - (int)getMarginWidth(cssCtx).width(),
-                        (int)getMarginWidth(cssCtx).top());
+                        getWidth(cssCtx) - (int)getMargin(cssCtx).width(),
+                        (int)getMargin(cssCtx).top());
             }
         } 
         if (! style.getStringProperty(CSSName.FS_FLOW_RIGHT).equals("none")) {
@@ -150,8 +150,8 @@ public class PageBox {
             if (name.equals(flow)) {
                 return new Rectangle(
                         0, 0,
-                        (int)getMarginWidth(cssCtx).right(),
-                        getHeight(cssCtx) - (int)getMarginWidth(cssCtx).height());
+                        (int)getMargin(cssCtx).right(),
+                        getHeight(cssCtx) - (int)getMargin(cssCtx).height());
             }
         } 
         if (! style.getStringProperty(CSSName.FS_FLOW_BOTTOM).equals("none")) {
@@ -159,8 +159,8 @@ public class PageBox {
             if (name.equals(flow)) {
                 return new Rectangle(
                         0, 0,
-                        getWidth(cssCtx) - (int)getMarginWidth(cssCtx).width(),
-                        (int)getMarginWidth(cssCtx).bottom());
+                        getWidth(cssCtx) - (int)getMargin(cssCtx).width(),
+                        (int)getMargin(cssCtx).bottom());
             }
         } 
         if (! style.getStringProperty(CSSName.FS_FLOW_LEFT).equals("none")) {
@@ -168,8 +168,8 @@ public class PageBox {
             if (name.equals(flow)) {
                 return new Rectangle(
                         0, 0,
-                        (int)getMarginWidth(cssCtx).left(),
-                        getHeight(cssCtx) - (int)getMarginWidth(cssCtx).height());
+                        (int)getMargin(cssCtx).left(),
+                        getHeight(cssCtx) - (int)getMargin(cssCtx).height());
             }
         }
         
@@ -194,7 +194,7 @@ public class PageBox {
         CalculatedStyle style = getStyle();
         String flowName = style.getStringProperty(CSSName.FS_FLOW_TOP);
         if (! flowName.equals("none")) {
-            int left = additionalClearance + (int)getMarginWidth(c).left();
+            int left = additionalClearance + (int)getMargin(c).left();
             int top;
             if (mode == Layer.PAGED_MODE_SCREEN) {
                 top = getPaintingTop();
@@ -213,13 +213,13 @@ public class PageBox {
         CalculatedStyle style = getStyle();
         String flowName = style.getStringProperty(CSSName.FS_FLOW_BOTTOM);
         if (! flowName.equals("none")) {
-            int left = additionalClearance + (int)getMarginWidth(c).left();
+            int left = additionalClearance + (int)getMargin(c).left();
             int top;
             
             if (mode == Layer.PAGED_MODE_SCREEN) {
-                top = getPaintingBottom() - (int)getMarginWidth(c).bottom();
+                top = getPaintingBottom() - (int)getMargin(c).bottom();
             } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = getHeight(c) - (int)getMarginWidth(c).bottom();
+                top = getHeight(c) - (int)getMargin(c).bottom();
             } else {
                 throw new IllegalArgumentException("Illegal mode");
             }
@@ -237,9 +237,9 @@ public class PageBox {
             int top;
             
             if (mode == Layer.PAGED_MODE_SCREEN) {
-                top = getPaintingTop() + (int)getMarginWidth(c).top();
+                top = getPaintingTop() + (int)getMargin(c).top();
             } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = (int)getMarginWidth(c).top();
+                top = (int)getMargin(c).top();
             } else {
                 throw new IllegalArgumentException("Illegal mode");
             }
@@ -254,13 +254,13 @@ public class PageBox {
         String flowName = style.getStringProperty(CSSName.FS_FLOW_RIGHT);
         if (! flowName.equals("none")) {
             int left = additionalClearance + getWidth(c) 
-                - (int)getMarginWidth(c).right();
+                - (int)getMargin(c).right();
             int top;
             
             if (mode == Layer.PAGED_MODE_SCREEN) {
-                top = getPaintingTop() + (int)getMarginWidth(c).top();
+                top = getPaintingTop() + (int)getMargin(c).top();
             } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = (int)getMarginWidth(c).top();
+                top = (int)getMargin(c).top();
             } else {
                 throw new IllegalArgumentException("Illegal mode");
             }
@@ -280,7 +280,7 @@ public class PageBox {
     }
     
     private Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
-        RectPropertySet margin = getMarginWidth(cssCtx);
+        RectPropertySet margin = getMargin(cssCtx);
         Rectangle result = new Rectangle(left + (int) margin.left(),
                 top + (int) margin.top(),
                 getWidth(cssCtx) - (int) margin.left() - (int) margin.right(),

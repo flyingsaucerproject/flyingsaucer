@@ -126,9 +126,7 @@ public class Boxing {
         // copy the extents
         c.setExtents(new Rectangle(oe));
 
-        /*
-        VerticalMarginCollapser.collapseVerticalMargins(c, block, content, (float) oe.getWidth());
-        */
+        block.collapseMargins(c);
         
         if (block.isResetMargins()) {
             block.resetCollapsedMargin();
@@ -137,7 +135,7 @@ public class Boxing {
 
         BorderPropertySet border = style.getBorder(c);
         //note: percentages here refer to width of containing block
-        RectPropertySet margin = block.getMarginWidth(c);
+        RectPropertySet margin = block.getMargin(c);
         RectPropertySet padding = style.getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
         // CLEAN: cast to int
         block.leftMBP = (int) margin.left() + (int) border.left() + (int) padding.left();
@@ -294,6 +292,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.80  2006/08/30 18:25:41  peterbrant
+ * Further refactoring / Bug fix for problem reported by Mike Curtis
+ *
  * Revision 1.79  2006/08/29 17:29:10  peterbrant
  * Make Style object a thing of the past
  *
