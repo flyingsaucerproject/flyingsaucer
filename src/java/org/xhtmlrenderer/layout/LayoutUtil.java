@@ -20,7 +20,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Rectangle;
 import java.util.List;
 
 import org.xhtmlrenderer.render.BlockBox;
@@ -33,9 +32,6 @@ public class LayoutUtil {
     public static boolean layoutAbsolute(
             LayoutContext c, LineBox currentLine, BlockBox box) {
         boolean result = true;
-        
-        Rectangle oe = c.getExtents();// copy the extents for safety
-        c.setExtents(new Rectangle(oe));
         
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
@@ -51,7 +47,6 @@ public class LayoutUtil {
                 result = false;
             }
         } else {
-            box.setContainingBlockWidth(c.getLayer().getMaster().getContentWidth());
             c.pushLayer(box);
             c.getLayer().setRequiresLayout(true);
             c.getLayer().setLayoutData(
@@ -61,8 +56,6 @@ public class LayoutUtil {
         
         c.setCurrentMarkerData(markerData);
         
-        c.setExtents(oe);
-        
         return result;
     }
     
@@ -70,9 +63,6 @@ public class LayoutUtil {
             final LayoutContext c, LineBox currentLine, FloatedBlockBox block, 
             int avail, List pendingFloats) {
         FloatLayoutResult result = new FloatLayoutResult();
-        
-        Rectangle oe = c.getExtents();
-        c.setExtents(new Rectangle(oe));
         
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
@@ -107,7 +97,6 @@ public class LayoutUtil {
         
         result.setBlock(block);
         c.setCurrentMarkerData(markerData);
-        c.setExtents(oe);
         
         return result;
     }

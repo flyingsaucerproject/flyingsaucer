@@ -35,6 +35,7 @@ import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
@@ -246,16 +247,12 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         getSharedContext().setCanvas(this);
 
-        Rectangle extents = getScreenExtents();
-        
-        // HACK avoid bogus warning
-        if (extents.width == 0 && extents.height == 0) {
-            extents = new Rectangle(0, 0, 1, 1);
-        }
-
         XRLog.layout(Level.FINEST, "new context end");
 
-        LayoutContext result = getSharedContext().newLayoutContextInstance(extents);
+        // HACK clean, remove extents reference
+        LayoutContext result = 
+            getSharedContext().newLayoutContextInstance(new Rectangle(0, 0, 1, 1));
+        
         Graphics2D layoutGraphics = 
             g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics();
         result.setFontContext(new Java2DFontContext(layoutGraphics));
@@ -263,14 +260,24 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         
         getSharedContext().getTextRenderer().setup(result.getFontContext());
         
-        if (result.isPrint()) {
-            PageBox first = Layer.createPageBox(result, "first");
-            extents = new Rectangle(0, 0, 
-                    first.getContentWidth(result), first.getContentHeight(result));
-            result.setExtents(extents);
-        }
-        
         return result;
+    }
+    
+    private Rectangle getInitialExtents(LayoutContext c) {
+        if (! c.isPrint()) {
+            Rectangle extents = getScreenExtents();
+            
+            // HACK avoid bogus warning
+            if (extents.width == 0 && extents.height == 0) {
+                extents = new Rectangle(0, 0, 1, 1);
+            }
+            
+            return extents;
+        } else {
+            PageBox first = Layer.createPageBox(c, "first");
+            return new Rectangle(0, 0, 
+                    first.getContentWidth(c), first.getContentHeight(c));
+        }
     }
 
     public ReplacedElementFactory newReplacedElementFactory() {
@@ -317,6 +324,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             setRootBox(root);            
         }
         
+        root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
         
         long end = System.currentTimeMillis();

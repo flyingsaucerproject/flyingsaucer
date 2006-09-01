@@ -19,10 +19,8 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Rectangle;
 import java.util.Stack;
 
-import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.MarkerData;
 
 public class LayoutState {
@@ -31,13 +29,8 @@ public class LayoutState {
     
     private MarkerData _currentMarkerData;
     
-    private Stack _styleStack;
-    
-    private Content _parentContent;
-    
     private Stack _BFCs;
-    private Rectangle _extents;
-
+    
     public Stack getBFCs() {
         return _BFCs;
     }
@@ -54,14 +47,6 @@ public class LayoutState {
         _currentMarkerData = currentMarkerData;
     }
 
-    public Rectangle getExtents() {
-        return _extents;
-    }
-
-    public void setExtents(Rectangle extents) {
-        _extents = extents;
-    }
-
     public StyleTracker getFirstLetters() {
         return _firstLetters;
     }
@@ -76,21 +61,5 @@ public class LayoutState {
 
     public void setFirstLines(StyleTracker firstLines) {
         _firstLines = firstLines;
-    }
-
-    public Content getParentContent() {
-        return _parentContent;
-    }
-
-    public void setParentContent(Content parentContent) {
-        _parentContent = parentContent;
-    }
-
-    public Stack getStyleStack() {
-        return _styleStack;
-    }
-
-    public void setStyleStack(Stack styleStack) {
-        _styleStack = styleStack;
     }
 }

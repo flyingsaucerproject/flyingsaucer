@@ -37,11 +37,21 @@ public class RowBox extends BlockBox {
      * Description of the Field
      */
     public List cells = new ArrayList();
+    
+    private int containingBlockWidth;
 
     /**
      * Description of the Field
      */
     public Element elem;
+    
+    public int getContainingBlockWidth() {
+        return containingBlockWidth;
+    }
+
+    public void setContainingBlockWidth(int containingBlockWidth) {
+        this.containingBlockWidth = containingBlockWidth;
+    }    
 
     public RowBox() {
     }
@@ -50,6 +60,9 @@ public class RowBox extends BlockBox {
 /*
  * $Id$
  * $Log$
+ * Revision 1.6  2006/09/01 23:49:37  peterbrant
+ * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
+ *
  * Revision 1.5  2005/10/06 03:20:24  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

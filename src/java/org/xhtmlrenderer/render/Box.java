@@ -102,8 +102,6 @@ public abstract class Box implements Styleable {
     private int collapsedMarginBottom;
     private boolean collapsedMarginBottomSet = false;
 
-    private int containingBlockWidth;
-    
     private int index;
     
     public Box() {
@@ -739,7 +737,7 @@ public abstract class Box implements Styleable {
 
     public RectPropertySet getMargin(CssContext cssContext) {
         RectPropertySet rect = 
-            getStyle().getMarginRect(containingBlockWidth, containingBlockWidth, cssContext);
+            getStyle().getMarginRect(getContainingBlockWidth(), cssContext);
 
         if (collapsedMarginTopSet || collapsedMarginBottomSet) {
             rect = rect.copyOf();
@@ -755,16 +753,16 @@ public abstract class Box implements Styleable {
     }
     
     public RectPropertySet getPadding(CssContext cssCtx) {
-        return getStyle().getPaddingRect(containingBlockWidth, containingBlockWidth, cssCtx);
+        return getStyle().getPaddingRect(getContainingBlockWidth(), cssCtx);
     }
     
     public int getMarginBorderPadding(CssContext cssCtx, int which) {
         return getStyle().getMarginBorderPadding(
-                cssCtx, (int)containingBlockWidth, which);
-    } 
+                cssCtx, getContainingBlockWidth(), which);
+    }
     
-    public void setContainingBlockWidth(int containingBlockWidth) {
-        this.containingBlockWidth = containingBlockWidth;
+    protected int getContainingBlockWidth() {
+        return getContainingBlock().getContentWidth();
     }
     
     public void resetCollapsedMargin() {
@@ -790,6 +788,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.115  2006/09/01 23:49:38  peterbrant
+ * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
+ *
  * Revision 1.114  2006/08/30 18:25:41  peterbrant
  * Further refactoring / Bug fix for problem reported by Mike Curtis
  *

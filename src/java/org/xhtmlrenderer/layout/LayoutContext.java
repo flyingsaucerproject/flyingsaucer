@@ -35,7 +35,6 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.MarkerData;
@@ -57,8 +56,6 @@ public class LayoutContext implements CssContext {
     //Style-handling stuff
     private Stack styleStack;
 
-    private Content parentContent;
-    
     private Stack bfcs;
     private Stack layers;
     
@@ -130,7 +127,6 @@ public class LayoutContext implements CssContext {
         this.styleStack.push(new EmptyStyle());
         this.styleStack.push(currentStyle);
         
-        this.parentContent = null;
         this.bfcs = new Stack();
         
         this.extents = null;
@@ -143,12 +139,7 @@ public class LayoutContext implements CssContext {
         result.setFirstLetters(this.firstLetters);
         result.setCurrentMarkerData(this.currentMarkerData);
         
-        result.setStyleStack(this.styleStack);
-        result.setParentContent(this.parentContent);
-        
         result.setBFCs(this.bfcs);
-        
-        result.setExtents(this.extents);
         
         return result;
     }
@@ -159,12 +150,7 @@ public class LayoutContext implements CssContext {
         
         this.currentMarkerData = layoutState.getCurrentMarkerData();
         
-        this.styleStack = layoutState.getStyleStack();
-        this.parentContent = layoutState.getParentContent();
-        
         this.bfcs = layoutState.getBFCs();
-        
-        this.extents = layoutState.getExtents();
     }
     
     public LayoutState copyStateForRelayout() {
@@ -323,14 +309,6 @@ public class LayoutContext implements CssContext {
 
     public boolean isInteractive() {
         return sharedContext.isInteractive();
-    }
-
-    public Content getParentContent() {
-        return this.parentContent;
-    }
-    
-    public void setParentContent(Content parent) {
-        this.parentContent = parent;
     }
 
     public RenderQueue getRenderQueue() {

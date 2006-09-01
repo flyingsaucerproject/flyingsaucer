@@ -49,7 +49,6 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
-import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.TableCellContent;
@@ -61,21 +60,7 @@ import org.xhtmlrenderer.swing.SwingReplacedElement;
 import org.xhtmlrenderer.util.XRLog;
 
 public class TableBoxing {
-
-
-    public static BlockBox createBox(LayoutContext c, Content content) {
-        BlockBox outerBox;//the outer box may be block or inline block
-        if (content instanceof TableContent) {
-            outerBox = new BlockBox();
-        } else {
-            XRLog.layout(Level.WARNING, "Unsupported table type " + content.getClass().getName());
-            return null;
-        }
-        return outerBox;
-    }
-
-    public static Box layout(LayoutContext c, BlockBox outerBox, Content content, 
-            Boxing.StyleSetListener listener) {
+    public static Box layout(LayoutContext c, BlockBox outerBox, Content content) {
         boolean set_bfc = false;
         
         c.setLayingOutTable(true);
@@ -103,10 +88,6 @@ public class TableBoxing {
         outerBox.contentWidth = c.getExtents().width;
         outerBox.height = c.getExtents().height;
 
-        /*
-        outerBox.createDefaultStyle(c);
-        */
-
         TableBox tableBox = new TableBox();
         outerBox.addChildForLayout(c, tableBox);
         tableBox.element = content.getElement();
@@ -121,10 +102,6 @@ public class TableBoxing {
         tableBox.setStyle(c.getCurrentStyle());
         tableBox.setContainingBlockWidth((int)oe.getWidth());
         
-        if (listener != null) {
-            listener.onStyleSet(tableBox);
-        }
-
         /*
         VerticalMarginCollapser.collapseVerticalMargins(c, tableBox, content, (float) oe.getWidth());
         */
@@ -140,7 +117,7 @@ public class TableBoxing {
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //note: percentages here refer to width of containing block
         RectPropertySet margin = tableBox.getMargin(c);
-        RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
+        RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), c);
         // CLEAN: cast to int
         int tx = (int) margin.left() + (int) border.left() + (int) padding.left();
         int ty = (int) margin.top() + (int) border.top() + (int) padding.top();
@@ -616,7 +593,7 @@ public class TableBoxing {
         // copy the extents
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
-
+        
         cell.colspan = (int) c.getCurrentStyle().asFloat(CSSName.FS_COLSPAN);
         cell.rowspan = (int) c.getCurrentStyle().asFloat(CSSName.FS_ROWSPAN);
         if (fixed) {
@@ -627,7 +604,7 @@ public class TableBoxing {
 
         CalculatedStyle style = c.getCurrentStyle();
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
-        RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
+        RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), c);
 
         // calculate the width and height as much as possible
         int setHeight = -1;//means height is not set by css
@@ -666,9 +643,12 @@ public class TableBoxing {
         
         Rectangle extents =
             c.shrinkExtents(tx + (int) border.right() + (int) padding.right(), ty + (int) border.bottom() + (int) padding.bottom());
-        if (! cell.isReplaced())
+        if (! cell.isReplaced()) {
+            int previousContentWidth = cell.contentWidth;
+            cell.contentWidth = c.getExtents().width;
             cell.layoutChildren(c);
-        else {
+            cell.contentWidth = previousContentWidth;
+        } else {
             if (c.isInteractive()) {
                 c.getCanvas().add(
                         ((SwingReplacedElement)cell.getReplacedElement()).getJComponent());
@@ -716,6 +696,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.66  2006/09/01 23:49:37  peterbrant
+   Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
+
    Revision 1.65  2006/08/30 18:25:42  peterbrant
    Further refactoring / Bug fix for problem reported by Mike Curtis
 

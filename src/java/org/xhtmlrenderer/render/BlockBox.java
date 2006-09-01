@@ -25,6 +25,9 @@ import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -35,16 +38,17 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.BlockBoxing;
+import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.BoxBuilder;
-import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PersistentBFC;
 import org.xhtmlrenderer.layout.content.TableContent;
+import org.xhtmlrenderer.table.TableBox;
 import org.xhtmlrenderer.table.TableBoxing;
 
-public class BlockBox extends Box implements Renderable, InlinePaintable {
+public class BlockBox extends Box implements InlinePaintable {
 
     public static final int POSITION_VERTICALLY = 1;
     public static final int POSITION_HORIZONTALLY = 2;
@@ -73,7 +77,10 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     private int childrenContentType;
     
     private List inlineContent;
-    private boolean verticalMarginsCalculated = false;
+    
+    private boolean topMarginCalculated;
+    private boolean bottomMarginCalculated;
+    private MarginCollapseResult pendingCollapseCalculation;
     
     public BlockBox() {
         super();
@@ -105,10 +112,6 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
             sb.append(" position: fixed");
         }
         return sb.toString();
-    }
-
-    public int getIndex() {
-        return renderIndex;
     }
 
     public double getAbsTop() {
@@ -448,6 +451,8 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     
     public void reset(LayoutContext c) {
         super.reset(c);
+        setTopMarginCalculated(false);
+        setBottomMarginCalculated(false);
         if (isReplaced()) {
             getReplacedElement().detach(c);
         }
@@ -464,11 +469,131 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
             }
             CascadedStyle cascadedStyle = c.getCss().getCascadedStyle(getElement(), false);
             c.initializeStyles(getStyle().getParent());
-            TableBoxing.layout(c, this, new TableContent(getElement(), cascadedStyle), null);
+            c.setExtents(new Rectangle(0, 0, getContainingBlockWidth(), 0));
+            TableBoxing.layout(c, this, new TableContent(getElement(), cascadedStyle));
         } else {
-            Boxing.layout(c, this);
+            layoutBlock(c);
         }
     }
+    
+    private void layoutBlock(LayoutContext c) {
+        CalculatedStyle style = getStyle();
+        
+        if (style.isFixedBackground()) {
+            c.getRootLayer().setFixedBackground(true);
+        }
+        
+        boolean pushedLayer = false;
+        if (isRoot() || getStyle().requiresLayer()) {
+            pushedLayer = true;
+            if (getLayer() == null) {
+                c.pushLayer(this);
+                if (c.isPrint() && isRoot()) {
+                    c.getLayer().addPage(c);
+                }
+            } else {
+                c.pushLayer(getLayer());
+            }
+        }
+
+        if (isRoot() || getStyle().establishesBFC()) {
+            BlockFormattingContext bfc = new BlockFormattingContext(this, c);
+            c.pushBFC(bfc);
+        }
+        
+        collapseMargins(c);
+        
+        BorderPropertySet border = getStyle().getBorder(c);
+        RectPropertySet margin = getMargin(c);
+        RectPropertySet padding = getPadding(c);
+        
+        // CLEAN: cast to int
+        this.leftMBP = (int) margin.left() + (int) border.left() + (int) padding.left();
+        this.rightMBP = (int) padding.right() + (int) border.right() + (int) margin.right();
+        this.contentWidth = (int) (getContainingBlockWidth() - this.leftMBP - this.rightMBP);
+        this.height = 0;
+        
+        if (! (this instanceof AnonymousBlockBox)) {
+            int cssWidth = getCSSWidth(c);
+            if (cssWidth != -1) {
+                this.contentWidth = cssWidth;
+            }
+            
+            int cssHeight = getCSSHeight(c);
+            if (cssHeight != -1) {
+                this.height = cssHeight;
+            }
+            
+            //check if replaced
+            ReplacedElement re = c.getReplacedElementFactory().createReplacedElement(
+                    c, this, c.getUac(), cssWidth, cssHeight);
+            if (re != null) {
+                this.contentWidth = re.getIntrinsicWidth();
+                this.height = re.getIntrinsicHeight();
+                setReplacedElement(re);
+            } 
+        }
+        
+        if (isResetMargins()) {
+            resetCollapsedMargin();
+            setResetMargins(false);
+        }
+        
+        // save height incase fixed height
+        int originalHeight = this.height;
+
+        if (! isReplaced()) {
+            this.height = 0;
+        }
+        
+        boolean didSetMarkerData = false;
+        if (this instanceof BlockBox && getStyle().isListItem()) {
+            StrutMetrics strutMetrics = InlineBoxing.createDefaultStrutMetrics(c, this);
+            createMarkerData(c, strutMetrics);
+            c.setCurrentMarkerData(getMarkerData());
+            didSetMarkerData = true;
+        }        
+
+        // do children's layout
+        int tx = (int) margin.left() + (int) border.left() + (int) padding.left();
+        int ty = (int) margin.top() + (int) border.top() + (int) padding.top();
+        this.tx = tx;
+        this.ty = ty;        
+        c.translate(this.tx, this.ty);
+        if (! isReplaced())
+            layoutChildren(c);
+        else {
+            setState(Box.DONE);
+        }
+        c.translate(-this.tx, -this.ty);
+
+        if (! isAutoHeight()) {
+            this.height = originalHeight;
+        }
+
+        if (isRoot() || getStyle().establishesBFC()) {
+            if (getStyle().isAutoHeight()) {
+                int delta = 
+                    c.getBlockFormattingContext().getFloatManager().getClearDelta(
+                            c, this.ty + this.height);
+                if (delta > 0) {
+                    this.height += delta ;
+                }
+            }
+            c.popBFC();
+        }
+        
+        if (didSetMarkerData) {
+            c.setCurrentMarkerData(null);
+        }
+
+        this.height += (int) margin.top() + (int) border.top() + (int) padding.top() + 
+            (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom();
+        
+        if (pushedLayer) {
+            c.popLayer();
+        }
+    }    
     
     private void ensureChildren(LayoutContext c) {
         if (getChildrenContentType() == CONTENT_UNKNOWN) {
@@ -512,51 +637,122 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     public boolean isMayCollapseWithChildren() {
-        return (! isRoot()) && getStyle().isMayCollapseWithChildren();
+        return (! isRoot()) && (! isBody()) && getStyle().isMayCollapseWithChildren();
     }
     
-    public void collapseMargins(LayoutContext c) {
-        /*
-        MarginCollapseResult result = new MarginCollapseResult();
-        collapseMargins(c, true, result);
-        
-        RectPropertySet margin = getMargin(c);
-        if ((int)margin.top() != result.getCollapsedTop()) {
-            setCollapsedMarginTop(result.getCollapsedTop());
+    // HACK
+    private boolean isBody() {
+        Element element = getElement();
+        if (element.getTagName().equals("body")) {
+            Node parent = element.getParentNode();
+            return parent != null && parent.getParentNode() instanceof Document;
         }
-        */
+        
+        return false;
     }
     
-    private void collapseMargins(
-            LayoutContext c, boolean calculationRoot, MarginCollapseResult result) {
-        if (! isVerticalMarginsCalculated()) {
-            
+    // This will require a rethink if we ever truly layout incrementally
+    // Should only ever collapse top margin and pick up collapsable
+    // bottom margins by looking back up the tree.
+    private void collapseMargins(LayoutContext c) {
+        if (! isTopMarginCalculated() || ! isBottomMarginCalculated()) {
             RectPropertySet margin = getMargin(c);
-            result.updateTop((int)margin.top());
             
-            if (! calculationRoot) {
-                setCollapsedMarginTop(0);
+            if (! isTopMarginCalculated()) {
+                MarginCollapseResult collapsedMargin = 
+                    pendingCollapseCalculation != null ?
+                            pendingCollapseCalculation : new MarginCollapseResult();
+                
+                collapseTopMargin(c, true, collapsedMargin);
+                if ((int)margin.top() != collapsedMargin.getMargin()) {
+                    setCollapsedMarginTop(collapsedMargin.getMargin());
+                }
             }
             
-            if (isMayCollapseWithChildren() && 
-                    ! getStyle().isTable() && isNoTopPaddingOrBorder(c)) {
-                ensureChildren(c);
-                if (getChildrenContentType() == CONTENT_BLOCK) {
-                    for (Iterator i = getChildIterator(); i.hasNext(); ) {
-                        BlockBox child = (BlockBox)i.next();
-                        
-                        if (child.isSkipWhenCollapsing()) {
-                            continue;
-                        }
-                        
-                        child.collapseMargins(c, false, result);
-                        break;
-                    }
+            if (! isBottomMarginCalculated()) {
+                MarginCollapseResult collapsedMargin = new MarginCollapseResult();
+                collapseBottomMargin(c, true, collapsedMargin);
+                
+                BlockBox next = null;
+                if (! isInline()) {
+                    next = (BlockBox)getNextSibling();
+                }
+                if (! (next == null || next instanceof AnonymousBlockBox) && 
+                        collapsedMargin.hasMargin()) {
+                    next.pendingCollapseCalculation = collapsedMargin;
+                    setCollapsedMarginBottom(0);
+                } else if ((int)margin.bottom() != collapsedMargin.getMargin()) {
+                    setCollapsedMarginBottom(collapsedMargin.getMargin());
                 }
             }
         }
-        
-        setVerticalMarginsCalculated(true);
+    }
+    
+    private void collapseTopMargin(
+            LayoutContext c, boolean calculationRoot, MarginCollapseResult result) {
+        if (! isTopMarginCalculated()) {
+            if (! isSkipWhenCollapsing()) {
+                RectPropertySet margin = getMargin(c);
+                result.update((int)margin.top());
+                
+                if (! calculationRoot && (int)margin.top() != 0) {
+                    setCollapsedMarginTop(0);
+                }
+                
+                if (isMayCollapseWithChildren() && 
+                        ! getStyle().isTable() && isNoTopPaddingOrBorder(c)) {
+                    ensureChildren(c);
+                    if (getChildrenContentType() == CONTENT_BLOCK) {
+                        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+                            BlockBox child = (BlockBox)i.next();
+                            child.collapseTopMargin(c, false, result);
+                            
+                            if (child.isSkipWhenCollapsing()) {
+                                continue;
+                            }
+                            
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            setTopMarginCalculated(true);
+        }
+    }
+    
+    private void collapseBottomMargin(
+            LayoutContext c, boolean calculationRoot, MarginCollapseResult result) {
+        if (! isBottomMarginCalculated()) {
+            if (! isSkipWhenCollapsing()) {
+                RectPropertySet margin = getMargin(c);
+                result.update((int)margin.bottom());
+                
+                if (! calculationRoot && (int)margin.bottom() != 0) {
+                    setCollapsedMarginBottom(0);
+                }
+                
+                if (isMayCollapseWithChildren() && 
+                        ! getStyle().isTable() && isNoBottomPaddingOrBorder(c)) {
+                    ensureChildren(c);
+                    if (getChildrenContentType() == CONTENT_BLOCK) {
+                        for (int i = getChildCount() - 1; i >= 0; i--) {
+                            BlockBox child = (BlockBox)getChild(i);
+                            
+                            if (child.isSkipWhenCollapsing()) {
+                                continue;
+                            }
+                            
+                            child.collapseBottomMargin(c, false, result);
+                            
+                            break;
+                        }
+                    }
+                }                
+            }
+            
+            setBottomMarginCalculated(true);
+        }
     }
     
     private boolean isNoTopPaddingOrBorder(LayoutContext c) {
@@ -602,47 +798,82 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
                             style.asFloat(CSSName.HEIGHT) == 0);
     }
     
-    public boolean isVerticalMarginsCalculated() {
-        return verticalMarginsCalculated;
+    public boolean isTopMarginCalculated() {
+        return topMarginCalculated;
     }
 
-    public void setVerticalMarginsCalculated(boolean verticalMarginsCalculated) {
-        this.verticalMarginsCalculated = verticalMarginsCalculated;
+    public void setTopMarginCalculated(boolean topMarginCalculated) {
+        this.topMarginCalculated = topMarginCalculated;
+    }
+
+    public boolean isBottomMarginCalculated() {
+        return bottomMarginCalculated;
+    }
+
+    public void setBottomMarginCalculated(boolean bottomMarginCalculated) {
+        this.bottomMarginCalculated = bottomMarginCalculated;
+    }  
+    
+    public int getCSSWidth(LayoutContext c) {
+        if (! (this instanceof AnonymousBlockBox)) {
+            if (! getStyle().isAutoWidth()) {
+                return (int) getStyle().getFloatPropertyProportionalWidth(
+                        CSSName.WIDTH, getContainingBlock().getContentWidth(), c);
+            }
+        }
+        
+        return -1;
+    }
+    
+    public int getCSSHeight(LayoutContext c) {
+        if (! (this instanceof AnonymousBlockBox)) {
+            if (! isAutoHeight()) {
+                if (! getContainingBlock().getStyle().isAutoHeight()) {
+                    return (int)getStyle().getFloatPropertyProportionalHeight(
+                            CSSName.HEIGHT, 
+                            getContainingBlock().getStyle().getFloatPropertyProportionalHeight(CSSName.HEIGHT, 0, c),
+                            c);
+                } else {
+                    return (int)getStyle().getFloatPropertyProportionalHeight(CSSName.HEIGHT, 0, c);
+                }
+            }
+        }
+        
+        return -1;
+    }
+    
+    public boolean isAutoHeight() {
+        if (getStyle().isAutoHeight()) {
+            return true;
+        } else if (getStyle().hasAbsoluteUnit(CSSName.HEIGHT)) {
+            return false;
+        } else {
+            return ! (getContainingBlock().isStyled() && 
+                    ! getContainingBlock().getStyle().isAutoHeight() &&
+                    getContainingBlock().getStyle().hasAbsoluteUnit(CSSName.HEIGHT));
+        }
     }
     
     private static class MarginCollapseResult {
-        int topMaxPositive;
-        int topMaxNegative;
+        private int maxPositive;
+        private int maxNegative;
         
-        int bottomMaxPositive;
-        int bottomMaxNegative;
-        
-        public void updateTop(int value) {
-            if (value < 0 && value < topMaxNegative) {
-                topMaxNegative = value;
+        public void update(int value) {
+            if (value < 0 && value < maxNegative) {
+                maxNegative = value;
             }
             
-            if (value > 0 && value > topMaxPositive) {
-                topMaxPositive = value;
+            if (value > 0 && value > maxPositive) {
+                maxPositive = value;
             }
         }
         
-        public int getCollapsedTop() {
-            return topMaxPositive + topMaxNegative;
+        public int getMargin() {
+            return maxPositive + maxNegative;
         }
         
-        public void updateBottom(int value) {
-            if (value < 0 && value < bottomMaxNegative) {
-                bottomMaxNegative = value;
-            }
-            
-            if (value > 0 && value > bottomMaxPositive) {
-                bottomMaxPositive = value;
-            }
-        }
-        
-        public int getCollapsedBottom() {
-            return bottomMaxPositive + bottomMaxNegative;
+        public boolean hasMargin() {
+            return maxPositive != 0 || maxNegative != 0;
         }
     }
 }
@@ -651,6 +882,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2006/09/01 23:49:38  peterbrant
+ * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
+ *
  * Revision 1.49  2006/08/30 18:25:41  peterbrant
  * Further refactoring / Bug fix for problem reported by Mike Curtis
  *

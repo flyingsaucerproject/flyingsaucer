@@ -130,7 +130,7 @@ public class PageBox {
     }
     
     public RectPropertySet getMargin(CssContext cssCtx) {
-        return getStyle().getMarginRect(_outerPageWidth, _outerPageWidth, cssCtx);
+        return getStyle().getMarginRect(_outerPageWidth, cssCtx);
     }
     
     public Rectangle getFlowBounds(CssContext cssCtx, String name) {

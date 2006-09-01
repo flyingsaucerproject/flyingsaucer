@@ -42,7 +42,7 @@ public class ViewportBox extends BlockBox {
     }
     
     public int getContentWidth() {
-        return viewport.height;
+        return viewport.width;
     }
     
     public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {

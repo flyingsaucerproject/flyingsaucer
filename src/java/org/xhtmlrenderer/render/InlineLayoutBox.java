@@ -54,6 +54,8 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     
     private TextDecoration textDecoration;
     
+    private int containingBlockWidth;
+    
     public InlineLayoutBox(LayoutContext c, Element elem, CalculatedStyle style, int cbWidth) {
         this();
         this.element = elem;
@@ -678,5 +680,13 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         } else {
             return result;
         }
+    }
+
+    public int getContainingBlockWidth() {
+        return containingBlockWidth;
+    }
+
+    public void setContainingBlockWidth(int containingBlockWidth) {
+        this.containingBlockWidth = containingBlockWidth;
     }
 }

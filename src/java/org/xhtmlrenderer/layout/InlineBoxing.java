@@ -47,7 +47,7 @@ import org.xhtmlrenderer.render.TextDecoration;
 public class InlineBoxing {
 
     public static void layoutContent(LayoutContext c, BlockBox box) {
-        int maxAvailableWidth = c.getExtents().width;
+        int maxAvailableWidth = box.getContentWidth();
         int remainingWidth = maxAvailableWidth;
 
         LineBox currentLine = newLine(c, null, box);
@@ -108,7 +108,6 @@ public class InlineBoxing {
                 CalculatedStyle style = iB.getStyle();
                 if (iB.isStartsHere()) {
                     previousIB = currentIB;
-                    // XXX Share Style Object
                     currentIB = new InlineLayoutBox(c, iB.getElement(), style, maxAvailableWidth);
 
                     elementStack.add(new InlineBoxInfo(currentIB));
@@ -139,8 +138,6 @@ public class InlineBoxing {
                     pendingRightMBP += style.getMarginBorderPadding(
                             c, maxAvailableWidth, CalculatedStyle.RIGHT);
                 }
-                
-                // XXX Handle functions (part of handling dynamic content [:before, :after}
                 
                 LineBreakContext lbContext = new LineBreakContext();
                 lbContext.setMaster(TextUtil.transformText(iB.getText(), style));

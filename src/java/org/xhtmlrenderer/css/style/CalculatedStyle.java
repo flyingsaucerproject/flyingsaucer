@@ -324,13 +324,12 @@ public class CalculatedStyle {
      * four-sided margin width. Uses the actual value (computed actual value)
      * for this element.
      *
-     * @param parentWidth
-     * @param parentHeight
+     * @param cbWidth
      * @param ctx
      * @return The marginWidth value
      */
-    public RectPropertySet getMarginRect(float parentWidth, float parentHeight, CssContext ctx) {
-        return getMarginProperty(this, CSSName.MARGIN_SHORTHAND, CSSName.MARGIN_SIDE_PROPERTIES, parentWidth, parentHeight, ctx);
+    public RectPropertySet getMarginRect(float cbWidth, CssContext ctx) {
+        return getMarginProperty(this, CSSName.MARGIN_SHORTHAND, CSSName.MARGIN_SIDE_PROPERTIES, cbWidth, ctx);
     }
 
     /**
@@ -338,13 +337,12 @@ public class CalculatedStyle {
      * four-sided padding width. Uses the actual value (computed actual value)
      * for this element.
      *
-     * @param parentWidth
-     * @param parentHeight
+     * @param cbWidth
      * @param ctx
      * @return The paddingWidth value
      */
-    public RectPropertySet getPaddingRect(float parentWidth, float parentHeight, CssContext ctx) {
-        return getPaddingProperty(this, CSSName.PADDING_SHORTHAND, CSSName.PADDING_SIDE_PROPERTIES, parentWidth, parentHeight, ctx);
+    public RectPropertySet getPaddingRect(float cbWidth, CssContext ctx) {
+        return getPaddingProperty(this, CSSName.PADDING_SHORTHAND, CSSName.PADDING_SIDE_PROPERTIES, cbWidth, ctx);
     }
 
     /**
@@ -541,20 +539,19 @@ public class CalculatedStyle {
     private static RectPropertySet getPaddingProperty(CalculatedStyle style,
                                                       CSSName shorthandProp,
                                                       CSSName[] sides,
-                                                      float parentWidth,
-                                                      float parentHeight,
+                                                      float cbWidth,
                                                       CssContext ctx) {
         String key = null;
 
         if (style._padding == null) {
             key = RectPropertySet.deriveKey(style, sides);
             if (key == null) {
-                style._padding = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+                style._padding = newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
                 return style._padding;
             } else {
                 style._padding = (RectPropertySet) getCachedRect(key);
                 if (style._padding == null) {
-                    style._padding = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+                    style._padding = newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
                     putCachedRect(key, style._padding);
                 }
             }
@@ -573,20 +570,19 @@ public class CalculatedStyle {
     private static RectPropertySet getMarginProperty(CalculatedStyle style,
                                                      CSSName shorthandProp,
                                                      CSSName[] sides,
-                                                     float parentWidth,
-                                                     float parentHeight,
+                                                     float cbWidth,
                                                      CssContext ctx) {
         String key = null;
 
         if (style._margin == null) {
             key = RectPropertySet.deriveKey(style, sides);
             if (key == null) {
-                style._margin = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+                style._margin = newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
                 return style._margin;
             } else {
                 style._margin = (RectPropertySet) getCachedRect(key);
                 if (style._margin == null) {
-                    style._margin = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+                    style._margin = newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
                     putCachedRect(key, style._margin);
                 }
             }
@@ -598,15 +594,13 @@ public class CalculatedStyle {
     private static RectPropertySet newRectInstance(CalculatedStyle style,
                                                    CSSName shorthand,
                                                    CSSName[] sides,
-                                                   float parentHeight,
-                                                   float parentWidth,
+                                                   float cbWidth,
                                                    CssContext ctx) {
         RectPropertySet rect;
         rect = RectPropertySet.newInstance(style,
                 shorthand,
                 sides,
-                parentHeight,
-                parentWidth,
+                cbWidth,
                 ctx);
         return rect;
     }
@@ -657,10 +651,10 @@ public class CalculatedStyle {
     public static final int BOTTOM = 4;
 
     public int getMarginBorderPadding(
-            CssContext cssCtx, int containingBlockWidth, int which) {
+            CssContext cssCtx, int cbWidth, int which) {
         BorderPropertySet border = getBorder(cssCtx);
-        RectPropertySet margin = getMarginRect(containingBlockWidth, containingBlockWidth, cssCtx);
-        RectPropertySet padding = getPaddingRect(containingBlockWidth, containingBlockWidth, cssCtx);
+        RectPropertySet margin = getMarginRect(cbWidth, cssCtx);
+        RectPropertySet padding = getPaddingRect(cbWidth, cssCtx);
 
         switch (which) {
             case LEFT:
@@ -750,12 +744,6 @@ public class CalculatedStyle {
         return isIdent(CSSName.DISPLAY, IdentValue.NONE);
     }
     
-    /*
-     * inline | block | list-item | run-in | inline-block | table | inline-table | 
-     * table-row-group | table-header-group | table-footer-group | table-row | 
-     * table-column-group | 
-     * table-column | table-cell | table-caption | none | inherit 
-     */
     public boolean isBlockEquivalent() {
         if (isFloated() || isAbsolute() || isFixed()) {
             return true;
@@ -819,10 +807,7 @@ public class CalculatedStyle {
     }
 
     public boolean isAutoHeight() {
-        // HACK: assume containing block height is auto, so percentages become
-        // auto
-        return isIdent(CSSName.HEIGHT, IdentValue.AUTO)
-                || ! hasAbsoluteUnit(CSSName.HEIGHT);
+        return isIdent(CSSName.HEIGHT, IdentValue.AUTO);
     }
     
     public boolean isAutoZIndex() {
@@ -918,9 +903,8 @@ public class CalculatedStyle {
     }
     
     public boolean isMayCollapseWithChildren() {
-        // Will only be called when collapsing block content so need to worry
-        // about other items from 8.3.1 (e.g. inline-block, floats, etc.)
-        return isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
+        return isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) && 
+            ! (isFloated() || isAbsolute() || isFixed() || isInlineBlock());
     }    
 
 }// end class
@@ -929,6 +913,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.70  2006/09/01 23:49:40  peterbrant
+ * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
+ *
  * Revision 1.69  2006/08/29 17:29:14  peterbrant
  * Make Style object a thing of the past
  *

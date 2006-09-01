@@ -39,17 +39,17 @@ public class RectPropertySet {
             CalculatedStyle style,
             CSSName shortHandProperty,
             CSSName[] sideProperties,
-            float parentHeight,
-            float parentWidth,
+            float cbWidth,
             CssContext ctx
     ) {
+        // HACK isLengthValue() calls are part of hack to treat margin: auto as zero
         RectPropertySet rect =
                 new RectPropertySet(
                         shortHandProperty,
-                        style.getFloatPropertyProportionalHeight(sideProperties[0], parentHeight, ctx),
-                        style.getFloatPropertyProportionalWidth(sideProperties[1], parentWidth, ctx),
-                        style.getFloatPropertyProportionalHeight(sideProperties[2], parentHeight, ctx),
-                        style.getFloatPropertyProportionalWidth(sideProperties[3], parentWidth, ctx)
+                        ! style.isLengthValue(sideProperties[0]) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties[0], cbWidth, ctx),
+                        ! style.isLengthValue(sideProperties[1]) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties[1], cbWidth, ctx),
+                        ! style.isLengthValue(sideProperties[2]) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties[2], cbWidth, ctx),
+                        ! style.isLengthValue(sideProperties[3]) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties[3], cbWidth, ctx)
                 );
         return rect;
     }
@@ -112,10 +112,11 @@ public class RectPropertySet {
     ) {
         String key = null;
         boolean isAbs = true;
+        // HACK isLengthValue() calls are part of hack to treat margin: auto as zero
         for (int i = 0; i < sideProperties.length && isAbs; i++) {
-            isAbs = style.hasAbsoluteUnit(sideProperties[i]);
-
+            isAbs = style.isLengthValue(sideProperties[0]) && style.hasAbsoluteUnit(sideProperties[i]);
         }
+        
         if (isAbs) {
             key = new StringBuffer()
                     .append(style.asString(sideProperties[0]))

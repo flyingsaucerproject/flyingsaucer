@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import org.xhtmlrenderer.layout.VerticalMarginCollapser;
 
 public abstract class AbstractCollapsableContent extends AbstractCachingContent
         implements CollapsableContent {
@@ -30,8 +29,6 @@ public abstract class AbstractCollapsableContent extends AbstractCachingContent
     private boolean _marginsAdjoining;
 
     private boolean _collapsed;
-
-    private VerticalMarginCollapser.CollapsedMarginPair _marginToCollapse;
 
     public boolean isTopMarginCollapsed() {
         return _topMarginCollapsed;
@@ -47,14 +44,6 @@ public abstract class AbstractCollapsableContent extends AbstractCachingContent
 
     public void setBottomMarginCollapsed(boolean bottomMarginCollapsed) {
         _bottomMarginCollapsed = bottomMarginCollapsed;
-    }
-
-    public VerticalMarginCollapser.CollapsedMarginPair getMarginToCollapse() {
-        return _marginToCollapse;
-    }
-
-    public void setMarginToCollapse(VerticalMarginCollapser.CollapsedMarginPair marginToCollapse) {
-        _marginToCollapse = marginToCollapse;
     }
 
     public boolean isMarginsAdjoining() {

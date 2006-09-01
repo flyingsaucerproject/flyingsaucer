@@ -47,6 +47,8 @@ public class CellBox extends BlockBox {
      * Description of the Field
      */
     private boolean virtual = false;
+    
+    private int containingBlockWidth;
 
     /**
      * Description of the Field
@@ -54,6 +56,14 @@ public class CellBox extends BlockBox {
     private CellBox real_box = null;
     public int colspan;
     public int rowspan;
+    
+    public int getContainingBlockWidth() {
+        return containingBlockWidth;
+    }
+
+    public void setContainingBlockWidth(int containingBlockWidth) {
+        this.containingBlockWidth = containingBlockWidth;
+    }    
 
     public CellBox() {
     }
@@ -103,6 +113,9 @@ public class CellBox extends BlockBox {
 /*
  * $Id$
  * $Log$
+ * Revision 1.12  2006/09/01 23:49:36  peterbrant
+ * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
+ *
  * Revision 1.11  2005/12/30 01:32:40  peterbrant
  * First merge of parts of pagination work
  *

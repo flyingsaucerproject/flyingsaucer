@@ -47,7 +47,6 @@ public class BoxBuilder {
     private static final Pattern CONTENT_NEWLINE = Pattern.compile("\\\\A");
     
     public static BlockBox createRootBox(LayoutContext c, Document document) {
-        // XXX assume block box for now
         Element root = document.getDocumentElement();
         
         BlockBox result = new BlockBox();

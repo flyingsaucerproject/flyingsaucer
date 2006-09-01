@@ -40,6 +40,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 
@@ -127,10 +128,17 @@ public class ITextRenderer {
     public void layout() {
         LayoutContext c = newLayoutContext();
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
+        root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
         Dimension dim = root.getLayer().getPaintingDimension(c);
         root.getLayer().trimEmptyPages(c, dim.height);
         _root = root;
+    }
+    
+    private Rectangle getInitialExtents(LayoutContext c) {
+        PageBox first = Layer.createPageBox(c, "first");
+        
+        return new Rectangle(0, 0, first.getContentWidth(c), first.getContentHeight(c));
     }
     
     private RenderingContext newRenderingContext() {
@@ -146,21 +154,12 @@ public class ITextRenderer {
     }
 
     private LayoutContext newLayoutContext() {
-
         Rectangle extents = new Rectangle(0, 0, 1, 1);
-
         LayoutContext result = _sharedContext.newLayoutContextInstance(extents);
         result.setFontContext(new ITextFontContext());
         result.setReplacedElementFactory(new ITextReplacedElementFactory());
         
         _sharedContext.getTextRenderer().setup(result.getFontContext());
-        
-        if (result.isPrint()) {
-            PageBox first = Layer.createPageBox(result, "first");
-            extents = new Rectangle(0, 0, 
-                    first.getContentWidth(result), first.getContentHeight(result));
-            result.setExtents(extents);
-        }
         
         return result;
     }

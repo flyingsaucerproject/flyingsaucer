@@ -25,8 +25,9 @@ import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.layout.InlineBoxing;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
-import org.xhtmlrenderer.layout.content.Content;
 
 public class AnonymousBlockBox extends BlockBox {
     private List openParents;
@@ -34,11 +35,9 @@ public class AnonymousBlockBox extends BlockBox {
     public AnonymousBlockBox(Element element) {
         this.element = element;
     }
-    
-    public AnonymousBlockBox(Content content) {
-        super();
-        this.element = content.getElement();
 
+    public void layout(LayoutContext c) {
+        InlineBoxing.layoutContent(c, this);
     }
 
     public String toString() {
@@ -94,6 +93,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2006/09/01 23:49:38  peterbrant
+ * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
+ *
  * Revision 1.18  2006/08/29 17:29:13  peterbrant
  * Make Style object a thing of the past
  *

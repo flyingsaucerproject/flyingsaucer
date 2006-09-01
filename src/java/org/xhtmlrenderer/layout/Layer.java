@@ -40,6 +40,7 @@ import org.xhtmlrenderer.render.MarginBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
+import org.xhtmlrenderer.table.TableBox;
 
 public class Layer {
     public static final short PAGED_MODE_SCREEN = 1;
@@ -212,10 +213,13 @@ public class Layer {
     private void paintBackgroundsAndBorders(RenderingContext c, List blocks) {
         for (Iterator i = blocks.iterator(); i.hasNext();) {
             BlockBox box = (BlockBox) i.next();
-            box.paintBackground(c);
-            box.paintBorder(c);
-            if (c.debugDrawBoxes()) {
-                box.paintDebugOutline(c);
+            // HACK to make existing table layout work
+            if (! (box.getStyle().isTable() && ! (box instanceof TableBox))) {
+                box.paintBackground(c);
+                box.paintBorder(c);
+                if (c.debugDrawBoxes()) {
+                    box.paintDebugOutline(c);
+                }
             }
         }
     }
@@ -684,7 +688,6 @@ public class Layer {
             master.positionAbsolute(c, BlockBox.POSITION_BOTH);
             master.positionAbsoluteOnPage(c);
             c.reInit(child.getLayoutData().getParentStyle());
-            c.setExtents(getExtents(c));
             ((BlockBox)child.getMaster()).layout(c);
             // Set right
             master.positionAbsolute(c, BlockBox.POSITION_HORIZONTALLY);
@@ -694,7 +697,6 @@ public class Layer {
             // repeatedly will converge on the correct position,
             // so just guess for now
             c.reInit(child.getLayoutData().getParentStyle());
-            c.setExtents(getExtents(c));
             ((BlockBox)child.getMaster()).layout(c);
             
             child.getMaster().reset(c);
@@ -702,7 +704,6 @@ public class Layer {
             master.positionAbsoluteOnPage(c);
             
             c.reInit(child.getLayoutData().getParentStyle());
-            c.setExtents(getExtents(c));
             ((BlockBox)child.getMaster()).layout(c);
         }
     }
@@ -712,18 +713,11 @@ public class Layer {
         // Set top, left
         master.positionAbsolute(c, BlockBox.POSITION_BOTH);
         c.reInit(child.getLayoutData().getParentStyle());
-        c.setExtents(child.getMaster().getContainingBlock().getPaddingEdge(0, 0, c));
         ((BlockBox)child.getMaster()).layout(c);
         // Set bottom, right
         master.positionAbsolute(c, BlockBox.POSITION_BOTH);
     }
     
-    private Rectangle getExtents(CssContext cssCtx) {
-        // FIXME Not right for inline layers
-        return getMaster().getPaddingEdge(getMaster().getAbsX(),
-                getMaster().getAbsY(), cssCtx);
-    }
-
     public List getPages() {
         return pages == null ? Collections.EMPTY_LIST : pages;
     }

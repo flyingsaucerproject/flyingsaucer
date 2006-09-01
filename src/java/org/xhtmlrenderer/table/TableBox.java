@@ -52,6 +52,8 @@ public class TableBox extends BlockBox {
     public int[] columnRows;
     public int[] columnHeight;
     public CellBox[] columnCell;
+    
+    private int containingBlockWidth;
 
     /**
      * Constructor for the TableBox object
@@ -62,11 +64,22 @@ public class TableBox extends BlockBox {
 
     }
 
+    public int getContainingBlockWidth() {
+        return containingBlockWidth;
+    }
+
+    public void setContainingBlockWidth(int containingBlockWidth) {
+        this.containingBlockWidth = containingBlockWidth;
+    }
+
 }
 
 /*
  * $Id$
  * $Log$
+ * Revision 1.7  2006/09/01 23:49:37  peterbrant
+ * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
+ *
  * Revision 1.6  2005/10/06 03:20:24  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

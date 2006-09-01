@@ -37,14 +37,6 @@ import org.xhtmlrenderer.util.Uu;
 public class BlockBoxing {
     private BlockBoxing() {
     }
-
-    /**
-     * @deprecated
-     */
-    public static void layoutContent(final LayoutContext c, final BlockBox block, 
-            List contentList) {
-        layoutContent(c, block);
-    }
     
     public static void layoutContent(final LayoutContext c, final BlockBox block) {
         boolean resetMargins = false;
@@ -429,6 +421,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.51  2006/09/01 23:49:35  peterbrant
+ * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
+ *
  * Revision 1.50  2006/08/29 17:29:11  peterbrant
  * Make Style object a thing of the past
  *
