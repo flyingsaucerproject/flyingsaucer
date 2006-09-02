@@ -10,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -20,17 +20,12 @@
  */
 package org.xhtmlrenderer.css.sheet.factory;
 
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.Counter;
-import org.w3c.dom.css.RGBColor;
-import org.w3c.dom.css.Rect;
-import org.w3c.dom.DOMException;
-import org.w3c.css.sac.LexicalUnit;
-import org.xhtmlrenderer.css.constants.CSSName;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.w3c.dom.css.CSSPrimitiveValue;
+import org.xhtmlrenderer.css.constants.CSSName;
 
 
 /**
@@ -40,8 +35,6 @@ import java.util.List;
  * @author   Patrick Wright
  */
 public class MarginPropertyDeclarationFactory extends AbstractPropertyDeclarationFactory {
-    private static final ZeroMarginPrimitiveValue ZERO_MARGIN = new ZeroMarginPrimitiveValue();
-
     /** Singleton instance. */
     private static MarginPropertyDeclarationFactory _instance;
 
@@ -119,37 +112,37 @@ public class MarginPropertyDeclarationFactory extends AbstractPropertyDeclaratio
             case 1:
                 primitive = primVals[0];
                 primitives = new CSSPrimitiveValue[]{
-                        hackAutoMargin(primitive),
-                        hackAutoMargin(primitive),
-                        hackAutoMargin(primitive),
-                        hackAutoMargin(primitive)};
+                        primitive,
+                        primitive,
+                        primitive,
+                        primitive};
 
                 addProperties( declarations, primitives, ONE_TO_FOUR, origin, important );
                 break;
             case 2:
                 primitives = new CSSPrimitiveValue[]{
-                        hackAutoMargin(primVals[0]),
-                        hackAutoMargin(primVals[0]),
-                        hackAutoMargin(primVals[1]),
-                        hackAutoMargin(primVals[1])};
+                        primVals[0],
+                        primVals[0],
+                        primVals[1],
+                        primVals[1]};
 
                 addProperties( declarations, primitives, TWO_TO_FOUR, origin, important );
                 break;
             case 3:
                 primitives = new CSSPrimitiveValue[]{
-                        hackAutoMargin(primVals[0]),
-                        hackAutoMargin(primVals[1]),
-                        hackAutoMargin(primVals[1]),
-                        hackAutoMargin(primVals[2])};
+                        primVals[0],
+                        primVals[1],
+                        primVals[1],
+                        primVals[2]};
 
                 addProperties( declarations, primitives, THREE_TO_FOUR, origin, important );
                 break;
             case 4:
                 primitives = new CSSPrimitiveValue[]{
-                        hackAutoMargin(primVals[0]),
-                        hackAutoMargin(primVals[1]),
-                        hackAutoMargin(primVals[2]),
-                        hackAutoMargin(primVals[3])};
+                        primVals[0],
+                        primVals[1],
+                        primVals[2],
+                        primVals[3]};
 
                 addProperties( declarations, primitives, FOUR_TO_FOUR, origin, important );
                 break;
@@ -169,71 +162,14 @@ public class MarginPropertyDeclarationFactory extends AbstractPropertyDeclaratio
         }
         return _instance;
     }
-
-    /** If CSSPrimitiveValue is 'auto', replace with "0", as we don't support auto-margins yet */
-    // TODO: remove once auto margins are supported
-    public static CSSPrimitiveValue hackAutoMargin(CSSPrimitiveValue margin) {
-        if (margin.getCssText().trim().toLowerCase().equals("auto")) {
-            return ZERO_MARGIN;
-        } else {
-            return margin;
-        }
-    }
-
-    static class ZeroMarginPrimitiveValue implements CSSPrimitiveValue {
-
-        public short getPrimitiveType() {
-            return LexicalUnit.SAC_INTEGER;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public float getFloatValue(short unitType) throws DOMException {
-            return 0;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public void setFloatValue(short unitType, float floatValue) throws DOMException {
-            //noimpl
-        }
-
-        public String getStringValue() throws DOMException {
-            return "0";  //noimpl
-        }
-
-        public void setStringValue(short stringType, String stringValue) throws DOMException {
-            //noimpl
-        }
-
-        public Counter getCounterValue() throws DOMException {
-            return null;  // noimpl
-        }
-
-        public RGBColor getRGBColorValue() throws DOMException {
-            return null;  // noimpl
-        }
-
-        public Rect getRectValue() throws DOMException {
-            return null;  // noimpl
-        }
-
-        public short getCssValueType() {
-            return CSS_PRIMITIVE_VALUE;
-        }
-
-        public String getCssText() {
-            return "0";
-        }
-
-        public void setCssText(String cssText) throws DOMException {
-            // noimpl
-        }
-    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
- * Revision 1.5  2006/07/26 18:05:34  pdoubleya
- * Hack to support margin: auto.
+ * Revision 1.6  2006/09/02 11:28:36  peterbrant
+ * Replace one hack with another to support non-shorthand margin auto properties
  *
  * Revision 1.4  2005/01/29 20:19:26  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
