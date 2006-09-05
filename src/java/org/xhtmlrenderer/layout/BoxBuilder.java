@@ -160,7 +160,6 @@ public class BoxBuilder {
         CalculatedStyle parentStyle = sharedContext.getStyle(parent);
         insertGeneratedContent(c, parent, parentStyle, "before", children);
         
-        /*
         if (parentStyle.mayHaveFirstLine()) {
             CascadedStyle firstLine = c.getCss().getPseudoElementStyle(parent, "first-line");
         }
@@ -168,7 +167,6 @@ public class BoxBuilder {
         if (parentStyle.mayHaveFirstLetter()) {
             CascadedStyle firstLetter = c.getCss().getPseudoElementStyle(parent, "first-letter");
         }
-        */
         
         Node working = parent.getFirstChild();
         if (working != null) {

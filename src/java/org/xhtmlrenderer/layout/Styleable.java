@@ -28,5 +28,4 @@ public interface Styleable {
     
     public Element getElement();
     public void setElement(Element e);
-    
 }

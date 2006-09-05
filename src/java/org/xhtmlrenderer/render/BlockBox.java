@@ -44,8 +44,8 @@ import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PersistentBFC;
+import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.layout.content.TableContent;
-import org.xhtmlrenderer.table.TableBox;
 import org.xhtmlrenderer.table.TableBoxing;
 
 public class BlockBox extends Box implements InlinePaintable {
@@ -81,6 +81,10 @@ public class BlockBox extends Box implements InlinePaintable {
     private boolean topMarginCalculated;
     private boolean bottomMarginCalculated;
     private MarginCollapseResult pendingCollapseCalculation;
+    
+    private int minWidth;
+    private int maxWidth;
+    private boolean minMaxCalculated;
     
     public BlockBox() {
         super();
@@ -455,6 +459,7 @@ public class BlockBox extends Box implements InlinePaintable {
         setBottomMarginCalculated(false);
         if (isReplaced()) {
             getReplacedElement().detach(c);
+            setReplacedElement(null);
         }
         if (getChildrenContentType() == BlockBox.CONTENT_INLINE) {
             removeAllChildren();
@@ -484,7 +489,7 @@ public class BlockBox extends Box implements InlinePaintable {
         }
         
         boolean pushedLayer = false;
-        if (isRoot() || getStyle().requiresLayer()) {
+        if (isRoot() || style.requiresLayer()) {
             pushedLayer = true;
             if (getLayer() == null) {
                 c.pushLayer(this);
@@ -503,7 +508,7 @@ public class BlockBox extends Box implements InlinePaintable {
         
         collapseMargins(c);
         
-        BorderPropertySet border = getStyle().getBorder(c);
+        BorderPropertySet border = style.getBorder(c);
         RectPropertySet margin = getMargin(c);
         RectPropertySet padding = getPadding(c);
         
@@ -525,13 +530,20 @@ public class BlockBox extends Box implements InlinePaintable {
             }
             
             //check if replaced
-            ReplacedElement re = c.getReplacedElementFactory().createReplacedElement(
+            ReplacedElement re = getReplacedElement();
+            if (re == null) {
+                re = c.getReplacedElementFactory().createReplacedElement(
                     c, this, c.getUac(), cssWidth, cssHeight);
+            }
             if (re != null) {
                 this.contentWidth = re.getIntrinsicWidth();
                 this.height = re.getIntrinsicHeight();
                 setReplacedElement(re);
-            } 
+            } else if (cssWidth == -1 && 
+                    (style.isInlineBlock() || style.isFloated() || 
+                            style.isAbsolute() || style.isFixed())) { 
+                this.contentWidth = calcShrinkToFitWidth(c) - this.leftMBP - this.rightMBP;
+            }
         }
         
         if (isResetMargins()) {
@@ -630,6 +642,14 @@ public class BlockBox extends Box implements InlinePaintable {
 
     public void setInlineContent(List inlineContent) {
         this.inlineContent = inlineContent;
+        if (inlineContent != null) {
+            for (Iterator i = inlineContent.iterator(); i.hasNext(); ) {
+                Styleable child = (Styleable)i.next();
+                if (child instanceof Box) {
+                    ((Box)child).setContainingBlock(this);
+                }
+            }
+        }
     }
     
     public boolean isSkipWhenCollapsing() {
@@ -854,6 +874,200 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
     
+    private int calcShrinkToFitWidth(LayoutContext c) {
+        calcMinMaxWidth(c);
+        
+        return Math.min(Math.max(getMinWidth(), getContainingBlockWidth()), getMaxWidth());
+    }
+    
+    public void calcMinMaxWidth(LayoutContext c) {
+        if (! minMaxCalculated) {
+            RectPropertySet margin = getMargin(c);
+            BorderPropertySet border = getStyle().getBorder(c);
+            RectPropertySet padding = getPadding(c);
+            
+            int width = getCSSWidth(c);
+            
+            if (width != -1) {
+                minWidth = maxWidth =
+                    (int)margin.left() + (int)border.left() + (int)padding.left() +
+                    width +
+                    (int)margin.right() + (int)border.right() + (int)padding.right();
+            } else {
+                minWidth = maxWidth =
+                    (int)margin.left() + (int)border.left() + (int)padding.left() +
+                    (int)margin.right() + (int)border.right() + (int)padding.right();
+                
+                ensureChildren(c);
+                
+                if (getChildrenContentType() == CONTENT_BLOCK || 
+                        getChildrenContentType() == CONTENT_INLINE) {
+                    switch (getChildrenContentType()) {
+                        case CONTENT_BLOCK:
+                            calcMinMaxWidthBlockChildren(c);
+                            break;
+                        case CONTENT_INLINE:
+                            calcMinMaxWidthInlineChildren(c);
+                            break;
+                    }
+                }
+            }
+            
+            minMaxCalculated = true;
+        }
+    }
+    
+    private void calcMinMaxWidthBlockChildren(LayoutContext c) {
+        int childMinWidth = 0;
+        int childMaxWidth = 0;
+        
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            BlockBox child = (BlockBox)i.next();            
+            if (! (child instanceof AnonymousBlockBox ||
+                    child.getStyle().isAbsolute() || child.getStyle().isFixed() ||
+                    child.getStyle().isFloated())) {
+                child.calcMinMaxWidth(c);
+                if (child.getMinWidth() > childMinWidth) {
+                    childMinWidth = child.getMinWidth();
+                }
+                if (child.getMaxWidth() > childMaxWidth) {
+                    childMaxWidth = child.getMaxWidth();
+                }
+            }
+        }
+        
+        this.minWidth += childMinWidth;
+        this.maxWidth += childMaxWidth;
+    }
+    
+    private void calcMinMaxWidthInlineChildren(LayoutContext c) {
+        int textIndent = (int)getStyle().getFloatPropertyProportionalWidth(
+                CSSName.TEXT_INDENT, getContentWidth(), c);
+                
+        int childMinWidth = 0;
+        int childMaxWidth = 0;
+        int lineWidth = 0;
+        
+        InlineBox trimmableIB = null;
+        
+        for (Iterator i = inlineContent.iterator(); i.hasNext(); ) {
+            Styleable child = (Styleable)i.next();
+            
+            if (child.getStyle().isAbsolute() || child.getStyle().isFixed()) {
+                continue;
+            }
+            
+            if (child.getStyle().isFloated() || child.getStyle().isInlineBlock()) {
+                if (child.getStyle().isFloated() && child.getStyle().isCleared()) {
+                    if (trimmableIB != null) {
+                        lineWidth -= trimmableIB.getTrailingSpaceWidth(c);
+                    }
+                    if (lineWidth > childMaxWidth) {
+                        childMaxWidth = lineWidth;
+                    }
+                    lineWidth = 0;
+                }
+                trimmableIB = null;
+                BlockBox block = (BlockBox)child;
+                block.calcMinMaxWidth(c);
+                lineWidth += block.getMaxWidth();
+                if (block.getMinWidth() > childMinWidth) {
+                    childMinWidth = block.getMinWidth();
+                }
+            } else { /* child.getStyle().isInline() */
+                InlineBox iB = (InlineBox)child;
+                IdentValue whitespace = iB.getStyle().getWhitespace();
+                
+                iB.calcMinMaxWidth(c, lineWidth == 0);
+                
+                if (whitespace == IdentValue.NOWRAP) {
+                    lineWidth += textIndent + iB.getMaxWidth();
+                    if (iB.getMinWidth() > childMinWidth) {
+                        childMinWidth = iB.getMinWidth();
+                    }
+                    trimmableIB = iB;
+                } else if (whitespace == IdentValue.PRE) {
+                    if (trimmableIB != null) {
+                        lineWidth -= trimmableIB.getTrailingSpaceWidth(c);
+                    }
+                    trimmableIB = null;
+                    if (lineWidth > childMaxWidth) {
+                        childMaxWidth = lineWidth;
+                    }
+                    lineWidth = textIndent + iB.getFirstLineWidth();
+                    if (lineWidth > childMinWidth) {
+                        childMinWidth = lineWidth;
+                    }
+                    lineWidth = iB.getMaxWidth();
+                    if (lineWidth > childMinWidth) {
+                        childMinWidth = lineWidth;
+                    }
+                    if (childMinWidth > childMaxWidth) {
+                        childMaxWidth = childMinWidth;
+                    }
+                    lineWidth = 0;
+                } else if (whitespace == IdentValue.PRE_WRAP || whitespace == IdentValue.PRE_LINE) {
+                    lineWidth += textIndent + iB.getFirstLineWidth();
+                    if (trimmableIB != null) {
+                        lineWidth -= trimmableIB.getTrailingSpaceWidth(c);
+                    }
+                    if (lineWidth > childMaxWidth) {
+                        childMaxWidth = lineWidth;
+                    }
+                    
+                    if (iB.getMaxWidth() > childMaxWidth) {
+                        childMaxWidth = iB.getMaxWidth();
+                    }
+                    if (iB.getMinWidth() > childMinWidth) {
+                        childMinWidth = iB.getMinWidth();
+                    }
+                    if (whitespace == IdentValue.PRE_LINE) {
+                        trimmableIB = iB;
+                    } else {
+                        trimmableIB = null;
+                    }
+                    lineWidth = 0;
+                } else /* if (whitespace == IdentValue.NORMAL) */ {
+                    lineWidth += textIndent + iB.getMaxWidth();
+                    if (iB.getMinWidth() > childMinWidth) {
+                        childMinWidth = textIndent + iB.getMinWidth();
+                    }
+                    trimmableIB = iB;
+                }
+                
+                if (textIndent > 0) {
+                    textIndent = 0;
+                }                
+            }
+        }
+        
+        if (trimmableIB != null) {
+            lineWidth -= trimmableIB.getTrailingSpaceWidth(c);
+        }
+        if (lineWidth > childMaxWidth) {
+            childMaxWidth = lineWidth;
+        }
+        
+        this.minWidth += childMinWidth;
+        this.maxWidth += childMaxWidth;
+    }
+    
+    public int getMaxWidth() {
+        return maxWidth;
+    }
+
+    protected void setMaxWidth(int maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
+    public int getMinWidth() {
+        return minWidth;
+    }
+
+    protected void setMinWidth(int minWidth) {
+        this.minWidth = minWidth;
+    }    
+    
     private static class MarginCollapseResult {
         private int maxPositive;
         private int maxNegative;
@@ -882,6 +1096,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.51  2006/09/05 23:03:44  peterbrant
+ * Initial draft of shrink-to-fit support
+ *
  * Revision 1.50  2006/09/01 23:49:38  peterbrant
  * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
  *

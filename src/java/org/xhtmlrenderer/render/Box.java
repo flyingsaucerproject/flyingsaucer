@@ -773,13 +773,11 @@ public abstract class Box implements Styleable {
         this.collapsedMarginTopSet = false;
     }
 
-    protected int getIndex()
-    {
+    protected int getIndex() {
         return index;
     }
 
-    protected void setIndex(int index)
-    {
+    protected void setIndex(int index) {
         this.index = index;
     }
 }
@@ -788,6 +786,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.116  2006/09/05 23:03:44  peterbrant
+ * Initial draft of shrink-to-fit support
+ *
  * Revision 1.115  2006/09/01 23:49:38  peterbrant
  * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
  *
