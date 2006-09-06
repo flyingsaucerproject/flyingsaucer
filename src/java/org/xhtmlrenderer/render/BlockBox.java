@@ -583,8 +583,12 @@ public class BlockBox extends Box implements InlinePaintable {
         }
         c.translate(-this.tx, -this.ty);
 
-        if (! isAutoHeight()) {
-            this.height = originalHeight;
+        if (! isReplaced()) {
+            if (! isAutoHeight()) {
+                this.height = originalHeight;
+            }
+            
+            applyCSSMinMaxHeight(c);
         }
 
         if (isRoot() || getStyle().establishesBFC()) {
@@ -621,6 +625,19 @@ public class BlockBox extends Box implements InlinePaintable {
         int cssMinWidth = getCSSMinWidth(c);
         if (cssMinWidth > 0 && this.contentWidth < cssMinWidth) {
             this.contentWidth = cssMinWidth;
+        }
+    }
+    
+    private void applyCSSMinMaxHeight(LayoutContext c) {
+        if (! getStyle().isMaxHeightNone()) {
+            int cssMaxHeight = getCSSMaxHeight(c);
+            if (this.height > cssMaxHeight) {
+                this.height = cssMaxHeight;
+            }
+        }
+        int cssMinHeight = getCSSMinHeight(c);
+        if (cssMinHeight > 0 && this.height < cssMinHeight) {
+            this.height = cssMinHeight;
         }
     }
     
@@ -904,11 +921,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
     
     private int getCSSMaxHeight(LayoutContext c) {
-        if (getStyle().isMaxHeightNone()) {
-            return Integer.MAX_VALUE / 2;
-        } else {
-            return getStyle().getMaxHeight(c, getContainingBlockCSSHeight(c));
-        }
+        return getStyle().getMaxHeight(c, getContainingBlockCSSHeight(c));
     }
     
     // Use only when the height of the containing block is required for
@@ -1189,6 +1202,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.53  2006/09/06 22:42:30  peterbrant
+ * Implement min/max-height (non-replaced content only)
+ *
  * Revision 1.52  2006/09/06 22:21:43  peterbrant
  * Fixes to shrink-to-fit implementation / Implement min/max-width (non-replaced content) only
  *
