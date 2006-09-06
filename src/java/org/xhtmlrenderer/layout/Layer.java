@@ -333,9 +333,11 @@ public class Layer {
     
     private Box find(CssContext cssCtx, int absX, int absY, List layers) {
         Box result = null;
-        for (int i = 0; i < layers.size(); i++) {
+        // Work backwards since layers are painted forwards and we're looking
+        // for the top-most box
+        for (int i = layers.size()-1; i >= 0; i--) {
             Layer l = (Layer)layers.get(i);
-            result = l.getMaster().find(cssCtx, absX, absY);
+            result = l.find(cssCtx, absX, absY);
             if (result != null) {
                 return result;
             }
