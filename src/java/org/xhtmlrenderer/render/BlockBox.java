@@ -544,6 +544,10 @@ public class BlockBox extends Box implements InlinePaintable {
                             style.isAbsolute() || style.isFixed())) { 
                 this.contentWidth = calcShrinkToFitWidth(c) - this.leftMBP - this.rightMBP;
             }
+            
+            if (! isReplaced()) {
+                applyCSSMinMaxWidth(c);
+            }
         }
         
         if (isResetMargins()) {
@@ -605,7 +609,20 @@ public class BlockBox extends Box implements InlinePaintable {
         if (pushedLayer) {
             c.popLayer();
         }
-    }    
+    }
+
+    private void applyCSSMinMaxWidth(LayoutContext c) {
+        if (! getStyle().isMaxWidthNone()) {
+            int cssMaxWidth = getCSSMaxWidth(c);
+            if (this.contentWidth > cssMaxWidth) {
+                this.contentWidth = cssMaxWidth;
+            }
+        }
+        int cssMinWidth = getCSSMinWidth(c);
+        if (cssMinWidth > 0 && this.contentWidth < cssMinWidth) {
+            this.contentWidth = cssMinWidth;
+        }
+    }
     
     private void ensureChildren(LayoutContext c) {
         if (getChildrenContentType() == CONTENT_UNKNOWN) {
@@ -834,7 +851,7 @@ public class BlockBox extends Box implements InlinePaintable {
         this.bottomMarginCalculated = bottomMarginCalculated;
     }  
     
-    public int getCSSWidth(LayoutContext c) {
+    private int getCSSWidth(LayoutContext c) {
         if (! (this instanceof AnonymousBlockBox)) {
             if (! getStyle().isAutoWidth()) {
                 return (int) getStyle().getFloatPropertyProportionalWidth(
@@ -845,7 +862,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return -1;
     }
     
-    public int getCSSHeight(LayoutContext c) {
+    private int getCSSHeight(LayoutContext c) {
         if (! (this instanceof AnonymousBlockBox)) {
             if (! isAutoHeight()) {
                 if (! getContainingBlock().getStyle().isAutoHeight()) {
@@ -874,6 +891,43 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
     
+    private int getCSSMinWidth(LayoutContext c) {
+        return getStyle().getMinWidth(c, getContainingBlockWidth());
+    }
+    
+    private int getCSSMaxWidth(LayoutContext c) {
+        return getStyle().getMaxWidth(c, getContainingBlockWidth());
+    }
+    
+    private int getCSSMinHeight(LayoutContext c) {
+        return getStyle().getMinHeight(c, getContainingBlockCSSHeight(c));
+    }
+    
+    private int getCSSMaxHeight(LayoutContext c) {
+        if (getStyle().isMaxHeightNone()) {
+            return Integer.MAX_VALUE / 2;
+        } else {
+            return getStyle().getMaxHeight(c, getContainingBlockCSSHeight(c));
+        }
+    }
+    
+    // Use only when the height of the containing block is required for
+    // resolving percentage values.  Does not represent the actual (resolved) height
+    // of the containing block.
+    private int getContainingBlockCSSHeight(LayoutContext c) {
+        if (! getContainingBlock().isStyled() || 
+                    getContainingBlock().getStyle().isAutoHeight()) {
+            return 0;
+        } else {
+            if (getContainingBlock().getStyle().hasAbsoluteUnit(CSSName.HEIGHT)) {
+                return (int)getContainingBlock().getStyle().getFloatPropertyProportionalTo(
+                        CSSName.HEIGHT, 0, c);
+            } else {
+                return 0;
+            }
+        }
+    }
+    
     private int calcShrinkToFitWidth(LayoutContext c) {
         calcMinMaxWidth(c);
         
@@ -887,6 +941,20 @@ public class BlockBox extends Box implements InlinePaintable {
             RectPropertySet padding = getPadding(c);
             
             int width = getCSSWidth(c);
+            
+            if (width == -1) {
+                if (isReplaced()) {
+                    width = getReplacedElement().getIntrinsicWidth();
+                } else {
+                    int height = getCSSHeight(c);
+                    ReplacedElement re = c.getReplacedElementFactory().createReplacedElement(
+                            c, this, c.getUac(), width, height);
+                    if (re != null) {
+                        setReplacedElement(re);
+                        width = getReplacedElement().getIntrinsicWidth();
+                    }
+                }
+            }
             
             if (width != -1) {
                 minWidth = maxWidth =
@@ -913,7 +981,34 @@ public class BlockBox extends Box implements InlinePaintable {
                 }
             }
             
+            if (! isReplaced()) {
+                calcMinMaxCSSMinMaxWidth(c, margin, border, padding);
+            }
+            
             minMaxCalculated = true;
+        }
+    }
+
+    private void calcMinMaxCSSMinMaxWidth(
+            LayoutContext c, RectPropertySet margin, BorderPropertySet border, 
+            RectPropertySet padding) {
+        int cssMinWidth = getCSSMinWidth(c);
+        if (cssMinWidth > 0) {
+            cssMinWidth += 
+                (int)margin.left() + (int)border.left() + (int)padding.left() +
+                (int)margin.right() + (int)border.right() + (int)padding.right();
+            if (minWidth < cssMinWidth) {
+                minWidth = cssMinWidth;
+            }
+        }
+        if (! getStyle().isMaxWidthNone()) {
+            int cssMaxWidth = getCSSMaxWidth(c);
+            cssMaxWidth +=
+                (int)margin.left() + (int)border.left() + (int)padding.left() +
+                (int)margin.right() + (int)border.right() + (int)padding.right();
+            if (maxWidth > cssMaxWidth) {
+                maxWidth = cssMaxWidth;
+            }
         }
     }
     
@@ -923,9 +1018,7 @@ public class BlockBox extends Box implements InlinePaintable {
         
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             BlockBox child = (BlockBox)i.next();            
-            if (! (child instanceof AnonymousBlockBox ||
-                    child.getStyle().isAbsolute() || child.getStyle().isFixed() ||
-                    child.getStyle().isFloated())) {
+            if (! (child instanceof AnonymousBlockBox)) {
                 child.calcMinMaxWidth(c);
                 if (child.getMinWidth() > childMinWidth) {
                     childMinWidth = child.getMinWidth();
@@ -978,7 +1071,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 InlineBox iB = (InlineBox)child;
                 IdentValue whitespace = iB.getStyle().getWhitespace();
                 
-                iB.calcMinMaxWidth(c, lineWidth == 0);
+                iB.calcMinMaxWidth(c, getContentWidth(), lineWidth == 0);
                 
                 if (whitespace == IdentValue.NOWRAP) {
                     lineWidth += textIndent + iB.getMaxWidth();
@@ -1096,6 +1189,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2006/09/06 22:21:43  peterbrant
+ * Fixes to shrink-to-fit implementation / Implement min/max-width (non-replaced content) only
+ *
  * Revision 1.51  2006/09/05 23:03:44  peterbrant
  * Initial draft of shrink-to-fit support
  *

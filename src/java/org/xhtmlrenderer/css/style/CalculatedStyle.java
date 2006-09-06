@@ -905,6 +905,30 @@ public class CalculatedStyle {
     public boolean isMayCollapseWithChildren() {
         return isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) && 
             ! (isFloated() || isAbsolute() || isFixed() || isInlineBlock());
+    }
+    
+    public boolean isMaxWidthNone() {
+        return isIdent(CSSName.MAX_WIDTH, IdentValue.NONE);
+    }
+    
+    public boolean isMaxHeightNone() {
+        return isIdent(CSSName.MAX_HEIGHT, IdentValue.NONE);
+    }
+    
+    public int getMinWidth(CssContext c, int cbWidth) {
+        return (int)getFloatPropertyProportionalTo(CSSName.MIN_WIDTH, cbWidth, c);
+    }
+    
+    public int getMaxWidth(CssContext c, int cbWidth) {
+        return (int)getFloatPropertyProportionalTo(CSSName.MAX_WIDTH, cbWidth, c);
+    }
+    
+    public int getMinHeight(CssContext c, int cbHeight) {
+        return (int)getFloatPropertyProportionalTo(CSSName.MIN_HEIGHT, cbHeight, c);
+    }
+    
+    public int getMaxHeight(CssContext c, int cbHeight) {
+        return (int)getFloatPropertyProportionalTo(CSSName.MAX_HEIGHT, cbHeight, c);
     }    
 
 }// end class
@@ -913,6 +937,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.71  2006/09/06 22:21:43  peterbrant
+ * Fixes to shrink-to-fit implementation / Implement min/max-width (non-replaced content) only
+ *
  * Revision 1.70  2006/09/01 23:49:40  peterbrant
  * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
  *

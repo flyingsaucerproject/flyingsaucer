@@ -117,7 +117,7 @@ public class InlineBox implements Styleable
                 s);
     }
     
-    private void calcMaxWidthFromLineLength(LayoutContext c, boolean trim) {
+    private void calcMaxWidthFromLineLength(LayoutContext c, int cbWidth, boolean trim) {
         int last = 0;
         int current = 0;
         
@@ -127,10 +127,13 @@ public class InlineBox implements Styleable
                 target = target.trim();
             }
             int length = getTextWidth(c, target);
+            if (last == 0) {
+                length += getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.LEFT);
+            }
             if (length > _maxWidth) {
                 _maxWidth = length;
             }
-            if (_firstLineWidth == 0 && length > 0) {
+            if (last == 0) {
                 _firstLineWidth = length;
             }
             last = current + 1;
@@ -141,6 +144,7 @@ public class InlineBox implements Styleable
             target = target.trim();
         }
         int length = getTextWidth(c, target);
+        length += getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.RIGHT);
         if (length > _maxWidth) {
             _maxWidth = length;
         }
@@ -166,13 +170,17 @@ public class InlineBox implements Styleable
     }
     
     private int calcMinWidthFromWordLength(
-            LayoutContext c, boolean trimLeadingSpace, boolean includeWS) {
+            LayoutContext c, int cbWidth, boolean trimLeadingSpace, boolean includeWS) {
         int spaceWidth = getSpaceWidth(c);
         
         int last = 0;
         int current = 0;
         int maxWidth = 0;
         int spaceCount = 0;
+        
+        boolean haveFirstWord = false;
+        int firstWord = 0;
+        int lastWord = 0;
         
         String text = getText(trimLeadingSpace);
         
@@ -186,11 +194,20 @@ public class InlineBox implements Styleable
                 }
                 spaceCount = 0;
             }
+            if (length > 0) {
+                if (! haveFirstWord) {
+                    firstWord = length;
+                }
+                lastWord = length;
+            }
+            
             if (length > _minWidth) {
                 _minWidth = length;
             }
             maxWidth += length;
-            maxWidth += spaceWidth;
+            if (! includeWS) {
+                maxWidth += spaceWidth;
+            }
             
             last = current;
             for (int i = current; i < text.length(); i++) {
@@ -211,11 +228,29 @@ public class InlineBox implements Styleable
                 }
             }
             spaceCount = 0;
+        }
+        if (length > 0) {
+            if (! haveFirstWord) {
+                firstWord = length;
+            }
+            lastWord = length;
         }        
         if (length > _minWidth) {
             _minWidth = length;
         }
         maxWidth += length;
+        
+        int leftMBP = getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.LEFT);
+        int rightMBP = getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.RIGHT);
+        
+        if (firstWord + leftMBP > _minWidth) {
+            _minWidth = firstWord + leftMBP;
+        }
+        if (lastWord + rightMBP > _minWidth) {
+            _minWidth = lastWord + rightMBP;
+        }
+        
+        maxWidth += leftMBP + rightMBP;
         
         return maxWidth;
     }
@@ -232,22 +267,27 @@ public class InlineBox implements Styleable
         }
     }
     
-    public void calcMinMaxWidth(LayoutContext c, boolean trimLeadingSpace) {
+    private int getInlineMBP(LayoutContext c, int cbWidth) {
+        return getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.LEFT) +
+            getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.RIGHT);
+    }
+    
+    public void calcMinMaxWidth(LayoutContext c, int cbWidth, boolean trimLeadingSpace) {
         if (! _minMaxCalculated) {
             IdentValue whitespace = getStyle().getWhitespace();
             if (whitespace == IdentValue.NOWRAP) {
-                _minWidth = _maxWidth = getTextWidth(c, getText(trimLeadingSpace));
+                _minWidth = _maxWidth = getInlineMBP(c, cbWidth) + getTextWidth(c, getText(trimLeadingSpace));
             } else if (whitespace == IdentValue.PRE) {
-                calcMaxWidthFromLineLength(c, false);
+                calcMaxWidthFromLineLength(c, cbWidth, false);
                 _minWidth = _maxWidth;
             } else if (whitespace == IdentValue.PRE_WRAP) {
-                calcMinWidthFromWordLength(c, false, true);
-                calcMaxWidthFromLineLength(c, false);
+                calcMinWidthFromWordLength(c, cbWidth, false, true);
+                calcMaxWidthFromLineLength(c, cbWidth, false);
             } else if (whitespace == IdentValue.PRE_LINE) {
-                calcMinWidthFromWordLength(c, trimLeadingSpace, false);
-                calcMaxWidthFromLineLength(c, true);
+                calcMinWidthFromWordLength(c, cbWidth, trimLeadingSpace, false);
+                calcMaxWidthFromLineLength(c, cbWidth, true);
             } else /* if (whitespace == IdentValue.NORMAL) */ {
-                _maxWidth = calcMinWidthFromWordLength(c, trimLeadingSpace, false);
+                _maxWidth = calcMinWidthFromWordLength(c, cbWidth, trimLeadingSpace, false);
             }
             
             _minMaxCalculated = true;
