@@ -59,8 +59,6 @@ public class BlockBox extends Box implements InlinePaintable {
     public static final int CONTENT_BLOCK = 2;
     public static final int CONTENT_EMPTY = 4;
     
-    public int renderIndex;
-    
     private MarkerData markerData;
     
     private int listCounter;
@@ -85,6 +83,9 @@ public class BlockBox extends Box implements InlinePaintable {
     private int minWidth;
     private int maxWidth;
     private boolean minMaxCalculated;
+    
+    private boolean dimensionsCalculated;
+    private boolean needShrinkToFitCalculatation;
     
     public BlockBox() {
         super();
@@ -457,12 +458,64 @@ public class BlockBox extends Box implements InlinePaintable {
         super.reset(c);
         setTopMarginCalculated(false);
         setBottomMarginCalculated(false);
+        this.dimensionsCalculated = false;
+        this.minMaxCalculated = false;
         if (isReplaced()) {
             getReplacedElement().detach(c);
             setReplacedElement(null);
         }
         if (getChildrenContentType() == BlockBox.CONTENT_INLINE) {
             removeAllChildren();
+        }
+    }
+    
+    private void calcDimensions(LayoutContext c) {
+        if (! dimensionsCalculated) {
+            CalculatedStyle style = getStyle();
+            
+            BorderPropertySet border = style.getBorder(c);
+            RectPropertySet margin = getMargin(c);
+            RectPropertySet padding = getPadding(c);
+            
+            // CLEAN: cast to int
+            this.leftMBP = (int) margin.left() + (int) border.left() + (int) padding.left();
+            this.rightMBP = (int) padding.right() + (int) border.right() + (int) margin.right();
+            this.contentWidth = (int) (getContainingBlockWidth() - this.leftMBP - this.rightMBP);
+            this.height = 0;
+            
+            if (! (this instanceof AnonymousBlockBox)) {
+                int cssWidth = getCSSWidth(c);
+                if (cssWidth != -1) {
+                    this.contentWidth = cssWidth;
+                }
+                
+                int cssHeight = getCSSHeight(c);
+                if (cssHeight != -1) {
+                    this.height = cssHeight;
+                }
+                
+                //check if replaced
+                ReplacedElement re = getReplacedElement();
+                if (re == null) {
+                    re = c.getReplacedElementFactory().createReplacedElement(
+                        c, this, c.getUac(), cssWidth, cssHeight);
+                }
+                if (re != null) {
+                    this.contentWidth = re.getIntrinsicWidth();
+                    this.height = re.getIntrinsicHeight();
+                    setReplacedElement(re);
+                } else if (cssWidth == -1 && 
+                        (style.isInlineBlock() || style.isFloated() || 
+                                style.isAbsolute() || style.isFixed())) { 
+                    this.needShrinkToFitCalculatation = true;
+                }
+                
+                if (! isReplaced()) {
+                    applyCSSMinMaxWidth(c);
+                }
+            }
+            
+            this.dimensionsCalculated = true;
         }
     }
     
@@ -506,49 +559,18 @@ public class BlockBox extends Box implements InlinePaintable {
             c.pushBFC(bfc);
         }
         
+        calcDimensions(c);
         collapseMargins(c);
+        
+        if (this.needShrinkToFitCalculatation) {
+            this.contentWidth = calcShrinkToFitWidth(c) - this.leftMBP - this.rightMBP;
+            applyCSSMinMaxWidth(c);
+            this.needShrinkToFitCalculatation = false;
+        }
         
         BorderPropertySet border = style.getBorder(c);
         RectPropertySet margin = getMargin(c);
         RectPropertySet padding = getPadding(c);
-        
-        // CLEAN: cast to int
-        this.leftMBP = (int) margin.left() + (int) border.left() + (int) padding.left();
-        this.rightMBP = (int) padding.right() + (int) border.right() + (int) margin.right();
-        this.contentWidth = (int) (getContainingBlockWidth() - this.leftMBP - this.rightMBP);
-        this.height = 0;
-        
-        if (! (this instanceof AnonymousBlockBox)) {
-            int cssWidth = getCSSWidth(c);
-            if (cssWidth != -1) {
-                this.contentWidth = cssWidth;
-            }
-            
-            int cssHeight = getCSSHeight(c);
-            if (cssHeight != -1) {
-                this.height = cssHeight;
-            }
-            
-            //check if replaced
-            ReplacedElement re = getReplacedElement();
-            if (re == null) {
-                re = c.getReplacedElementFactory().createReplacedElement(
-                    c, this, c.getUac(), cssWidth, cssHeight);
-            }
-            if (re != null) {
-                this.contentWidth = re.getIntrinsicWidth();
-                this.height = re.getIntrinsicHeight();
-                setReplacedElement(re);
-            } else if (cssWidth == -1 && 
-                    (style.isInlineBlock() || style.isFloated() || 
-                            style.isAbsolute() || style.isFixed())) { 
-                this.contentWidth = calcShrinkToFitWidth(c) - this.leftMBP - this.rightMBP;
-            }
-            
-            if (! isReplaced()) {
-                applyCSSMinMaxWidth(c);
-            }
-        }
         
         if (isResetMargins()) {
             resetCollapsedMargin();
@@ -746,6 +768,7 @@ public class BlockBox extends Box implements InlinePaintable {
             LayoutContext c, boolean calculationRoot, MarginCollapseResult result) {
         if (! isTopMarginCalculated()) {
             if (! isSkipWhenCollapsing()) {
+                calcDimensions(c);
                 RectPropertySet margin = getMargin(c);
                 result.update((int)margin.top());
                 
@@ -779,6 +802,7 @@ public class BlockBox extends Box implements InlinePaintable {
             LayoutContext c, boolean calculationRoot, MarginCollapseResult result) {
         if (! isBottomMarginCalculated()) {
             if (! isSkipWhenCollapsing()) {
+                calcDimensions(c);
                 RectPropertySet margin = getMargin(c);
                 result.update((int)margin.bottom());
                 
@@ -1202,6 +1226,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2006/09/07 16:24:50  peterbrant
+ * Need to calculate (preliminary) box dimensions when collapsing margins
+ *
  * Revision 1.53  2006/09/06 22:42:30  peterbrant
  * Implement min/max-height (non-replaced content only)
  *
