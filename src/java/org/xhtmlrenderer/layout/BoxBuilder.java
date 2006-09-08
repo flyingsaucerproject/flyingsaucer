@@ -92,22 +92,23 @@ public class BoxBuilder {
     
     private static void insertGeneratedContent(
             LayoutContext c, Element element, CalculatedStyle parentStyle, String peName, List children) {
-        CascadedStyle before = c.getCss().getPseudoElementStyle(element, peName);
-        if (before != null && before.hasProperty(CSSName.CONTENT)) {
-            String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
+        CascadedStyle peStyle = c.getCss().getPseudoElementStyle(element, peName);
+        if (peStyle != null && peStyle.hasProperty(CSSName.CONTENT)) {
+            String content = ((CSSPrimitiveValue) peStyle.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
             // FIXME Don't think this test is right. Even empty inline content
             // should force a line box to be created.  Leave for now though.
             // TODO: need to handle hex values in CSS--\2192 is the Unicode for an arrow (HTML &8594;), though this
             // is a general string problem, anywhere strings can appear in CSS, not just content
             if (! content.equals("")) {
-                CalculatedStyle calculatedStyle = parentStyle.deriveStyle(before);
-                children.add(createGeneratedContent(c, element, calculatedStyle, content));
+                CalculatedStyle calculatedStyle = parentStyle.deriveStyle(peStyle);
+                children.add(createGeneratedContent(c, element, peName, calculatedStyle, content));
             }
         }
     }
     
     private static Styleable createGeneratedContent(
-            LayoutContext c, Element element, CalculatedStyle calculatedStyle, String raw) {
+            LayoutContext c, Element element, String peName,
+            CalculatedStyle calculatedStyle, String raw) {
         ContentFunction contentFunction = null;
         String content = CONTENT_NEWLINE.matcher(raw).replaceAll("\n");
         if (Idents.looksLikeAFunction(raw)) {
@@ -126,6 +127,7 @@ public class BoxBuilder {
         InlineBox iB = new InlineBox(content);
         iB.setContentFunction(contentFunction);
         iB.setElement(element);
+        iB.setPseudoElementOrClass(peName);
         iB.setStartsHere(true);
         iB.setEndsHere(true);
         
@@ -135,12 +137,14 @@ public class BoxBuilder {
             return iB;
         } else {
             iB.setStyle(calculatedStyle.createAnonymousStyle());
+            iB.setElement(null);
             
             BlockBox result = createBlockBox(calculatedStyle);
             result.setStyle(calculatedStyle);
             result.setInlineContent(Collections.singletonList(iB));
             result.setElement(element);
             result.setChildrenContentType(BlockBox.CONTENT_INLINE);
+            result.setPseudoElementOrClass(peName);
             
             return result;
         }
@@ -160,14 +164,6 @@ public class BoxBuilder {
         CalculatedStyle parentStyle = sharedContext.getStyle(parent);
         insertGeneratedContent(c, parent, parentStyle, "before", children);
         
-        if (parentStyle.mayHaveFirstLine()) {
-            CascadedStyle firstLine = c.getCss().getPseudoElementStyle(parent, "first-line");
-        }
-
-        if (parentStyle.mayHaveFirstLetter()) {
-            CascadedStyle firstLetter = c.getCss().getPseudoElementStyle(parent, "first-letter");
-        }
-        
         Node working = parent.getFirstChild();
         if (working != null) {
             InlineBox previousIB = null;
@@ -185,11 +181,18 @@ public class BoxBuilder {
                         createChildren(c, element, children);
                     } else {
                         child = createBlockBox(style);
-                    }
-                    
-                    if (child != null) {
                         child.setStyle(style);
                         child.setElement(element);
+                        
+                        BlockBox block = (BlockBox)child;
+                        if (block.getStyle().mayHaveFirstLine()) {
+                            block.setFirstLineStyle(
+                                    c.getCss().getPseudoElementStyle(element, "first-line"));
+                        }
+                        if (block.getStyle().mayHaveFirstLetter()) {
+                            block.setFirstLetterStyle(
+                                    c.getCss().getPseudoElementStyle(element, "first-letter"));
+                        }
                     }
                 }
                 else if (working.getNodeType() == Node.TEXT_NODE) {
@@ -276,7 +279,7 @@ public class BoxBuilder {
             AnonymousBlockBox anon = new AnonymousBlockBox(parent.element);
             anon.setStyle(c.getStyle(parent.element).createAnonymousStyle());
             if (savedParents != null && savedParents.size() > 0) {
-                anon.setOpenParents(savedParents);
+                anon.setOpenInlineBoxes(savedParents);
             }
             parent.addChild(anon);
             anon.setChildrenContentType(BlockBox.CONTENT_INLINE);

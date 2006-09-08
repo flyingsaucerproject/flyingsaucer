@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 public class StyleTracker {
     private List styles = new ArrayList();
@@ -58,7 +59,15 @@ public class StyleTracker {
                 c.pushStyle((CascadedStyle) i.next());
             }
         }
-    }    
+    }
+    
+    public CalculatedStyle deriveAll(CalculatedStyle start) {
+        CalculatedStyle result = start;
+        for (Iterator i = getStyles().iterator(); i.hasNext(); ) {
+            result = result.deriveStyle((CascadedStyle)i.next());
+        }
+        return result;
+    }
 
     public List getStyles() {
         return styles;

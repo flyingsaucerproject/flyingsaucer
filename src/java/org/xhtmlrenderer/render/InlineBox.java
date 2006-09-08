@@ -45,6 +45,7 @@ public class InlineBox implements Styleable
     
     private int _firstLineWidth;
     
+    private String _pseudoElementOrClass;
     
     public InlineBox(String text) {
         _text = text;
@@ -304,5 +305,13 @@ public class InlineBox implements Styleable
     
     public int getFirstLineWidth() {
         return _firstLineWidth;
+    }
+
+    public String getPseudoElementOrClass() {
+        return _pseudoElementOrClass;
+    }
+
+    public void setPseudoElementOrClass(String pseudoElementOrClass) {
+        _pseudoElementOrClass = pseudoElementOrClass;
     }
 }

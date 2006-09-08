@@ -58,14 +58,17 @@ public class InlineBoxing {
         
         int contentStart = 0;
 
-        List elementStack = new ArrayList();
+        List openInlineBoxes = null;
+        
         if (box instanceof AnonymousBlockBox) {
-            List openParents = ((AnonymousBlockBox)box).getOpenParents();
-            if (openParents != null) {
-                elementStack = addOpenParents(c, currentLine, openParents, maxAvailableWidth);
-                InlineBoxInfo last = (InlineBoxInfo)elementStack.get(elementStack.size()-1);
-                currentIB = last.getInlineBox();
+            openInlineBoxes = ((AnonymousBlockBox)box).getOpenInlineBoxes();
+            if (openInlineBoxes != null) {
+                currentIB = addOpenInlineBoxes(c, currentLine, openInlineBoxes, maxAvailableWidth);
             }
+        }
+        
+        if (openInlineBoxes == null) {
+            openInlineBoxes = new ArrayList();
         }
         
         remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
@@ -93,7 +96,7 @@ public class InlineBoxing {
         List pendingInlineLayers = new ArrayList();
         
         if (c.getFirstLinesTracker().hasStyles()) {
-            c.getFirstLinesTracker().pushStyles(c);
+            box.styleText(c, c.getFirstLinesTracker().deriveAll(box.getStyle()));
             hasFirstLinePEs = true;
         }
 
@@ -110,7 +113,7 @@ public class InlineBoxing {
                     previousIB = currentIB;
                     currentIB = new InlineLayoutBox(c, iB.getElement(), style, maxAvailableWidth);
 
-                    elementStack.add(new InlineBoxInfo(currentIB));
+                    openInlineBoxes.add(iB);
 
                     if (previousIB == null) {
                         currentLine.addChildForLayout(c, currentIB);
@@ -167,7 +170,7 @@ public class InlineBoxing {
                     } else {
                         lbContext.saveEnd();
                         InlineText inlineText = layoutText(
-                                c, iB, remainingWidth - fit, lbContext, false);
+                                c, iB.getStyle(), remainingWidth - fit, lbContext, false);
                         if (!lbContext.isUnbreakable() ||
                                 (lbContext.isUnbreakable() && ! currentLine.isContainsContent())) {
                             if (iB.isDynamicFunction()) {
@@ -186,18 +189,17 @@ public class InlineBoxing {
 
                     if (lbContext.isNeedsNewLine()) {
                         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                                maxAvailableWidth, elementStack, pendingFloats, 
+                                maxAvailableWidth, pendingFloats, 
                                 hasFirstLinePEs, pendingInlineLayers, markerData,
                                 contentStart);
                         markerData = null;
                         contentStart = 0;
                         if (currentLine.isFirstLine() && hasFirstLinePEs) {
-                            lbContext.setMaster(TextUtil.transformText(iB.getText(), style));
+                            lbContext.setMaster(TextUtil.transformText(iB.getText(), iB.getStyle()));
                         }
                         previousLine = currentLine;
                         currentLine = newLine(c, previousLine, box);
-                        currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
-                                maxAvailableWidth);
+                        currentIB = addOpenInlineBoxes(c, currentLine, openInlineBoxes,  maxAvailableWidth);
                         previousIB = currentIB.getParent() instanceof LineBox ?
                                 null : (InlineLayoutBox) currentIB.getParent();
                         remainingWidth = maxAvailableWidth;
@@ -212,7 +214,7 @@ public class InlineBoxing {
                     pendingRightMBP -= rightMBP;
                     remainingWidth -= rightMBP;
 
-                    elementStack.remove(elementStack.size() - 1);
+                    openInlineBoxes.remove(openInlineBoxes.size() - 1);
 
                     currentIB.setEndsHere(true);
                     
@@ -241,15 +243,13 @@ public class InlineBoxing {
 
                    if (child.getWidth() > remainingWidth && currentLine.isContainsContent()) {
                        saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                               maxAvailableWidth, elementStack, pendingFloats, 
-                               hasFirstLinePEs, pendingInlineLayers, markerData,
-                               contentStart);
+                               maxAvailableWidth, pendingFloats,  hasFirstLinePEs, 
+                               pendingInlineLayers, markerData, contentStart);
                        markerData = null;
                        contentStart = 0;
                        previousLine = currentLine;
                        currentLine = newLine(c, previousLine, box);
-                       currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
-                               maxAvailableWidth);
+                       currentIB = addOpenInlineBoxes(c, currentLine, openInlineBoxes, maxAvailableWidth);
                        previousIB = currentIB == null || currentIB.getParent() instanceof LineBox ?
                                null : (InlineLayoutBox) currentIB.getParent();
                        remainingWidth = maxAvailableWidth;
@@ -277,7 +277,7 @@ public class InlineBoxing {
 
         currentLine.maybeTrimTrailingSpace(c);
         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePEs,
+                maxAvailableWidth, pendingFloats, hasFirstLinePEs,
                 pendingInlineLayers, markerData, contentStart);
         if (currentLine.isFirstLine() && currentLine.height == 0 && markerData != null) {
             c.setCurrentMarkerData(markerData);
@@ -292,23 +292,25 @@ public class InlineBoxing {
     private static InlineLayoutBox addFirstLetterBox(LayoutContext c, LineBox current, 
             InlineLayoutBox currentIB, LineBreakContext lbContext, int maxAvailableWidth, 
             int remainingWidth) {
-        c.getFirstLettersTracker().pushStyles(c);
+        CalculatedStyle previous = currentIB.getStyle();
         
-        InlineLayoutBox iB = new InlineLayoutBox(c, null, c.getCurrentStyle(), maxAvailableWidth);
+        currentIB.setStyle(c.getFirstLettersTracker().deriveAll(currentIB.getStyle()));
+        
+        InlineLayoutBox iB = new InlineLayoutBox(c, null, currentIB.getStyle(), maxAvailableWidth);
         iB.setStartsHere(true);
         iB.setEndsHere(true);
         
         currentIB.addInlineChild(c, iB);
         current.setContainsContent(true);
         
-        InlineText text = layoutText(c, null, remainingWidth, lbContext, true);
+        InlineText text = layoutText(c, iB.getStyle(), remainingWidth, lbContext, true);
         iB.addInlineChild(c, text);
         iB.setInlineWidth(text.getWidth());
         
         lbContext.setStart(lbContext.getEnd());
         
-        c.getFirstLettersTracker().popStyles(c);
         c.getFirstLettersTracker().clearStyles();
+        currentIB.setStyle(previous);
         
         return iB;
     }
@@ -642,11 +644,10 @@ public class InlineBoxing {
     }
 
     private static void saveLine(final LineBox current, LineBox previous,
-                                 final LayoutContext c, Box block, int minHeight,
-                                 final int maxAvailableWidth, List elementStack, 
-                                 List pendingFloats, boolean hasFirstLinePCs,
-                                 List pendingInlineLayers, MarkerData markerData,
-                                 int contentStart) {
+                                 final LayoutContext c, BlockBox block, int minHeight,
+                                 final int maxAvailableWidth, List pendingFloats, 
+                                 boolean hasFirstLinePCs, List pendingInlineLayers, 
+                                 MarkerData markerData, int contentStart) {
         current.setContentStart(contentStart);
         current.prunePendingInlineBoxes();
 
@@ -679,18 +680,8 @@ public class InlineBoxing {
         }
         
         if (hasFirstLinePCs && current.isFirstLine()) {
-            for (int i = 0; i < elementStack.size(); i++) {
-                c.popStyle();
-            }
-            c.getFirstLinesTracker().popStyles(c);
             c.getFirstLinesTracker().clearStyles();
-            for (Iterator i = elementStack.iterator(); i.hasNext(); ) {
-                InlineBoxInfo iBInfo = (InlineBoxInfo)i.next();
-                /*
-                c.pushStyle(iBInfo.getCascadedStyle());
-                */
-                iBInfo.setCalculatedStyle(c.getCurrentStyle());
-            }
+            block.styleText(c);
         }
 
         if (pendingFloats.size() > 0) {
@@ -748,15 +739,13 @@ public class InlineBoxing {
         }
     }
     
-    private static InlineText layoutText(LayoutContext c, InlineBox iB, int remainingWidth,
+    private static InlineText layoutText(LayoutContext c, CalculatedStyle style, int remainingWidth,
                                          LineBreakContext lbContext, boolean needFirstLetter) {
         InlineText result = null;
 
         result = new InlineText();
         result.setMasterText(lbContext.getMaster());
 
-        CalculatedStyle style = iB.getStyle();
-        
         if (needFirstLetter) {
             Breaker.breakFirstLetter(c, lbContext, remainingWidth, style);
         } else {
@@ -818,38 +807,8 @@ public class InlineBoxing {
 
         return result;
     }
-
-    private static InlineLayoutBox addNestedInlineBoxes(LayoutContext c, LineBox line, 
-            List elementStack, int cbWidth) {
-        InlineLayoutBox currentIB = null;
-        InlineLayoutBox previousIB = null;
-
-        boolean first = true;
-        for (Iterator i = elementStack.iterator(); i.hasNext();) {
-            InlineBoxInfo info = (InlineBoxInfo) i.next();
-            currentIB = info.getInlineBox().copyOf();
-            
-            // :first-line transition
-            if (info.getCalculatedStyle() != null) {
-                currentIB.setStyle(info.getCalculatedStyle());
-                currentIB.setContainingBlockWidth(cbWidth);
-                currentIB.calculateHeight(c);
-                info.setCalculatedStyle(null);
-                info.setInlineBox(currentIB);
-            }
-            
-            if (first) {
-                line.addChildForLayout(c, currentIB);
-                first = false;
-            } else {
-                previousIB.addInlineChild(c, currentIB, false);
-            }
-            previousIB = currentIB;
-        }
-        return currentIB;
-    }
     
-    private static List addOpenParents(LayoutContext c, LineBox line, List openParents, int cbWidth) {
+    private static InlineLayoutBox addOpenInlineBoxes(LayoutContext c, LineBox line, List openParents, int cbWidth) {
         ArrayList result = new ArrayList();
         
         InlineLayoutBox currentIB = null;
@@ -861,7 +820,7 @@ public class InlineBoxing {
             currentIB = new InlineLayoutBox(
                     c, iB.getElement(), iB.getStyle(), cbWidth);
             
-            result.add(new InlineBoxInfo(currentIB));
+            result.add(iB);
             
             if (first) {
                 line.addChildForLayout(c, currentIB);
@@ -871,35 +830,8 @@ public class InlineBoxing {
             }
             previousIB = currentIB;
         }
-        return result;
-    }    
-
-    private static class InlineBoxInfo {
-        private CalculatedStyle calculatedStyle;
-        private InlineLayoutBox inlineBox;
-
-        public InlineBoxInfo(InlineLayoutBox inlineBox) {
-            this.inlineBox = inlineBox;
-        }
-
-        public InlineBoxInfo() {
-        }
-
-        public InlineLayoutBox getInlineBox() {
-            return inlineBox;
-        }
-
-        public void setInlineBox(InlineLayoutBox inlineBox) {
-            this.inlineBox = inlineBox;
-        }
-
-        public CalculatedStyle getCalculatedStyle() {
-            return calculatedStyle;
-        }
-
-        public void setCalculatedStyle(CalculatedStyle calculatedStyle) {
-            this.calculatedStyle = calculatedStyle;
-        }
+        
+        return currentIB;
     }
 }
 

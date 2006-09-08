@@ -30,7 +30,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
 
 public class AnonymousBlockBox extends BlockBox {
-    private List openParents;
+    private List openInlineBoxes;
     
     public AnonymousBlockBox(Element element) {
         this.element = element;
@@ -64,12 +64,12 @@ public class AnonymousBlockBox extends BlockBox {
         }
     }
 
-    public List getOpenParents() {
-        return openParents;
+    public List getOpenInlineBoxes() {
+        return openInlineBoxes;
     }
 
-    public void setOpenParents(List openParents) {
-        this.openParents = openParents;
+    public void setOpenInlineBoxes(List openInlineBoxes) {
+        this.openInlineBoxes = openInlineBoxes;
     }
     
     public boolean isSkipWhenCollapsing() {
@@ -84,15 +84,34 @@ public class AnonymousBlockBox extends BlockBox {
         return true;
     }
     
+    public void provideSiblingMarginToFloats(int margin) {
+        for (Iterator i = getInlineContent().iterator(); i.hasNext(); ) {
+            Styleable styleable = (Styleable)i.next();
+            CalculatedStyle style = styleable.getStyle();
+            if (style.isFloated() && ! (style.isAbsolute() || style.isFixed())) {
+                ((FloatedBlockBox)styleable).setMarginFromSibling(margin);
+            }
+        }
+    }
+    
     public boolean isMayCollapseWithChildren() {
         return false;
     }
+    
+    public void styleText(LayoutContext c) {
+        styleText(c, getParent().getStyle());
+    }    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2006/09/08 15:41:57  peterbrant
+ * Calculate containing block width accurately when collapsing margins / Provide collapsed bottom
+ * margin to floats / Revive :first-line and :first-letter / Minor simplication in InlineBoxing
+ * (get rid of now-superfluous InlineBoxInfo)
+ *
  * Revision 1.19  2006/09/01 23:49:38  peterbrant
  * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
  *

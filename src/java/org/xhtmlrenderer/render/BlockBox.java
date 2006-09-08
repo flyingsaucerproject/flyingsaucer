@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -86,6 +87,9 @@ public class BlockBox extends Box implements InlinePaintable {
     
     private boolean dimensionsCalculated;
     private boolean needShrinkToFitCalculatation;
+    
+    private CascadedStyle firstLineStyle;
+    private CascadedStyle firstLetterStyle;
     
     public BlockBox() {
         super();
@@ -562,11 +566,7 @@ public class BlockBox extends Box implements InlinePaintable {
         calcDimensions(c);
         collapseMargins(c);
         
-        if (this.needShrinkToFitCalculatation) {
-            this.contentWidth = calcShrinkToFitWidth(c) - this.leftMBP - this.rightMBP;
-            applyCSSMinMaxWidth(c);
-            this.needShrinkToFitCalculatation = false;
-        }
+        calcShrinkToFitWidthIfNeeded(c);
         
         BorderPropertySet border = style.getBorder(c);
         RectPropertySet margin = getMargin(c);
@@ -637,6 +637,15 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
+    private void calcShrinkToFitWidthIfNeeded(LayoutContext c)
+    {
+        if (this.needShrinkToFitCalculatation) {
+            this.contentWidth = calcShrinkToFitWidth(c) - this.leftMBP - this.rightMBP;
+            applyCSSMinMaxWidth(c);
+            this.needShrinkToFitCalculatation = false;
+        }
+    }
+
     private void applyCSSMinMaxWidth(LayoutContext c) {
         if (! getStyle().isMaxWidthNone()) {
             int cssMaxWidth = getCSSMaxWidth(c);
@@ -673,6 +682,13 @@ public class BlockBox extends Box implements InlinePaintable {
         setState(Box.CHILDREN_FLUX);
         ensureChildren(c);
         
+        if (getFirstLetterStyle() != null) {
+            c.getFirstLettersTracker().addStyle(getFirstLetterStyle());
+        }
+        if (getFirstLineStyle() != null) {
+            c.getFirstLinesTracker().addStyle(getFirstLineStyle());
+        }
+        
         switch (getChildrenContentType()) {
             case CONTENT_INLINE:
                 InlineBoxing.layoutContent(c, this);
@@ -681,6 +697,14 @@ public class BlockBox extends Box implements InlinePaintable {
                 BlockBoxing.layoutContent(c, this);
                 break;
         }
+        
+        if (getFirstLetterStyle() != null) {
+            c.getFirstLettersTracker().removeLast();
+        }
+        if (getFirstLineStyle() != null) {
+            c.getFirstLinesTracker().removeLast();
+        }
+        
         setState(Box.DONE);
     }
 
@@ -751,7 +775,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 
                 BlockBox next = null;
                 if (! isInline()) {
-                    next = (BlockBox)getNextSibling();
+                    next = getNextCollapsableSibling(collapsedMargin);
                 }
                 if (! (next == null || next instanceof AnonymousBlockBox) && 
                         collapsedMargin.hasMargin()) {
@@ -762,6 +786,22 @@ public class BlockBox extends Box implements InlinePaintable {
                 }
             }
         }
+    }
+
+    private BlockBox getNextCollapsableSibling(MarginCollapseResult collapsedMargin) {
+        BlockBox next = (BlockBox)getNextSibling();
+        while (next != null) {
+            if (next instanceof AnonymousBlockBox) {
+                ((AnonymousBlockBox)next).provideSiblingMarginToFloats(
+                        collapsedMargin.getMargin());
+            }
+            if (! next.isSkipWhenCollapsing()) {
+                break;
+            } else {
+                next = (BlockBox)next.getNextSibling();
+            }
+        }
+        return next;
     }
     
     private void collapseTopMargin(
@@ -1196,6 +1236,61 @@ public class BlockBox extends Box implements InlinePaintable {
 
     protected void setMinWidth(int minWidth) {
         this.minWidth = minWidth;
+    }
+    
+    public void styleText(LayoutContext c) {
+        styleText(c, getStyle());
+    }
+    
+    // FIXME Should be expanded into generic restyle facility
+    public void styleText(LayoutContext c, CalculatedStyle style) {
+        if (getChildrenContentType() == CONTENT_INLINE) {
+            LinkedList styles = new LinkedList();
+            styles.add(style);
+            for (Iterator i = inlineContent.iterator(); i.hasNext(); ) {
+                Styleable child = (Styleable)i.next();
+                if (child instanceof InlineBox) {
+                    InlineBox iB = (InlineBox)child;
+                    
+                    if (iB.isStartsHere()) {
+                        CascadedStyle cs = null;
+                        if (iB.getElement() != null) {
+                            if (iB.getPseudoElementOrClass() == null) {
+                                cs = c.getCss().getCascadedStyle(iB.getElement(), false);
+                            } else {
+                                cs = c.getCss().getPseudoElementStyle(
+                                        iB.getElement(), iB.getPseudoElementOrClass());
+                            }
+                            styles.add(((CalculatedStyle)styles.getLast()).deriveStyle(cs));
+                        } else {
+                            styles.add(style.createAnonymousStyle());
+                        }
+                    }
+                    
+                    iB.setStyle(((CalculatedStyle)styles.getLast()));
+                    
+                    if (iB.isEndsHere()) {
+                        styles.removeLast();
+                    }
+                }
+            }
+        }
+    }
+    
+    public CascadedStyle getFirstLetterStyle() {
+        return firstLetterStyle;
+    }
+
+    public void setFirstLetterStyle(CascadedStyle firstLetterStyle) {
+        this.firstLetterStyle = firstLetterStyle;
+    }
+
+    public CascadedStyle getFirstLineStyle() {
+        return firstLineStyle;
+    }
+
+    public void setFirstLineStyle(CascadedStyle firstLineStyle) {
+        this.firstLineStyle = firstLineStyle;
     }    
     
     private static class MarginCollapseResult {
@@ -1226,6 +1321,11 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.55  2006/09/08 15:41:58  peterbrant
+ * Calculate containing block width accurately when collapsing margins / Provide collapsed bottom
+ * margin to floats / Revive :first-line and :first-letter / Minor simplication in InlineBoxing
+ * (get rid of now-superfluous InlineBoxInfo)
+ *
  * Revision 1.54  2006/09/07 16:24:50  peterbrant
  * Need to calculate (preliminary) box dimensions when collapsing margins
  *

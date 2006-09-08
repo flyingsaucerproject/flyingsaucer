@@ -71,7 +71,7 @@ public class LayoutUtil {
         block.setContainingLayer(currentLine.getContainingLayer());
         
         if (pendingFloats != null) {
-            block.y = currentLine.y + block.getMarginFromPrevious();
+            block.y = currentLine.y + block.getMarginFromSibling();
         } else {
             block.y = currentLine.y + currentLine.height;
         }

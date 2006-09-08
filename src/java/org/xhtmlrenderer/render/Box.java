@@ -104,6 +104,8 @@ public abstract class Box implements Styleable {
 
     private int index;
     
+    private String pseudoElementOrClass;
+    
     public Box() {
     }
 
@@ -780,12 +782,25 @@ public abstract class Box implements Styleable {
     protected void setIndex(int index) {
         this.index = index;
     }
+
+    public String getPseudoElementOrClass() {
+        return pseudoElementOrClass;
+    }
+
+    public void setPseudoElementOrClass(String pseudoElementOrClass) {
+        this.pseudoElementOrClass = pseudoElementOrClass;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.117  2006/09/08 15:41:58  peterbrant
+ * Calculate containing block width accurately when collapsing margins / Provide collapsed bottom
+ * margin to floats / Revive :first-line and :first-letter / Minor simplication in InlineBoxing
+ * (get rid of now-superfluous InlineBoxInfo)
+ *
  * Revision 1.116  2006/09/05 23:03:44  peterbrant
  * Initial draft of shrink-to-fit support
  *
