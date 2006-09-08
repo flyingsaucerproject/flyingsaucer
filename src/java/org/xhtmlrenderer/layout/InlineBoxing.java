@@ -63,6 +63,7 @@ public class InlineBoxing {
         if (box instanceof AnonymousBlockBox) {
             openInlineBoxes = ((AnonymousBlockBox)box).getOpenInlineBoxes();
             if (openInlineBoxes != null) {
+                openInlineBoxes = new ArrayList(openInlineBoxes);
                 currentIB = addOpenInlineBoxes(c, currentLine, openInlineBoxes, maxAvailableWidth);
             }
         }
