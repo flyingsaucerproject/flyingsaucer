@@ -140,8 +140,8 @@ public class WhitespaceStripper2 {
 
         if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
             text = linefeed_to_space.matcher(text).replaceAll(SPACE);
-            text = space_collapse.matcher(text).replaceAll(SPACE);
             text = tab_to_space.matcher(text).replaceAll(SPACE);
+            text = space_collapse.matcher(text).replaceAll(SPACE);
         } else if (whitespace == IdentValue.PRE) { // not correct, should treat as 8 space tab stops
             text = tab_to_space.matcher(text).replaceAll(SPACE);
         }
