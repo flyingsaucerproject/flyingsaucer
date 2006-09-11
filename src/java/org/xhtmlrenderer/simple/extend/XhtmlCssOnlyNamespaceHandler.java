@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Torbjörn Gannholm
+ * Copyright (c) 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -18,18 +18,19 @@
  */
 package org.xhtmlrenderer.simple.extend;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.swing.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Handles xhtml but only css styling is honored,
@@ -161,6 +162,18 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         return title;
     }
+    
+    private Element findFirstChild(Element parent, String targetName) {
+        NodeList children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node n = (Node)children.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(targetName)) {
+                return (Element)n;
+            }
+        }
+        
+        return null;
+    }
 
     /**
      * Gets the inlineStyle attribute of the XhtmlNamespaceHandler object
@@ -171,13 +184,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     public InlineStyleInfo[] getInlineStyle(org.w3c.dom.Document doc) {
         List list = new ArrayList();
         org.w3c.dom.NodeList nl = null;
-        for (int i = 0; i < 1; i++) {//smart HACK
-            Element html = doc.getDocumentElement();
-            nl = html.getElementsByTagName("head");
-            if (nl.getLength() == 0) {
-                break;
-            }
-            nl = ((Element) nl.item(0)).getElementsByTagName("style");
+        Element html = doc.getDocumentElement();
+        Element head = findFirstChild(html, "head");
+        if (head != null) {
+            nl = head.getElementsByTagName("style");
         }
         for (int i = 0, len = nl.getLength(); i < len; i++) {
             StringBuffer style = new StringBuffer();
@@ -224,13 +234,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         list.addAll(java.util.Arrays.asList(refs));
         //get the link elements
         org.w3c.dom.NodeList nl = null;
-        for (int i = 0; i < 1; i++) {//smart HACK
-            Element html = doc.getDocumentElement();
-            nl = html.getElementsByTagName("head");
-            if (nl.getLength() == 0) {
-                break;
-            }
-            nl = ((Element) nl.item(0)).getElementsByTagName("link");
+        Element html = doc.getDocumentElement();
+        Element head = findFirstChild(html, "head");
+        if (head != null) {
+            nl = head.getElementsByTagName("link");
         }
         for (int i = 0, len = nl.getLength(); i < len; i++) {
             Element link = (Element) nl.item(i);
