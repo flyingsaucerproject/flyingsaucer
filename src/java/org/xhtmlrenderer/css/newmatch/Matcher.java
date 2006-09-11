@@ -1,6 +1,6 @@
 /*
  * Matcher.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,6 +19,15 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.extend.TreeResolver;
@@ -27,11 +36,9 @@ import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.util.*;
-
 
 /**
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  */
 public class Matcher {
 
@@ -76,6 +83,9 @@ public class Matcher {
     private Set _visitElements;
     
     private List _pageRules;
+    
+    private Map _elementStyles;
+    private Map _nonCSSStyles;
 
     /**
      * creates a new matcher for the combination of parameters
@@ -660,11 +670,15 @@ public class Matcher {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
-            String style = _attRes.getElementStyling(e);
-            if (style == null || style.equals("")) {
-                return null;
+            if (_elementStyles == null) {
+                String style = _attRes.getElementStyling(e);
+                if (style == null || style.equals("")) {
+                    return null;
+                }
+                return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
+            } else {
+                return (Ruleset)_elementStyles.get(e);
             }
-            return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
         }
     }
 
@@ -673,11 +687,15 @@ public class Matcher {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
-            String style = _attRes.getNonCssStyling(e);
-            if (style == null || style.equals("")) {
-                return null;
+            if (_nonCSSStyles == null) {
+                String style = _attRes.getNonCssStyling(e);
+                if (style == null || style.equals("")) {
+                    return null;
+                }
+                return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
+            } else {
+                return (Ruleset)_nonCSSStyles.get(e);
             }
-            return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
         }
     }
 
@@ -685,7 +703,7 @@ public class Matcher {
      * Mapper represents a local CSS for a Node that is used to match the Node's
      * children.
      *
-     * @author Torbjörn Gannholm
+     * @author Torbjï¿½rn Gannholm
      */
     class Mapper {
 
@@ -852,5 +870,20 @@ public class Matcher {
         }
     }
 
+    public Map getElementStyles() {
+        return _elementStyles;
+    }
+
+    public void setElementStyles(Map elementStyles) {
+        _elementStyles = elementStyles;
+    }
+
+    public Map getNonCSSStyles() {
+        return _nonCSSStyles;
+    }
+
+    public void setNonCSSStyles(Map nonCSSStyles) {
+        _nonCSSStyles = nonCSSStyles;
+    }
 }
 

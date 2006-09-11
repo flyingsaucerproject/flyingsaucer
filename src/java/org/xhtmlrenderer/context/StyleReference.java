@@ -19,17 +19,24 @@
  */
 package org.xhtmlrenderer.context;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.lib.DOMTreeResolver;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.newmatch.Matcher;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
@@ -103,8 +110,77 @@ public class StyleReference {
         XRLog.match("media = " + _context.getMedia());
         _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(
                 new DOMTreeResolver(), attRes, _stylesheetFactory, infos, _context.getMedia());
+        long start = System.currentTimeMillis();
+        createElementStyleMaps(doc, attRes, _matcher);
+        long end = System.currentTimeMillis();
+        XRLog.load("TIME: scan and parse element styles " + (end - start) + "ms");
     }
-
+    
+    private void createElementStyleMaps(Document doc, AttributeResolver attRes, Matcher matcher) {
+        StringBuffer elementStyles = new StringBuffer();
+        List elementStyleElements = new ArrayList();
+        
+        StringBuffer nonCSSStyles = new StringBuffer();
+        List nonCSSStyleElements = new ArrayList();
+        
+        scanElement(
+                attRes, doc.getDocumentElement(),
+                elementStyles, elementStyleElements,
+                nonCSSStyles, nonCSSStyleElements);
+        
+        long start = System.currentTimeMillis();
+        matcher.setElementStyles(createStyleMap(elementStyleElements, elementStyles.toString()));
+        matcher.setNonCSSStyles(createStyleMap(nonCSSStyleElements, nonCSSStyles.toString()));
+        long end = System.currentTimeMillis();
+        XRLog.load("TIME: parse element styles " + (end - start) + "ms");
+    }
+    
+    private Map createStyleMap(List elements, String content) {
+        if (elements.size() == 0) {
+            return Collections.EMPTY_MAP;
+        }
+        
+        List rulesets = _stylesheetFactory.parseStyleDeclarations(StylesheetInfo.AUTHOR, content.toString());
+        
+        if (elements.size() == rulesets.size()) {
+            Map result = new HashMap();
+            Iterator i, j;
+            for (i = elements.iterator(), j = rulesets.iterator(); i.hasNext(); ) {
+                result.put(i.next(), j.next());
+            }
+            return result;
+        } else {
+            // Parse error
+            return null;
+        }
+    }
+    
+    private void scanElement(AttributeResolver attRes, Element e, 
+            StringBuffer elementStyles, List elementStyleElements,
+            StringBuffer nonCSSStyles, List nonCSSStyleElements) {
+        String elementStyling = attRes.getElementStyling(e);
+        if (elementStyling != null && ! elementStyling.equals("")) {
+            elementStyles.append("*  {" + elementStyling + "}\n\n");
+            elementStyleElements.add(e);
+        }
+        
+        String nonCSSStyling = attRes.getNonCssStyling(e);
+        if (nonCSSStyling != null && ! nonCSSStyling.equals("")) {
+            nonCSSStyles.append("*  {" + nonCSSStyling + "}\n\n");
+            nonCSSStyleElements.add(e);
+        }        
+        
+        NodeList children = e.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node n = children.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                scanElement(attRes, (Element)n, 
+                        elementStyles, elementStyleElements,
+                        nonCSSStyles, nonCSSStyleElements);
+            }
+        }
+    }
+    
     /**
      * Description of the Method
      *
@@ -264,6 +340,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2006/09/11 19:23:29  peterbrant
+ * Parse element styles all at once
+ *
  * Revision 1.9  2006/08/27 00:36:14  peterbrant
  * Initial commit of (initial) R7 work
  *

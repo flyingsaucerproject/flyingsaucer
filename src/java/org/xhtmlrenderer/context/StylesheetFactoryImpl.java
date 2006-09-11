@@ -1,6 +1,6 @@
 /*
  * StylesheetFactoryImpl.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,9 +19,24 @@
  */
 package org.xhtmlrenderer.context;
 
-import com.steadystate.css.parser.CSSOMParser;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.w3c.css.sac.InputSource;
-import org.w3c.dom.css.*;
+import org.w3c.dom.css.CSSImportRule;
+import org.w3c.dom.css.CSSMediaRule;
+import org.w3c.dom.css.CSSPageRule;
+import org.w3c.dom.css.CSSRuleList;
+import org.w3c.dom.css.CSSStyleRule;
+import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.stylesheets.MediaList;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
@@ -33,18 +48,16 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.io.*;
-import java.net.URL;
+import com.steadystate.css.parser.CSSOMParser;
 
 /**
  * A Factory class for Cascading Style Sheets. Sheets are parsed using a single
  * parser instance for all sheets. Sheets are cached by URI using a LRU test,
  * but timestamp of file is not checked.
  *
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  */
-public class StylesheetFactoryImpl implements StylesheetFactory {
-
+public class StylesheetFactoryImpl implements StylesheetFactory {    
     /**
      * the UserAgentCallback to resolve uris
      */
@@ -194,6 +207,24 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
             return new Ruleset((CSSStyleRule) style.getCssRules().item(0), origin);
         } catch (Exception ex) {
             throw new XRRuntimeException("Cannot parse style declaration from string." + ex.getMessage(), ex);
+        }
+    }
+    
+    public synchronized List parseStyleDeclarations(int origin, String declarations) {
+        try {
+            java.io.StringReader reader = new java.io.StringReader(declarations);
+            InputSource is = new InputSource(reader);
+            CSSStyleSheet style = parser.parseStyleSheet(is);
+            reader.close();
+            
+            CSSRuleList cssRules = style.getCssRules();
+            List result = new ArrayList();
+            for (int i = 0; i < cssRules.getLength(); i++) {
+                result.add(new Ruleset((CSSStyleRule)cssRules.item(i), origin));
+            }
+            return result;
+        } catch (Exception ex) {
+            throw new XRRuntimeException("Cannot parse style declarations from string." + ex.getMessage(), ex);
         }
     }
 
