@@ -22,6 +22,8 @@ h3(fs_heading){clear:none}. General XHTML / CSS features
 * CSS selectors. All CSS selectors in the spec should be supported, even the sibling/child ones
 * Pagination
 * Margin Collapsing
+* R7pre1: Shrink-to-fit sizing. Turned on for auto-width floats, inline-blocks, and absolutely positioned content.
+* R7pre1: min-width, max-width, min-height, and max-height properties, for non-replaced content only.
 
 h3(fs_heading){clear:none}. Special Features
 
@@ -32,7 +34,7 @@ h3(fs_heading){clear:none}. Special Features
 h3(fs_heading){clear:none}. What's not Supported (yet)
 
 * Parts of absolute, fixed, and float positioning. Things like setting a left and right with width = auto. There are probably a lot of bugs when you nest positioned boxes too.
-* Shrink-to-fit sizing. You need an explicit width on any positioned for floated box.
+* Shrink-to-fit sizing. You need an explicit width on any positioned for floated box. (in R7pre1)
 * Auto-fit tables. You must use explicit table widths and sizes (%,px, em, etc).
 * Incremental rendering and dynamic layout
 
