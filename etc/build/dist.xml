@@ -35,7 +35,10 @@
 			<include name="etc/build/**"/>
 			<include name="src/**"/>
 			<include name="demos/**"/>
-			<zipfileset dir="${src.packaging.dir}" includes="readme.txt" fullpath="readme.txt"/>
+      <include name="www/r6/users-guide-r6.html"/>
+      <include name="www/r6/*.png"/>
+      <include name="www/base.css"/>
+      <zipfileset dir="${src.packaging.dir}" includes="readme.txt" fullpath="readme.txt"/>
 		</zip>
 	</target>
 
