@@ -6,7 +6,7 @@ include. ../include/menu.xil
 
 h1. CSS and XHTML References
 
-h2(fs_heading). Library
+h2(fs_heading){clear:none}. Library
 
 Flying Saucer makes use of the ${cssparser} project on Sourceforge, formerly the Steady State CSS parser. All of our modifications to it have been contributed back to this project per the LGPL license.
 The Specs:
@@ -15,14 +15,14 @@ The Specs:
 * ${css21} (exhaustive but precise)
 * "W3CSchools XHTML Website":http://www.w3schools.com/xhtml/xhtml_reference.asp a more hands on definition of XHTML with examples and tutorials
 
-h2(fs_heading). Learning about Good CSS Design
+h2(fs_heading){clear:none}. Learning about Good CSS Design
 
 * "A List Apart":http://alistapart.com/ years of articles about good CSS design
 * "CSS Edge":http://www.meyerweb.com/eric/css/edge/ demos and cool tutorials of advanced CSS
 * "CSS Zen Garden":http://csszengarden.com/ An example site showing the power of CSS.
 * "Dashboard":http://www.apple.com/macosx/tiger/dashboard.html Apple's technology to free XHTML/CSS from the webbrowser.
 
-h2(fs_heading). Books
+h2(fs_heading){clear:none}. Books
 
 * "Eric Myers on CSS":http://www.ericmeyeroncss.com/
 * "CSS Pocket Reference, 2nd Edition":http://www.oreilly.com/catalog/csspr2/ (only 10$!)
