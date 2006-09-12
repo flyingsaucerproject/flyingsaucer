@@ -24,7 +24,7 @@ h2(fs_heading). The 100% Java XHTML/CSS2 Renderer
 
 h2(fs_heading). News
 
-p{font-size: 18pt}. *Flying Saucer: Release 7 pre 1 Now Available!*
+p{font-size: 14pt}. *Flying Saucer: Release 7 pre 1 Now Available!*
 
 *September 11, 2006*: The Flying Saucer team announces the Release 7pre1 of the Flying Saucer 100% Java XHTML+CSS renderer. 
 
@@ -38,7 +38,7 @@ R7pre1 has some great improvements since our R6 release a few weeks ago, includi
 
 You can download either the binary or the source bundle by following the links on the navigation menu. Front-facing APIs haven't changed since R6, so documentation remains the same. Remember this is an unstable release, meaning it's been smoke-tested but has not been fully shaken out. Let us know if you have any problems. Take it for a spin!   
 
-p{font-size: 18pt}. *Flying Saucer: Release 6 Now Available!*
+p{font-size: 14pt}. *Flying Saucer: Release 6 Now Available!*
 
 *August 6, 2006*: The Flying Saucer team is happy to announce Release 6 of the Flying Saucer 100% Java XHTML+CSS renderer.  
 
@@ -74,6 +74,7 @@ Download our latest stable release, R6:
 ==
 
 p.
+
 h2(fs_heading). Development Snapshots
 
 Our latest development snapshot is R7pre1. This is a snapshot of the current CVS HEAD. Careful, we've smoke-tested it but there may be problems.
@@ -93,6 +94,7 @@ Our latest development snapshot is R7pre1. This is a snapshot of the current CVS
 
 
 p.
+
 h2(fs_heading). Demos
 
 Check out our spiffy "demo apps":r6/demos.html.
@@ -100,6 +102,7 @@ Check out our spiffy "demo apps":r6/demos.html.
 As part of our R6 release, the older and pre-release binaries for the R5 release have been removed from our download servers. If you are still using the R6pre1 or R6pre2 releases, or R5, please upgrade to the final release, as we can no longer support changes to the pre-releases or to Release 5.
 
 p.
+
 h2(fs_heading). Helping Out
 
 We need help!
