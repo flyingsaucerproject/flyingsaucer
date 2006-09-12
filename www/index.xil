@@ -54,6 +54,7 @@ Release 6 includes major improvements in performance and stability--plus we've t
 
 Plus there are lots of bug fixes and improvements all around; check out our complete "feature list":r6/feature-list.html. We have one user community using Flying Saucer to render PDF output from XML+CSS via over 30K lines of XSL. Things are looking good!
 
+p.
 
 h2(fs_heading). Stable Releases
 
@@ -72,6 +73,7 @@ Download our latest stable release, R6:
 </a>
 ==
 
+p.
 h2(fs_heading). Development Snapshots
 
 Our latest development snapshot is R7pre1. This is a snapshot of the current CVS HEAD. Careful, we've smoke-tested it but there may be problems.
@@ -90,13 +92,15 @@ Our latest development snapshot is R7pre1. This is a snapshot of the current CVS
 ==
 
 
+p.
 h2(fs_heading). Demos
 
 Check out our spiffy "demo apps":r6/demos.html.
   
 As part of our R6 release, the older and pre-release binaries for the R5 release have been removed from our download servers. If you are still using the R6pre1 or R6pre2 releases, or R5, please upgrade to the final release, as we can no longer support changes to the pre-releases or to Release 5.
 
-h2(fs_heading). Sail with the Saucer!
+p.
+h2(fs_heading). Helping Out
 
 We need help!
 
