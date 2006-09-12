@@ -18,11 +18,11 @@ divStart(#fs).
 
 include. include/menu.xil
 
-h1(fs_heading). !images/new_saucer.png! Flying Saucer
+h1(fs_heading){ clear: none }. !images/new_saucer.png! Flying Saucer
 
-h2(fs_heading). The 100% Java XHTML/CSS2 Renderer
+h2(fs_heading){ clear: none }. The 100% Java XHTML/CSS2 Renderer
 
-h2(fs_heading). News
+h2(fs_heading){ clear: none }. News
 
 p{font-size: 14pt}. *Flying Saucer: Release 7 pre 1 Now Available!*
 
