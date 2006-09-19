@@ -189,29 +189,31 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         if (head != null) {
             nl = head.getElementsByTagName("style");
         }
-        for (int i = 0, len = nl.getLength(); i < len; i++) {
-            StringBuffer style = new StringBuffer();
-            org.w3c.dom.Element elem = (org.w3c.dom.Element) nl.item(i);
-            String m = elem.getAttribute("media");
-            if ("".equals(m)) {
-                m = "all";
-            }//default for HTML is "screen", but that is silly and firefox seems to assume "all"
-            StylesheetInfo info = new StylesheetInfo();
-            info.setMedia(m);
-            info.setType(elem.getAttribute("type"));
-            info.setTitle(elem.getAttribute("title"));
-            info.setOrigin(StylesheetInfo.AUTHOR);
-            org.w3c.dom.NodeList children = elem.getChildNodes();
-            for (int j = 0; j < children.getLength(); j++) {
-                org.w3c.dom.Node txt = children.item(j);
-                if (txt instanceof CharacterData) {
-                    style.append(txt.getNodeValue());
+        if (nl != null) {
+            for (int i = 0, len = nl.getLength(); i < len; i++) {
+                StringBuffer style = new StringBuffer();
+                org.w3c.dom.Element elem = (org.w3c.dom.Element) nl.item(i);
+                String m = elem.getAttribute("media");
+                if ("".equals(m)) {
+                    m = "all";
+                }//default for HTML is "screen", but that is silly and firefox seems to assume "all"
+                StylesheetInfo info = new StylesheetInfo();
+                info.setMedia(m);
+                info.setType(elem.getAttribute("type"));
+                info.setTitle(elem.getAttribute("title"));
+                info.setOrigin(StylesheetInfo.AUTHOR);
+                org.w3c.dom.NodeList children = elem.getChildNodes();
+                for (int j = 0; j < children.getLength(); j++) {
+                    org.w3c.dom.Node txt = children.item(j);
+                    if (txt instanceof CharacterData) {
+                        style.append(txt.getNodeValue());
+                    }
                 }
+                InlineStyleInfo isi = new InlineStyleInfo();
+                isi.setInfo(info);
+                isi.setStyle(style.toString());
+                list.add(isi);
             }
-            InlineStyleInfo isi = new InlineStyleInfo();
-            isi.setInfo(info);
-            isi.setStyle(style.toString());
-            list.add(isi);
         }
 
         InlineStyleInfo[] infos = new InlineStyleInfo[list.size()];
@@ -239,33 +241,35 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         if (head != null) {
             nl = head.getElementsByTagName("link");
         }
-        for (int i = 0, len = nl.getLength(); i < len; i++) {
-            Element link = (Element) nl.item(i);
-            if (!link.getAttribute("rel").equals("stylesheet")) {
-                continue;
-            }
-            StylesheetInfo info = new StylesheetInfo();
-            info.setOrigin(StylesheetInfo.AUTHOR);
-            String a = link.getAttribute("rel");
-            if (a.indexOf("alternate") != -1) {
-                continue;
-            }//DON'T get alternate stylesheets
-            a = link.getAttribute("type");
-            if ("".equals(a)) {
-                a = "text/css";
-            }//HACK: is not entirely correct because default may be set by META tag or HTTP headers
-            info.setType(a);
-            a = link.getAttribute("href");
-            info.setUri(a);
-            a = link.getAttribute("media");
-            if ("".equals(a)) {
-                a = "screen";
-            }//the default in HTML
-            info.setMedia(a);
-            a = link.getAttribute("title");
-            info.setTitle(a);
-            if (info.getType().equals("text/css")) {
-                list.add(info);
+        if (nl != null) {
+            for (int i = 0, len = nl.getLength(); i < len; i++) {
+                Element link = (Element) nl.item(i);
+                if (!link.getAttribute("rel").equals("stylesheet")) {
+                    continue;
+                }
+                StylesheetInfo info = new StylesheetInfo();
+                info.setOrigin(StylesheetInfo.AUTHOR);
+                String a = link.getAttribute("rel");
+                if (a.indexOf("alternate") != -1) {
+                    continue;
+                }//DON'T get alternate stylesheets
+                a = link.getAttribute("type");
+                if ("".equals(a)) {
+                    a = "text/css";
+                }//HACK: is not entirely correct because default may be set by META tag or HTTP headers
+                info.setType(a);
+                a = link.getAttribute("href");
+                info.setUri(a);
+                a = link.getAttribute("media");
+                if ("".equals(a)) {
+                    a = "screen";
+                }//the default in HTML
+                info.setMedia(a);
+                a = link.getAttribute("title");
+                info.setTitle(a);
+                if (info.getType().equals("text/css")) {
+                    list.add(info);
+                }
             }
         }
 
