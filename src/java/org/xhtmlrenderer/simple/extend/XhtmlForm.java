@@ -18,24 +18,24 @@
  */
 package org.xhtmlrenderer.simple.extend;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xhtmlrenderer.extend.FSImage;
-import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.render.AWTFSImage;
-import org.xhtmlrenderer.util.XRLog;
-
-import javax.swing.*;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.render.AWTFSImage;
+import org.xhtmlrenderer.util.XRLog;
 
 
 /**
@@ -106,7 +106,7 @@ public class XhtmlForm {
                     System.out.println("pulling from here: " + e.getAttribute("src"));
                     FSImage fsImage = uac.getImageResource(e.getAttribute("src")).getImage();
                     if (fsImage != null) {
-                        im = ((AWTFSImage)fsImage).getImage();
+                        im = ((AWTFSImage) fsImage).getImage();
                     }
                 }
                 if (im == null) {
@@ -116,6 +116,7 @@ public class XhtmlForm {
                     jb = new JButton(ii);
                 }
                 jb.setBorder(BorderFactory.createEmptyBorder());
+                jb.setContentAreaFilled(false);
                 cc = jb;
             } else if (type.equals("checkbox")) {
                 JCheckBox checkbox = new JCheckBox();
