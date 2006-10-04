@@ -761,8 +761,7 @@ public class CalculatedStyle {
         }
     }
     
-    public boolean isLayedOutInInlineContext()
-    {
+    public boolean isLayedOutInInlineContext() {
         if (isFloated() || isAbsolute() || isFixed()) {
             return true;
         } else {
@@ -772,7 +771,10 @@ public class CalculatedStyle {
         }
     }
     
-
+    public boolean isNeedAutoMarginResolution() {
+        return ! (isAbsolute() || isFixed() || isFloated() || isInlineBlock());
+    }
+    
     public boolean isAbsolute() {
         return isIdent(CSSName.POSITION, IdentValue.ABSOLUTE);
     }
@@ -937,6 +939,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.72  2006/10/04 23:52:57  peterbrant
+ * Implement support for margin: auto (centering blocks in their containing block)
+ *
  * Revision 1.71  2006/09/06 22:21:43  peterbrant
  * Fixes to shrink-to-fit implementation / Implement min/max-width (non-replaced content) only
  *

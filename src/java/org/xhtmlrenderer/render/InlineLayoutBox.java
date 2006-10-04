@@ -61,8 +61,8 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         this.element = elem;
         setStyle(style);
         setContainingBlockWidth(cbWidth);
-        setCollapsedMarginTop(0);
-        setCollapsedMarginBottom(0);
+        setMarginTop(c, 0);
+        setMarginBottom(c, 0);
         markPending();
         calculateHeight(c);
     }

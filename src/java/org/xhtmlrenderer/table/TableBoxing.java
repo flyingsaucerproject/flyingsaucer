@@ -108,10 +108,10 @@ public class TableBoxing {
 
         TableContent tableContent = (TableContent) content;
         if (tableContent.isTopMarginCollapsed()) {
-            tableBox.setCollapsedMarginTop(0);
+            tableBox.setMarginTop(c, 0);
         }
         if (tableContent.isBottomMarginCollapsed()) {
-            tableBox.setCollapsedMarginBottom(0);
+            tableBox.setMarginBottom(c, 0);
         }
         
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
@@ -696,6 +696,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.67  2006/10/04 23:52:58  peterbrant
+   Implement support for margin: auto (centering blocks in their containing block)
+
    Revision 1.66  2006/09/01 23:49:37  peterbrant
    Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
 

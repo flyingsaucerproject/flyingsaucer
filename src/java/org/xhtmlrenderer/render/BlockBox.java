@@ -490,8 +490,9 @@ public class BlockBox extends Box implements InlinePaintable {
             int right = (int)getStyle().getFloatPropertyProportionalTo(
                     CSSName.RIGHT, getContainingBlockWidth(), c);
             
-            return getContainingBlock().getPaddingWidth(c) - 
+            int result = getContainingBlock().getPaddingWidth(c) - 
                 left - right - this.leftMBP - this.rightMBP;
+            return result < 0 ? 0 : result;
         } 
         
         return -1;
@@ -505,19 +506,54 @@ public class BlockBox extends Box implements InlinePaintable {
             int bottom = (int)getStyle().getFloatPropertyProportionalTo(
                     CSSName.BOTTOM, getContainingBlockWidth(), c);
             
-            return getContainingBlock().getPaddingEdge(0, 0, c).height - top - bottom; 
+            int result = getContainingBlock().getPaddingEdge(0, 0, c).height - top - bottom;
+            return result < 0 ? 0 : result;
         } 
         
         return -1;
+    }
+    
+    private void resolveAutoMargins(
+            LayoutContext c, int cssWidth, 
+            RectPropertySet padding, BorderPropertySet border) {
+        int withoutMargins = 
+            (int)border.left() + (int)padding.left() +
+            cssWidth +
+            (int)padding.right() + (int)border.right();
+        if (withoutMargins < getContainingBlockWidth()) {
+            int available = getContainingBlockWidth() - withoutMargins;
+            
+            boolean autoLeft = getStyle().isIdent(CSSName.MARGIN_LEFT, IdentValue.AUTO);
+            boolean autoRight = getStyle().isIdent(CSSName.MARGIN_RIGHT, IdentValue.AUTO);
+            
+            if (autoLeft && autoRight) {
+                setMarginLeft(c, available / 2);
+                setMarginRight(c, available / 2);
+            } else if (autoLeft) {
+                setMarginLeft(c, available);
+            } else if (autoRight) {
+                setMarginRight(c, available);
+            }
+        }
     }
     
     private void calcDimensions(LayoutContext c) {
         if (! dimensionsCalculated) {
             CalculatedStyle style = getStyle();
             
-            BorderPropertySet border = style.getBorder(c);
-            RectPropertySet margin = getMargin(c);
+            int cssWidth = getCSSWidth(c);
+            
             RectPropertySet padding = getPadding(c);
+            BorderPropertySet border = style.getBorder(c);
+            
+            if (cssWidth != -1 && (! (this instanceof AnonymousBlockBox)) &&
+                    (getStyle().isIdent(CSSName.MARGIN_LEFT, IdentValue.AUTO) ||
+                            getStyle().isIdent(CSSName.MARGIN_RIGHT, IdentValue.AUTO)) &&
+                    getStyle().isNeedAutoMarginResolution()) {
+                resolveAutoMargins(c, cssWidth, padding, border);
+            }
+            
+            RectPropertySet margin = getMargin(c);
             
             // CLEAN: cast to int
             this.leftMBP = (int) margin.left() + (int) border.left() + (int) padding.left();
@@ -528,7 +564,6 @@ public class BlockBox extends Box implements InlinePaintable {
             if (! (this instanceof AnonymousBlockBox)) {
                 int pinnedContentWidth = -1;
                 
-                int cssWidth = getCSSWidth(c);
                 if (cssWidth != -1) {
                     this.contentWidth = cssWidth;
                 } else if (getStyle().isAbsolute()) {
@@ -618,7 +653,7 @@ public class BlockBox extends Box implements InlinePaintable {
         RectPropertySet padding = getPadding(c);
         
         if (isResetMargins()) {
-            resetCollapsedMargin();
+            resetCollapsedMargin(c);
             setResetMargins(false);
         }
         
@@ -809,7 +844,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 
                 collapseTopMargin(c, true, collapsedMargin);
                 if ((int)margin.top() != collapsedMargin.getMargin()) {
-                    setCollapsedMarginTop(collapsedMargin.getMargin());
+                    setMarginTop(c, collapsedMargin.getMargin());
                 }
             }
             
@@ -824,9 +859,9 @@ public class BlockBox extends Box implements InlinePaintable {
                 if (! (next == null || next instanceof AnonymousBlockBox) && 
                         collapsedMargin.hasMargin()) {
                     next.pendingCollapseCalculation = collapsedMargin;
-                    setCollapsedMarginBottom(0);
+                    setMarginBottom(c, 0);
                 } else if ((int)margin.bottom() != collapsedMargin.getMargin()) {
-                    setCollapsedMarginBottom(collapsedMargin.getMargin());
+                    setMarginBottom(c, collapsedMargin.getMargin());
                 }
             }
         }
@@ -857,7 +892,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 result.update((int)margin.top());
                 
                 if (! calculationRoot && (int)margin.top() != 0) {
-                    setCollapsedMarginTop(0);
+                    setMarginTop(c, 0);
                 }
                 
                 if (isMayCollapseWithChildren() && 
@@ -891,7 +926,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 result.update((int)margin.bottom());
                 
                 if (! calculationRoot && (int)margin.bottom() != 0) {
-                    setCollapsedMarginBottom(0);
+                    setMarginBottom(c, 0);
                 }
                 
                 if (isMayCollapseWithChildren() && 
@@ -1387,6 +1422,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.58  2006/10/04 23:52:57  peterbrant
+ * Implement support for margin: auto (centering blocks in their containing block)
+ *
  * Revision 1.57  2006/10/04 21:35:49  peterbrant
  * Allow dimensions of absolutely positioned content to be specified with all four corners, not just one of left/right, top/bottom
  *

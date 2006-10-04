@@ -97,11 +97,8 @@ public abstract class Box implements Styleable {
     
     private Rectangle aggregateBounds;
     
-    private int collapsedMarginTop;
-    private boolean collapsedMarginTopSet = false;
-    private int collapsedMarginBottom;
-    private boolean collapsedMarginBottomSet = false;
-
+    private RectPropertySet workingMargin;
+    
     private int index;
     
     private String pseudoElementOrClass;
@@ -590,8 +587,7 @@ public abstract class Box implements Styleable {
         }
         this.containingLayer = null;
         this.layer = null;
-        this.collapsedMarginBottomSet = false;
-        this.collapsedMarginTopSet = false;
+        this.workingMargin = null;
         String anchorName = c.getNamespaceHandler().getAnchorName(this.element);
         if (anchorName != null) {
             c.removeNamedAnchor(anchorName);
@@ -724,39 +720,38 @@ public abstract class Box implements Styleable {
         this.aggregateBounds = aggregateBounds;
     }
     
-    public float getCollapsedMarginTop() {
-        return this.collapsedMarginTop;
+    public void setMarginTop(CssContext cssContext, int marginTop) {
+        ensureWorkingMargin(cssContext);
+        this.workingMargin.setTop(marginTop);
     }
 
-    public void setCollapsedMarginTop(int marginTop) {
-        this.collapsedMarginTop = marginTop;
-        this.collapsedMarginTopSet = true;
+    public void setMarginBottom(CssContext cssContext, int marginBottom) {
+        ensureWorkingMargin(cssContext);
+        this.workingMargin.setBottom(marginBottom);
     }
-
-    public float getCollapsedMarginBottom() {
-        return this.collapsedMarginBottom;
+    
+    public void setMarginLeft(CssContext cssContext, int marginLeft) {
+        ensureWorkingMargin(cssContext);
+        this.workingMargin.setLeft(marginLeft);
     }
-
-    public void setCollapsedMarginBottom(int marginBottom) {
-        this.collapsedMarginBottom = marginBottom;
-        this.collapsedMarginBottomSet = true;
+    
+    public void setMarginRight(CssContext cssContext, int marginRight) {
+        ensureWorkingMargin(cssContext);
+        this.workingMargin.setRight(marginRight);
+    }    
+    
+    private void ensureWorkingMargin(CssContext cssContext) {
+        if (this.workingMargin == null) {
+            this.workingMargin = getStyleMargin(cssContext).copyOf();
+        }
     }
 
     public RectPropertySet getMargin(CssContext cssContext) {
-        RectPropertySet rect = 
-            getStyle().getMarginRect(getContainingBlockWidth(), cssContext);
-
-        if (collapsedMarginTopSet || collapsedMarginBottomSet) {
-            rect = rect.copyOf();
-            if (collapsedMarginTopSet) {
-                rect.setTop((int)collapsedMarginTop);
-            }
-            if (collapsedMarginBottomSet) {
-                rect.setBottom((int)collapsedMarginBottom);
-            }
-        }
-
-        return rect;
+        return this.workingMargin != null ? this.workingMargin : getStyleMargin(cssContext);
+    }
+    
+    private RectPropertySet getStyleMargin(CssContext cssContext) {
+        return getStyle().getMarginRect(getContainingBlockWidth(), cssContext);
     }
     
     public RectPropertySet getPadding(CssContext cssCtx) {
@@ -772,12 +767,13 @@ public abstract class Box implements Styleable {
         return getContainingBlock().getContentWidth();
     }
     
-    public void resetCollapsedMargin() {
-        this.collapsedMarginBottom = 0;
-        this.collapsedMarginBottomSet = false;
-        
-        this.collapsedMarginTop = 0;
-        this.collapsedMarginTopSet = false;
+    public void resetCollapsedMargin(CssContext cssContext) {
+        if (this.workingMargin != null) {
+            RectPropertySet styleMargin = getStyleMargin(cssContext);
+            
+            this.workingMargin.setTop(styleMargin.top());
+            this.workingMargin.setBottom(styleMargin.bottom());
+        }
     }
 
     protected int getIndex() {
@@ -801,6 +797,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.119  2006/10/04 23:52:57  peterbrant
+ * Implement support for margin: auto (centering blocks in their containing block)
+ *
  * Revision 1.118  2006/10/04 19:49:08  peterbrant
  * Improve calculation of available width when calculating shrink-to-fit width
  *
