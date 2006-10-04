@@ -655,8 +655,8 @@ public class Layer {
                     layoutAbsoluteChild(c, child);
                     if (child.getMaster().getStyle().isAvoidPageBreakInside() &&
                             child.getMaster().crossesPageBreak(c)) {
-                        ((BlockBox)child.getMaster()).setNeedPageClear(true);
                         child.getMaster().reset(c);
+                        ((BlockBox)child.getMaster()).setNeedPageClear(true);
                         layoutAbsoluteChild(c, child);
                         ((BlockBox)child.getMaster()).setNeedPageClear(false);
                         if (child.getMaster().crossesPageBreak(c)) {
