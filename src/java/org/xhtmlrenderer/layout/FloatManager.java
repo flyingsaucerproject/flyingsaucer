@@ -75,9 +75,6 @@ public class FloatManager {
         alignToLastOpposingFloat(cssCtx, bfc, current, direction);
         alignToLastFloat(cssCtx, bfc, current, direction);
 
-        // FIXME These linear searches are slooow when there are a ton
-        // of floats and (I think) unnecessary.  Revisit.
-        
         if (!fitsInContainingBlock(current) ||
                 overlaps(cssCtx, bfc, current, getFloats(direction))) {
             moveAllTheWayOver(current, direction);
