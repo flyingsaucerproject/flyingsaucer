@@ -19,15 +19,14 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
-import org.xhtmlrenderer.util.GeneralUtil;
-import org.xhtmlrenderer.util.Uu;
-
-import javax.swing.*;
-import javax.swing.border.EtchedBorder;
+import java.awt.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+
+import org.xhtmlrenderer.util.GeneralUtil;
+import org.xhtmlrenderer.util.Uu;
 
 /**
  * Description of the Class
@@ -155,15 +154,15 @@ public class BrowserStartup {
     private static void setLookAndFeel() {
         boolean lnfSet = false;
         try {
-            UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
+            UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
             lnfSet = true;
-        } catch (Exception e) {}
+        } catch (Throwable th) {}
         if (!lnfSet) {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 lnfSet = true;
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Throwable th) {
+                th.printStackTrace();
             }
         }
     }
@@ -192,6 +191,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2006/10/04 08:06:26  pdoubleya
+ * Made reference to JGoodies via class name, not via class, in case not available; catch Throwable in that case as class not found is an error, not an exception.
+ *
  * Revision 1.20  2006/07/31 14:20:54  pdoubleya
  * Bunch of cleanups and fixes. Now using a toolbar for actions, added Home button, next/prev navigation actions to facilitate demo file browsing, loading demo pages from a list, about dlg and link to user's manual.
  *
