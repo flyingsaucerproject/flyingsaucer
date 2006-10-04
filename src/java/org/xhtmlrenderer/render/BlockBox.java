@@ -392,7 +392,6 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
-    // TODO Finish this!
     public void positionAbsolute(CssContext cssCtx, int direction) {
         CalculatedStyle style = getStyle();
 
@@ -424,6 +423,14 @@ public class BlockBox extends Box implements InlinePaintable {
 	            this.y = boundingBox.height -
 	                    (int)style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight();
 	        }
+
+            // Can't do this before now because our containing block
+            // must be completed layed out
+            int pinnedHeight = calcPinnedHeight(cssCtx);
+            if (pinnedHeight != -1 && getCSSHeight(cssCtx) == -1) {
+                this.height = pinnedHeight;
+                applyCSSMinMaxHeight(cssCtx);
+            }
         }
 	
         this.x += boundingBox.x;
@@ -475,6 +482,35 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
     
+    private int calcPinnedContentWidth(CssContext c) {
+        if (! getStyle().isIdent(CSSName.LEFT, IdentValue.AUTO) &&
+                ! getStyle().isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
+            int left = (int)getStyle().getFloatPropertyProportionalTo(
+                    CSSName.LEFT, getContainingBlockWidth(), c);
+            int right = (int)getStyle().getFloatPropertyProportionalTo(
+                    CSSName.RIGHT, getContainingBlockWidth(), c);
+            
+            return getContainingBlock().getPaddingWidth(c) - 
+                left - right - this.leftMBP - this.rightMBP;
+        } 
+        
+        return -1;
+    }
+    
+    private int calcPinnedHeight(CssContext c) {
+        if (! getStyle().isIdent(CSSName.TOP, IdentValue.AUTO) &&
+                ! getStyle().isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
+            int top = (int)getStyle().getFloatPropertyProportionalTo(
+                    CSSName.TOP, getContainingBlockWidth(), c);
+            int bottom = (int)getStyle().getFloatPropertyProportionalTo(
+                    CSSName.BOTTOM, getContainingBlockWidth(), c);
+            
+            return getContainingBlock().getPaddingEdge(0, 0, c).height - top - bottom; 
+        } 
+        
+        return -1;
+    }
+    
     private void calcDimensions(LayoutContext c) {
         if (! dimensionsCalculated) {
             CalculatedStyle style = getStyle();
@@ -490,9 +526,16 @@ public class BlockBox extends Box implements InlinePaintable {
             this.height = 0;
             
             if (! (this instanceof AnonymousBlockBox)) {
+                int pinnedContentWidth = -1;
+                
                 int cssWidth = getCSSWidth(c);
                 if (cssWidth != -1) {
                     this.contentWidth = cssWidth;
+                } else if (getStyle().isAbsolute()) {
+                    pinnedContentWidth = calcPinnedContentWidth(c);
+                    if (pinnedContentWidth != -1) {
+                        this.contentWidth = pinnedContentWidth;
+                    }
                 }
                 
                 int cssHeight = getCSSHeight(c);
@@ -510,7 +553,7 @@ public class BlockBox extends Box implements InlinePaintable {
                     this.contentWidth = re.getIntrinsicWidth();
                     this.height = re.getIntrinsicHeight();
                     setReplacedElement(re);
-                } else if (cssWidth == -1 && 
+                } else if (cssWidth == -1 && pinnedContentWidth == -1 &&
                         (style.isInlineBlock() || style.isFloated() || 
                                 style.isAbsolute() || style.isFixed())) { 
                     this.needShrinkToFitCalculatation = true;
@@ -647,7 +690,7 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
-    private void applyCSSMinMaxWidth(LayoutContext c) {
+    private void applyCSSMinMaxWidth(CssContext c) {
         if (! getStyle().isMaxWidthNone()) {
             int cssMaxWidth = getCSSMaxWidth(c);
             if (this.contentWidth > cssMaxWidth) {
@@ -660,7 +703,7 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
     
-    private void applyCSSMinMaxHeight(LayoutContext c) {
+    private void applyCSSMinMaxHeight(CssContext c) {
         if (! getStyle().isMaxHeightNone()) {
             int cssMaxHeight = getCSSMaxHeight(c);
             if (this.height > cssMaxHeight) {
@@ -933,7 +976,7 @@ public class BlockBox extends Box implements InlinePaintable {
         this.bottomMarginCalculated = bottomMarginCalculated;
     }  
     
-    private int getCSSWidth(LayoutContext c) {
+    private int getCSSWidth(CssContext c) {
         if (! (this instanceof AnonymousBlockBox)) {
             if (! getStyle().isAutoWidth()) {
                 return (int) getStyle().getFloatPropertyProportionalWidth(
@@ -944,7 +987,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return -1;
     }
     
-    private int getCSSHeight(LayoutContext c) {
+    private int getCSSHeight(CssContext c) {
         if (! (this instanceof AnonymousBlockBox)) {
             if (! isAutoHeight()) {
                 if (! getContainingBlock().getStyle().isAutoHeight()) {
@@ -973,26 +1016,26 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
     
-    private int getCSSMinWidth(LayoutContext c) {
+    private int getCSSMinWidth(CssContext c) {
         return getStyle().getMinWidth(c, getContainingBlockWidth());
     }
     
-    private int getCSSMaxWidth(LayoutContext c) {
+    private int getCSSMaxWidth(CssContext c) {
         return getStyle().getMaxWidth(c, getContainingBlockWidth());
     }
     
-    private int getCSSMinHeight(LayoutContext c) {
+    private int getCSSMinHeight(CssContext c) {
         return getStyle().getMinHeight(c, getContainingBlockCSSHeight(c));
     }
     
-    private int getCSSMaxHeight(LayoutContext c) {
+    private int getCSSMaxHeight(CssContext c) {
         return getStyle().getMaxHeight(c, getContainingBlockCSSHeight(c));
     }
     
     // Use only when the height of the containing block is required for
     // resolving percentage values.  Does not represent the actual (resolved) height
     // of the containing block.
-    private int getContainingBlockCSSHeight(LayoutContext c) {
+    private int getContainingBlockCSSHeight(CssContext c) {
         if (! getContainingBlock().isStyled() || 
                     getContainingBlock().getStyle().isAutoHeight()) {
             return 0;
@@ -1016,21 +1059,21 @@ public class BlockBox extends Box implements InlinePaintable {
         if (! getStyle().isAbsolute()) {
             return getContainingBlockWidth();
         } else {
+            int left = 0;
+            int right = 0;
             if (! getStyle().isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-                int left =
+                left =
                     (int)getStyle().getFloatPropertyProportionalTo(CSSName.LEFT, 
                             getContainingBlock().getContentWidth(), c);
-                return getContainingBlock().getPaddingWidth(c) - left;
             }
             
             if (! getStyle().isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-                int right =
+                right =
                     (int)getStyle().getFloatPropertyProportionalTo(CSSName.RIGHT, 
                             getContainingBlock().getContentWidth(), c);
-                return getContainingBlock().getPaddingWidth(c) - right;
             }
             
-            return getContainingBlockWidth();
+            return getContainingBlock().getPaddingWidth(c) - left - right;
         }
     }
     
@@ -1344,6 +1387,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.57  2006/10/04 21:35:49  peterbrant
+ * Allow dimensions of absolutely positioned content to be specified with all four corners, not just one of left/right, top/bottom
+ *
  * Revision 1.56  2006/10/04 19:49:08  peterbrant
  * Improve calculation of available width when calculating shrink-to-fit width
  *
