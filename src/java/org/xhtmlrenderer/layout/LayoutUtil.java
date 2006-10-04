@@ -49,8 +49,6 @@ public class LayoutUtil {
         } else {
             c.pushLayer(box);
             c.getLayer().setRequiresLayout(true);
-            c.getLayer().setLayoutData(
-                    new AbsoluteContentLayoutData(box, c.getCurrentStyle()));
             c.popLayer();
         }
         

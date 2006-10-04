@@ -118,14 +118,10 @@ public class LayoutContext implements CssContext {
         this.firstLetters = new StyleTracker();
     }
     
-    public void reInit(CalculatedStyle currentStyle) {
+    public void reInit() {
         this.firstLines = new StyleTracker();
         this.firstLetters = new StyleTracker();
         this.currentMarkerData = null;
-        
-        this.styleStack = new Stack();
-        this.styleStack.push(new EmptyStyle());
-        this.styleStack.push(currentStyle);
         
         this.bfcs = new Stack();
         

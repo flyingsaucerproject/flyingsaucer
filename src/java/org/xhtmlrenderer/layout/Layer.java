@@ -60,8 +60,6 @@ public class Layer {
     private boolean inline;
     private boolean requiresLayout;
     
-    private AbsoluteContentLayoutData layoutData;
-    
     private List pages;
     
     public Layer(Box master) {
@@ -590,14 +588,6 @@ public class Layer {
         this.end = end;
     }
 
-    public AbsoluteContentLayoutData getLayoutData() {
-        return layoutData;
-    }
-
-    public void setLayoutData(AbsoluteContentLayoutData layoutData) {
-        this.layoutData = layoutData;
-    }
-
     public boolean isRequiresLayout() {
         return requiresLayout;
     }
@@ -689,7 +679,7 @@ public class Layer {
             // Set top, left
             master.positionAbsolute(c, BlockBox.POSITION_BOTH);
             master.positionAbsoluteOnPage(c);
-            c.reInit(child.getLayoutData().getParentStyle());
+            c.reInit();
             ((BlockBox)child.getMaster()).layout(c);
             // Set right
             master.positionAbsolute(c, BlockBox.POSITION_HORIZONTALLY);
@@ -698,14 +688,14 @@ public class Layer {
             // to do?  Not sure if just laying out and positioning
             // repeatedly will converge on the correct position,
             // so just guess for now
-            c.reInit(child.getLayoutData().getParentStyle());
+            c.reInit();
             ((BlockBox)child.getMaster()).layout(c);
             
             child.getMaster().reset(c);
             master.positionAbsolute(c, BlockBox.POSITION_BOTH);
             master.positionAbsoluteOnPage(c);
             
-            c.reInit(child.getLayoutData().getParentStyle());
+            c.reInit();
             ((BlockBox)child.getMaster()).layout(c);
         }
     }
@@ -714,7 +704,7 @@ public class Layer {
         BlockBox master = (BlockBox)child.getMaster();
         // Set top, left
         master.positionAbsolute(c, BlockBox.POSITION_BOTH);
-        c.reInit(child.getLayoutData().getParentStyle());
+        c.reInit();
         ((BlockBox)child.getMaster()).layout(c);
         // Set bottom, right
         master.positionAbsolute(c, BlockBox.POSITION_BOTH);
