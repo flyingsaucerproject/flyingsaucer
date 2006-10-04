@@ -432,6 +432,11 @@ public abstract class Box implements Styleable {
         return result;
     }
     
+    protected int getPaddingWidth(CssContext cssCtx) {
+        RectPropertySet padding = getPadding(cssCtx);
+        return (int)padding.left() + getContentWidth() + (int)padding.right();
+    }
+    
     public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getMargin(cssCtx);
         RectPropertySet border = getStyle().getBorder(cssCtx);
@@ -796,6 +801,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.118  2006/10/04 19:49:08  peterbrant
+ * Improve calculation of available width when calculating shrink-to-fit width
+ *
  * Revision 1.117  2006/09/08 15:41:58  peterbrant
  * Calculate containing block width accurately when collapsing margins / Provide collapsed bottom
  * margin to floats / Revive :first-line and :first-letter / Minor simplication in InlineBoxing
