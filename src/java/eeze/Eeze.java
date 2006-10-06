@@ -19,13 +19,6 @@
  */
 package eeze;
 
-import org.xhtmlrenderer.simple.FSScrollPane;
-import org.xhtmlrenderer.simple.Graphics2DRenderer;
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.XRLog;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -36,6 +29,13 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
+import org.xhtmlrenderer.simple.FSScrollPane;
+import org.xhtmlrenderer.simple.Graphics2DRenderer;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.XRLog;
 
 
 /**
@@ -94,7 +94,7 @@ public class Eeze {
     /**
      * Description of the Field
      */
-    private String directory;
+    private File directory;
 
     /**
      * Description of the Field
@@ -110,6 +110,7 @@ public class Eeze {
             };
     private ReloadPageAction reloadPageAction;
     private ReloadFileListAction reloadFileList;
+    private boolean compareImages;
 
     /**
      * Constructor for the Eeze object
@@ -124,7 +125,6 @@ public class Eeze {
      */
     private void run(String args[]) {
         buildFrame();
-        directory = args[0];
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -153,6 +153,29 @@ public class Eeze {
         }
     }
 
+    private void parseArgs(String[] args) {
+        File f = null;
+
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.equals("c")) {
+                this.compareImages = true;
+            } else {
+                f = new File(arg);
+                if ( !f.exists() ) {
+                    showUsageAndExit("Does not exist: " + arg, -1);
+                }
+                if (!f.isDirectory()) {
+                    showUsageAndExit("You specified a file, not a directory: " + arg, -1);
+                }
+                this.directory = f;
+            } 
+        }
+        if ( this.directory == null ) {
+            showUsageAndExit("Please specify a directory", -1);
+        }
+    }
+
     /**
      * Description of the Method
      *
@@ -161,12 +184,7 @@ public class Eeze {
     private List buildFileList() {
         List fileList = null;
         try {
-            File dir = new File(directory);
-            if (!dir.isDirectory()) {
-                showUsage("Please enter a directory name (not a file name).");
-                System.exit(-1);
-            }
-            File list[] = dir.listFiles(HTML_FILE_FILTER);
+            File list[] = directory.listFiles(HTML_FILE_FILTER);
             fileList = Arrays.asList(list);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -325,10 +343,11 @@ public class Eeze {
     public static void main(String args[]) {
         try {
             if (args.length == 0) {
-                showUsage("Eeze needs some information to work.");
-                System.exit(-1);
+                showUsageAndExit("Eeze needs some information to work.", -1);
             }
-            new Eeze().run(args);
+            Eeze eeze = new Eeze();
+            eeze.parseArgs(args);
+            eeze.run(args);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -338,8 +357,9 @@ public class Eeze {
      * Description of the Method
      *
      * @param error PARAM
+     * @param i
      */
-    private static void showUsage(String error) {
+    private static void showUsageAndExit(String error, int i) {
         StringBuffer sb = new StringBuffer();
 
         sb.append("Oops! " + error + " \n")
@@ -348,7 +368,11 @@ public class Eeze {
                 .append("  A frame to walk through a set of XHTML/XML pages with Flying Saucer \n")
                 .append(" \n")
                 .append(" Usage: \n")
-                .append("    java eeze.Eeze {directory}\n")
+                .append("    java eeze.Eeze [c] {directory}\n")
+                .append(" \n")
+                .append(" where [options] include")
+                .append("   c   look for reference images for current page, and overlay")
+                .append(" \n")
                 .append(" \n")
                 .append(" where {directory} is a directory containing XHTML/XML files.\n")
                 .append(" \n")
@@ -357,6 +381,7 @@ public class Eeze {
                 .append(" shortcuts.\n")
                 .append(" \n");
         System.out.println(sb.toString());
+        System.exit(-1);
     }
 
     /**
@@ -387,8 +412,11 @@ public class Eeze {
         }
 
         public boolean imageWasLoaded() {
+            if ( Eeze.this.comparingWithImage == false )
+                return false;
+            
             currentPageImg = loadImageForPage();
-            if ( currentPageImg != null ) {
+            if (currentPageImg != null) {
                 this.setPreferredSize(new Dimension(currentPageImg.getWidth(null), currentPageImg.getHeight(null)));
             }
             return (currentPageImg != null);
@@ -399,6 +427,7 @@ public class Eeze {
             try {
                 File file = currentDisplayed;
                 File parent = file.getParentFile();
+                if (parent == null) parent = file;
                 File imgDir = new File(parent.getAbsolutePath() + File.separator + "ref-img");
                 String name = file.getName().substring(0, file.getName().lastIndexOf(".")) + ".png";
                 File target = new File(imgDir.getAbsolutePath() + File.separator + name);
@@ -434,7 +463,7 @@ public class Eeze {
             Graphics2D g2d = (Graphics2D) g;
             if (currentPageImg == null) {
                 g2d.setColor(Color.WHITE);
-                g2d.fillRect(0, 0, (int)this.getPreferredSize().getWidth(), (int)this.getPreferredSize().getHeight());
+                g2d.fillRect(0, 0, (int) this.getPreferredSize().getWidth(), (int) this.getPreferredSize().getHeight());
             } else {
                 g2d.drawImage(currentPageImg, 0, 0, currentPageImg.getWidth(null), currentPageImg.getHeight(null), null);
 
@@ -641,7 +670,7 @@ public class Eeze {
             comparingWithImage = !comparingWithImage;
 
             if (comparingWithImage) {
-                if (! imagePanel.imageWasLoaded()) {
+                if (!imagePanel.imageWasLoaded()) {
                     comparingWithImage = false;
                     System.out.println("   but have no image to load");
                     return;
@@ -793,9 +822,10 @@ public class Eeze {
             try {
                 File file = currentDisplayed;
                 File parent = file.getParentFile();
+                if (parent == null) parent = file;
                 File imgDir = new File(parent.getAbsolutePath() + File.separator + "ref-img");
-                if (! imgDir.exists()) {
-                    if (! imgDir.mkdir()) {
+                if (!imgDir.exists()) {
+                    if (!imgDir.mkdir()) {
                         JOptionPane.showMessageDialog(
                                 Eeze.this.eezeFrame,
                                 "Can't create dir to store images: \n" + imgDir,
