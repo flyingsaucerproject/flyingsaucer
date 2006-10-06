@@ -19,6 +19,10 @@
  */
 package org.xhtmlrenderer.simple;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -28,10 +32,6 @@ import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
-
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
 
 
 /**
@@ -231,9 +231,11 @@ public class XHTMLPanel extends BasicPanel {
     public void setDocument(File file)
             throws Exception {
         resetListeners();
+        File parent = file.getParentFile();
+        String parentURL = ( parent == null ? "" : parent.toURI().toURL().toExternalForm());
         setDocument(
                 loadDocument(file.toURI().toURL().toExternalForm()),
-                file.getParentFile().toURI().toURL().toExternalForm()
+                parentURL
         );
     }
 
@@ -345,6 +347,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2006/10/06 18:52:29  pdoubleya
+ * Fixed NPE when calling setDocument(File) and file has no parent directory; issue #134.
+ *
  * Revision 1.35  2006/07/26 18:11:21  pdoubleya
  * TODO
  *
