@@ -50,24 +50,26 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         if (e.getNodeName().equals("img")) {
             cc = getImageComponent(e);
             if (cc == null) {
-                JButton jb = null;
+                JLabel lbl = null;
                 Image im = null;
                 FSImage fsImage = uac.getImageResource(e.getAttribute("src")).getImage();
                 if (fsImage != null) {
                     im = ((AWTFSImage) fsImage).getImage();
                 }
                 if (im == null) {
-                    jb = new JButton("Image unreachable. " + e.getAttribute("alt"));
+                    lbl = new JLabel("Image unreachable. " + e.getAttribute("alt"));
                 } else {
                     Image i2 = im.getScaledInstance(cssWidth, cssHeight, Image.SCALE_FAST);
                     ImageIcon ii = new ImageIcon(i2, e.getAttribute("alt"));
-                    jb = new JButton(ii);
+                    lbl = new JLabel(ii);
                 }
-                jb.setBorder(BorderFactory.createEmptyBorder());
-                jb.setSize(jb.getPreferredSize());
-                jb.setContentAreaFilled(false);
-                addImageComponent(e, jb);
-                cc = jb;
+                lbl.setBorder(BorderFactory.createEmptyBorder());
+                lbl.setSize(lbl.getPreferredSize());
+                lbl.setOpaque(false);
+                lbl.setFocusable(false);
+
+                addImageComponent(e, lbl);
+                cc = lbl;
             }
         } else {
             //form components
