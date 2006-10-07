@@ -36,11 +36,6 @@
   */
 package org.xhtmlrenderer.table;
 
-import java.awt.Rectangle;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -59,10 +54,15 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.SwingReplacedElement;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.awt.Rectangle;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+
 public class TableBoxing {
     public static Box layout(LayoutContext c, BlockBox outerBox, Content content) {
         boolean set_bfc = false;
-        
+
         c.setLayingOutTable(true);
 
         if (content instanceof TableContent) {
@@ -100,8 +100,8 @@ public class TableBoxing {
         }
 
         tableBox.setStyle(c.getCurrentStyle());
-        tableBox.setContainingBlockWidth((int)oe.getWidth());
-        
+        tableBox.setContainingBlockWidth((int) oe.getWidth());
+
         /*
         VerticalMarginCollapser.collapseVerticalMargins(c, tableBox, content, (float) oe.getWidth());
         */
@@ -113,7 +113,7 @@ public class TableBoxing {
         if (tableContent.isBottomMarginCollapsed()) {
             tableBox.setMarginBottom(c, 0);
         }
-        
+
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //note: percentages here refer to width of containing block
         RectPropertySet margin = tableBox.getMargin(c);
@@ -124,8 +124,8 @@ public class TableBoxing {
         tableBox.tx = tx;
         tableBox.ty = ty;
         c.translate(tx, ty);
-        Rectangle extents = 
-            c.shrinkExtents(tx + (int) margin.right() + (int) border.right() + (int) padding.right(), ty + (int) margin.bottom() + (int) border.bottom() + (int) padding.bottom());
+        Rectangle extents =
+                c.shrinkExtents(tx + (int) margin.right() + (int) border.right() + (int) padding.right(), ty + (int) margin.bottom() + (int) border.bottom() + (int) padding.bottom());
         IdentValue borderStyle = c.getCurrentStyle().getIdent(CSSName.BORDER_COLLAPSE);
         int borderSpacingHorizontal = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_HORIZONTAL, 0, c);
         int borderSpacingVertical = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_VERTICAL, 0, c);
@@ -169,7 +169,7 @@ public class TableBoxing {
             }
         }
         fixHeights(tableBox, borderSpacingVertical);
-        
+
         alignCellLines(tableBox);
 
         //TODO: margins go on the outer box
@@ -192,65 +192,65 @@ public class TableBoxing {
         calculateOuterBoxDimensions(outerBox);
         tableBox.setState(Box.DONE);
         outerBox.setState(Box.DONE);
-        
+
         outerBox.calcCanvasLocation();
         outerBox.calcChildLocations();
-        
+
         c.setLayingOutTable(false);
-        
+
         if (c.isPrint()) {
             positionRowsOnPage(c, tableBox);
             calculateOuterBoxDimensions(outerBox);
             outerBox.calcChildLocations();
         }
-        
+
         return outerBox;
     }
 
     private static void calculateOuterBoxDimensions(BlockBox outerBox) {
         if (outerBox.getChildCount() > 0) {
-            Box table = (Box)outerBox.getChild(0);
+            Box table = (Box) outerBox.getChild(0);
             outerBox.height = table.height;
             outerBox.contentWidth = table.contentWidth;
         }
     }
-    
+
     private static void positionRowsOnPage(LayoutContext c, TableBox table) {
         int lastMoved = -1;
         for (int i = 0; i < table.getChildCount(); i++) {
-            RowBox row = (RowBox)table.getChild(i);
-            
+            RowBox row = (RowBox) table.getChild(i);
+
             if (row.crossesPageBreak(c) && i != lastMoved) {
                 int runStart = findStartOfRun(c, table, i);
-                RowBox start = (RowBox)table.getChild(runStart);
+                RowBox start = (RowBox) table.getChild(runStart);
                 int delta = start.moveToNextPage(c);
                 table.height += delta;
-                
+
                 for (int j = runStart + 1; j < table.getChildCount(); j++) {
-                    RowBox followingSibling = (RowBox)table.getChild(j);
+                    RowBox followingSibling = (RowBox) table.getChild(j);
                     followingSibling.y += delta;
                     followingSibling.setAbsY(followingSibling.getAbsY() + delta);
                 }
-                
+
                 i = runStart;
                 lastMoved = runStart;
             }
         }
     }
-    
+
     private static int findStartOfRun(LayoutContext c, TableBox table, int end) {
         if (end > 0) {
             int offset = end;
 
             while (offset > 0) {
-                RowBox previous = (RowBox)table.getChild(offset-1);
-                RowBox current = (RowBox)table.getChild(offset);
-                
+                RowBox previous = (RowBox) table.getChild(offset - 1);
+                RowBox current = (RowBox) table.getChild(offset);
+
                 IdentValue after = previous.getStyle().getIdent(CSSName.PAGE_BREAK_AFTER);
-                IdentValue before = 
-                    current.getStyle().getIdent(CSSName.PAGE_BREAK_BEFORE);
-                
-                if ( (after == IdentValue.AVOID && before == IdentValue.AUTO) ||
+                IdentValue before =
+                        current.getStyle().getIdent(CSSName.PAGE_BREAK_BEFORE);
+
+                if ((after == IdentValue.AVOID && before == IdentValue.AUTO) ||
                         (after == IdentValue.AUTO && before == IdentValue.AVOID) ||
                         (after == IdentValue.AVOID && before == IdentValue.AVOID)) {
                     offset--;
@@ -263,14 +263,14 @@ public class TableBoxing {
             return 0;
         }
     }
-    
+
     private static void alignCellLines(TableBox box) {
         for (int i = 0; i < box.getChildCount(); i++) {
-            RowBox row = (RowBox)box.getChild(i);
-            
+            RowBox row = (RowBox) box.getChild(i);
+
             for (int j = 0; j < row.getChildCount(); j++) {
-                CellBox cell = (CellBox)row.getChild(j);
-                
+                CellBox cell = (CellBox) row.getChild(j);
+
                 cell.alignLines();
             }
         }
@@ -290,6 +290,7 @@ public class TableBoxing {
                 //if sum is greater, we probably screwed up earlier, just do something reasonable
                 tableBox.contentWidth = sum;
             }
+            //int maxRowWidth = 0;
             for (Iterator tci = tableBox.getChildIterator(); tci.hasNext();) {
                 Object tc = tci.next();
                 if (tc instanceof RowBox) {
@@ -303,12 +304,13 @@ public class TableBoxing {
                         }
                         CellBox cb = (CellBox) cbi.next();
                         cb.contentWidth = 0;
-                           for (int i = 0; (i < cb.colspan) && (col + i < tableBox.columns.length); i++) cb.contentWidth += tableBox.columns[col + i];
+                        for (int i = 0; (i < cb.colspan) && (col + i < tableBox.columns.length); i++)
+                            cb.contentWidth += tableBox.columns[col + i];
                         cb.contentWidth += borderSpacingHorizontal * (cb.colspan - 1);
                         cb.contentWidth -= cb.leftMBP + cb.rightMBP;
                         cb.x = x;
                         x += cb.getWidth() + borderSpacingHorizontal;
-                           for (int j = 0; (j < cb.colspan) && (col + j < tableBox.columns.length); j++) {
+                        for (int j = 0; (j < cb.colspan) && (col + j < tableBox.columns.length); j++) {
                             tableBox.columnRows[col + j] = cb.rowspan;
                         }
                         col += cb.colspan;
@@ -316,9 +318,21 @@ public class TableBoxing {
                     for (int j = 0; j < tableBox.columns.length; j++) {
                         tableBox.columnRows[j]--;
                     }
+                    //if (row.contentWidth > maxRowWidth) maxRowWidth = row.contentWidth;
+                    //instead of calculating maxRowWidth, we can just set it, the row must have the width of the table
+                    row.contentWidth = tableBox.contentWidth;
                 } else
                     XRLog.layout(Level.WARNING, "Can't fix widths of " + tc.getClass().getName() + " yet!");
             }
+            //Now we need to normalize all the rows.
+            /*No. see above
+            for (Iterator tci = tableBox.getChildIterator(); tci.hasNext();) {
+                Object tc = tci.next();
+                if (tc instanceof RowBox) {
+                    RowBox rBox = (RowBox) tc;
+                    if (rBox.contentWidth < maxRowWidth) rBox.contentWidth = maxRowWidth;
+                }
+            }*/
         }
     }
 
@@ -436,7 +450,7 @@ public class TableBoxing {
         }
 
         row.setStyle(c.getCurrentStyle());
-        row.setContainingBlockWidth((int)oe.getWidth());
+        row.setContainingBlockWidth((int) oe.getWidth());
 
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //rows have no margin or padding
@@ -449,7 +463,7 @@ public class TableBoxing {
         row.ty = ty;
         c.translate(tx, ty);
         Rectangle extents =
-            c.shrinkExtents(tx + (int) border.right(), ty + (int) border.bottom());
+                c.shrinkExtents(tx + (int) border.right(), ty + (int) border.bottom());
         List cells = tableRowContent.getChildContent(c);
         checkColumns(table, cells.size());
         layoutCells(cells, c, row, table, fixed, borderSpacingHorizontal, borderSpacingVertical);
@@ -464,7 +478,7 @@ public class TableBoxing {
         //restore the extents
         c.setExtents(oe);
         row.setState(Box.DONE);
-        
+
         row.setContainingBlock(null);
         return row;
     }
@@ -524,13 +538,13 @@ public class TableBoxing {
         for (int j = 0; j < table.columns.length; j++) {
             // increase the final layout height if the child was greater
             if (table.columnRows[j] != 0) {
-            int height = table.columnHeight[j] / table.columnRows[j];
-            if (height > row.height) {
-                row.height = height;
+                int height = table.columnHeight[j] / table.columnRows[j];
+                if (height > row.height) {
+                    row.height = height;
+                }
+                table.columnHeight[j] -= height;
+                table.columnRows[j]--;
             }
-            table.columnHeight[j] -= height;
-            table.columnRows[j]--;
-        }
         }
         for (int j = 0; j < table.columns.length; j++) {
             if (table.columnCell[j] == null) continue;
@@ -593,7 +607,7 @@ public class TableBoxing {
         // copy the extents
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
-        
+
         cell.colspan = (int) c.getCurrentStyle().asFloat(CSSName.FS_COLSPAN);
         cell.rowspan = (int) c.getCurrentStyle().asFloat(CSSName.FS_ROWSPAN);
         if (fixed) {
@@ -620,7 +634,7 @@ public class TableBoxing {
             cell.height = setHeight;
         }
         //check if replaced
-        
+
         ReplacedElement re = c.getReplacedElementFactory().createReplacedElement(
                 c, cell, c.getUac(), setWidth, setHeight);
         if (re != null) {
@@ -640,9 +654,9 @@ public class TableBoxing {
         cell.tx = tx;
         cell.ty = ty;
         c.translate(tx, ty);
-        
+
         Rectangle extents =
-            c.shrinkExtents(tx + (int) border.right() + (int) padding.right(), ty + (int) border.bottom() + (int) padding.bottom());
+                c.shrinkExtents(tx + (int) border.right() + (int) padding.right(), ty + (int) border.bottom() + (int) padding.bottom());
         if (! cell.isReplaced()) {
             int previousContentWidth = cell.contentWidth;
             cell.contentWidth = c.getExtents().width;
@@ -651,10 +665,10 @@ public class TableBoxing {
         } else {
             if (c.isInteractive()) {
                 c.getCanvas().add(
-                        ((SwingReplacedElement)cell.getReplacedElement()).getJComponent());
+                        ((SwingReplacedElement) cell.getReplacedElement()).getJComponent());
             }
         }
-        
+
         c.setExtents(extents);
         c.translate(-tx, -ty);
 
@@ -663,9 +677,9 @@ public class TableBoxing {
             // Uu.p("restoring original height");
             cell.height = original_height;
         } else {
-            int delta = 
-                c.getBlockFormattingContext().getFloatManager().getClearDelta(
-                        c, (int) border.top() + (int) padding.top() + cell.height);
+            int delta =
+                    c.getBlockFormattingContext().getFloatManager().getClearDelta(
+                            c, (int) border.top() + (int) padding.top() + cell.height);
             if (delta > 0) {
                 cell.height += delta;
             }
@@ -686,9 +700,9 @@ public class TableBoxing {
 
         // Uu.p("BoxLayout: finished with cell: " + cell);
         cell.setState(Box.DONE);
-        
+
         cell.expandToMaxChildWidth();
-        
+
         return cell;
     }
 }
@@ -696,6 +710,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.68  2006/10/07 21:52:35  tobega
+   fixed problem with row-widths found by J Steenkamp
+
    Revision 1.67  2006/10/04 23:52:58  peterbrant
    Implement support for margin: auto (centering blocks in their containing block)
 
