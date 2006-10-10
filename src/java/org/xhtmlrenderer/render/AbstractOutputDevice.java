@@ -200,29 +200,36 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
     } 
     
-    private void tileFill(FSImage img, Rectangle rect, int xoff, int yoff, boolean horiz, boolean vert) {
-        int iwidth = img.getWidth();
-        int iheight = img.getHeight();
-        int rwidth = rect.width;
-        int rheight = rect.height;
+    private void tileFill(FSImage img, Rectangle rect, int xOffset, int yOffset, boolean horiz, boolean vert) {
+        int iWidth = img.getWidth();
+        int iHeight = img.getHeight();
+        int rWidth = rect.width;
+        int rHeight = rect.height;
+        
+        int startX = xOffset;
+        int startY = yOffset;
     
-        if (horiz) {
-            xoff = xoff % iwidth - iwidth;
-            rwidth += iwidth;
+        if (horiz && ! (startX == 0 && rWidth <= iWidth)) {
+            if (startX != 0) {
+                startX = startX % iWidth - iWidth;
+                rWidth += iWidth;
+            }
         } else {
-            rwidth = iwidth;
+            rWidth = iWidth;
         }
     
-        if (vert) {
-            yoff = yoff % iheight - iheight;
-            rheight += iheight;
+        if (vert && ! (startY == 0 && rHeight <= iHeight)) {
+            if (startY != 0) {
+                startY = startY % iHeight - iHeight;
+                rHeight += iHeight;
+            }
         } else {
-            rheight = iheight;
+            rHeight = iHeight;
         }
     
-        for (int i = 0; i < rwidth; i += iwidth) {
-            for (int j = 0; j < rheight; j += iheight) {
-                drawImage(img, i + rect.x + xoff, j + rect.y + yoff);
+        for (int i = 0; i < rWidth; i += iWidth) {
+            for (int j = 0; j < rHeight; j += iHeight) {
+                drawImage(img, i + rect.x + startX, j + rect.y + startY);
             }
         }
     }    
