@@ -21,7 +21,6 @@ package org.xhtmlrenderer.pdf;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -32,7 +31,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -301,6 +299,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private void followPath(Shape s, int drawType) {
         PdfContentByte cb = _currentPage;
         if (s==null) return;
+        
         if (drawType==STROKE) {
             if (!(_stroke instanceof BasicStroke)) {
                 s = _stroke.createStrokedShape(s);
@@ -312,14 +311,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             setStrokeDiff(_stroke, _oldStroke);
             _oldStroke = _stroke;
             ensureStrokeColor();
-        }
-        else if (drawType==FILL)
+        } else if (drawType==FILL) {
             ensureFillColor();
+        }
+            
         PathIterator points;
-        if (drawType == CLIP)
+        if (drawType == CLIP) {
             points = s.getPathIterator(IDENTITY);
-        else
+        } else {
             points = s.getPathIterator(_transform);
+        }
         float[] coords = new float[6];
         int traces = 0;
         while(!points.isDone()) {
@@ -562,24 +563,20 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         
         PdfImportedPage page = getWriter().getImportedPage(reader, 1);
         
-        // FIXME Life is not that complicated...
         AffineTransform at = AffineTransform.getTranslateInstance(x,y);
         at.translate(0, image.getHeightAsFloat());
+        at.scale(image.getWidthAsFloat(), image.getHeightAsFloat());
         
         AffineTransform inverse = normalizeMatrix(_transform);
         AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
         inverse.concatenate(at);
         inverse.concatenate(flipper);
         
-        Point2D outputLoc = new Point2D.Float();
-        inverse.transform(new Point(x, y), outputLoc);
-        
-        AffineTransform outputT = AffineTransform.getTranslateInstance(
-                outputLoc.getX(), outputLoc.getY());
-        outputT.scale(image.scaleWidth(), image.scaleHeight());
-        
         double[] mx = new double[6];
-        outputT.getMatrix(mx);
+        inverse.getMatrix(mx);
+        
+        mx[0] = image.scaleWidth();
+        mx[3] = image.scaleHeight();
         
         _currentPage.addTemplate(page,
                 (float)mx[0], (float)mx[1], (float)mx[2],
