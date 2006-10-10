@@ -19,9 +19,9 @@
  */
 package org.xhtmlrenderer.util;
 
-import org.xhtmlrenderer.render.Box;
-
 import java.awt.*;
+
+import org.xhtmlrenderer.render.Box;
 
 /**
  * Description of the Class
@@ -74,18 +74,6 @@ public class GraphicsUtil {
 
     public static Image cleanImage(Image img) {
         return img.getScaledInstance(img.getWidth(null), img.getHeight(null), Image.SCALE_FAST);
-        /*
-
-        BufferedImage buf = new BufferedImage(img.getWidth(null),
-            img.getHeight(null),
-            BufferedImage.TYPE_INT_RGB);
-        Graphics g = buf.getGraphics();
-        g.drawImage(img,0,0,null);
-        g.setColor(Color.green);
-        g.drawLine(0,0,300,300);
-        g.dispose();
-        return buf;
-        */
     }
 
 }
@@ -94,6 +82,9 @@ public class GraphicsUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2006/10/10 20:53:46  pdoubleya
+ * Removed commented code
+ *
  * Revision 1.6  2005/10/06 03:20:25  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *
