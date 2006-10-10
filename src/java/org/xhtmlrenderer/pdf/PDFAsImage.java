@@ -45,15 +45,15 @@ public class PDFAsImage implements FSImage {
     }
 
     public void scale(int width, int height) {
-        int targetWidth = width;
-        int targetHeight = height;
+        float targetWidth = width;
+        float targetHeight = height;
         
-        if (targetWidth == -1) {
-            targetWidth = getWidth() * (targetHeight / getHeight());
+        if (width == -1) {
+            targetWidth = getWidthAsFloat() * (targetHeight / getHeight());
         }
         
-        if (targetHeight == -1) {
-            targetHeight = getHeight() * (targetWidth / getWidth());
+        if (height == -1) {
+            targetHeight = getHeightAsFloat() * (targetWidth / getWidth());
         }
         
         _width = targetWidth;
