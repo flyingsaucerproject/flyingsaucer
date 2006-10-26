@@ -38,7 +38,7 @@ public class WhitespaceStripper2 {
     public final static Pattern linefeed_space_collapse = Pattern.compile("\\s+\\n\\s+");//Pattern is thread-safe
     public final static Pattern linefeed_to_space = Pattern.compile("\\n");
     public final static Pattern tab_to_space = Pattern.compile("\\t");
-    public final static Pattern space_collapse = Pattern.compile("( )+");
+    public final static Pattern space_collapse = Pattern.compile("(?: )+");
     public final static Pattern space_before_linefeed_collapse = Pattern.compile("[\\s&&[^\\n]]\\n");
     
     /**
