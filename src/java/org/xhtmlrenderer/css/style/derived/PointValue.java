@@ -38,10 +38,6 @@ public class PointValue extends DerivedValue {
         }
     }
 
-    public FSDerivedValue copyOf(CSSName cssName) {
-        return new PointValue(getStyle(), cssName, getCssSacUnitType(), getStringValue(), getStringValue());
-    }
-
     /**
      * @param parentWidth
      * @param parentHeight

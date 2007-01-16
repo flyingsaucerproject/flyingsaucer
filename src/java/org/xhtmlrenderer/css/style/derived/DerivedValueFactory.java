@@ -46,7 +46,7 @@ public class DerivedValueFactory {
         // default to copy of parent if inherited; may be overridden in some cases
         boolean declaredInherit = cssText.equals("inherit");
         if (declaredInherit) {
-            val = style.getParent().copyOf(cssName);
+            val = style.getParent().valueByName(cssName);
         } else {
             if (cssName == CSSName.BACKGROUND_POSITION) {
                 val = new PointValue(style, cssName, cssSACUnitType, cssText, cssStringValue);

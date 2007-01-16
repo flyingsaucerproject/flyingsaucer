@@ -34,21 +34,6 @@ public class ColorValue extends DerivedValue {
         _derivedColor = deriveColor(name, rgbColor);
     }
 
-    private ColorValue(
-            CSSName name,
-            short cssSACUnitType,
-            String cssText,
-            String cssStringValue,
-            Color color
-    ) {
-        super(name, cssSACUnitType, cssText, cssStringValue);
-        _derivedColor = color;
-    }
-
-    public FSDerivedValue copyOf(CSSName cssName) {
-        return new ColorValue(cssName, getCssSacUnitType(), getStringValue(), getStringValue(), _derivedColor);
-    }
-
     /**
      * Returns the value as a Color, if it is a color.
      *

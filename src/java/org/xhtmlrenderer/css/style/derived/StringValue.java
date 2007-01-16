@@ -37,10 +37,6 @@ public class StringValue extends DerivedValue {
         return _stringAsArray;
     }
 
-    public FSDerivedValue copyOf(CSSName cssName) {
-        return new StringValue(cssName, getCssSacUnitType(), getStringValue(), getStringValue());
-    }
-
     public String toString() {
         return getStringValue();
     }

@@ -361,10 +361,6 @@ public class CalculatedStyle {
         return val instanceof LengthValue;
     }
 
-    public FSDerivedValue copyOf(CSSName cssName) {
-        return valueByName(cssName).copyOf(cssName);
-    }
-
     /**
      * Returns a {@link FSDerivedValue} by name. Because we are a derived
      * style, the property will already be resolved at this point.
@@ -383,8 +379,7 @@ public class CalculatedStyle {
                     && _parent != null
                     //
                     && (val = _parent.valueByName(cssName)) != null) {
-
-                val = val.copyOf(cssName);
+                // Do nothing, val is already set
             } else {
                 // otherwise, use the initial value (defined by the CSS2 Spec)
                 String initialValue = CSSName.initialValue(cssName);
@@ -939,6 +934,10 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.73  2007/01/16 16:11:38  peterbrant
+ * Don't copy derived values as they propagate down the style tree (don't need to anymore
+ * now that we don't cache length values in LengthValue and PointValue)
+ *
  * Revision 1.72  2006/10/04 23:52:57  peterbrant
  * Implement support for margin: auto (centering blocks in their containing block)
  *

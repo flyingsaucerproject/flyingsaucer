@@ -98,10 +98,6 @@ public class LengthValue extends DerivedValue {
         return _lengthAsFloat;
     }
 
-    public FSDerivedValue copyOf(CSSName cssName) {
-        return new LengthValue(getStyle(), cssName, getCssSacUnitType(), getStringValue(), getStringValue());
-    }
-
     /**
      * Computes a relative unit (e.g. percentage) as an absolute value, using
      * the input value. Used for such properties whose parent value cannot be

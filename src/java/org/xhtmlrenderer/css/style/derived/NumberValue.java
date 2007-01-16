@@ -36,10 +36,6 @@ public class NumberValue extends DerivedValue {
         _floatValue = new Float(getStringValue()).floatValue();
     }
 
-    public FSDerivedValue copyOf(CSSName cssName) {
-        return new NumberValue(cssName, getCssSacUnitType(), getStringValue(), getStringValue());
-    }
-
     public float asFloat() {
         return _floatValue;
     }

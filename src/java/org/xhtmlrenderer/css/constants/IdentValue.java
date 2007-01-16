@@ -267,9 +267,6 @@ public class IdentValue implements FSDerivedValue {
      * METHODS USED TO SUPPORT IdentValue as an FSDerivedValue, used in CalculatedStyle.
      * Most of these throw exceptions--makes use of the interface easier in CS (avoids casting)
      */
-    public FSDerivedValue copyOf(CSSName cssName) {
-        return this;
-    }
 
     public boolean isDeclaredInherit() {
         return this == INHERIT;
@@ -327,6 +324,10 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2007/01/16 16:11:38  peterbrant
+ * Don't copy derived values as they propagate down the style tree (don't need to anymore
+ * now that we don't cache length values in LengthValue and PointValue)
+ *
  * Revision 1.22  2006/07/28 10:08:55  pdoubleya
  * Additional work for support of parsing content and quotes.
  *
