@@ -16,8 +16,6 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class DerivedValue implements FSDerivedValue {
-    private CalculatedStyle _style;
-
     private String _asString;
 
     private short _cssSacUnitType;
@@ -25,12 +23,10 @@ public abstract class DerivedValue implements FSDerivedValue {
     protected DerivedValue() {}
 
     protected DerivedValue(
-            CalculatedStyle style,
             CSSName name,
             short cssSACUnitType,
             String cssText,
             String cssStringValue) {
-        this._style = style;
         this._cssSacUnitType = cssSACUnitType;
 
         String orgText = cssText;
@@ -113,9 +109,5 @@ public abstract class DerivedValue implements FSDerivedValue {
     }
     public boolean isIdent() {
         return false;
-    }
-
-    public CalculatedStyle getStyle() {
-        return _style;
     }
 }

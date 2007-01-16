@@ -46,26 +46,20 @@ public class DerivedValueFactory {
         // default to copy of parent if inherited; may be overridden in some cases
         boolean declaredInherit = cssText.equals("inherit");
         if (declaredInherit) {
-            if (style.getParent().isLengthValue(cssName)) {
-                val = new InheritedLength((LengthValue) style.getParent().valueByName(cssName));
-            } else {
-                // not as bad as it looks; all IdentValues return their
-                // own instance in copyOf, so they are really singletons
-                val = style.getParent().copyOf(cssName);
-            }
+            val = style.getParent().copyOf(cssName);
         } else {
             if (cssName == CSSName.BACKGROUND_POSITION) {
                 val = new PointValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
             } else if (COLOR_PROPERTIES.contains(cssName)) {
                 // TODO: we should probably cache these, as colors will be reused across styles
                 // and probably won't be too many of them
-                val = newColor(style, cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
+                val = newColor(cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
             } else if (STRING_PROPERTIES.contains(cssName)) {
-                val = new StringValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
+                val = new StringValue(cssName, cssSACUnitType, cssText, cssStringValue);
             } else if (!(cssName == CSSName.FONT_WEIGHT) && Idents.looksLikeALength(cssText)) {
                 val = new LengthValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
             } else if (!(cssName == CSSName.FONT_WEIGHT) && Idents.looksLikeANumber(cssText)) {
-                val = new NumberValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
+                val = new NumberValue(cssName, cssSACUnitType, cssText, cssStringValue);
             } else if (IDENT_PROPERTIES.contains(cssName) || IdentValue.looksLikeIdent(cssText)) {
                 val = IdentValue.getByIdentString(cssText);
             } else {
@@ -83,16 +77,16 @@ public class DerivedValueFactory {
      * Returns the ColorValue, possibly from local cache by cssText value; RGB colors are not cached (guessing
      * these will be custom anyway).
      */
-    private static FSDerivedValue newColor(CalculatedStyle style, CSSName cssName, short cssSACUnitType, String cssText, String cssStringValue, RGBColor rgbColor) {
+    private static FSDerivedValue newColor(CSSName cssName, short cssSACUnitType, String cssText, String cssStringValue, RGBColor rgbColor) {
         FSDerivedValue val;
         if (rgbColor == null) {
             val = (FSDerivedValue) CACHED_COLORS.get(cssText);
             if (val == null) {
-                val = new ColorValue(style, cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
+                val = new ColorValue(cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
                 CACHED_COLORS.put(cssText, val);
             }
         } else {
-            val = new ColorValue(style, cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
+            val = new ColorValue(cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
         }
         return val;
     }

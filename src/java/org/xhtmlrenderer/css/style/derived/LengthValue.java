@@ -72,6 +72,8 @@ public class LengthValue extends DerivedValue {
      * The specified length value, as a float; pulled from the CSS text
      */
     private float _lengthAsFloat;
+    
+    private CalculatedStyle _style;
 
     /**
      * The specified primitive SAC data type given for this length, from the CSS text
@@ -87,7 +89,8 @@ public class LengthValue extends DerivedValue {
                        short cssSACUnitType,
                        String cssText,
                        String cssStringValue) {
-        super(style, name, cssSACUnitType, cssText, cssStringValue);
+        super(name, cssSACUnitType, cssText, cssStringValue);
+        _style = style;
         pullLengthValueParts(name);
     }
 
@@ -282,6 +285,10 @@ public class LengthValue extends DerivedValue {
         f.variant = style.getIdent(CSSName.FONT_VARIANT);
 
         return ctx.getFontSizeForXHeight(style.getParent().getFont(ctx), f, xHeight);
+    }
+    
+    private CalculatedStyle getStyle() {
+        return _style;
     }
 }
 

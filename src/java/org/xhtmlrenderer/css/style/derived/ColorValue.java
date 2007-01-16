@@ -1,15 +1,14 @@
 package org.xhtmlrenderer.css.style.derived;
 
+import java.awt.Color;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.RGBColor;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.DerivedValue;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.util.ConversionUtil;
 import org.xhtmlrenderer.util.XRRuntimeException;
-
-import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,31 +24,29 @@ public class ColorValue extends DerivedValue {
     private Color _derivedColor;
 
     public ColorValue(
-            CalculatedStyle style,
             CSSName name,
             short cssSACUnitType,
             String cssText,
             String cssStringValue,
             RGBColor rgbColor
     ) {
-        super(style, name, cssSACUnitType, cssText, cssStringValue);
+        super(name, cssSACUnitType, cssText, cssStringValue);
         _derivedColor = deriveColor(name, rgbColor);
     }
 
     private ColorValue(
-            CalculatedStyle style,
             CSSName name,
             short cssSACUnitType,
             String cssText,
             String cssStringValue,
             Color color
     ) {
-        super(style, name, cssSACUnitType, cssText, cssStringValue);
+        super(name, cssSACUnitType, cssText, cssStringValue);
         _derivedColor = color;
     }
 
     public FSDerivedValue copyOf(CSSName cssName) {
-        return new ColorValue(getStyle(), cssName, getCssSacUnitType(), getStringValue(), getStringValue(), _derivedColor);
+        return new ColorValue(cssName, getCssSacUnitType(), getStringValue(), getStringValue(), _derivedColor);
     }
 
     /**

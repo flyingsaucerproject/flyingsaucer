@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Torbjšrn Gannholm
+ * Copyright (c) 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,7 +19,6 @@
 package org.xhtmlrenderer.css.style.derived;
 
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
@@ -32,13 +31,13 @@ import org.xhtmlrenderer.css.style.FSDerivedValue;
 public class NumberValue extends DerivedValue {
     private float _floatValue;
 
-    public NumberValue(CalculatedStyle style, CSSName cssName, short cssSACUnitType, String cssText, String cssStringValue) {
-        super(style, cssName, cssSACUnitType, cssText, cssStringValue);
+    public NumberValue(CSSName cssName, short cssSACUnitType, String cssText, String cssStringValue) {
+        super(cssName, cssSACUnitType, cssText, cssStringValue);
         _floatValue = new Float(getStringValue()).floatValue();
     }
 
     public FSDerivedValue copyOf(CSSName cssName) {
-        return new NumberValue(getStyle(), cssName, getCssSacUnitType(), getStringValue(), getStringValue());
+        return new NumberValue(cssName, getCssSacUnitType(), getStringValue(), getStringValue());
     }
 
     public float asFloat() {

@@ -16,13 +16,12 @@ public class StringValue extends DerivedValue {
     private String[] _stringAsArray;
 
     public StringValue (
-            CalculatedStyle style,
             CSSName name,
             short cssSACUnitType,
             String cssText,
             String cssStringValue
     ) {
-        super(style, name, cssSACUnitType, cssText, cssStringValue);
+        super(name, cssSACUnitType, cssText, cssStringValue);
     }
 
     /**
@@ -39,7 +38,7 @@ public class StringValue extends DerivedValue {
     }
 
     public FSDerivedValue copyOf(CSSName cssName) {
-        return new StringValue(getStyle(), cssName, getCssSacUnitType(), getStringValue(), getStringValue());
+        return new StringValue(cssName, getCssSacUnitType(), getStringValue(), getStringValue());
     }
 
     public String toString() {

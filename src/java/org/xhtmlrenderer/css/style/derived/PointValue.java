@@ -21,6 +21,8 @@ public class PointValue extends DerivedValue {
     private short _yType;
     private boolean _isAbsolute;
     private Point _point;
+    
+    private CalculatedStyle _style;
 
     public PointValue (
             CalculatedStyle style,
@@ -29,7 +31,8 @@ public class PointValue extends DerivedValue {
             String cssText,
             String cssStringValue
     ) {
-        super(style, name, cssSACUnitType, cssText, cssStringValue);
+        super(name, cssSACUnitType, cssText, cssStringValue);
+        _style = style;
         if ( name == CSSName.BACKGROUND_POSITION ) {
             pullPointValuesForBGPos(cssText);
         }
@@ -114,5 +117,9 @@ public class PointValue extends DerivedValue {
             }
             throw new XRRuntimeException(msg.toString(), ex);
         }
+    }
+    
+    private CalculatedStyle getStyle() {
+        return _style;
     }
 }
