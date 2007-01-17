@@ -27,6 +27,12 @@ import org.xhtmlrenderer.extend.OutputDevice;
 import java.awt.*;
 
 public class BorderPainter {
+    public static final int TOP = 1;
+    public static final int LEFT = 2;
+    public static final int BOTTOM = 4;
+    public static final int RIGHT = 8;
+    public static final int ALL = TOP + LEFT + BOTTOM + RIGHT;
+    
     /**
      * @param xOffset for determining starting point for patterns
      */
@@ -191,35 +197,19 @@ public class BorderPainter {
     private static Polygon getBevelledPolygon(final Rectangle bounds, 
             final BorderPropertySet border, final int sides, 
             int currentSide, boolean isClipRegion) {
-        //adjust for bug in polygon filling
-        int adjust;
-        //adjust inside corners to make sides fit snugly
-        int snuggle;
-        if (isClipRegion) {
-            adjust = 0;
-            snuggle = 1;
-        } else {
-            adjust = 1;
-            snuggle = 0;
-        }
-        
-        // Undo for now
-        adjust = 0;
-        snuggle = 0;
-
-        int rightCorner = (((sides & BorderPainter.RIGHT) == BorderPainter.RIGHT) ? (int) border.right() : adjust);
-        int leftCorner = (((sides & BorderPainter.LEFT) == BorderPainter.LEFT) ? (int) border.left() - adjust : 0);
-        int topCorner = (((sides & BorderPainter.TOP) == BorderPainter.TOP) ? (int) border.top() - adjust : 0);
-        int bottomCorner = (((sides & BorderPainter.BOTTOM) == BorderPainter.BOTTOM) ? (int) border.bottom() : adjust);
+        int rightCorner = (((sides & BorderPainter.RIGHT) == BorderPainter.RIGHT) ? (int) border.right() : 0);
+        int leftCorner = (((sides & BorderPainter.LEFT) == BorderPainter.LEFT) ? (int) border.left() : 0);
+        int topCorner = (((sides & BorderPainter.TOP) == BorderPainter.TOP) ? (int) border.top() : 0);
+        int bottomCorner = (((sides & BorderPainter.BOTTOM) == BorderPainter.BOTTOM) ? (int) border.bottom() : 0);
         Polygon poly = null;
         if (currentSide == BorderPainter.TOP) {
             if ((int) border.top() != 1) {
                 // use polygons for borders over 1px wide
                 poly = new Polygon();
                 poly.addPoint(bounds.x, bounds.y);
-                poly.addPoint(bounds.x + bounds.width - adjust, bounds.y);
-                poly.addPoint(bounds.x + bounds.width - rightCorner, bounds.y + (int) border.top() - adjust);
-                poly.addPoint(bounds.x + leftCorner, bounds.y + (int) border.top() - adjust);
+                poly.addPoint(bounds.x + bounds.width, bounds.y);
+                poly.addPoint(bounds.x + bounds.width - rightCorner, bounds.y + (int) border.top() - 0);
+                poly.addPoint(bounds.x + leftCorner, bounds.y + (int) border.top() - 0);
             }
         } else if (currentSide == BorderPainter.BOTTOM) {
             if ((int) border.bottom() != 1) {
@@ -229,25 +219,25 @@ public class BorderPainter {
                 // upper left
                 poly.addPoint(bounds.x + leftCorner, bounds.y + bounds.height - (int) border.bottom());
                 // lower left
-                poly.addPoint(bounds.x, bounds.y + bounds.height - adjust);
+                poly.addPoint(bounds.x, bounds.y + bounds.height);
                 // lower right
-                poly.addPoint(bounds.x + bounds.width - adjust, bounds.y + bounds.height - adjust);
+                poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height - 0);
             }
         } else if (currentSide == BorderPainter.RIGHT) {
             if ((int) border.right() != 1) {
                 poly = new Polygon();
-                poly.addPoint(bounds.x + bounds.width - adjust, bounds.y);
-                poly.addPoint(bounds.x + bounds.width - (int) border.right(), bounds.y + topCorner - snuggle);
-                poly.addPoint(bounds.x + bounds.width - (int) border.right(), bounds.y + bounds.height - bottomCorner + snuggle);
-                poly.addPoint(bounds.x + bounds.width - adjust, bounds.y + bounds.height - adjust);
+                poly.addPoint(bounds.x + bounds.width, bounds.y);
+                poly.addPoint(bounds.x + bounds.width - (int) border.right(), bounds.y + topCorner);
+                poly.addPoint(bounds.x + bounds.width - (int) border.right(), bounds.y + bounds.height - bottomCorner);
+                poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
             }
         } else if (currentSide == BorderPainter.LEFT) {
             if ((int) border.left() != 1) {
                 poly = new Polygon();
                 poly.addPoint(bounds.x, bounds.y);
-                poly.addPoint(bounds.x + (int) border.left() - adjust, bounds.y + topCorner - snuggle);
-                poly.addPoint(bounds.x + (int) border.left() - adjust, bounds.y + bounds.height - bottomCorner + snuggle);
-                poly.addPoint(bounds.x, bounds.y + bounds.height - adjust);
+                poly.addPoint(bounds.x + (int) border.left(), bounds.y + topCorner);
+                poly.addPoint(bounds.x + (int) border.left(), bounds.y + bounds.height - bottomCorner);
+                poly.addPoint(bounds.x, bounds.y + bounds.height);
             }
         }
         return poly;
@@ -344,18 +334,15 @@ public class BorderPainter {
             }
         }
     }
-
-    public static final int TOP = 1;
-    public static final int LEFT = 2;
-    public static final int BOTTOM = 4;
-    public static final int RIGHT = 8;
-    public static final int ALL = TOP + LEFT + BOTTOM + RIGHT;
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2007/01/17 17:50:54  peterbrant
+ * Clean out unused code
+ *
  * Revision 1.43  2006/02/21 18:09:17  peterbrant
  * Fix call to BorderPropertySet constructor
  *
