@@ -19,13 +19,13 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import org.xhtmlrenderer.util.GeneralUtil;
+
 import java.io.File;
 import java.net.MalformedURLException;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 import java.util.Date;
-
-import org.xhtmlrenderer.util.GeneralUtil;
 
 
 /**
@@ -68,8 +68,8 @@ public class DirectoryLister {
             String loc = null;
             try {
                 File parent = file.getParentFile();
-                if (parent != null) {
-                    loc = GeneralUtil.htmlEscapeSpace(parent.toURL().toExternalForm()).toString();
+                if ( parent != null ) {
+                    loc = GeneralUtil.htmlEscapeSpace(file.getParentFile().toURL().toExternalForm()).toString();
                     sb.append("<a class='dir' href='" + loc + "'>Up to higher level directory</a>");
                 }
             } catch (MalformedURLException e) {
@@ -81,9 +81,9 @@ public class DirectoryLister {
             String img = "";
             for (int i = 0; i < files.length; i++) {
                 File f = files[i];
-                if (f.isHidden()) continue;
+                if ( f.isHidden() ) continue;
                 long len = f.length();
-                String lenDesc = (len > 1024 ? new DecimalFormat("#,###KB").format(len / 1024) : "");
+                String lenDesc = ( len > 1024 ? new DecimalFormat("#,###KB").format(len / 1024) : "");
                 String lastMod = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a").format(new Date(f.lastModified()));
                 sb.append("<tr>");
                 if (files[i].isDirectory()) {
@@ -119,8 +119,8 @@ public class DirectoryLister {
  * $Id$
  *
  * $Log$
- * Revision 1.10  2007/01/29 21:03:18  pdoubleya
- * Fix for API change and deferred image loading
+ * Revision 1.11  2007/01/29 21:41:46  pdoubleya
+ * revert checkin
  *
  * Revision 1.9  2006/07/31 14:20:54  pdoubleya
  * Bunch of cleanups and fixes. Now using a toolbar for actions, added Home button, next/prev navigation actions to facilitate demo file browsing, loading demo pages from a list, about dlg and link to user's manual.

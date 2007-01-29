@@ -19,6 +19,17 @@
  */
 package org.xhtmlrenderer.demo.aboutbox;
 
+import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.render.AWTFSImage;
+import org.xhtmlrenderer.resource.CSSResource;
+import org.xhtmlrenderer.resource.ImageResource;
+import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.util.GraphicsUtil;
+import org.xhtmlrenderer.util.XRLog;
+import org.xml.sax.InputSource;
+
+import javax.imageio.ImageIO;
+import javax.xml.transform.sax.SAXSource;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -26,17 +37,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.*;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
-
-import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.render.AWTFSImage;
-import org.xhtmlrenderer.resource.CSSResource;
-import org.xhtmlrenderer.resource.ImageResource;
-import org.xhtmlrenderer.resource.XMLResource;
-import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
 
 
 /**
@@ -80,12 +81,6 @@ public class DemoUserAgent implements UserAgentCallback {
     public ImageResource getImageResource(String uri) {
         ImageResource ir = null;
         uri = resolveURI(uri);
-        return doGetImageResource(uri);
-    }
-
-
-    private ImageResource doGetImageResource(String uri) {
-        ImageResource ir;
         ir = (ImageResource) imageCache.get(uri);
         //TODO: check that cached image is still valid
         if (ir == null) {
@@ -115,10 +110,6 @@ public class DemoUserAgent implements UserAgentCallback {
     }
 
     public XMLResource getXMLResource(String uri) {
-        return this.getXMLResource(uri, null);
-    }
-
-    public XMLResource getXMLResource(String uri, NamespaceHandler nsh) {
         uri = resolveURI(uri);
         if (uri != null && uri.startsWith("file:")) {
             File file = null;
@@ -134,7 +125,7 @@ public class DemoUserAgent implements UserAgentCallback {
             uc.connect();
             String contentType = uc.getContentType();
             //Maybe should popup a choice when content/unknown!
-            xr = XMLResource.load(uc.getInputStream(), nsh);
+            xr = XMLResource.load(uc.getInputStream());
         } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (IOException e) {
@@ -142,7 +133,7 @@ public class DemoUserAgent implements UserAgentCallback {
         }
         if (xr == null) {
             String notFound = "<h1>Document not found</h1>";
-            xr = XMLResource.load(new StringReader(notFound), nsh);
+            xr = XMLResource.load(new StringReader(notFound));
         }
         return xr;
     }
@@ -197,17 +188,6 @@ public class DemoUserAgent implements UserAgentCallback {
             return null;
         else
             return ref.toExternalForm();
-    }
-
-    public ImageResource getImageResource(String originURI, String uri) {
-        if (originURI != null)
-            try {
-                String u = new URL(new URL(originURI), uri).toString();
-                uri = u;
-            } catch (MalformedURLException e) {
-                // nothing
-            }
-        return doGetImageResource(uri);
     }
 
     public String getBaseURL() {
