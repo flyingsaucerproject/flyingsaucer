@@ -1,19 +1,18 @@
 package tests.public_apis.css.properties.factory;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.io.StringReader;
+import java.util.Iterator;
+import java.util.Map;
 
+import com.steadystate.css.parser.CSSOMParser;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 import org.w3c.css.sac.InputSource;
 import org.w3c.dom.css.CSSRuleList;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSStyleSheet;
-import com.steadystate.css.parser.CSSOMParser;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
@@ -39,7 +38,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * associates the expected properties that should be read when the input
  * property is parse. Samples are provided here, in method comments.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public abstract class AbstractPropertyExplosionTest extends TestCase {
     /**
@@ -48,7 +47,9 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      */
     private CSSStyleSheet cssStyleSheet;
 
-    /** The SAC parser used to load the rules.  */
+    /**
+     * The SAC parser used to load the rules.
+     */
     private CSSOMParser parser = new CSSOMParser();
 
     /**
@@ -64,26 +65,28 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      * property/values. See the buildTestsMap() for examples.
      */
     private Map testsMap;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private boolean showLog;
 
     /**
      * Constructor for the AbstractPropertyExplosionTest object
      *
-     * @param name  PARAM
+     * @param name PARAM
      */
-    public AbstractPropertyExplosionTest( String name ) {
-        this( name, false );
+    public AbstractPropertyExplosionTest(String name) {
+        this(name, false);
     }
 
     /**
      * Constructor for the AbstractPropertyExplosionTest object
      *
-     * @param name     PARAM
-     * @param showLog  PARAM
+     * @param name    PARAM
+     * @param showLog PARAM
      */
-    public AbstractPropertyExplosionTest( String name, boolean showLog ) {
-        super( name );
+    public AbstractPropertyExplosionTest(String name, boolean showLog) {
+        super(name);
         this.showLog = showLog;
     }
 
@@ -93,7 +96,7 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      * the exploded values we expect to see, from the testsMap Map.
      */
     public void testExplode() {
-        log( "@@@ Executing testExplode() in " + this.getClass().getName() );
+        log("@@@ Executing testExplode() in " + this.getClass().getName());
 
         String sel = null;
         CSSStyleDeclaration decl = null;
@@ -103,47 +106,50 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
 
         // walk through all parsed rules
         CSSRuleList rlist = cssStyleSheet.getCssRules();
-        for ( int i = 0; i < rlist.getLength(); i++ ) {
-            CSSStyleRule rule = (CSSStyleRule)rlist.item( i );
+        for (int i = 0; i < rlist.getLength(); i++) {
+            CSSStyleRule rule = (CSSStyleRule) rlist.item(i);
 
             // current selector, declaration, and property name
             sel = rule.getSelectorText();
             decl = rule.getStyle();
-            propName = decl.item( 0 );
-            CSSName cssName = CSSName.getByPropertyName( propName );
+            propName = decl.item(0);
+            CSSName cssName = CSSName.getByPropertyName(propName);
 
             // get the comparison data using the current selector
             // testMap is a Map of exploded property name to expected value
-            Object dat[] = (Object[])testsMap.get( sel );
-            testMap = (Map)dat[1];
+            Object dat[] = (Object[]) testsMap.get(sel);
+            testMap = (Map) dat[1];
 
             // explode the property using the property factory initialized above
-            Iterator iter = factory.buildDeclarations( decl, cssName, origin );
+            Iterator iter = factory.buildDeclarations(decl, cssName, origin, null);
             int explodedCnt = 0;
-            while ( iter.hasNext() ) {
-                PropertyDeclaration pd = (PropertyDeclaration)iter.next();
+            while (iter.hasNext()) {
+                PropertyDeclaration pd = (PropertyDeclaration) iter.next();
                 // DEBUG
-                log( "   " + sel + "=> " + pd );
+                log("   " + sel + "=> " + pd);
 
                 // get the expected value
-                Object expected = testMap.get( pd.getCSSName() );
+                Object expected = testMap.get(pd.getCSSName());
                 Object actual = null;
                 actual = pd.getValue().toString();
-                
+
                 // compare actual with expected
-                assertEquals( sel + " ::Value for " + pd.getPropertyName() + " should be " +
-                        expected, expected, actual );
+                assertEquals(sel + " ::Value for " + pd.getPropertyName() + " should be " +
+                        expected, expected, actual);
                 explodedCnt++;
             }
             int expectedCnt = testMap.size();
-            assertTrue( "Expected " + expectedCnt + " properties from shorthand, but got only " + explodedCnt +
-                    " " + sel, expectedCnt == explodedCnt );
+            assertTrue("Expected " + expectedCnt + " properties from shorthand, but got only " + explodedCnt +
+                    " " + sel, expectedCnt == explodedCnt);
 
         }
     }
 
-    /** The teardown method for JUnit  */
-    protected void tearDown() { }
+    /**
+     * The teardown method for JUnit
+     */
+    protected void tearDown() {
+    }
 
     /**
      * Returns a new PropertyDeclarationFactory that we are testing against.
@@ -153,7 +159,7 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      *   }
      * </pre>
      *
-     * @return   A new PropertyDeclarationFactory
+     * @return A new PropertyDeclarationFactory
      */
     protected abstract PropertyDeclarationFactory newPropertyDeclarationFactory();
 
@@ -171,7 +177,7 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      *  temp.put( "p#BTAllV1", new Object[]{"{ border-top: black 1pt solid; }", testVals} );
      * </pre> You can define as many selectors and comparison cases as you like.
      *
-     * @return   Initialized test map; see desc.
+     * @return Initialized test map; see desc.
      */
     protected abstract Map buildTestsMap();
 
@@ -186,10 +192,10 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      * meaning of font, and background, are not. To be able to test parsing for
      * those properties against a variation of inputs, this can save some time.
      * <p/>
-     *
+     * <p/>
      * Likely you would call this within {@link #buildTestsMap()} to add
      * permutations to your tests. <p/>
-     *
+     * <p/>
      * Here is an example of how to use it: <pre>
      * Map tests = new HashMap();
      * Map testVals = new TreeMap();
@@ -206,48 +212,50 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      * </pre> The <code>tests</code> map will then have all the permutations on
      * inputs for the array we gave.
      *
-     * @param testsMap    The Map of tests you are building (see class JavaDoc).
-     * @param selector    The *prefix* for the selector you want to use. An
-     *      integer counter will be appended to this selector for each
-     *      permutation generated. Supply a decent prefix if you want meaningful
-     *      logging.
-     * @param cssName     The CSS property shorthand name you want to use. See
-     *      {@link org.xhtmlrenderer.css.constants.CSSName}.
-     * @param elem        Array of elements which form the basis of the
-     *      permutations. The number of permutations is the factorial of
-     *      elem.length, so be careful: over 20, you have reached the limit of a
-     *      long datatype (we can handle a little bit more, but the tests will
-     *      run awhile).
-     * @param testValues  The Map of values to test against. This is a Map of
-     *      CSS property names that are to be expanded from the shorthand
-     *      property, assigned to the value you expect to be parsed from the
+     * @param testsMap   The Map of tests you are building (see class JavaDoc).
+     * @param selector   The *prefix* for the selector you want to use. An
+     *                   integer counter will be appended to this selector for each
+     *                   permutation generated. Supply a decent prefix if you want meaningful
+     *                   logging.
+     * @param cssName    The CSS property shorthand name you want to use. See
+     *                   {@link org.xhtmlrenderer.css.constants.CSSName}.
+     * @param elem       Array of elements which form the basis of the
+     *                   permutations. The number of permutations is the factorial of
+     *                   elem.length, so be careful: over 20, you have reached the limit of a
+     *                   long datatype (we can handle a little bit more, but the tests will
+     *                   run awhile).
+     * @param testValues The Map of values to test against. This is a Map of
+     *                   CSS property names that are to be expanded from the shorthand
+     *                   property, assigned to the value you expect to be parsed from the
      */
-    protected final void appendTestPermutations( Map testsMap, String selector, CSSName cssName, String elem[], Map testValues ) {
-        PermutationGenerator pg = new PermutationGenerator( elem.length );
+    protected final void appendTestPermutations(Map testsMap, String selector, CSSName cssName, String elem[], Map testValues) {
+        PermutationGenerator pg = new PermutationGenerator(elem.length);
 
         int[] indices;
         StringBuffer permutation;
         int cnt = 0;
-        while ( pg.hasMore() ) {
-            permutation = new StringBuffer( "{ " + cssName + ":" );
+        while (pg.hasMore()) {
+            permutation = new StringBuffer("{ " + cssName + ":");
             indices = pg.getNext();
-            for ( int i = 0; i < indices.length; i++ ) {
-                permutation.append( " " + elem[indices[i]] );
+            for (int i = 0; i < indices.length; i++) {
+                permutation.append(" " + elem[indices[i]]);
             }
-            permutation.append( "; }" );
-            testsMap.put( selector + "pmt" + cnt, new Object[]{permutation, testValues} );
+            permutation.append("; }");
+            testsMap.put(selector + "pmt" + cnt, new Object[]{permutation, testValues});
             cnt++;
         }
     }
 
-    /** The JUnit setup method  */
+    /**
+     * The JUnit setup method
+     */
     protected void setUp() {
         factory = newPropertyDeclarationFactory();
-        InputSource is = new InputSource( new StringReader( getCSSText() ) );
+        InputSource is = new InputSource(new StringReader(getCSSText()));
         try {
-            cssStyleSheet = parser.parseStyleSheet( is );
-        } catch ( java.io.IOException e ) {
-            throw new XRRuntimeException( "IOException on parsing style seet from a Reader; don't know the URI.", e );
+            cssStyleSheet = parser.parseStyleSheet(is);
+        } catch (java.io.IOException e) {
+            throw new XRRuntimeException("IOException on parsing style seet from a Reader; don't know the URI.", e);
         }
     }
 
@@ -256,8 +264,8 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      * during {@link #setUp()}. The tests Map is built in {@link
      * #buildTestsMap()}.
      *
-     * @return   A valid, parseable CSS string containing selectors and property
-     *      declarations.
+     * @return A valid, parseable CSS string containing selectors and property
+     *         declarations.
      */
     protected String getCSSText() {
         this.testsMap = buildTestsMap();
@@ -265,11 +273,11 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
         // iterate over the keys in our tests, which are selectors
         Iterator iter = testsMap.keySet().iterator();
         StringBuffer sb = new StringBuffer();
-        while ( iter.hasNext() ) {
+        while (iter.hasNext()) {
             // for each selector, append the selector and the property assignment
-            String selector = (String)iter.next();
-            Object dat[] = (Object[])testsMap.get( selector );
-            sb.append( selector ).append( " " ).append( dat[0] ).append( "\n" );
+            String selector = (String) iter.next();
+            Object dat[] = (Object[]) testsMap.get(selector);
+            sb.append(selector).append(" ").append(dat[0]).append("\n");
         }
         // DEBUG
         //log( "CSS:\n" + sb.toString() );
@@ -280,11 +288,11 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      * Workaround. XRLog seems to cause problems when executed via Ant within
      * jEdit, probably a treading problem or conflict
      *
-     * @param msg  PARAM
+     * @param msg PARAM
      */
-    private void log( String msg ) {
-        if ( showLog ) {
-            System.out.println( msg );
+    private void log(String msg) {
+        if (showLog) {
+            System.out.println(msg);
         }
     }
 
@@ -295,10 +303,10 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      *   }
      * </pre>
      *
-     * @return   The test suite
+     * @return The test suite
      */
     public static Test suite() {
-        return new TestSuite( AbstractPropertyExplosionTest.class );
+        return new TestSuite(AbstractPropertyExplosionTest.class);
     }
 }// end class
 
@@ -306,6 +314,9 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2007/01/29 21:00:59  pdoubleya
+ * Fix for API change
+ *
  * Revision 1.4  2005/01/29 16:00:11  pdoubleya
  * No longer expect Color instance for color properties.
  *
