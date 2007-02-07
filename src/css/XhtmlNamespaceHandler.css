@@ -8,7 +8,7 @@ h5, h6, noframes,
 ol, p, ul, center,
 dir, hr, menu, pre, object   { display: block }
 li              { display: list-item }
-head            { display: none }
+head, script    { display: none }
 body            { margin: 8px }
 h1              { font-size: 2em; margin: .67em 0 }
 h2              { font-size: 1.5em; margin: .75em 0 }
