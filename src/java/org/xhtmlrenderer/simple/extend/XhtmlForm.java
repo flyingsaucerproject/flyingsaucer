@@ -31,7 +31,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.swing.AWTFSImage;
@@ -244,7 +246,7 @@ public class XhtmlForm {
             int selected = -1;
             for (int i = 0; i < options.getLength(); i++) {
                 Element value = (Element) options.item(i);
-                String svalue = value.getFirstChild().getNodeValue();
+                String svalue = collectText(value);
                 select.addItem(svalue);
                 if (value.hasAttribute("selected") && value.getAttribute("selected").equals("selected")) {
                     selected = i;
@@ -265,6 +267,20 @@ public class XhtmlForm {
             components.put(e, cc);
         }
         return cc;
+    }
+    
+    private String collectText(Element e) {
+        StringBuffer result = new StringBuffer();
+        Node n = e.getFirstChild();
+        if (n != null) {
+            do {
+                if (n.getNodeType() == Node.TEXT_NODE) {
+                    Text text = (Text)n;
+                    result.append(text.getData());
+                }
+            } while ( (n = n.getNextSibling()) != null);
+        }
+        return result.toString().trim();
     }
 
     /**
