@@ -20,90 +20,89 @@
 package org.xhtmlrenderer.layout;
 
 public class LineBreakContext {
-    private String master;
-    private int start;
-    private int end;
-    private int savedEnd;
-    private boolean unbreakable;;
-    private boolean needsNewLine;
-    
-    private int width;
+    private String _master;
+    private int _start;
+    private int _end;
+    private int _savedEnd;
+    private boolean _unbreakable;
+    private boolean _needsNewLine;
+    private int _width;
     
     public int getLast() {
-    	return master.length();
+        return _master.length();
     }
     
     public void reset() {
-        this.width = 0;
-        this.unbreakable = false;
-        this.needsNewLine = false;
+        _width = 0;
+        _unbreakable = false;
+        _needsNewLine = false;
     }
     
     public int getEnd() {
-        return end;
+        return _end;
     }
     
     public void setEnd(int end) {
-        this.end = end;
+        _end = end;
     }
     
     public String getMaster() {
-        return master;
+        return _master;
     }
     
     public void setMaster(String master) {
-        this.master = master;
+        _master = master;
     }
     
     public int getStart() {
-        return start;
+        return _start;
     }
     
     public void setStart(int start) {
-        this.start = start;
+        _start = start;
     }
     
     public String getStartSubstring() {
-        return master.substring(start);
+        return _master.substring(_start);
     }
     
     public String getCalculatedSubstring() {
-        return master.substring(start, end);
+        return _master.substring(_start, _end);
     }
 
     public boolean isUnbreakable() {
-        return unbreakable;
+        return _unbreakable;
     }
 
     public void setUnbreakable(boolean unbreakable) {
-        this.unbreakable = unbreakable;
+        _unbreakable = unbreakable;
     }
 
     public boolean isNeedsNewLine() {
-        return needsNewLine;
+        return _needsNewLine;
     }
 
     public void setNeedsNewLine(boolean needsLineBreak) {
-        this.needsNewLine = needsLineBreak;
+        _needsNewLine = needsLineBreak;
     }
 
     public int getWidth() {
-        return width;
+        return _width;
     }
 
     public void setWidth(int width) {
-        this.width = width;
+        _width = width;
     }
     
     public boolean isFinished() {
-        return this.end == getMaster().length();
+        return _end == getMaster().length();
     }
 
     public void resetEnd() {
-        this.end = this.savedEnd;
+        _end = _savedEnd;
     }
     
     public void saveEnd() {
-        this.savedEnd = this.end;
+        _savedEnd = _end;
     }
 }

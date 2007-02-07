@@ -30,8 +30,6 @@ import javax.swing.JComponent;
 
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
-import org.xhtmlrenderer.render.AWTFSFont;
-import org.xhtmlrenderer.render.AWTFSImage;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;

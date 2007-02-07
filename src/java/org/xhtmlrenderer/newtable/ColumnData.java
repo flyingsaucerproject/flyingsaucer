@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2005 Wisconsin Court System
+ * Copyright (c) 2007 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -17,14 +17,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.layout.content;
+package org.xhtmlrenderer.newtable;
 
-import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.css.style.Length;
 
-public interface CachingContent extends Content {
-    public Content getNextSibling(LayoutContext c, Content which);
-
-    public Content getNextInFlowSibling(LayoutContext c, Content which);
-
-    public Content getPreviousInFlowSibling(LayoutContext c, Content which);
+public class ColumnData {
+    private Length _width;
+    private int _span = 1;
+    
+    public int getSpan() {
+        return _span;
+    }
+    
+    public void setSpan(int span) {
+        _span = span;
+    }
+    
+    public Length getWidth() {
+        return _width;
+    }
+    
+    public void setWidth(Length width) {
+        _width = width;
+    }
 }

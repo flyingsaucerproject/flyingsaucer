@@ -31,61 +31,185 @@ import org.w3c.dom.Node;
  */
 public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
 
-    public String getNonCssStyling(org.w3c.dom.Element e) {
-        StringBuffer style = new StringBuffer();
+    public String getNonCssStyling(Element e) {
         if (e.getNodeName().equals("table")) {
-            String s;
-            if (!(s = e.getAttribute("width")).equals("")) {
-                style.append("width: ");
-                style.append(s);
-                style.append(";");
-            }
-            if (!(s = e.getAttribute("border")).equals("")) {
-                style.append("border: ");
-                style.append(s);
-                style.append(" inset black;");
-            }
-            if (!(s = e.getAttribute("cellspacing")).equals("")) {
-                style.append("border-collapse: separate; border-spacing: ");
-                style.append(s);
-                style.append(";");
-            }
+            return applyTableStyles(e);            
         } else if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
-            String s;
-            //check for cellpadding
-            for (Node n = e.getParentNode(); n != null; n = n.getParentNode()) {
+            return applyTableCellStyles(e);
+        } else if (e.getNodeName().equals("tr")) {
+            return applyTableRowStyles(e);
+        } else if (e.getNodeName().equals("img")) {
+            return applyImgStyles(e);
+        }
+        return "";
+    }
+    
+    private String applyImgStyles(Element e) {
+        StringBuffer style = new StringBuffer();
+        applyFloatingAlign(e, style);
+        return style.toString();
+    }
+
+    private String applyTableCellStyles(Element e) {
+        StringBuffer style = new StringBuffer();
+        String s;
+        //check for cellpadding
+        Element table = findTable(e);
+        if (table != null) {
+            if (!(s = table.getAttribute("cellpadding")).equals("")) {
+                style.append("padding: ");
+                style.append(s);
+                style.append(";");
+            }
+            s = table.getAttribute("border");
+            if (! (s.equals("") || s.equals("0"))) {
+                style.append("border: 1 outset black;");
+            }
+        }
+        if (!(s = e.getAttribute("width")).equals("")) {
+            style.append("width: ");
+            style.append(s);
+            style.append(";");
+        }
+        if (!(s = e.getAttribute("height")).equals("")) {
+            style.append("height: ");
+            style.append(s);
+            style.append(";");
+        }        
+        applyAlignment(e, style);
+        if (!(s = e.getAttribute("bgcolor")).equals("")) {
+            s = s.toLowerCase();
+            style.append("background-color: ");
+            if (looksLikeAMangledColor(s)) {
+                style.append('#');
+                style.append(s);
+            } else {
+                style.append(s);
+            }
+            style.append(';');
+        }
+        if (!(s = e.getAttribute("background")).equals("")) {
+            style.append("background-image: url(");
+            style.append(s);
+            style.append(");");
+        }
+        return style.toString();
+    }
+
+    private String applyTableStyles(Element e) {
+        StringBuffer style = new StringBuffer();
+        String s;
+        if (!(s = e.getAttribute("width")).equals("")) {
+            style.append("width: ");
+            style.append(s);
+            style.append(";");
+        }
+        if (!(s = e.getAttribute("border")).equals("")) {
+            style.append("border: ");
+            style.append(s);
+            style.append(" inset black;");
+        }
+        if (!(s = e.getAttribute("cellspacing")).equals("")) {
+            style.append("border-collapse: separate; border-spacing: ");
+            style.append(s);
+            style.append(";");
+        }
+        if (!(s = e.getAttribute("bgcolor")).equals("")) {
+            s = s.toLowerCase();
+            style.append("background-color: ");
+            if (looksLikeAMangledColor(s)) {
+                style.append('#');
+                style.append(s);
+            } else {
+                style.append(s);
+            }
+            style.append(';');
+        }
+        if (!(s = e.getAttribute("background")).equals("")) {
+            style.append("background-image: url(");
+            style.append(s);
+            style.append(");");
+        }
+        applyFloatingAlign(e, style);
+        return style.toString();
+    }
+    
+    private String applyTableRowStyles(Element e) {
+        StringBuffer style = new StringBuffer();
+        applyAlignment(e, style);
+        return style.toString();
+    }
+    
+    private void applyFloatingAlign(Element e, StringBuffer style) {
+        String s;
+        if (!(s = e.getAttribute("align")).equals("")) {
+            s = s.toLowerCase().trim();
+            if (s.equals("left")) {
+                style.append("float: left;");
+            } else if (s.equals("right")) {
+                style.append("float: right;");
+            } else if (s.equals("center")) {
+                style.append("margin-left: auto; margin-right: auto;");
+            }
+        }
+    }
+    
+    private void applyAlignment(Element e, StringBuffer style) {
+        String s;
+        if (!(s = e.getAttribute("align")).equals("")) {
+            style.append("text-align: ");
+            style.append(s.toLowerCase());
+            style.append(";");
+        }
+        if (!(s = e.getAttribute("valign")).equals("")) {
+            style.append("vertical-align: ");
+            style.append(s.toLowerCase());
+            style.append(";");
+        }
+    }
+    
+    private boolean looksLikeAMangledColor(String s) {
+        if (s.length() != 6) {
+            return false;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            boolean valid = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
+            if (! valid) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private Element findTable(Element cell) {
+        Node n = cell.getParentNode();
+        Element next;
+        if (n.getNodeType() == Node.ELEMENT_NODE) {
+            next = (Element)n;
+            if (next.getNodeName().equals("tr")) {
+                n = next.getParentNode();
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
-                    Element t = (Element) n;
-                    if (t.getNodeName().equals("table")) {
-                        if (!(s = t.getAttribute("cellpadding")).equals("")) {
-                            style.append("padding: ");
-                            style.append(s);
-                            style.append(";");
+                    next = (Element)n;
+                    String name = next.getNodeName();
+                    if (name.equals("table")) {
+                        return next;
+                    }
+                    
+                    if (name.equals("tbody") || name.equals("tfoot") || name.equals("thead")) {
+                        n = next.getParentNode();
+                        if (n.getNodeType() == Node.ELEMENT_NODE) {
+                            next =(Element)n;
+                            if (next.getNodeName().equals("table")) {
+                                return next;
+                            }
                         }
-                        if (!(s = t.getAttribute("border")).equals("")) {
-                            style.append("border: 1 outset black;");
-                        }
-                        break;
                     }
                 }
             }
-            if (!(s = e.getAttribute("width")).equals("")) {
-                style.append("width: ");
-                style.append(s);
-                style.append(";");
-            }
-            if (!(s = e.getAttribute("align")).equals("")) {
-                style.append("text-align: ");
-                style.append(s.toLowerCase());
-                style.append(";");
-            }
-            if (!(s = e.getAttribute("valign")).equals("")) {
-                style.append("vertical-align: ");
-                style.append(s.toLowerCase());
-                style.append(";");
-            }
         }
-        return style.toString();
+        
+        return null;
     }
 }
 

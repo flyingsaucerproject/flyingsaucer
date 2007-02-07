@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
  * Copyright (c) 2004, 2005 Joshua Marinacci
+ * Copyright (c) 2006, 2007 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -9,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -30,25 +31,14 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
 
 public class AnonymousBlockBox extends BlockBox {
-    private List openInlineBoxes;
+    private List _openInlineBoxes;
     
     public AnonymousBlockBox(Element element) {
-        this.element = element;
+        setElement(element);
     }
 
     public void layout(LayoutContext c) {
         InlineBoxing.layoutContent(c, this);
-    }
-
-    public String toString() {
-
-        StringBuffer sb = new StringBuffer();
-
-        sb.append("AnonymousBlockBox:");
-
-        sb.append(super.toString());
-
-        return sb.toString();
     }
 
     public int getContentWidth() {
@@ -65,14 +55,14 @@ public class AnonymousBlockBox extends BlockBox {
     }
 
     public List getOpenInlineBoxes() {
-        return openInlineBoxes;
+        return _openInlineBoxes;
     }
 
     public void setOpenInlineBoxes(List openInlineBoxes) {
-        this.openInlineBoxes = openInlineBoxes;
+        _openInlineBoxes = openInlineBoxes;
     }
     
-    public boolean isSkipWhenCollapsing() {
+    public boolean isSkipWhenCollapsingMargins() {
         // An anonymous block will already have its children provided to it
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             Styleable styleable = (Styleable)i.next();
@@ -87,14 +77,16 @@ public class AnonymousBlockBox extends BlockBox {
     public void provideSiblingMarginToFloats(int margin) {
         for (Iterator i = getInlineContent().iterator(); i.hasNext(); ) {
             Styleable styleable = (Styleable)i.next();
-            CalculatedStyle style = styleable.getStyle();
-            if (style.isFloated() && ! (style.isAbsolute() || style.isFixed())) {
-                ((FloatedBlockBox)styleable).setMarginFromSibling(margin);
+            if (styleable instanceof BlockBox) {
+                BlockBox b = (BlockBox)styleable;
+                if (b.isFloated()) {
+                    b.getFloatedBoxData().setMarginFromSibling(margin);
+                }
             }
         }
     }
     
-    public boolean isMayCollapseWithChildren() {
+    public boolean isMayCollapseMarginsWithChildren() {
         return false;
     }
     
@@ -107,6 +99,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2007/02/07 16:33:24  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.20  2006/09/08 15:41:57  peterbrant
  * Calculate containing block width accurately when collapsing margins / Provide collapsed bottom
  * margin to floats / Revive :first-line and :first-letter / Minor simplication in InlineBoxing

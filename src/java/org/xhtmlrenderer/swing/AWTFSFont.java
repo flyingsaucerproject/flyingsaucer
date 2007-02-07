@@ -17,32 +17,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.render;
+package org.xhtmlrenderer.swing;
 
-import java.awt.Image;
+import java.awt.Font;
 
-import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.render.FSFont;
 
-public class AWTFSImage implements FSImage {
-    private Image _image;
+public class AWTFSFont implements FSFont {
+    private Font _font;
     
-    public AWTFSImage(Image image) {
-        _image = image;
+    public AWTFSFont(Font font) {
+        _font = font;
     }
     
-    public Image getImage() {
-        return _image;
+    public float getSize2D() {
+        return _font.getSize2D();
     }
     
-    public int getHeight() {
-        return _image.getHeight(null);
-    }
-    
-    public int getWidth() {
-        return _image.getWidth(null);
-    }
-    
-    public void scale(int width, int height) {
-        _image = _image.getScaledInstance(width, height, Image.SCALE_FAST);
+    public Font getAWTFont() {
+        return _font;
     }
 }

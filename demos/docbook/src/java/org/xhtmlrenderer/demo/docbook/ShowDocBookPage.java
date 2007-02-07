@@ -2,7 +2,7 @@ package org.xhtmlrenderer.demo.docbook;
 
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.render.Java2DTextRenderer;
+import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.XRLog;

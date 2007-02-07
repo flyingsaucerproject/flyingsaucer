@@ -10,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -51,6 +51,12 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
         this._stringValue = value;
         this._cssValueType = CSS_PRIMITIVE_VALUE;
         this._primitiveType = ValueConstants.guessType(value);
+    }
+    
+    public DefaultCSSPrimitiveValue(String value, short primitiveType) {
+        _stringValue = value;
+        _cssValueType = CSS_PRIMITIVE_VALUE;
+        _primitiveType = primitiveType;
     }
 
     /**
@@ -393,6 +399,9 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2007/02/07 16:33:36  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.7  2005/10/25 15:38:27  pdoubleya
  * Moved guessType() to ValueConstants, applied fix to method suggested by Chris Oliver, to avoid exception-based catch.
  *

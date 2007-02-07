@@ -154,8 +154,7 @@ public class ITextRenderer {
     }
 
     private LayoutContext newLayoutContext() {
-        Rectangle extents = new Rectangle(0, 0, 1, 1);
-        LayoutContext result = _sharedContext.newLayoutContextInstance(extents);
+        LayoutContext result = _sharedContext.newLayoutContextInstance();
         result.setFontContext(new ITextFontContext());
         result.setReplacedElementFactory(new ITextReplacedElementFactory());
         

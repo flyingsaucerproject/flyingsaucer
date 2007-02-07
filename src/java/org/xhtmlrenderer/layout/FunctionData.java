@@ -28,8 +28,7 @@ public class FunctionData {
     public FunctionData() {
     }
     
-    public FunctionData(ContentFunction contentFunction, String declaration)
-    {
+    public FunctionData(ContentFunction contentFunction, String declaration) {
         _contentFunction = contentFunction;
         _declaration = declaration;
     }

@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -56,7 +56,7 @@ public class LinkListener extends MouseInputAdapter {
             return;
         }
 
-        Element elem = box.element;
+        Element elem = box.getElement();
         if (elem == null) {
             return;
         }
@@ -93,11 +93,11 @@ public class LinkListener extends MouseInputAdapter {
     }
 
     private void setCursor(Box box) {
-        if (prev == box || box == null || box.element == null) {
+        if (prev == box || box == null || box.getElement() == null) {
             return;
         }
 
-        if (findLink(box.element) != null) {
+        if (findLink(box.getElement()) != null) {
             if (!panel.getCursor().equals(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))) {
                 panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }

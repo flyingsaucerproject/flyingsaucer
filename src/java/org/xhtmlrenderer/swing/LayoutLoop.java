@@ -43,7 +43,7 @@ public class LayoutLoop implements Runnable {
             if (evt.getDimension() != null) {
 
                 // if the renderwidth != to the actual panel width, then re-layout
-                if (root.getRenderWidth() != root.getLayoutWidth()) {
+                if (/*root.getRenderWidth()*/ 0 != root.getLayoutWidth()) {
                     // Uu.p("render width != panel width. resizing");
                     doRelayout(evt);
                 } else {

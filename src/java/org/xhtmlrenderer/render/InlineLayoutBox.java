@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
- * Copyright (c) 2005 Joshua Marinacci, Wisconsin Court System
+ * Copyright (c) 2005 Joshua Marinacci
+ * Copyright (c) 2005, 2007 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -25,6 +26,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -39,31 +41,32 @@ import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.PaintingInfo;
 
 public class InlineLayoutBox extends Box implements InlinePaintable {
-    private int baseline;
+    private int _baseline;
     
-    private boolean startsHere;
-    private boolean endsHere;
+    private boolean _startsHere;
+    private boolean _endsHere;
     
-    private List inlineChildren;
+    private List _inlineChildren;
     
-    private boolean pending;
+    private boolean _pending;
     
-    private int inlineWidth;
+    private int _inlineWidth;
     
-    private TextDecoration textDecoration;
+    private TextDecoration _textDecoration;
     
-    private int containingBlockWidth;
+    private int _containingBlockWidth;
     
     public InlineLayoutBox(LayoutContext c, Element elem, CalculatedStyle style, int cbWidth) {
         this();
-        this.element = elem;
+        setElement(elem);
         setStyle(style);
         setContainingBlockWidth(cbWidth);
         setMarginTop(c, 0);
         setMarginBottom(c, 0);
-        markPending();
+        setPending(true);
         calculateHeight(c);
     }
     
@@ -73,12 +76,12 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     
     public InlineLayoutBox copyOf() {
         InlineLayoutBox result = new InlineLayoutBox();
-        result.element = this.element;
+        result.setElement(getElement());
         
         result.setStyle(getStyle());
         result.setHeight(getHeight());
         
-        result.pending = this.pending;
+        result._pending = _pending;
         
         result.setContainingLayer(getContainingLayer());
         
@@ -86,7 +89,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public void calculateHeight(LayoutContext c) {
-        BorderPropertySet border = getStyle().getBorder(c);
+        BorderPropertySet border = getBorder(c);
         RectPropertySet padding = getPadding(c);
         
         FSFontMetrics metrics = getStyle().getFSFontMetrics(c);
@@ -96,15 +99,15 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     public int getBaseline() {
-        return baseline;
+        return _baseline;
     }
 
     public void setBaseline(int baseline) {
-        this.baseline = baseline;
+        _baseline = baseline;
     }
 
     public int getInlineChildCount() {
-        return inlineChildren == null ? 0 : inlineChildren.size();
+        return _inlineChildren == null ? 0 : _inlineChildren.size();
     }
     
     public void addInlineChild(LayoutContext c, Object child) {
@@ -112,11 +115,11 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public void addInlineChild(LayoutContext c, Object child, boolean callUnmarkPending) {
-        if (inlineChildren == null) {
-            inlineChildren = new ArrayList();
+        if (_inlineChildren == null) {
+            _inlineChildren = new ArrayList();
         }
         
-        inlineChildren.add(child);
+        _inlineChildren.add(child);
         
         if (callUnmarkPending && isPending()) {
             unmarkPending(c);
@@ -134,19 +137,19 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public List getInlineChildren() {
-        return inlineChildren == null ? Collections.EMPTY_LIST : inlineChildren;
+        return _inlineChildren == null ? Collections.EMPTY_LIST : _inlineChildren;
     }
     
     public Object getInlineChild(int i) {
-        if (inlineChildren == null) {
+        if (_inlineChildren == null) {
             throw new ArrayIndexOutOfBoundsException();
         } else {
-            return inlineChildren.get(i);
+            return _inlineChildren.get(i);
         }
     }
     
     public int getInlineWidth(CssContext cssCtx) {
-        return inlineWidth;
+        return _inlineWidth;
     }
     
     public void prunePending() {
@@ -170,31 +173,31 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     public boolean isEndsHere() {
-        return endsHere;
+        return _endsHere;
     }
 
     public void setEndsHere(boolean endsHere) {
-        this.endsHere = endsHere;
+        _endsHere = endsHere;
     }
 
     public boolean isStartsHere() {
-        return startsHere;
+        return _startsHere;
     }
 
     public void setStartsHere(boolean startsHere) {
-        this.startsHere = startsHere;
+        _startsHere = startsHere;
     }
 
     public boolean isPending() {
-        return pending;
+        return _pending;
     }
     
-    public void markPending() {
-        this.pending = true;
+    public void setPending(boolean b) {
+        _pending = b;
     }
     
     private void unmarkPending(LayoutContext c) {
-        this.pending = false;
+        _pending = false;
         
         if (getParent() instanceof InlineLayoutBox) {
             InlineLayoutBox iB = (InlineLayoutBox)getParent();
@@ -237,7 +240,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             paintDebugOutline(c);
         }
         
-        if (textDecoration != null) {
+        if (_textDecoration != null) {
             IdentValue val = 
                 getStyle().getIdent(CSSName.TEXT_DECORATION);
             if (val == IdentValue.UNDERLINE || val == IdentValue.OVERLINE) {
@@ -252,7 +255,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             }
         }
         
-        if (textDecoration != null) {
+        if (_textDecoration != null) {
             IdentValue val = 
                 getStyle().getIdent(CSSName.TEXT_DECORATION);
             if (val == IdentValue.LINE_THROUGH) {
@@ -264,10 +267,10 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     public int getBorderSides() {
         int result = BorderPainter.TOP + BorderPainter.BOTTOM;
         
-        if (startsHere) {
+        if (_startsHere) {
             result += BorderPainter.LEFT;
         }
-        if (endsHere) {
+        if (_endsHere) {
             result += BorderPainter.RIGHT;
         }
         
@@ -280,16 +283,16 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         
         float marginLeft = 0;
         float marginRight = 0;
-        if (startsHere || endsHere) {
+        if (_startsHere || _endsHere) {
             RectPropertySet margin = (RectPropertySet)getMargin(cssCtx);
-            if (startsHere) {
+            if (_startsHere) {
                 marginLeft = margin.left();
             } 
-            if (endsHere) {
+            if (_endsHere) {
                 marginRight = margin.right();
             }
         }
-        BorderPropertySet border = getStyle().getBorder(cssCtx);
+        BorderPropertySet border = getBorder(cssCtx);
         RectPropertySet padding = getPadding(cssCtx);
         
         Rectangle result = new Rectangle(
@@ -304,12 +307,12 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         Rectangle result = getBorderEdge(left, top, cssCtx);
         float marginLeft = 0;
         float marginRight = 0;
-        if (startsHere || endsHere) {
+        if (_startsHere || _endsHere) {
             RectPropertySet margin = (RectPropertySet)getMargin(cssCtx);
-            if (startsHere) {
+            if (_startsHere) {
                 marginLeft = margin.left();
             } 
-            if (endsHere) {
+            if (_endsHere) {
                 marginRight = margin.right();
             }
         }
@@ -325,7 +328,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }    
     
     public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
-        BorderPropertySet border = getStyle().getBorder(cssCtx);
+        BorderPropertySet border = getBorder(cssCtx);
         RectPropertySet padding = getPadding(cssCtx);
         
         float marginLeft = 0;
@@ -337,14 +340,14 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         float paddingLeft = 0;
         float paddingRight = 0;
         
-        if (startsHere || endsHere) {
+        if (_startsHere || _endsHere) {
             RectPropertySet margin = (RectPropertySet)getMargin(cssCtx);
-            if (startsHere) {
+            if (_startsHere) {
                 marginLeft = margin.left();
                 borderLeft = border.left();
                 paddingLeft = padding.left();
             } 
-            if (endsHere) {
+            if (_endsHere) {
                 marginRight = margin.right();
                 borderRight = border.right();
                 paddingRight = padding.right();
@@ -361,7 +364,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public int getLeftMarginBorderPadding(CssContext cssCtx) {
-        if (startsHere) {
+        if (_startsHere) {
             return getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT);
         } else {
             return 0;
@@ -369,7 +372,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public int getRightMarginPaddingBorder(CssContext cssCtx) {
-        if (endsHere) {
+        if (_endsHere) {
             return getMarginBorderPadding(cssCtx, CalculatedStyle.RIGHT);
         } else {
             return 0;
@@ -377,11 +380,11 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }    
     
     public int getInlineWidth() {
-        return inlineWidth;
+        return _inlineWidth;
     }
 
     public void setInlineWidth(int inlineWidth) {
-        this.inlineWidth = inlineWidth;
+        _inlineWidth = inlineWidth;
     }
     
     // XXX Could we just not add them in the first place?
@@ -427,11 +430,11 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     public TextDecoration getTextDecoration() {
-        return textDecoration;
+        return _textDecoration;
     }
 
     public void setTextDecoration(TextDecoration textDecoration) {
-        this.textDecoration = textDecoration;
+        _textDecoration = textDecoration;
     }
     
     private void addToContentList(List list) {
@@ -462,7 +465,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         
         BlockBox container = (BlockBox)getLineBox().getParent();
         while (true) {
-            List elementBoxes = container.getElementBoxes(this.element);
+            List elementBoxes = container.getElementBoxes(getElement());
             for (int i = 0; i < elementBoxes.size(); i++) {
                 InlineLayoutBox iB = (InlineLayoutBox)elementBoxes.get(i);
                 iB.addToContentList(result);
@@ -511,7 +514,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             Box b = (Box)result.get(i);
             if (b instanceof InlineLayoutBox) {
                 InlineLayoutBox iB = (InlineLayoutBox)b;
-                if (this.element == iB.element && iB.isEndsHere()) {
+                if (getElement() == iB.getElement() && iB.isEndsHere()) {
                     return true;
                 }
             }
@@ -525,7 +528,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             Object child = getInlineChild(i);
             if (child instanceof Box) {
                 Box b = (Box)child;
-                if (b.element == elem) {
+                if (b.getElement() == elem) {
                     result.add(b);
                 }
                 result.addAll(b.getElementBoxes(elem));
@@ -537,15 +540,15 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     public Dimension positionRelative(CssContext cssCtx) {
         Dimension delta = super.positionRelative(cssCtx);
         
-        this.x -= delta.width;
-        this.y -= delta.height;
+        setX(getX() - delta.width);
+        setY(getY() - delta.height);
         
         List toTranslate = getElementWithContent();
         
         for (int i = 0; i < toTranslate.size(); i++) {
             Box b = (Box)toTranslate.get(i);
-            b.x += delta.width;
-            b.y += delta.height;
+            b.setX(b.getX() + delta.width);
+            b.setY(b.getY() + delta.height);
             
             b.calcCanvasLocation();
             b.calcChildLocations();
@@ -582,21 +585,21 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public void removeChild(Box child) {
-        if (inlineChildren != null) {
-            inlineChildren.remove(child);
+        if (_inlineChildren != null) {
+            _inlineChildren.remove(child);
         }
     }
     
     public void removeChild(int i) {
-        if (inlineChildren != null) {
-            inlineChildren.remove(i);
+        if (_inlineChildren != null) {
+            _inlineChildren.remove(i);
         }
     }
     
     public void calcCanvasLocation() {
         LineBox lineBox = getLineBox();
-        setAbsX(lineBox.getAbsX() + this.x);
-        setAbsY(lineBox.getAbsY() + this.y);
+        setAbsX(lineBox.getAbsX() + getX());
+        setAbsY(lineBox.getAbsY() + getY());
     }
     
     public void calcChildLocations() {
@@ -609,6 +612,26 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             }
         }
     }
+    
+    protected void calcChildPaintingInfo(LayoutContext c, PaintingInfo result) {
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object obj = getInlineChild(i);
+            if (obj instanceof Box) {
+                PaintingInfo info = ((Box)obj).calcPaintingInfo(c);
+                moveIfGreater(result.getOuterMarginCorner(), info.getOuterMarginCorner());
+                result.getAggregateBounds().add(info.getAggregateBounds());
+            } 
+        }
+    }
+    
+    protected void translateChildPaintingInfo(LayoutContext c, int tx, int ty) {
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object obj = getInlineChild(i);
+            if (obj instanceof Box) {   
+                ((Box)obj).translatePaintingInfo(c, tx, ty);
+            }
+        }
+    }    
     
     public void lookForDynamicFunctions(RenderingContext c) {
         for (int i = 0; i < getInlineChildCount(); i++) {
@@ -661,21 +684,26 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public Box find(CssContext cssCtx, int absX, int absY) {
+        PaintingInfo pI = getPaintingInfo();
+        if (! pI.getAggregateBounds().contains(absX, absY)) {
+            return null;
+        }
+        
         Box result = null;
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object child = getInlineChild(i);
             if (child instanceof Box) {
-	            result = ((Box)child).find(cssCtx, absX, absY);
-	            if (result != null) {
-	                return result;
-	            }
+                    result = ((Box)child).find(cssCtx, absX, absY);
+                    if (result != null) {
+                        return result;
+                    }
             }
         }
         
         Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), cssCtx);
         result = edge.contains(absX, absY) ? this : null;
         
-        if (result != null && this.element == null) {
+        if (result != null && getElement() == null) {
             return getParent().getParent();
         } else {
             return result;
@@ -683,10 +711,86 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     public int getContainingBlockWidth() {
-        return containingBlockWidth;
+        return _containingBlockWidth;
     }
 
     public void setContainingBlockWidth(int containingBlockWidth) {
-        this.containingBlockWidth = containingBlockWidth;
+        _containingBlockWidth = containingBlockWidth;
+    }
+    
+    public String toString() {
+        StringBuffer result = new StringBuffer();
+        result.append("InlineLayoutBox: ");
+        if (getElement() != null) {
+            result.append("<");
+            result.append(getElement().getNodeName());
+            result.append("> ");
+        } else {
+            result.append("(anonymous) ");
+        }       
+        if (isStartsHere() || isEndsHere()) {
+            result.append("(");
+            if (isStartsHere()) {
+                result.append("S");
+            }
+            if (isEndsHere()) {
+                result.append("E");
+            }
+            result.append(") ");
+        }
+        result.append("(baseline=");
+        result.append(_baseline);
+        result.append(") ");
+        result.append("(" + getAbsX() + "," + getAbsY() + ")->(" + getInlineWidth() + " x " + getHeight() + ")");
+        return result.toString();
+    } 
+    
+    public String dump(LayoutContext c, String indent, int which) {
+        if (which != Box.DUMP_RENDER) {
+            throw new IllegalArgumentException();
+        }
+        
+        StringBuffer result = new StringBuffer(indent);
+        result.append(this);
+        result.append('\n');
+        
+        for (Iterator i = getInlineChildren().iterator(); i.hasNext(); ) {
+            Object obj = i.next();
+            if (obj instanceof Box) {
+                Box b = (Box)obj;
+                result.append(b.dump(c, indent + "  ", which));
+                result.deleteCharAt(result.length()-1);
+            } else {
+                result.append(indent + "  ");
+                result.append(obj.toString());
+            }
+            if (i.hasNext()) {
+                result.append('\n');
+            }
+        }
+        
+        return result.toString();
+    }
+    
+    public void restyle(LayoutContext c) {
+        super.restyle(c);
+        calculateTextDecoration(c);
+    }
+    
+    protected void restyleChildren(LayoutContext c) {
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object obj = getInlineChild(i);
+            if (obj instanceof Box) {
+                ((Box)obj).restyle(c);
+            }
+        }
+    }
+    
+    public Box getRestyleTarget() {
+        if (getElement() != null) {
+            return this;
+        } else {
+            return getParent();
+        }
     }
 }

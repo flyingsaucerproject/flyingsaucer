@@ -68,7 +68,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * This class is largely based on {@link com.lowagie.text.pdf.PdfGraphics2D}. See
- * {@link http://sourceforge.net/projects/itext/} for license information.
+ * <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/projects/itext/</a> for license information.
  */
 public class ITextOutputDevice extends AbstractOutputDevice implements OutputDevice {
     private static final int FILL = 1;
@@ -526,28 +526,28 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (fsImage instanceof PDFAsImage) {
             drawPDFAsImage((PDFAsImage)fsImage, x, y);
         } else {
-	        Image image = ((ITextFSImage)fsImage).getImage();
-	        
-	        AffineTransform at = AffineTransform.getTranslateInstance(x,y);
-	        at.translate(0, fsImage.getHeight());
-	        at.scale(fsImage.getWidth(), fsImage.getHeight());
-	        
-	        AffineTransform inverse = normalizeMatrix(_transform);
-	        AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
-	        inverse.concatenate(at);
-	        inverse.concatenate(flipper);
-	        
-	        double[] mx = new double[6];
-	        inverse.getMatrix(mx);
-	        
-	        try {
-	            _currentPage.addImage(image, 
-	                    (float)mx[0], (float)mx[1], (float)mx[2], 
-	                    (float)mx[3], (float)mx[4], (float)mx[5]);
-	        } catch (DocumentException e) {
-	            throw new XRRuntimeException(e.getMessage(), e);
-	        }
-	    }    
+            Image image = ((ITextFSImage)fsImage).getImage();
+            
+            AffineTransform at = AffineTransform.getTranslateInstance(x,y);
+            at.translate(0, fsImage.getHeight());
+            at.scale(fsImage.getWidth(), fsImage.getHeight());
+            
+            AffineTransform inverse = normalizeMatrix(_transform);
+            AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
+            inverse.concatenate(at);
+            inverse.concatenate(flipper);
+            
+            double[] mx = new double[6];
+            inverse.getMatrix(mx);
+            
+            try {
+                _currentPage.addImage(image, 
+                        (float)mx[0], (float)mx[1], (float)mx[2], 
+                        (float)mx[3], (float)mx[4], (float)mx[5]);
+            } catch (DocumentException e) {
+                throw new XRRuntimeException(e.getMessage(), e);
+            }
+        }    
     }
     
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {

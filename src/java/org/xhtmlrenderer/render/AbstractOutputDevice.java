@@ -94,7 +94,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             fillRect(
                 lineBox.getAbsX(), 
                 lineBox.getAbsY() + textDecoration.getOffset(),
-                parent.getAbsX() + parent.tx + parent.getContentWidth() - lineBox.getAbsX(), 
+                parent.getAbsX() + parent.getTx() + parent.getContentWidth() - lineBox.getAbsX(), 
                 textDecoration.getThickness());
         } else {
             fillRect(
@@ -123,11 +123,11 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             borderBounds.height += c.getCanvas().getHeight();
         }
     
-        BorderPainter.paint(borderBounds, box.getBorderSides(), box.getStyle(), c, 0);
+        BorderPainter.paint(borderBounds, box.getBorderSides(), box.getBorder(c), c, 0);
     }
     
     public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
-        BorderPainter.paint(edge, sides, style, c, 0);
+        BorderPainter.paint(edge, sides, style.getBorder(c), c, 0);
     }
     
     private FSImage getBackgroundImage(RenderingContext c, Box box) {

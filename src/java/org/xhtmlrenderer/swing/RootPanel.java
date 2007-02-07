@@ -30,7 +30,6 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Java2DFontContext;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.render.RenderQueue;
@@ -58,6 +57,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     public SharedContext getSharedContext() {
         return sharedContext;
+    }
+    
+    public LayoutContext getLayoutContext() {
+        return layout_context;
     }
 
     protected SharedContext sharedContext;
@@ -210,17 +213,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
     }
 
-    int rendered_width = 0;
-
-    protected int getRenderWidth() {
-        return rendered_width;
-    }
-
-    protected void setRenderWidth(int renderWidth) {
-        this.rendered_width = renderWidth;
-    }
-
-
     boolean layoutInProgress = false;
 
 
@@ -249,9 +241,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         XRLog.layout(Level.FINEST, "new context end");
 
-        // HACK clean, remove extents reference
-        LayoutContext result = 
-            getSharedContext().newLayoutContextInstance(new Rectangle(0, 0, 1, 1));
+        LayoutContext result = getSharedContext().newLayoutContextInstance();
         
         Graphics2D layoutGraphics = 
             g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics();
@@ -312,7 +302,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             this.layout_context = c;
         }
         c.setRenderQueue(queue);
-        setRenderWidth((int) c.getExtents().getWidth());
         
         long start = System.currentTimeMillis();
         
@@ -327,13 +316,13 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
         
+        /*
+        System.out.println(root.dump(c, "", BlockBox.DUMP_LAYOUT));
+        */
+        
         long end = System.currentTimeMillis();
         
         XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
-        
-        if (!c.isStylesAllPopped()) {
-            XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
-        }
         
         if (c.shouldStop()) {//interrupted layout
             return;
@@ -372,9 +361,9 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                 }
                 //Uu.p("need to do the body hack");
                 if (root != null && ! c.isPrint()) {
-                    root.height = enclosingScrollPane.getViewport().getHeight();
-                    bodyExpandHack(root, root.height);
-                    intrinsic_size.height = root.height;
+                    root.setHeight(enclosingScrollPane.getViewport().getHeight());
+                    bodyExpandHack(root, root.getHeight());
+                    intrinsic_size.height = root.getHeight();
                 }
             } 
             
@@ -398,13 +387,13 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         for (int i = 0; i < root.getChildCount(); i++) {
             // set the html box to the max
             Box html = root.getChild(i);
-            if (html.element != null && html.element.getNodeName().equals("html")) {
-                html.height = view_height;
+            if (html.getElement() != null && html.getElement().getNodeName().equals("html")) {
+                html.setHeight(view_height);
                 // set the body box to the max
                 for (int j = 0; j < html.getChildCount(); j++) {
                     Box body = html.getChild(j);
-                    if (body.element != null && body.element.getNodeName().equals("body")) {
-                        body.height = view_height;
+                    if (body.getElement() != null && body.getElement().getNodeName().equals("body")) {
+                        body.setHeight(view_height);
                     }
                 }
             }

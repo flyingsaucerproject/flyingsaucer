@@ -80,7 +80,7 @@ public class Breaker {
         if (whitespace == IdentValue.PRE ||
                 whitespace == IdentValue.PRE_WRAP ||
                 whitespace == IdentValue.PRE_LINE) {
-            int n = context.getStartSubstring().indexOf(WhitespaceStripper2.EOL);
+            int n = context.getStartSubstring().indexOf(WhitespaceStripper.EOL);
             if (n > -1) {
                 context.setEnd(context.getStart() + n + 1);
                 context.setWidth(c.getTextRenderer().getWidth(
@@ -100,7 +100,7 @@ public class Breaker {
 
         String currentString = context.getStartSubstring();
         int left = 0;
-        int right = currentString.indexOf(WhitespaceStripper2.SPACE, left + 1);
+        int right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
         int lastWrap = 0;
         int graphicsLength = 0;
         int lastGraphicsLength = 0;
@@ -111,7 +111,7 @@ public class Breaker {
                     c.getFontContext(), font, currentString.substring(left, right));
             lastWrap = left;
             left = right;
-            right = currentString.indexOf(WhitespaceStripper2.SPACE, left + 1);
+            right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
         }
 
         if (graphicsLength <= avail) {

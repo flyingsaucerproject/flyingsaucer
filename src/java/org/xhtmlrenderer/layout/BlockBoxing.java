@@ -65,7 +65,7 @@ public class BlockBoxing {
             if (c.isPrint()) {
                 relayoutData = relayoutDataList.get(offset);
                 relayoutData.setLayoutState(c.copyStateForRelayout());
-                relayoutData.setInitialParentHeight(block.height);
+                relayoutData.setInitialParentHeight(block.getHeight());
                 relayoutData.setListIndex(listIndex);
                 relayoutData.setResetMargins(resetMargins);
             }
@@ -101,9 +101,9 @@ public class BlockBoxing {
             // increase the final layout height by the height of the child
             Dimension relativeOffset = child.getRelativeOffset();
             if (relativeOffset == null) {
-                block.height = child.y + child.height;
+                block.setHeight(child.getY() + child.getHeight());
             } else {
-                block.height = child.y - relativeOffset.height + child.height;
+                block.setHeight(child.getY() - relativeOffset.height + child.getHeight());
             }
 
             if (c.isPrint()) {
@@ -172,7 +172,7 @@ public class BlockBoxing {
     private static void relayoutRun(
             LayoutContext c, List localChildren, BlockBox block, 
             RelayoutDataList relayoutDataList, int start, int end, boolean onNewPage) {
-        block.height = relayoutDataList.get(start).getInitialParentHeight();
+        block.setHeight(relayoutDataList.get(start).getInitialParentHeight());
         
         if (onNewPage) {
             block.expandToPageBottom(c);
@@ -211,9 +211,9 @@ public class BlockBoxing {
             
             Dimension relativeOffset = child.getRelativeOffset();
             if (relativeOffset == null) {
-                block.height = child.y + child.height;
+                block.setHeight(child.getY() + child.getHeight());
             } else {
-                block.height = child.y - relativeOffset.height + child.height;
+                block.setHeight(child.getY() - relativeOffset.height + child.getHeight());
             }
             
             if (child.getStyle().isForcePageBreakAfter()) {
@@ -233,16 +233,15 @@ public class BlockBoxing {
         
         child.setListCounter(listIndex);
         
-        child.x = 0;
-        child.y = parent.height;
+        child.initStaticPos(c, parent);
         
         child.initContainingLayer(c);
         child.calcCanvasLocation();
         
-        c.translate(0, parent.height);
+        c.translate(0, parent.getHeight());
         repositionBox(c, child);
         child.layout(c);
-        c.translate(-child.x, -child.y);
+        c.translate(-child.getX(), -child.getY());
     }
     
     private static void repositionBox(LayoutContext c, BlockBox child) {
@@ -261,9 +260,9 @@ public class BlockBoxing {
             child.setNeedPageClear(false);
         }
         if (child.getStyle().isCleared()) {
-            c.translate(0, -child.y);
+            c.translate(0, -child.getY());
             c.getBlockFormattingContext().clear(c, child);
-            c.translate(0, child.y);
+            c.translate(0, child.getY());
             moved = true;
         }
         if (moved) {
@@ -421,6 +420,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2007/02/07 16:33:35  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.51  2006/09/01 23:49:35  peterbrant
  * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
  *

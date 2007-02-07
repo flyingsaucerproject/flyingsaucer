@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.css.extend;
 
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.RenderingContext;
 

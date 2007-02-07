@@ -20,22 +20,22 @@
 package org.xhtmlrenderer.render;
 
 public class TextDecoration {
-    private int offset;
-    private int thickness;
+    private int _offset;
+    private int _thickness;
     
     public TextDecoration() {
     }
     
     public int getOffset() {
-        return offset;
+        return _offset;
     }
     public void setOffset(int offset) {
-        this.offset = offset;
+        _offset = offset;
     }
     public int getThickness() {
-        return thickness;
+        return _thickness;
     }
     public void setThickness(int thickness) {
-        this.thickness = thickness;
+        _thickness = thickness;
     }
 }

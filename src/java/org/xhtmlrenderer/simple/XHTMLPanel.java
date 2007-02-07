@@ -151,9 +151,11 @@ public class XHTMLPanel extends BasicPanel {
             // install a default link listener
             linkListener = new LinkListener(this);
             addMouseListener(linkListener);
+            addMouseMotionListener(linkListener);
 
             // install a default hover listener
             hoverListener = new HoverListener(this);
+            
             addMouseListener(hoverListener);
             addMouseMotionListener(hoverListener);
         }
@@ -347,6 +349,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2007/02/07 16:33:31  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.36  2006/10/06 18:52:29  pdoubleya
  * Fixed NPE when calling setDocument(File) and file has no parent directory; issue #134.
  *

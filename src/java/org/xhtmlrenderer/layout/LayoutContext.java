@@ -46,26 +46,16 @@ public class LayoutContext implements CssContext {
     private SharedContext sharedContext;
     private RenderQueue renderQueue;
     
-    private boolean shrinkWrap = false;
     private Layer rootLayer;
     
     private StyleTracker firstLines;
     private StyleTracker firstLetters;
     private MarkerData currentMarkerData;
     
-    //Style-handling stuff
-    private Stack styleStack;
-
     private Stack bfcs;
     private Stack layers;
     
-    private Rectangle extents;   
-    
-    int renderIndex = 0;
-    
     private boolean shouldStop = false;
-    
-    private boolean layingOutTable = false;
     
     private ReplacedElementFactory replacedElementFactory;
     
@@ -93,26 +83,11 @@ public class LayoutContext implements CssContext {
         return sharedContext.getNamespaceHandler();
     }
     
-    public boolean shrinkWrap() {
-        return shrinkWrap;
-    }
-
-    public void setShrinkWrap() {
-        shrinkWrap = true;
-    }
-
-    public void unsetShrinkWrap() {
-        shrinkWrap = false;
-    }
-
     //the stuff that needs to have a separate instance for each run.
-    LayoutContext(SharedContext sharedContext, Rectangle extents) {
+    LayoutContext(SharedContext sharedContext) {
         this.sharedContext = sharedContext;
         this.bfcs = new Stack();
         this.layers = new Stack();
-        this.styleStack = new Stack();
-        this.styleStack.push(new EmptyStyle());
-        setExtents(extents);
         
         this.firstLines = new StyleTracker();
         this.firstLetters = new StyleTracker();
@@ -124,8 +99,6 @@ public class LayoutContext implements CssContext {
         this.currentMarkerData = null;
         
         this.bfcs = new Stack();
-        
-        this.extents = null;
     }
     
     public LayoutState captureLayoutState() {
@@ -165,28 +138,6 @@ public class LayoutContext implements CssContext {
         
         this.currentMarkerData = layoutState.getCurrentMarkerData();
     }
-
-    public void pushStyle(CascadedStyle s) {
-        CalculatedStyle parent = (CalculatedStyle) styleStack.peek();
-        CalculatedStyle derived = parent.deriveStyle(s);
-        styleStack.push(derived);
-    }
-
-    public void popStyle() {
-        if (isStylesAllPopped()) {
-            XRLog.general(Level.SEVERE, "Trying to pop base empty style");
-        } else {
-            styleStack.pop();
-        }
-    }
-
-    public CalculatedStyle getCurrentStyle() {
-        return (CalculatedStyle) styleStack.peek();
-    }
-
-    public boolean isStylesAllPopped() {
-        return styleStack.size() == 1;//Is primed with an EmptyStyle to setStartStyle off with
-    }   
 
     public BlockFormattingContext getBlockFormattingContext() {
         return (BlockFormattingContext)bfcs.peek();
@@ -243,35 +194,6 @@ public class LayoutContext implements CssContext {
         return rootLayer;
     }
 
-    public void setExtents(Rectangle rect) {
-        this.extents = rect;
-        if (extents.width < 1) {
-            XRLog.exception("width < 1");
-            extents.width = 1;
-        }
-    }
-
-    public Rectangle getExtents() {
-        return this.extents;
-    }
-
-    /**
-     * @param dw amount to shrink width by
-     * @param dh amount to shrink height by
-     * @return the extents before shrinking
-     */
-    public Rectangle shrinkExtents(int dw, int dh) {
-        Rectangle result = getExtents();
-
-        Rectangle rect = new Rectangle(0, 0,
-                getExtents().width - dw,
-                getExtents().height - dh);
-
-        setExtents(rect);
-        
-        return result;
-    }
-
     public void translate(int x, int y) {
         getBlockFormattingContext().translate(x, y);
     }
@@ -282,12 +204,6 @@ public class LayoutContext implements CssContext {
 
     public void stopRendering() {
         this.shouldStop = true;
-    }
-
-    public String toString() {
-        return "Context: extents = " +
-                "(" + extents.x + "," + extents.y + ") -> (" + extents.width + "x" + extents.height + ")"
-                ;
     }
 
     /* code to keep track of all of the id'd boxes */
@@ -317,10 +233,6 @@ public class LayoutContext implements CssContext {
 
     public boolean isRenderQueueAvailable() {
         return this.renderQueue != null;
-    }
-
-    public int getNewRenderIndex() {
-        return renderIndex++;
     }
 
     public float getMmPerDot() {
@@ -371,14 +283,6 @@ public class LayoutContext implements CssContext {
         this.currentMarkerData = currentMarkerData;
     }
 
-    public boolean isLayingOutTable() {
-        return layingOutTable;
-    }
-
-    public void setLayingOutTable(boolean layingOutTable) {
-        this.layingOutTable = layingOutTable;
-    }
-
     public ReplacedElementFactory getReplacedElementFactory() {
         return replacedElementFactory;
     }
@@ -394,11 +298,6 @@ public class LayoutContext implements CssContext {
 
     public void setFontContext(FontContext fontContext) {
         this.fontContext = fontContext;
-    }
-    
-    public void initializeStyles(CalculatedStyle c) {
-        styleStack = new Stack();
-        styleStack.push(c);
     }
     
     public ContentFunctionFactory getContentFunctionFactory() {

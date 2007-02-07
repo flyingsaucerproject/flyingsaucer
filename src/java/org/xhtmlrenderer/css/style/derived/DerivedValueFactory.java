@@ -1,16 +1,16 @@
 package org.xhtmlrenderer.css.style.derived;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.w3c.dom.css.RGBColor;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,18 +23,18 @@ public class DerivedValueFactory {
     /**
      * Properties which only accept color assignments; transparent is included.
      */
-    private static final List COLOR_PROPERTIES;
+    private static final Set COLOR_PROPERTIES;
 
     /**
      * Properties which only accept string assignments (e.g. URLs)
      */
-    private static final List STRING_PROPERTIES;
+    private static final Set STRING_PROPERTIES;
 
     /**
      * Properties which only accept enumerated constants
      */
-    private static final List IDENT_PROPERTIES;
-
+    private static final Set IDENT_PROPERTIES;
+    
     public static FSDerivedValue newDerivedValue(CalculatedStyle style,
                                                  CSSName cssName,
                                                  short cssSACUnitType,
@@ -96,7 +96,7 @@ public class DerivedValueFactory {
     static {
         CACHED_COLORS = new HashMap();
 
-        COLOR_PROPERTIES = new ArrayList();
+        COLOR_PROPERTIES = new HashSet();
         COLOR_PROPERTIES.add(CSSName.COLOR);
         COLOR_PROPERTIES.add(CSSName.BACKGROUND_COLOR);
         COLOR_PROPERTIES.add(CSSName.OUTLINE_COLOR);
@@ -105,7 +105,7 @@ public class DerivedValueFactory {
         COLOR_PROPERTIES.add(CSSName.BORDER_COLOR_BOTTOM);
         COLOR_PROPERTIES.add(CSSName.BORDER_COLOR_LEFT);
 
-        STRING_PROPERTIES = new ArrayList();
+        STRING_PROPERTIES = new HashSet();
         STRING_PROPERTIES.add(CSSName.FONT_FAMILY);
         STRING_PROPERTIES.add(CSSName.BACKGROUND_IMAGE);
         STRING_PROPERTIES.add(CSSName.LIST_STYLE_IMAGE);
@@ -117,7 +117,7 @@ public class DerivedValueFactory {
         STRING_PROPERTIES.add(CSSName.FS_FLOW_BOTTOM);
         STRING_PROPERTIES.add(CSSName.FS_FLOW_LEFT);
 
-        IDENT_PROPERTIES = new ArrayList();
+        IDENT_PROPERTIES = new HashSet();
         IDENT_PROPERTIES.add(CSSName.BACKGROUND_ATTACHMENT);
         IDENT_PROPERTIES.add(CSSName.BACKGROUND_REPEAT);
         IDENT_PROPERTIES.add(CSSName.BORDER_COLLAPSE);
@@ -126,6 +126,7 @@ public class DerivedValueFactory {
         IDENT_PROPERTIES.add(CSSName.BORDER_STYLE_RIGHT);
         IDENT_PROPERTIES.add(CSSName.BORDER_STYLE_TOP);
         IDENT_PROPERTIES.add(CSSName.DISPLAY);
+        IDENT_PROPERTIES.add(CSSName.EMPTY_CELLS);        
         IDENT_PROPERTIES.add(CSSName.FLOAT);
         IDENT_PROPERTIES.add(CSSName.FONT_STYLE);
         IDENT_PROPERTIES.add(CSSName.FONT_VARIANT);

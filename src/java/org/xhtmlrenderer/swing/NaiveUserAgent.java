@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import org.xhtmlrenderer.render.AWTFSImage;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
@@ -165,6 +164,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2007/02/07 16:33:31  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.27  2006/06/28 13:46:59  peterbrant
  * ImageIO.read() can apparently return sometimes null instead of throwing an exception when processing an invalid image
  *

@@ -25,22 +25,23 @@ import java.awt.Point;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.LineBox;
 
 public class BlockFormattingContext {
-    protected int x, y = 0;
-    private final PersistentBFC persistentBFC;
+    private int _x = 0;
+    private int _y = 0;
+    
+    private final PersistentBFC _persistentBFC;
 
     public BlockFormattingContext(BlockBox block, LayoutContext c) {
-        persistentBFC = new PersistentBFC(block, c);
+        _persistentBFC = new PersistentBFC(block, c);
     }
     
     /* ====== positioning stuff ======== */
 
     public Point getOffset() {
         //return new Point(x, y);
-        return new Point(x, y);
+        return new Point(_x, _y);
     }
 
     // we want to preserve the block formatting contexts position
@@ -48,12 +49,12 @@ public class BlockFormattingContext {
     // of the graphics
     public void translate(int x, int y) {
         //Uu.p("trans : " + x + " " + y);
-        this.x -= x;
-        this.y -= y;
+        _x -= x;
+        _y -= y;
     }
     
     public FloatManager getFloatManager() {
-        return persistentBFC.getFloatManager();
+        return _persistentBFC.getFloatManager();
     }
     
     public int getLeftFloatDistance(CssContext cssCtx, LineBox line, int containingBlockWidth) {
@@ -69,7 +70,7 @@ public class BlockFormattingContext {
                     getRightFloatDistance(cssCtx, line, containingBlockWidth);
     }
     
-    public void floatBox(LayoutContext c, FloatedBlockBox floated) {
+    public void floatBox(LayoutContext c, BlockBox floated) {
         getFloatManager().floatBox(c, c.getLayer(), this, floated);
     }
     
@@ -78,6 +79,6 @@ public class BlockFormattingContext {
     }
     
     public String toString() {
-        return "BFC: (" + x + "," + y + ")";
+        return "BFC: (" + _x + "," + _y + ")";
     }
 }

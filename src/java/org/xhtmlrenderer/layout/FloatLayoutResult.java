@@ -19,11 +19,11 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.render.FloatedBlockBox;
+import org.xhtmlrenderer.render.BlockBox;
 
 public class FloatLayoutResult {
     private boolean _pending;
-    private FloatedBlockBox _block;
+    private BlockBox _block;
     
     public boolean isPending() {
         return _pending;
@@ -33,11 +33,11 @@ public class FloatLayoutResult {
         _pending = pending;
     }
 
-    public FloatedBlockBox getBlock() {
+    public BlockBox getBlock() {
         return _block;
     }
 
-    public void setBlock(FloatedBlockBox block) {
+    public void setBlock(BlockBox block) {
         _block = block;
     }
 }

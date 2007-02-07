@@ -23,8 +23,8 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.render.AWTFSFont;
 import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.swing.AWTFSFont;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -265,6 +265,9 @@ public class AWTFontResolver implements FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2007/02/07 16:33:29  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.1  2006/02/01 01:30:15  peterbrant
  * Initial commit of PDF work
  *

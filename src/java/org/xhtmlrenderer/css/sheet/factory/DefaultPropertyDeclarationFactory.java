@@ -70,18 +70,8 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
                     " CSS style information is not primitive--is a list of values." +
                     " Should be handled by a shorthand property factory.");
         }
-        FSCssValue fsCssValue = null;
-
-        // HACK: font-size <absolute-size> ident workaround
-        if (cssName == CSSName.FONT_SIZE) {
-            fsCssValue = FontSizeHackHelper.fontSizeAbsoluteHack(primVals[0]);
-        } else {
-            fsCssValue = new FSCssValue(primVals[0]);
-        }
-        List declarations = new ArrayList(1);
-
-        declarations.add(newPropertyDeclaration(cssName, fsCssValue, origin, important));
-        return declarations.iterator();
+        FSCssValue fsCssValue = new FSCssValue(primVals[0]);
+        return Collections.singletonList(newPropertyDeclaration(cssName, fsCssValue, origin, important)).iterator();
     }
 
 
@@ -103,6 +93,9 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2007/02/07 16:33:39  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.8  2006/07/27 15:18:15  pdoubleya
  * Added workaround for font-sizes with idents such as medium, large, etc.
  *

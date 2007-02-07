@@ -10,6 +10,9 @@ import org.xhtmlrenderer.css.style.CssContext;
  * some rectangular area, and per-side thickness.
  */
 public class RectPropertySet {
+    //                                                                  HACK
+    public static final RectPropertySet ALL_ZEROS = new RectPropertySet(CSSName.MARGIN_SHORTHAND, 0, 0, 0, 0);
+    
     protected String _key;
     protected float _top;
     protected float _right;
@@ -46,10 +49,10 @@ public class RectPropertySet {
         RectPropertySet rect =
                 new RectPropertySet(
                         shortHandProperty,
-                        ! style.isLengthValue(sideProperties[0]) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties[0], cbWidth, ctx),
-                        ! style.isLengthValue(sideProperties[1]) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties[1], cbWidth, ctx),
-                        ! style.isLengthValue(sideProperties[2]) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties[2], cbWidth, ctx),
-                        ! style.isLengthValue(sideProperties[3]) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties[3], cbWidth, ctx)
+                        ! style.isLengthOrNumber(sideProperties[0]) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties[0], cbWidth, ctx),
+                        ! style.isLengthOrNumber(sideProperties[1]) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties[1], cbWidth, ctx),
+                        ! style.isLengthOrNumber(sideProperties[2]) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties[2], cbWidth, ctx),
+                        ! style.isLengthOrNumber(sideProperties[3]) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties[3], cbWidth, ctx)
                 );
         return rect;
     }
@@ -114,7 +117,7 @@ public class RectPropertySet {
         boolean isAbs = true;
         // HACK isLengthValue is part of margin auto hack
         for (int i = 0; i < sideProperties.length && isAbs; i++) {
-            isAbs = style.isLengthValue(sideProperties[i]) && style.hasAbsoluteUnit(sideProperties[i]);
+            isAbs = style.isLengthOrNumber(sideProperties[i]) && style.hasAbsoluteUnit(sideProperties[i]);
         }
         
         if (isAbs) {

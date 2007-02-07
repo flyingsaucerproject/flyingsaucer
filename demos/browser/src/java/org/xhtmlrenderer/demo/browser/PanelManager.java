@@ -20,10 +20,10 @@
 package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.render.AWTFSImage;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;

@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2005 Wisconsin Court System
+ * Copyright (c) 2007 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -17,43 +17,35 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.render;
+package org.xhtmlrenderer.newtable;
 
-public class StrutMetrics {
-    private int _baseline;
-    private float _ascent;
-    private float _descent;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RowData {
+    private List _row = new ArrayList();
+    private TableRowBox _tableRow;
     
-    public StrutMetrics(float ascent, int baseline, float descent) {
-        _ascent = ascent;
-        _baseline = baseline;
-        _descent = descent;
+    public List getRow() {
+        return _row;
+    }
+    
+    public void extendToColumnCount(int columnCount) {
+        while (_row.size() < columnCount) {
+            _row.add(null);
+        }
+    }
+    
+    public void splitColumn(int pos) {
+        TableCellBox current = (TableCellBox)_row.get(pos);
+        _row.add(pos+1, current == null ? null : TableSectionBox.SPANNING_CELL);
     }
 
-    public StrutMetrics() {
+    public TableRowBox getTableRow() {
+        return _tableRow;
     }
-    
-    public float getAscent() {
-        return _ascent;
-    }
-    
-    public void setAscent(float ascent) {
-        _ascent = ascent;
-    }
-    
-    public int getBaseline() {
-        return _baseline;
-    }
-    
-    public void setBaseline(int baseline) {
-        _baseline = baseline;
-    }
-    
-    public float getDescent() {
-        return _descent;
-    }
-    
-    public void setDescent(float descent) {
-        _descent = descent;
+
+    public void setTableRow(TableRowBox tableRow) {
+        _tableRow = tableRow;
     }
 }

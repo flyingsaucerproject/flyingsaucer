@@ -104,6 +104,18 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 style.append(s);
                 style.append(";");
             }
+        } else if (e.getNodeName().equals("colgroup") || e.getNodeName().equals("col")) {
+            String s;
+            if (!(s = e.getAttribute("span")).equals("")) {
+                style.append("-fs-table-cell-colspan: ");
+                style.append(s);
+                style.append(";");
+            }
+            if (!(s = e.getAttribute("width")).equals("")) {
+                style.append("width: ");
+                style.append(s);
+                style.append(";");
+            }            
         }
         style.append(e.getAttribute("style"));
         return style.toString();

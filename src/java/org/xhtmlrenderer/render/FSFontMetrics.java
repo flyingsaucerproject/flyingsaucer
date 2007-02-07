@@ -33,7 +33,6 @@ public interface FSFontMetrics {
     /**
      * In keeping with the JDK {@link java.awt.font.LineMetrics} convention, this number is
      * positive for values below the baseline.
-     * @return
      */
     public float getUnderlineOffset();
     

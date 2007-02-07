@@ -64,7 +64,7 @@ public class TextUtil {
      * @param text  PARAM
      * @return      Returns
      */
-    public static String capitalizeWords( String text ) {
+    private static String capitalizeWords( String text ) {
         //Uu.p("start = -"+text+"-");
         if ( text.length() == 0 ) {
             return text;
@@ -105,6 +105,9 @@ public class TextUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2007/02/07 16:33:33  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.10  2005/01/29 20:18:41  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

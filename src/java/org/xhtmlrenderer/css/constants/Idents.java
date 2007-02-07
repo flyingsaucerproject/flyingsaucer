@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -217,8 +217,7 @@ public final class Idents {
         return val.startsWith("url(") && val.endsWith(")");
     }
     
-    public static boolean looksLikeAFunction(String value)
-    {
+    public static boolean looksLikeAFunction(String value) {
         return FUNCTION_PATTERN.matcher(value).find();
     }
 
@@ -414,6 +413,10 @@ public final class Idents {
         FONT_SIZES.put("large", "14.4pt");
         FONT_SIZES.put("x-large", "17.3pt");
         FONT_SIZES.put("xx-large", "20.7pt");
+        
+        // HACK
+        FONT_SIZES.put("smaller", "0.8em");
+        FONT_SIZES.put("larger", "1.2em");
 
         FONT_WEIGHTS = new HashMap();
         FONT_WEIGHTS.put("normal", "400");
@@ -536,6 +539,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2007/02/07 16:33:36  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.15  2006/07/28 10:08:55  pdoubleya
  * Additional work for support of parsing content and quotes.
  *

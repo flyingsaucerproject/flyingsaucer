@@ -9,24 +9,13 @@ ol, p, ul, center,
 dir, hr, menu, pre, object   { display: block }
 li              { display: list-item }
 head            { display: none }
-table           { display: table }
-tr              { display: table-row }
-thead           { display: table-header-group }
-tbody           { display: table-row-group }
-tfoot           { display: table-footer-group }
-col             { display: table-column }
-colgroup        { display: table-column-group }
-td, th          { display: table-cell }
-caption         { display: table-caption }
-th              { font-weight: bolder; text-align: center }
-caption         { text-align: center }
 body            { margin: 8px }
 h1              { font-size: 2em; margin: .67em 0 }
 h2              { font-size: 1.5em; margin: .75em 0 }
 h3              { font-size: 1.17em; margin: .83em 0 }
 h4, p,
 blockquote, ul,
-fieldset, form,
+fieldset, 
 ol, dl, dir,
 menu            { margin: 1.12em 0 }
 h5              { font-size: .83em; margin: 1.5em 0 }
@@ -43,15 +32,8 @@ pre             { white-space: pre }
 button, textarea,
 input, select   { display: inline-block }
 big             { font-size: 1.17em }
-small, sub, sup { font-size: .83em }
-sub             { vertical-align: sub }
-sup             { vertical-align: super }
-table           { border-spacing: 2px; }
-thead, tbody,
-tfoot           { vertical-align: middle }
-td, th          { vertical-align: inherit }
+small           { font-size: .83em }
 s, strike, del  { text-decoration: line-through }
-hr              { border: 1px inset }
 ol, ul, dir,
 menu, dd        { margin-left: 40px }
 ol              { list-style-type: decimal }
@@ -65,13 +47,6 @@ a:link, a:visited { text-decoration: underline }
 /*
 :focus          { outline: thin dotted invert }
 */
-
-/* Begin bidirectionality settings (do not change) */
-BDO[DIR="ltr"]  { direction: ltr; unicode-bidi: bidi-override }
-BDO[DIR="rtl"]  { direction: rtl; unicode-bidi: bidi-override }
-
-*[DIR="ltr"]    { direction: ltr; unicode-bidi: embed }
-*[DIR="rtl"]    { direction: rtl; unicode-bidi: embed }
 
 /*
 @media print {
@@ -103,9 +78,8 @@ img {
     padding: 0px;
 }
 
-/* don't know why */
 a {
-    color: #ff0000;
+    color: #0000ff;
 }
 
 h5, h6, b, strong { 
@@ -115,4 +89,116 @@ h5, h6, b, strong {
 /* Match default behavior of Firefox and Opera */
 pre {
   margin: 1em 0;
+}
+
+/* Various table related rules taken from Firefox's html.css */
+table {
+  display: table;
+  border-spacing: 2px;
+  border-collapse: separate;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-indent: 0;
+}
+
+/*
+table[rules]:not([rules="none"]) {
+  border-collapse: collapse;
+}
+*/
+   
+/* caption inherits from table not table-outer */  
+caption {
+  display: table-caption;
+  text-align: center;
+}
+
+table[align="center"] > caption {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table[align="center"] > caption[align="left"] {
+  margin-right: 0;
+}
+
+table[align="center"] > caption[align="right"] {
+  margin-left: 0;
+}
+
+tr {
+  display: table-row;
+  vertical-align: inherit;
+}
+
+col {
+  display: table-column;
+}
+
+colgroup {
+  display: table-column-group;
+}
+
+tbody {
+  display: table-row-group;
+  vertical-align: middle;
+}
+
+thead {
+  display: table-header-group;
+  vertical-align: middle;
+}
+
+tfoot {
+  display: table-footer-group;
+  vertical-align: middle;
+}
+
+/* for XHTML tables without tbody */
+table > tr {
+  vertical-align: middle;
+}
+
+td { 
+  display: table-cell;
+  vertical-align: inherit;
+  text-align: inherit; 
+  padding: 1px;
+}
+
+th {
+  display: table-cell;
+  vertical-align: inherit;
+  font-weight: bold;
+  padding: 1px;
+}
+
+/* Modified version of equivalent FF definitions */
+
+sub {
+  vertical-align: sub;
+  font-size: 0.83em;
+  line-height: normal;
+}
+
+sup {
+  vertical-align: super;
+  font-size: 0.83em;
+  line-height: normal;
+}
+
+hr {
+  display: block;
+  border: 1px inset;
+  margin: 0.5em auto 0.5em auto;
+}
+
+hr[size="1"] {
+  border-width: 1px 0 0 0;
+  border-style: solid none none none;
+}
+
+/* Quirk: give form margin for compat (b=41806) (from Firefox) */
+form{
+ margin: 0 0 1em 0;
 }

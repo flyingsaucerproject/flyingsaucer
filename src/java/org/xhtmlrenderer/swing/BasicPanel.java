@@ -19,6 +19,24 @@
  */
 package org.xhtmlrenderer.swing;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.LayoutManager;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.print.PrinterGraphics;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.event.DocumentListener;
@@ -35,17 +53,6 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
-
-import java.awt.*;
-import java.awt.print.PrinterGraphics;
-import java.io.InputStream;
-import java.io.BufferedReader;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
 
 //hmm, IntelliJ sees references to Xx below as being Xx in Component!
 
@@ -713,6 +720,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.107  2007/02/07 16:33:29  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.106  2006/08/29 17:29:14  peterbrant
  * Make Style object a thing of the past
  *

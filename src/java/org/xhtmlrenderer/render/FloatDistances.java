@@ -20,27 +20,27 @@
 package org.xhtmlrenderer.render;
 
 public class FloatDistances {
-	private int leftFloatDistance;
-	private int rightFloatDistance;
-	
-	public FloatDistances() {
-	}
+    private int _leftFloatDistance;
 
-	public int getLeftFloatDistance() {
-		return leftFloatDistance;
-	}
+    private int _rightFloatDistance;
 
-	public void setLeftFloatDistance(int leftFloatDistance) {
-		this.leftFloatDistance = leftFloatDistance;
-	}
+    public FloatDistances() {
+    }
 
-	public int getRightFloatDistance() {
-		return rightFloatDistance;
-	}
+    public int getLeftFloatDistance() {
+        return _leftFloatDistance;
+    }
 
-	public void setRightFloatDistance(int rightFloatDistance) {
-		this.rightFloatDistance = rightFloatDistance;
-	}
-	
-	
+    public void setLeftFloatDistance(int leftFloatDistance) {
+        _leftFloatDistance = leftFloatDistance;
+    }
+
+    public int getRightFloatDistance() {
+        return _rightFloatDistance;
+    }
+
+    public void setRightFloatDistance(int rightFloatDistance) {
+        _rightFloatDistance = rightFloatDistance;
+    }
+
 }

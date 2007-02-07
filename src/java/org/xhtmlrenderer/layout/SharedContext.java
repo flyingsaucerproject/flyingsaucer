@@ -42,8 +42,8 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
-import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -103,8 +103,8 @@ public class SharedContext {
         }
     }
 
-    public LayoutContext newLayoutContextInstance(Rectangle extents) {
-        LayoutContext c = new LayoutContext(this, extents);
+    public LayoutContext newLayoutContextInstance() {
+        LayoutContext c = new LayoutContext(this);
         return c;
     }
 
@@ -639,23 +639,29 @@ public class SharedContext {
         this.dotsPerPixel = pixelsPerDot;
     }
     
-    
     public CalculatedStyle getStyle(Element e) {
+        return getStyle(e, false);
+    }
+    
+    public CalculatedStyle getStyle(Element e, boolean restyle) {
         if (styleMap == null) {
             styleMap = new HashMap(1024, 0.75f);
         }
         
-        CalculatedStyle result = (CalculatedStyle)styleMap.get(e);
+        CalculatedStyle result = null;
+        if (! restyle) {
+            result = (CalculatedStyle)styleMap.get(e);
+        }
         if (result == null) {
             Node parent = e.getParentNode();
             CalculatedStyle parentCalculatedStyle;
             if (parent instanceof Document) {
                 parentCalculatedStyle = new EmptyStyle();
             } else {
-                parentCalculatedStyle = getStyle((Element)parent);
+                parentCalculatedStyle = getStyle((Element)parent, false);
             }
             
-            result = parentCalculatedStyle.deriveStyle(getCss().getCascadedStyle(e, false));
+            result = parentCalculatedStyle.deriveStyle(getCss().getCascadedStyle(e, restyle));
             
             styleMap.put(e, result);
         }
@@ -674,6 +680,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2007/02/07 16:33:35  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.31  2006/08/29 17:29:10  peterbrant
  * Make Style object a thing of the past
  *

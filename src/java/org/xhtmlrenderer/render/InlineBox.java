@@ -24,10 +24,10 @@ import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
-import org.xhtmlrenderer.layout.WhitespaceStripper2;
+import org.xhtmlrenderer.layout.TextUtil;
+import org.xhtmlrenderer.layout.WhitespaceStripper;
 
-public class InlineBox implements Styleable
-{
+public class InlineBox implements Styleable {
     private Element _element;
     
     private String _text;
@@ -57,6 +57,10 @@ public class InlineBox implements Styleable
     
     public void setText(String text) {
         _text = text;
+    }
+    
+    public void applyTextTransform() {
+        _text = TextUtil.transformText(_text, getStyle());
     }
 
     public boolean isRemovableWhitespace() {
@@ -122,7 +126,7 @@ public class InlineBox implements Styleable
         int last = 0;
         int current = 0;
         
-        while ( (current = _text.indexOf(WhitespaceStripper2.EOL, last)) != -1) {
+        while ( (current = _text.indexOf(WhitespaceStripper.EOL, last)) != -1) {
             String target = _text.substring(last, current);
             if (trim) {
                 target = target.trim();
@@ -158,7 +162,7 @@ public class InlineBox implements Styleable
         return c.getTextRenderer().getWidth(
                 c.getFontContext(), 
                 getStyle().getFSFont(c), 
-                WhitespaceStripper2.SPACE);
+                WhitespaceStripper.SPACE);
         
     }
     
@@ -185,7 +189,7 @@ public class InlineBox implements Styleable
         
         String text = getText(trimLeadingSpace);
         
-        while ( (current = text.indexOf(WhitespaceStripper2.SPACE, last)) != -1) {
+        while ( (current = text.indexOf(WhitespaceStripper.SPACE, last)) != -1) {
             int length = getTextWidth(c, text.substring(last, current));
             if (spaceCount > 0) {
                 if (includeWS) {
@@ -241,17 +245,21 @@ public class InlineBox implements Styleable
         }
         maxWidth += length;
         
-        int leftMBP = getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.LEFT);
-        int rightMBP = getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.RIGHT);
+        if (isStartsHere()) {
+            int leftMBP = getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.LEFT);
+            if (firstWord + leftMBP > _minWidth) {
+                _minWidth = firstWord + leftMBP;
+            }
+            maxWidth += leftMBP;
+        } 
         
-        if (firstWord + leftMBP > _minWidth) {
-            _minWidth = firstWord + leftMBP;
+        if (isEndsHere()) {
+            int rightMBP = getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.RIGHT);
+            if (lastWord + rightMBP > _minWidth) {
+                _minWidth = lastWord + rightMBP;
+            }
+            maxWidth += rightMBP;
         }
-        if (lastWord + rightMBP > _minWidth) {
-            _minWidth = lastWord + rightMBP;
-        }
-        
-        maxWidth += leftMBP + rightMBP;
         
         return maxWidth;
     }
@@ -313,5 +321,51 @@ public class InlineBox implements Styleable
 
     public void setPseudoElementOrClass(String pseudoElementOrClass) {
         _pseudoElementOrClass = pseudoElementOrClass;
+    }
+    
+    public String toString() {
+        StringBuffer result = new StringBuffer();
+        result.append("InlineBox: ");
+        if (getElement() != null) {
+            result.append("<");
+            result.append(getElement().getNodeName());
+            result.append("> ");
+        } else {
+            result.append("(anonymous) ");
+        }       
+        if (isStartsHere() || isEndsHere()) {
+            result.append("(");
+            if (isStartsHere()) {
+                result.append("S");
+            }
+            if (isEndsHere()) {
+                result.append("E");
+            }
+            result.append(") ");
+        }
+        result.append("(");
+        result.append(shortText());
+        result.append(") ");
+        return result.toString();
+    }
+    
+    private String shortText() {
+        if (_text == null) {
+            return null;
+        } else {
+            StringBuffer result = new StringBuffer();
+            for (int i = 0; i < _text.length() && i < 40; i++) {
+                char c = _text.charAt(i);
+                if (c == '\n') {
+                    result.append(' ');
+                } else {
+                    result.append(c);
+                }
+            }
+            if (result.length() == 40) {
+                result.append("...");
+            }
+            return result.toString();
+        }
     }
 }

@@ -1,6 +1,7 @@
 /*
  * CalculatedStyle.java
  * Copyright (c) 2004, 2005 Patrick Wright, Torbj�rn Gannholm
+ * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -9,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -31,12 +32,12 @@ import org.w3c.dom.css.RGBColor;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
-import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
+import org.xhtmlrenderer.css.style.derived.NumberValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -84,6 +85,10 @@ public class CalculatedStyle {
 
     private FSFont _FSFont;
     private FSFontMetrics _FSFontMetrics;
+    
+    private boolean _marginsAllowed = true;
+    private boolean _paddingAllowed = true;
+    private boolean _bordersAllowed = true;
 
     /**
      * Cache child styles of this style that have the same cascaded properties
@@ -125,12 +130,41 @@ public class CalculatedStyle {
      * @param parent  PARAM
      * @param matched PARAM
      */
-    CalculatedStyle(CalculatedStyle parent, CascadedStyle matched) {
+    private CalculatedStyle(CalculatedStyle parent, CascadedStyle matched) {
         this();
         _parent = parent;
 
         derive(matched);
+        
+        checkPaddingAllowed();
+        checkMarginsAllowed();
+        checkBordersAllowed();
     }
+    
+    private void checkPaddingAllowed() {
+        IdentValue v = getIdent(CSSName.DISPLAY);
+        if (v == IdentValue.TABLE_HEADER_GROUP || v == IdentValue.TABLE_ROW_GROUP ||
+                 v == IdentValue.TABLE_FOOTER_GROUP || v == IdentValue.TABLE_ROW) {
+            _paddingAllowed = false;
+        }
+    }
+    
+    private void checkMarginsAllowed() {
+        IdentValue v = getIdent(CSSName.DISPLAY);
+        if (v == IdentValue.TABLE_HEADER_GROUP || v == IdentValue.TABLE_ROW_GROUP ||
+                 v == IdentValue.TABLE_FOOTER_GROUP || v == IdentValue.TABLE_ROW ||
+                 v == IdentValue.TABLE_CELL) {
+            _marginsAllowed = false;
+        }
+    }
+    
+    private void checkBordersAllowed() {
+        IdentValue v = getIdent(CSSName.DISPLAY);
+        if (v == IdentValue.TABLE_HEADER_GROUP || v == IdentValue.TABLE_ROW_GROUP ||
+                 v == IdentValue.TABLE_FOOTER_GROUP || v == IdentValue.TABLE_ROW) {
+            _bordersAllowed = false;
+        }
+    }    
 
     /**
      * derives a child style from this style.
@@ -261,8 +295,12 @@ public class CalculatedStyle {
     }
 
     public BorderPropertySet getBorder(CssContext ctx) {
-        BorderPropertySet b = getBorderProperty(this, ctx);
-        return b;
+        if (! _bordersAllowed) {
+            return BorderPropertySet.ALL_ZEROS;
+        } else {
+            BorderPropertySet b = getBorderProperty(this, ctx);
+            return b;
+        }
     }
 
     public FontSpecification getFont(CssContext ctx) {
@@ -307,7 +345,7 @@ public class CalculatedStyle {
         if (! _lineHeightResolved) {
             if (isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
                 _lineHeight = getFont(ctx).size * 1.1f;//css recommends something between 1.0 and 1.2
-            } else if (isLengthValue(CSSName.LINE_HEIGHT)) {
+            } else if (isLength(CSSName.LINE_HEIGHT)) {
                 //could be more elegant, I suppose
                 _lineHeight = getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, 0, ctx);
             } else {
@@ -329,7 +367,11 @@ public class CalculatedStyle {
      * @return The marginWidth value
      */
     public RectPropertySet getMarginRect(float cbWidth, CssContext ctx) {
-        return getMarginProperty(this, CSSName.MARGIN_SHORTHAND, CSSName.MARGIN_SIDE_PROPERTIES, cbWidth, ctx);
+        if (! _marginsAllowed) {
+            return RectPropertySet.ALL_ZEROS;
+        } else {
+            return getMarginProperty(this, CSSName.MARGIN_SHORTHAND, CSSName.MARGIN_SIDE_PROPERTIES, cbWidth, ctx);
+        }
     }
 
     /**
@@ -342,7 +384,11 @@ public class CalculatedStyle {
      * @return The paddingWidth value
      */
     public RectPropertySet getPaddingRect(float cbWidth, CssContext ctx) {
-        return getPaddingProperty(this, CSSName.PADDING_SHORTHAND, CSSName.PADDING_SIDE_PROPERTIES, cbWidth, ctx);
+        if (! _paddingAllowed) {
+            return RectPropertySet.ALL_ZEROS;
+        } else {
+            return getPaddingProperty(this, CSSName.PADDING_SHORTHAND, CSSName.PADDING_SIDE_PROPERTIES, cbWidth, ctx);
+        }
     }
 
     /**
@@ -356,9 +402,14 @@ public class CalculatedStyle {
     /**
      * TODO: doc
      */
-    public boolean isLengthValue(CSSName cssName) {
+    public boolean isLength(CSSName cssName) {
         FSDerivedValue val = valueByName(cssName);
         return val instanceof LengthValue;
+    }
+    
+    public boolean isLengthOrNumber(CSSName cssName) {
+        FSDerivedValue val = valueByName(cssName);
+        return val instanceof NumberValue || val instanceof LengthValue;
     }
 
     /**
@@ -387,20 +438,11 @@ public class CalculatedStyle {
                     throw new XRRuntimeException("Property '" + cssName + "' has no initial values assigned. " +
                             "Check CSSName declarations.");
                 }
-                if (initialValue.startsWith("=")) {
+                if (initialValue.charAt(0) == '=') {
                     CSSName ref = CSSName.getByPropertyName(initialValue.substring(1));
                     val = valueByName(ref);
                 } else {
-                    initialValue = Idents.convertIdent(cssName, initialValue);
-
-                    short type = ValueConstants.guessType(initialValue);
-
-                    val = DerivedValueFactory.newDerivedValue(this,
-                            cssName,
-                            type,
-                            initialValue,
-                            initialValue,
-                            null);
+                    val = CSSName.initialDerivedValue(cssName);
                 }
             }
             _derivedValuesById[cssName.FS_ID] = val;
@@ -735,8 +777,44 @@ public class CalculatedStyle {
         return isIdent(CSSName.DISPLAY, IdentValue.TABLE);
     }
     
+    public boolean isInlineTable() {
+        return isIdent(CSSName.DISPLAY, IdentValue.INLINE_TABLE);
+    }    
+    
+    public boolean isTableCell() {
+        return isIdent(CSSName.DISPLAY, IdentValue.TABLE_CELL);
+    }
+    
+    public boolean isTableSection() {
+        IdentValue display = getIdent(CSSName.DISPLAY);
+        
+        return display == IdentValue.TABLE_ROW_GROUP ||
+            display == IdentValue.TABLE_HEADER_GROUP ||
+            display == IdentValue.TABLE_FOOTER_GROUP;
+    }
+    
+    public boolean isTableCaption() {
+        return isIdent(CSSName.DISPLAY, IdentValue.TABLE_CAPTION);
+    }
+    
+    public boolean isTableHeader() {
+        return isIdent(CSSName.DISPLAY, IdentValue.TABLE_HEADER_GROUP);
+    }
+    
+    public boolean isTableFooter() {
+        return isIdent(CSSName.DISPLAY, IdentValue.TABLE_FOOTER_GROUP);
+    }
+    
+    public boolean isTableRow() {
+        return isIdent(CSSName.DISPLAY, IdentValue.TABLE_ROW);
+    }
+    
     public boolean isHidden() {
         return isIdent(CSSName.DISPLAY, IdentValue.NONE);
+    }
+    
+    public boolean isSpecifiedAsBlock() {
+        return isIdent(CSSName.DISPLAY, IdentValue.BLOCK);
     }
     
     public boolean isBlockEquivalent() {
@@ -747,8 +825,7 @@ public class CalculatedStyle {
             IdentValue display = getIdent(CSSName.DISPLAY);
             if (display == IdentValue.INLINE) {
                 return false;
-            }
-            else {
+            } else {
                 return display == IdentValue.BLOCK || display == IdentValue.LIST_ITEM ||
                     display == IdentValue.RUN_IN || display == IdentValue.INLINE_BLOCK ||
                     display == IdentValue.TABLE || display == IdentValue.INLINE_TABLE;
@@ -871,8 +948,8 @@ public class CalculatedStyle {
         return isIdent(CSSName.PAGE_BREAK_INSIDE, IdentValue.AVOID);
     }
 
-    public CalculatedStyle createAnonymousStyle() {
-        return deriveStyle(CascadedStyle.emptyCascadedStyle);
+    public CalculatedStyle createAnonymousStyle(IdentValue display) {
+        return deriveStyle(CascadedStyle.createAnonymousStyle(display));
     }
     
     public boolean mayHaveFirstLine() {
@@ -926,14 +1003,55 @@ public class CalculatedStyle {
     
     public int getMaxHeight(CssContext c, int cbHeight) {
         return (int)getFloatPropertyProportionalTo(CSSName.MAX_HEIGHT, cbHeight, c);
-    }    
-
+    }
+    
+    public boolean isCollapseBorders() {
+        return isIdent(CSSName.BORDER_COLLAPSE, IdentValue.COLLAPSE);
+    }
+    
+    public int getBorderHSpacing(CssContext c) {
+        return isCollapseBorders() ? 0 : (int)getFloatPropertyProportionalTo(CSSName.FS_BORDER_SPACING_HORIZONTAL, 0, c);
+    }
+    
+    public int getBorderVSpacing(CssContext c) {
+        return isCollapseBorders() ? 0 : (int)getFloatPropertyProportionalTo(CSSName.FS_BORDER_SPACING_VERTICAL, 0, c);
+    }
+    
+    public int getRowSpan() {
+        int result = (int)asFloat(CSSName.FS_ROWSPAN);
+        return result > 0 ? result : 1;
+    }
+    
+    public int getColSpan() {
+        int result =(int)asFloat(CSSName.FS_COLSPAN);
+        return result > 0 ? result : 1;
+    }
+    
+    public Length asLength(CSSName cssName) {
+        Length result = new Length();
+        
+        FSDerivedValue value = valueByName(cssName);
+        if (value instanceof LengthValue || value instanceof NumberValue) {
+            result.setValue((int)value.asFloat());
+            result.setType(value.hasAbsoluteUnit() ? Length.FIXED : Length.PERCENT);
+        }
+        
+        return result;
+    }
+    
+    public boolean isShowEmptyCells() {
+        return isCollapseBorders() || isIdent(CSSName.EMPTY_CELLS, IdentValue.SHOW);
+    }
+    
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.74  2007/02/07 16:33:28  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.73  2007/01/16 16:11:38  peterbrant
  * Don't copy derived values as they propagate down the style tree (don't need to anymore
  * now that we don't cache length values in LengthValue and PointValue)

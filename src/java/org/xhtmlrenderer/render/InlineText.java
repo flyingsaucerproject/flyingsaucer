@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
- * Copyright (c) 2005 Joshua Marinacci, Wisconsin Court System
+ * Copyright (c) 2005 Joshua Marinacci
+ * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -21,43 +22,46 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.FunctionData;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.util.Uu;
 
 public class InlineText {
-    private InlineLayoutBox parent;
+    private InlineLayoutBox _parent;
     
-    private int x;
+    private int _x;
     
-    private String masterText;
-    private int start;
-    private int end;
+    private String _masterText;
+    private int _start;
+    private int _end;
     
-    private int width;
+    private int _width;
     
-    private FunctionData functionData;
+    private FunctionData _functionData;
     
-    public void maybeTrimTrailingSpace(LayoutContext c) {
-        if (! isEmpty() && masterText.charAt(end-1) == ' ') {
-            end--;
+    private boolean _containedLF = false;
+    
+    public void trimTrailingSpace(LayoutContext c) {
+        if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
+            _end--;
             setWidth(c.getTextRenderer().getWidth(c.getFontContext(), 
                     getParent().getStyle().getFSFont(c),
                     getSubstring()));
-        }
+        } 
     }
     
     public boolean isEmpty() {
-        return start == end;
+        return _start == _end && ! _containedLF;
     }
     
     public String getSubstring() {
         if (getMasterText() != null) {
-            if (start == -1 || end == -1) {
+            if (_start == -1 || _end == -1) {
                 throw new RuntimeException("negative index in InlineBox");
             }
-            if (end < start) {
+            if (_end < _start) {
                 throw new RuntimeException("end is less than setStartStyle");
             }
-            return getMasterText().substring(start, end);
+            return getMasterText().substring(_start, _end);
         } else {
             throw new RuntimeException("No master text set!");
         }
@@ -70,32 +74,37 @@ public class InlineText {
         } else if (end < 0 || start < 0) {
             throw new RuntimeException("Trying to set negative index to inline box");
         }
-        this.start = start;
-        this.end = end;
+        _start = start;
+        _end = end;
+        
+        if (_end > 0 && _masterText.charAt(_end-1) == WhitespaceStripper.EOLC) {
+            _containedLF = true;
+            _end--;
+        }
     }
 
     public String getMasterText() {
-        return masterText;
+        return _masterText;
     }
 
     public void setMasterText(String masterText) {
-        this.masterText = masterText;
+        _masterText = masterText;
     }
 
     public int getX() {
-        return x;
+        return _x;
     }
 
     public void setX(int x) {
-        this.x = x;
+        _x = x;
     }
 
     public int getWidth() {
-        return width;
+        return _width;
     }
 
     public void setWidth(int width) {
-        this.width = width;
+        _width = width;
     }
     
     public void paint(RenderingContext c) {
@@ -103,33 +112,53 @@ public class InlineText {
     }
 
     public InlineLayoutBox getParent() {
-        return parent;
+        return _parent;
     }
 
     public void setParent(InlineLayoutBox parent) {
-        this.parent = parent;
+        _parent = parent;
     }
 
     public boolean isDynamicFunction() {
-        return this.functionData != null;
+        return _functionData != null;
     }
 
     public FunctionData getFunctionData() {
-        return functionData;
+        return _functionData;
     }
 
     public void setFunctionData(FunctionData functionData) {
-        this.functionData = functionData;
+        _functionData = functionData;
     }
     
     public void updateDynamicValue(RenderingContext c) {
-        String value = this.functionData.getContentFunction().calculate(c, 
-                this.functionData.getDeclaration(), this);
-        this.start = 0;
-        this.end = value.length();
-        this.masterText = value;
-        this.width = c.getTextRenderer().getWidth(
+        String value = _functionData.getContentFunction().calculate(c, 
+                _functionData.getDeclaration(), this);
+        _start = 0;
+        _end = value.length();
+        _masterText = value;
+        _width = c.getTextRenderer().getWidth(
                 c.getFontContext(), getParent().getStyle().getFSFont(c),
                 value);
+    }
+    
+    public String toString() {
+        StringBuffer result = new StringBuffer();
+        result.append("InlineText: ");
+        if (_containedLF || isDynamicFunction()) {
+            result.append("(");
+            if (_containedLF) {
+                result.append('L');
+            }
+            if (isDynamicFunction()) {
+                result.append('F');
+            }
+            result.append(") ");
+        }
+        result.append('(');
+        result.append(getSubstring());
+        result.append(')');
+        
+        return result.toString();
     }
 }

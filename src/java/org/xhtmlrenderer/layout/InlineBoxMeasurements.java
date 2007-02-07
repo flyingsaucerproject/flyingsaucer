@@ -20,82 +20,82 @@
 package org.xhtmlrenderer.layout;
 
 public class InlineBoxMeasurements {
-    private int textTop;
-    private int textBottom;
-    private int baseline;
-    private int inlineTop;
-    private int inlineBottom;
+    private int _textTop;
+    private int _textBottom;
+    private int _baseline;
+    private int _inlineTop;
+    private int _inlineBottom;
     
-    private int paintingTop;
-    private int paintingBottom;
+    private int _paintingTop;
+    private int _paintingBottom;
     
-    private boolean containsContent;
+    private boolean _containsContent;
     
     public InlineBoxMeasurements() {
         
     }
 
     public int getBaseline() {
-        return baseline;
+        return _baseline;
     }
 
     public void setBaseline(int baseline) {
-        this.baseline = baseline;
+        _baseline = baseline;
     }
 
     public int getInlineBottom() {
-        return inlineBottom;
+        return _inlineBottom;
     }
 
     public void setInlineBottom(int inlineBottom) {
-        this.inlineBottom = inlineBottom;
+        _inlineBottom = inlineBottom;
     }
 
     public int getInlineTop() {
-        return inlineTop;
+        return _inlineTop;
     }
 
     public void setInlineTop(int inlineTop) {
-        this.inlineTop = inlineTop;
+        _inlineTop = inlineTop;
     }
 
     public int getTextBottom() {
-        return textBottom;
+        return _textBottom;
     }
 
     public void setTextBottom(int textBottom) {
-        this.textBottom = textBottom;
+        _textBottom = textBottom;
     }
 
     public int getTextTop() {
-        return textTop;
+        return _textTop;
     }
 
     public void setTextTop(int textTop) {
-        this.textTop = textTop;
+        _textTop = textTop;
     }
 
     public boolean isContainsContent() {
-        return containsContent;
+        return _containsContent;
     }
 
     public void setContainsContent(boolean containsContent) {
-        this.containsContent = containsContent;
+        _containsContent = containsContent;
     }
 
     public int getPaintingBottom() {
-        return paintingBottom;
+        return _paintingBottom;
     }
 
     public void setPaintingBottom(int paintingBottom) {
-        this.paintingBottom = paintingBottom;
+        _paintingBottom = paintingBottom;
     }
 
     public int getPaintingTop() {
-        return paintingTop;
+        return _paintingTop;
     }
 
     public void setPaintingTop(int paintingTop) {
-        this.paintingTop = paintingTop;
+        _paintingTop = paintingTop;
     }
 }

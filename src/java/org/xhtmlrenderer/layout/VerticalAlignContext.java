@@ -29,84 +29,84 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 
 public class VerticalAlignContext {
-    private List measurements = new ArrayList();
+    private List _measurements = new ArrayList();
     
-    private int inlineTop;
-    private boolean inlineTopSet = false;
+    private int _inlineTop;
+    private boolean _inlineTopSet = false;
     
-    private int inlineBottom;
-    private boolean inlineBottomSet = false;
+    private int _inlineBottom;
+    private boolean _inlineBottomSet = false;
     
-    private int paintingTop;
-    private boolean paintingTopSet = false;
+    private int _paintingTop;
+    private boolean _paintingTopSet = false;
     
-    private int paintingBottom;
-    private boolean paintingBottomSet = false;
+    private int _paintingBottom;
+    private boolean _paintingBottomSet = false;
     
-    private List children = new ArrayList();
+    private List _children = new ArrayList();
     
-    private VerticalAlignContext parent = null;
+    private VerticalAlignContext _parent = null;
     
     private void moveTrackedValues(int ty) {
-        if (inlineTopSet) {
-            inlineTop += ty;
+        if (_inlineTopSet) {
+            _inlineTop += ty;
         }
         
-        if (inlineBottomSet) {
-            inlineBottom += ty;
+        if (_inlineBottomSet) {
+            _inlineBottom += ty;
         }
         
-        if (paintingTopSet) {
-            paintingTop += ty;
+        if (_paintingTopSet) {
+            _paintingTop += ty;
         }
         
-        if (paintingBottomSet) {
-            paintingBottom += ty;
+        if (_paintingBottomSet) {
+            _paintingBottom += ty;
         }
     }
     
     public int getInlineBottom() {
-        return inlineBottom;
+        return _inlineBottom;
     }
 
     public int getInlineTop() {
-        return inlineTop;
+        return _inlineTop;
     }
 
     public void updateInlineTop(int inlineTop) {
-        if (! inlineTopSet || inlineTop < this.inlineTop) {
-            this.inlineTop = inlineTop;
-            inlineTopSet = true;
+        if (! _inlineTopSet || inlineTop < _inlineTop) {
+            _inlineTop = inlineTop;
+            _inlineTopSet = true;
         }
     }
     
     public void updatePaintingTop(int paintingTop) {
-        if (! paintingTopSet || paintingTop < this.paintingTop) {
-            this.paintingTop = paintingTop;
-            paintingTopSet = true;
+        if (! _paintingTopSet || paintingTop < _paintingTop) {
+            _paintingTop = paintingTop;
+            _paintingTopSet = true;
         }
     }
     
     public void updateInlineBottom(int inlineBottom) {
-        if (! inlineBottomSet || inlineBottom > this.inlineBottom) {
-            this.inlineBottom = inlineBottom;
-            inlineBottomSet = true;
+        if (! _inlineBottomSet || inlineBottom > _inlineBottom) {
+            _inlineBottom = inlineBottom;
+            _inlineBottomSet = true;
         }
     }
     
     public void updatePaintingBottom(int paintingBottom) {
-        if (! paintingBottomSet || paintingBottom > this.paintingBottom) {
-            this.paintingBottom = paintingBottom;
-            paintingBottomSet = true;
+        if (! _paintingBottomSet || paintingBottom > _paintingBottom) {
+            _paintingBottom = paintingBottom;
+            _paintingBottomSet = true;
         }
     }    
     
     public int getLineBoxHeight() {
-        return this.inlineBottom - this.inlineTop;
+        return _inlineBottom - _inlineTop;
     }
     
     public void pushMeasurements(InlineBoxMeasurements measurements) {
-        this.measurements.add(measurements);
+        _measurements.add(measurements);
         
         if (measurements.isContainsContent()) {
             updateInlineTop(measurements.getInlineTop());
@@ -118,19 +118,19 @@ public class VerticalAlignContext {
     }
     
     public InlineBoxMeasurements getParentMeasurements() {
-        return (InlineBoxMeasurements)this.measurements.get(this.measurements.size()-1);
+        return (InlineBoxMeasurements)_measurements.get(_measurements.size()-1);
     }
     
     public void popMeasurements() {
-        this.measurements.remove(this.measurements.size()-1);
+        _measurements.remove(_measurements.size()-1);
     }
 
     public int getPaintingBottom() {
-        return paintingBottom;
+        return _paintingBottom;
     }
 
     public int getPaintingTop() {
-        return paintingTop;
+        return _paintingTop;
     }
     
     public VerticalAlignContext createChild(Box root) {
@@ -140,28 +140,28 @@ public class VerticalAlignContext {
         
         result.setParent(vaRoot);
         
-        InlineBoxMeasurements initial = (InlineBoxMeasurements)vaRoot.measurements.get(0);
+        InlineBoxMeasurements initial = (InlineBoxMeasurements)vaRoot._measurements.get(0);
         result.pushMeasurements(initial);
         
-        if (vaRoot.children == null) {
-            vaRoot.children = new ArrayList();
+        if (vaRoot._children == null) {
+            vaRoot._children = new ArrayList();
         }
         
-        vaRoot.children.add(new ChildContextData(root, result));
+        vaRoot._children.add(new ChildContextData(root, result));
         
         return result;
     }
     
     public List getChildren() {
-        return children == null ? Collections.EMPTY_LIST : children;
+        return _children == null ? Collections.EMPTY_LIST : _children;
     }
 
     public VerticalAlignContext getParent() {
-        return parent;
+        return _parent;
     }
 
     public void setParent(VerticalAlignContext parent) {
-        this.parent = parent;
+        _parent = parent;
     }
     
     private VerticalAlignContext getRoot() {
@@ -187,41 +187,41 @@ public class VerticalAlignContext {
     }
     
     private static final class ChildContextData {
-        private Box root;
-        private VerticalAlignContext verticalAlignContext;
+        private Box _root;
+        private VerticalAlignContext _verticalAlignContext;
         
         
         public ChildContextData() {
         }
         
         public ChildContextData(Box root, VerticalAlignContext vaContext) {
-            this.root = root;
-            this.verticalAlignContext = vaContext;
+            _root = root;
+            _verticalAlignContext = vaContext;
         }
         
         public Box getRoot() {
-            return root;
+            return _root;
         }
         
         public void setRoot(Box root) {
-            this.root = root;
+            _root = root;
         }
         
         public VerticalAlignContext getVerticalAlignContext() {
-            return verticalAlignContext;
+            return _verticalAlignContext;
         }
         
         public void setVerticalAlignContext(VerticalAlignContext verticalAlignContext) {
-            this.verticalAlignContext = verticalAlignContext;
+            _verticalAlignContext = verticalAlignContext;
         }
         
         private void moveContextContents(int ty) {
-            moveInlineContents(this.root, ty);
+            moveInlineContents(_root, ty);
         }
         
         private void moveInlineContents(Box box, int ty) {
             if (canBeMoved(box)) { 
-                box.y += ty;
+                box.setY(box.getY() + ty);
                 if (box instanceof InlineLayoutBox) {
                     InlineLayoutBox iB = (InlineLayoutBox)box;
                     for (int i = 0; i < iB.getInlineChildCount(); i++) {
@@ -236,25 +236,25 @@ public class VerticalAlignContext {
         
         private boolean canBeMoved(Box box) {
             IdentValue vAlign = box.getStyle().getIdent(CSSName.VERTICAL_ALIGN);
-            return box == this.root ||
+            return box == _root ||
                 ! (vAlign == IdentValue.TOP || vAlign == IdentValue.BOTTOM);
         }
         
         public void align() {
-            IdentValue vAlign = this.root.getStyle().getIdent(
+            IdentValue vAlign = _root.getStyle().getIdent(
                     CSSName.VERTICAL_ALIGN);
             int delta = 0;
             if (vAlign == IdentValue.TOP) {
-                delta = this.verticalAlignContext.getRoot().getInlineTop() -
-                    this.verticalAlignContext.getInlineTop();
+                delta = _verticalAlignContext.getRoot().getInlineTop() -
+                    _verticalAlignContext.getInlineTop();
             } else if (vAlign == IdentValue.BOTTOM) {
-                delta = this.verticalAlignContext.getRoot().getInlineBottom() -
-                    this.verticalAlignContext.getInlineBottom();
+                delta = _verticalAlignContext.getRoot().getInlineBottom() -
+                    _verticalAlignContext.getInlineBottom();
             } else {
                 throw new RuntimeException("internal error");
             }
             
-            this.verticalAlignContext.moveTrackedValues(delta);
+            _verticalAlignContext.moveTrackedValues(delta);
             moveContextContents(delta);
         }
     }    

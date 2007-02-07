@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -19,9 +19,12 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 import java.util.*;
 
@@ -53,6 +56,20 @@ public class CascadedStyle {
     private Map cascadedProperties;
     
     private String fingerprint;
+    
+    /**
+     * Creates a <code>CascadedStyle</code>, setting the display property to
+     * to the value of the <code>display</code> parameter.  
+     */
+    public static CascadedStyle createAnonymousStyle(IdentValue display) {
+        CSSPrimitiveValue val = new DefaultCSSPrimitiveValue(
+                display.toString(), CSSPrimitiveValue.CSS_IDENT);
+        // Urk... kind of ugly, but we really want this value to be used
+        List props = Collections.singletonList(
+                new PropertyDeclaration(CSSName.DISPLAY, val, true, StylesheetInfo.USER));
+        
+        return new CascadedStyle(props.iterator());
+    }
 
     /**
      * Constructs a new CascadedStyle, given an {@link java.util.Iterator} of
@@ -181,6 +198,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2007/02/07 16:33:14  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.14  2006/06/15 20:02:39  tobega
  * Using a TreeMap to get properties in sorted order should be able to reduce the size of the caches in CalculatedStyle when styles are the same apart from order of declaration of properties.
  *

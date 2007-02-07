@@ -47,7 +47,7 @@ public class GraphicsUtil {
 
         //g.drawLine(-5,5,5,-5);
 
-        g.drawRect(box.x, box.y, box.getWidth(), box.height);
+        g.drawRect(box.getX(), box.getY(), box.getWidth(), box.getHeight());
 
         g.setColor(oc);
 
@@ -82,6 +82,9 @@ public class GraphicsUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2007/02/07 16:33:39  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.7  2006/10/10 20:53:46  pdoubleya
  * Removed commented code
  *

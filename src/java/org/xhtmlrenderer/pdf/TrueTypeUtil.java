@@ -13,7 +13,7 @@ import com.lowagie.text.pdf.RandomAccessFileOrArray;
 
 /**
  * Uses code from iText's DefaultFontMapper and TrueTypeFont classes.  See
- * {@link http://sourceforge.net/projects/itext/} for license information.
+ * <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/projects/itext/</a> for license information.
  */
 public class TrueTypeUtil {
     private static IdentValue guessStyle(BaseFont font) {

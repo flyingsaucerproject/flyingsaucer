@@ -19,12 +19,15 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.BasicStroke;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
+
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.extend.OutputDevice;
-
-import java.awt.*;
 
 public class BorderPainter {
     public static final int TOP = 1;
@@ -36,8 +39,7 @@ public class BorderPainter {
     /**
      * @param xOffset for determining starting point for patterns
      */
-    public static void paint(Rectangle bounds, int sides, CalculatedStyle style, RenderingContext ctx, int xOffset) {
-        BorderPropertySet border = style.getBorder(ctx);
+    public static void paint(Rectangle bounds, int sides, BorderPropertySet border, RenderingContext ctx, int xOffset) {
         if ((sides & BorderPainter.TOP) == BorderPainter.TOP && border.noTop()) {
             sides -= BorderPainter.TOP;
         }
@@ -340,6 +342,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2007/02/07 16:33:25  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.44  2007/01/17 17:50:54  peterbrant
  * Clean out unused code
  *

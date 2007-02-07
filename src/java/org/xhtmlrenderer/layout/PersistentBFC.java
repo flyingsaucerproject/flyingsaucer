@@ -23,14 +23,14 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.render.BlockBox;
 
 public class PersistentBFC {
-    private FloatManager floatManager = new FloatManager();
+    private FloatManager _floatManager = new FloatManager();
     
     public PersistentBFC(BlockBox master, LayoutContext c) {
         master.setPersistentBFC(this);
-        floatManager.setMaster(master);
+        _floatManager.setMaster(master);
     }
     
     public FloatManager getFloatManager() {
-        return floatManager;
+        return _floatManager;
     }
 }

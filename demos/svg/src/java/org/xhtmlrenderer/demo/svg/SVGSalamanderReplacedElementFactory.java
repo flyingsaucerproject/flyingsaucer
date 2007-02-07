@@ -32,7 +32,7 @@ public class SVGSalamanderReplacedElementFactory implements ReplacedElementFacto
         String content = null;
         JComponent cc = null;
         try {
-            Element elem = box.element;
+            Element elem = box.getElement();
             if (elem == null || ! isSVGEmbedded(elem)) {
                 return null;
             }

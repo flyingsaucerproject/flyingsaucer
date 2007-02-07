@@ -8,7 +8,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -34,7 +34,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.render.AWTFSImage;
+import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xhtmlrenderer.util.XRLog;
 
 

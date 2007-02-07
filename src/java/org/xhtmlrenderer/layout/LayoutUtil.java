@@ -23,7 +23,6 @@ package org.xhtmlrenderer.layout;
 import java.util.List;
 
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
 
@@ -58,7 +57,7 @@ public class LayoutUtil {
     }
     
     public static FloatLayoutResult layoutFloated(
-            final LayoutContext c, LineBox currentLine, FloatedBlockBox block, 
+            final LayoutContext c, LineBox currentLine, BlockBox block, 
             int avail, List pendingFloats) {
         FloatLayoutResult result = new FloatLayoutResult();
         
@@ -69,18 +68,18 @@ public class LayoutUtil {
         block.setContainingLayer(currentLine.getContainingLayer());
         
         if (pendingFloats != null) {
-            block.y = currentLine.y + block.getMarginFromSibling();
+            block.setY(currentLine.getY() + block.getFloatedBoxData().getMarginFromSibling());
         } else {
-            block.y = currentLine.y + currentLine.height;
+            block.setY(currentLine.getY() + currentLine.getHeight());
         }
         
-        block.calcInitialCanvasLocation(c);
+        block.calcInitialFloatedCanvasLocation(c);
         
-        int initialY = block.y;
+        int initialY = block.getY();
         
         block.layout(c);
         
-        c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
+        c.getBlockFormattingContext().floatBox(c, (BlockBox) block);
 
         if (pendingFloats != null && 
                 (pendingFloats.size() > 0 || block.getWidth() > avail)) {
@@ -88,7 +87,7 @@ public class LayoutUtil {
             result.setPending(true);
         } else {
             if (c.isPrint()) {
-                positionFloatOnPage(c, currentLine, block, initialY != block.y);
+                positionFloatOnPage(c, currentLine, block, initialY != block.getY());
                 c.getRootLayer().ensureHasPage(c, block);
             }
         }
@@ -100,7 +99,7 @@ public class LayoutUtil {
     }
 
     private static void positionFloatOnPage(
-            final LayoutContext c, LineBox currentLine, FloatedBlockBox block, 
+            final LayoutContext c, LineBox currentLine, BlockBox block, 
             boolean movedVertically) {
         boolean clearedPage = false;
         int clearDelta = 0;
@@ -114,20 +113,20 @@ public class LayoutUtil {
             block.reset(c);
             block.setContainingLayer(currentLine.getContainingLayer());
             block.layout(c);
-            c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
+            c.getBlockFormattingContext().floatBox(c, (BlockBox) block);
         }
         
         if ((movedVertically || 
                     (block.getStyle().isAvoidPageBreakInside() && block.crossesPageBreak(c))) && 
                 ! block.getStyle().isForcePageBreakBefore()) {
             if (clearedPage) {
-                block.y -= clearDelta;
+                block.setY(block.getY() - clearDelta);
                 block.calcCanvasLocation();
             }
             block.reset(c);
             block.setContainingLayer(currentLine.getContainingLayer());
             block.layout(c);
-            c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
+            c.getBlockFormattingContext().floatBox(c, (BlockBox) block);
         }
     }
 }

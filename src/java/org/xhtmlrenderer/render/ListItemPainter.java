@@ -10,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -84,7 +84,7 @@ public class ListItemPainter {
         if (markerData.getReferenceLine() != null) {
             return markerData.getReferenceLine().getAbsY() + strutMetrics.getBaseline();
         } else {
-            return box.getAbsY() + box.ty + strutMetrics.getBaseline();
+            return box.getAbsY() + box.getTy() + strutMetrics.getBaseline();
         }
     }
 
@@ -134,6 +134,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2007/02/07 16:33:22  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.35  2006/08/30 18:25:41  peterbrant
  * Further refactoring / Bug fix for problem reported by Mike Curtis
  *

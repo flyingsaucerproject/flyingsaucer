@@ -74,8 +74,12 @@ public class BoxCollector {
         if (clip == null) {
             return true;
         }
-        Rectangle bounds = box.getAggregateBounds();
-        return bounds != null && clip.intersects(bounds);
+        PaintingInfo info = box.getPaintingInfo();
+        if (info == null) {
+            return false;
+        }
+        Rectangle bounds = info.getAggregateBounds();
+        return clip.intersects(bounds);
     }
     
     public void collect(
@@ -100,7 +104,7 @@ public class BoxCollector {
                 }
             }
 
-            if (container.getAggregateBounds() == null || intersectsAggregateBounds) {
+            if (container.getPaintingInfo() == null || intersectsAggregateBounds) {
                 if (container.getLayer() == null || container == layer.getMaster()) {
                     for (int i = 0; i < container.getChildCount(); i++) {
                         Box child = container.getChild(i);

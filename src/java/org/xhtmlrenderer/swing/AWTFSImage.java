@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2005 Torbjšrn Gannholm
+ * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -17,21 +17,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.render;
+package org.xhtmlrenderer.swing;
 
-/**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2005-okt-16
- * Time: 14:51:39
- * To change this template use File | Settings | File Templates.
- */
-public interface Renderable extends VerticalExtent {
+import java.awt.Image;
 
-    int getIndex();
+import org.xhtmlrenderer.extend.FSImage;
 
-    //HACK: Context should not be necessary
-    /*
-    void render(RenderingContext c, Graphics2D g2);
-    */
+public class AWTFSImage implements FSImage {
+    private Image _image;
+    
+    public AWTFSImage(Image image) {
+        _image = image;
+    }
+    
+    public Image getImage() {
+        return _image;
+    }
+    
+    public int getHeight() {
+        return _image.getHeight(null);
+    }
+    
+    public int getWidth() {
+        return _image.getWidth(null);
+    }
+    
+    public void scale(int width, int height) {
+        _image = _image.getScaledInstance(width, height, Image.SCALE_FAST);
+    }
 }

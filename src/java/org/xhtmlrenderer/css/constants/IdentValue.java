@@ -97,6 +97,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue GROOVE = addValue("groove");
     public final static IdentValue HEBREW = addValue("hebrew");
     public final static IdentValue HIDDEN = addValue("hidden");
+    public final static IdentValue HIDE = addValue("hide");
     public final static IdentValue HIRAGANA = addValue("hiragana");
     public final static IdentValue HIRAGANA_IROHA = addValue("hiragana-iroha");
     public final static IdentValue INHERIT = addValue("inherit");
@@ -324,6 +325,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2007/02/07 16:33:36  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.23  2007/01/16 16:11:38  peterbrant
  * Don't copy derived values as they propagate down the style tree (don't need to anymore
  * now that we don't cache length values in LengthValue and PointValue)

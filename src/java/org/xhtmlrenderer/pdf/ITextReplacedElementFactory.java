@@ -31,7 +31,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
     public ReplacedElement createReplacedElement(
             LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight) {
-        Element e = box.element;
+        Element e = box.getElement();
         if (e == null) {
             return null;
         }

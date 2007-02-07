@@ -21,11 +21,11 @@ package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.render.Java2DTextRenderer;
-import org.xhtmlrenderer.render.MiniumTextRenderer;
 import org.xhtmlrenderer.swing.DOMInspector;
 import org.xhtmlrenderer.swing.HoverListener;
+import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.LinkListener;
+import org.xhtmlrenderer.swing.MiniumTextRenderer;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
@@ -302,16 +302,13 @@ public class BrowserMenuBar extends JMenuBar {
                     root.panel.view.removeMouseListener(ll);
                 }
             }
-                                                                        
+            
+            /*                                                            
             SelectionMouseListener ma = new SelectionMouseListener();
             root.panel.view.addMouseListener(ma);
             root.panel.view.addMouseMotionListener(ma);
+            */
 
-            // XXX Is this necessary?  Basically identical code
-            // appears in XHTMLPanel.setupListeners().
-            HoverListener hl = new HoverListener(root.panel.view);
-            root.panel.view.addMouseListener(hl);
-            root.panel.view.addMouseMotionListener(hl);
             LinkListener ll = new LinkListener(root.panel.view) {
                 public void linkClicked(String uri) {
                     if (uri.startsWith("demoNav")) {
@@ -665,6 +662,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.40  2007/02/07 16:33:38  peterbrant
+* Initial commit of rewritten table support and associated refactorings
+*
 * Revision 1.39  2006/08/06 21:27:00  pdoubleya
 * Removed printing for R6.
 *

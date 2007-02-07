@@ -18,20 +18,19 @@
  */
 package org.xhtmlrenderer.css.style.derived;
 
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
-import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
-
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -154,7 +153,7 @@ public class LengthValue extends DerivedValue {
     }
 
 
-    protected static float calcFloatProportionalValue(CalculatedStyle style,
+    public static float calcFloatProportionalValue(CalculatedStyle style,
                                                       CSSName cssName,
                                                       String stringValue,
                                                       float relVal,
@@ -253,12 +252,6 @@ public class LengthValue extends DerivedValue {
                     + absVal + " using base=" + baseValue);
         }
 
-        // round down. (CHECK: Why? Is this always appropriate? - tobe)
-        /*
-        double d = Math.floor((double) absVal);
-        */
-        // Round is surely what we want? (previous was 
-        // doing e.g. 6in = 431.9997 = 431 ??? - pmb)
         double d = Math.round((double) absVal);
         absVal = new Float(d).floatValue();
         return absVal;

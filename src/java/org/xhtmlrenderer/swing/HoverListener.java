@@ -7,8 +7,6 @@ import javax.swing.event.MouseInputAdapter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.Restyling;
-import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 
 public class HoverListener extends MouseInputAdapter {
@@ -40,6 +38,11 @@ public class HoverListener extends MouseInputAdapter {
     }
 
     private void restyle(Box ib) {
+        LayoutContext c = panel.getLayoutContext();
+        if (c == null) {
+            return;
+        }
+        
         //Uu.p("under cursor = " + ib);
         boolean needRepaint = false;
         // return this box or one if it's parents to find the deepest hovered element.
@@ -51,64 +54,30 @@ public class HoverListener extends MouseInputAdapter {
         if (hovered_element == panel.hovered_element) {
             return;
         }
-        Element previousHoveredElement = panel.hovered_element;
+        
         panel.hovered_element = hovered_element;
 
         // if moved out of the old block then unstyle it
         if (prev != null) {
             //prev.hover = false;
             needRepaint = true;
-            restyleElementChildBoxes(previousHoveredElement, prev);
+            prev.getRestyleTarget().restyle(c);
             prev = null;
         }
-
         if (hovered_element != null) {
             needRepaint = true;
-            restyleElementChildBoxes(hovered_element, ib);
+            ib.getRestyleTarget().restyle(c);
             prev = ib;
         }
-        if (needRepaint) panel.repaint();
-    }
-    
-    private LayoutContext newLayoutContextInstance() {
-        LayoutContext result = panel.getSharedContext().newLayoutContextInstance(
-                panel.getScreenExtents());
-        result.setFontContext(panel.layout_context.getFontContext());
-        return result;
-    }
-
-    private void restyleElementChildBoxes(Element e, Box ib) {
-        //HACK:Find the parent block box whose element is self-or-parent of e
-        Box p = ib;
-        while (true) {
-            while (p != null && (!(p instanceof BlockBox) || p.element == null)) {
-                p = p.getParent();
-            }
-            if (p == null) {//root box was not a block box! impossible at time of coding
-                Restyling.restyleAll(newLayoutContextInstance(),
-                        (BlockBox) panel.getRootBox());
-                return;
-            }
-            Element pe = p.element;
-            Element ie = e;
-            while (ie != null && ie != pe) {
-                Node n = ie.getParentNode();
-                if (n.getNodeType() == Node.ELEMENT_NODE) {
-                    ie = (Element) n;
-                } else {
-                    ie = null;
-                }
-            }
-            if (ie == pe) {
-                Restyling.restyleAll(newLayoutContextInstance(), (BlockBox) p);
-                return;
-            }
+        
+        if (needRepaint) {
+            panel.repaint();
         }
     }
-
+    
     private Element getHoveredElement(Box ib) {
         if (ib == null) return null;
-        Element e = ib.element;
+        Element e = ib.getElement();
         while (e != null && !panel.getSharedContext().getCss().isHoverStyled(e)) {
             Node n = e.getParentNode();
             if (n.getNodeType() == Node.ELEMENT_NODE) {

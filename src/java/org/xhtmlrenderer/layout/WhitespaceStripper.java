@@ -31,9 +31,10 @@ import org.xhtmlrenderer.render.InlineBox;
 /**
  * @author Torbj�rn Gannholm
  */
-public class WhitespaceStripper2 {
+public class WhitespaceStripper {
     public final static String SPACE = " ";
     public final static String EOL = "\n";
+    public final static char EOLC = '\n';
     
     public final static Pattern linefeed_space_collapse = Pattern.compile("\\s+\\n\\s+");//Pattern is thread-safe
     public final static Pattern linefeed_to_space = Pattern.compile("\\n");
@@ -50,8 +51,6 @@ public class WhitespaceStripper2 {
      *
      * @param c
      * @param inlineContent
-     * @return a list cleaned of empty content and the thereby
-     *         redundant style-changes
      */
     public static void stripInlineContent(List inlineContent) {
         boolean collapse = false;

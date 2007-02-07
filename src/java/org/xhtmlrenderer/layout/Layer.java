@@ -34,33 +34,30 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.FloatedBlockBox;
-import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.MarginBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
-import org.xhtmlrenderer.table.TableBox;
 
 public class Layer {
     public static final short PAGED_MODE_SCREEN = 1;
     public static final short PAGED_MODE_PRINT = 2;
     
-    private Layer parent;
-    private boolean stackingContext;
-    private List children;
-    private Box master;
+    private Layer _parent;
+    private boolean _stackingContext;
+    private List _children;
+    private Box _master;
     
-    private Box end;
+    private Box _end;
 
-    private List floats;
+    private List _floats;
 
-    private boolean fixedBackground;
+    private boolean _fixedBackground;
     
-    private boolean inline;
-    private boolean requiresLayout;
+    private boolean _inline;
+    private boolean _requiresLayout;
     
-    private List pages;
+    private List _pages;
     
     public Layer(Box master) {
         this(null, master);
@@ -68,64 +65,64 @@ public class Layer {
     }
 
     public Layer(Layer parent, Box master) {
-        this.parent = parent;
-        this.master = master;
+        _parent = parent;
+        _master = master;
         setStackingContext(!master.getStyle().isAutoZIndex());
         master.setLayer(this);
         master.setContainingLayer(this);
     }
 
     public Layer getParent() {
-        return parent;
+        return _parent;
     }
 
     public boolean isStackingContext() {
-        return stackingContext;
+        return _stackingContext;
     }
 
     public void setStackingContext(boolean stackingContext) {
-        this.stackingContext = stackingContext;
+        _stackingContext = stackingContext;
     }
 
     public int getZIndex() {
-        return (int) master.getStyle().asFloat(CSSName.Z_INDEX);
+        return (int) _master.getStyle().asFloat(CSSName.Z_INDEX);
     }
     
     public boolean isAlternateFlow() {
-        return master.getStyle().isAlternateFlow();
+        return _master.getStyle().isAlternateFlow();
     }
 
     public Box getMaster() {
-        return master;
+        return _master;
     }
 
     public synchronized void addChild(Layer layer) {
-        if (children == null) {
-            children = new ArrayList();
+        if (_children == null) {
+            _children = new ArrayList();
         }
-        children.add(layer);
+        _children.add(layer);
     }
 
-    public void addFloat(FloatedBlockBox floater, BlockFormattingContext bfc) {
-        if (floats == null) {
-            floats = new ArrayList();
+    public void addFloat(BlockBox floater, BlockFormattingContext bfc) {
+        if (_floats == null) {
+            _floats = new ArrayList();
         }
 
-        floats.add(floater);
+        _floats.add(floater);
         
-        floater.setDrawingLayer(this);
+        floater.getFloatedBoxData().setDrawingLayer(this);
     }
 
-    public void removeFloat(FloatedBlockBox floater) {
-        if (floats != null) {
-            floats.remove(floater);
+    public void removeFloat(BlockBox floater) {
+        if (_floats != null) {
+            _floats.remove(floater);
         }
     }
 
     private void paintFloats(RenderingContext c) {
-        if (floats != null) {
-            for (int i = floats.size() - 1; i >= 0; i--) {
-                FloatedBlockBox floater = (FloatedBlockBox) floats.get(i);
+        if (_floats != null) {
+            for (int i = _floats.size() - 1; i >= 0; i--) {
+                BlockBox floater = (BlockBox) _floats.get(i);
                 paintAsLayer(c, floater);
             }
         }
@@ -211,13 +208,10 @@ public class Layer {
     private void paintBackgroundsAndBorders(RenderingContext c, List blocks) {
         for (Iterator i = blocks.iterator(); i.hasNext();) {
             BlockBox box = (BlockBox) i.next();
-            // HACK to make existing table layout work
-            if (! (box.getStyle().isTable() && ! (box instanceof TableBox))) {
-                box.paintBackground(c);
-                box.paintBorder(c);
-                if (c.debugDrawBoxes()) {
-                    box.paintDebugOutline(c);
-                }
+            box.paintBackground(c);
+            box.paintBorder(c);
+            if (c.debugDrawBoxes()) {
+                box.paintDebugOutline(c);
             }
         }
     }
@@ -230,7 +224,7 @@ public class Layer {
     }
     
     public Dimension getPaintingDimension(LayoutContext c) {
-        return calcPaintingDimension(c).outerMarginCorner;
+        return calcPaintingDimension(c).getOuterMarginCorner();
     }
     
     public void paint(RenderingContext c, int originX, int originY) {
@@ -285,7 +279,7 @@ public class Layer {
     }
     
     private List getFloats() {
-        return this.floats == null ? Collections.EMPTY_LIST : this.floats;
+        return _floats == null ? Collections.EMPTY_LIST : _floats;
     }
     
     public Box find(CssContext cssCtx, int absX, int absY) {
@@ -379,8 +373,8 @@ public class Layer {
 
         Box fixed = getMaster();
 
-        fixed.x = 0;
-        fixed.y = 0;
+        fixed.setX(0);
+        fixed.setY(0);
         fixed.setAbsX(0);
         fixed.setAbsY(0);
 
@@ -414,11 +408,6 @@ public class Layer {
         return getParent() == null && isStackingContext();
     }
     
-    private static class PaintingInfo {
-        public Dimension outerMarginCorner;
-        public Rectangle aggregateBounds;
-    }
-    
     private void moveIfGreater(Dimension result, Dimension test) {
         if (test.width > result.width) {
             result.width = test.width;
@@ -429,7 +418,8 @@ public class Layer {
     }
     
     private PaintingInfo calcPaintingDimension(LayoutContext c) {
-        PaintingInfo result = scanLayer(c);
+        getMaster().calcPaintingInfo(c);
+        PaintingInfo result = (PaintingInfo)getMaster().getPaintingInfo().copyOf();
         
         List children = getChildren();
         for (int i = 0; i < children.size(); i++) {
@@ -438,62 +428,14 @@ public class Layer {
             if (child.getMaster().getStyle().isFixed()) {
                 continue;
             } else if (child.getMaster().getStyle().isAbsolute()) {
-                PaintingInfo info = child.scanLayer(c);
-                moveIfGreater(result.outerMarginCorner, info.outerMarginCorner);
+                PaintingInfo info = child.calcPaintingDimension(c);
+                moveIfGreater(result.getOuterMarginCorner(), info.getOuterMarginCorner());
             } 
         }
         
         return result;
     }
-
-    // TODO block.renderIndex = c.getNewRenderIndex();
-    private PaintingInfo scanLayer(LayoutContext c) {
-        return scanLayerHelper(c, getMaster());
-    }
     
-    private PaintingInfo scanLayerHelper(final LayoutContext c, final Box box) {
-        final PaintingInfo result = new PaintingInfo();
-        
-        Rectangle bounds = box.getBounds(box.getAbsX(), box.getAbsY(), c, 0, 0);
-        result.outerMarginCorner =
-            new Dimension(bounds.x + bounds.width, bounds.y + bounds.height);
-        
-        result.aggregateBounds = box.getPaintingClipEdge(c);
-        
-        if (! (box instanceof InlineLayoutBox)) {
-            if (box instanceof BlockBox && ((BlockBox)box).getPersistentBFC() != null) {
-                ((BlockBox)box).getPersistentBFC().getFloatManager().performFloatOperation(
-                        new FloatManager.FloatOperation() {
-                            public void operate(Box floater) {
-                                PaintingInfo info = scanLayerHelper(c, floater);
-                                moveIfGreater(result.outerMarginCorner, info.outerMarginCorner);
-                            }
-                        });
-            }
-            
-            for (int i = 0; i < box.getChildCount(); i++) {
-                Box child = (Box) box.getChild(i);
-                PaintingInfo info = scanLayerHelper(c, child);
-                moveIfGreater(result.outerMarginCorner, info.outerMarginCorner);
-                result.aggregateBounds.add(info.aggregateBounds);
-            }
-        } else {
-            InlineLayoutBox iB = (InlineLayoutBox)box;
-            for (int i = 0; i < iB.getInlineChildCount(); i++) {
-                Object obj = iB.getInlineChild(i);
-                if (obj instanceof Box) {
-                    PaintingInfo info = scanLayerHelper(c, (Box)obj);
-                    moveIfGreater(result.outerMarginCorner, info.outerMarginCorner);
-                    result.aggregateBounds.add(info.aggregateBounds);
-                } 
-            }
-        }
-        
-        box.setAggregateBounds(result.aggregateBounds);
-        
-        return result;
-    }
-
     public void positionChildren(LayoutContext c) {
         for (Iterator i = getChildren().iterator(); i.hasNext();) {
             Layer child = (Layer) i.next();
@@ -522,15 +464,15 @@ public class Layer {
     }
 
     public boolean containsFixedContent() {
-        return fixedBackground || containsFixedLayer();
+        return _fixedBackground || containsFixedLayer();
     }
 
     public void setFixedBackground(boolean b) {
-        this.fixedBackground = b;
+        _fixedBackground = b;
     }
 
     public synchronized List getChildren() {
-        return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
+        return _children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(_children);
     }
     
     public Layer getAlternateFlow(String name) {
@@ -550,8 +492,8 @@ public class Layer {
     private void remove(Layer layer) {
         boolean removed = false;
         
-        if (children != null) {
-            for (Iterator i = children.iterator(); i.hasNext(); ) {
+        if (_children != null) {
+            for (Iterator i = _children.iterator(); i.hasNext(); ) {
                 Layer child = (Layer)i.next();
                 if (child == layer) {
                     removed = true;
@@ -573,27 +515,27 @@ public class Layer {
     }
 
     public boolean isInline() {
-        return inline;
+        return _inline;
     }
 
     public void setInline(boolean inline) {
-        this.inline = inline;
+        _inline = inline;
     }
 
     public Box getEnd() {
-        return end;
+        return _end;
     }
 
     public void setEnd(Box end) {
-        this.end = end;
+        _end = end;
     }
 
     public boolean isRequiresLayout() {
-        return requiresLayout;
+        return _requiresLayout;
     }
 
     public void setRequiresLayout(boolean requiresLayout) {
-        this.requiresLayout = requiresLayout;
+        _requiresLayout = requiresLayout;
     }
     
     public void finish(LayoutContext c) {
@@ -711,21 +653,21 @@ public class Layer {
     }
     
     public List getPages() {
-        return pages == null ? Collections.EMPTY_LIST : pages;
+        return _pages == null ? Collections.EMPTY_LIST : _pages;
     }
 
     public void setPages(List pages) {
-        this.pages = pages;
+        _pages = pages;
     }
     
     public boolean isLastPage(PageBox pageBox) {
-        return this.pages.get(this.pages.size()-1) == pageBox;
+        return _pages.get(_pages.size()-1) == pageBox;
     }
     
     public void addPage(CssContext c) {
         String pseudoPage = null;
-        if (this.pages == null) {
-            this.pages = new ArrayList();
+        if (_pages == null) {
+            _pages = new ArrayList();
         }
         
         List pages = getPages();

@@ -188,7 +188,7 @@ public class DocumentDiffTest {
      * @param tab PARAM
      */
     public static void getDiff(StringBuffer sb, Box box, String tab) {
-        sb.append(tab + box.getTestString() + "\n");
+        /* sb.append(tab + box.getTestString() + "\n"); */
         for (int i = 0; i < box.getChildCount(); i++) {
             getDiff(sb, (Box) box.getChild(i), tab + " ");
         }
@@ -227,6 +227,9 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2007/02/07 16:33:40  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.16  2005/10/22 23:00:30  peterbrant
  * Fix memory leak (all box trees ever built remained in memory)
  *

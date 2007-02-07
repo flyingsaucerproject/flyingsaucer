@@ -31,7 +31,6 @@ import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.render.AWTFSImage;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
@@ -42,7 +41,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     public ReplacedElement createReplacedElement(
             LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight) {
-        Element e = box.element;
+        Element e = box.getElement();
         JComponent cc = null;
         if (e == null) {
             return null;

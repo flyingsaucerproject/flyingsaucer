@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -22,134 +22,134 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.extend.FSImage;
 
 public class MarkerData {
-    private StrutMetrics structMetrics;
+    private StrutMetrics _structMetrics;
     
-    private TextMarker textMarker;
-    private GlyphMarker glyphMarker;
-    private ImageMarker imageMarker;
+    private TextMarker _textMarker;
+    private GlyphMarker _glyphMarker;
+    private ImageMarker _imageMarker;
     
-    private LineBox referenceLine;
-    private LineBox previousReferenceLine;
+    private LineBox _referenceLine;
+    private LineBox _previousReferenceLine;
 
     public TextMarker getTextMarker() {
-        return textMarker;
+        return _textMarker;
     }
 
     public void setTextMarker(TextMarker markerText) {
-        this.textMarker = markerText;
+        _textMarker = markerText;
     }
 
     public GlyphMarker getGlyphMarker() {
-        return glyphMarker;
+        return _glyphMarker;
     }
 
     public void setGlyphMarker(GlyphMarker glyphMarker) {
-        this.glyphMarker = glyphMarker;
+        _glyphMarker = glyphMarker;
     }
 
     public ImageMarker getImageMarker() {
-        return imageMarker;
+        return _imageMarker;
     }
 
     public void setImageMarker(ImageMarker imageMarker) {
-        this.imageMarker = imageMarker;
+        _imageMarker = imageMarker;
     }
 
     public StrutMetrics getStructMetrics() {
-        return structMetrics;
+        return _structMetrics;
     }
 
     public void setStructMetrics(StrutMetrics structMetrics) {
-        this.structMetrics = structMetrics;
+        _structMetrics = structMetrics;
     }
     
     public int getLayoutWidth() {
-        if (textMarker != null) {
-            return textMarker.getLayoutWidth();
-        } else if (glyphMarker != null) {
-            return glyphMarker.getLayoutWidth();
-        } else if (imageMarker != null) {
-            return imageMarker.getLayoutWidth();
+        if (_textMarker != null) {
+            return _textMarker.getLayoutWidth();
+        } else if (_glyphMarker != null) {
+            return _glyphMarker.getLayoutWidth();
+        } else if (_imageMarker != null) {
+            return _imageMarker.getLayoutWidth();
         } else {
             return 0;
         }
     }
 
     public LineBox getReferenceLine() {
-        return referenceLine;
+        return _referenceLine;
     }
 
     public void setReferenceLine(LineBox referenceLine) {
-        this.previousReferenceLine = this.referenceLine;
-        this.referenceLine = referenceLine;
+        _previousReferenceLine = _referenceLine;
+        _referenceLine = referenceLine;
     }
     
     public void restorePreviousReferenceLine(LineBox current) {
-        if (current == this.referenceLine) {
-            this.referenceLine = this.previousReferenceLine;
+        if (current == _referenceLine) {
+            _referenceLine = _previousReferenceLine;
         }
     }
     
     public static class ImageMarker {
-        private int layoutWidth;
-        private FSImage image;
+        private int _layoutWidth;
+        private FSImage _image;
         
         public FSImage getImage() {
-            return image;
+            return _image;
         }
         public void setImage(FSImage image) {
-            this.image = image;
+            _image = image;
         }
         public int getLayoutWidth() {
-            return layoutWidth;
+            return _layoutWidth;
         }
         public void setLayoutWidth(int layoutWidth) {
-            this.layoutWidth = layoutWidth;
+            _layoutWidth = layoutWidth;
         }
     }
     
     public static class GlyphMarker {
-        private int diameter;
-        private int layoutWidth;
+        private int _diameter;
+        private int _layoutWidth;
         
         public int getDiameter() {
-            return diameter;
+            return _diameter;
         }
         
         public void setDiameter(int diameter) {
-            this.diameter = diameter;
+            _diameter = diameter;
         }
         
         public int getLayoutWidth() {
-            return layoutWidth;
+            return _layoutWidth;
         }
         
         public void setLayoutWidth(int layoutWidth) {
-            this.layoutWidth = layoutWidth;
+            _layoutWidth = layoutWidth;
         }
     }
     
     public static class TextMarker {
-        private String text;
-        private int layoutWidth;
+        private String _text;
+        private int _layoutWidth;
         
         public TextMarker() {
         }
 
         public String getText() {
-            return text;
+            return _text;
         }
 
         public void setText(String text) {
-            this.text = text;
+            _text = text;
         }
 
         public int getLayoutWidth() {
-            return layoutWidth;
+            return _layoutWidth;
         }
 
         public void setLayoutWidth(int width) {
-            this.layoutWidth = width;
+            _layoutWidth = width;
         }
     }    
 }

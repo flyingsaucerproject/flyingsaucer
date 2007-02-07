@@ -27,38 +27,24 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 public class StyleTracker {
-    private List styles = new ArrayList();
+    private List _styles = new ArrayList();
     
     public void addStyle(CascadedStyle style) {
-        styles.add(style);
+        _styles.add(style);
     }
 
     public void removeLast() {
-        if (styles.size() != 0) {
-            styles.remove(styles.size()-1);
-        }
-    }
-    
-    public void popStyles(LayoutContext c) {
-        for (int i = 0; i < styles.size(); i++) {
-            c.popStyle();
+        if (_styles.size() != 0) {
+            _styles.remove(_styles.size()-1);
         }
     }
 
     public boolean hasStyles() {
-        return styles.size() != 0;
+        return _styles.size() != 0;
     }
 
     public void clearStyles() {
-        styles.clear();
-    }
-    
-    public void pushStyles(LayoutContext c) {
-        if (hasStyles()) {
-            for (Iterator i = getStyles().iterator(); i.hasNext();) {
-                c.pushStyle((CascadedStyle) i.next());
-            }
-        }
+        _styles.clear();
     }
     
     public CalculatedStyle deriveAll(CalculatedStyle start) {
@@ -70,12 +56,12 @@ public class StyleTracker {
     }
 
     public List getStyles() {
-        return styles;
+        return _styles;
     }
     
     public StyleTracker copyOf() {
         StyleTracker result = new StyleTracker();
-        result.styles.addAll(this.styles);
+        result._styles.addAll(this._styles);
         return result;
     }
 }

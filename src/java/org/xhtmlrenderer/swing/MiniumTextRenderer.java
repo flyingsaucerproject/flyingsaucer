@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.render;
+package org.xhtmlrenderer.swing;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -27,7 +27,9 @@ import org.sektor37.minium.TextRendererFactory;
 import org.sektor37.minium.TextRenderingHints;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
-import org.xhtmlrenderer.swing.Java2DOutputDevice;
+import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.render.LineMetricsAdapter;
 
 
 /**

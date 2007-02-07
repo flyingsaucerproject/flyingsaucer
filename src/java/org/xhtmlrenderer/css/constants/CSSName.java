@@ -24,6 +24,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.xhtmlrenderer.css.style.FSDerivedValue;
+import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
+
 
 /**
  * A CSSName is a Singleton representing a single CSS property name, like
@@ -75,6 +78,8 @@ public final class CSSName implements Comparable {
      * True if the property inherits by default, false if not inherited
      */
     private final boolean propertyInherits;
+    
+    private FSDerivedValue initialDerivedValue;
 
 
     /**
@@ -694,7 +699,7 @@ public final class CSSName implements Comparable {
             addProperty(
                     "outline-color",
                     PRIMITIVE,
-                    "invert",
+                    /* "invert", */ "black",  // XXX Wrong (but doesn't matter for now)
                     NOT_INHERITED
             );
 
@@ -1402,7 +1407,7 @@ public final class CSSName implements Comparable {
      * @param initialValue
      * @param inherits
      */
-    private CSSName(String propName, String initialValue, boolean inherits) {
+    private CSSName(String propName, String initialValue, boolean inherits, Object type) {
         this.propName = propName;
         this.FS_ID = CSSName.maxAssigned++;
         this.initialValue = initialValue;
@@ -1479,6 +1484,10 @@ public final class CSSName implements Comparable {
     public final static String initialValue(CSSName cssName) {
         return cssName.initialValue;
     }
+    
+    public final static FSDerivedValue initialDerivedValue(CSSName cssName) {
+        return cssName.initialDerivedValue;
+    }
 
     /**
      * Gets the byPropertyName attribute of the CSSName class
@@ -1509,7 +1518,7 @@ public final class CSSName implements Comparable {
             Object type,
             String initialValue, Object inherit
     ) {
-        CSSName cssName = new CSSName(propName, initialValue, (inherit == INHERITS));
+        CSSName cssName = new CSSName(propName, initialValue, (inherit == INHERITS), type);
 
         ALL_PROPERTY_NAMES.put(propName, cssName);
 
@@ -1528,11 +1537,33 @@ public final class CSSName implements Comparable {
             ALL_PROPERTIES[name.FS_ID] = name;
         }
     }
+    
+    static {
+        for (Iterator i = ALL_PRIMITIVE_PROPERTY_NAMES.values().iterator(); i.hasNext(); ) {
+            CSSName cssName = (CSSName)i.next();
+            if (cssName.initialValue.charAt(0) != '=') {
+                String convertedValue = Idents.convertIdent(cssName, cssName.initialValue);
+
+                short valueType = ValueConstants.guessType(convertedValue);
+
+                cssName.initialDerivedValue = DerivedValueFactory.newDerivedValue(null,
+                        cssName,
+                        valueType,
+                        convertedValue,
+                        convertedValue,
+                        null);
+            }
+        }
+    }
 
     //Assumed to be consistent with equals because CSSName is in essence an enum
     public int compareTo(Object object) {
         if (object == null) throw new NullPointerException();//required by Comparable
         return FS_ID - ((CSSName) object).FS_ID;//will throw ClassCastException according to Comparable if not a CSSName
+    }
+    
+    public int hashCode() {
+        return FS_ID;
     }
 
 
@@ -1542,6 +1573,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2007/02/07 16:33:35  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.24  2006/07/03 23:37:09  tobega
  * fixed Comparable so that the previous TreeMap change works. TreeMap does not seem to affect performance but assures that CalculatedStyles get shared properly as intended.
  *

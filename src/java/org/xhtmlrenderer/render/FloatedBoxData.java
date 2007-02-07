@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2005 Wisconsin Court System
+ * Copyright (c) 2007 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,34 +19,35 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Rectangle;
+import org.xhtmlrenderer.layout.FloatManager;
+import org.xhtmlrenderer.layout.Layer;
 
-import org.xhtmlrenderer.css.style.CssContext;
-
-public class MarginBox extends BlockBox {
-    private Rectangle _bounds;
+public class FloatedBoxData {
+    private Layer _drawingLayer;
+    private FloatManager _manager;
+    private int _marginFromSibling;
     
-    public MarginBox(Rectangle bounds) {
-        _bounds = bounds;
+    public Layer getDrawingLayer() {
+        return _drawingLayer;
     }
     
-    public int getWidth() {
-        return _bounds.width;
+    public void setDrawingLayer(Layer drawingLayer) {
+        _drawingLayer = drawingLayer;
     }
     
-    public int getHeightXXX() {
-        return _bounds.height;
+    public FloatManager getManager() {
+        return _manager;
     }
     
-    public int getContentWidth() {
-        return _bounds.height;
+    public void setManager(FloatManager manager) {
+        _manager = manager;
     }
     
-    public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
-        return new Rectangle(-_bounds.x, -_bounds.y, _bounds.width, _bounds.height);
+    public int getMarginFromSibling() {
+        return _marginFromSibling;
     }
     
-    public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
-        return new Rectangle(-_bounds.x, -_bounds.y, _bounds.width, _bounds.height);
+    public void setMarginFromSibling(int marginFromSibling) {
+        _marginFromSibling = marginFromSibling;
     }
 }

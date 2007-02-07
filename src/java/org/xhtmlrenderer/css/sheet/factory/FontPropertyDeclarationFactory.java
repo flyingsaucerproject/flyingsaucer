@@ -92,10 +92,6 @@ public class FontPropertyDeclarationFactory extends AbstractPropertyDeclarationF
                 continue;
             }
 
-            if ( names[0] == CSSName.FONT_SIZE ) {
-                primitives[0] = FontSizeHackHelper.fontSizeAbsoluteHack(primitives[0]);
-            }
-
             addProperties(declarations, primitives, names, origin, important);
         }
 
@@ -164,6 +160,9 @@ public class FontPropertyDeclarationFactory extends AbstractPropertyDeclarationF
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2007/02/07 16:33:39  peterbrant
+ * Initial commit of rewritten table support and associated refactorings
+ *
  * Revision 1.6  2006/07/27 15:18:15  pdoubleya
  * Added workaround for font-sizes with idents such as medium, large, etc.
  *

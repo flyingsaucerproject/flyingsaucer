@@ -15,6 +15,8 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public class BorderPropertySet extends RectPropertySet {
+    public static final BorderPropertySet ALL_ZEROS = new BorderPropertySet(0.0f, 0.0f, 0.0f, 0.0f);
+    
     private IdentValue _topStyle;
     private IdentValue _rightStyle;
     private IdentValue _bottomStyle;
