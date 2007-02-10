@@ -1,0 +1,42 @@
+S,whitespace
+CDO,<!--
+CDC,-->
+INCLUDES,an attribute word match
+DASHMATCH,an attribute hyphen match
+LBRACE,a {
+PLUS,a +
+GREATER,a >
+COMMA,a comma
+STRING,a string
+INVALID,an unclosed string
+IDENT,an identifier
+HASH,a hex color
+IMPORT_SYM,@import
+PAGE_SYM,@page
+MEDIA_SYM,@media
+CHARSET_SYM,@charset
+IMPORTANT_SYM,!important
+EMS,an em value
+EXS,an ex value
+LENGTH,a length value
+ANGLE,an angle value
+TIME,a time value
+FREQ,a freq value
+DIMENSION,a dimension
+PERCENTAGE,a percentage
+NUMBER,a number
+URI,a URI
+FUNCTION,function
+OTHER,other
+RBRACE,}
+SEMICOLON,;
+VIRGULE,/
+COLON,:
+MINUS,-
+RPAREN,)
+LBRACKET,[
+RBRACKET,]
+PERIOD,.
+EQUALS,=
+ASTERISK,*
+EOF,end of file
