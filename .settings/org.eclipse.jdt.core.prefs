@@ -1,4 +1,4 @@
-#Mon Jan 22 15:42:34 CET 2007
+#Fri Feb 09 17:50:42 CET 2007
 eclipse.preferences.version=1
 org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled
 org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.2
@@ -75,7 +75,7 @@ org.eclipse.jdt.core.formatter.indent_empty_lines=false
 org.eclipse.jdt.core.formatter.indent_statements_compare_to_block=true
 org.eclipse.jdt.core.formatter.indent_statements_compare_to_body=true
 org.eclipse.jdt.core.formatter.indent_switchstatements_compare_to_cases=true
-org.eclipse.jdt.core.formatter.indent_switchstatements_compare_to_switch=false
+org.eclipse.jdt.core.formatter.indent_switchstatements_compare_to_switch=true
 org.eclipse.jdt.core.formatter.indentation.size=4
 org.eclipse.jdt.core.formatter.insert_new_line_after_annotation=insert
 org.eclipse.jdt.core.formatter.insert_new_line_after_opening_brace_in_array_initializer=do not insert
