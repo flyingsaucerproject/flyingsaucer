@@ -21,14 +21,10 @@ package org.xhtmlrenderer.layout;
 
 import java.awt.Rectangle;
 import java.util.Stack;
-import java.util.logging.Level;
 
 import org.xhtmlrenderer.context.ContentFunctionFactory;
 import org.xhtmlrenderer.context.StyleReference;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -40,7 +36,6 @@ import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.swing.RootPanel;
-import org.xhtmlrenderer.util.XRLog;
 
 public class LayoutContext implements CssContext {
     private SharedContext sharedContext;
