@@ -613,11 +613,12 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         }
     }
     
-    protected void calcChildPaintingInfo(LayoutContext c, PaintingInfo result) {
+    protected void calcChildPaintingInfo(
+            CssContext c, PaintingInfo result, boolean useCache) {
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object obj = getInlineChild(i);
             if (obj instanceof Box) {
-                PaintingInfo info = ((Box)obj).calcPaintingInfo(c);
+                PaintingInfo info = ((Box)obj).calcPaintingInfo(c, useCache);
                 moveIfGreater(result.getOuterMarginCorner(), info.getOuterMarginCorner());
                 result.getAggregateBounds().add(info.getAggregateBounds());
             } 

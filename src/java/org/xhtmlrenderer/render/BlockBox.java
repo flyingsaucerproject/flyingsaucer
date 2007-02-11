@@ -1500,19 +1500,19 @@ public class BlockBox extends Box implements InlinePaintable {
     }
     
     protected void calcChildPaintingInfo(
-            final LayoutContext c, final PaintingInfo result) {
+            final CssContext c, final PaintingInfo result, final boolean useCache) {
         if (getPersistentBFC() != null) {
             ((BlockBox)this).getPersistentBFC().getFloatManager().performFloatOperation(
                     new FloatManager.FloatOperation() {
                         public void operate(Box floater) {
-                            PaintingInfo info = floater.calcPaintingInfo(c);
+                            PaintingInfo info = floater.calcPaintingInfo(c, useCache);
                             moveIfGreater(
                                     result.getOuterMarginCorner(), 
                                     info.getOuterMarginCorner());
                         }
                     });
         }
-        super.calcChildPaintingInfo(c, result);
+        super.calcChildPaintingInfo(c, result, useCache);
     }  
     
     protected void translateChildPaintingInfo(
@@ -1641,6 +1641,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.60  2007/02/11 23:10:59  peterbrant
+ * Make sure bounds information is calculated for fixed layers
+ *
  * Revision 1.59  2007/02/07 16:33:25  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

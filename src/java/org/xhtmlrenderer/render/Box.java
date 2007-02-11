@@ -676,9 +676,9 @@ public abstract class Box implements Styleable {
         }
     }
     
-    public PaintingInfo calcPaintingInfo(LayoutContext c) {
+    public PaintingInfo calcPaintingInfo(CssContext c, boolean useCache) {
         PaintingInfo cached = getPaintingInfo();
-        if (cached != null) {
+        if (cached != null && useCache) {
             return cached;
         }
         
@@ -690,11 +690,21 @@ public abstract class Box implements Styleable {
           
         result.setAggregateBounds(getPaintingClipEdge(c));
         
-        calcChildPaintingInfo(c, result);
+        calcChildPaintingInfo(c, result, useCache);
         
         setPaintingInfo(result);
         
         return result;
+    }
+    
+    protected void calcChildPaintingInfo(
+            CssContext c, PaintingInfo result, boolean useCache) {
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = (Box) getChild(i);
+            PaintingInfo info = child.calcPaintingInfo(c, useCache);
+            moveIfGreater(result.getOuterMarginCorner(), info.getOuterMarginCorner());
+            result.getAggregateBounds().add(info.getAggregateBounds());
+        }
     }
     
     public int getMarginBorderPadding(CssContext cssCtx, int which) {
@@ -715,16 +725,7 @@ public abstract class Box implements Styleable {
                 throw new IllegalArgumentException();
         }
     }    
-    
-    protected void calcChildPaintingInfo(LayoutContext c, PaintingInfo result) {
-        for (int i = 0; i < getChildCount(); i++) {
-            Box child = (Box) getChild(i);
-            PaintingInfo info = child.calcPaintingInfo(c);
-            moveIfGreater(result.getOuterMarginCorner(), info.getOuterMarginCorner());
-            result.getAggregateBounds().add(info.getAggregateBounds());
-        }
-    }
-    
+
     protected void moveIfGreater(Dimension result, Dimension test) {
         if (test.width > result.width) {
             result.width = test.width;
@@ -869,6 +870,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.121  2007/02/11 23:10:59  peterbrant
+ * Make sure bounds information is calculated for fixed layers
+ *
  * Revision 1.120  2007/02/07 16:33:22  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

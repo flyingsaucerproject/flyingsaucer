@@ -380,6 +380,8 @@ public class Layer {
 
         fixed.setContainingBlock(new ViewportBox(rect));
         ((BlockBox)fixed).positionAbsolute(c, BlockBox.POSITION_BOTH);
+        
+        fixed.calcPaintingInfo(c, false);
     }
 
     private void paintLayerBackgroundAndBorder(RenderingContext c) {
@@ -418,7 +420,7 @@ public class Layer {
     }
     
     private PaintingInfo calcPaintingDimension(LayoutContext c) {
-        getMaster().calcPaintingInfo(c);
+        getMaster().calcPaintingInfo(c, true);
         PaintingInfo result = (PaintingInfo)getMaster().getPaintingInfo().copyOf();
         
         List children = getChildren();
