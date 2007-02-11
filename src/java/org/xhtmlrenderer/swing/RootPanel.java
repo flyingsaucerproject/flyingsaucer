@@ -50,7 +50,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     }
 
     public RootPanel() {
-        this(Configuration.isTrue("xr.use.threads", true));
+        /* this(Configuration.isTrue("xr.use.threads", true)); */
+        this(false);
     }
 
     protected Map documentListeners;
