@@ -39,7 +39,8 @@ public interface TextRenderer {
 
     /**
      * Set the smoothing threashold. This is a font size above which
-     * all text will be anti-aliased. Set to -1 for no antialiasing. 
+     * all text will be anti-aliased. Text below this size will not be antialiased. 
+     * Set to -1 for no antialiasing. 
      * Set to 0 for all antialising.
      * Else, set to the threshold font size. does not take font scaling
      * into account.
