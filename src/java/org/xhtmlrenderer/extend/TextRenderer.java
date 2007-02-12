@@ -37,9 +37,11 @@ public interface TextRenderer {
 
     public float getFontScale();
 
-    /*
-     * set to -1 for no antialiasing. set to 0 for all antialising.
-     * else, set to the threshold font size. does not take font scaling
+    /**
+     * Set the smoothing threashold. This is a font size above which
+     * all text will be anti-aliased. Set to -1 for no antialiasing. 
+     * Set to 0 for all antialising.
+     * Else, set to the threshold font size. does not take font scaling
      * into account.
      */
     public void setSmoothingThreshold(float fontsize);
