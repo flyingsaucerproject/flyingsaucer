@@ -563,6 +563,17 @@ _What happens with form components when generating a PDF? Is this supported at a
 Replaced elements are @OutputDevice@-specific.  The PDF renderer doesn't use Graphics2D.  At this point, an @<input>@ element will be treated like regular content.  Adding AcroForm support is high on the list of priorities for the ${fs} team. 
 >xil>}}}
 
+
+
+h4(fs_heading). How do I control font smoothing (anti-aliasing?)
+
+By default ${fs} will use the rendering hints taken from the operating system. However you can override the defaults using methods
+in the TextRenderer class. For example, to make all text above font size 0 be smoothed, you could use code like this:
+
+myXhtmlPanel.getSharedContext().getTextRenderer().setSmoothingLevel(0);
+
+
+
 h2. Flying Saucer Extensions to the CSS 2.1 Specification
 
 As per section "4.1.2.1":http://www.w3.org/TR/CSS21/syndata.html#q4 of the ${css21}, "Vendor-specific extensions":http://www.w3.org/TR/CSS21/syndata.html#q4, ${fs} includes some extensions to work around limitations in our current implementation, or limitations in the 2.1 spec. All of these are properties you can use in your CSS when rendering with ${fs}, but which will not be recognized by other renderers. While we can't recommend that you deviate from the spec, you may find some cases where you need to add a property to get something special done.
