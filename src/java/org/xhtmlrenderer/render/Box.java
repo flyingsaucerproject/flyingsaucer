@@ -505,7 +505,7 @@ public abstract class Box implements Styleable {
     
     public void resetChildren(LayoutContext c, int start, int end) {
         for (int i = start; i <= end; i++) {
-            Box box = getChild(start);
+            Box box = getChild(i);
             box.reset(c);
         }
     }
@@ -870,6 +870,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.123  2007/02/19 23:42:54  peterbrant
+ * Fix resetChildren() typo
+ *
  * Revision 1.122  2007/02/19 14:53:36  peterbrant
  * Integrate new CSS parser
  *
