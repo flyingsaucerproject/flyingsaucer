@@ -126,6 +126,13 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
         }
     }
     
+    protected void checkIdentOrString(CSSName cssName, CSSPrimitiveValue value) {
+        short type = value.getPrimitiveType();
+        if (type != CSSPrimitiveValue.CSS_STRING && type != CSSPrimitiveValue.CSS_IDENT) {
+            throw new CSSParseException("Value for " + cssName + " must be an identifier or string", -1);
+        }
+    }
+    
     protected void checkIdentLengthNumberOrPercentType(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
         if (type != CSSPrimitiveValue.CSS_IDENT && 

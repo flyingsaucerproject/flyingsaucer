@@ -25,7 +25,6 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -647,7 +646,7 @@ public class CSSParser {
                     switch (t.getType()) {
                         case Token.HASH:
                             t = next();
-                            selector.addIDCondition(getTokenValue(t));
+                            selector.addIDCondition(getTokenValue(t, true));
                             break;
                         case Token.PERIOD:
                             class_selector(selector);
@@ -670,7 +669,7 @@ public class CSSParser {
                     switch (t.getType()) {
                         case Token.HASH:
                             t = next();
-                            selector.addIDCondition(getTokenValue(t));
+                            selector.addIDCondition(getTokenValue(t, true));
                             found = true;
                             break;
                         case Token.PERIOD:
@@ -707,7 +706,7 @@ public class CSSParser {
         if (t == Token.TK_PERIOD) {
             t = next();
             if (t == Token.TK_IDENT) {
-                selector.addClassCondition(getTokenValue(t));
+                selector.addClassCondition(getTokenValue(t, true));
             } else {
                 push(t);
                 throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
@@ -725,7 +724,7 @@ public class CSSParser {
         //System.out.println("element_name()");
         Token t = next();
         if (t == Token.TK_IDENT || t == Token.TK_ASTERISK) {
-            return getTokenValue(t);
+            return getTokenValue(t, true);
         } else {
             push(t);
             throw new CSSParseException(
@@ -745,7 +744,7 @@ public class CSSParser {
             t = next();
             if (t == Token.TK_IDENT) {
                 boolean existenceMatch = true;
-                String attrName = getTokenValue(t);
+                String attrName = getTokenValue(t, true);
                 skip_whitespace();
                 t = la();
                 switch (t.getType()) {
@@ -757,7 +756,7 @@ public class CSSParser {
                         skip_whitespace();
                         t = next();
                         if (t == Token.TK_IDENT || t == Token.TK_STRING) {
-                            String value = getTokenValue(t);
+                            String value = getTokenValue(t, true);
                             switch (selectorType.getType()) {
                                 case Token.EQUALS:
                                     selector.addAttributeEqualsCondition(attrName, value);
@@ -919,14 +918,6 @@ public class CSSParser {
                     if (t == Token.TK_IMPORTANT_SYM) {
                         prio();
                         important = true;
-                    }
-                    
-                    // HACK temporary
-                    for (Iterator i = values.iterator(); i.hasNext(); ) {
-                        Object obj = i.next();
-                        if (obj == null) {
-                            i.remove();
-                        }
                     }
                     
                     if (valid) {
@@ -1102,7 +1093,7 @@ public class CSSParser {
                 break;
             case Token.EMS:
                 result = new PropertyValue(
-                        CSSPrimitiveValue.CSS_PERCENTAGE, 
+                        CSSPrimitiveValue.CSS_EMS, 
                         sign*Float.parseFloat(extractNumber(t)),
                         getTokenValue(t));
                 next();
@@ -1110,7 +1101,7 @@ public class CSSParser {
                 break;
             case Token.EXS:
                 result = new PropertyValue(
-                        CSSPrimitiveValue.CSS_PERCENTAGE, 
+                        CSSPrimitiveValue.CSS_EXS, 
                         sign*Float.parseFloat(extractNumber(t)),
                         getTokenValue(t));
                 next();
@@ -1224,8 +1215,11 @@ public class CSSParser {
                 throw new CSSParseException(t, Token.TK_RPAREN, getCurrentLine());
             }
             
-            if (f.equalsIgnoreCase("rgb(")) {
+            if (f.equals("rgb(")) {
                 result = new PropertyValue(createColorFromFunction(params));
+            } else {
+                result = new PropertyValue(new FSFunction(
+                        f.substring(0, f.length()-1), params));
             }
             
             skip_whitespace();

@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.swing.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
@@ -231,8 +231,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         StringBuffer buf = new StringBuffer();
         Node current = style.getFirstChild();
         while (current != null) {
-            if (current.getNodeType() == Node.TEXT_NODE) {
-                buf.append(((Text)current).getData());
+            if (current instanceof CharacterData) {
+                buf.append(((CharacterData)current).getData());
             }
             current = current.getNextSibling();
         }
@@ -297,21 +297,23 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         //get the link elements
         Element html = doc.getDocumentElement();
         Element head = findFirstChild(html, "head");
-        Node current = head.getFirstChild();
-        while (current != null) {
-            if (current.getNodeType() == Node.ELEMENT_NODE) {
-                Element elem = (Element)current;
-                StylesheetInfo info = null;
-                if (elem.getTagName().equals("link")) {
-                    info = readLinkElement(elem);
-                } else if (elem.getTagName().equals("style")) {
-                    info = readStyleElement(elem);
+        if (head != null) {
+            Node current = head.getFirstChild();
+            while (current != null) {
+                if (current.getNodeType() == Node.ELEMENT_NODE) {
+                    Element elem = (Element)current;
+                    StylesheetInfo info = null;
+                    if (elem.getTagName().equals("link")) {
+                        info = readLinkElement(elem);
+                    } else if (elem.getTagName().equals("style")) {
+                        info = readStyleElement(elem);
+                    }
+                    if (info != null) {
+                        result.add(info);
+                    }
                 }
-                if (info != null) {
-                    result.add(info);
-                }
+                current = current.getNextSibling();
             }
-            current = current.getNextSibling();
         }
 
         return (StylesheetInfo[])result.toArray(new StylesheetInfo[result.size()]);

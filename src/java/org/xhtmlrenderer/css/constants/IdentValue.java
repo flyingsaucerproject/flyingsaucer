@@ -98,6 +98,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue FONT_WEIGHT_700 = addValue("700");
     public final static IdentValue FONT_WEIGHT_800 = addValue("800");
     public final static IdentValue FONT_WEIGHT_900 = addValue("900");
+    public final static IdentValue FS_CONTENT_PLACEHOLDER = addValue("-fs-content-placeholder");
     public final static IdentValue GEORGIAN = addValue("georgian");
     public final static IdentValue GROOVE = addValue("groove");
     public final static IdentValue HEBREW = addValue("hebrew");
@@ -340,6 +341,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2007/02/19 23:18:40  peterbrant
+ * Further work on new CSS parser / Misc. bug fixes
+ *
  * Revision 1.25  2007/02/19 14:53:36  peterbrant
  * Integrate new CSS parser
  *

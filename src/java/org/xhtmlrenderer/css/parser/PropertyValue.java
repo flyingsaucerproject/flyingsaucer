@@ -36,6 +36,7 @@ public class PropertyValue implements CSSPrimitiveValue {
     public static final short VALUE_TYPE_IDENT = 4;
     public static final short VALUE_TYPE_STRING = 5;
     public static final short VALUE_TYPE_LIST = 6;
+    public static final short VALUE_TYPE_FUNCTION = 7;
     
     private short _type;
     private short _cssValueType;
@@ -55,6 +56,7 @@ public class PropertyValue implements CSSPrimitiveValue {
     private Token _operator;
     
     private List _values;
+    private FSFunction _function;
     
     public PropertyValue(short type, float floatValue, String cssText) {
         _type = type;
@@ -103,11 +105,20 @@ public class PropertyValue implements CSSPrimitiveValue {
     
     public PropertyValue(List values) {
         _type = CSSPrimitiveValue.CSS_UNKNOWN; // HACK
-        _cssValueType = CSSPrimitiveValue.CSS_VALUE_LIST;
+        _cssValueType = CSSValue.CSS_CUSTOM;
         _cssText = values.toString(); // HACK
         
         _values = values;
         _propertyValueType = VALUE_TYPE_LIST;
+    }
+    
+    public PropertyValue(FSFunction function) {
+        _type = CSSPrimitiveValue.CSS_UNKNOWN;
+        _cssValueType = CSSValue.CSS_CUSTOM;
+        _cssText = function.toString();
+        
+        _function = function;
+        _propertyValueType = VALUE_TYPE_FUNCTION;
     }
 
     public Counter getCounterValue() throws DOMException {
@@ -196,5 +207,9 @@ public class PropertyValue implements CSSPrimitiveValue {
     
     public List getValues() {
         return _values;
+    }
+    
+    public FSFunction getFunction() {
+        return _function;
     }
 }

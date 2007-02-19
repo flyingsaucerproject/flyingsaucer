@@ -282,7 +282,12 @@ public class CalculatedStyle {
      * @return The backgroundColor value
      */
     public Color getBackgroundColor() {
-        return asColor(CSSName.BACKGROUND_COLOR);
+        FSDerivedValue prop = valueByName(CSSName.BACKGROUND_COLOR);
+        if (prop == IdentValue.TRANSPARENT) {
+            return null;
+        } else {
+            return asColor(CSSName.BACKGROUND_COLOR);
+        } 
     }
 
     /**
@@ -1054,6 +1059,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.76  2007/02/19 23:18:43  peterbrant
+ * Further work on new CSS parser / Misc. bug fixes
+ *
  * Revision 1.75  2007/02/19 14:53:43  peterbrant
  * Integrate new CSS parser
  *

@@ -34,7 +34,7 @@ public class MarginBox extends BlockBox {
         return _bounds.width;
     }
     
-    public int getHeightXXX() {
+    public int getHeight() {
         return _bounds.height;
     }
     
@@ -48,5 +48,13 @@ public class MarginBox extends BlockBox {
     
     public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         return new Rectangle(-_bounds.x, -_bounds.y, _bounds.width, _bounds.height);
+    }
+    
+    protected int getContainingBlockWidth() {
+        return _bounds.width;
+    }
+    
+    protected int getPaddingWidth(CssContext cssCtx) {
+        return _bounds.width;
     }
 }

@@ -54,8 +54,16 @@ public class FSRGBColor {
     }
     
     public String toString() {
-        return '#' + Integer.toHexString(_red) + 
-            Integer.toHexString(_green) + Integer.toHexString(_blue);
+        return '#' + toString(_red) + toString(_green) + toString(_blue);
+    }
+    
+    private String toString(int color) {
+        String result = Integer.toHexString(color);
+        if (result.length() == 1) {
+            return "0" + result;
+        } else {
+            return result;
+        }
     }
     
     public Color toAWTColor() {

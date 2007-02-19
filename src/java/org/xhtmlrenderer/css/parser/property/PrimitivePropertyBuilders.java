@@ -75,7 +75,23 @@ public class PrimitivePropertyBuilders {
             IdentValue.LOWER_GREEK, IdentValue.LOWER_LATIN,
             IdentValue.UPPER_LATIN, IdentValue.ARMENIAN, 
             IdentValue.GEORGIAN, IdentValue.LOWER_ALPHA,
-            IdentValue.UPPER_ALPHA, IdentValue.NONE });    
+            IdentValue.UPPER_ALPHA, IdentValue.NONE });
+    
+    // repeat | repeat-x | repeat-y | no-repeat | inherit 
+    public static final BitSet BACKGROUND_REPEATS = setFor(
+            new IdentValue[] { 
+                    IdentValue.REPEAT, IdentValue.REPEAT_X, 
+                    IdentValue.REPEAT_Y, IdentValue.NO_REPEAT }); 
+    
+    // scroll | fixed | inherit 
+    public static final BitSet BACKGROUND_ATTACHMENTS = setFor(
+            new IdentValue[] { IdentValue.SCROLL, IdentValue.FIXED }); 
+    
+    // left | right | top | bottom | center
+    public static final BitSet BACKGROUND_POSITIONS = setFor(
+            new IdentValue[] { 
+                    IdentValue.LEFT, IdentValue.RIGHT, IdentValue.TOP, 
+                    IdentValue.BOTTOM, IdentValue.CENTER });    
     
     public static final PropertyBuilder COLOR = new GenericColor();
     public static final PropertyBuilder BORDER_STYLE = new GenericBorderStyle();
@@ -295,7 +311,39 @@ public class PrimitivePropertyBuilders {
                     new PropertyDeclaration(cssName, value, important, origin));
 
         }  
+    }
+    
+    private static abstract class SingleStringWithIdent extends AbstractPropertyBuilder {
+        protected abstract BitSet getAllowed();
+        
+        public List buildDeclarations(
+                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+            checkValueCount(cssName, 1, values.size());
+            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+            checkInheritAllowed(value, inheritAllowed);
+            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+                checkIdentOrString(cssName, value);
+                
+                if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+                    IdentValue ident = checkIdent(cssName, value);
+                    
+                    checkValidity(cssName, getAllowed(), ident);
+                }
+            }
+            
+            return Collections.singletonList(
+                    new PropertyDeclaration(cssName, value, important, origin));
+
+        }  
     } 
+    
+    private static class SingleStringWithNone extends SingleStringWithIdent {
+        private static final BitSet ALLOWED = setFor(new IdentValue[] { IdentValue.NONE });
+        
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+    }
     
     private static class LengthLikeWithAuto extends LengthLikeWithIdent {
         // <length> | <percentage> | auto | inherit
@@ -339,13 +387,9 @@ public class PrimitivePropertyBuilders {
         }    
     }    
     
-    public static class BackgroundAttachment extends SingleIdent {
-        // scroll | fixed | inherit 
-        private static final BitSet ALLOWED = setFor(
-                new IdentValue[] { IdentValue.SCROLL, IdentValue.FIXED });
-        
+    public static class BackgroundAttachment extends SingleIdent {        
         protected BitSet getAllowed() {
-            return ALLOWED;
+            return BACKGROUND_ATTACHMENTS;
         }
     }
     
@@ -355,13 +399,7 @@ public class PrimitivePropertyBuilders {
     public static class BackgroundImage extends Image {
     }
     
-    public static class BackgroundPosition extends AbstractPropertyBuilder {
-        // left | right | top | bottom | center
-        private static final BitSet ALLOWED = setFor(
-                new IdentValue[] { 
-                        IdentValue.LEFT, IdentValue.RIGHT, IdentValue.TOP, 
-                        IdentValue.BOTTOM, IdentValue.CENTER });
-        
+    public static class BackgroundPosition extends AbstractPropertyBuilder {        
         public List buildDeclarations(
                 CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
             checkValueCount(cssName, 1, 2, values.size());
@@ -494,19 +532,13 @@ public class PrimitivePropertyBuilders {
         }
         
         private BitSet getAllowed() {
-            return ALLOWED;
+            return BACKGROUND_POSITIONS;
         }
     }
     
-    public static class BackgroundRepeat extends SingleIdent {
-        // repeat | repeat-x | repeat-y | no-repeat | inherit 
-        private static final BitSet ALLOWED = setFor(
-                new IdentValue[] { 
-                        IdentValue.REPEAT, IdentValue.REPEAT_X, 
-                        IdentValue.REPEAT_Y, IdentValue.NO_REPEAT });
-        
+    public static class BackgroundRepeat extends SingleIdent {        
         protected BitSet getAllowed() {
-            return ALLOWED;
+            return BACKGROUND_REPEATS;
         }
     }
     
@@ -590,7 +622,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { 
                         IdentValue.INLINE, IdentValue.BLOCK,
-                        IdentValue.LIST_ITEM, IdentValue.RUN_IN,
+                        IdentValue.LIST_ITEM, /* IdentValue.RUN_IN, */
                         IdentValue.INLINE_BLOCK, IdentValue.TABLE,
                         IdentValue.INLINE_TABLE, IdentValue.TABLE_ROW_GROUP,
                         IdentValue.TABLE_HEADER_GROUP, IdentValue.TABLE_FOOTER_GROUP,
@@ -637,7 +669,10 @@ public class PrimitivePropertyBuilders {
                 }
             }
             
-            boolean needComma = false;
+            // Both Opera and Firefox parse "Century Gothic" Arial sans-serif as
+            // [Century Gothic], [Arial sans-serif] (i.e. the comma is assumed
+            // after a string).  Seems wrong per the spec, but FF (at least) 
+            // does it in standards mode so we do too.
             List consecutiveIdents = new ArrayList();
             List normalized = new ArrayList(values.size());
             for (Iterator i = values.iterator(); i.hasNext(); ) {
@@ -647,12 +682,8 @@ public class PrimitivePropertyBuilders {
                 if (operator != null && operator != Token.TK_COMMA) {
                     throw new CSSParseException("Invalid font-family definition", -1);
                 }
-                if (needComma && operator == null) {
-                    throw new CSSParseException("Invalid font-family definition, expected ,", -1);
-                }
                 
                 if (operator != null) {
-                    needComma = false;
                     if (consecutiveIdents.size() > 0) {
                         normalized.add(concat(consecutiveIdents, ' '));
                         consecutiveIdents.clear();
@@ -662,7 +693,10 @@ public class PrimitivePropertyBuilders {
                 checkInheritAllowed(value, false);
                 short type = value.getPrimitiveType();
                 if (type == CSSPrimitiveValue.CSS_STRING) {
-                    needComma = true;
+                    if (consecutiveIdents.size() > 0) {
+                        normalized.add(concat(consecutiveIdents, ' '));
+                        consecutiveIdents.clear();
+                    }
                     normalized.add(value.getStringValue());
                 } else if (type == CSSPrimitiveValue.CSS_IDENT) {
                     consecutiveIdents.add(value.getStringValue());
@@ -676,7 +710,7 @@ public class PrimitivePropertyBuilders {
             
             String text = concat(normalized, ',');
             PropertyValue result = new PropertyValue(
-                    CSSPrimitiveValue.CSS_STRING, text, text);
+                    CSSPrimitiveValue.CSS_STRING, text, text);  // HACK cssText can be wrong
             result.setStringArrayValue((String[]) normalized.toArray(new String[normalized.size()]));
             
             return Collections.singletonList(
@@ -785,16 +819,16 @@ public class PrimitivePropertyBuilders {
     public static class FSBorderSpacingVertical extends Length {
     }
     
-    public static class FSFlowTop extends SingleString {
+    public static class FSFlowTop extends SingleStringWithNone {
     }
     
-    public static class FSFlowRight extends SingleString {
+    public static class FSFlowRight extends SingleStringWithNone {
     }
     
-    public static class FSFlowBottom extends SingleString {
+    public static class FSFlowBottom extends SingleStringWithNone {
     }
     
-    public static class FSFlowLeft extends SingleString {
+    public static class FSFlowLeft extends SingleStringWithNone {
     }
     
     public static class FSMoveToFlow extends SingleString {

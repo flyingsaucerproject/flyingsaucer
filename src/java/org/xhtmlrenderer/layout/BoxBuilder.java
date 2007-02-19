@@ -39,6 +39,8 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.parser.PropertyValue;
+import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.newtable.TableBox;
 import org.xhtmlrenderer.newtable.TableCellBox;
@@ -69,7 +71,7 @@ public class BoxBuilder {
 
         ChildBoxInfo info = new ChildBoxInfo();
 
-        createChildren(c, parent, parent.getElement(), children, info);
+        createChildren(c, parent, parent.getElement(), children, info, false);
 
         boolean parentIsNestingTableContent = isNestingTableContent(parent.getStyle().getIdent(
                 CSSName.DISPLAY));
@@ -398,29 +400,103 @@ public class BoxBuilder {
                 display == IdentValue.TABLE_HEADER_GROUP || display == IdentValue.TABLE_ROW_GROUP || 
                 display == IdentValue.TABLE_FOOTER_GROUP || display == IdentValue.TABLE_ROW;
     }
-
-    // table -> section -> row -> cell
+    
+    private static List createGeneratedInlineBoxes(
+            LayoutContext c, Element element, PropertyValue propValue, String peName) {
+        List values = propValue.getValues();
+        List result = new ArrayList(values.size());
+        
+        for (Iterator i = values.iterator(); i.hasNext(); ) {
+            PropertyValue value = (PropertyValue)i.next();
+            
+            ContentFunction contentFunction = null;
+            
+            String content = null;
+            
+            short type = value.getPrimitiveType();
+            if (type == CSSPrimitiveValue.CSS_STRING) {
+                content = value.getStringValue();
+            } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+                // XXX handle functions (after CSS cleanup)
+                continue;
+            }
+            
+            InlineBox iB = new InlineBox(content);
+            iB.setContentFunction(contentFunction);
+            iB.setElement(element);
+            iB.setPseudoElementOrClass(peName);
+            iB.setStartsHere(true);
+            iB.setEndsHere(true);
+            
+            result.add(iB);
+        }
+        
+        return result;
+    }
 
     private static void insertGeneratedContent(LayoutContext c, Element element,
             CalculatedStyle parentStyle, String peName, List children, ChildBoxInfo info) {
         CascadedStyle peStyle = c.getCss().getPseudoElementStyle(element, peName);
-        if (peStyle != null && peStyle.hasProperty(CSSName.CONTENT)) {
-            String content = ((CSSPrimitiveValue) peStyle.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
-            // FIXME Don't think this test is right. Even empty inline content
-            // should force a line box to be created. Leave for now though.
-            // TODO: need to handle hex values in CSS--\2192 is the Unicode for
-            // an arrow (HTML &8594;), though this
-            // is a general string problem, anywhere strings can appear in CSS,
-            // not just content
-            if (!content.equals("")) {
-                CalculatedStyle calculatedStyle = parentStyle.deriveStyle(peStyle);
-                children.add(createGeneratedContent(c, element, peName, calculatedStyle, content,
-                        info));
+        if (peStyle != null) {
+            PropertyDeclaration propDecl = (PropertyDeclaration) peStyle.propertyByName(CSSName.CONTENT);
+            if (propDecl != null) {
+                CSSPrimitiveValue propValue = propDecl.getValue();
+                if (propValue instanceof PropertyValue) {
+                    CalculatedStyle calculatedStyle = parentStyle.deriveStyle(peStyle);
+                    children.addAll(createGeneratedContent(c, element, peName, calculatedStyle,
+                            (PropertyValue) propValue, info));
+                } else {
+                    String content = 
+                        ((CSSPrimitiveValue) peStyle.propertyByName(
+                                CSSName.CONTENT).getValue()).getStringValue();
+                    // FIXME Don't think this test is right. Even empty inline
+                    // content
+                    // should force a line box to be created. Leave for now
+                    // though.
+                    if (!content.equals("")) {
+                        CalculatedStyle calculatedStyle = parentStyle.deriveStyle(peStyle);
+                        children.add(legacyCreateGeneratedContent(c, element, peName,
+                                calculatedStyle, content, info));
+                    }
+                }
             }
         }
     }
+    
+    private static List createGeneratedContent(LayoutContext c, Element element,
+            String peName, CalculatedStyle calculatedStyle, PropertyValue property, ChildBoxInfo info) {
+        List inlineBoxes = createGeneratedInlineBoxes(c, element, property, peName);
 
-    private static Styleable createGeneratedContent(LayoutContext c, Element element,
+        if (calculatedStyle.isInline()) {
+            for (Iterator i = inlineBoxes.iterator(); i.hasNext(); ) {
+                InlineBox iB = (InlineBox)i.next();
+                iB.setStyle(calculatedStyle);
+                iB.applyTextTransform();
+            }
+            return inlineBoxes;
+        } else {
+            CalculatedStyle anon = calculatedStyle.createAnonymousStyle(IdentValue.INLINE);
+            for (Iterator i = inlineBoxes.iterator(); i.hasNext(); ) {
+                InlineBox iB = (InlineBox)i.next();
+                iB.setStyle(anon);
+                iB.applyTextTransform();
+                iB.setElement(null);
+            }
+
+            // XXX A table / table content display value won't work here.
+            // Should (somehow) reset to display: block
+            BlockBox result = createBlockBox(calculatedStyle, info);
+            result.setStyle(calculatedStyle);
+            result.setInlineContent(inlineBoxes);
+            result.setElement(element);
+            result.setChildrenContentType(BlockBox.CONTENT_INLINE);
+            result.setPseudoElementOrClass(peName);
+
+            return new ArrayList(Collections.singletonList(result));
+        }
+    }
+
+    private static Styleable legacyCreateGeneratedContent(LayoutContext c, Element element,
             String peName, CalculatedStyle calculatedStyle, String raw, ChildBoxInfo info) {
         ContentFunction contentFunction = null;
         String content = CONTENT_NEWLINE.matcher(raw).replaceAll("\n");
@@ -528,15 +604,33 @@ public class BoxBuilder {
             addColumns(c, table, new TableColumn(e, style));
         }
     }
+    
+    private static InlineBox createInlineBox(
+            String text, Element parent, CalculatedStyle parentStyle) {
+        InlineBox result = new InlineBox(text.toString());
+
+        if (parentStyle.isInline()) {
+            result.setStyle(parentStyle);
+            result.setElement(parent);
+        } else {
+            result.setStyle(parentStyle.createAnonymousStyle(IdentValue.INLINE));
+        }
+        
+        result.applyTextTransform();
+        
+        return result;
+    }
 
     private static void createChildren(
-            LayoutContext c, BlockBox blockParent, Element parent, List children, ChildBoxInfo info) {
+            LayoutContext c, BlockBox blockParent, Element parent, 
+            List children, ChildBoxInfo info, boolean inline) {
         SharedContext sharedContext = c.getSharedContext();
 
         CalculatedStyle parentStyle = sharedContext.getStyle(parent);
         insertGeneratedContent(c, parent, parentStyle, "before", children, info);
 
         Node working = parent.getFirstChild();
+        boolean needInline = inline;
         if (working != null) {
             InlineBox previousIB = null;
             do {
@@ -561,7 +655,19 @@ public class BoxBuilder {
                     }
 
                     if (style.isInline()) {
-                        createChildren(c, null, element, children, info);
+                        if (needInline) {
+                            InlineBox iB = createInlineBox("", parent, parentStyle);
+                            iB.setStartsHere(true);
+                            iB.setEndsHere(false);
+                            children.add(iB);
+                        }
+                        createChildren(c, null, element, children, info, true);
+                        if (needInline) {
+                            InlineBox iB = createInlineBox("", parent, parentStyle);
+                            iB.setStartsHere(false);
+                            iB.setEndsHere(true);
+                            children.add(iB);
+                        }                        
                     } else {
                         child = createBlockBox(style, info);
                         child.setStyle(style);
@@ -590,6 +696,7 @@ public class BoxBuilder {
                         }
                     }
                 } else if (working.getNodeType() == Node.TEXT_NODE) {
+                    needInline = false;
                     Text textNode = (Text) working;
                     StringBuffer text = new StringBuffer(textNode.getData());
 
@@ -606,7 +713,7 @@ public class BoxBuilder {
 
                     working = textNode;
 
-                    child = new InlineBox(text.toString());
+                    child = createInlineBox(text.toString(), parent, parentStyle);
 
                     InlineBox iB = (InlineBox) child;
                     iB.setEndsHere(true);
@@ -616,15 +723,6 @@ public class BoxBuilder {
                         previousIB.setEndsHere(false);
                     }
                     previousIB = iB;
-
-                    if (parentStyle.isInline()) {
-                        iB.setStyle(parentStyle);
-                        iB.setElement(parent);
-                    } else {
-                        iB.setStyle(parentStyle.createAnonymousStyle(IdentValue.INLINE));
-                    }
-                    
-                    iB.applyTextTransform();
                 }
 
                 if (child != null) {

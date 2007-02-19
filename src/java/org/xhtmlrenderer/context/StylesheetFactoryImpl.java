@@ -182,7 +182,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     }
     
     public synchronized List parseStyleDeclarations(int origin, String declarations) {
-        if (! StyleReference.USE_NEW_PARSER) {
+        if (StyleReference.USE_NEW_PARSER) {
             throw new IllegalArgumentException("(bug) This method should not have been called");
         }
         try {

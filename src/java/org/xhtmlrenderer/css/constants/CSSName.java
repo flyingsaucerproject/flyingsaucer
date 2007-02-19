@@ -24,13 +24,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.xhtmlrenderer.css.parser.property.BackgroundPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.BorderPropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.BorderSpacingPropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.ContentPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.FontPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.ListStylePropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.OneToFourPropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.SizePropertyBuilder;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 
@@ -387,7 +390,7 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "normal",
                     NOT_INHERITED,
-                    null
+                    new ContentPropertyBuilder()
             );
 
     /**
@@ -1242,7 +1245,7 @@ public final class CSSName implements Comparable {
                     SHORTHAND,
                     "transparent none repeat scroll 0% 0%",
                     NOT_INHERITED,
-                    null
+                    new BackgroundPropertyBuilder()
             );
 
     /**
@@ -1420,7 +1423,7 @@ public final class CSSName implements Comparable {
                     SHORTHAND,
                     "auto",
                     NOT_INHERITED,
-                    null
+                    new SizePropertyBuilder()
             );
 
     public final static CSSName[] MARGIN_SIDE_PROPERTIES =
@@ -1644,16 +1647,6 @@ public final class CSSName implements Comparable {
             }
         }
     }
-    
-    static {
-        Iterator iter = ALL_PROPERTY_NAMES.values().iterator();
-        while (iter.hasNext()) {
-            CSSName name = (CSSName) iter.next();
-            if (name.implemented && name.builder == null) {
-                System.out.println("STILL NEED: " + name);
-            }
-        }
-    }
 
     //Assumed to be consistent with equals because CSSName is in essence an enum
     public int compareTo(Object object) {
@@ -1672,6 +1665,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2007/02/19 23:18:40  peterbrant
+ * Further work on new CSS parser / Misc. bug fixes
+ *
  * Revision 1.26  2007/02/19 14:53:36  peterbrant
  * Integrate new CSS parser
  *
