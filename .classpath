@@ -11,7 +11,6 @@
 	<classpathentry kind="lib" path="lib/dev/java2html.jar"/>
 	<classpathentry kind="lib" path="lib/dev/javasrc.jar"/>
 	<classpathentry kind="lib" path="lib/dev/tagsoup-1.0rc2.jar"/>
-	<classpathentry kind="lib" path="lib/dev/Tidy.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="lib" path="lib/minium.jar"/>
 	<classpathentry kind="lib" path="lib/cssparser-0-9-4-fs.jar"/>
