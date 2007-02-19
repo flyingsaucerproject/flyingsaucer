@@ -19,13 +19,14 @@
  */
 package org.xhtmlrenderer.css.constants;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
-
-import java.awt.*;
-import java.util.Map;
-import java.util.TreeMap;
 
 
 /**
@@ -53,10 +54,14 @@ import java.util.TreeMap;
  * @author Patrick Wright
  */
 public class IdentValue implements FSDerivedValue {
+    private static int maxAssigned = 0;
+    
     /**
      * Description of the Field
      */
     private final String ident;
+    
+    public final int FS_ID;
 
     public final static IdentValue ABSOLUTE = addValue("absolute");
     public final static IdentValue ALWAYS = addValue("always");
@@ -102,7 +107,6 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue HIRAGANA_IROHA = addValue("hiragana-iroha");
     public final static IdentValue INHERIT = addValue("inherit");
     public final static IdentValue INLINE = addValue("inline");
-    // HACK: inline-block is not a valid CSS value, but was being used in CSS/demos. should prob be inline or block (PWW 25-01-05)
     public final static IdentValue INLINE_BLOCK = addValue("inline-block");
     public final static IdentValue INLINE_TABLE = addValue("inline-table");
     public final static IdentValue INSET = addValue("inset");
@@ -170,6 +174,8 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue TABLE_ROW_GROUP = addValue("table-row-group");
     public final static IdentValue TEXT_BOTTOM = addValue("text-bottom");
     public final static IdentValue TEXT_TOP = addValue("text-top");
+    public final static IdentValue THICK = addValue("thick");
+    public final static IdentValue THIN = addValue("thin");
     public final static IdentValue TOP = addValue("top");
     public final static IdentValue TRANSPARENT = addValue("transparent");
     public final static IdentValue UNDERLINE = addValue("underline");
@@ -213,6 +219,7 @@ public class IdentValue implements FSDerivedValue {
      */
     private IdentValue(String ident) {
         this.ident = ident;
+        this.FS_ID = IdentValue.maxAssigned++;
     }
 
     /**
@@ -248,6 +255,14 @@ public class IdentValue implements FSDerivedValue {
     public static boolean looksLikeIdent(String ident) {
         return (IdentValue) ALL_IDENT_VALUES.get(ident) != null;
     }
+    
+    public static IdentValue valueOf(String ident) {
+        return (IdentValue)ALL_IDENT_VALUES.get(ident);
+    }    
+    
+    public static int getIdentCount() {
+        return ALL_IDENT_VALUES.size();
+    }
 
     /**
      * Adds a feature to the Value attribute of the IdentValue class
@@ -257,7 +272,7 @@ public class IdentValue implements FSDerivedValue {
      */
     private final static synchronized IdentValue addValue(String ident) {
         if (ALL_IDENT_VALUES == null) {
-            ALL_IDENT_VALUES = new TreeMap();
+            ALL_IDENT_VALUES = new HashMap();
         }
         IdentValue val = new IdentValue(ident);
         ALL_IDENT_VALUES.put(ident, val);
@@ -325,6 +340,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2007/02/19 14:53:36  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.24  2007/02/07 16:33:36  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

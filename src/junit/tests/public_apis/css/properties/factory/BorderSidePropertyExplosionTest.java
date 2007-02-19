@@ -52,9 +52,9 @@ public class BorderSidePropertyExplosionTest extends AbstractPropertyExplosionTe
         // these selectors just vary the order of values, but props are
         // the same, so we use the same comparison values in a Map
         testVals = new HashMap();
-        testVals.put( CSSName.BORDER_COLOR_TOP, "black" );
-        testVals.put( CSSName.BORDER_WIDTH_TOP, "1pt" );
-        testVals.put( CSSName.BORDER_STYLE_TOP, "solid" );
+        testVals.put( CSSName.BORDER_TOP_COLOR, "black" );
+        testVals.put( CSSName.BORDER_TOP_WIDTH, "1pt" );
+        testVals.put( CSSName.BORDER_TOP_STYLE, "solid" );
         appendTestPermutations(temp,
                                "p#BorderTopAll",
                                CSSName.BORDER_TOP_SHORTHAND,
@@ -62,9 +62,9 @@ public class BorderSidePropertyExplosionTest extends AbstractPropertyExplosionTe
                                testVals);
 
         testVals = new HashMap();
-        testVals.put( CSSName.BORDER_COLOR_RIGHT, "black" );
-        testVals.put( CSSName.BORDER_WIDTH_RIGHT, "1pt" );
-        testVals.put( CSSName.BORDER_STYLE_RIGHT, "solid" );
+        testVals.put( CSSName.BORDER_RIGHT_COLOR, "black" );
+        testVals.put( CSSName.BORDER_RIGHT_WIDTH, "1pt" );
+        testVals.put( CSSName.BORDER_RIGHT_STYLE, "solid" );
         appendTestPermutations(temp,
                                "p#BorderRightAll",
                                CSSName.BORDER_RIGHT_SHORTHAND,
@@ -72,9 +72,9 @@ public class BorderSidePropertyExplosionTest extends AbstractPropertyExplosionTe
                                testVals);
 
         testVals = new HashMap();
-        testVals.put( CSSName.BORDER_COLOR_BOTTOM, "black" );
-        testVals.put( CSSName.BORDER_WIDTH_BOTTOM, "1pt" );
-        testVals.put( CSSName.BORDER_STYLE_BOTTOM, "solid" );
+        testVals.put( CSSName.BORDER_BOTTOM_COLOR, "black" );
+        testVals.put( CSSName.BORDER_BOTTOM_WIDTH, "1pt" );
+        testVals.put( CSSName.BORDER_BOTTOM_STYLE, "solid" );
         appendTestPermutations(temp,
                                "p#BorderBottomAll",
                                CSSName.BORDER_BOTTOM_SHORTHAND,
@@ -82,9 +82,9 @@ public class BorderSidePropertyExplosionTest extends AbstractPropertyExplosionTe
                                testVals);
 
         testVals = new HashMap();
-        testVals.put( CSSName.BORDER_COLOR_LEFT, "black" );
-        testVals.put( CSSName.BORDER_WIDTH_LEFT, "1pt" );
-        testVals.put( CSSName.BORDER_STYLE_LEFT, "solid" );
+        testVals.put( CSSName.BORDER_LEFT_COLOR, "black" );
+        testVals.put( CSSName.BORDER_LEFT_WIDTH, "1pt" );
+        testVals.put( CSSName.BORDER_LEFT_STYLE, "solid" );
         appendTestPermutations(temp,
                                "p#BorderRightAll",
                                CSSName.BORDER_LEFT_SHORTHAND,
@@ -108,6 +108,9 @@ public class BorderSidePropertyExplosionTest extends AbstractPropertyExplosionTe
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2007/02/19 14:54:18  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.3  2005/01/29 16:00:42  pdoubleya
  * No longer use identifier-replaced values on PDs.
  *

@@ -392,7 +392,7 @@ public class LineBox extends Box implements InlinePaintable {
     
     public Box find(CssContext cssCtx, int absX, int absY) {
         PaintingInfo pI = getPaintingInfo();
-        if (! pI.getAggregateBounds().contains(absX, absY)) {
+        if (pI !=null && ! pI.getAggregateBounds().contains(absX, absY)) {
             return null;
         }
         
@@ -440,6 +440,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.58  2007/02/19 14:53:36  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.57  2007/02/07 16:33:22  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

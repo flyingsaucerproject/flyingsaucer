@@ -1,12 +1,16 @@
 package org.xhtmlrenderer.css.style.derived;
 
-import org.xhtmlrenderer.css.style.*;
+import java.awt.Point;
+import java.util.List;
+import java.util.regex.Matcher;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.ValueConstants;
+import org.xhtmlrenderer.css.parser.PropertyValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.DerivedValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
-
-import java.util.regex.Matcher;
-import java.awt.*;
 
 /**
  * A DerivedValue representing a point in space; used for background-position.
@@ -37,12 +41,26 @@ public class PointValue extends DerivedValue {
             pullPointValuesForBGPos(cssText);
         }
     }
+    
+    public PointValue(CalculatedStyle style, CSSName name, PropertyValue value) {
+        super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
+        
+        List values = (List)value.getValues();
+        
+        PropertyValue x = (PropertyValue)values.get(0);
+        PropertyValue y = (PropertyValue)values.get(1);
+        
+        _xPos = x.getFloatValue();
+        _xType = x.getPrimitiveType();
+        
+        _yPos = y.getFloatValue();
+        _yType = y.getPrimitiveType();
+    }
 
     /**
      * @param parentWidth
      * @param parentHeight
      * @param ctx
-     * @return
      */
     public Point asPoint(
             CSSName cssName,

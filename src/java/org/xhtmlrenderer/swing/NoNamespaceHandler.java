@@ -21,18 +21,17 @@
 
 package org.xhtmlrenderer.swing;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.ProcessingInstruction;
-import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
-import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.ProcessingInstruction;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 /**
  * Handles a general XML document
@@ -78,10 +77,6 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
     public String getDocumentTitle(org.w3c.dom.Document doc) {
         return null;
     }
-
-    public InlineStyleInfo[] getInlineStyle(org.w3c.dom.Document doc) {
-        return null;
-    }
     
     public String getAnchorName(Element e) {
         return null;
@@ -93,7 +88,7 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
     private Pattern _alternatePattern = Pattern.compile("alternate\\s?=\\s?");
     private Pattern _mediaPattern = Pattern.compile("media\\s?=\\s?");
 
-    public StylesheetInfo[] getStylesheetLinks(org.w3c.dom.Document doc) {
+    public StylesheetInfo[] getStylesheets(org.w3c.dom.Document doc) {
         List list = new ArrayList();
         //get the processing-instructions (actually for XmlDocuments)
         //type and href are required to be set

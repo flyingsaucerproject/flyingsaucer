@@ -34,7 +34,7 @@ import java.util.List;
  * @author Torbjörn Gannholm
  * @author Patrick Wright
  */
-public class Stylesheet {
+public class Stylesheet implements RulesetContainer {
     /**
      * The info for this stylesheet
      */
@@ -50,6 +50,9 @@ public class Stylesheet {
     private java.util.List _rulesets;
 
     private List _pageRulesets;
+    
+    private List _importRules = new ArrayList();
+    private List _contents = new ArrayList();
 
     /**
      * Creates a new instance of Stylesheet
@@ -119,6 +122,30 @@ public class Stylesheet {
     public List getPageRulesets() {
         return _pageRulesets;
     }
+    
+    public void addContent(Ruleset ruleset) {
+        _contents.add(ruleset);
+    }
+    
+    public void addContent(MediaRule rule) {
+        _contents.add(rule);
+    }
+    
+    public void addContent(PageRule rule) {
+        _contents.add(rule);
+    }
+    
+    public List getContents() {
+        return _contents;
+    }
+    
+    public void addImportRule(StylesheetInfo info) {
+        _importRules.add(info);
+    }
+    
+    public List getImportRules() {
+        return _importRules;
+    }
 
 }// end class
 
@@ -126,6 +153,9 @@ public class Stylesheet {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2007/02/19 14:53:38  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.14  2006/01/03 23:02:22  peterbrant
  * Remove unused import
  *

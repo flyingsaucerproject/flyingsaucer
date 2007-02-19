@@ -1,9 +1,8 @@
 package org.xhtmlrenderer.css.style.derived;
 
-import org.xhtmlrenderer.css.style.FSDerivedValue;
-import org.xhtmlrenderer.css.style.DerivedValue;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.parser.PropertyValue;
+import org.xhtmlrenderer.css.style.DerivedValue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,6 +21,13 @@ public class StringValue extends DerivedValue {
             String cssStringValue
     ) {
         super(name, cssSACUnitType, cssText, cssStringValue);
+    }
+    
+    public StringValue(CSSName name, PropertyValue value) {
+        super(name, value.getPrimitiveType(), value.getCssText(), value.getStringValue());
+        if (value.getStringArrayValue() != null) {
+            _stringAsArray = value.getStringArrayValue();   
+        }
     }
 
     /**

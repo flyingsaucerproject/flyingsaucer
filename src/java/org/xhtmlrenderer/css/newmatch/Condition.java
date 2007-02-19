@@ -173,7 +173,7 @@ abstract class Condition {
             if (attRes == null) {
                 return false;
             }
-            if (attRes.getAttributeValue(e, _name) != null) {
+            if (! attRes.getAttributeValue(e, _name).equals("")) {
                 return true;
             }
             return false;

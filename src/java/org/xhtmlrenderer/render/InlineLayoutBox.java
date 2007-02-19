@@ -686,7 +686,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     
     public Box find(CssContext cssCtx, int absX, int absY) {
         PaintingInfo pI = getPaintingInfo();
-        if (! pI.getAggregateBounds().contains(absX, absY)) {
+        if (pI != null && ! pI.getAggregateBounds().contains(absX, absY)) {
             return null;
         }
         

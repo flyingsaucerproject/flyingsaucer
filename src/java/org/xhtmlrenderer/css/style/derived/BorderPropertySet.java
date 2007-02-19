@@ -60,24 +60,24 @@ public class BorderPropertySet extends RectPropertySet {
             CalculatedStyle style,
             CssContext ctx
     ) {
-        _top = ( style.isIdent(CSSName.BORDER_STYLE_TOP, IdentValue.NONE) ?
-            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_WIDTH_TOP, 0, ctx));
-        _right = ( style.isIdent(CSSName.BORDER_STYLE_RIGHT, IdentValue.NONE) ?
-            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_WIDTH_RIGHT, 0, ctx));
-        _bottom = ( style.isIdent(CSSName.BORDER_STYLE_BOTTOM, IdentValue.NONE) ?
-            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_WIDTH_BOTTOM, 0, ctx));
-        _left = ( style.isIdent(CSSName.BORDER_STYLE_LEFT, IdentValue.NONE) ?
-            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_WIDTH_LEFT, 0, ctx));
+        _top = ( style.isIdent(CSSName.BORDER_TOP_STYLE, IdentValue.NONE) ?
+            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_TOP_WIDTH, 0, ctx));
+        _right = ( style.isIdent(CSSName.BORDER_RIGHT_STYLE, IdentValue.NONE) ?
+            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_RIGHT_WIDTH, 0, ctx));
+        _bottom = ( style.isIdent(CSSName.BORDER_BOTTOM_STYLE, IdentValue.NONE) ?
+            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_BOTTOM_WIDTH, 0, ctx));
+        _left = ( style.isIdent(CSSName.BORDER_LEFT_STYLE, IdentValue.NONE) ?
+            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_LEFT_WIDTH, 0, ctx));
 
-        _topColor = style.asColor(CSSName.BORDER_COLOR_TOP);
-        _rightColor = style.asColor(CSSName.BORDER_COLOR_RIGHT);
-        _bottomColor = style.asColor(CSSName.BORDER_COLOR_BOTTOM);
-        _leftColor = style.asColor(CSSName.BORDER_COLOR_LEFT);
+        _topColor = style.asColor(CSSName.BORDER_TOP_COLOR);
+        _rightColor = style.asColor(CSSName.BORDER_RIGHT_COLOR);
+        _bottomColor = style.asColor(CSSName.BORDER_BOTTOM_COLOR);
+        _leftColor = style.asColor(CSSName.BORDER_LEFT_COLOR);
 
-        _topStyle = style.getIdent(CSSName.BORDER_STYLE_TOP);
-        _rightStyle = style.getIdent(CSSName.BORDER_STYLE_RIGHT);
-        _bottomStyle = style.getIdent(CSSName.BORDER_STYLE_BOTTOM);
-        _leftStyle = style.getIdent(CSSName.BORDER_STYLE_LEFT);
+        _topStyle = style.getIdent(CSSName.BORDER_TOP_STYLE);
+        _rightStyle = style.getIdent(CSSName.BORDER_RIGHT_STYLE);
+        _bottomStyle = style.getIdent(CSSName.BORDER_BOTTOM_STYLE);
+        _leftStyle = style.getIdent(CSSName.BORDER_LEFT_STYLE);
 
         this._key = deriveKey(style);
     }
@@ -230,7 +230,6 @@ public class BorderPropertySet extends RectPropertySet {
      * @param color the base color
      * @param dS    change in saturation (result will be clipped to range 0.0-1.0)
      * @param dB    change in brightness (result will be clipped to range 0.0-1.0)
-     * @return
      */
     private static Color modify(Color color, double dS, double dB) {
         float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);

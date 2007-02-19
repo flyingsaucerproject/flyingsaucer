@@ -47,10 +47,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName ONE_TO_FOUR[] = {
-        CSSName.BORDER_COLOR_TOP,
-        CSSName.BORDER_COLOR_RIGHT,
-        CSSName.BORDER_COLOR_BOTTOM,
-        CSSName.BORDER_COLOR_LEFT};
+        CSSName.BORDER_TOP_COLOR,
+        CSSName.BORDER_RIGHT_COLOR,
+        CSSName.BORDER_BOTTOM_COLOR,
+        CSSName.BORDER_LEFT_COLOR};
 
     /**
      * List of property names, in order, when expanding 2 prop to 4. Careful,
@@ -58,10 +58,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName TWO_TO_FOUR[] = {
-        CSSName.BORDER_COLOR_TOP,
-        CSSName.BORDER_COLOR_BOTTOM,
-        CSSName.BORDER_COLOR_RIGHT,
-        CSSName.BORDER_COLOR_LEFT};
+        CSSName.BORDER_TOP_COLOR,
+        CSSName.BORDER_BOTTOM_COLOR,
+        CSSName.BORDER_RIGHT_COLOR,
+        CSSName.BORDER_LEFT_COLOR};
 
     /**
      * List of property names, in order, when expanding 3 prop to 4. Careful,
@@ -69,10 +69,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName THREE_TO_FOUR[] = {
-        CSSName.BORDER_COLOR_TOP,
-        CSSName.BORDER_COLOR_RIGHT,
-        CSSName.BORDER_COLOR_LEFT,
-        CSSName.BORDER_COLOR_BOTTOM};
+        CSSName.BORDER_TOP_COLOR,
+        CSSName.BORDER_RIGHT_COLOR,
+        CSSName.BORDER_LEFT_COLOR,
+        CSSName.BORDER_BOTTOM_COLOR};
 
     /**
      * List of property names, in order, when expanding 4 prop to 4. Careful,
@@ -80,10 +80,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName FOUR_TO_FOUR[] = {
-        CSSName.BORDER_COLOR_TOP,
-        CSSName.BORDER_COLOR_RIGHT,
-        CSSName.BORDER_COLOR_BOTTOM,
-        CSSName.BORDER_COLOR_LEFT};
+        CSSName.BORDER_TOP_COLOR,
+        CSSName.BORDER_RIGHT_COLOR,
+        CSSName.BORDER_BOTTOM_COLOR,
+        CSSName.BORDER_LEFT_COLOR};
 
     /**
      * Default constructor; don't use, use instance() instead.
@@ -175,6 +175,9 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2007/02/19 14:53:34  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.6  2005/05/08 13:02:37  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *

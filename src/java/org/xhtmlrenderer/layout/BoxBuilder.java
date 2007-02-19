@@ -405,8 +405,7 @@ public class BoxBuilder {
             CalculatedStyle parentStyle, String peName, List children, ChildBoxInfo info) {
         CascadedStyle peStyle = c.getCss().getPseudoElementStyle(element, peName);
         if (peStyle != null && peStyle.hasProperty(CSSName.CONTENT)) {
-            String content = ((CSSPrimitiveValue) peStyle.propertyByName(CSSName.CONTENT)
-                    .getValue()).getStringValue();
+            String content = ((CSSPrimitiveValue) peStyle.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
             // FIXME Don't think this test is right. Even empty inline content
             // should force a line box to be created. Leave for now though.
             // TODO: need to handle hex values in CSS--\2192 is the Unicode for

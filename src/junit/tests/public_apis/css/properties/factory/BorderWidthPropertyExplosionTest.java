@@ -58,31 +58,31 @@ public class BorderWidthPropertyExplosionTest extends AbstractPropertyExplosionT
         Map testVals = null;
 
         testVals = new HashMap();
-        testVals.put(CSSName.BORDER_WIDTH_TOP, "1px");
-        testVals.put(CSSName.BORDER_WIDTH_BOTTOM, "1px");
-        testVals.put(CSSName.BORDER_WIDTH_RIGHT, "1px");
-        testVals.put(CSSName.BORDER_WIDTH_LEFT, "1px");
+        testVals.put(CSSName.BORDER_TOP_WIDTH, "1px");
+        testVals.put(CSSName.BORDER_BOTTOM_WIDTH, "1px");
+        testVals.put(CSSName.BORDER_RIGHT_WIDTH, "1px");
+        testVals.put(CSSName.BORDER_LEFT_WIDTH, "1px");
         temp.put( "p#OneToFour", new Object[]{"{ border-width: 1px; }", testVals} );
 
         testVals = new HashMap();
-        testVals.put(CSSName.BORDER_WIDTH_TOP, "1px");
-        testVals.put(CSSName.BORDER_WIDTH_BOTTOM, "1px");
-        testVals.put(CSSName.BORDER_WIDTH_RIGHT, "2px");
-        testVals.put(CSSName.BORDER_WIDTH_LEFT, "2px");
+        testVals.put(CSSName.BORDER_TOP_WIDTH, "1px");
+        testVals.put(CSSName.BORDER_BOTTOM_WIDTH, "1px");
+        testVals.put(CSSName.BORDER_RIGHT_WIDTH, "2px");
+        testVals.put(CSSName.BORDER_LEFT_WIDTH, "2px");
         temp.put( "p#TwoToFour", new Object[]{"{ border-width: 1px 2px; }", testVals} );
 
         testVals = new HashMap();
-        testVals.put(CSSName.BORDER_WIDTH_TOP, "1px");
-        testVals.put(CSSName.BORDER_WIDTH_RIGHT, "2px");
-        testVals.put(CSSName.BORDER_WIDTH_LEFT, "2px");
-        testVals.put(CSSName.BORDER_WIDTH_BOTTOM, "3px");
+        testVals.put(CSSName.BORDER_TOP_WIDTH, "1px");
+        testVals.put(CSSName.BORDER_RIGHT_WIDTH, "2px");
+        testVals.put(CSSName.BORDER_LEFT_WIDTH, "2px");
+        testVals.put(CSSName.BORDER_BOTTOM_WIDTH, "3px");
         temp.put( "p#ThreeToFour", new Object[]{"{ border-width: 1px 2px 3px; }", testVals} );
 
         testVals = new HashMap();
-        testVals.put(CSSName.BORDER_WIDTH_TOP, "1px");
-        testVals.put(CSSName.BORDER_WIDTH_RIGHT, "2px");
-        testVals.put(CSSName.BORDER_WIDTH_BOTTOM, "3px");
-        testVals.put(CSSName.BORDER_WIDTH_LEFT, "4px");
+        testVals.put(CSSName.BORDER_TOP_WIDTH, "1px");
+        testVals.put(CSSName.BORDER_RIGHT_WIDTH, "2px");
+        testVals.put(CSSName.BORDER_BOTTOM_WIDTH, "3px");
+        testVals.put(CSSName.BORDER_LEFT_WIDTH, "4px");
         temp.put( "p#FourToFour", new Object[]{"{ border-width: 1px 2px 3px 4px; }", testVals} );
         return temp;
     }
@@ -104,6 +104,9 @@ public class BorderWidthPropertyExplosionTest extends AbstractPropertyExplosionT
  *
 
  * $Log$
+ * Revision 1.3  2007/02/19 14:54:18  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.2  2005/01/24 14:32:30  pdoubleya
  * Cleaned imports, removed references to FSCSSTestCase.
  *

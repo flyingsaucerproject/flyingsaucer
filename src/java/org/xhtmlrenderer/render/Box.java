@@ -576,7 +576,7 @@ public abstract class Box implements Styleable {
     
     public Box find(CssContext cssCtx, int absX, int absY) {
         PaintingInfo pI = getPaintingInfo();
-        if (! pI.getAggregateBounds().contains(absX, absY)) {
+        if (pI != null && ! pI.getAggregateBounds().contains(absX, absY)) {
             return null;
         }
         
@@ -870,6 +870,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.122  2007/02/19 14:53:36  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.121  2007/02/11 23:10:59  peterbrant
  * Make sure bounds information is calculated for fixed layers
  *

@@ -24,6 +24,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.xhtmlrenderer.css.parser.property.BorderPropertyBuilders;
+import org.xhtmlrenderer.css.parser.property.BorderSpacingPropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.FontPropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.ListStylePropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.OneToFourPropertyBuilders;
+import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
+import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 
@@ -80,7 +87,10 @@ public final class CSSName implements Comparable {
     private final boolean propertyInherits;
     
     private FSDerivedValue initialDerivedValue;
-
+    
+    private final boolean implemented;
+    
+    private final PropertyBuilder builder;
 
     /**
      * Unique integer id for a CSSName.
@@ -90,17 +100,17 @@ public final class CSSName implements Comparable {
     /**
      * Map of all CSS properties
      */
-    private static CSSName[] ALL_PROPERTIES;
+    private static final CSSName[] ALL_PROPERTIES;
 
     /**
      * Map of all CSS properties
      */
-    private static Map ALL_PROPERTY_NAMES = new TreeMap();
+    private static final Map ALL_PROPERTY_NAMES = new TreeMap();
 
     /**
      * Map of all non-shorthand CSS properties
      */
-    private static Map ALL_PRIMITIVE_PROPERTY_NAMES = new TreeMap();
+    private static final Map ALL_PRIMITIVE_PROPERTY_NAMES = new TreeMap();
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -111,7 +121,8 @@ public final class CSSName implements Comparable {
                     "color",
                     PRIMITIVE,
                     "black",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.Color()
             );
 
     /**
@@ -122,7 +133,8 @@ public final class CSSName implements Comparable {
                     "background-color",
                     PRIMITIVE,
                     "transparent",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BackgroundColor()
             );
 
     /**
@@ -133,7 +145,8 @@ public final class CSSName implements Comparable {
                     "background-image",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BackgroundImage()
             );
 
     /**
@@ -144,7 +157,8 @@ public final class CSSName implements Comparable {
                     "background-repeat",
                     PRIMITIVE,
                     "repeat",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BackgroundRepeat()
             );
 
     /**
@@ -155,7 +169,8 @@ public final class CSSName implements Comparable {
                     "background-attachment",
                     PRIMITIVE,
                     "scroll",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BackgroundAttachment()
             );
 
     /**
@@ -166,7 +181,8 @@ public final class CSSName implements Comparable {
                     "background-position",
                     PRIMITIVE,
                     "0% 0%",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BackgroundPosition()
             );
 
     /**
@@ -177,7 +193,8 @@ public final class CSSName implements Comparable {
                     "border-collapse",
                     PRIMITIVE,
                     "separate",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.BorderCollapse()
             );
 
     /**
@@ -188,7 +205,8 @@ public final class CSSName implements Comparable {
                     "-fs-border-spacing-horizontal",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSBorderSpacingHorizontal()
             );
 
     /**
@@ -199,7 +217,8 @@ public final class CSSName implements Comparable {
                     "-fs-border-spacing-vertical",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSBorderSpacingVertical()
             );
 
     /**
@@ -210,7 +229,8 @@ public final class CSSName implements Comparable {
                     "-fs-flow-top",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSFlowTop()
             );
 
     /**
@@ -221,7 +241,8 @@ public final class CSSName implements Comparable {
                     "-fs-flow-right",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSFlowRight()
             );
 
     /**
@@ -232,7 +253,8 @@ public final class CSSName implements Comparable {
                     "-fs-flow-bottom",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSFlowBottom()
             );
 
     /**
@@ -243,7 +265,8 @@ public final class CSSName implements Comparable {
                     "-fs-flow-left",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSFlowLeft()
             );
 
     /**
@@ -254,7 +277,8 @@ public final class CSSName implements Comparable {
                     "-fs-move-to-flow",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSMoveToFlow()
             );
 
     /**
@@ -265,7 +289,8 @@ public final class CSSName implements Comparable {
                     "-fs-page-width",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSPageWidth()
             );
 
     /**
@@ -276,7 +301,8 @@ public final class CSSName implements Comparable {
                     "-fs-page-height",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSPageHeight()
             );
 
     /**
@@ -287,7 +313,8 @@ public final class CSSName implements Comparable {
                     "-fs-page-orientation",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSPageOrientation()
             );
 
     /**
@@ -298,7 +325,8 @@ public final class CSSName implements Comparable {
                     "-fs-text-decoration-extent",
                     PRIMITIVE,
                     "line",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSTextDecorationExtent()
             );
 
     /**
@@ -309,7 +337,8 @@ public final class CSSName implements Comparable {
                     "bottom",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Bottom()
             );
 
     /**
@@ -320,7 +349,8 @@ public final class CSSName implements Comparable {
                     "caption-side",
                     PRIMITIVE,
                     "top",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.Top()
             );
 
     /**
@@ -331,7 +361,8 @@ public final class CSSName implements Comparable {
                     "clear",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Clear()
             );
 
     /**
@@ -342,7 +373,9 @@ public final class CSSName implements Comparable {
                     "clip",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    false,
+                    null
             );
 
     /**
@@ -353,7 +386,8 @@ public final class CSSName implements Comparable {
                     "content",
                     PRIMITIVE,
                     "normal",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    null
             );
 
     /**
@@ -364,7 +398,9 @@ public final class CSSName implements Comparable {
                     "counter-increment",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    false,
+                    null
             );
 
     /**
@@ -375,7 +411,9 @@ public final class CSSName implements Comparable {
                     "counter-reset",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    false,
+                    null
             );
 
     /**
@@ -386,7 +424,9 @@ public final class CSSName implements Comparable {
                     "cursor",
                     PRIMITIVE,
                     "auto",
-                    INHERITS
+                    INHERITS,
+                    false,
+                    null
             );
 
     /**
@@ -397,7 +437,9 @@ public final class CSSName implements Comparable {
                     "direction",
                     PRIMITIVE,
                     "ltr",
-                    INHERITS
+                    INHERITS,
+                    false,
+                    null
             );
 
     /**
@@ -408,7 +450,8 @@ public final class CSSName implements Comparable {
                     "display",
                     PRIMITIVE,
                     "inline",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Display()
             );
 
     /**
@@ -419,7 +462,8 @@ public final class CSSName implements Comparable {
                     "empty-cells",
                     PRIMITIVE,
                     "show",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.EmptyCells()
             );
 
     /**
@@ -430,7 +474,8 @@ public final class CSSName implements Comparable {
                     "float",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Float()
             );
 
     /**
@@ -441,7 +486,8 @@ public final class CSSName implements Comparable {
                     "font-style",
                     PRIMITIVE,
                     "normal",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.FontStyle()
             );
 
     /**
@@ -452,7 +498,8 @@ public final class CSSName implements Comparable {
                     "font-variant",
                     PRIMITIVE,
                     "normal",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.FontVariant()
             );
 
     /**
@@ -463,7 +510,8 @@ public final class CSSName implements Comparable {
                     "font-weight",
                     PRIMITIVE,
                     "normal",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.FontWeight()
             );
 
     /**
@@ -474,7 +522,8 @@ public final class CSSName implements Comparable {
                     "font-size",
                     PRIMITIVE,
                     "medium",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.FontSize()
             );
 
     /**
@@ -485,7 +534,8 @@ public final class CSSName implements Comparable {
                     "line-height",
                     PRIMITIVE,
                     "normal",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.LineHeight()
             );
 
     /**
@@ -497,31 +547,8 @@ public final class CSSName implements Comparable {
                     "font-family",
                     PRIMITIVE,
                     "\"Times New Roman\"",
-                    INHERITS
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     * CLEAN: not in the spec
-     */
-    public final static CSSName FONT_SIZE_ADJUST =
-            addProperty(
-                    "font-size-adjust",
-                    PRIMITIVE,
-                    "none",
-                    INHERITS
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     * CLEAN: not in the spec
-     */
-    public final static CSSName FONT_STRETCH =
-            addProperty(
-                    "font-stretch",
-                    PRIMITIVE,
-                    "normal",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.FontFamily()
             );
 
     /**
@@ -532,7 +559,8 @@ public final class CSSName implements Comparable {
                     "-fs-table-cell-colspan",
                     PRIMITIVE,
                     "1",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSTableCellColspan()
             );
 
     /**
@@ -543,7 +571,8 @@ public final class CSSName implements Comparable {
                     "-fs-table-cell-rowspan",
                     PRIMITIVE,
                     "1",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSTableCellRowspan()
             );
 
     /**
@@ -554,7 +583,8 @@ public final class CSSName implements Comparable {
                     "height",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Height()
             );
 
     /**
@@ -565,7 +595,8 @@ public final class CSSName implements Comparable {
                     "left",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Left()
             );
 
     /**
@@ -576,7 +607,9 @@ public final class CSSName implements Comparable {
                     "letter-spacing",
                     PRIMITIVE,
                     "normal",
-                    INHERITS
+                    INHERITS,
+                    false,
+                    null
             );
 
     /**
@@ -587,7 +620,8 @@ public final class CSSName implements Comparable {
                     "list-style-type",
                     PRIMITIVE,
                     "disc",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.ListStyleType()
             );
 
     /**
@@ -598,7 +632,8 @@ public final class CSSName implements Comparable {
                     "list-style-position",
                     PRIMITIVE,
                     "outside",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.ListStylePosition()
             );
 
     /**
@@ -609,31 +644,8 @@ public final class CSSName implements Comparable {
                     "list-style-image",
                     PRIMITIVE,
                     "none",
-                    INHERITS
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     * CLEAN: not in spec
-     */
-    public final static CSSName MARKER_OFFSET =
-            addProperty(
-                    "marker-offset",
-                    PRIMITIVE,
-                    "auto",
-                    NOT_INHERITED
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     * CLEAN: not in spec
-     */
-    public final static CSSName MARKS =
-            addProperty(
-                    "marks",
-                    PRIMITIVE,
-                    "none",
-                    NOT_INHERITED
+                    INHERITS,
+                    new PrimitivePropertyBuilders.ListStyleImage()
             );
 
     /**
@@ -644,7 +656,8 @@ public final class CSSName implements Comparable {
                     "max-height",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.MaxHeight()
             );
 
     /**
@@ -655,7 +668,8 @@ public final class CSSName implements Comparable {
                     "max-width",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.MaxWidth()
             );
 
     /**
@@ -666,7 +680,8 @@ public final class CSSName implements Comparable {
                     "min-height",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.MinHeight()
             );
 
     /**
@@ -678,7 +693,8 @@ public final class CSSName implements Comparable {
                     "min-width",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.MinWidth()
             );
 
     /**
@@ -689,7 +705,9 @@ public final class CSSName implements Comparable {
                     "orphans",
                     PRIMITIVE,
                     "2",
-                    INHERITS
+                    INHERITS,
+                    false,
+                    null
             );
 
     /**
@@ -700,7 +718,9 @@ public final class CSSName implements Comparable {
                     "outline-color",
                     PRIMITIVE,
                     /* "invert", */ "black",  // XXX Wrong (but doesn't matter for now)
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    false,
+                    null
             );
 
     /**
@@ -711,7 +731,9 @@ public final class CSSName implements Comparable {
                     "outline-style",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    false,
+                    null
             );
 
     /**
@@ -722,7 +744,9 @@ public final class CSSName implements Comparable {
                     "outline-width",
                     PRIMITIVE,
                     "medium",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    false,
+                    null
             );
 
     /**
@@ -733,19 +757,9 @@ public final class CSSName implements Comparable {
                     "overflow",
                     PRIMITIVE,
                     "visible",
-                    NOT_INHERITED
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     * CLEAN: not in spec
-     */
-    public final static CSSName PAGE =
-            addProperty(
-                    "page",
-                    PRIMITIVE,
-                    "auto",
-                    INHERITS
+                    NOT_INHERITED,
+                    false,
+                    null
             );
 
     /**
@@ -756,7 +770,8 @@ public final class CSSName implements Comparable {
                     "page-break-after",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.PageBreakAfter()
             );
 
     /**
@@ -767,7 +782,8 @@ public final class CSSName implements Comparable {
                     "page-break-before",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.PageBreakBefore()
             );
 
     /**
@@ -778,7 +794,8 @@ public final class CSSName implements Comparable {
                     "page-break-inside",
                     PRIMITIVE,
                     "auto",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.PageBreakInside()
             );
 
     /**
@@ -789,7 +806,8 @@ public final class CSSName implements Comparable {
                     "position",
                     PRIMITIVE,
                     "static",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Position()
             );
 
     /**
@@ -801,7 +819,9 @@ public final class CSSName implements Comparable {
                     "quotes",
                     PRIMITIVE,
                     "none",
-                    INHERITS
+                    INHERITS,
+                    false,
+                    null
             );
 
     /**
@@ -812,7 +832,8 @@ public final class CSSName implements Comparable {
                     "right",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Right()
             );
 
     /**
@@ -823,7 +844,8 @@ public final class CSSName implements Comparable {
                     "table-layout",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.TableLayout()
             );
 
     /**
@@ -835,7 +857,8 @@ public final class CSSName implements Comparable {
                     "text-align",
                     PRIMITIVE,
                     "left",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.TextAlign()
             );
 
     /**
@@ -846,7 +869,8 @@ public final class CSSName implements Comparable {
                     "text-decoration",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.TextDecoration()
             );
 
     /**
@@ -857,19 +881,8 @@ public final class CSSName implements Comparable {
                     "text-indent",
                     PRIMITIVE,
                     "0",
-                    INHERITS
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     * CLEAN: not in spec
-     */
-    public final static CSSName TEXT_SHADOW =
-            addProperty(
-                    "text-shadow",
-                    PRIMITIVE,
-                    "none",
-                    NOT_INHERITED
+                    INHERITS,
+                    new PrimitivePropertyBuilders.TextIndent()
             );
 
     /**
@@ -880,7 +893,8 @@ public final class CSSName implements Comparable {
                     "text-transform",
                     PRIMITIVE,
                     "none",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.TextTransform()
             );
 
     /**
@@ -891,7 +905,8 @@ public final class CSSName implements Comparable {
                     "top",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Top()
             );
 
     /**
@@ -902,7 +917,9 @@ public final class CSSName implements Comparable {
                     "unicode-bidi",
                     PRIMITIVE,
                     "normal",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    false,
+                    null
             );
 
     /**
@@ -913,7 +930,8 @@ public final class CSSName implements Comparable {
                     "vertical-align",
                     PRIMITIVE,
                     "baseline",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.VerticalAlign()
             );
 
     /**
@@ -924,7 +942,8 @@ public final class CSSName implements Comparable {
                     "visibility",
                     PRIMITIVE,
                     "visible",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.Visibility()
             );
 
     /**
@@ -935,7 +954,8 @@ public final class CSSName implements Comparable {
                     "white-space",
                     PRIMITIVE,
                     "normal",
-                    INHERITS
+                    INHERITS,
+                    new PrimitivePropertyBuilders.WhiteSpace()
             );
 
     /**
@@ -946,7 +966,9 @@ public final class CSSName implements Comparable {
                     "widows",
                     PRIMITIVE,
                     "2",
-                    INHERITS
+                    INHERITS,
+                    false,
+                    null
             );
 
     /**
@@ -957,7 +979,8 @@ public final class CSSName implements Comparable {
                     "width",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Width()
             );
 
     /**
@@ -968,7 +991,9 @@ public final class CSSName implements Comparable {
                     "word-spacing",
                     PRIMITIVE,
                     "normal",
-                    INHERITS
+                    INHERITS,
+                    false,
+                    null
             );
 
     /**
@@ -979,130 +1004,143 @@ public final class CSSName implements Comparable {
                     "z-index",
                     PRIMITIVE,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.ZIndex()
             );
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLOR_TOP =
+    public final static CSSName BORDER_TOP_COLOR =
             addProperty(
                     "border-top-color",
                     PRIMITIVE,
                     "=color",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderTopColor()
             );
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLOR_RIGHT =
+    public final static CSSName BORDER_RIGHT_COLOR =
             addProperty(
                     "border-right-color",
                     PRIMITIVE,
                     "=color",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderLeftColor()
             );
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLOR_BOTTOM =
+    public final static CSSName BORDER_BOTTOM_COLOR =
             addProperty(
                     "border-bottom-color",
                     PRIMITIVE,
                     "=color",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderBottomColor()
             );
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLOR_LEFT =
+    public final static CSSName BORDER_LEFT_COLOR =
             addProperty(
                     "border-left-color",
                     PRIMITIVE,
                     "=color",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderLeftColor()
             );
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_STYLE_TOP =
+    public final static CSSName BORDER_TOP_STYLE =
             addProperty(
                     "border-top-style",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderTopStyle()
             );
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_STYLE_RIGHT =
+    public final static CSSName BORDER_RIGHT_STYLE =
             addProperty(
                     "border-right-style",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderRightStyle()
             );
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_STYLE_BOTTOM =
+    public final static CSSName BORDER_BOTTOM_STYLE =
             addProperty(
                     "border-bottom-style",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderBottomStyle()
             );
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_STYLE_LEFT =
+    public final static CSSName BORDER_LEFT_STYLE =
             addProperty(
                     "border-left-style",
                     PRIMITIVE,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderLeftStyle()
             );
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_WIDTH_TOP =
+    public final static CSSName BORDER_TOP_WIDTH =
             addProperty(
                     "border-top-width",
                     PRIMITIVE,
                     "medium",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderTopWidth()
             );
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_WIDTH_RIGHT =
+    public final static CSSName BORDER_RIGHT_WIDTH =
             addProperty(
                     "border-right-width",
                     PRIMITIVE,
                     "medium",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderRightWidth()
             );
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_WIDTH_BOTTOM =
+    public final static CSSName BORDER_BOTTOM_WIDTH =
             addProperty(
                     "border-bottom-width",
                     PRIMITIVE,
                     "medium",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderBottomWidth()
             );
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_WIDTH_LEFT =
+    public final static CSSName BORDER_LEFT_WIDTH =
             addProperty(
                     "border-left-width",
                     PRIMITIVE,
                     "medium",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderLeftWidth()
             );
 
     /**
@@ -1113,7 +1151,8 @@ public final class CSSName implements Comparable {
                     "margin-top",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.MarginTop()
             );
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1123,7 +1162,8 @@ public final class CSSName implements Comparable {
                     "margin-right",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.MarginRight()
             );
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1133,7 +1173,8 @@ public final class CSSName implements Comparable {
                     "margin-bottom",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.MarginBottom()
             );
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1143,7 +1184,8 @@ public final class CSSName implements Comparable {
                     "margin-left",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.MarginLeft()
             );
 
     /**
@@ -1154,7 +1196,8 @@ public final class CSSName implements Comparable {
                     "padding-top",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.PaddingTop()
             );
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1164,7 +1207,8 @@ public final class CSSName implements Comparable {
                     "padding-right",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.PaddingRight()
             );
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1174,7 +1218,8 @@ public final class CSSName implements Comparable {
                     "padding-bottom",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.PaddingBottom()
             );
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1184,7 +1229,8 @@ public final class CSSName implements Comparable {
                     "padding-left",
                     PRIMITIVE,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.PaddingLeft()
             );
 
     /**
@@ -1195,7 +1241,8 @@ public final class CSSName implements Comparable {
                     "background",
                     SHORTHAND,
                     "transparent none repeat scroll 0% 0%",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    null
             );
 
     /**
@@ -1206,7 +1253,8 @@ public final class CSSName implements Comparable {
                     "border-width",
                     SHORTHAND,
                     "medium",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new OneToFourPropertyBuilders.BorderWidth()
             );
 
     /**
@@ -1217,7 +1265,8 @@ public final class CSSName implements Comparable {
                     "border-style",
                     SHORTHAND,
                     "none",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new OneToFourPropertyBuilders.BorderStyle()
             );
 
     /**
@@ -1228,7 +1277,8 @@ public final class CSSName implements Comparable {
                     "border",
                     SHORTHAND,
                     "medium none black",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new BorderPropertyBuilders.Border()
             );
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1238,7 +1288,8 @@ public final class CSSName implements Comparable {
                     "border-top",
                     SHORTHAND,
                     "medium none black",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new BorderPropertyBuilders.BorderTop()
             );
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1248,7 +1299,8 @@ public final class CSSName implements Comparable {
                     "border-right",
                     SHORTHAND,
                     "medium none black",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new BorderPropertyBuilders.BorderRight()
             );
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1258,7 +1310,8 @@ public final class CSSName implements Comparable {
                     "border-bottom",
                     SHORTHAND,
                     "medium none black",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new BorderPropertyBuilders.BorderBottom()
             );
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1268,7 +1321,8 @@ public final class CSSName implements Comparable {
                     "border-left",
                     SHORTHAND,
                     "medium none black",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new BorderPropertyBuilders.BorderLeft()
             );
 
     /**
@@ -1279,7 +1333,8 @@ public final class CSSName implements Comparable {
                     "border-color",
                     SHORTHAND,
                     "black",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new OneToFourPropertyBuilders.BorderColor()
             );
 
     /**
@@ -1290,7 +1345,8 @@ public final class CSSName implements Comparable {
                     "border-spacing",
                     SHORTHAND,
                     "0",
-                    INHERITS
+                    INHERITS,
+                    new BorderSpacingPropertyBuilder()
             );
 
     /**
@@ -1301,7 +1357,8 @@ public final class CSSName implements Comparable {
                     "font",
                     SHORTHAND,
                     "",
-                    INHERITS
+                    INHERITS,
+                    new FontPropertyBuilder()
             );
 
     /**
@@ -1312,7 +1369,8 @@ public final class CSSName implements Comparable {
                     "list-style",
                     SHORTHAND,
                     "disc outside none",
-                    INHERITS
+                    INHERITS,
+                    new ListStylePropertyBuilder()
             );
 
     /**
@@ -1323,7 +1381,8 @@ public final class CSSName implements Comparable {
                     "margin",
                     SHORTHAND,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new OneToFourPropertyBuilders.Margin()
             );
 
     /**
@@ -1334,7 +1393,9 @@ public final class CSSName implements Comparable {
                     "outline",
                     SHORTHAND,
                     "invert none medium",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    false,
+                    null
             );
 
     /**
@@ -1345,7 +1406,8 @@ public final class CSSName implements Comparable {
                     "padding",
                     SHORTHAND,
                     "0",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    new OneToFourPropertyBuilders.Padding()
             );
 
 
@@ -1357,7 +1419,8 @@ public final class CSSName implements Comparable {
                     "size",
                     SHORTHAND,
                     "auto",
-                    NOT_INHERITED
+                    NOT_INHERITED,
+                    null
             );
 
     public final static CSSName[] MARGIN_SIDE_PROPERTIES =
@@ -1378,28 +1441,28 @@ public final class CSSName implements Comparable {
 
     public final static CSSName[] BORDER_SIDE_PROPERTIES =
             new CSSName[]{
-                    CSSName.BORDER_WIDTH_TOP,
-                    CSSName.BORDER_WIDTH_RIGHT,
-                    CSSName.BORDER_WIDTH_BOTTOM,
-                    CSSName.BORDER_WIDTH_LEFT
+                    CSSName.BORDER_TOP_WIDTH,
+                    CSSName.BORDER_RIGHT_WIDTH,
+                    CSSName.BORDER_BOTTOM_WIDTH,
+                    CSSName.BORDER_LEFT_WIDTH
             };
 
     public final static CSSName[] BORDER_STYLE_PROPERTIES =
             new CSSName[]{
-                    CSSName.BORDER_STYLE_TOP,
-                    CSSName.BORDER_STYLE_RIGHT,
-                    CSSName.BORDER_STYLE_BOTTOM,
-                    CSSName.BORDER_STYLE_LEFT
+                    CSSName.BORDER_TOP_STYLE,
+                    CSSName.BORDER_RIGHT_STYLE,
+                    CSSName.BORDER_BOTTOM_STYLE,
+                    CSSName.BORDER_LEFT_STYLE
             };
 
     public final static CSSName[] BORDER_COLOR_PROPERTIES =
             new CSSName[]{
-                    CSSName.BORDER_COLOR_TOP,
-                    CSSName.BORDER_COLOR_RIGHT,
-                    CSSName.BORDER_COLOR_BOTTOM,
-                    CSSName.BORDER_COLOR_LEFT
+                    CSSName.BORDER_TOP_COLOR,
+                    CSSName.BORDER_RIGHT_COLOR,
+                    CSSName.BORDER_BOTTOM_COLOR,
+                    CSSName.BORDER_LEFT_COLOR
             };
-
+    
     /**
      * Constructor for the CSSName object
      *
@@ -1407,11 +1470,15 @@ public final class CSSName implements Comparable {
      * @param initialValue
      * @param inherits
      */
-    private CSSName(String propName, String initialValue, boolean inherits, Object type) {
+    private CSSName(
+            String propName, String initialValue, boolean inherits, 
+            Object type, boolean implemented, PropertyBuilder builder) {
         this.propName = propName;
         this.FS_ID = CSSName.maxAssigned++;
         this.initialValue = initialValue;
         this.propertyInherits = inherits;
+        this.implemented = implemented;
+        this.builder = builder;
     }
 
     /**
@@ -1488,6 +1555,14 @@ public final class CSSName implements Comparable {
     public final static FSDerivedValue initialDerivedValue(CSSName cssName) {
         return cssName.initialDerivedValue;
     }
+    
+    public final static boolean isImplemented(CSSName cssName) {
+        return cssName.implemented;
+    }
+    
+    public final static PropertyBuilder getPropertyBuilder(CSSName cssName) {
+        return cssName.builder;
+    }
 
     /**
      * Gets the byPropertyName attribute of the CSSName class
@@ -1503,6 +1578,16 @@ public final class CSSName implements Comparable {
     public static CSSName getByID(int id) {
         return ALL_PROPERTIES[id];
     }
+    
+    private final static synchronized CSSName addProperty(
+            String propName,
+            Object type,
+            String initialValue, 
+            Object inherit,
+            PropertyBuilder builder
+    ) {
+        return addProperty(propName, type, initialValue, inherit, true, builder);
+    }
 
     /**
      * Adds a feature to the Property attribute of the CSSName class
@@ -1516,9 +1601,13 @@ public final class CSSName implements Comparable {
     private final static synchronized CSSName addProperty(
             String propName,
             Object type,
-            String initialValue, Object inherit
+            String initialValue, 
+            Object inherit,
+            boolean implemented,
+            PropertyBuilder builder
     ) {
-        CSSName cssName = new CSSName(propName, initialValue, (inherit == INHERITS), type);
+        CSSName cssName = new CSSName(
+                propName, initialValue, (inherit == INHERITS), type, implemented, builder);
 
         ALL_PROPERTY_NAMES.put(propName, cssName);
 
@@ -1555,6 +1644,16 @@ public final class CSSName implements Comparable {
             }
         }
     }
+    
+    static {
+        Iterator iter = ALL_PROPERTY_NAMES.values().iterator();
+        while (iter.hasNext()) {
+            CSSName name = (CSSName) iter.next();
+            if (name.implemented && name.builder == null) {
+                System.out.println("STILL NEED: " + name);
+            }
+        }
+    }
 
     //Assumed to be consistent with equals because CSSName is in essence an enum
     public int compareTo(Object object) {
@@ -1573,6 +1672,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2007/02/19 14:53:36  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.25  2007/02/07 16:33:35  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

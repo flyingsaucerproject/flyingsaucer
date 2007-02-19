@@ -23,7 +23,6 @@ import java.io.InputStream;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 
@@ -55,17 +54,10 @@ public interface NamespaceHandler {
 
     /**
      * @param doc
-     * @return all CSS styles (type="text/css") defined inline in this
-     *         document
-     */
-    public InlineStyleInfo[] getInlineStyle(Document doc);
-
-    /**
-     * @param doc
      * @return all links to CSS stylesheets (type="text/css") in this
      *         document
      */
-    public StylesheetInfo[] getStylesheetLinks(Document doc);
+    public StylesheetInfo[] getStylesheets(Document doc);
 
     /**
      * may return null. Required to return null if attribute does not exist and

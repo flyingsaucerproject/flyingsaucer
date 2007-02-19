@@ -34,12 +34,12 @@ package org.xhtmlrenderer.css.parser;
     }
 %}
 
-h		      = [0-9a-f]
-nonascii      = [\200-\377]
+h		      = [0-9a-fA-F]
+nonascii      = [^\000-\177]
 unicode       = \\{h}{1,6}(\r\n|[ \t\r\n\f])?
-escape        = {unicode}|\\[^\r\n\f0-9a-f]
-nmstart       = [_a-z]|{nonascii}|{escape}
-nmchar        = [_a-z0-9-]|{nonascii}|{escape}
+escape        = {unicode}|\\[^\r\n\f0-9a-fA-F]
+nmstart       = [_a-zA-Z]|{nonascii}|{escape}
+nmchar        = [_a-zA-Z0-9-]|{nonascii}|{escape}
 string1       = \"([^\n\r\f\"\\]|\\{nl}|{escape})*\"
 string2       = \'([^\n\r\f\'\\]|\\{nl}|{escape})*\'
 invalid1      = \"([^\n\r\f\"\\]|\\{nl}|{escape})*
@@ -106,12 +106,12 @@ Z             = z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 
 {num}{E}{M}		{return Token.TK_EMS;}
 {num}{E}{X}		{return Token.TK_EXS;}
-{num}{P}{X}		{return Token.TK_LENGTH;}
-{num}{C}{M}		{return Token.TK_LENGTH;}
-{num}{M}{M}		{return Token.TK_LENGTH;}
-{num}{I}{N}		{return Token.TK_LENGTH;}
-{num}{P}{T}		{return Token.TK_LENGTH;}
-{num}{P}{C}		{return Token.TK_LENGTH;}
+{num}{P}{X}		{return Token.TK_PX;}
+{num}{C}{M}		{return Token.TK_CM;}
+{num}{M}{M}		{return Token.TK_MM;}
+{num}{I}{N}		{return Token.TK_IN;}
+{num}{P}{T}		{return Token.TK_PT;}
+{num}{P}{C}		{return Token.TK_PC;}
 {num}{D}{E}{G}		{return Token.TK_ANGLE;}
 {num}{R}{A}{D}		{return Token.TK_ANGLE;}
 {num}{G}{R}{A}{D}	{return Token.TK_ANGLE;}

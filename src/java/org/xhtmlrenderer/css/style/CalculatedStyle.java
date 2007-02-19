@@ -33,6 +33,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
@@ -484,6 +485,10 @@ public class CalculatedStyle {
     }
 
     private FSDerivedValue deriveValue(CSSName cssName, org.w3c.dom.css.CSSPrimitiveValue value) {
+        if (value instanceof PropertyValue) {
+            return DerivedValueFactory.newDerivedValue(this, cssName, (PropertyValue)value);
+        }
+        
         // Start assuming our computed value is the same as the specified value
         RGBColor rgb = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR ? value.getRGBColorValue() : null);
         String s = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ? value.getStringValue() : null);
@@ -1049,6 +1054,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.75  2007/02/19 14:53:43  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.74  2007/02/07 16:33:28  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

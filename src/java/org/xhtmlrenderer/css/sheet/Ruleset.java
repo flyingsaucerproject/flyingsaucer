@@ -19,17 +19,19 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
-import com.steadystate.css.dom.CSSStyleRuleImpl;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
 
 import org.xhtmlrenderer.context.CSSPageRuleAdapter;
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xhtmlrenderer.css.newmatch.Selector;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
+import com.steadystate.css.dom.CSSStyleRuleImpl;
 
 
 /**
@@ -37,14 +39,7 @@ import java.util.logging.Level;
  * @author Patrick Wright
  */
 public class Ruleset {
-    /**
-     * Description of the Field
-     */
     private int _origin;
-
-    /**
-     * Description of the Field
-     */
     private java.util.List _props;
 
     /**
@@ -54,30 +49,9 @@ public class Ruleset {
     private org.w3c.css.sac.SelectorList sacSelectorList;
 
     private String _selectorText;
+    
+    private List _fsSelectors = new ArrayList();
 
-    /**
-     * Convenience parser for selector text
-     */
-    private final static com.steadystate.css.parser.CSSOMParser CSOM_PARSER;
-
-    static {
-        try {
-            Object obj = Class.forName("com.steadystate.css.parser.SACParser").newInstance();
-            org.w3c.css.sac.Parser psr = (org.w3c.css.sac.Parser) obj;
-            CSOM_PARSER = new com.steadystate.css.parser.CSSOMParser(psr);
-        } catch (Exception ex) {
-            throw new XRRuntimeException("Bad!  Couldn't load the CSS parser. Everything after this will fail.", ex);
-        }
-        //CSOM_PARSER = new com.steadystate.css.parser.CSSOMParser();
-    }
-
-
-    /**
-     * Creates a new instance of Ruleset
-     *
-     * @param rule PARAM
-     * @param orig PARAM
-     */
     public Ruleset(org.w3c.dom.css.CSSStyleRule rule, int orig) {
         this(orig);
         this._selectorText = rule.getSelectorText();
@@ -100,14 +74,10 @@ public class Ruleset {
         this._props.addAll(propertyDeclarations);
     }
 
-    /**
-     * Default constructor
-     *
-     * @param orig PARAM
-     */
-    private Ruleset(int orig) {
+    public Ruleset(int orig) {
         _origin = orig;
-        _props = new java.util.LinkedList();
+        _props = new LinkedList();
+        _fsSelectors = new LinkedList();
     }
 
     /**
@@ -194,6 +164,30 @@ public class Ruleset {
     public String getSelectorText() {
         return _selectorText;
     }
+    
+    public void setSelectorText(String selectorText) {
+        _selectorText = selectorText;
+    }
+    
+    public void addProperty(PropertyDeclaration decl) {
+        _props.add(decl);
+    }
+    
+    public void addAllProperties(List props) {
+        _props.addAll(props);
+    }
+    
+    public void addFSSelector(Selector selector) {
+        _fsSelectors.add(selector);
+    }
+    
+    public List getFSSelectors() {
+        return _fsSelectors;
+    }
+    
+    public int getOrigin() {
+        return _origin;
+    }
 
 }// end class
 
@@ -201,6 +195,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2007/02/19 14:53:38  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.14  2006/07/26 18:05:05  pdoubleya
  * Clean exception throw.
  *

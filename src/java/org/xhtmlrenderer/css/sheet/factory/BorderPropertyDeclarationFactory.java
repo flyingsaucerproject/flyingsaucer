@@ -115,24 +115,24 @@ public class BorderPropertyDeclarationFactory extends AbstractPropertyDeclaratio
 
     static {
         WIDTH_PRP = new CSSName[]{
-                CSSName.BORDER_WIDTH_TOP,
-                CSSName.BORDER_WIDTH_RIGHT,
-                CSSName.BORDER_WIDTH_BOTTOM,
-                CSSName.BORDER_WIDTH_LEFT
+                CSSName.BORDER_TOP_WIDTH,
+                CSSName.BORDER_RIGHT_WIDTH,
+                CSSName.BORDER_BOTTOM_WIDTH,
+                CSSName.BORDER_LEFT_WIDTH
                 };
 
         STYLE_PRP = new CSSName[]{
-                CSSName.BORDER_STYLE_TOP,
-                CSSName.BORDER_STYLE_RIGHT,
-                CSSName.BORDER_STYLE_BOTTOM,
-                CSSName.BORDER_STYLE_LEFT
+                CSSName.BORDER_TOP_STYLE,
+                CSSName.BORDER_RIGHT_STYLE,
+                CSSName.BORDER_BOTTOM_STYLE,
+                CSSName.BORDER_LEFT_STYLE
                 };
 
         COLOR_PRP = new CSSName[]{
-                CSSName.BORDER_COLOR_TOP,
-                CSSName.BORDER_COLOR_RIGHT,
-                CSSName.BORDER_COLOR_BOTTOM,
-                CSSName.BORDER_COLOR_LEFT
+                CSSName.BORDER_TOP_COLOR,
+                CSSName.BORDER_RIGHT_COLOR,
+                CSSName.BORDER_BOTTOM_COLOR,
+                CSSName.BORDER_LEFT_COLOR
                 };
 
         WIDTH_IDX = 0;
@@ -150,6 +150,9 @@ public class BorderPropertyDeclarationFactory extends AbstractPropertyDeclaratio
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2007/02/19 14:53:34  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.4  2005/01/29 20:24:25  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

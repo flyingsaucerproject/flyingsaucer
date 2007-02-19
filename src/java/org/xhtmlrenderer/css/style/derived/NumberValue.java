@@ -19,9 +19,9 @@
 package org.xhtmlrenderer.css.style.derived;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
-import org.xhtmlrenderer.css.style.FSDerivedValue;
 
 /**
  * User: tobe
@@ -34,6 +34,11 @@ public class NumberValue extends DerivedValue {
     public NumberValue(CSSName cssName, short cssSACUnitType, String cssText, String cssStringValue) {
         super(cssName, cssSACUnitType, cssText, cssStringValue);
         _floatValue = new Float(getStringValue()).floatValue();
+    }
+    
+    public NumberValue(CSSName cssName, PropertyValue value) {
+        super(cssName, value.getPrimitiveType(), value.getCssText(), value.getCssText());
+        _floatValue = value.getFloatValue();
     }
 
     public float asFloat() {

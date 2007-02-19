@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.ValueConstants;
+import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
@@ -91,6 +92,14 @@ public class LengthValue extends DerivedValue {
         super(name, cssSACUnitType, cssText, cssStringValue);
         _style = style;
         pullLengthValueParts(name);
+    }
+    
+    public LengthValue(CalculatedStyle style, CSSName name, PropertyValue value) {
+        super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
+        
+        _style = style;
+        _lengthAsFloat = value.getFloatValue();
+        _lengthPrimitiveType = value.getPrimitiveType();
     }
 
     public float asFloat() {
@@ -231,6 +240,9 @@ public class LengthValue extends DerivedValue {
                 }
                 absVal = (relVal / 100F) * baseValue;
 
+                break;
+            case CSSPrimitiveValue.CSS_NUMBER:
+                absVal = relVal;
                 break;
             default:
                 // nothing to do, we only convert those listed above

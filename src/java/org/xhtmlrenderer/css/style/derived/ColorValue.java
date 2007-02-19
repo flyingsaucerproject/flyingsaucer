@@ -5,8 +5,8 @@ import java.awt.Color;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.RGBColor;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.DerivedValue;
-import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.util.ConversionUtil;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -32,6 +32,17 @@ public class ColorValue extends DerivedValue {
     ) {
         super(name, cssSACUnitType, cssText, cssStringValue);
         _derivedColor = deriveColor(name, rgbColor);
+    }
+    
+    public ColorValue(CSSName name, PropertyValue value) {
+        super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
+        
+        short type = value.getPrimitiveType();
+        if (type == CSSPrimitiveValue.CSS_IDENT) {
+            _derivedColor = COLOR_TRANSPARENT;  // Only possibility
+        } else {
+            _derivedColor = value.getFSRGBColor().toAWTColor();
+        }
     }
 
     /**

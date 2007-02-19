@@ -43,10 +43,10 @@ public class BorderStylePropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName ONE_TO_FOUR[] = {
-            CSSName.BORDER_STYLE_TOP,
-            CSSName.BORDER_STYLE_RIGHT,
-            CSSName.BORDER_STYLE_BOTTOM,
-            CSSName.BORDER_STYLE_LEFT};
+            CSSName.BORDER_TOP_STYLE,
+            CSSName.BORDER_RIGHT_STYLE,
+            CSSName.BORDER_BOTTOM_STYLE,
+            CSSName.BORDER_LEFT_STYLE};
 
     /**
      * List of property names, in order, when expanding 2 prop to 4. Careful,
@@ -54,10 +54,10 @@ public class BorderStylePropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName TWO_TO_FOUR[] = {
-            CSSName.BORDER_STYLE_TOP,
-            CSSName.BORDER_STYLE_BOTTOM,
-            CSSName.BORDER_STYLE_RIGHT,
-            CSSName.BORDER_STYLE_LEFT};
+            CSSName.BORDER_TOP_STYLE,
+            CSSName.BORDER_BOTTOM_STYLE,
+            CSSName.BORDER_RIGHT_STYLE,
+            CSSName.BORDER_LEFT_STYLE};
 
     /**
      * List of property names, in order, when expanding 3 prop to 4. Careful,
@@ -65,10 +65,10 @@ public class BorderStylePropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName THREE_TO_FOUR[] = {
-            CSSName.BORDER_STYLE_TOP,
-            CSSName.BORDER_STYLE_RIGHT,
-            CSSName.BORDER_STYLE_LEFT,
-            CSSName.BORDER_STYLE_BOTTOM};
+            CSSName.BORDER_TOP_STYLE,
+            CSSName.BORDER_RIGHT_STYLE,
+            CSSName.BORDER_LEFT_STYLE,
+            CSSName.BORDER_BOTTOM_STYLE};
 
     /**
      * List of property names, in order, when expanding 4 prop to 4. Careful,
@@ -76,10 +76,10 @@ public class BorderStylePropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName FOUR_TO_FOUR[] = {
-            CSSName.BORDER_STYLE_TOP,
-            CSSName.BORDER_STYLE_RIGHT,
-            CSSName.BORDER_STYLE_BOTTOM,
-            CSSName.BORDER_STYLE_LEFT};
+            CSSName.BORDER_TOP_STYLE,
+            CSSName.BORDER_RIGHT_STYLE,
+            CSSName.BORDER_BOTTOM_STYLE,
+            CSSName.BORDER_LEFT_STYLE};
 
     /** Default constructor; don't use, use instance() instead. */
     private BorderStylePropertyDeclarationFactory() { }
@@ -165,6 +165,9 @@ public class BorderStylePropertyDeclarationFactory extends AbstractPropertyDecla
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2007/02/19 14:53:35  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.4  2005/01/29 20:24:24  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

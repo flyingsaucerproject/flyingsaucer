@@ -145,20 +145,20 @@ public final class Idents {
             String pos = (String) BACKGROUND_POSITIONS.get(ident);
             val = (pos == null ? ident : pos);
         } else if (
-                cssName == CSSName.BORDER_WIDTH_BOTTOM ||
-                cssName == CSSName.BORDER_WIDTH_LEFT ||
-                cssName == CSSName.BORDER_WIDTH_RIGHT ||
+                cssName == CSSName.BORDER_BOTTOM_WIDTH ||
+                cssName == CSSName.BORDER_LEFT_WIDTH ||
+                cssName == CSSName.BORDER_RIGHT_WIDTH ||
                 cssName == CSSName.BORDER_WIDTH_SHORTHAND ||
-                cssName == CSSName.BORDER_WIDTH_TOP) {
+                cssName == CSSName.BORDER_TOP_WIDTH) {
 
             String size = (String) BORDER_WIDTHS.get(ident);
             val = (size == null ? ident : size);
         } else if (
-                cssName == CSSName.BORDER_COLOR_BOTTOM ||
-                cssName == CSSName.BORDER_COLOR_LEFT ||
-                cssName == CSSName.BORDER_COLOR_RIGHT ||
+                cssName == CSSName.BORDER_BOTTOM_COLOR ||
+                cssName == CSSName.BORDER_LEFT_COLOR ||
+                cssName == CSSName.BORDER_RIGHT_COLOR ||
                 cssName == CSSName.BORDER_COLOR_SHORTHAND ||
-                cssName == CSSName.BORDER_COLOR_TOP ||
+                cssName == CSSName.BORDER_TOP_COLOR ||
                 cssName == CSSName.BACKGROUND_COLOR ||
                 cssName == CSSName.COLOR ||
                 cssName == CSSName.OUTLINE_COLOR) {
@@ -196,7 +196,7 @@ public final class Idents {
     public static boolean looksLikeAColor(String val) {
         return COLOR_MAP.get(val) != null || (val.startsWith("#") && (val.length() == 7 || val.length() == 4)) || val.startsWith("rgb");
     }
-
+    
     /**
      * Description of the Method
      *
@@ -539,6 +539,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2007/02/19 14:53:36  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.16  2007/02/07 16:33:36  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

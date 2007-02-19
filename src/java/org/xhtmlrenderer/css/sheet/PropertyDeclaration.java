@@ -222,7 +222,15 @@ public class PropertyDeclaration {
     public org.w3c.dom.css.CSSPrimitiveValue getValue() {
         return cssPrimitiveValue;
     }
-
+    
+    public boolean isImportant() {
+        return important;
+    }
+    
+    public int getOrigin() {
+        return origin;
+    }
+    
     /**
      * Description of the Method
      *
@@ -242,7 +250,7 @@ public class PropertyDeclaration {
         }
         return pdf;
     }
-
+    
     static {
         // HACK: size for up to 256 custom properties (PWW 06/16/05)
         PROPERTY_FACTORIES = new PropertyDeclarationFactory[CSSName.countCSSNames() + 256];
@@ -274,6 +282,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2007/02/19 14:53:37  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.18  2006/07/28 10:08:56  pdoubleya
  * Additional work for support of parsing content and quotes.
  *

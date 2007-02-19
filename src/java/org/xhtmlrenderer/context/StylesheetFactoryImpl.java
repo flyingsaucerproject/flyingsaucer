@@ -20,12 +20,11 @@
 package org.xhtmlrenderer.context;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,8 @@ import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.stylesheets.MediaList;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
-import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
+import org.xhtmlrenderer.css.parser.CSSErrorHandler;
+import org.xhtmlrenderer.css.parser.CSSParser;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
@@ -57,15 +57,12 @@ import com.steadystate.css.parser.CSSOMParser;
  *
  * @author Torbj�rn Gannholm
  */
-public class StylesheetFactoryImpl implements StylesheetFactory {    
+public class StylesheetFactoryImpl implements StylesheetFactory {
     /**
      * the UserAgentCallback to resolve uris
      */
     private UserAgentCallback _userAgent;
 
-    /**
-     * Description of the Field
-     */
     private int _cacheCapacity = 16;
 
     /**
@@ -73,17 +70,16 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      */
     private java.util.LinkedHashMap _cache =
             new java.util.LinkedHashMap(_cacheCapacity, 0.75f, true) {
+                private static final long serialVersionUID = 1L;
+
                 protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
                     return size() > _cacheCapacity;
                 }
             };
     private CSSOMParser parser;
+    
+    private CSSParser newParser;
 
-    /**
-     * Creates a new instance of StylesheetFactory
-     *
-     * @param userAgent PARAM
-     */
     public StylesheetFactoryImpl(UserAgentCallback userAgent) {
         _userAgent = userAgent;
         try {
@@ -93,36 +89,40 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         } catch (Exception ex) {
             XRLog.exception("Bad!  Couldn't load the CSS parser. Everything after this will fail.");
         }
+        
+        newParser = new CSSParser(new CSSErrorHandler() {
+            public void error(String uri, String message) {
+                XRLog.cssParse("(" + uri + ") " + message);
+            }
+        });
+    }
+
+    synchronized Stylesheet parse(Reader reader, StylesheetInfo info) {
+        if (StyleReference.USE_NEW_PARSER) {
+            try {
+                return newParser.parseStylesheet(info.getUri(), info.getOrigin(), reader);
+            } catch (IOException e) {
+                // XXX Should we really just give up?  or skip and continue?
+                throw new XRRuntimeException("IOException on parsing style seet from a Reader; don't know the URI.", e);
+            }
+        } else {
+            InputSource is = new InputSource(reader);
+            CSSStyleSheet style = null;
+            try {
+                style = parser.parseStyleSheet(is);
+            } catch (java.io.IOException e) {
+                // XXX Should we really just give up?  or skip and continue?
+                throw new XRRuntimeException("IOException on parsing style seet from a Reader; don't know the URI.", e);
+            }
+    
+            Stylesheet sheet = new Stylesheet(info.getUri(), info.getOrigin());
+            CSSRuleList rl = style.getCssRules();
+            pullRulesets(rl, sheet, info);
+            return sheet;
+        } 
     }
 
     /**
-     * Description of the Method
-     *
-     * @param stream PARAM
-     * @param info
-     * @return Returns
-     */
-    synchronized Stylesheet parse(InputStream stream, StylesheetInfo info) {
-        Reader r = new InputStreamReader(stream);
-        InputSource is = new InputSource(r);
-        CSSStyleSheet style = null;
-        try {
-            style = parser.parseStyleSheet(is);
-        } catch (java.io.IOException e) {
-            throw new XRRuntimeException("IOException on parsing style seet from a Reader; don't know the URI.", e);
-        }
-
-        Stylesheet sheet = new Stylesheet(info.getUri(), info.getOrigin());
-        CSSRuleList rl = style.getCssRules();
-        pullRulesets(rl, sheet, info);
-
-        return sheet;
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param info
      * @return Returns null if uri could not be loaded
      */
     private Stylesheet parse(StylesheetInfo info) {
@@ -132,7 +132,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
 
         try {
             if (is != null) {
-                sheet = parse(is, info);
+                sheet = parse(new InputStreamReader(is), info);
             }
         } catch (Exception e) {
             debugBadStyleSheet(info);
@@ -165,52 +165,26 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param isis PARAM
-     * @param main PARAM
-     * @return Returns
-     */
-    public Stylesheet parseInlines(InlineStyleInfo[] isis, StylesheetInfo main) {
-        Stylesheet sheet = new Stylesheet(main.getUri(), main.getOrigin());
-        if (isis != null) {
-            for (int i = 0; i < isis.length; i++) {
-                try {
-                    InputStream stream = new ByteArrayInputStream(isis[i].getStyle().getBytes("UTF-8"));
-                    StylesheetInfo info = isis[i].getInfo();
-                    info.setUri(main.getUri());
-                    Stylesheet is = parse(stream, info);
-                    info.setStylesheet(is);
-                    sheet.addStylesheet(info);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }
-        }
-        return sheet;
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param origin           PARAM
-     * @param styleDeclaration PARAM
-     * @return Returns
-     */
     public synchronized Ruleset parseStyleDeclaration(int origin, String styleDeclaration) {
-        try {
-            java.io.StringReader reader = new java.io.StringReader("* {" + styleDeclaration + "}");
-            InputSource is = new InputSource(reader);
-            CSSStyleSheet style = parser.parseStyleSheet(is);
-            reader.close();
-            return new Ruleset((CSSStyleRule) style.getCssRules().item(0), origin);
-        } catch (Exception ex) {
-            throw new XRRuntimeException("Cannot parse style declaration from string." + ex.getMessage(), ex);
+        if (StyleReference.USE_NEW_PARSER) {
+            return newParser.parseDeclaration(origin, styleDeclaration);
+        } else {
+            try {
+                java.io.StringReader reader = new java.io.StringReader("* {" + styleDeclaration + "}");
+                InputSource is = new InputSource(reader);
+                CSSStyleSheet style = parser.parseStyleSheet(is);
+                reader.close();
+                return new Ruleset((CSSStyleRule) style.getCssRules().item(0), origin);
+            } catch (Exception ex) {
+                throw new XRRuntimeException("Cannot parse style declaration from string." + ex.getMessage(), ex);
+            }
         }
     }
     
     public synchronized List parseStyleDeclarations(int origin, String declarations) {
+        if (! StyleReference.USE_NEW_PARSER) {
+            throw new IllegalArgumentException("(bug) This method should not have been called");
+        }
         try {
             java.io.StringReader reader = new java.io.StringReader(declarations);
             InputSource is = new InputSource(reader);
@@ -218,7 +192,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
             reader.close();
             
             CSSRuleList cssRules = style.getCssRules();
-            List result = new ArrayList();
+            List result = new ArrayList(cssRules.getLength());
             for (int i = 0; i < cssRules.getLength(); i++) {
                 result.add(new Ruleset((CSSStyleRule)cssRules.item(i), origin));
             }
@@ -314,16 +288,17 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
                 String href = cssir.getHref();
                 MediaList mediaList = cssir.getMedia();
                 String media = mediaList.getMediaText();
-                if (media.equals("")) {
-                    media = sheetInfo.getMedia();
-                }
                 String uri = null;
                 try {
                     uri = new java.net.URL(new URL(stylesheet.getURI()), href).toString();
                     StylesheetInfo info = new StylesheetInfo();
                     info.setOrigin(stylesheet.getOrigin());
                     info.setUri(uri);
-                    info.setMedia(media);
+                    if (media.equals("")) {
+                        info.setMedia(sheetInfo.getMedia());
+                    } else {
+                        info.setMedia(media);
+                    }
                     info.setType("text/css");
                     stylesheet.addStylesheet(info);
                 } catch (java.net.MalformedURLException e) {

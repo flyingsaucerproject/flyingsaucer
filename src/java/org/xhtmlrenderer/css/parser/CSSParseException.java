@@ -24,7 +24,7 @@ public class CSSParseException extends RuntimeException {
     
     private final Token _found;
     private final Token[] _expected;
-    private final int _line;
+    private int _line;
     
     private final String _genericMessage;
     
@@ -91,6 +91,10 @@ public class CSSParseException extends RuntimeException {
 
     public int getLine() {
         return _line;
+    }
+    
+    public void setLine(int i) {
+        _line = i;
     }
     
     public boolean isEOF() {

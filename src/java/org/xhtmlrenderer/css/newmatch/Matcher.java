@@ -28,11 +28,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.extend.TreeResolver;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.MediaRule;
+import org.xhtmlrenderer.css.sheet.PageRule;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
@@ -44,44 +46,17 @@ import org.xhtmlrenderer.util.XRLog;
  */
 public class Matcher {
 
-    /**
-     * Description of the Field
-     */
     Mapper docMapper;
-    /**
-     * Description of the Field
-     */
     private org.xhtmlrenderer.css.extend.AttributeResolver _attRes;
-    /**
-     * Description of the Field
-     */
     private org.xhtmlrenderer.css.extend.TreeResolver _treeRes;
-    /**
-     * Description of the Field
-     */
     private org.xhtmlrenderer.css.extend.StylesheetFactory _styleFactory;
 
-    /**
-     * Description of the Field
-     */
     private java.util.Map _map;
 
     //handle dynamic
-    /**
-     * Description of the Field
-     */
     private Set _hoverElements;
-    /**
-     * Description of the Field
-     */
     private Set _activeElements;
-    /**
-     * Description of the Field
-     */
     private Set _focusElements;
-    /**
-     * Description of the Field
-     */
     private Set _visitElements;
     
     private List _pageRules;
@@ -89,33 +64,23 @@ public class Matcher {
     private Map _elementStyles;
     private Map _nonCSSStyles;
 
-    /**
-     * creates a new matcher for the combination of parameters
-     *
-     * @param tr
-     * @param ar          PARAM
-     * @param factory     PARAM
-     * @param stylesheets PARAM
-     * @param media       PARAM
-     */
     public Matcher(TreeResolver tr, AttributeResolver ar, 
-            StylesheetFactory factory, List stylesheets, String media) {
+            StylesheetFactory factory, List stylesheetInfos, List stylesheets, String medium) {
         newMaps();
         _treeRes = tr;
         _attRes = ar;
         _styleFactory = factory;
-        docMapper = createDocumentMapper(stylesheets.iterator(), media);
-        _pageRules = new ArrayList();
-        collectPageRules(stylesheets, _pageRules, media);
+        
+        if (stylesheetInfos != null) {
+            docMapper = legacyCreateDocumentMapper(stylesheetInfos.iterator(), medium);
+            _pageRules = new ArrayList();
+            collectPageRules(stylesheetInfos, _pageRules, medium);
+        } else {
+            _pageRules = new ArrayList();
+            docMapper = createDocumentMapper(stylesheets, medium);
+        }
     }
 
-    /**
-     * Gets the cascadedStyle attribute of the Matcher object
-     *
-     * @param e       PARAM
-     * @param restyle PARAM
-     * @return The cascadedStyle value
-     */
     public CascadedStyle getCascadedStyle(Object e, boolean restyle) {
         synchronized (e) {
             Mapper em;
@@ -131,10 +96,6 @@ public class Matcher {
     /**
      * May return null.
      * We assume that restyle has already been done by a getCascadedStyle if necessary.
-     *
-     * @param e             PARAM
-     * @param pseudoElement PARAM
-     * @return The pECascadedStyle value
      */
     public CascadedStyle getPECascadedStyle(Object e, String pseudoElement) {
         synchronized (e) {
@@ -182,52 +143,22 @@ public class Matcher {
         }
     }
 
-    /**
-     * Gets the visitedStyled attribute of the Matcher object
-     *
-     * @param e PARAM
-     * @return The visitedStyled value
-     */
     public boolean isVisitedStyled(Object e) {
         return _visitElements.contains(e);
     }
 
-    /**
-     * Gets the hoverStyled attribute of the Matcher object
-     *
-     * @param e PARAM
-     * @return The hoverStyled value
-     */
     public boolean isHoverStyled(Object e) {
         return _hoverElements.contains(e);
     }
 
-    /**
-     * Gets the activeStyled attribute of the Matcher object
-     *
-     * @param e PARAM
-     * @return The activeStyled value
-     */
     public boolean isActiveStyled(Object e) {
         return _activeElements.contains(e);
     }
 
-    /**
-     * Gets the focusStyled attribute of the Matcher object
-     *
-     * @param e PARAM
-     * @return The focusStyled value
-     */
     public boolean isFocusStyled(Object e) {
         return _focusElements.contains(e);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     * @return Returns
-     */
     protected Mapper matchElement(Object e) {
         synchronized (e) {
             Object parent = _treeRes.getParentElement(e);
@@ -242,36 +173,89 @@ public class Matcher {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param stylesheets PARAM
-     * @param media       PARAM
-     * @return Returns
-     */
-    Mapper createDocumentMapper(java.util.Iterator stylesheets, String media) {
+    Mapper legacyCreateDocumentMapper(java.util.Iterator stylesheets, String medium) {
         int count = 0;
         java.util.TreeMap sorter = new java.util.TreeMap();
         while (stylesheets.hasNext()) {
-            count = appendStylesheet((StylesheetInfo) stylesheets.next(), count, sorter, media);
+            count = legacyAppendStylesheet((StylesheetInfo) stylesheets.next(), count, sorter, medium);
         }
         XRLog.match("Matcher created with " + sorter.size() + " selectors");
         return new Mapper(sorter.values());
     }
+    
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     * @param m PARAM
-     */
+    private int legacyAppendStylesheet(StylesheetInfo si, int count, java.util.TreeMap sorter, String medium) {
+        if (!si.appliesToMedia(medium)) {
+            return count;
+        }//this is logical, and also how firefox does it
+        Stylesheet ss = si.getStylesheet();
+        if (ss == null) {
+            ss = _styleFactory.getStylesheet(si);
+            si.setStylesheet(ss);
+        }
+        if (ss == null) {
+            return count;
+        }//couldn't load it
+        for (java.util.Iterator rulesets = ss.getRulesets(); rulesets.hasNext();) {
+            Object obj = rulesets.next();
+            if (obj instanceof StylesheetInfo) {
+                count = legacyAppendStylesheet((StylesheetInfo) obj, count, sorter, medium);
+            } else {
+                org.xhtmlrenderer.css.sheet.Ruleset r = (org.xhtmlrenderer.css.sheet.Ruleset) obj;
+                //at this point all selectors in a ruleset must be placed on the descendant axis
+                org.w3c.css.sac.SelectorList selector_list = r.getSelectorList();
+                for (int i = 0; i < selector_list.getLength(); i++) {
+                    org.w3c.css.sac.Selector selector = selector_list.item(i);
+                    Selector s = addSelector(count++, r, selector);
+                    sorter.put(s.getOrder(), s);
+                }
+            }
+        }
+        return count;
+    }
+    
+    Mapper createDocumentMapper(List stylesheets, String medium) {
+        java.util.TreeMap sorter = new java.util.TreeMap();
+        addAllStylesheets(stylesheets, sorter, medium);
+        XRLog.match("Matcher created with " + sorter.size() + " selectors");
+        return new Mapper(sorter.values());
+    }
+    
+    private void addAllStylesheets(List stylesheets, TreeMap sorter, String medium) {
+        int count = 0;
+        for (Iterator i = stylesheets.iterator(); i.hasNext(); ) {
+            Stylesheet stylesheet = (Stylesheet)i.next();
+            for (Iterator j = stylesheet.getContents().iterator(); j.hasNext(); ) {
+                Object obj = (Object)j.next();
+                if (obj instanceof Ruleset) {
+                    for (Iterator k = ((Ruleset)obj).getFSSelectors().iterator(); k.hasNext(); ) {
+                        Selector selector = (Selector)k.next();
+                        selector.setPos(++count);
+                        sorter.put(selector.getOrder(), selector);
+                    }
+                } else if (obj instanceof PageRule) {
+                    _pageRules.add(((PageRule)obj).getRuleset());
+                } else if (obj instanceof MediaRule) {
+                    MediaRule mediaRule = (MediaRule)obj;
+                    if (mediaRule.matches(medium)) {
+                        for (Iterator k = mediaRule.getContents().iterator(); k.hasNext(); ) {
+                            Ruleset ruleset = (Ruleset)k.next();
+                            for (Iterator l = ruleset.getFSSelectors().iterator(); l.hasNext(); ) {
+                                Selector selector = (Selector)l.next();
+                                selector.setPos(++count);
+                                sorter.put(selector.getOrder(), selector);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void link(Object e, Mapper m) {
         _map.put(e, m);
     }
 
-    /**
-     * Description of the Method
-     */
     private void newMaps() {
         _map = Collections.synchronizedMap(new java.util.HashMap());
         _hoverElements = Collections.synchronizedSet(new java.util.HashSet());
@@ -280,15 +264,15 @@ public class Matcher {
         _visitElements = Collections.synchronizedSet(new java.util.HashSet());
     }
     
-    private void collectPageRules(List infos, List pageRulesets, String media) {
+    private void collectPageRules(List infos, List pageRulesets, String medium) {
         for (Iterator i = infos.iterator(); i.hasNext(); ) {
             StylesheetInfo si = (StylesheetInfo)i.next();
-            collectPageRules(si, pageRulesets, media);
+            collectPageRules(si, pageRulesets, medium);
         }
     }
     
-    private void collectPageRules(StylesheetInfo si, List pageRulesets, String media) {
-        if (! si.appliesToMedia(media)) {
+    private void collectPageRules(StylesheetInfo si, List pageRulesets, String medium) {
+        if (! si.appliesToMedia(medium)) {
             return;
         }
         Stylesheet ss = si.getStylesheet();
@@ -305,58 +289,14 @@ public class Matcher {
         for (java.util.Iterator rulesets = ss.getRulesets(); rulesets.hasNext();) {
             Object obj = rulesets.next();
             if (obj instanceof StylesheetInfo) {
-                collectPageRules((StylesheetInfo)obj, pageRulesets, media);
+                collectPageRules((StylesheetInfo)obj, pageRulesets, medium);
             }
         }
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param si     PARAM
-     * @param count  PARAM
-     * @param sorter PARAM
-     * @param media  PARAM
-     * @return Returns
-     */
-    private int appendStylesheet(StylesheetInfo si, int count, java.util.TreeMap sorter, String media) {
-        if (!si.appliesToMedia(media)) {
-            return count;
-        }//this is logical, and also how firefox does it
-        Stylesheet ss = si.getStylesheet();
-        if (ss == null) {
-            ss = _styleFactory.getStylesheet(si);
-            si.setStylesheet(ss);
-        }
-        if (ss == null) {
-            return count;
-        }//couldn't load it
-        for (java.util.Iterator rulesets = ss.getRulesets(); rulesets.hasNext();) {
-            Object obj = rulesets.next();
-            if (obj instanceof StylesheetInfo) {
-                count = appendStylesheet((StylesheetInfo) obj, count, sorter, media);
-            } else {
-                org.xhtmlrenderer.css.sheet.Ruleset r = (org.xhtmlrenderer.css.sheet.Ruleset) obj;
-                //at this point all selectors in a ruleset must be placed on the descendant axis
-                org.w3c.css.sac.SelectorList selector_list = r.getSelectorList();
-                for (int i = 0; i < selector_list.getLength(); i++) {
-                    org.w3c.css.sac.Selector selector = selector_list.item(i);
-                    Selector s = addSelector(count++, r, selector);
-                    sorter.put(s.getOrder(), s);
-                }
-            }
-        }
-        return count;
     }
 
     /**
      * Turn the selection logic inside-out: we want to start as close to the
      * root element as possible, while sac starts at the final selected element
-     *
-     * @param pos      The feature to be added to the Selector attribute
-     * @param rs       The feature to be added to the ChainedSelector attribute
-     * @param selector The feature to be added to the ChainedSelector attribute
-     * @return Returns
      */
     private Selector addSelector(int pos, org.xhtmlrenderer.css.sheet.Ruleset rs, org.w3c.css.sac.Selector selector) {
         Selector s = null;
@@ -381,10 +321,6 @@ public class Matcher {
         return s;
     }
 
-    /**
-     * @param s        The feature to be added to the ChainedSelector attribute
-     * @param selector The feature to be added to the ChainedSelector attribute
-     */
     private void addChainedSelector(Selector s, org.w3c.css.sac.Selector selector) {
         int axis = 0;
         org.w3c.css.sac.SimpleSelector simple = null;
@@ -415,15 +351,6 @@ public class Matcher {
         }
     }
 
-    /**
-     * @param pos             The feature to be added to the SiblingSelector
-     *                        attribute
-     * @param rs              The feature to be added to the SiblingSelector
-     *                        attribute
-     * @param siblingSelector The feature to be added to the ChainedSelector
-     *                        attribute
-     * @return Returns
-     */
     private Selector addSiblingSelector(int pos, org.xhtmlrenderer.css.sheet.Ruleset rs, org.w3c.css.sac.Selector siblingSelector) {
         int axis = Selector.DESCENDANT_AXIS;
         org.w3c.css.sac.SimpleSelector simple = null;
@@ -519,10 +446,6 @@ public class Matcher {
         return ancestor;
     }
 
-    /**
-     * @param s    The feature to be added to the Conditions attribute
-     * @param cond The feature to be added to the Conditions attribute
-     */
     private void addConditions(Selector s, org.w3c.css.sac.Condition cond) {
         switch (cond.getConditionType()) {
             case org.w3c.css.sac.Condition.SAC_AND_CONDITION:
@@ -592,12 +515,6 @@ public class Matcher {
         }
     }
 
-    /**
-     * Gets the mapper attribute of the Matcher object
-     *
-     * @param e PARAM
-     * @return The mapper value
-     */
     private Mapper getMapper(Object e) {
         Mapper m = (Mapper) _map.get(e);
         if (m != null) {
@@ -607,13 +524,6 @@ public class Matcher {
         return m;
     }
 
-
-    /**
-     * Gets the matchedRulesets attribute of the Matcher object
-     *
-     * @param mappedSelectors PARAM
-     * @return The matchedRulesets value
-     */
     private static java.util.Iterator getMatchedRulesets(final List mappedSelectors) {
         return
                 new java.util.Iterator() {
@@ -637,12 +547,6 @@ public class Matcher {
                 };
     }
 
-    /**
-     * Gets the selectedRulesets attribute of the Matcher object
-     *
-     * @param selectorList PARAM
-     * @return The selectedRulesets value
-     */
     private static java.util.Iterator getSelectedRulesets(java.util.List selectorList) {
         final java.util.List sl = selectorList;
         return
@@ -708,31 +612,16 @@ public class Matcher {
      * @author Torbj�rn Gannholm
      */
     class Mapper {
-
-        /**
-         * Description of the Field
-         */
         java.util.List axes;
-        /**
-         * Description of the Field
-         */
         private HashMap pseudoSelectors;
         private List mappedSelectors;
         private HashMap children;
 
-        /**
-         * Creates a new instance of Mapper
-         *
-         * @param selectors PARAM
-         */
         Mapper(java.util.Collection selectors) {
             axes = new java.util.ArrayList();
             axes.addAll(selectors);
         }
 
-        /**
-         * Constructor for the Mapper object
-         */
         private Mapper() {
         }
 
@@ -844,10 +733,6 @@ public class Matcher {
         /**
          * May return null.
          * We assume that restyle has already been done by a getCascadedStyle if necessary.
-         *
-         * @param e             PARAM
-         * @param pseudoElement PARAM
-         * @return The pECascadedStyle value
          */
         public CascadedStyle getPECascadedStyle(Object e, String pseudoElement) {
             java.util.Iterator si = pseudoSelectors.entrySet().iterator();

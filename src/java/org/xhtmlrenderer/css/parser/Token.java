@@ -40,28 +40,33 @@ public class Token {
     public static final int IMPORTANT_SYM = 18;
     public static final int EMS = 19;
     public static final int EXS = 20;
-    public static final int LENGTH = 21;
-    public static final int ANGLE = 22;
-    public static final int TIME = 23;
-    public static final int FREQ = 24;
-    public static final int DIMENSION = 25;
-    public static final int PERCENTAGE = 26;
-    public static final int NUMBER = 27;
-    public static final int URI = 28;
-    public static final int FUNCTION = 29;
-    public static final int OTHER = 30;
-    public static final int RBRACE = 31;
-    public static final int SEMICOLON = 32;
-    public static final int VIRGULE = 33;
-    public static final int COLON = 34;
-    public static final int MINUS = 35;
-    public static final int RPAREN = 36;
-    public static final int LBRACKET = 37;
-    public static final int RBRACKET = 38;
-    public static final int PERIOD = 39;
-    public static final int EQUALS = 40;
-    public static final int ASTERISK = 41;
-    public static final int EOF = 42;
+    public static final int PX = 21;
+    public static final int CM = 22;
+    public static final int MM = 23;
+    public static final int IN = 24;
+    public static final int PT = 25;
+    public static final int PC = 26;
+    public static final int ANGLE = 27;
+    public static final int TIME = 28;
+    public static final int FREQ = 29;
+    public static final int DIMENSION = 30;
+    public static final int PERCENTAGE = 31;
+    public static final int NUMBER = 32;
+    public static final int URI = 33;
+    public static final int FUNCTION = 34;
+    public static final int OTHER = 35;
+    public static final int RBRACE = 36;
+    public static final int SEMICOLON = 37;
+    public static final int VIRGULE = 38;
+    public static final int COLON = 39;
+    public static final int MINUS = 40;
+    public static final int RPAREN = 41;
+    public static final int LBRACKET = 42;
+    public static final int RBRACKET = 43;
+    public static final int PERIOD = 44;
+    public static final int EQUALS = 45;
+    public static final int ASTERISK = 46;
+    public static final int EOF = 47;
 
     public static final Token TK_S = new Token(S, "S", "whitespace");
     public static final Token TK_CDO = new Token(CDO, "CDO", "<!--");
@@ -83,7 +88,12 @@ public class Token {
     public static final Token TK_IMPORTANT_SYM = new Token(IMPORTANT_SYM, "IMPORTANT_SYM", "!important");
     public static final Token TK_EMS = new Token(EMS, "EMS", "an em value");
     public static final Token TK_EXS = new Token(EXS, "EXS", "an ex value");
-    public static final Token TK_LENGTH = new Token(LENGTH, "LENGTH", "a length value");
+    public static final Token TK_PX = new Token(PX, "PX", "a pixel value");
+    public static final Token TK_CM = new Token(CM, "CM", "a centimeter value");
+    public static final Token TK_MM = new Token(MM, "MM", "a millimeter value");
+    public static final Token TK_IN = new Token(IN, "IN", "an inch value");
+    public static final Token TK_PT = new Token(PT, "PT", "a point value");
+    public static final Token TK_PC = new Token(PC, "PC", "a pica value");
     public static final Token TK_ANGLE = new Token(ANGLE, "ANGLE", "an angle value");
     public static final Token TK_TIME = new Token(TIME, "TIME", "a time value");
     public static final Token TK_FREQ = new Token(FREQ, "FREQ", "a freq value");
@@ -133,6 +143,6 @@ public class Token {
     }
     
     public static Token createOtherToken(String value) {
-        return new Token(OTHER, "OTHER", value);
+        return new Token(OTHER, "OTHER", value + " (other)");
     }
 }

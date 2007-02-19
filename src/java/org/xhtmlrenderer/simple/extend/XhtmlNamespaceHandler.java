@@ -56,28 +56,32 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         //check for cellpadding
         Element table = findTable(e);
         if (table != null) {
-            if (!(s = table.getAttribute("cellpadding")).equals("")) {
+            s = getAttribute(table, "cellpadding");
+            if (s != null) {
                 style.append("padding: ");
-                style.append(s);
+                style.append(convertToLength(s));
                 style.append(";");
             }
-            s = table.getAttribute("border");
-            if (! (s.equals("") || s.equals("0"))) {
-                style.append("border: 1 outset black;");
+            s = getAttribute(table, "border");
+            if (s != null && ! s.equals("0")) {
+                style.append("border: 1px outset black;");
             }
         }
-        if (!(s = e.getAttribute("width")).equals("")) {
+        s = getAttribute(e, "width");
+        if (s != null) {
             style.append("width: ");
-            style.append(s);
+            style.append(convertToLength(s));
             style.append(";");
         }
-        if (!(s = e.getAttribute("height")).equals("")) {
+        s = getAttribute(e, "height");
+        if (s != null) {
             style.append("height: ");
-            style.append(s);
+            style.append(convertToLength(s));
             style.append(";");
         }        
         applyAlignment(e, style);
-        if (!(s = e.getAttribute("bgcolor")).equals("")) {
+        s = getAttribute(e, "bgcolor");
+        if (s != null) {
             s = s.toLowerCase();
             style.append("background-color: ");
             if (looksLikeAMangledColor(s)) {
@@ -88,7 +92,8 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
             }
             style.append(';');
         }
-        if (!(s = e.getAttribute("background")).equals("")) {
+        s = getAttribute(e, "background");
+        if (s != null) {
             style.append("background-image: url(");
             style.append(s);
             style.append(");");
@@ -99,22 +104,26 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     private String applyTableStyles(Element e) {
         StringBuffer style = new StringBuffer();
         String s;
-        if (!(s = e.getAttribute("width")).equals("")) {
+        s = getAttribute(e, "width");
+        if (s != null) {
             style.append("width: ");
-            style.append(s);
+            style.append(convertToLength(s));
             style.append(";");
         }
-        if (!(s = e.getAttribute("border")).equals("")) {
+        s = getAttribute(e, "border");
+        if (s != null) {
             style.append("border: ");
-            style.append(s);
+            style.append(convertToLength(s));
             style.append(" inset black;");
         }
-        if (!(s = e.getAttribute("cellspacing")).equals("")) {
+        s = getAttribute(e, "cellspacing");
+        if (s != null) {
             style.append("border-collapse: separate; border-spacing: ");
-            style.append(s);
+            style.append(convertToLength(s));
             style.append(";");
         }
-        if (!(s = e.getAttribute("bgcolor")).equals("")) {
+        s = getAttribute(e, "bgcolor");
+        if (s != null) {
             s = s.toLowerCase();
             style.append("background-color: ");
             if (looksLikeAMangledColor(s)) {
@@ -125,7 +134,8 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
             }
             style.append(';');
         }
-        if (!(s = e.getAttribute("background")).equals("")) {
+        s = getAttribute(e, "background");
+        if (s != null) {
             style.append("background-image: url(");
             style.append(s);
             style.append(");");
@@ -142,7 +152,8 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     
     private void applyFloatingAlign(Element e, StringBuffer style) {
         String s;
-        if (!(s = e.getAttribute("align")).equals("")) {
+        s = getAttribute(e, "align");
+        if (s != null) {
             s = s.toLowerCase().trim();
             if (s.equals("left")) {
                 style.append("float: left;");
@@ -156,12 +167,14 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     
     private void applyAlignment(Element e, StringBuffer style) {
         String s;
-        if (!(s = e.getAttribute("align")).equals("")) {
+        s = getAttribute(e, "align");
+        if (s != null) {
             style.append("text-align: ");
             style.append(s.toLowerCase());
             style.append(";");
         }
-        if (!(s = e.getAttribute("valign")).equals("")) {
+        s = getAttribute(e, "valign");
+        if (s != null) {
             style.append("vertical-align: ");
             style.append(s.toLowerCase());
             style.append(";");

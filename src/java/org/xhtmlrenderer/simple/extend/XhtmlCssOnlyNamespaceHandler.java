@@ -20,13 +20,13 @@ package org.xhtmlrenderer.simple.extend;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
+import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.swing.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
@@ -71,6 +71,30 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     public String getID(org.w3c.dom.Element e) {
         return e.getAttribute("id");
     }
+    
+    protected String convertToLength(String value) {
+        if (isInteger(value)) {
+            return value + "px";
+        } else {
+            return value;
+        }
+    }
+    
+    protected boolean isInteger(String value) {
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (! (c >= '0' && c <= '9')) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    protected String getAttribute(Element e, String attrName) {
+        String result = e.getAttribute(attrName);
+        result = result.trim();
+        return result.length() == 0 ? null : result;
+    }
 
     /**
      * Gets the elementStyling attribute of the XhtmlNamespaceHandler object
@@ -82,38 +106,44 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         StringBuffer style = new StringBuffer();
         if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
             String s;
-            if (!(s = e.getAttribute("colspan")).equals("")) {
+            s = getAttribute(e, "colspan");
+            if (s != null) {
                 style.append("-fs-table-cell-colspan: ");
                 style.append(s);
                 style.append(";");
             }
-            if (!(s = e.getAttribute("rowspan")).equals("")) {
+            s = getAttribute(e, "rowspan");
+            if (s != null) {
                 style.append("-fs-table-cell-rowspan: ");
                 style.append(s);
                 style.append(";");
             }
         } else if (e.getNodeName().equals("img")) {
             String s;
-            if (!(s = e.getAttribute("width")).equals("")) {
+            s = getAttribute(e, "width");
+            if (s != null) {
                 style.append("width: ");
-                style.append(s);
+                style.append(convertToLength(s));
                 style.append(";");
             }
-            if (!(s = e.getAttribute("height")).equals("")) {
+            s = getAttribute(e, "height");
+            if (s != null) {
                 style.append("height: ");
-                style.append(s);
+                style.append(convertToLength(s));
                 style.append(";");
             }
         } else if (e.getNodeName().equals("colgroup") || e.getNodeName().equals("col")) {
             String s;
-            if (!(s = e.getAttribute("span")).equals("")) {
+            s = getAttribute(e, "span");
+            if (s != null) {
                 style.append("-fs-table-cell-colspan: ");
                 style.append(s);
                 style.append(";");
             }
-            if (!(s = e.getAttribute("width")).equals("")) {
+            s = getAttribute(e, "width");
+            if (s != null) {
                 style.append("width: ");
-                style.append(s);
+                style.append(convertToLength(s));
                 style.append(";");
             }            
         }
@@ -186,53 +216,71 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         
         return null;
     }
-
-    /**
-     * Gets the inlineStyle attribute of the XhtmlNamespaceHandler object
-     *
-     * @param doc PARAM
-     * @return The inlineStyle value
-     */
-    public InlineStyleInfo[] getInlineStyle(org.w3c.dom.Document doc) {
-        List list = new ArrayList();
-        org.w3c.dom.NodeList nl = null;
-        Element html = doc.getDocumentElement();
-        Element head = findFirstChild(html, "head");
-        if (head != null) {
-            nl = head.getElementsByTagName("style");
-        }
-        if (nl != null) {
-            for (int i = 0, len = nl.getLength(); i < len; i++) {
-                StringBuffer style = new StringBuffer();
-                org.w3c.dom.Element elem = (org.w3c.dom.Element) nl.item(i);
-                String m = elem.getAttribute("media");
-                if ("".equals(m)) {
-                    m = "all";
-                }//default for HTML is "screen", but that is silly and firefox seems to assume "all"
-                StylesheetInfo info = new StylesheetInfo();
-                info.setMedia(m);
-                info.setType(elem.getAttribute("type"));
-                info.setTitle(elem.getAttribute("title"));
-                info.setOrigin(StylesheetInfo.AUTHOR);
-                org.w3c.dom.NodeList children = elem.getChildNodes();
-                for (int j = 0; j < children.getLength(); j++) {
-                    org.w3c.dom.Node txt = children.item(j);
-                    if (txt instanceof CharacterData) {
-                        style.append(txt.getNodeValue());
-                    }
-                }
-                InlineStyleInfo isi = new InlineStyleInfo();
-                isi.setInfo(info);
-                isi.setStyle(style.toString());
-                list.add(isi);
+    
+    protected StylesheetInfo readStyleElement(Element style) {
+        String media = style.getAttribute("media");
+        if ("".equals(media)) {
+            media = "all";
+        }//default for HTML is "screen", but that is silly and firefox seems to assume "all"
+        StylesheetInfo info = new StylesheetInfo();
+        info.setMedia(media);
+        info.setType(style.getAttribute("type"));
+        info.setTitle(style.getAttribute("title"));
+        info.setOrigin(StylesheetInfo.AUTHOR);
+        
+        StringBuffer buf = new StringBuffer();
+        Node current = style.getFirstChild();
+        while (current != null) {
+            if (current.getNodeType() == Node.TEXT_NODE) {
+                buf.append(((Text)current).getData());
             }
+            current = current.getNextSibling();
         }
+        
+        String css = buf.toString().trim();
+        if (css.length() > 0) {
+            info.setContent(css.toString());
+            
+            return info;
+        } else {
+            return null;
+        }
+    }
+    
+    protected StylesheetInfo readLinkElement(Element link) {
+        if (!link.getAttribute("rel").equals("stylesheet")) {
+            return null;
+        }
+        
+        String type = link.getAttribute("type");
+        if (! (type.equals("") || type.equals("text/css"))) {
+            return null;
+        }
+        
+        StylesheetInfo info = new StylesheetInfo();
+        
+        if (type.equals("")) {
+            type = "text/css";
+        } // HACK is not entirely correct because default may be set by META tag or HTTP headers
+        info.setType(type);
+        
+        info.setOrigin(StylesheetInfo.AUTHOR);
+        String rel = link.getAttribute("rel");
+        if (rel.indexOf("alternate") != -1) {
+            return null;
+        }//DON'T get alternate stylesheets
+        
+        info.setUri(link.getAttribute("href"));
+        String media = link.getAttribute("media");
+        if ("".equals(media)) {
+            media = "screen";
+        }//the default in HTML
+        info.setMedia(media);
+        
+        String title = link.getAttribute("title");
+        info.setTitle(title);
 
-        InlineStyleInfo[] infos = new InlineStyleInfo[list.size()];
-        for (int i = 0; i < infos.length; i++) {
-            infos[i] = (InlineStyleInfo) list.get(i);
-        }
-        return infos;
+        return info;
     }
 
     /**
@@ -241,55 +289,32 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @param doc PARAM
      * @return The stylesheetLinks value
      */
-    public StylesheetInfo[] getStylesheetLinks(org.w3c.dom.Document doc) {
-        List list = new ArrayList();
+    public StylesheetInfo[] getStylesheets(org.w3c.dom.Document doc) {
+        List result = new ArrayList();
         //get the processing-instructions (actually for XmlDocuments)
-        StylesheetInfo[] refs = super.getStylesheetLinks(doc);
-        list.addAll(java.util.Arrays.asList(refs));
+        result.addAll(Arrays.asList(super.getStylesheets(doc)));
+        
         //get the link elements
-        org.w3c.dom.NodeList nl = null;
         Element html = doc.getDocumentElement();
         Element head = findFirstChild(html, "head");
-        if (head != null) {
-            nl = head.getElementsByTagName("link");
-        }
-        if (nl != null) {
-            for (int i = 0, len = nl.getLength(); i < len; i++) {
-                Element link = (Element) nl.item(i);
-                if (!link.getAttribute("rel").equals("stylesheet")) {
-                    continue;
+        Node current = head.getFirstChild();
+        while (current != null) {
+            if (current.getNodeType() == Node.ELEMENT_NODE) {
+                Element elem = (Element)current;
+                StylesheetInfo info = null;
+                if (elem.getTagName().equals("link")) {
+                    info = readLinkElement(elem);
+                } else if (elem.getTagName().equals("style")) {
+                    info = readStyleElement(elem);
                 }
-                StylesheetInfo info = new StylesheetInfo();
-                info.setOrigin(StylesheetInfo.AUTHOR);
-                String a = link.getAttribute("rel");
-                if (a.indexOf("alternate") != -1) {
-                    continue;
-                }//DON'T get alternate stylesheets
-                a = link.getAttribute("type");
-                if ("".equals(a)) {
-                    a = "text/css";
-                }//HACK: is not entirely correct because default may be set by META tag or HTTP headers
-                info.setType(a);
-                a = link.getAttribute("href");
-                info.setUri(a);
-                a = link.getAttribute("media");
-                if ("".equals(a)) {
-                    a = "screen";
-                }//the default in HTML
-                info.setMedia(a);
-                a = link.getAttribute("title");
-                info.setTitle(a);
-                if (info.getType().equals("text/css")) {
-                    list.add(info);
+                if (info != null) {
+                    result.add(info);
                 }
             }
+            current = current.getNextSibling();
         }
 
-        refs = new StylesheetInfo[list.size()];
-        for (int i = 0; i < refs.length; i++) {
-            refs[i] = (StylesheetInfo) list.get(i);
-        }
-        return refs;
+        return (StylesheetInfo[])result.toArray(new StylesheetInfo[result.size()]);
     }
 
     /**

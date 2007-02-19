@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 
 /**
@@ -41,11 +44,13 @@ public class StylesheetInfo {
     /** Description of the Field */
     private String uri;
     /** Description of the Field */
-    private String media = "all";
-    /** Description of the Field */
     private int origin = USER_AGENT;
     /** Description of the Field */
     private String type;
+    
+    private List mediaTypes = new ArrayList();
+    
+    private String content;
 
     /** Origin of stylesheet - user agent  */
     public final static int USER_AGENT = 0;
@@ -55,13 +60,15 @@ public class StylesheetInfo {
 
     /** Origin of stylesheet - author  */
     public final static int AUTHOR = 2;
+    
 
     /**
      * @param m  a single media identifier
      * @return   true if the stylesheet referenced applies to the medium
      */
-    public boolean appliesToMedia( String m ) {
-        return !( m.indexOf( "all" ) == -1 && media.indexOf( "all" ) == -1 && media.indexOf( m ) == -1 );
+    public boolean appliesToMedia(String m) {
+        return m.toLowerCase().equals("all") || 
+            mediaTypes.contains("all") || mediaTypes.contains(m.toLowerCase());
     }
 
     /**
@@ -79,7 +86,20 @@ public class StylesheetInfo {
      * @param media  The new media value
      */
     public void setMedia( String media ) {
-        this.media = media;
+        String[] mediaTypes = media.split(",");
+        List l = new ArrayList(mediaTypes.length);
+        for (int i = 0; i < mediaTypes.length; i++) {
+            l.add(mediaTypes[i].trim().toLowerCase());
+        }
+        this.mediaTypes = l;
+    }
+    
+    public void setMedia(List mediaTypes) {
+        this.mediaTypes = mediaTypes;
+    }
+    
+    public void addMedium(String medium) {
+        mediaTypes.add(medium);
     }
 
     /**
@@ -132,8 +152,8 @@ public class StylesheetInfo {
      *
      * @return   The media value
      */
-    public String getMedia() {
-        return media;
+    public List getMedia() {
+        return mediaTypes;
     }
 
     /**
@@ -170,6 +190,18 @@ public class StylesheetInfo {
      */
     public Stylesheet getStylesheet() {
         return stylesheet;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+    
+    public boolean isInline() {
+        return this.content != null;
     }
 }
 

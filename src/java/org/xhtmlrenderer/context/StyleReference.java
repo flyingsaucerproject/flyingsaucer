@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.context;
 
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +39,6 @@ import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.lib.DOMTreeResolver;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.newmatch.Matcher;
-import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
@@ -45,6 +46,7 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
 
@@ -52,6 +54,9 @@ import org.xhtmlrenderer.util.XRLog;
  * @author Torbj�rn Gannholm
  */
 public class StyleReference {
+    public static final boolean USE_NEW_PARSER = 
+        Configuration.valueFor("xr.css.parser", "legacy").equals("new");
+    
     /**
      * The Context this StyleReference operates in; used for property
      * resolution.
@@ -108,12 +113,44 @@ public class StyleReference {
 
         List infos = getStylesheets();
         XRLog.match("media = " + _context.getMedia());
-        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(
-                new DOMTreeResolver(), attRes, _stylesheetFactory, infos, _context.getMedia());
-        long start = System.currentTimeMillis();
-        createElementStyleMaps(doc, attRes, _matcher);
-        long end = System.currentTimeMillis();
-        XRLog.load("TIME: scan and parse element styles " + (end - start) + "ms");
+        if (! USE_NEW_PARSER) {
+            _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(
+                    new DOMTreeResolver(), attRes, _stylesheetFactory, infos, null, _context.getMedia());
+            long start = System.currentTimeMillis();
+            createElementStyleMaps(doc, attRes, _matcher);
+            long end = System.currentTimeMillis();
+            XRLog.load("TIME: scan and parse element styles " + (end - start) + "ms");
+        } else {
+            _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(
+                    new DOMTreeResolver(), 
+                    attRes, 
+                    _stylesheetFactory, 
+                    null, 
+                    readAndParseAll(infos, _context.getMedia()), 
+                    _context.getMedia());
+        }
+    }
+    
+    private List readAndParseAll(List infos, String medium) {
+        List result = new ArrayList(infos.size() + 15);
+        for (Iterator i = infos.iterator(); i.hasNext(); ) {
+            StylesheetInfo info = (StylesheetInfo)i.next();
+            if (info.appliesToMedia(medium)) {
+                Stylesheet sheet = info.getStylesheet();
+                
+                if (sheet == null) {
+                    sheet = _stylesheetFactory.getStylesheet(info);
+                }
+                
+                if (sheet.getImportRules().size() > 0) {
+                    result.addAll(readAndParseAll(sheet.getImportRules(), medium));
+                }
+                
+                result.add(sheet);
+            }
+        }
+        
+        return result;
     }
     
     private void createElementStyleMaps(Document doc, AttributeResolver attRes, Matcher matcher) {
@@ -296,36 +333,30 @@ public class StyleReference {
         if (!_stylesheetFactory.containsStylesheet(uri)) {
             java.io.InputStream stream = _nsh.getDefaultStylesheet();
             if (stream != null) {
-                Stylesheet sheet = _stylesheetFactory.parse(stream, info);
+                Stylesheet sheet = _stylesheetFactory.parse(new InputStreamReader(stream), info);
                 _stylesheetFactory.putStylesheet(uri, sheet);
                 infos.add(info);
             }
         } else
             infos.add(info);
 
-        StylesheetInfo[] refs = _nsh.getStylesheetLinks(_doc);
+        StylesheetInfo[] refs = _nsh.getStylesheets(_doc);
+        int inlineStyleCount = 0;
         if (refs != null) {
             for (int i = 0; i < refs.length; i++) {
-                uri = _uac.resolveURI(refs[i].getUri());
-                refs[i].setUri(uri);
+                if (! refs[i].isInline()) {
+                    uri = _uac.resolveURI(refs[i].getUri());
+                    refs[i].setUri(uri);
+                } else {
+                    refs[i].setUri(_uac.getBaseURL() + "#inline_style_" + (++inlineStyleCount));
+                    Stylesheet sheet = _stylesheetFactory.parse(
+                            new StringReader(refs[i].getContent()), refs[i]);
+                    refs[i].setStylesheet(sheet);
+                    refs[i].setUri(null);
+                }
             }
         }
         infos.addAll(Arrays.asList(refs));
-
-        uri = _uac.getBaseURL();
-        info = new StylesheetInfo();
-        info.setUri(uri);
-        info.setOrigin(StylesheetInfo.AUTHOR);
-        Stylesheet sheet = null;
-        if (_stylesheetFactory.containsStylesheet(uri)) {
-            sheet = _stylesheetFactory.getCachedStylesheet(uri);
-        } else {
-            InlineStyleInfo[] inlineStyle = _nsh.getInlineStyle(_doc);
-            sheet = _stylesheetFactory.parseInlines(inlineStyle, info);
-            _stylesheetFactory.putStylesheet(uri, sheet);
-        }
-        info.setStylesheet(sheet);//add it here because matcher cannot look it up, uri:s are in a twist
-        infos.add(info);
 
         // TODO: here we should also get user stylesheet from userAgent
 
@@ -340,6 +371,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2007/02/19 14:53:42  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.10  2006/09/11 19:23:29  peterbrant
  * Parse element styles all at once
  *

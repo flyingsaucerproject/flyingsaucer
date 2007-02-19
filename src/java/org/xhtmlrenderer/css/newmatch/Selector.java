@@ -33,7 +33,7 @@ import java.util.logging.Level;
  *
  * @author Torbjörn Gannholm
  */
-class Selector {
+public class Selector {
 
     /**
      * Description of the Field
@@ -105,19 +105,19 @@ class Selector {
     /**
      * Description of the Field
      */
-    final static int VISITED_PSEUDOCLASS = 2;
+    public final static int VISITED_PSEUDOCLASS = 2;
     /**
      * Description of the Field
      */
-    final static int HOVER_PSEUDOCLASS = 4;
+    public final static int HOVER_PSEUDOCLASS = 4;
     /**
      * Description of the Field
      */
-    final static int ACTIVE_PSEUDOCLASS = 8;
+    public final static int ACTIVE_PSEUDOCLASS = 8;
     /**
      * Description of the Field
      */
-    final static int FOCUS_PSEUDOCLASS = 16;
+    public final static int FOCUS_PSEUDOCLASS = 16;
 
     /**
      * Give each a unique ID to be able to create a key to internalize Matcher.Mappers
@@ -479,8 +479,6 @@ class Selector {
     /**
      * The correct specificity value for this selector and its sibling-axis
      * selectors
-     *
-     * @return
      */
     public int getSpecificityB() {
         if (siblingSelector != null) {
@@ -492,8 +490,6 @@ class Selector {
     /**
      * The correct specificity value for this selector and its sibling-axis
      * selectors
-     *
-     * @return
      */
     public int getSpecificityD() {
         if (siblingSelector != null) {
@@ -505,8 +501,6 @@ class Selector {
     /**
      * The correct specificity value for this selector and its sibling-axis
      * selectors
-     *
-     * @return
      */
     public int getSpecificityC() {
         if (siblingSelector != null) {
@@ -578,6 +572,48 @@ class Selector {
 
     public int getSelectorID() {
         return selectorID;
+    }
+    
+    public void setName(String name) {
+        _name = name;
+    }
+    
+    public void setPos(int pos) {
+        _pos = pos;
+        if (siblingSelector != null) {
+            siblingSelector.setPos(pos);
+        }
+        if (chainedSelector != null) {
+            chainedSelector.setPos(pos);
+        }
+    }
+    
+    public void setParent(Ruleset ruleset) {
+        _parent = ruleset;
+    }
+    
+    public void setAxis(int axis) {
+        _axis = axis;
+    }
+    
+    public void setSpecificityB(int b) {
+        _specificityB = b;
+    }
+    
+    public void setSpecificityC(int c) {
+        _specificityC = c;
+    }
+    
+    public void setSpecificityD(int d) {
+        _specificityD = d;
+    }
+    
+    public void setChainedSelector(Selector selector) {
+        chainedSelector = selector;
+    }
+    
+    public void setSiblingSelector(Selector selector) {
+        siblingSelector = selector;
     }
 }
 

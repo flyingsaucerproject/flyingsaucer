@@ -60,31 +60,31 @@ public class BorderStylePropertyExplosionTest extends AbstractPropertyExplosionT
         Map testVals = new TreeMap();
 
         testVals = new HashMap();
-        testVals.put(CSSName.BORDER_STYLE_TOP, "none");
-        testVals.put(CSSName.BORDER_STYLE_BOTTOM, "none");
-        testVals.put(CSSName.BORDER_STYLE_RIGHT, "none");
-        testVals.put(CSSName.BORDER_STYLE_LEFT, "none");
+        testVals.put(CSSName.BORDER_TOP_STYLE, "none");
+        testVals.put(CSSName.BORDER_BOTTOM_STYLE, "none");
+        testVals.put(CSSName.BORDER_RIGHT_STYLE, "none");
+        testVals.put(CSSName.BORDER_LEFT_STYLE, "none");
         temp.put( "p#OneToFour", new Object[]{"{ border-style: none; }", testVals} );
 
         testVals = new HashMap();
-        testVals.put(CSSName.BORDER_STYLE_TOP, "hidden");
-        testVals.put(CSSName.BORDER_STYLE_BOTTOM, "hidden");
-        testVals.put(CSSName.BORDER_STYLE_RIGHT, "dotted");
-        testVals.put(CSSName.BORDER_STYLE_LEFT, "dotted");
+        testVals.put(CSSName.BORDER_TOP_STYLE, "hidden");
+        testVals.put(CSSName.BORDER_BOTTOM_STYLE, "hidden");
+        testVals.put(CSSName.BORDER_RIGHT_STYLE, "dotted");
+        testVals.put(CSSName.BORDER_LEFT_STYLE, "dotted");
         temp.put( "p#TwoToFour", new Object[]{"{ border-style: hidden dotted; }", testVals} );
 
         testVals = new HashMap();
-        testVals.put(CSSName.BORDER_STYLE_TOP, "dashed");
-        testVals.put(CSSName.BORDER_STYLE_RIGHT, "solid");
-        testVals.put(CSSName.BORDER_STYLE_LEFT, "solid");
-        testVals.put(CSSName.BORDER_STYLE_BOTTOM, "double");
+        testVals.put(CSSName.BORDER_TOP_STYLE, "dashed");
+        testVals.put(CSSName.BORDER_RIGHT_STYLE, "solid");
+        testVals.put(CSSName.BORDER_LEFT_STYLE, "solid");
+        testVals.put(CSSName.BORDER_BOTTOM_STYLE, "double");
         temp.put( "p#ThreeToFour", new Object[]{"{ border-style: dashed solid double; }", testVals} );
 
         testVals = new HashMap();
-        testVals.put(CSSName.BORDER_STYLE_TOP, "groove");
-        testVals.put(CSSName.BORDER_STYLE_RIGHT, "ridge");
-        testVals.put(CSSName.BORDER_STYLE_BOTTOM, "inset");
-        testVals.put(CSSName.BORDER_STYLE_LEFT, "outset");
+        testVals.put(CSSName.BORDER_TOP_STYLE, "groove");
+        testVals.put(CSSName.BORDER_RIGHT_STYLE, "ridge");
+        testVals.put(CSSName.BORDER_BOTTOM_STYLE, "inset");
+        testVals.put(CSSName.BORDER_LEFT_STYLE, "outset");
         temp.put( "p#FourToFour", new Object[]{"{ border-style: groove ridge inset outset; }", testVals} );
         return temp;
     }
@@ -119,6 +119,9 @@ public class BorderStylePropertyExplosionTest extends AbstractPropertyExplosionT
  *
 
  * $Log$
+ * Revision 1.3  2007/02/19 14:54:18  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.2  2005/01/24 14:32:30  pdoubleya
  * Cleaned imports, removed references to FSCSSTestCase.
  *

@@ -143,13 +143,13 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
         COLOR_IDX = 2;
 
         PROP_EXPLODE = new HashMap();
-        CSSName top[] = new CSSName[]{CSSName.BORDER_WIDTH_TOP, CSSName.BORDER_STYLE_TOP, CSSName.BORDER_COLOR_TOP};
+        CSSName top[] = new CSSName[]{CSSName.BORDER_TOP_WIDTH, CSSName.BORDER_TOP_STYLE, CSSName.BORDER_TOP_COLOR};
 
-        CSSName right[] = new CSSName[]{CSSName.BORDER_WIDTH_RIGHT, CSSName.BORDER_STYLE_RIGHT, CSSName.BORDER_COLOR_RIGHT};
+        CSSName right[] = new CSSName[]{CSSName.BORDER_RIGHT_WIDTH, CSSName.BORDER_RIGHT_STYLE, CSSName.BORDER_RIGHT_COLOR};
 
-        CSSName bottom[] = new CSSName[]{CSSName.BORDER_WIDTH_BOTTOM, CSSName.BORDER_STYLE_BOTTOM, CSSName.BORDER_COLOR_BOTTOM};
+        CSSName bottom[] = new CSSName[]{CSSName.BORDER_BOTTOM_WIDTH, CSSName.BORDER_BOTTOM_STYLE, CSSName.BORDER_BOTTOM_COLOR};
 
-        CSSName left[] = new CSSName[]{CSSName.BORDER_WIDTH_LEFT, CSSName.BORDER_STYLE_LEFT, CSSName.BORDER_COLOR_LEFT};
+        CSSName left[] = new CSSName[]{CSSName.BORDER_LEFT_WIDTH, CSSName.BORDER_LEFT_STYLE, CSSName.BORDER_LEFT_COLOR};
 
         PROP_EXPLODE.put(CSSName.BORDER_TOP_SHORTHAND, top);
         PROP_EXPLODE.put(CSSName.BORDER_RIGHT_SHORTHAND, right);
@@ -163,6 +163,9 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2007/02/19 14:53:34  peterbrant
+ * Integrate new CSS parser
+ *
  * Revision 1.5  2005/05/08 13:02:37  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *
