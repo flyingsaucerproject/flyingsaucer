@@ -849,8 +849,8 @@ public class CalculatedStyle {
         
         return isFloated() || 
             position == IdentValue.ABSOLUTE || position == IdentValue.FIXED ||
-            display == IdentValue.INLINE_BLOCK || display == IdentValue.TABLE_CELL ||
-            ! isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
+            display == IdentValue.INLINE_BLOCK || display == IdentValue.TABLE_CELL 
+            /* || ! isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) */;
     }
     
     public boolean requiresLayer() {
@@ -932,7 +932,7 @@ public class CalculatedStyle {
     }
     
     public boolean isMayCollapseWithChildren() {
-        return isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) && 
+        return /* isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) && */ 
             ! (isFloated() || isAbsolute() || isFixed() || isInlineBlock());
     }
     
@@ -1004,6 +1004,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.79  2007/02/20 16:11:11  peterbrant
+ * Comment out references to CSSName.OVERFLOW
+ *
  * Revision 1.78  2007/02/20 01:17:11  peterbrant
  * Start CSS parser cleanup
  *
