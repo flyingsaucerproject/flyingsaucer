@@ -515,6 +515,8 @@ public class BoxBuilder {
             result.setElement(element);
             result.setChildrenContentType(BlockBox.CONTENT_INLINE);
             result.setPseudoElementOrClass(peName);
+            
+            info.setContainsBlockLevelContent(true);
 
             return new ArrayList(Collections.singletonList(result));
         }
