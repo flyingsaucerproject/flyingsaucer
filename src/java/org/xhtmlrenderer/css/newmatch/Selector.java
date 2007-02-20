@@ -125,47 +125,6 @@ public class Selector {
     private int selectorID;
     private static int selectorCount = 0;
 
-    /**
-     * Creates a new instance of Selector. Only called in the context of adding
-     * a Selector to a Ruleset or adding a chained Selector to another Selector.
-     *
-     * @param pos         PARAM
-     * @param parent      PARAM
-     * @param axis        see values above.
-     * @param elementName matches any element if null
-     */
-    Selector(int pos, Ruleset parent, int axis, String elementName) {
-        this();
-        _parent = parent;
-        _axis = axis;
-        _name = elementName;
-        _pos = pos;
-        _specificityB = 0;
-        _specificityC = 0;
-        _specificityD = 0;
-        if (_name != null) {
-            _specificityD++;
-        }
-    }
-
-    /**
-     * Constructor for the Selector object
-     *
-     * @param pos          PARAM
-     * @param specificityB PARAM
-     * @param specificityC PARAM
-     * @param specificityD PARAM
-     * @param parent       PARAM
-     * @param axis         PARAM
-     * @param elementName  PARAM
-     */
-    private Selector(int pos, int specificityB, int specificityC, int specificityD, Ruleset parent, int axis, String elementName) {
-        this(pos, parent, axis, elementName);
-        _specificityB += specificityB;
-        _specificityC += specificityC;
-        _specificityD += specificityD;
-    }
-
     public Selector() {
         selectorID = selectorCount++;
     }
@@ -244,47 +203,6 @@ public class Selector {
             }
         }
         return true;
-    }
-
-    /**
-     * append a selector to this chain, specifying which axis it should be
-     * evaluated on
-     *
-     * @param axis        PARAM
-     * @param elementName PARAM
-     * @return Returns
-     */
-    public Selector appendChainedSelector(int axis, String elementName) {
-        checkPseudoElement();
-        if (chainedSelector == null) {
-            return (chainedSelector = new Selector(_pos, getSpecificityB(), getSpecificityC(), getSpecificityD(), _parent, axis, elementName));
-        } else {
-            return chainedSelector.appendChainedSelector(axis, elementName);
-        }
-    }
-
-    /**
-     * append a selector to this chain, specifying which axis it should be
-     * evaluated on
-     *
-     * @param axis        PARAM
-     * @param elementName PARAM
-     * @return Returns
-     */
-    public Selector appendSiblingSelector(int axis, String elementName) {
-        checkPseudoElement();
-        if (siblingSelector == null) {
-            return (siblingSelector = new Selector(_pos, getSpecificityB(), getSpecificityC(), getSpecificityD(), _parent, axis, elementName));
-        } else {
-            return siblingSelector.appendSiblingSelector(axis, elementName);
-        }
-    }
-
-    private void checkPseudoElement() {
-        if (_pe != null) {
-            addUnsupportedCondition();
-            XRLog.match(Level.WARNING, "Trying to append child selectors to pseudoElement " + _pe);
-        }
     }
 
     /**
@@ -481,9 +399,6 @@ public class Selector {
      * selectors
      */
     public int getSpecificityB() {
-        if (siblingSelector != null) {
-            return siblingSelector.getSpecificityB();
-        }
         return _specificityB;
     }
 
@@ -492,9 +407,6 @@ public class Selector {
      * selectors
      */
     public int getSpecificityD() {
-        if (siblingSelector != null) {
-            return siblingSelector.getSpecificityD();
-        }
         return _specificityD;
     }
 
@@ -503,9 +415,6 @@ public class Selector {
      * selectors
      */
     public int getSpecificityC() {
-        if (siblingSelector != null) {
-            return siblingSelector.getSpecificityC();
-        }
         return _specificityC;
     }
 
