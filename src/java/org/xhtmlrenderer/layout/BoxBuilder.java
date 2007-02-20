@@ -418,6 +418,12 @@ public class BoxBuilder {
     private static List createGeneratedInlineBoxes(
             LayoutContext c, Element element, PropertyValue propValue, String peName) {
         List values = propValue.getValues();
+        
+        if (values == null) {
+            // content: normal or content: none
+            return Collections.EMPTY_LIST;
+        }
+        
         List result = new ArrayList(values.size());
         
         for (Iterator i = values.iterator(); i.hasNext(); ) {

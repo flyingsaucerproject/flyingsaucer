@@ -54,6 +54,11 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
         for (Iterator i = values.iterator(); i.hasNext(); ) {
             PropertyValue value = (PropertyValue)i.next();
             
+            if (value.getOperator() != null) {
+                throw new CSSParseException(
+                        "Found unexpected operator, " + value.getOperator().getExternalName(), -1);
+            }
+            
             short type = value.getPrimitiveType();
             if (type == CSSPrimitiveValue.CSS_URI) {
                 continue;
@@ -82,7 +87,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
         
         if (resultValues.size() > 0) {
             return Collections.singletonList(
-                    new PropertyDeclaration(CSSName.CONTENT, new PropertyValue(values), important, origin));
+                    new PropertyDeclaration(CSSName.CONTENT, new PropertyValue(resultValues), important, origin));
         } else {
             return Collections.EMPTY_LIST;
         }
