@@ -1,28 +1,32 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2005 Patrick Wright
+ * Copyright (c) 2007 Wisconsin Court System
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.css.style.derived;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.DerivedValue;
 
-/**
- * Created by IntelliJ IDEA.
- * User: patrick
- * Date: Oct 17, 2005
- * Time: 2:10:04 PM
- * To change this template use File | Settings | File Templates.
- */
 public class StringValue extends DerivedValue {
     private String[] _stringAsArray;
 
-    public StringValue (
-            CSSName name,
-            short cssSACUnitType,
-            String cssText,
-            String cssStringValue
-    ) {
-        super(name, cssSACUnitType, cssText, cssStringValue);
-    }
-    
     public StringValue(CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getStringValue());
         if (value.getStringArrayValue() != null) {
@@ -30,16 +34,7 @@ public class StringValue extends DerivedValue {
         }
     }
 
-    /**
-     * Returns the value as assigned, split into a string array on comma.
-     *
-     * @return Returns
-     */
     public String[] asStringArray() {
-        if (_stringAsArray == null) {
-            String str = getStringValue();
-            _stringAsArray = (str == null ? new String[0] : str.split(","));
-        }
         return _stringAsArray;
     }
 

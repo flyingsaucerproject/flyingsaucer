@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2005 Patrick Wright
+ * Copyright (c) 2007 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,8 +20,6 @@
 package org.xhtmlrenderer.css.style.derived;
 
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -31,41 +30,11 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: patrick
- * Date: Oct 17, 2005
- * Time: 2:09:42 PM
- * To change this template use File | Settings | File Templates.
- */
 public class LengthValue extends DerivedValue {
-    /**
-     * A regex Pattern for CSSLength. Groups are the number portion, and the
-     * suffix; if there is a match <code>matcher.group(0)</code> returns the
-     * input string, <code>group(1)</code> returns the number (may be a float),
-     * and <code>group(2)</code> returns the suffix. Suffix is optional in the
-     * pattern, so check if <code>group(2)</code> is null before using.
-     * Only values that are identically zero may leave out the unit (suffix).
-     */
-    private final static Pattern CSS_LENGTH_PATTERN = Pattern.compile("(-?\\d{1,10}(\\.?\\d{0,10})?)((em)|(ex)|(px)|(%)|(in)|(cm)|(mm)|(pt)|(pc))?");
-
-    /**
-     * Description of the Field
-     */
     private final static int MM__PER__CM = 10;
-    /**
-     * Description of the Field
-     */
     private final static float CM__PER__IN = 2.54F;
-    /**
-     * Description of the Field
-     */
     private final static float PT__PER__IN = 1f / 72f;
-    /**
-     * Description of the Field
-     */
     private final static float PC__PER__PT = 12;
 
     /**
@@ -79,20 +48,6 @@ public class LengthValue extends DerivedValue {
      * The specified primitive SAC data type given for this length, from the CSS text
      */
     private short _lengthPrimitiveType;
-
-    protected LengthValue() {
-        super();
-    }
-
-    public LengthValue(CalculatedStyle style,
-                       CSSName name,
-                       short cssSACUnitType,
-                       String cssText,
-                       String cssStringValue) {
-        super(name, cssSACUnitType, cssText, cssStringValue);
-        _style = style;
-        pullLengthValueParts(name);
-    }
     
     public LengthValue(CalculatedStyle style, CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
@@ -128,39 +83,9 @@ public class LengthValue extends DerivedValue {
                 ctx);
     }
 
-    protected static Matcher getLengthMatcher(String len) {
-        return CSS_LENGTH_PATTERN.matcher(len);
-    }
-
     public boolean hasAbsoluteUnit() {
         return ValueConstants.isAbsoluteUnit(getCssSacUnitType());
     }
-
-    /**
-     * Given the {@link org.w3c.dom.css.CSSValue}, which contains a string holding a CSSLength,
-     * pull out the numeric portion and the type portion separately; stored as
-     * member fields in this class. We use a regex to do this.
-     */
-    private void pullLengthValueParts(CSSName cssName) {
-        Matcher m = CSS_LENGTH_PATTERN.matcher(getStringValue());
-        String lengthAsString = null;
-        if (m.matches()) {
-            lengthAsString = m.group(1);
-            _lengthAsFloat = new Float(lengthAsString).floatValue();
-            _lengthPrimitiveType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
-        } else {
-            throw new XRRuntimeException("Could not extract length for " + cssName +
-                    " from " + getStringValue() +
-                    " using " + CSS_LENGTH_PATTERN);
-        }
-
-        if (lengthAsString == null) {
-            throw new XRRuntimeException("Could not extract length for " + cssName +
-                    " from " + getStringValue() +
-                    "; is null, using " + CSS_LENGTH_PATTERN);
-        }
-    }
-
 
     public static float calcFloatProportionalValue(CalculatedStyle style,
                                                       CSSName cssName,

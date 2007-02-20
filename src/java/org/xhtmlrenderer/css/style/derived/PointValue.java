@@ -1,8 +1,27 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2005 Patrick Wright
+ * Copyright (c) 2007 Wisconsin Court System
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.css.style.derived;
 
 import java.awt.Point;
 import java.util.List;
-import java.util.regex.Matcher;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.ValueConstants;
@@ -10,7 +29,6 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 /**
  * A DerivedValue representing a point in space; used for background-position.
@@ -27,20 +45,6 @@ public class PointValue extends DerivedValue {
     private Point _point;
     
     private CalculatedStyle _style;
-
-    public PointValue (
-            CalculatedStyle style,
-            CSSName name,
-            short cssSACUnitType,
-            String cssText,
-            String cssStringValue
-    ) {
-        super(name, cssSACUnitType, cssText, cssStringValue);
-        _style = style;
-        if ( name == CSSName.BACKGROUND_POSITION ) {
-            pullPointValuesForBGPos(cssText);
-        }
-    }
     
     public PointValue(CalculatedStyle style, CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
@@ -57,13 +61,14 @@ public class PointValue extends DerivedValue {
         
         _yPos = y.getFloatValue();
         _yType = y.getPrimitiveType();
+        
+        if (ValueConstants.isAbsoluteUnit(_xType) && ValueConstants.isAbsoluteUnit(_yType)) {
+            _isAbsolute = true;
+        } else {
+            _isAbsolute = false;
+        }
     }
 
-    /**
-     * @param parentWidth
-     * @param parentHeight
-     * @param ctx
-     */
     public Point asPoint(
             CSSName cssName,
             float parentWidth,
@@ -89,52 +94,6 @@ public class PointValue extends DerivedValue {
         return pt;
     }
 
-    /**
-     * This method extracts the two values from the background-position
-     * assignment. It tries to resolve them if both values are absolute, but if
-     * proportional, this is deferred until the Point is requested. We pull
-     * immediately because it's a small String operation that would be silly to
-     * reproduce on each request.
-     * <p/>
-     * precondition: the value has been canonicalized to a _point.
-     * Handled by {@link org.xhtmlrenderer.css.sheet.factory.BackgroundPositionPropertyDeclarationFactory}
-     *
-     * @param cssText The CSS text for the property
-     */
-    private void pullPointValuesForBGPos(String cssText) {
-        String[] pos = cssText.split(" ");
-        try {
-            Matcher m = LengthValue.getLengthMatcher(pos[0]);
-            m.matches();
-            String xAsString = m.group(1);
-            _xPos = new Float(xAsString).floatValue();
-            _xType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
-
-            m = LengthValue.getLengthMatcher(pos[1]);
-            m.matches();
-            String yAsString = m.group(1);
-            _yPos = new Float(yAsString).floatValue();
-            _yType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
-
-            if (ValueConstants.isAbsoluteUnit(_xType) && ValueConstants.isAbsoluteUnit(_yType)) {
-                _isAbsolute = true;
-            } else {
-                _isAbsolute = false;
-            }
-        } catch (Exception ex) {
-            StringBuffer msg = new StringBuffer();
-            msg.append("background-position: failed to convert '" + cssText + "' into a Point. ");
-            msg.append("Property value (as text) was split into " + pos.length + " values for positioning. ");
-            if (pos.length >= 1) {
-                msg.append(" background-position x-pos is " + pos[0]);
-            }
-            if (pos.length == 2) {
-                msg.append(" background-position y-pos is " + pos[1]);
-            }
-            throw new XRRuntimeException(msg.toString(), ex);
-        }
-    }
-    
     private CalculatedStyle getStyle() {
         return _style;
     }

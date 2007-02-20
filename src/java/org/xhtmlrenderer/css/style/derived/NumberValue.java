@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2005 Torbj�rn Gannholm
+ * Copyright (c) 2007 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -23,19 +24,9 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
 
-/**
- * User: tobe
- * Date: 2005-nov-12
- * Time: 20:33:39
- */
 public class NumberValue extends DerivedValue {
     private float _floatValue;
 
-    public NumberValue(CSSName cssName, short cssSACUnitType, String cssText, String cssStringValue) {
-        super(cssName, cssSACUnitType, cssText, cssStringValue);
-        _floatValue = new Float(getStringValue()).floatValue();
-    }
-    
     public NumberValue(CSSName cssName, PropertyValue value) {
         super(cssName, value.getPrimitiveType(), value.getCssText(), value.getCssText());
         _floatValue = value.getFloatValue();

@@ -1,9 +1,27 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2005 Patrick Wright
+ * Copyright (c) 2007 Wisconsin Court System
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.css.style.derived;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -12,28 +30,8 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 
-/**
- * Created by IntelliJ IDEA.
- * User: patrick
- * Date: Oct 17, 2005
- * Time: 2:21:32 PM
- * To change this template use File | Settings | File Templates.
- */
 public class DerivedValueFactory {
-    /**
-     * Properties which only accept color assignments; transparent is included.
-     */
-    private static final Set COLOR_PROPERTIES;
-
-    /**
-     * Properties which only accept string assignments (e.g. URLs)
-     */
-    private static final Set STRING_PROPERTIES;
-
-    /**
-     * Properties which only accept enumerated constants
-     */
-    private static final Set IDENT_PROPERTIES;
+    private static final Map CACHED_COLORS = new HashMap();
     
     public static FSDerivedValue newDerivedValue(
             CalculatedStyle style, CSSName cssName, PropertyValue value) {
@@ -70,53 +68,5 @@ public class DerivedValueFactory {
             default:
                 throw new IllegalArgumentException();
         }
-    }
-    
-    private static final Map CACHED_COLORS;
-
-    static {
-        CACHED_COLORS = new HashMap();
-
-        COLOR_PROPERTIES = new HashSet();
-        COLOR_PROPERTIES.add(CSSName.COLOR);
-        COLOR_PROPERTIES.add(CSSName.BACKGROUND_COLOR);
-        COLOR_PROPERTIES.add(CSSName.OUTLINE_COLOR);
-        COLOR_PROPERTIES.add(CSSName.BORDER_TOP_COLOR);
-        COLOR_PROPERTIES.add(CSSName.BORDER_RIGHT_COLOR);
-        COLOR_PROPERTIES.add(CSSName.BORDER_BOTTOM_COLOR);
-        COLOR_PROPERTIES.add(CSSName.BORDER_LEFT_COLOR);
-
-        STRING_PROPERTIES = new HashSet();
-        STRING_PROPERTIES.add(CSSName.FONT_FAMILY);
-        STRING_PROPERTIES.add(CSSName.BACKGROUND_IMAGE);
-        STRING_PROPERTIES.add(CSSName.LIST_STYLE_IMAGE);
-        STRING_PROPERTIES.add(CSSName.CONTENT);
-        STRING_PROPERTIES.add(CSSName.QUOTES);
-        STRING_PROPERTIES.add(CSSName.FS_MOVE_TO_FLOW);
-        STRING_PROPERTIES.add(CSSName.FS_FLOW_TOP);
-        STRING_PROPERTIES.add(CSSName.FS_FLOW_RIGHT);
-        STRING_PROPERTIES.add(CSSName.FS_FLOW_BOTTOM);
-        STRING_PROPERTIES.add(CSSName.FS_FLOW_LEFT);
-
-        IDENT_PROPERTIES = new HashSet();
-        IDENT_PROPERTIES.add(CSSName.BACKGROUND_ATTACHMENT);
-        IDENT_PROPERTIES.add(CSSName.BACKGROUND_REPEAT);
-        IDENT_PROPERTIES.add(CSSName.BORDER_COLLAPSE);
-        IDENT_PROPERTIES.add(CSSName.BORDER_BOTTOM_STYLE);
-        IDENT_PROPERTIES.add(CSSName.BORDER_LEFT_STYLE);
-        IDENT_PROPERTIES.add(CSSName.BORDER_RIGHT_STYLE);
-        IDENT_PROPERTIES.add(CSSName.BORDER_TOP_STYLE);
-        IDENT_PROPERTIES.add(CSSName.DISPLAY);
-        IDENT_PROPERTIES.add(CSSName.EMPTY_CELLS);        
-        IDENT_PROPERTIES.add(CSSName.FLOAT);
-        IDENT_PROPERTIES.add(CSSName.FONT_STYLE);
-        IDENT_PROPERTIES.add(CSSName.FONT_VARIANT);
-        IDENT_PROPERTIES.add(CSSName.FONT_WEIGHT);
-        IDENT_PROPERTIES.add(CSSName.LIST_STYLE_TYPE);
-        IDENT_PROPERTIES.add(CSSName.POSITION);
-        IDENT_PROPERTIES.add(CSSName.TEXT_DECORATION);
-        IDENT_PROPERTIES.add(CSSName.TEXT_TRANSFORM);
-        IDENT_PROPERTIES.add(CSSName.VERTICAL_ALIGN);
-        IDENT_PROPERTIES.add(CSSName.WHITE_SPACE);
     }
 }
