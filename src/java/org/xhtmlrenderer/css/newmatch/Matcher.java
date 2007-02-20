@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -60,9 +59,6 @@ public class Matcher {
     
     private List _pageRules;
     
-    private Map _elementStyles;
-    private Map _nonCSSStyles;
-
     public Matcher(
             TreeResolver tr, AttributeResolver ar, StylesheetFactory factory, List stylesheets, String medium) {
         newMaps();
@@ -277,15 +273,13 @@ public class Matcher {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
-            if (_elementStyles == null) {
-                String style = _attRes.getElementStyling(e);
-                if (style == null || style.equals("")) {
-                    return null;
-                }
-                return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
-            } else {
-                return (Ruleset)_elementStyles.get(e);
+            
+            String style = _attRes.getElementStyling(e);
+            if (style == null || style.equals("")) {
+                return null;
             }
+            
+            return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
         }
     }
 
@@ -294,15 +288,11 @@ public class Matcher {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
-            if (_nonCSSStyles == null) {
-                String style = _attRes.getNonCssStyling(e);
-                if (style == null || style.equals("")) {
-                    return null;
-                }
-                return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
-            } else {
-                return (Ruleset)_nonCSSStyles.get(e);
+            String style = _attRes.getNonCssStyling(e);
+            if (style == null || style.equals("")) {
+                return null;
             }
+            return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
         }
     }
 
@@ -456,22 +446,6 @@ public class Matcher {
             }
             return cs;
         }
-    }
-
-    public Map getElementStyles() {
-        return _elementStyles;
-    }
-
-    public void setElementStyles(Map elementStyles) {
-        _elementStyles = elementStyles;
-    }
-
-    public Map getNonCSSStyles() {
-        return _nonCSSStyles;
-    }
-
-    public void setNonCSSStyles(Map nonCSSStyles) {
-        _nonCSSStyles = nonCSSStyles;
     }
 }
 
