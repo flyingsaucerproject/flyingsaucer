@@ -608,6 +608,7 @@ public class CSSParser {
             return (Selector)selectors.get(0);
         }
         
+        int lastDescendantOrChildAxis = Selector.DESCENDANT_AXIS;
         Selector result = null;
         for (int i = 0; i < count - 1; i++) {
             Selector first = (Selector)selectors.get(i);
@@ -623,8 +624,10 @@ public class CSSParser {
             boolean sibling = false;
             if (combinator == Token.TK_S) {
                 second.setAxis(Selector.DESCENDANT_AXIS);
+                lastDescendantOrChildAxis = Selector.DESCENDANT_AXIS;
             } else if (combinator == Token.TK_GREATER) {
                 second.setAxis(Selector.CHILD_AXIS);
+                lastDescendantOrChildAxis = Selector.CHILD_AXIS;
             } else if (combinator == Token.TK_PLUS) {
                 first.setAxis(Selector.IMMEDIATE_SIBLING_AXIS);
                 sibling = true;
@@ -645,9 +648,13 @@ public class CSSParser {
                     result = second;
                 }
                 if (i > 0) {
-                    Selector previous = (Selector)selectors.get(i-1);
-                    if (previous.getChainedSelector() == first) {
-                        previous.setChainedSelector(second);
+                    for (int j = i-1; j >= 0; j--) {
+                        Selector selector = (Selector)selectors.get(j);
+                        if (selector.getChainedSelector() == first) {
+                            selector.setChainedSelector(second);
+                            second.setAxis(lastDescendantOrChildAxis);
+                            break;
+                        }
                     }
                 }
             }
