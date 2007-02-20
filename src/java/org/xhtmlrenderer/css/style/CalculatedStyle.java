@@ -27,11 +27,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.RGBColor;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
@@ -496,67 +493,9 @@ public class CalculatedStyle {
     }
 
     private FSDerivedValue deriveValue(CSSName cssName, org.w3c.dom.css.CSSPrimitiveValue value) {
-        if (value instanceof PropertyValue) {
-            return DerivedValueFactory.newDerivedValue(this, cssName, (PropertyValue)value);
-        }
-        
-        // Start assuming our computed value is the same as the specified value
-        RGBColor rgb = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR ? value.getRGBColorValue() : null);
-        String s = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ? value.getStringValue() : null);
-        String cssText = value.getCssText();
-
-        String converted = Idents.convertIdent(cssName, value.getCssText());
-        if (! converted.equals(value.getCssText())) {
-            cssText = converted;
-            s = converted;
-        }
-
-        // derive the value, will also handle "inherit"
-        FSDerivedValue dval = null;
-        try {
-            dval = DerivedValueFactory.newDerivedValue(this,
-                    cssName,
-                    value.getPrimitiveType(),
-                    cssText,
-                    s,
-                    rgb);
-        } catch (Exception e) {
-            dval = assignInitialValue(cssName);
-            XRLog.cascade(
-                    Level.WARNING,
-                    "Property " + cssName + " had an illegal or unexpected value. " +
-                    "This may actually be a limitation or bug in the Flying Saucer code, so please report " +
-                    "it. The assigned text was '" + cssText + "'." +
-                            (s == null ? "" : " (or possibly there was a problem with" +
-                    "our interpretation of the value (once converted) '" + s + "').") +
-                    "The property is being assigned its valid _initial_ value as defined by the CSS 2.1 spec." +
-                    "Original exception message: " + e.getMessage());
-        }
-        return dval;
+        return DerivedValueFactory.newDerivedValue(this, cssName, (PropertyValue)value);
     }
-
-    private FSDerivedValue assignInitialValue(CSSName cssName) {
-        String initialValue = CSSName.initialValue(cssName);
-        FSDerivedValue dval = null;
-        try {
-            dval = DerivedValueFactory.newDerivedValue(this,
-                    cssName,
-                    CSSPrimitiveValue.CSS_STRING,
-                    initialValue,
-                    initialValue,
-                    null);
-        } catch (Exception e) {
-            XRLog.cascade(
-                    Level.WARNING,
-                    "Property " + cssName + " had an initial value of " + initialValue + " which " +
-                    "could not be converted for use in styling. Have no option but to assign a " +
-                    "null at this point, which may cause the render or layout to break. Exception " +
-                    "message was: " + e.getMessage());
-        }
-
-        return dval;
-    }
-
+    
     private String genStyleKey() {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < _derivedValuesById.length; i++) {
@@ -1065,6 +1004,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.78  2007/02/20 01:17:11  peterbrant
+ * Start CSS parser cleanup
+ *
  * Revision 1.77  2007/02/20 00:01:12  peterbrant
  * asColor() fix
  *

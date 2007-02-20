@@ -23,22 +23,17 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.lib.DOMTreeResolver;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.newmatch.Matcher;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
@@ -46,7 +41,6 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
 
@@ -54,9 +48,6 @@ import org.xhtmlrenderer.util.XRLog;
  * @author Torbj�rn Gannholm
  */
 public class StyleReference {
-    public static final boolean USE_NEW_PARSER = 
-        Configuration.valueFor("xr.css.parser", "legacy").equals("new");
-    
     /**
      * The Context this StyleReference operates in; used for property
      * resolution.
@@ -113,22 +104,12 @@ public class StyleReference {
 
         List infos = getStylesheets();
         XRLog.match("media = " + _context.getMedia());
-        if (! USE_NEW_PARSER) {
-            _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(
-                    new DOMTreeResolver(), attRes, _stylesheetFactory, infos, null, _context.getMedia());
-            long start = System.currentTimeMillis();
-            createElementStyleMaps(doc, attRes, _matcher);
-            long end = System.currentTimeMillis();
-            XRLog.load("TIME: scan and parse element styles " + (end - start) + "ms");
-        } else {
-            _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(
-                    new DOMTreeResolver(), 
-                    attRes, 
-                    _stylesheetFactory, 
-                    null, 
-                    readAndParseAll(infos, _context.getMedia()), 
-                    _context.getMedia());
-        }
+        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(
+                new DOMTreeResolver(), 
+                attRes, 
+                _stylesheetFactory, 
+                readAndParseAll(infos, _context.getMedia()), 
+                _context.getMedia());
     }
     
     private List readAndParseAll(List infos, String medium) {
@@ -151,71 +132,6 @@ public class StyleReference {
         }
         
         return result;
-    }
-    
-    private void createElementStyleMaps(Document doc, AttributeResolver attRes, Matcher matcher) {
-        StringBuffer elementStyles = new StringBuffer();
-        List elementStyleElements = new ArrayList();
-        
-        StringBuffer nonCSSStyles = new StringBuffer();
-        List nonCSSStyleElements = new ArrayList();
-        
-        scanElement(
-                attRes, doc.getDocumentElement(),
-                elementStyles, elementStyleElements,
-                nonCSSStyles, nonCSSStyleElements);
-        
-        long start = System.currentTimeMillis();
-        matcher.setElementStyles(createStyleMap(elementStyleElements, elementStyles.toString()));
-        matcher.setNonCSSStyles(createStyleMap(nonCSSStyleElements, nonCSSStyles.toString()));
-        long end = System.currentTimeMillis();
-        XRLog.load("TIME: parse element styles " + (end - start) + "ms");
-    }
-    
-    private Map createStyleMap(List elements, String content) {
-        if (elements.size() == 0) {
-            return Collections.EMPTY_MAP;
-        }
-        
-        List rulesets = _stylesheetFactory.parseStyleDeclarations(StylesheetInfo.AUTHOR, content.toString());
-        
-        if (elements.size() == rulesets.size()) {
-            Map result = new HashMap();
-            Iterator i, j;
-            for (i = elements.iterator(), j = rulesets.iterator(); i.hasNext(); ) {
-                result.put(i.next(), j.next());
-            }
-            return result;
-        } else {
-            // Parse error
-            return null;
-        }
-    }
-    
-    private void scanElement(AttributeResolver attRes, Element e, 
-            StringBuffer elementStyles, List elementStyleElements,
-            StringBuffer nonCSSStyles, List nonCSSStyleElements) {
-        String elementStyling = attRes.getElementStyling(e);
-        if (elementStyling != null && ! elementStyling.equals("")) {
-            elementStyles.append("*  {" + elementStyling + "}\n\n");
-            elementStyleElements.add(e);
-        }
-        
-        String nonCSSStyling = attRes.getNonCssStyling(e);
-        if (nonCSSStyling != null && ! nonCSSStyling.equals("")) {
-            nonCSSStyles.append("*  {" + nonCSSStyling + "}\n\n");
-            nonCSSStyleElements.add(e);
-        }        
-        
-        NodeList children = e.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            Node n = children.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE) {
-                scanElement(attRes, (Element)n, 
-                        elementStyles, elementStyleElements,
-                        nonCSSStyles, nonCSSStyleElements);
-            }
-        }
     }
     
     /**
@@ -371,6 +287,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2007/02/20 01:17:10  peterbrant
+ * Start CSS parser cleanup
+ *
  * Revision 1.11  2007/02/19 14:53:42  peterbrant
  * Integrate new CSS parser
  *

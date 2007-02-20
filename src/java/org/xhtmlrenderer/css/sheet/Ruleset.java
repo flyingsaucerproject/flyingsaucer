@@ -21,17 +21,10 @@ package org.xhtmlrenderer.css.sheet;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 
-import org.xhtmlrenderer.context.CSSPageRuleAdapter;
-import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.Selector;
-import org.xhtmlrenderer.util.XRLog;
-
-import com.steadystate.css.dom.CSSStyleRuleImpl;
 
 
 /**
@@ -42,37 +35,9 @@ public class Ruleset {
     private int _origin;
     private java.util.List _props;
 
-    /**
-     * Our list of SAC Selectors, pulled from the CSSStyleRule used to
-     * initialize this Ruleset
-     */
-    private org.w3c.css.sac.SelectorList sacSelectorList;
-
     private String _selectorText;
     
     private List _fsSelectors = new ArrayList();
-
-    public Ruleset(org.w3c.dom.css.CSSStyleRule rule, int orig) {
-        this(orig);
-        this._selectorText = rule.getSelectorText();
-        pullPropertiesFromDOMRule(rule);
-        pullSelectorsFromDOMRule(rule);
-    }
-
-    /**
-     * Instantiates a Ruleset for a specific {@link org.w3c.css.sac.SelectorList}, List of
-     * {@link PropertyDeclaration} and origin. Can be used when you have these
-     * outside of a {@link org.w3c.dom.css.CSSStyleRule}.
-     *
-     * @param selectorList         PARAM
-     * @param propertyDeclarations PARAM
-     * @param orig                 PARAM
-     */
-    public Ruleset(org.w3c.css.sac.SelectorList selectorList, List propertyDeclarations, int orig) {
-        this(orig);
-        this.sacSelectorList = selectorList;
-        this._props.addAll(propertyDeclarations);
-    }
 
     public Ruleset(int orig) {
         _origin = orig;
@@ -88,77 +53,6 @@ public class Ruleset {
      */
     public List getPropertyDeclarations() {
         return Collections.unmodifiableList(_props);
-    }
-
-    /**
-     * Returns the SAC SelectorList associated with this CSSStyleRule.
-     *
-     * @return The selectorList value
-     */
-    public org.w3c.css.sac.SelectorList getSelectorList() {
-        return sacSelectorList;
-    }
-
-    /**
-     * Extracts the CSS SAC SelectorList from a CSSStyleRule.
-     *
-     * @param sacRule PARAM
-     */
-    private void pullSelectorsFromDOMRule(org.w3c.dom.css.CSSStyleRule sacRule) {
-        if (sacRule instanceof CSSPageRuleAdapter) {
-            return;
-        }
-        // HACK, but right now we already depend on Steady State classes
-        sacSelectorList = ((CSSStyleRuleImpl) sacRule).getSelectorList();
-
-        /*
-        // note, we parse the selector for this instance, not the one from the CSS Style, which
-        // might still be multi-part; selector for TODO is always single (no commas)
-        
-        sacSelectorList =
-                CSOM_PARSER.parseSelectors(new org.w3c.css.sac.InputSource(new java.io.StringReader(sacRule.getSelectorText())));
-        */
-    }
-
-    /**
-     * Given a CSSStyleRule, pulls all properties into instances of
-     * PropertyDeclaration which are stored in our _props List.
-     *
-     * @param sacRule PARAM
-     */
-    private void pullPropertiesFromDOMRule(org.w3c.dom.css.CSSStyleRule sacRule) {
-        org.w3c.dom.css.CSSStyleDeclaration decl = sacRule.getStyle();
-
-        // a style declaration is a block of property assignments
-        // so looping items in the declaration means looping properties
-        //
-        // here we create a PropertyDeclaration for each property, expanding
-        // shorthand properties along the way.
-        for (int i = 0; i < decl.getLength(); i++) {
-            String propName = decl.item(i);
-            CSSName cssName = CSSName.getByPropertyName(propName);
-
-            if ( cssName == null ) {
-                // TODO: we don't pass unknown properties through. Right now new properties need to be declared in CSSName, and there is no dynamic way to do this (outside of a compile)
-                XRLog.cascade("Unknown property in stylesheet: " + propName + ", skipping it.");
-            } else {
-                try {
-                Iterator iter = PropertyDeclaration.newFactory(cssName).buildDeclarations(decl, cssName, _origin);
-
-                while (iter.hasNext()) {
-                    // the cast is just for doc purposes
-                    _props.add((PropertyDeclaration) iter.next());
-                }
-                } catch (Exception ex) {
-                    XRLog.cascade(
-                            Level.WARNING,
-                            "Property " + cssName + " could not be parsed while creating PropertyDeclarations. " +
-                            "Assigned value might be: " + decl.getPropertyValue(cssName.toString()) + ". " +
-                            "Exception was " + ex + ". Property is being IGNORED and skipped."
-                    );
-                }
-            }
-        }
     }
 
     public String getSelectorText() {
@@ -195,6 +89,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2007/02/20 01:17:11  peterbrant
+ * Start CSS parser cleanup
+ *
  * Revision 1.15  2007/02/19 14:53:38  peterbrant
  * Integrate new CSS parser
  *

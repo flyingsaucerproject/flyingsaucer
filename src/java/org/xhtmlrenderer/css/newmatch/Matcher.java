@@ -37,7 +37,6 @@ import org.xhtmlrenderer.css.sheet.MediaRule;
 import org.xhtmlrenderer.css.sheet.PageRule;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
-import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.util.XRLog;
 
 
@@ -64,21 +63,15 @@ public class Matcher {
     private Map _elementStyles;
     private Map _nonCSSStyles;
 
-    public Matcher(TreeResolver tr, AttributeResolver ar, 
-            StylesheetFactory factory, List stylesheetInfos, List stylesheets, String medium) {
+    public Matcher(
+            TreeResolver tr, AttributeResolver ar, StylesheetFactory factory, List stylesheets, String medium) {
         newMaps();
         _treeRes = tr;
         _attRes = ar;
         _styleFactory = factory;
         
-        if (stylesheetInfos != null) {
-            docMapper = legacyCreateDocumentMapper(stylesheetInfos.iterator(), medium);
-            _pageRules = new ArrayList();
-            collectPageRules(stylesheetInfos, _pageRules, medium);
-        } else {
-            _pageRules = new ArrayList();
-            docMapper = createDocumentMapper(stylesheets, medium);
-        }
+        _pageRules = new ArrayList();
+        docMapper = createDocumentMapper(stylesheets, medium);
     }
 
     public CascadedStyle getCascadedStyle(Object e, boolean restyle) {
@@ -173,47 +166,6 @@ public class Matcher {
         }
     }
 
-    Mapper legacyCreateDocumentMapper(java.util.Iterator stylesheets, String medium) {
-        int count = 0;
-        java.util.TreeMap sorter = new java.util.TreeMap();
-        while (stylesheets.hasNext()) {
-            count = legacyAppendStylesheet((StylesheetInfo) stylesheets.next(), count, sorter, medium);
-        }
-        XRLog.match("Matcher created with " + sorter.size() + " selectors");
-        return new Mapper(sorter.values());
-    }
-    
-
-    private int legacyAppendStylesheet(StylesheetInfo si, int count, java.util.TreeMap sorter, String medium) {
-        if (!si.appliesToMedia(medium)) {
-            return count;
-        }//this is logical, and also how firefox does it
-        Stylesheet ss = si.getStylesheet();
-        if (ss == null) {
-            ss = _styleFactory.getStylesheet(si);
-            si.setStylesheet(ss);
-        }
-        if (ss == null) {
-            return count;
-        }//couldn't load it
-        for (java.util.Iterator rulesets = ss.getRulesets(); rulesets.hasNext();) {
-            Object obj = rulesets.next();
-            if (obj instanceof StylesheetInfo) {
-                count = legacyAppendStylesheet((StylesheetInfo) obj, count, sorter, medium);
-            } else {
-                org.xhtmlrenderer.css.sheet.Ruleset r = (org.xhtmlrenderer.css.sheet.Ruleset) obj;
-                //at this point all selectors in a ruleset must be placed on the descendant axis
-                org.w3c.css.sac.SelectorList selector_list = r.getSelectorList();
-                for (int i = 0; i < selector_list.getLength(); i++) {
-                    org.w3c.css.sac.Selector selector = selector_list.item(i);
-                    Selector s = addSelector(count++, r, selector);
-                    sorter.put(s.getOrder(), s);
-                }
-            }
-        }
-        return count;
-    }
-    
     Mapper createDocumentMapper(List stylesheets, String medium) {
         java.util.TreeMap sorter = new java.util.TreeMap();
         addAllStylesheets(stylesheets, sorter, medium);
@@ -262,257 +214,6 @@ public class Matcher {
         _activeElements = Collections.synchronizedSet(new java.util.HashSet());
         _focusElements = Collections.synchronizedSet(new java.util.HashSet());
         _visitElements = Collections.synchronizedSet(new java.util.HashSet());
-    }
-    
-    private void collectPageRules(List infos, List pageRulesets, String medium) {
-        for (Iterator i = infos.iterator(); i.hasNext(); ) {
-            StylesheetInfo si = (StylesheetInfo)i.next();
-            collectPageRules(si, pageRulesets, medium);
-        }
-    }
-    
-    private void collectPageRules(StylesheetInfo si, List pageRulesets, String medium) {
-        if (! si.appliesToMedia(medium)) {
-            return;
-        }
-        Stylesheet ss = si.getStylesheet();
-        if (ss == null) {
-            ss = _styleFactory.getStylesheet(si);
-            si.setStylesheet(ss);
-        }
-        if (ss == null) {
-            return;
-        }
-        
-        pageRulesets.addAll(ss.getPageRulesets());
-        
-        for (java.util.Iterator rulesets = ss.getRulesets(); rulesets.hasNext();) {
-            Object obj = rulesets.next();
-            if (obj instanceof StylesheetInfo) {
-                collectPageRules((StylesheetInfo)obj, pageRulesets, medium);
-            }
-        }
-    }
-
-    /**
-     * Turn the selection logic inside-out: we want to start as close to the
-     * root element as possible, while sac starts at the final selected element
-     */
-    private Selector addSelector(int pos, org.xhtmlrenderer.css.sheet.Ruleset rs, org.w3c.css.sac.Selector selector) {
-        Selector s = null;
-        if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR) {
-            s = addSiblingSelector(pos, rs, selector);
-        } else if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR) {
-            s = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) selector).getAncestorSelector());
-            addChainedSelector(s, selector);
-        } else if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR) {
-            s = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) selector).getAncestorSelector());
-            addChainedSelector(s, selector);
-        } else if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
-            org.w3c.css.sac.Condition cond = ((org.w3c.css.sac.ConditionalSelector) selector).getCondition();
-            s = addSelector(pos, rs, ((org.w3c.css.sac.ConditionalSelector) selector).getSimpleSelector());
-            addConditions(s, cond);
-        } else if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
-            s = new Selector(pos, rs, Selector.DESCENDANT_AXIS, ((org.w3c.css.sac.ElementSelector) selector).getLocalName());
-        } else {
-            XRLog.exception("unsupported selector in addSelector: " + selector.getSelectorType());
-        }
-
-        return s;
-    }
-
-    private void addChainedSelector(Selector s, org.w3c.css.sac.Selector selector) {
-        int axis = 0;
-        org.w3c.css.sac.SimpleSelector simple = null;
-        switch (selector.getSelectorType()) {
-            case org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR:
-                axis = Selector.CHILD_AXIS;
-                simple = ((org.w3c.css.sac.DescendantSelector) selector).getSimpleSelector();
-                break;
-            case org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR:
-                axis = Selector.DESCENDANT_AXIS;
-                simple = ((org.w3c.css.sac.DescendantSelector) selector).getSimpleSelector();
-                break;
-            default:
-                System.err.println("Bad selector in addChainedSelector");
-        }
-
-        org.w3c.css.sac.Condition cond = null;
-        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
-            cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
-            //if ConditionalSelectors can be nested, we are in trouble here
-            simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
-        }
-        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
-            s = s.appendChainedSelector(axis, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
-        }
-        if (cond != null) {
-            addConditions(s, cond);
-        }
-    }
-
-    private Selector addSiblingSelector(int pos, org.xhtmlrenderer.css.sheet.Ruleset rs, org.w3c.css.sac.Selector siblingSelector) {
-        int axis = Selector.DESCENDANT_AXIS;
-        org.w3c.css.sac.SimpleSelector simple = null;
-        org.w3c.css.sac.Selector sib = null;
-        switch (siblingSelector.getSelectorType()) {
-            case org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR:
-                simple = ((org.w3c.css.sac.SiblingSelector) siblingSelector).getSiblingSelector();
-                sib = ((org.w3c.css.sac.SiblingSelector) siblingSelector).getSelector();
-                break;
-            default:
-                XRLog.exception("Bad selector in addSiblingSelector");
-        }
-
-        Selector ancestor = null;
-        Selector current = null;
-        org.w3c.css.sac.Selector pa = sib;
-        while (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR) {
-            pa = ((org.w3c.css.sac.SiblingSelector) pa).getSelector();
-        }
-        if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR) {
-            ancestor = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) pa).getAncestorSelector());
-            axis = Selector.CHILD_AXIS;
-        } else if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR) {
-            ancestor = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) pa).getAncestorSelector());
-        } else if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
-            //do nothing, no ancestor selector exists
-        } else if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
-            //do nothing, no ancestor selector exists
-        } else {
-            XRLog.exception("unsupported selector in addSiblingSelector: " + pa.getSelectorType());
-        }
-
-        org.w3c.css.sac.Condition cond = null;
-        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
-            cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
-            //if ConditionalSelectors can be nested, we are in trouble here
-            simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
-        }
-        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
-            if (ancestor == null) {
-                current = new Selector(pos, rs, Selector.DESCENDANT_AXIS, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
-                ancestor = current;
-            } else {
-                current = ancestor.appendChainedSelector(axis, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
-            }
-        }
-        if (cond != null) {
-            addConditions(current, cond);
-        }
-
-        while (sib.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR) {
-            simple = ((org.w3c.css.sac.SiblingSelector) sib).getSiblingSelector();
-            cond = null;
-            Selector s = null;
-            if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
-                cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
-                //if ConditionalSelectors can be nested, we are in trouble here
-                simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
-            }
-            if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
-                s = current.appendSiblingSelector(Selector.IMMEDIATE_SIBLING_AXIS, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
-            }
-            if (cond != null) {
-                addConditions(s, cond);
-            }
-            sib = ((org.w3c.css.sac.SiblingSelector) sib).getSelector();
-        }
-        simple = null;
-        switch (sib.getSelectorType()) {
-            case org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR:
-                simple = ((org.w3c.css.sac.DescendantSelector) sib).getSimpleSelector();
-                break;
-            case org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR:
-                simple = ((org.w3c.css.sac.DescendantSelector) sib).getSimpleSelector();
-                break;
-            default:
-                simple = (org.w3c.css.sac.SimpleSelector) sib;
-        }
-
-        cond = null;
-        Selector s = null;
-        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
-            cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
-            //if ConditionalSelectors can be nested, we are in trouble here
-            simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
-        }
-        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
-            s = current.appendSiblingSelector(Selector.IMMEDIATE_SIBLING_AXIS, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
-        }
-        if (cond != null) {
-            addConditions(s, cond);
-        }
-        return ancestor;
-    }
-
-    private void addConditions(Selector s, org.w3c.css.sac.Condition cond) {
-        switch (cond.getConditionType()) {
-            case org.w3c.css.sac.Condition.SAC_AND_CONDITION:
-                org.w3c.css.sac.CombinatorCondition comb = (org.w3c.css.sac.CombinatorCondition) cond;
-                addConditions(s, comb.getFirstCondition());
-                addConditions(s, comb.getSecondCondition());
-                break;
-            case org.w3c.css.sac.Condition.SAC_ATTRIBUTE_CONDITION:
-                org.w3c.css.sac.AttributeCondition attr = (org.w3c.css.sac.AttributeCondition) cond;
-                if (attr.getSpecified()) {
-                    s.addAttributeEqualsCondition(attr.getLocalName(), attr.getValue());
-                } else {
-                    s.addAttributeExistsCondition(attr.getLocalName());
-                }
-                break;
-            case org.w3c.css.sac.Condition.SAC_BEGIN_HYPHEN_ATTRIBUTE_CONDITION:
-                attr = (org.w3c.css.sac.AttributeCondition) cond;
-                s.addAttributeMatchesFirstPartCondition(attr.getLocalName(), attr.getValue());
-                break;
-            case org.w3c.css.sac.Condition.SAC_CLASS_CONDITION:
-                attr = (org.w3c.css.sac.AttributeCondition) cond;
-                s.addClassCondition(attr.getValue());
-                break;
-            case org.w3c.css.sac.Condition.SAC_ID_CONDITION:
-                attr = (org.w3c.css.sac.AttributeCondition) cond;
-                s.addIDCondition(attr.getValue());
-                break;
-            case org.w3c.css.sac.Condition.SAC_LANG_CONDITION:
-                org.w3c.css.sac.LangCondition lang = (org.w3c.css.sac.LangCondition) cond;
-                s.addLangCondition(lang.getLang());
-                break;
-            case org.w3c.css.sac.Condition.SAC_ONE_OF_ATTRIBUTE_CONDITION:
-                attr = (org.w3c.css.sac.AttributeCondition) cond;
-                s.addAttributeMatchesListCondition(attr.getLocalName(), attr.getValue());
-                break;
-            case org.w3c.css.sac.Condition.SAC_POSITIONAL_CONDITION:
-                org.w3c.css.sac.PositionalCondition pos = (org.w3c.css.sac.PositionalCondition) cond;
-                if (pos.getPosition() == 0) {
-                    s.addFirstChildCondition();
-                } else {
-                    s.addUnsupportedCondition();
-                }
-                break;
-            case org.w3c.css.sac.Condition.SAC_PSEUDO_CLASS_CONDITION:
-                attr = (org.w3c.css.sac.AttributeCondition) cond;
-                if (attr.getValue().equals("link")) {
-                    s.addLinkCondition();
-                } else if (attr.getValue().equals("visited")) {
-                    s.setPseudoClass(Selector.VISITED_PSEUDOCLASS);
-                } else if (attr.getValue().equals("hover")) {
-                    s.setPseudoClass(Selector.HOVER_PSEUDOCLASS);
-                } else if (attr.getValue().equals("active")) {
-                    s.setPseudoClass(Selector.ACTIVE_PSEUDOCLASS);
-                } else if (attr.getValue().equals("focus")) {
-                    s.setPseudoClass(Selector.FOCUS_PSEUDOCLASS);
-                } else if (attr.getValue().equals("first-child")) {
-                    // With SS CSS parser, :first-child is reported here
-                    // and not above.  Seems like a bug, but easy enough
-                    // to work around here
-                    s.addFirstChildCondition();
-                } else {//it must be a pseudo-element
-                    s.setPseudoElement(attr.getValue());
-                }
-                break;
-            default:
-                System.err.println("Bad condition");
-        }
     }
 
     private Mapper getMapper(Object e) {

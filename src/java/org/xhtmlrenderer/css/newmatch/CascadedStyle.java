@@ -19,14 +19,19 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue;
+import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-
-import java.util.*;
 
 
 /**
@@ -62,8 +67,7 @@ public class CascadedStyle {
      * to the value of the <code>display</code> parameter.  
      */
     public static CascadedStyle createAnonymousStyle(IdentValue display) {
-        CSSPrimitiveValue val = new DefaultCSSPrimitiveValue(
-                display.toString(), CSSPrimitiveValue.CSS_IDENT);
+        CSSPrimitiveValue val = new PropertyValue(display);
         // Urk... kind of ugly, but we really want this value to be used
         List props = Collections.singletonList(
                 new PropertyDeclaration(CSSName.DISPLAY, val, true, StylesheetInfo.USER));
@@ -198,6 +202,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2007/02/20 01:17:09  peterbrant
+ * Start CSS parser cleanup
+ *
  * Revision 1.15  2007/02/07 16:33:14  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

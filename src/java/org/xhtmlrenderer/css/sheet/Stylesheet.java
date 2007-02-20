@@ -44,13 +44,6 @@ public class Stylesheet implements RulesetContainer {
      */
     private int _origin;
 
-    /**
-     * Description of the Field
-     */
-    private java.util.List _rulesets;
-
-    private List _pageRulesets;
-    
     private List _importRules = new ArrayList();
     private List _contents = new ArrayList();
 
@@ -63,8 +56,6 @@ public class Stylesheet implements RulesetContainer {
     public Stylesheet(String uri, int origin) {
         _uri = uri;
         _origin = origin;
-        _rulesets = new java.util.LinkedList();
-        _pageRulesets = new ArrayList();
     }
 
     /**
@@ -83,44 +74,6 @@ public class Stylesheet implements RulesetContainer {
      */
     public String getURI() {
         return _uri;
-    }
-
-    /**
-     * Returns an iterator over the Rulesets and embedded Stylesheets loaded
-     * from the source stylesheet.
-     *
-     * @return The rulesets value
-     */
-    public java.util.Iterator getRulesets() {
-        return _rulesets.iterator();
-    }
-
-    /**
-     * Set the Rulesets to this stylesheet. Should usually only be called by
-     * StylesheetFactory.
-     *
-     * @param r The feature to be added to the Ruleset attribute
-     */
-    public void addRuleset(Ruleset r) {
-        _rulesets.add(r);
-    }
-
-    /**
-     * Set the imported stylesheet Rulesets to this stylesheet. Should usually
-     * only be called by StylesheetFactory.
-     *
-     * @param s The feature to be added to the Stylesheet attribute
-     */
-    public void addStylesheet(StylesheetInfo s) {
-        _rulesets.add(s);
-    }
-
-    public void addPageRuleset(Ruleset r) {
-        _pageRulesets.add(r);
-    }
-
-    public List getPageRulesets() {
-        return _pageRulesets;
     }
     
     public void addContent(Ruleset ruleset) {
@@ -153,6 +106,9 @@ public class Stylesheet implements RulesetContainer {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2007/02/20 01:17:11  peterbrant
+ * Start CSS parser cleanup
+ *
  * Revision 1.15  2007/02/19 14:53:38  peterbrant
  * Integrate new CSS parser
  *

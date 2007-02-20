@@ -6,10 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.RGBColor;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
@@ -74,60 +72,6 @@ public class DerivedValueFactory {
         }
     }
     
-    public static FSDerivedValue newDerivedValue(CalculatedStyle style,
-                                                 CSSName cssName,
-                                                 short cssSACUnitType,
-                                                 String cssText,
-                                                 String cssStringValue,
-                                                 RGBColor rgbColor) {
-        FSDerivedValue val = null;
-
-        // default to copy of parent if inherited
-        boolean declaredInherit = cssText.equals("inherit");
-        if (declaredInherit) {
-            val = style.getParent().valueByName(cssName);
-        } else {
-            if (cssName == CSSName.BACKGROUND_POSITION) {
-                val = new PointValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
-            } else if (COLOR_PROPERTIES.contains(cssName)) {
-                val = newColor(cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
-            } else if (STRING_PROPERTIES.contains(cssName)) {
-                val = new StringValue(cssName, cssSACUnitType, cssText, cssStringValue);
-            } else if (!(cssName == CSSName.FONT_WEIGHT) && Idents.looksLikeALength(cssText)) {
-                val = new LengthValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
-            } else if (!(cssName == CSSName.FONT_WEIGHT) && Idents.looksLikeANumber(cssText)) {
-                val = new NumberValue(cssName, cssSACUnitType, cssText, cssStringValue);
-            } else if (IDENT_PROPERTIES.contains(cssName) || IdentValue.looksLikeIdent(cssText)) {
-                val = IdentValue.getByIdentString(cssText);
-            } else {
-                // use regular RuntimeException; XRRuntimeException auto-logs, which we don't need
-                // in this case.
-                throw new RuntimeException("Can't determine the dervived value type to use for property " +
-                        "named '" + cssName + "' with value " + cssText);
-            }
-        }
-
-        return val;
-    }
-
-    /**
-     * Returns the ColorValue, possibly from local cache by cssText value; RGB colors are not cached (guessing
-     * these will be custom anyway).
-     */
-    private static FSDerivedValue newColor(CSSName cssName, short cssSACUnitType, String cssText, String cssStringValue, RGBColor rgbColor) {
-        FSDerivedValue val;
-        if (rgbColor == null) {
-            val = (FSDerivedValue) CACHED_COLORS.get(cssText);
-            if (val == null) {
-                val = new ColorValue(cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
-                CACHED_COLORS.put(cssText, val);
-            }
-        } else {
-            val = new ColorValue(cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
-        }
-        return val;
-    }
-
     private static final Map CACHED_COLORS;
 
     static {

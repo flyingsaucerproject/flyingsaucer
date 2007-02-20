@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,7 +35,6 @@ import org.w3c.dom.Text;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.parser.PropertyValue;
@@ -54,8 +52,6 @@ import org.xhtmlrenderer.render.FloatedBoxData;
 import org.xhtmlrenderer.render.InlineBox;
 
 public class BoxBuilder {
-    private static final Pattern CONTENT_NEWLINE = Pattern.compile("\\\\A");
-
     public static BlockBox createRootBox(LayoutContext c, Document document) {
         Element root = document.getDocumentElement();
 
@@ -441,24 +437,9 @@ public class BoxBuilder {
             PropertyDeclaration propDecl = (PropertyDeclaration) peStyle.propertyByName(CSSName.CONTENT);
             if (propDecl != null) {
                 CSSPrimitiveValue propValue = propDecl.getValue();
-                if (propValue instanceof PropertyValue) {
-                    CalculatedStyle calculatedStyle = parentStyle.deriveStyle(peStyle);
-                    children.addAll(createGeneratedContent(c, element, peName, calculatedStyle,
-                            (PropertyValue) propValue, info));
-                } else {
-                    String content = 
-                        ((CSSPrimitiveValue) peStyle.propertyByName(
-                                CSSName.CONTENT).getValue()).getStringValue();
-                    // FIXME Don't think this test is right. Even empty inline
-                    // content
-                    // should force a line box to be created. Leave for now
-                    // though.
-                    if (!content.equals("")) {
-                        CalculatedStyle calculatedStyle = parentStyle.deriveStyle(peStyle);
-                        children.add(legacyCreateGeneratedContent(c, element, peName,
-                                calculatedStyle, content, info));
-                    }
-                }
+                CalculatedStyle calculatedStyle = parentStyle.deriveStyle(peStyle);
+                children.addAll(createGeneratedContent(c, element, peName, calculatedStyle,
+                        (PropertyValue) propValue, info));
             }
         }
     }
@@ -493,52 +474,6 @@ public class BoxBuilder {
             result.setPseudoElementOrClass(peName);
 
             return new ArrayList(Collections.singletonList(result));
-        }
-    }
-
-    private static Styleable legacyCreateGeneratedContent(LayoutContext c, Element element,
-            String peName, CalculatedStyle calculatedStyle, String raw, ChildBoxInfo info) {
-        ContentFunction contentFunction = null;
-        String content = CONTENT_NEWLINE.matcher(raw).replaceAll("\n");
-        if (Idents.looksLikeAFunction(raw)) {
-            contentFunction = c.getContentFunctionFactory().lookupFunction(c, raw);
-            if (contentFunction != null && contentFunction.isStatic()) {
-                content = contentFunction.calculate(c, raw);
-                contentFunction = null;
-            }
-        } else if (Idents.looksLikeAQuote(raw)) {
-            // TODO: if the content is one of the quote idents, then look up the
-            // value of the quotes property
-            content = "\"";
-        } else if (Idents.looksLikeASkipQuote(content)) {
-            // TODO: no content, but increment nesting level for quotes
-        }
-
-        InlineBox iB = new InlineBox(content);
-        iB.setContentFunction(contentFunction);
-        iB.setElement(element);
-        iB.setPseudoElementOrClass(peName);
-        iB.setStartsHere(true);
-        iB.setEndsHere(true);
-
-        if (calculatedStyle.isInline()) {
-            iB.setStyle(calculatedStyle);
-            iB.applyTextTransform();
-            return iB;
-        } else {
-            iB.setStyle(calculatedStyle.createAnonymousStyle(IdentValue.INLINE));
-            iB.setElement(null);
-
-            // XXX A table / table content display value won't work here.
-            // Should (somehow) reset to display: block
-            BlockBox result = createBlockBox(calculatedStyle, info);
-            result.setStyle(calculatedStyle);
-            result.setInlineContent(Collections.singletonList(iB));
-            result.setElement(element);
-            result.setChildrenContentType(BlockBox.CONTENT_INLINE);
-            result.setPseudoElementOrClass(peName);
-
-            return result;
         }
     }
 

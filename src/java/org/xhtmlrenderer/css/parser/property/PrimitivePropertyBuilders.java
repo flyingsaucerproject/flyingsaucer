@@ -297,6 +297,7 @@ public class PrimitivePropertyBuilders {
         }
     }
     
+    /*
     private static class SingleString extends AbstractPropertyBuilder {
         public List buildDeclarations(
                 CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
@@ -312,6 +313,7 @@ public class PrimitivePropertyBuilders {
 
         }  
     }
+    */
     
     private static abstract class SingleStringWithIdent extends AbstractPropertyBuilder {
         protected abstract BitSet getAllowed();
