@@ -36,6 +36,7 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.ColorValue;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.NumberValue;
@@ -213,7 +214,12 @@ public class CalculatedStyle {
     }
 
     public Color asColor(CSSName cssName) {
-        return valueByName(cssName).asColor();
+        FSDerivedValue prop = valueByName(cssName);
+        if (prop == IdentValue.TRANSPARENT) {
+            return ColorValue.COLOR_TRANSPARENT;
+        } else {
+            return prop.asColor();
+        } 
     }
 
     public float asFloat(CSSName cssName) {
@@ -1059,6 +1065,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.77  2007/02/20 00:01:12  peterbrant
+ * asColor() fix
+ *
  * Revision 1.76  2007/02/19 23:18:43  peterbrant
  * Further work on new CSS parser / Misc. bug fixes
  *

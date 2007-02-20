@@ -18,7 +18,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * To change this template use File | Settings | File Templates.
  */
 public class ColorValue extends DerivedValue {
-    private static final Color COLOR_TRANSPARENT = new Color(0, 0, 0, 0);
+    public static final Color COLOR_TRANSPARENT = new Color(0, 0, 0, 0);
     private static final String TRANSPARENT = "transparent";
 
     private Color _derivedColor;
