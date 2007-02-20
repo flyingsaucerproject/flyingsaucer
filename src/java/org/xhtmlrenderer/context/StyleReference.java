@@ -253,8 +253,9 @@ public class StyleReference {
                 _stylesheetFactory.putStylesheet(uri, sheet);
                 infos.add(info);
             }
-        } else
+        } else {
             infos.add(info);
+        }
 
         StylesheetInfo[] refs = _nsh.getStylesheets(_doc);
         int inlineStyleCount = 0;
@@ -287,6 +288,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2007/02/20 23:44:51  peterbrant
+ * Minor formatting change
+ *
  * Revision 1.12  2007/02/20 01:17:10  peterbrant
  * Start CSS parser cleanup
  *
