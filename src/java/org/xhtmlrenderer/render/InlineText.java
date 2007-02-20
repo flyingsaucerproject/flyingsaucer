@@ -132,8 +132,8 @@ public class InlineText {
     }
     
     public void updateDynamicValue(RenderingContext c) {
-        String value = _functionData.getContentFunction().calculate(c, 
-                _functionData.getDeclaration(), this);
+        String value = _functionData.getContentFunction().calculate(
+                c, _functionData.getFunction(), this);
         _start = 0;
         _end = value.length();
         _masterText = value;

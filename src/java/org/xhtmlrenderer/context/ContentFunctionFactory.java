@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
+import org.xhtmlrenderer.css.parser.FSFunction;
+import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.Box;
@@ -37,15 +40,13 @@ public class ContentFunctionFactory {
     {
         _functions.add(new PageCounterFunction());
         _functions.add(new PagesCounterFunction());
-        _functions.add(new FSCurrentPageFunction());
-        _functions.add(new FSPageRangeFunction());
     }
     
-    public ContentFunction lookupFunction(LayoutContext c, String declaration) {
+    public ContentFunction lookupFunction(LayoutContext c, FSFunction function) {
         for (Iterator i = _functions.iterator(); i.hasNext(); ) {
-            ContentFunction function = (ContentFunction)i.next();
-            if (function.canHandle(c, declaration)) {
-                return function;
+            ContentFunction f = (ContentFunction)i.next();
+            if (f.canHandle(c, function)) {
+                return f;
             }
         }
         return null;
@@ -60,71 +61,49 @@ public class ContentFunctionFactory {
             return false;
         }
         
-        public String calculate(LayoutContext c, String declaration) {
+        public String calculate(LayoutContext c, FSFunction function) {
             return null;
         }
         
         public String getLayoutReplacementText() {
             return "999";
         }
+        
+        protected boolean isCounter(FSFunction function, String counterName) {
+            if (function.getName().equals("counter")) {
+                List parameters = function.getParameters();
+                // XXX Not correct, since a counter may have a style parameter too
+                // but we don't have generic counter support (yet)
+                if (parameters.size() == 1) {
+                    PropertyValue param = (PropertyValue)parameters.get(0);
+                    if (param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT &&
+                            param.getStringValue().equals(counterName)) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
     }
     
     private static class PageCounterFunction extends PageNumberFunction implements ContentFunction {
-        public String calculate(RenderingContext c, String declaration, InlineText text) {
+        public String calculate(RenderingContext c, FSFunction function, InlineText text) {
             return Integer.toString(c.getPageNo() + 1);
         }
         
-        public boolean canHandle(LayoutContext c, String declaration) {
-            return c.isPrint() && declaration.equals("counter(page)");
+        public boolean canHandle(LayoutContext c, FSFunction function) {
+            return c.isPrint() && isCounter(function, "page");
         }
     }
     
     private static class PagesCounterFunction extends PageNumberFunction implements ContentFunction {
-        public String calculate(RenderingContext c, String declaration, InlineText text) {
+        public String calculate(RenderingContext c, FSFunction function, InlineText text) {
             return Integer.toString(c.getPageCount());
         }
 
-        public boolean canHandle(LayoutContext c, String declaration) {
-            return c.isPrint() && declaration.equals("counter(pages)");
-        }
-    }
-    
-    private static class FSCurrentPageFunction extends PageNumberFunction implements ContentFunction {
-        public String calculate(RenderingContext c, String declaration, InlineText text) {
-            String id = declaration.substring(
-                    "-fs-current-page(".length(), declaration.length() - 1).trim();
-            Box b = c.getIDBox(id);
-            if (b == null) {
-                return "";
-            } else {
-                Layer root = text.getParent().getContainingLayer().findRoot();
-                PageBox pageBox = root.getFirstPage(c, b);
-                return Integer.toString(c.getPageNo() - pageBox.getPageNo() + 1);
-            }
-        }
-        
-        public boolean canHandle(LayoutContext c, String declaration) {
-            return c.isPrint() && declaration.startsWith("-fs-current-page(");
-        }
-    }
-    
-    private static class FSPageRangeFunction extends PageNumberFunction implements ContentFunction {
-        public String calculate(RenderingContext c, String declaration, InlineText text) {
-            String id = declaration.substring(
-                    "-fs-page-range(".length(), declaration.length() - 1).trim();
-            Box b = c.getIDBox(id);
-            if (b == null) {
-                return "";
-            } else {
-                Layer root = text.getParent().getContainingLayer().findRoot();
-                PageBox first = root.getFirstPage(c, b);
-                PageBox last = root.getLastPage(c, b);
-                return Integer.toString(last.getPageNo() - first.getPageNo() + 1);
-            }
-        }
-        
-        public boolean canHandle(LayoutContext c, String declaration) {
-            return c.isPrint() && declaration.startsWith("-fs-page-range(");
+        public boolean canHandle(LayoutContext c, FSFunction function) {
+            return c.isPrint() && isCounter(function, "pages");
         }
     }
 }

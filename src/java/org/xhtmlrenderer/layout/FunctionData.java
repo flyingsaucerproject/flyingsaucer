@@ -20,29 +20,33 @@
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.extend.ContentFunction;
+import org.xhtmlrenderer.css.parser.FSFunction;
 
 public class FunctionData {
     private ContentFunction _contentFunction;
-    private String _declaration;
+    private FSFunction _function;
     
     public FunctionData() {
     }
     
-    public FunctionData(ContentFunction contentFunction, String declaration) {
+    public FunctionData(ContentFunction contentFunction, FSFunction function) {
         _contentFunction = contentFunction;
-        _declaration = declaration;
+        _function = function;
     }
     
     public ContentFunction getContentFunction() {
         return _contentFunction;
     }
+    
     public void setContentFunction(ContentFunction contentFunction) {
         _contentFunction = contentFunction;
     }
-    public String getDeclaration() {
-        return _declaration;
+
+    public FSFunction getFunction() {
+        return _function;
     }
-    public void setDeclaration(String declaration) {
-        _declaration = declaration;
+
+    public void setFunction(FSFunction function) {
+        _function = function;
     }
 }

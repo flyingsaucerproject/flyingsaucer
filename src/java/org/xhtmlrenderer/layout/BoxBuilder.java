@@ -37,6 +37,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -406,6 +407,7 @@ public class BoxBuilder {
             PropertyValue value = (PropertyValue)i.next();
             
             ContentFunction contentFunction = null;
+            FSFunction function = null;
             
             String content = null;
             
@@ -413,12 +415,27 @@ public class BoxBuilder {
             if (type == CSSPrimitiveValue.CSS_STRING) {
                 content = value.getStringValue();
             } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
-                // XXX handle functions (after CSS cleanup)
-                continue;
+                contentFunction =
+                    c.getContentFunctionFactory().lookupFunction(
+                            c, value.getFunction());
+                if (contentFunction == null) {
+                    continue;
+                }
+                
+                function = value.getFunction();
+                
+                if (contentFunction.isStatic()) {
+                    content = contentFunction.calculate(c, function);
+                    contentFunction = null;
+                    function = null;
+                } else {
+                    content = contentFunction.getLayoutReplacementText();
+                }
             }
             
             InlineBox iB = new InlineBox(content);
             iB.setContentFunction(contentFunction);
+            iB.setFunction(function);
             iB.setElement(element);
             iB.setPseudoElementOrClass(peName);
             iB.setStartsHere(true);

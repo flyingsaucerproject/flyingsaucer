@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.extend;
 
+import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -34,8 +35,8 @@ public interface ContentFunction {
      */
     public boolean isStatic();
     
-    public String calculate(LayoutContext c, String declaration);
-    public String calculate(RenderingContext c, String declaration, InlineText text);
+    public String calculate(LayoutContext c, FSFunction function);
+    public String calculate(RenderingContext c, FSFunction function, InlineText text);
     
     /**
      * If a function value can change at render time (i.e. {@link #isStatic()} returns false)
@@ -43,5 +44,5 @@ public interface ContentFunction {
      */
     public String getLayoutReplacementText();
     
-    public boolean canHandle(LayoutContext c, String declaration);
+    public boolean canHandle(LayoutContext c, FSFunction function);
 }

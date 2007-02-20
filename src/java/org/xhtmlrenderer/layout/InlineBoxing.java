@@ -193,7 +193,7 @@ public class InlineBoxing {
                                 (lbContext.isUnbreakable() && ! currentLine.isContainsContent())) {
                             if (iB.isDynamicFunction()) {
                                 inlineText.setFunctionData(new FunctionData(
-                                        iB.getContentFunction(), iB.getText()));
+                                        iB.getContentFunction(), iB.getFunction()));
                             }
                             currentLine.setContainsDynamicFunction(inlineText.isDynamicFunction());
                             currentIB.addInlineChild(c, inlineText);

@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
+import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
@@ -38,6 +39,7 @@ public class InlineBox implements Styleable {
     private CalculatedStyle _style;
     
     private ContentFunction _contentFunction;
+    private FSFunction _function;
     
     private boolean _minMaxCalculated;
     private int _maxWidth;
@@ -367,5 +369,13 @@ public class InlineBox implements Styleable {
             }
             return result.toString();
         }
+    }
+
+    public FSFunction getFunction() {
+        return _function;
+    }
+
+    public void setFunction(FSFunction function) {
+        _function = function;
     }
 }
