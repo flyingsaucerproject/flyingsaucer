@@ -334,7 +334,12 @@ public class InlineBox implements Styleable {
             result.append("> ");
         } else {
             result.append("(anonymous) ");
-        }       
+        } 
+        if (getPseudoElementOrClass() != null) {
+            result.append(':');
+            result.append(getPseudoElementOrClass());
+            result.append(' ');
+        }
         if (isStartsHere() || isEndsHere()) {
             result.append("(");
             if (isStartsHere()) {

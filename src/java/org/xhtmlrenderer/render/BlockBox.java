@@ -133,6 +133,11 @@ public class BlockBox extends Box implements InlinePaintable {
         if (isAnonymous()) {
             result.append("(anonymous) ");
         }
+        if (getPseudoElementOrClass() != null) {
+            result.append(':');
+            result.append(getPseudoElementOrClass());
+            result.append(' ');
+        }
         result.append('(');
         result.append(getStyle().getIdent(CSSName.DISPLAY).toString());
         result.append(") ");
@@ -1641,6 +1646,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.61  2007/02/20 23:46:06  peterbrant
+ * Include pseudo element in toString()
+ *
  * Revision 1.60  2007/02/11 23:10:59  peterbrant
  * Make sure bounds information is calculated for fixed layers
  *
