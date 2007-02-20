@@ -45,6 +45,8 @@ public class PointValue extends DerivedValue {
     public PointValue(CalculatedStyle style, CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
         
+        _style = style;
+        
         List values = (List)value.getValues();
         
         PropertyValue x = (PropertyValue)values.get(0);
