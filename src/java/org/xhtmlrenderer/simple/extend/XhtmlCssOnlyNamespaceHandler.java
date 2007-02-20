@@ -248,7 +248,11 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
     
     protected StylesheetInfo readLinkElement(Element link) {
-        if (!link.getAttribute("rel").equals("stylesheet")) {
+        String rel = link.getAttribute("rel");
+        if (rel.indexOf("alternate") != -1) {
+            return null;
+        }//DON'T get alternate stylesheets
+        if (rel.indexOf("stylesheet") == -1) {
             return null;
         }
         
@@ -265,10 +269,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         info.setType(type);
         
         info.setOrigin(StylesheetInfo.AUTHOR);
-        String rel = link.getAttribute("rel");
-        if (rel.indexOf("alternate") != -1) {
-            return null;
-        }//DON'T get alternate stylesheets
         
         info.setUri(link.getAttribute("href"));
         String media = link.getAttribute("media");
