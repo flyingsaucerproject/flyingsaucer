@@ -190,7 +190,7 @@ public class CascadedStyle {
             StringBuffer sb = new StringBuffer();
             Iterator iter = cascadedProperties.values().iterator();
             while (iter.hasNext()) {
-                sb.append(((PropertyDeclaration)iter.next()).getDeclarationStandardText());
+                sb.append(((PropertyDeclaration)iter.next()).getFingerprint());
             }
             this.fingerprint = sb.toString();
         }
@@ -202,6 +202,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2007/02/20 17:23:15  peterbrant
+ * Optimize fingerprint calculation
+ *
  * Revision 1.16  2007/02/20 01:17:09  peterbrant
  * Start CSS parser cleanup
  *

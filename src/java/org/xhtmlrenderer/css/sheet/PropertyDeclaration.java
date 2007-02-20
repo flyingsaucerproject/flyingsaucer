@@ -21,6 +21,7 @@ package org.xhtmlrenderer.css.sheet;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.factory.*;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -71,6 +72,8 @@ public class PropertyDeclaration {
      * Description of the Field
      */
     private boolean identIsSet;
+    
+    private String _fingerprint;
 
     /**
      * ImportanceAndOrigin of stylesheet - how many different
@@ -160,6 +163,13 @@ public class PropertyDeclaration {
 
     public String getDeclarationStandardText() {
         return cssName + ": " + cssPrimitiveValue.getCssText() + ";";
+    }
+    
+    public String getFingerprint() {
+        if (_fingerprint == null) {
+            _fingerprint = 'P' + cssName.FS_ID + ':' + ((PropertyValue)cssPrimitiveValue).getFingerprint() + ';';    
+        }
+        return _fingerprint;
     }
 
     /**
@@ -282,6 +292,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2007/02/20 17:23:14  peterbrant
+ * Optimize fingerprint calculation
+ *
  * Revision 1.19  2007/02/19 14:53:37  peterbrant
  * Integrate new CSS parser
  *

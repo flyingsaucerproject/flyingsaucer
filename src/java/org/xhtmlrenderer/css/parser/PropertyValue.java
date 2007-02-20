@@ -212,4 +212,15 @@ public class PropertyValue implements CSSPrimitiveValue {
     public FSFunction getFunction() {
         return _function;
     }
+    
+    public String getFingerprint() {
+        if (getPropertyValueType() == VALUE_TYPE_IDENT) {
+            if (_identValue == null) {
+                _identValue = IdentValue.getByIdentString(getStringValue());
+            }
+            return "I" + _identValue.FS_ID;
+        } else {
+            return getCssText();
+        }
+    }
 }
