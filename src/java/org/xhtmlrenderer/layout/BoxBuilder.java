@@ -398,6 +398,23 @@ public class BoxBuilder {
                 display == IdentValue.TABLE_FOOTER_GROUP || display == IdentValue.TABLE_ROW;
     }
     
+    private static boolean isAttrFunction(FSFunction function) {
+        if (function.getName().equals("attr")) {
+            List params = function.getParameters();
+            if (params.size() == 1) {
+                PropertyValue value = (PropertyValue)params.get(0);
+                return value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
+            }
+        }
+        
+        return false;
+    }
+    
+    private static String getAttributeValue(FSFunction attrFunc, Element e) {
+        PropertyValue value = (PropertyValue)attrFunc.getParameters().get(0);
+        return e.getAttribute(value.getStringValue());
+    }
+    
     private static List createGeneratedInlineBoxes(
             LayoutContext c, Element element, PropertyValue propValue, String peName) {
         List values = propValue.getValues();
@@ -415,21 +432,24 @@ public class BoxBuilder {
             if (type == CSSPrimitiveValue.CSS_STRING) {
                 content = value.getStringValue();
             } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
-                contentFunction =
-                    c.getContentFunctionFactory().lookupFunction(
-                            c, value.getFunction());
-                if (contentFunction == null) {
-                    continue;
-                }
-                
-                function = value.getFunction();
-                
-                if (contentFunction.isStatic()) {
-                    content = contentFunction.calculate(c, function);
-                    contentFunction = null;
-                    function = null;
+                if (isAttrFunction(value.getFunction())) {
+                    content = getAttributeValue(value.getFunction(), element);
                 } else {
-                    content = contentFunction.getLayoutReplacementText();
+                    contentFunction =
+                        c.getContentFunctionFactory().lookupFunction(c, value.getFunction());
+                    if (contentFunction == null) {
+                        continue;
+                    }
+                    
+                    function = value.getFunction();
+                    
+                    if (contentFunction.isStatic()) {
+                        content = contentFunction.calculate(c, function);
+                        contentFunction = null;
+                        function = null;
+                    } else {
+                        content = contentFunction.getLayoutReplacementText();
+                    }
                 }
             }
             
