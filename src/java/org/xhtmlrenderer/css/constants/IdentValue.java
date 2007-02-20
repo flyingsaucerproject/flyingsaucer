@@ -190,6 +190,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue E_RESIZE = addValue("e-resize");
     public final static IdentValue HELP = addValue("help");
     public final static IdentValue LARGE = addValue("large");
+    public final static IdentValue LARGER = addValue("larger");
     public final static IdentValue MEDIUM = addValue("medium");
     public final static IdentValue MOVE = addValue("move");
     public final static IdentValue N_RESIZE = addValue("n-resize");
@@ -199,6 +200,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue S_RESIZE = addValue("s-resize");
     public final static IdentValue SE_RESIZE = addValue("se-resize");
     public final static IdentValue SMALL = addValue("small");
+    public final static IdentValue SMALLER = addValue("smaller");
     public final static IdentValue SW_RESIZE = addValue("sw-resize");
     public final static IdentValue TEXT = addValue("text");
     public final static IdentValue W_RESIZE = addValue("w-resize");
@@ -341,6 +343,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2007/02/20 20:05:40  peterbrant
+ * Complete support for absolute and relative font sizes
+ *
  * Revision 1.26  2007/02/19 23:18:40  peterbrant
  * Further work on new CSS parser / Misc. bug fixes
  *

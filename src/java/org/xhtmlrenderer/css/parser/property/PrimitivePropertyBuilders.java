@@ -91,7 +91,17 @@ public class PrimitivePropertyBuilders {
     public static final BitSet BACKGROUND_POSITIONS = setFor(
             new IdentValue[] { 
                     IdentValue.LEFT, IdentValue.RIGHT, IdentValue.TOP, 
-                    IdentValue.BOTTOM, IdentValue.CENTER });    
+                    IdentValue.BOTTOM, IdentValue.CENTER });  
+    
+    public static final BitSet ABSOLUTE_FONT_SIZES = setFor(
+            new IdentValue[] { 
+                    IdentValue.XX_SMALL, IdentValue.X_SMALL, IdentValue.SMALL, 
+                    IdentValue.MEDIUM, IdentValue.LARGE, IdentValue.X_LARGE, 
+                    IdentValue.XX_LARGE }); 
+    
+    public static final BitSet RELATIVE_FONT_SIZES = setFor(
+            new IdentValue[] { 
+                    IdentValue.SMALLER, IdentValue.LARGER }); 
     
     public static final PropertyBuilder COLOR = new GenericColor();
     public static final PropertyBuilder BORDER_STYLE = new GenericBorderStyle();
@@ -734,6 +744,13 @@ public class PrimitivePropertyBuilders {
     
     public static class FontSize extends AbstractPropertyBuilder {
         // <absolute-size> | <relative-size> | <length> | <percentage> | inherit 
+        private static final BitSet ALLOWED;
+        
+        static {
+            ALLOWED = new BitSet(IdentValue.getIdentCount());
+            ALLOWED.or(ABSOLUTE_FONT_SIZES);
+            ALLOWED.or(RELATIVE_FONT_SIZES);
+        }
         
         public List buildDeclarations(
                 CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
@@ -744,14 +761,8 @@ public class PrimitivePropertyBuilders {
                 checkIdentLengthOrPercentType(cssName, value);
                 
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    PropertyValue size = Conversions.getFontSize(value.getStringValue());
-                    if (size == null) {
-                        throw new CSSParseException(
-                                "Ident " + value + " is not a valid absolute or relative value for font-size",
-                                -1);
-                    }
-                    return Collections.singletonList(
-                            new PropertyDeclaration(cssName, size, important, origin));
+                    IdentValue ident = checkIdent(cssName, value);
+                    checkValidity(cssName, ALLOWED, ident);
                 } else if (value.getFloatValue() < 0.0f) {
                     throw new CSSParseException("font-size may not be negative", -1);
                 }

@@ -31,6 +31,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.parser.PropertyValue;
+import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.ColorValue;
@@ -88,7 +89,7 @@ public class CalculatedStyle {
     private boolean _marginsAllowed = true;
     private boolean _paddingAllowed = true;
     private boolean _bordersAllowed = true;
-
+    
     /**
      * Cache child styles of this style that have the same cascaded properties
      */
@@ -315,15 +316,53 @@ public class CalculatedStyle {
     public FontSpecification getFont(CssContext ctx) {
         if (_font == null) {
             _font = new FontSpecification();
-            _font.size = getFloatPropertyProportionalTo(CSSName.FONT_SIZE, 0, ctx);
+            
+            _font.families = valueByName(CSSName.FONT_FAMILY).asStringArray();
+            
+            FSDerivedValue fontSize = valueByName(CSSName.FONT_SIZE);
+            if (fontSize instanceof IdentValue) {
+                PropertyValue replacement;
+                IdentValue resolved = resolveAbsoluteFontSize();
+                if (resolved != null) {
+                    replacement = FontSizeHelper.resolveAbsoluteFontSize(resolved, _font.families);
+                } else {
+                    replacement = FontSizeHelper.getDefaultRelativeFontSize((IdentValue)fontSize);
+                }
+                _font.size = LengthValue.calcFloatProportionalValue(
+                        this, CSSName.FONT_SIZE, replacement.getCssText(),
+                        replacement.getFloatValue(), replacement.getPrimitiveType(), 0, ctx);
+            } else {
+                _font.size = getFloatPropertyProportionalTo(CSSName.FONT_SIZE, 0, ctx);
+            }
 
             _font.fontWeight = getIdent(CSSName.FONT_WEIGHT);
-            _font.families = valueByName(CSSName.FONT_FAMILY).asStringArray();
 
             _font.fontStyle = getIdent(CSSName.FONT_STYLE);
             _font.variant = getIdent(CSSName.FONT_VARIANT);
         }
         return _font;
+    }
+    
+    private IdentValue resolveAbsoluteFontSize() {
+        FSDerivedValue fontSize = valueByName(CSSName.FONT_SIZE);
+        if (! (fontSize instanceof IdentValue)) {
+            return null;
+        }
+        IdentValue fontSizeIdent = (IdentValue)fontSize;
+        if (PrimitivePropertyBuilders.ABSOLUTE_FONT_SIZES.get(fontSizeIdent.FS_ID)) {
+            return fontSizeIdent;
+        }
+        
+        IdentValue parent = getParent().resolveAbsoluteFontSize();
+        if (parent != null) {
+            if (fontSizeIdent == IdentValue.SMALLER) {
+                return FontSizeHelper.getNextSmaller(parent);
+            } else if (fontSize == IdentValue.LARGER) {
+                return FontSizeHelper.getNextLarger(parent);
+            }
+        }
+        
+        return null;
     }
 
     public float getFloatPropertyProportionalTo(CSSName cssName, float baseValue, CssContext ctx) {
@@ -1004,6 +1043,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.80  2007/02/20 20:05:40  peterbrant
+ * Complete support for absolute and relative font sizes
+ *
  * Revision 1.79  2007/02/20 16:11:11  peterbrant
  * Comment out references to CSSName.OVERFLOW
  *
