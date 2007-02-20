@@ -358,12 +358,7 @@ public class Selector {
      * @return The pseudoElement value
      */
     public String getPseudoElement() {
-        //only care about the last in the chain
-        if (chainedSelector != null) {
-            return chainedSelector.getPseudoElement();
-        } else {
-            return _pe;
-        }
+    	return _pe;
     }
 
     /**
@@ -485,6 +480,7 @@ public class Selector {
     
     public void setName(String name) {
         _name = name;
+        _specificityD++;
     }
     
     public void setPos(int pos) {
