@@ -831,7 +831,7 @@ public class PrimitivePropertyBuilders {
     public static class FSFlowLeft extends SingleStringWithNone {
     }
     
-    public static class FSMoveToFlow extends SingleString {
+    public static class FSMoveToFlow extends SingleStringWithNone {
     }
     
     public static class FSPageHeight extends LengthLikeWithAuto {

@@ -33,6 +33,7 @@ import org.xhtmlrenderer.css.newmatch.Selector;
 import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
 import org.xhtmlrenderer.css.sheet.MediaRule;
 import org.xhtmlrenderer.css.sheet.PageRule;
+import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.RulesetContainer;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
@@ -79,6 +80,38 @@ public class CSSParser {
         }
     }
     
+    public PropertyValue parsePropertyValue(CSSName cssName, int origin, String expr) {
+        _URI = cssName + " property value";
+        try {
+            reset(new StringReader(expr));
+            List values = expr(cssName == CSSName.FONT_FAMILY);
+            
+            PropertyBuilder builder = CSSName.getPropertyBuilder(cssName);
+            List props;
+            try {
+                props = builder.buildDeclarations(cssName, values, origin, false);
+            } catch (CSSParseException e) {
+                e.setLine(getCurrentLine());
+                throw e;
+            }
+            
+            if (props.size() != 1) {
+                throw new CSSParseException(
+                        "Builder created " + props.size() + "properties, expected 1", getCurrentLine());
+            }
+            
+            PropertyDeclaration decl = (PropertyDeclaration)props.get(0);
+            
+            return (PropertyValue)decl.getValue();
+        } catch (IOException e) {
+            // "Shouldn't" happen
+            throw new RuntimeException(e.getMessage(), e);
+        } catch (CSSParseException e) {
+            error(e, "property value", false);
+            return null;
+        }
+    }
+    
 //  stylesheet
 //  : [ CHARSET_SYM STRING ';' ]?
 //    [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
@@ -106,7 +139,7 @@ public class CSSParser {
                         throw new CSSParseException(t, Token.TK_STRING, getCurrentLine());
                     }
                 } catch (CSSParseException e) {
-                    error(e, "@charset rule");
+                    error(e, "@charset rule", true);
                     recover(false, false);
                 }
             } else {
@@ -135,13 +168,13 @@ public class CSSParser {
                         case Token.IMPORT_SYM:
                             next();
                             error(new CSSParseException("@import not allowed", getCurrentLine()),
-                                    "@import rule");
+                                    "@import rule", true);
                             recover(false, false);
                             break;
                         case Token.OTHER:
                             if (_lexer.yycharat(0) == '@') {
                                 next();
-                                error(new CSSParseException("Invalid at-rule", getCurrentLine()), "rule");
+                                error(new CSSParseException("Invalid at-rule", getCurrentLine()), "rule", true);
                                 recover(false, false);
                                 break;
                             }
@@ -155,7 +188,7 @@ public class CSSParser {
         } catch (CSSParseException e) {
             // "shouldn't" happen
             if (! e.isCallerNotified()) {
-                error(e, "stylesheet");
+                error(e, "stylesheet", false);
             }
         }
     }
@@ -229,7 +262,7 @@ public class CSSParser {
                         t, Token.TK_IMPORT_SYM, getCurrentLine());
             }
         } catch (CSSParseException e) {
-            error(e, "@import rule");
+            error(e, "@import rule", true);
             recover(false, false);
         }
     }
@@ -294,7 +327,7 @@ public class CSSParser {
                 throw new CSSParseException(t, Token.TK_MEDIA_SYM, getCurrentLine());
             }
         } catch (CSSParseException e) {
-            error(e, "@media rule");
+            error(e, "@media rule", true);
             recover(false, false);
         }
     }
@@ -359,7 +392,7 @@ public class CSSParser {
                 throw new CSSParseException(t, Token.TK_PAGE_SYM, getCurrentLine());
             }
         } catch (CSSParseException e) {
-            error(e, "@page rule");
+            error(e, "@page rule", true);
             recover(false, false);
         }
     }
@@ -525,7 +558,7 @@ public class CSSParser {
                 container.addContent(ruleset);
             }
         } catch (CSSParseException e) {
-            error(e, "ruleset");
+            error(e, "ruleset", true);
             recover(true, false);
         }
     }
@@ -927,7 +960,7 @@ public class CSSParser {
                                     cssName, values, ruleset.getOrigin(), important));
                         } catch (CSSParseException e) {
                             e.setLine(getCurrentLine());
-                            error(e, "declaration");
+                            error(e, "declaration", true);
                         }
                     }
                 } else {
@@ -938,7 +971,7 @@ public class CSSParser {
                 throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
             }
         } catch (CSSParseException e) {
-            error(e, "declaration");
+            error(e, "declaration", true);
             recover(false, true);
         }
     }
@@ -1385,13 +1418,13 @@ public class CSSParser {
         return result;
     }
     
-    private void error(CSSParseException e, String what) throws IOException {
+    private void error(CSSParseException e, String what, boolean rethrowEOF) {
         if (! e.isCallerNotified()) {
             String message = e.getMessage() + " Skipping " + what + ".";
             _errorHandler.error(_URI, message);
         }
         e.setCallerNotified(true);
-        if (e.isEOF()) {
+        if (e.isEOF() && rethrowEOF) {
             throw e;
         }
     }

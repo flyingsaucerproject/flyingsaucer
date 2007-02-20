@@ -24,6 +24,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.xhtmlrenderer.css.parser.CSSErrorHandler;
+import org.xhtmlrenderer.css.parser.CSSParser;
+import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.property.BackgroundPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.BorderPropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.BorderSpacingPropertyBuilder;
@@ -34,8 +37,10 @@ import org.xhtmlrenderer.css.parser.property.OneToFourPropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.SizePropertyBuilder;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
+import org.xhtmlrenderer.util.XRLog;
 
 
 /**
@@ -353,7 +358,7 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "top",
                     INHERITS,
-                    new PrimitivePropertyBuilders.Top()
+                    new PrimitivePropertyBuilders.CaptionSide()
             );
 
     /**
@@ -1631,19 +1636,25 @@ public final class CSSName implements Comparable {
     }
     
     static {
+        CSSParser parser = new CSSParser(new CSSErrorHandler() {
+            public void error(String uri, String message) {
+                XRLog.cssParse("(" + uri + ") " + message);
+            }
+        });
         for (Iterator i = ALL_PRIMITIVE_PROPERTY_NAMES.values().iterator(); i.hasNext(); ) {
             CSSName cssName = (CSSName)i.next();
-            if (cssName.initialValue.charAt(0) != '=') {
-                String convertedValue = Idents.convertIdent(cssName, cssName.initialValue);
+            if (cssName.initialValue.charAt(0) != '=' && cssName.implemented) {
+                PropertyValue value = parser.parsePropertyValue(
+                        cssName, StylesheetInfo.USER_AGENT, cssName.initialValue);
 
-                short valueType = ValueConstants.guessType(convertedValue);
-
-                cssName.initialDerivedValue = DerivedValueFactory.newDerivedValue(null,
-                        cssName,
-                        valueType,
-                        convertedValue,
-                        convertedValue,
-                        null);
+                if (value == null) {
+                    XRLog.exception("Unable to derive initial value for " + cssName);   
+                } else {
+                    cssName.initialDerivedValue = DerivedValueFactory.newDerivedValue(
+                            null,
+                            cssName,
+                            value);
+                }
             }
         }
     }
@@ -1665,6 +1676,10 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2007/02/20 00:59:14  peterbrant
+ * Fix wrong property builder for caption-side / Use new CSS parser for
+ * parsing default values
+ *
  * Revision 1.27  2007/02/19 23:18:40  peterbrant
  * Further work on new CSS parser / Misc. bug fixes
  *
