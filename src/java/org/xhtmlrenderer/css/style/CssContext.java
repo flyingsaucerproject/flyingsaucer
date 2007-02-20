@@ -20,8 +20,6 @@ public interface CssContext {
 
     float getXHeight(FontSpecification parentFont);
 
-    float getFontSizeForXHeight(FontSpecification parent, FontSpecification desired, float xHeight);
-
     FSFont getFont(FontSpecification font);
     
     // FIXME Doesn't really belong here, but this is

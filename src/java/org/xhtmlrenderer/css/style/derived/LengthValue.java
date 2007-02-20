@@ -139,16 +139,15 @@ public class LengthValue extends DerivedValue {
                 // To convert EMS to pixels, we need the height of the lowercase 'Xx' character in the current
                 // element...
                 // to the font size of the parent element (spec: 4.3.2)
+                float xHeight;
                 if (cssName == CSSName.FONT_SIZE) {
                     FontSpecification parentFont = style.getParent().getFont(ctx);
-                    float xHeight = ctx.getXHeight(parentFont);
-                    xHeight = relVal * xHeight;
-                    absVal = getFontSizeForXHeight(style, ctx, xHeight);
+                    xHeight = ctx.getXHeight(parentFont);
                 } else {
                     FontSpecification font = style.getFont(ctx);
-                    float xHeight = ctx.getXHeight(font);
-                    absVal = relVal * xHeight;
+                    xHeight = ctx.getXHeight(font);
                 }
+                absVal = relVal * xHeight;
 
                 break;
             case CSSPrimitiveValue.CSS_PERCENTAGE:
@@ -192,25 +191,6 @@ public class LengthValue extends DerivedValue {
         double d = Math.round((double) absVal);
         absVal = new Float(d).floatValue();
         return absVal;
-    }
-
-
-    //TODO: this stuff is a bit of a mess
-    private static float getFontSizeForXHeight(CalculatedStyle style, CssContext ctx, float xHeight) {
-        FontSpecification f = new FontSpecification();
-
-        //can't set size now
-        // ASK: why don't we just use the style's getFont()? we're already caching these values
-        // e.g.
-        // return ctx.getFontSizeForXHeight(style.getParent().getFont(ctx), style.getFont(ctx), xHeight);
-        //ANSWER: when the font is already cached, this method never gets called
-        f.fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
-        f.families = style.asStringArray(CSSName.FONT_FAMILY);
-
-        f.fontStyle = style.getIdent(CSSName.FONT_STYLE);
-        f.variant = style.getIdent(CSSName.FONT_VARIANT);
-
-        return ctx.getFontSizeForXHeight(style.getParent().getFont(ctx), f, xHeight);
     }
     
     private CalculatedStyle getStyle() {

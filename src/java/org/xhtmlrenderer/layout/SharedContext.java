@@ -493,33 +493,13 @@ public class SharedContext {
         return getFontResolver().resolveFont(this, spec);
     }
 
-    public float getFontSizeForXHeight( 
-            FontContext fontContext, 
-            FontSpecification parent, FontSpecification desired, float xHeight) {
-        float bestGuess = getFontResolver().resolveFont(this, parent).getSize2D();
-        float bestHeight = getXHeight(fontContext, parent);
-        float nextGuess = bestGuess * xHeight / bestHeight;
-        while (true) {
-            desired.size = nextGuess;
-            float nextHeight = getXHeight(fontContext, desired);
-            //this check is needed in cases where the iteration can hop back and forth between two values
-            if (Math.abs(nextHeight - xHeight) < Math.abs(bestHeight - xHeight)) {
-                bestGuess = nextGuess;
-                bestHeight = nextHeight;
-                nextGuess = bestGuess * xHeight / nextHeight;
-            } else
-                break;
-        }
-        return bestGuess;
-    }
-
     //strike-through offset should always be half of the height of lowercase x...
     //and it is defined even for fonts without 'x'!
     public float getXHeight(FontContext fontContext, FontSpecification fs) {
         FSFont font = getFontResolver().resolveFont(this, fs);
         FSFontMetrics fm = getTextRenderer().getFSFontMetrics(fontContext, font, " ");
         float sto = fm.getStrikethroughOffset();
-        return 2 * Math.abs(sto) + fm.getStrikethroughThickness();
+        return fm.getAscent() - 2 * Math.abs(sto) + fm.getStrikethroughThickness();
     }
 
     /**
@@ -680,6 +660,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2007/02/20 17:07:13  peterbrant
+ * Clean up ex calculation
+ *
  * Revision 1.32  2007/02/07 16:33:35  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *
