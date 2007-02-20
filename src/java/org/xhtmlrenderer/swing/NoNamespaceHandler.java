@@ -92,62 +92,55 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
         List list = new ArrayList();
         //get the processing-instructions (actually for XmlDocuments)
         //type and href are required to be set
-        try {
-            NodeList nl = doc.getChildNodes();
-            for (int i = 0, len = nl.getLength(); i < len; i++) {
-                Node node = nl.item(i);
-                if (node.getNodeType() != Node.PROCESSING_INSTRUCTION_NODE) continue;
-                ProcessingInstruction piNode = (ProcessingInstruction) node;
-                if (!piNode.getTarget().equals("xml-stylesheet")) continue;
-                StylesheetInfo info = new StylesheetInfo();
-                info = new StylesheetInfo();
-                info.setOrigin(StylesheetInfo.AUTHOR);
-                String pi = piNode.getData();
-                Matcher m = _alternatePattern.matcher(pi);
-                if (m.matches()) {
-                    int start = m.end();
-                    String alternate = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                    //TODO: handle alternate stylesheets
-                    if (alternate.equals("yes")) continue;//DON'T get alternate stylesheets for now
-                }
-                m = _typePattern.matcher(pi);
-                if (m.find()) {
-                    int start = m.end();
-                    String type = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                    //TODO: handle other stylesheet types
-                    if (!type.equals("text/css")) continue;//for now
-                    info.setType(type);
-                }
-                m = _hrefPattern.matcher(pi);
-                if (m.find()) {
-                    int start = m.end();
-                    String href = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                    info.setUri(href);
-                }
-                m = _titlePattern.matcher(pi);
-                if (m.find()) {
-                    int start = m.end();
-                    String title = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                    info.setTitle(title);
-                }
-                m = _mediaPattern.matcher(pi);
-                if (m.find()) {
-                    int start = m.end();
-                    String media = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                    info.setMedia(media);
-                }
-                list.add(info);
+        NodeList nl = doc.getChildNodes();
+        for (int i = 0, len = nl.getLength(); i < len; i++) {
+            Node node = nl.item(i);
+            if (node.getNodeType() != Node.PROCESSING_INSTRUCTION_NODE) continue;
+            ProcessingInstruction piNode = (ProcessingInstruction) node;
+            if (!piNode.getTarget().equals("xml-stylesheet")) continue;
+            StylesheetInfo info = new StylesheetInfo();
+            info = new StylesheetInfo();
+            info.setOrigin(StylesheetInfo.AUTHOR);
+            String pi = piNode.getData();
+            Matcher m = _alternatePattern.matcher(pi);
+            if (m.matches()) {
+                int start = m.end();
+                String alternate = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+                //TODO: handle alternate stylesheets
+                if (alternate.equals("yes")) continue;//DON'T get alternate stylesheets for now
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            m = _typePattern.matcher(pi);
+            if (m.find()) {
+                int start = m.end();
+                String type = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+                //TODO: handle other stylesheet types
+                if (!type.equals("text/css")) continue;//for now
+                info.setType(type);
+            }
+            m = _hrefPattern.matcher(pi);
+            if (m.find()) {
+                int start = m.end();
+                String href = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+                info.setUri(href);
+            }
+            m = _titlePattern.matcher(pi);
+            if (m.find()) {
+                int start = m.end();
+                String title = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+                info.setTitle(title);
+            }
+            m = _mediaPattern.matcher(pi);
+            if (m.find()) {
+                int start = m.end();
+                String media = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+                info.setMedia(media);
+            } else {
+                info.addMedium("screen");
+            }
+            list.add(info);
         }
 
-        StylesheetInfo[] refs = new StylesheetInfo[list.size()];
-        for (int i = 0; i < refs.length; i++) {
-            refs[i] = (StylesheetInfo) list.get(i);
-        }
-
-        return refs;
+        return (StylesheetInfo[])list.toArray(new StylesheetInfo[list.size()]);
     }
 
     public InputStream getDefaultStylesheet() {
