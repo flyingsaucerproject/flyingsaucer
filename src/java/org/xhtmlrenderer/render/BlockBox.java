@@ -193,7 +193,9 @@ public class BlockBox extends Box implements InlinePaintable {
                     if (styleable instanceof BlockBox) {
                         BlockBox b = (BlockBox)styleable;
                         result.append(b.dump(c, indent + "  ", which));
-                        result.deleteCharAt(result.length()-1);
+                        if (result.charAt(result.length()-1) == '\n') {
+                            result.deleteCharAt(result.length()-1);
+                        }
                     } else {
                         result.append(indent + "  ");
                         result.append(styleable.toString());
@@ -1573,9 +1575,9 @@ public class BlockBox extends Box implements InlinePaintable {
         return _needShrinkToFitCalculatation;
     }
     
-    public void initStaticPos(LayoutContext c, BlockBox parent) {
+    public void initStaticPos(LayoutContext c, BlockBox parent, int childOffset) {
         setX(0);
-        setY(parent.getHeight());
+        setY(childOffset);
     }
     
     public int calcBaseline(LayoutContext c) {
@@ -1646,6 +1648,10 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.62  2007/02/21 17:17:04  peterbrant
+ * Calculate position of next child and block height independently.  They may not
+ * move in lockstep in the face of negative vertical margins.
+ *
  * Revision 1.61  2007/02/20 23:46:06  peterbrant
  * Include pseudo element in toString()
  *

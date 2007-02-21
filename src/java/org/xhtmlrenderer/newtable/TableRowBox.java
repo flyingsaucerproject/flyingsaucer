@@ -195,7 +195,7 @@ public class TableRowBox extends BlockBox {
         cell.layout(c);
     } 
     
-    public void initStaticPos(LayoutContext c, BlockBox parent) {
+    public void initStaticPos(LayoutContext c, BlockBox parent, int childOffset) {
         setX(0);
         
         TableBox table = getTable();
