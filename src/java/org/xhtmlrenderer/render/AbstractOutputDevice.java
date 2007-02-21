@@ -106,7 +106,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     
     public void drawDebugOutline(RenderingContext c, Box box, Color color) {
         setColor(color);
-        Rectangle rect = box.getBounds(box.getAbsX(), box.getAbsY(), c, 0, 0);
+        Rectangle rect = box.getMarginEdge(box.getAbsX(), box.getAbsY(), c, 0, 0);
         rect.height -= 1;
         rect.width -= 1;
         drawRect(rect.x, rect.y, rect.width, rect.height);

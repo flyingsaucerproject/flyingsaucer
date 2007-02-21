@@ -90,7 +90,7 @@ public class LineBox extends Box implements InlinePaintable {
         return getAbsY() + getHeight();
     }
 
-    public Rectangle getBounds(CssContext cssCtx, int tx, int ty) {
+    public Rectangle getMarginEdge(CssContext cssCtx, int tx, int ty) {
         Rectangle result = new Rectangle(getX(), getY(), getContentWidth(), getHeight());
         result.translate(tx, ty);
         return result;
@@ -440,6 +440,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.59  2007/02/21 23:11:02  peterbrant
+ * Correct margin edge calculation (as it turns out the straightforward approach is also the correct one)
+ *
  * Revision 1.58  2007/02/19 14:53:36  peterbrant
  * Integrate new CSS parser
  *

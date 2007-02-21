@@ -267,17 +267,16 @@ public abstract class Box implements Styleable {
         _containingBlock = containingBlock;
     }
     
-    public Rectangle getBounds(int left, int top, CssContext cssCtx, int tx, int ty) {
-        // Looks unnecessarily convoluted, but necessary to get negative
-        // margins right
-        Rectangle result = getBorderEdge(left, top, cssCtx);
-        addBackMargins(cssCtx, result);
+    public Rectangle getMarginEdge(int left, int top, CssContext cssCtx, int tx, int ty) {
+        // Note that negative margins can mean this rectangle is inside the border
+        // edge, but that's the way it's supposed to work...
+        Rectangle result = new Rectangle(left, top, getWidth(), getHeight());
         result.translate(tx, ty);
         return result;
     }
 
-    public Rectangle getBounds(CssContext cssCtx, int tx, int ty) {
-        return getBounds(getX(), getY(), cssCtx, tx, ty);
+    public Rectangle getMarginEdge(CssContext cssCtx, int tx, int ty) {
+        return getMarginEdge(getX(), getY(), cssCtx, tx, ty);
     }
     
     public Rectangle getPaintingBorderEdge(CssContext cssCtx) {
@@ -293,24 +292,6 @@ public abstract class Box implements Styleable {
      */
     public boolean intersects(CssContext cssCtx, Shape clip) {
         return clip == null || clip.intersects(getPaintingClipEdge(cssCtx));
-    }
-
-    private void addBackMargins(CssContext cssCtx, Rectangle bounds) {
-        RectPropertySet margin = getMargin(cssCtx);
-        if (margin.top() > 0) {
-            bounds.y -= margin.top();
-            bounds.height += margin.top();
-        }
-        if (margin.right() > 0) {
-            bounds.width += margin.right();
-        }
-        if (margin.bottom() > 0) {
-            bounds.height += margin.bottom();
-        }
-        if (margin.left() > 0) {
-            bounds.x -= margin.left();
-            bounds.width += margin.left();
-        }
     }
 
     protected Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
@@ -684,7 +665,7 @@ public abstract class Box implements Styleable {
         
         final PaintingInfo result = new PaintingInfo();
         
-        Rectangle bounds = getBounds(getAbsX(), getAbsY(), c, 0, 0);
+        Rectangle bounds = getMarginEdge(getAbsX(), getAbsY(), c, 0, 0);
         result.setOuterMarginCorner(
             new Dimension(bounds.x + bounds.width, bounds.y + bounds.height));
           
@@ -870,6 +851,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.125  2007/02/21 23:11:03  peterbrant
+ * Correct margin edge calculation (as it turns out the straightforward approach is also the correct one)
+ *
  * Revision 1.124  2007/02/21 19:15:05  peterbrant
  * right and bottom need to push the opposite direction as left and top with position: relative
  *

@@ -114,9 +114,9 @@ public class FloatManager {
             BoxOffset lastOffset = (BoxOffset) floats.get(floats.size() - 1);
             BlockBox last = (BlockBox) lastOffset.getBox();
 
-            Rectangle currentBounds = current.getBounds(cssCtx, -offset.x, -offset.y);
+            Rectangle currentBounds = current.getMarginEdge(cssCtx, -offset.x, -offset.y);
 
-            Rectangle lastBounds = last.getBounds(cssCtx, -lastOffset.getX(), -lastOffset.getY());
+            Rectangle lastBounds = last.getMarginEdge(cssCtx, -lastOffset.getX(), -lastOffset.getY());
 
             boolean moveOver = false;
 
@@ -152,9 +152,9 @@ public class FloatManager {
             Point offset = bfc.getOffset();
             BoxOffset lastOffset = (BoxOffset) floats.get(floats.size() - 1);
 
-            Rectangle currentBounds = current.getBounds(cssCtx, -offset.x, -offset.y);
+            Rectangle currentBounds = current.getMarginEdge(cssCtx, -offset.x, -offset.y);
 
-            Rectangle lastBounds = lastOffset.getBox().getBounds(cssCtx,
+            Rectangle lastBounds = lastOffset.getBox().getMarginEdge(cssCtx,
                     -lastOffset.getX(), -lastOffset.getY());
 
             if (currentBounds.y < lastBounds.y) {
@@ -186,8 +186,8 @@ public class FloatManager {
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset floater = (BoxOffset) i.next();
 
-            Rectangle bounds = floater.getBox().getBounds(cssCtx,
-                    -floater.getX(), -floater.getY());
+            Rectangle bounds = floater.getBox().getMarginEdge(
+                    cssCtx, -floater.getX(), -floater.getY());
             if (bounds.y + bounds.height > result) {
                 result = bounds.y + bounds.height;
             }
@@ -208,11 +208,11 @@ public class FloatManager {
     private boolean overlaps(CssContext cssCtx, BlockFormattingContext bfc,
                              BlockBox current, List floats) {
         Point offset = bfc.getOffset();
-        Rectangle bounds = current.getBounds(cssCtx, -offset.x, -offset.y);
+        Rectangle bounds = current.getMarginEdge(cssCtx, -offset.x, -offset.y);
 
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset floater = (BoxOffset) i.next();
-            Rectangle floaterBounds = floater.getBox().getBounds(cssCtx,
+            Rectangle floaterBounds = floater.getBox().getMarginEdge(cssCtx,
                     -floater.getX(), -floater.getY());
 
             if (floaterBounds.intersects(bounds)) {
@@ -226,7 +226,7 @@ public class FloatManager {
     private void moveClear(CssContext cssCtx, BlockFormattingContext bfc,
                            Box current, List floats) {
         Point offset = bfc.getOffset();
-        Rectangle bounds = current.getBounds(cssCtx, -offset.x, -offset.y);
+        Rectangle bounds = current.getMarginEdge(cssCtx, -offset.x, -offset.y);
 
         int y = findLowestAbsoluteY(cssCtx, floats);
 
@@ -294,7 +294,7 @@ public class FloatManager {
         }
 
         Point offset = bfc.getOffset();
-        Rectangle lineBounds = line.getBounds(cssCtx, -offset.x, -offset.y);
+        Rectangle lineBounds = line.getMarginEdge(cssCtx, -offset.x, -offset.y);
         lineBounds.width = containingBlockContentWidth;
         
         int farthestOver = direction == LEFT ? lineBounds.x : lineBounds.x + lineBounds.width;
@@ -303,7 +303,7 @@ public class FloatManager {
 
         for (int i = 0; i < floatsList.size(); i++) {
             BoxOffset floater = (BoxOffset) floatsList.get(i);
-            Rectangle fr = floater.getBox().getBounds(cssCtx, -floater.getX(), -floater.getY());
+            Rectangle fr = floater.getBox().getMarginEdge(cssCtx, -floater.getX(), -floater.getY());
             if (lineBounds.intersects(fr)) {
                 if (direction == LEFT && fr.x + fr.width > farthestOver) {
                     farthestOver = fr.x + fr.width;

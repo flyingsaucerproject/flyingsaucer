@@ -303,7 +303,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         return result;
     }
     
-    public Rectangle getBounds(int left, int top, CssContext cssCtx, int tx, int ty) {
+    public Rectangle getMarginEdge(int left, int top, CssContext cssCtx, int tx, int ty) {
         Rectangle result = getBorderEdge(left, top, cssCtx);
         float marginLeft = 0;
         float marginRight = 0;
