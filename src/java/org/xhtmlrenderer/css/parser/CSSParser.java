@@ -1094,6 +1094,10 @@ public class CSSParser {
         return getTokenValue(t).substring(s.length());
     }
     
+    private String sign(float sign) {
+        return sign == -1.0f ? "-" : "";
+    }
+    
 //  term
 //    : unary_operator?
 //      [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
@@ -1119,7 +1123,7 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_NUMBER, 
                         sign*Float.parseFloat(getTokenValue(t)),
-                        getTokenValue(t));
+                        sign(sign) + getTokenValue(t));
                 next();
                 skip_whitespace();                
                 break;
@@ -1127,7 +1131,7 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PERCENTAGE, 
                         sign*Float.parseFloat(extractNumber(t)),
-                        getTokenValue(t));
+                        sign(sign) + getTokenValue(t));
                 next();
                 skip_whitespace();                
                 break;
@@ -1135,7 +1139,7 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_EMS, 
                         sign*Float.parseFloat(extractNumber(t)),
-                        getTokenValue(t));
+                        sign(sign) + getTokenValue(t));
                 next();
                 skip_whitespace();                
                 break;
@@ -1143,7 +1147,7 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_EXS, 
                         sign*Float.parseFloat(extractNumber(t)),
-                        getTokenValue(t));
+                        sign(sign) + getTokenValue(t));
                 next();
                 skip_whitespace();                
                 break;
@@ -1151,7 +1155,7 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PX, 
                         sign*Float.parseFloat(extractNumber(t)),
-                        getTokenValue(t));
+                        sign(sign) + getTokenValue(t));
                 next();
                 skip_whitespace();                
                 break;
@@ -1159,7 +1163,7 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_CM, 
                         sign*Float.parseFloat(extractNumber(t)),
-                        getTokenValue(t));
+                        sign(sign) + getTokenValue(t));
                 next();
                 skip_whitespace();                
                 break;
@@ -1167,7 +1171,7 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_MM, 
                         sign*Float.parseFloat(extractNumber(t)),
-                        getTokenValue(t));
+                        sign(sign) + getTokenValue(t));
                 next();
                 skip_whitespace();                
                 break;
@@ -1175,7 +1179,7 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_IN, 
                         sign*Float.parseFloat(extractNumber(t)),
-                        getTokenValue(t));
+                        sign(sign) + getTokenValue(t));
                 next();
                 skip_whitespace();                
                 break;
@@ -1183,7 +1187,7 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PT, 
                         sign*Float.parseFloat(extractNumber(t)),
-                        getTokenValue(t));
+                        sign(sign) + getTokenValue(t));
                 next();
                 skip_whitespace();                
                 break;
@@ -1193,7 +1197,7 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PC, 
                         sign*Float.parseFloat(extractNumber(t)),
-                        getTokenValue(t));
+                        sign(sign) + getTokenValue(t));
                 break;
             case Token.STRING:
                 String s = getTokenValue(t);
