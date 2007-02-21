@@ -180,7 +180,7 @@ public class FloatManager {
                 (current.getX() + current.getWidth()) <= current.getContainingBlock().getContentWidth();
     }
 
-    private int findLowestAbsoluteY(CssContext cssCtx, List floats) {
+    private int findLowestY(CssContext cssCtx, List floats) {
         int result = 0;
 
         for (Iterator i = floats.iterator(); i.hasNext();) {
@@ -197,8 +197,8 @@ public class FloatManager {
     }
     
     public int getClearDelta(CssContext cssCtx, int bfcRelativeY) {
-        int lowestLeftY = findLowestAbsoluteY(cssCtx, getFloats(LEFT));
-        int lowestRightY = findLowestAbsoluteY(cssCtx, getFloats(RIGHT));
+        int lowestLeftY = findLowestY(cssCtx, getFloats(LEFT));
+        int lowestRightY = findLowestY(cssCtx, getFloats(RIGHT));
         
         int lowestY = Math.max(lowestLeftY, lowestRightY);
         
@@ -225,17 +225,20 @@ public class FloatManager {
 
     private void moveClear(CssContext cssCtx, BlockFormattingContext bfc,
                            Box current, List floats) {
+        // Translate from box coords to BFC coords
         Point offset = bfc.getOffset();
-        Rectangle bounds = current.getMarginEdge(cssCtx, -offset.x, -offset.y);
-
-        int y = findLowestAbsoluteY(cssCtx, floats);
-
+        Rectangle bounds = current.getBorderEdge(-offset.x, -offset.y, cssCtx);
+        
+        int y = findLowestY(cssCtx, floats);
+        
         if (bounds.y < y) {
+            // Translate bottom margin edge of lowest float back to box coords
+            // and set the box's border edge to that value
             bounds.y = y;
 
             bounds.translate(offset.x, offset.y);
 
-            current.setY(bounds.y);
+            current.setY(bounds.y - (int)current.getMargin(cssCtx).top());
         }
     }
 

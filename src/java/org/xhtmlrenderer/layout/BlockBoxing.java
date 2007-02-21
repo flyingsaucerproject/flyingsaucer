@@ -278,12 +278,6 @@ public class BlockBoxing {
             moved = true;
             child.setNeedPageClear(false);
         }
-        if (child.getStyle().isCleared()) {
-            c.translate(0, -child.getY());
-            c.getBlockFormattingContext().clear(c, child);
-            c.translate(0, child.getY());
-            moved = true;
-        }
         if (moved) {
             child.calcCanvasLocation();
         }
@@ -459,6 +453,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2007/02/21 23:49:41  peterbrant
+ * Can't calculate clearance until margins have been collapsed / Clearance must be calculated relative to the box's border edge, not margin edge
+ *
  * Revision 1.53  2007/02/21 17:16:49  peterbrant
  * Calculate position of next child and block height independently.  They may not
  * move in lockstep in the face of negative vertical margins.

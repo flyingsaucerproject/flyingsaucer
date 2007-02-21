@@ -294,7 +294,7 @@ public abstract class Box implements Styleable {
         return clip == null || clip.intersects(getPaintingClipEdge(cssCtx));
     }
 
-    protected Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
+    public Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getMargin(cssCtx);
         Rectangle result = new Rectangle(left + (int) margin.left(),
                 top + (int) margin.top(),
@@ -851,6 +851,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.126  2007/02/21 23:49:41  peterbrant
+ * Can't calculate clearance until margins have been collapsed / Clearance must be calculated relative to the box's border edge, not margin edge
+ *
  * Revision 1.125  2007/02/21 23:11:03  peterbrant
  * Correct margin edge calculation (as it turns out the straightforward approach is also the correct one)
  *

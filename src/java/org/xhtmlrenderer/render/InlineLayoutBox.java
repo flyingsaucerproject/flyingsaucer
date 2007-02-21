@@ -277,7 +277,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         return result;
     }
     
-    protected Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
+    public Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
         // x, y pins the content area of the box so subtract off top border and padding
         // too
         

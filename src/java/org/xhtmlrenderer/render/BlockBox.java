@@ -709,6 +709,15 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
     
+    private void calcClearance(LayoutContext c) {
+        if (getStyle().isCleared()) {
+            c.translate(0, -getY());
+            c.getBlockFormattingContext().clear(c, this);
+            c.translate(0, getY());
+            calcCanvasLocation();
+        }
+    }
+    
     public void layout(LayoutContext c) {
         layoutBlock(c);
     }
@@ -741,6 +750,7 @@ public class BlockBox extends Box implements InlinePaintable {
         calcDimensions(c);
         collapseMargins(c);
         
+        calcClearance(c);
         calcShrinkToFitWidthIfNeeded(c);
         
         BorderPropertySet border = getBorder(c);
@@ -1664,6 +1674,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.64  2007/02/21 23:49:41  peterbrant
+ * Can't calculate clearance until margins have been collapsed / Clearance must be calculated relative to the box's border edge, not margin edge
+ *
  * Revision 1.63  2007/02/21 21:47:26  peterbrant
  * Implement (limited) support for collapsing through blocks with adjoining top and bottom margins / <body> should collapse with children
  *
