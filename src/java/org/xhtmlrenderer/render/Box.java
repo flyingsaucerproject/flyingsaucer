@@ -367,7 +367,7 @@ public abstract class Box implements Styleable {
             setX(getX() + (int)style.getFloatPropertyProportionalWidth(
                     CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx));
         } else if (! style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-            setX(getX() + (int)style.getFloatPropertyProportionalWidth(
+            setX(getX() - (int)style.getFloatPropertyProportionalWidth(
                     CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx));
         }
         
@@ -382,7 +382,7 @@ public abstract class Box implements Styleable {
             setY(getY() + ((int)style.getFloatPropertyProportionalHeight(
                     CSSName.TOP, cbContentHeight, cssCtx)));
         } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-            setY(getY() + ((int)style.getFloatPropertyProportionalHeight(
+            setY(getY() - ((int)style.getFloatPropertyProportionalHeight(
                     CSSName.BOTTOM, cbContentHeight, cssCtx)));
         }
         
@@ -870,6 +870,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.124  2007/02/21 19:15:05  peterbrant
+ * right and bottom need to push the opposite direction as left and top with position: relative
+ *
  * Revision 1.123  2007/02/19 23:42:54  peterbrant
  * Fix resetChildren() typo
  *
