@@ -27,9 +27,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -926,18 +923,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
     
     protected boolean isMayCollapseMarginsWithChildren() {
-        return (! isRoot()) && (! isBody()) && getStyle().isMayCollapseWithChildren();
-    }
-    
-    // HACK
-    private boolean isBody() {
-        Element element = getElement();
-        if (element.getTagName().equals("body")) {
-            Node parent = element.getParentNode();
-            return parent != null && parent.getParentNode() instanceof Document;
-        }
-        
-        return false;
+        return (! isRoot()) && getStyle().isMayCollapseWithChildren();
     }
     
     // This will require a rethink if we ever truly layout incrementally
@@ -947,33 +933,45 @@ public class BlockBox extends Box implements InlinePaintable {
         if (! isTopMarginCalculated() || ! isBottomMarginCalculated()) {
             RectPropertySet margin = getMargin(c);
             
-            if (! isTopMarginCalculated()) {
+            if (! isTopMarginCalculated() && ! isBottomMarginCalculated() && isVerticalMarginsAdjoin(c)) {
                 MarginCollapseResult collapsedMargin = 
                     _pendingCollapseCalculation != null ?
                             _pendingCollapseCalculation : new MarginCollapseResult();
+                collapseEmptySubtreeMargins(c, collapsedMargin);
+                setCollapsedBottomMargin(c, margin, collapsedMargin);
+            } else {
+                if (! isTopMarginCalculated()) {
+                    MarginCollapseResult collapsedMargin = 
+                        _pendingCollapseCalculation != null ?
+                                _pendingCollapseCalculation : new MarginCollapseResult();
+                    
+                    collapseTopMargin(c, true, collapsedMargin);
+                    if ((int)margin.top() != collapsedMargin.getMargin()) {
+                        setMarginTop(c, collapsedMargin.getMargin());
+                    }
+                }
                 
-                collapseTopMargin(c, true, collapsedMargin);
-                if ((int)margin.top() != collapsedMargin.getMargin()) {
-                    setMarginTop(c, collapsedMargin.getMargin());
+                if (! isBottomMarginCalculated()) {
+                    MarginCollapseResult collapsedMargin = new MarginCollapseResult();
+                    collapseBottomMargin(c, true, collapsedMargin);
+                    
+                    setCollapsedBottomMargin(c, margin, collapsedMargin);
                 }
             }
-            
-            if (! isBottomMarginCalculated()) {
-                MarginCollapseResult collapsedMargin = new MarginCollapseResult();
-                collapseBottomMargin(c, true, collapsedMargin);
-                
-                BlockBox next = null;
-                if (! isInline()) {
-                    next = getNextCollapsableSibling(collapsedMargin);
-                }
-                if (! (next == null || next instanceof AnonymousBlockBox) && 
-                        collapsedMargin.hasMargin()) {
-                    next._pendingCollapseCalculation = collapsedMargin;
-                    setMarginBottom(c, 0);
-                } else if ((int)margin.bottom() != collapsedMargin.getMargin()) {
-                    setMarginBottom(c, collapsedMargin.getMargin());
-                }
-            }
+        }
+    }
+
+    private void setCollapsedBottomMargin(LayoutContext c, RectPropertySet margin, MarginCollapseResult collapsedMargin) {
+        BlockBox next = null;
+        if (! isInline()) {
+            next = getNextCollapsableSibling(collapsedMargin);
+        }
+        if (! (next == null || next instanceof AnonymousBlockBox) && 
+                collapsedMargin.hasMargin()) {
+            next._pendingCollapseCalculation = collapsedMargin;
+            setMarginBottom(c, 0);
+        } else if ((int)margin.bottom() != collapsedMargin.getMargin()) {
+            setMarginBottom(c, collapsedMargin.getMargin());
         }
     }
 
@@ -1054,7 +1052,7 @@ public class BlockBox extends Box implements InlinePaintable {
                             break;
                         }
                     }
-                }                
+                }                  
             }
             
             setBottomMarginCalculated(true);
@@ -1075,36 +1073,54 @@ public class BlockBox extends Box implements InlinePaintable {
         return (int)padding.bottom() == 0 && (int)border.bottom() == 0;
     }
     
-    /*
+    private void collapseEmptySubtreeMargins(LayoutContext c, MarginCollapseResult result) {
+        RectPropertySet margin = getMargin(c);
+        result.update((int)margin.top());
+        result.update((int)margin.bottom());
+        
+        setMarginTop(c, 0);
+        setTopMarginCalculated(true);
+        setMarginBottom(c, 0);
+        setBottomMarginCalculated(true);
+        
+        ensureChildren(c);
+        if (getChildrenContentType() == CONTENT_BLOCK) {
+            for (Iterator i = getChildIterator(); i.hasNext(); ) {
+                BlockBox child = (BlockBox)i.next();
+                child.collapseEmptySubtreeMargins(c, result);
+            }
+        }
+    }
+    
     private boolean isVerticalMarginsAdjoin(LayoutContext c) {
         CalculatedStyle style = getStyle();
         
-        ensureChildren(c);
+        BorderPropertySet borderWidth = style.getBorder(c);
+        RectPropertySet padding = getPadding(c);
         
+        boolean bordersOrPadding = 
+            (int)borderWidth.top() != 0 || (int)borderWidth.bottom() != 0 ||
+            (int)padding.top() != 0 || (int)padding.bottom() != 0;
+        
+        if (bordersOrPadding) {
+            return false;
+        }
+        
+        ensureChildren(c);
         if (getChildrenContentType() == CONTENT_INLINE) {
             return false;
         } else if (getChildrenContentType() == CONTENT_BLOCK) {
             for (Iterator i = getChildIterator(); i.hasNext(); ) {
                 BlockBox child = (BlockBox)i.next();
-                if (child.isSkipWhenCollapsing()) {
-                    continue;
-                }
-                if (! child.isVerticalMarginsAdjoin(c)) {
+                if (child.isSkipWhenCollapsingMargins() || ! child.isVerticalMarginsAdjoin(c)) {
                     return false;
                 }
             }
         }
         
-        BorderPropertySet borderWidth = style.getBorder(c);
-        RectPropertySet padding = getPadding(c);
-        
-        return (int)borderWidth.top() == 0 && (int)borderWidth.bottom() == 0 &&
-                    (int)padding.top() == 0 && (int)padding.bottom() == 0 &&
-                    style.asFloat(CSSName.MIN_HEIGHT) == 0 &&
-                    (style.isIdent(CSSName.HEIGHT, IdentValue.AUTO) ||
-                            style.asFloat(CSSName.HEIGHT) == 0);
+        return style.asFloat(CSSName.MIN_HEIGHT) == 0 && 
+                (isAutoHeight() || style.asFloat(CSSName.HEIGHT) == 0);
     }
-    */
     
     public boolean isTopMarginCalculated() {
         return _topMarginCalculated;
@@ -1648,6 +1664,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.63  2007/02/21 21:47:26  peterbrant
+ * Implement (limited) support for collapsing through blocks with adjoining top and bottom margins / <body> should collapse with children
+ *
  * Revision 1.62  2007/02/21 17:17:04  peterbrant
  * Calculate position of next child and block height independently.  They may not
  * move in lockstep in the face of negative vertical margins.
