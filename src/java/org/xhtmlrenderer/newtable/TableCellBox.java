@@ -71,7 +71,7 @@ public class TableCellBox extends BlockBox {
     }
     
     public Length getOuterStyleWidth(CssContext c) {
-        Length result = getStyle().asLength(CSSName.WIDTH);
+        Length result = getStyle().asLength(c, CSSName.WIDTH);
         if (result.isVariable() || result.isPercent()) {
             return result;
         }
@@ -96,7 +96,7 @@ public class TableCellBox extends BlockBox {
         TableColumn col = getTable().colElement(getCol());
         if (col != null) {
             // XXX Need to add in collapsed borders from cell (if collapsing borders)
-            result = col.getStyle().asLength(CSSName.WIDTH);
+            result = col.getStyle().asLength(c, CSSName.WIDTH);
         }
         return result;
     }

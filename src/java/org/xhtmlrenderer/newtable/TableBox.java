@@ -213,7 +213,9 @@ public class TableBox extends BlockBox {
             RectPropertySet margin, RectPropertySet padding) {
         super.calcLayoutHeight(c, border, margin, padding);
         
-        setHeight(getHeight() + getStyle().getBorderVSpacing(c));
+        if (getChildCount() > 0) {
+            setHeight(getHeight() + getStyle().getBorderVSpacing(c));
+        }
     }
     
     public void reset(LayoutContext c) {
@@ -301,9 +303,9 @@ public class TableBox extends BlockBox {
             for (Iterator j = table.getStyleColumns().iterator(); j.hasNext();) {
                 TableColumn col = (TableColumn) j.next();
                 int span = col.getStyle().getColSpan();
-                Length w = col.getStyle().asLength(CSSName.WIDTH);
+                Length w = col.getStyle().asLength(c, CSSName.WIDTH);
                 if (w.isVariable() && col.getParent() != null) {
-                    w = col.getParent().getStyle().asLength(CSSName.WIDTH);
+                    w = col.getParent().getStyle().asLength(c, CSSName.WIDTH);
                 }
 
                 int effWidth = 0;
@@ -517,9 +519,9 @@ public class TableBox extends BlockBox {
             for (Iterator j = table.getStyleColumns().iterator(); j.hasNext();) {
                 TableColumn col = (TableColumn) j.next();
                 int span = col.getStyle().getColSpan();
-                Length w = col.getStyle().asLength(CSSName.WIDTH);
+                Length w = col.getStyle().asLength(c, CSSName.WIDTH);
                 if (w.isVariable() && col.getParent() != null) {
-                    w = col.getParent().getStyle().asLength(CSSName.WIDTH);
+                    w = col.getParent().getStyle().asLength(c, CSSName.WIDTH);
                 }
 
                 if ((w.isFixed() && w.value() == 0) || (w.isPercent() && w.value() == 0)) {
@@ -866,7 +868,7 @@ public class TableBox extends BlockBox {
             minWidth += bs;
             maxWidth += bs;
 
-            Length tw = table.getStyle().asLength(CSSName.WIDTH);
+            Length tw = table.getStyle().asLength(c, CSSName.WIDTH);
             if (tw.isFixed() && tw.value() > 0) {
                 table.calcDimensions(c);
                 int width = table.getWidth();

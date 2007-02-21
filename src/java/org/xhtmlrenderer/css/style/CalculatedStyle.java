@@ -1021,13 +1021,18 @@ public class CalculatedStyle {
         return result > 0 ? result : 1;
     }
     
-    public Length asLength(CSSName cssName) {
+    public Length asLength(CssContext c, CSSName cssName) {
         Length result = new Length();
         
         FSDerivedValue value = valueByName(cssName);
         if (value instanceof LengthValue || value instanceof NumberValue) {
-            result.setValue((int)value.asFloat());
-            result.setType(value.hasAbsoluteUnit() ? Length.FIXED : Length.PERCENT);
+            if (value.hasAbsoluteUnit()) {
+                result.setValue((int)value.getFloatProportionalTo(cssName, 0, c));
+                result.setType(Length.FIXED);
+            } else {
+                result.setValue((int)value.asFloat());
+                result.setType(Length.PERCENT);
+            }
         }
         
         return result;
@@ -1043,6 +1048,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.81  2007/02/21 01:19:12  peterbrant
+ * Need to take unit into account when creating Length objects with non-pixel units
+ *
  * Revision 1.80  2007/02/20 20:05:40  peterbrant
  * Complete support for absolute and relative font sizes
  *
