@@ -726,22 +726,40 @@ public abstract class Box implements Styleable {
     
     public void restyle(LayoutContext c) {
         Element e = getElement();
-        if (e != null) {    
-            CalculatedStyle style = c.getSharedContext().getStyle(e, true);
-            if (! isAnonymous()) {
-                setStyle(style);
+        CalculatedStyle style = null;
+        
+        String pe = getPseudoElementOrClass();
+        if (pe != null) {
+            if (e != null) {
+                style = c.getSharedContext().getStyle(e, true);
+                style = style.deriveStyle(c.getCss().getPseudoElementStyle(e, pe));
             } else {
-                setStyle(style.createAnonymousStyle(getStyle().getIdent(CSSName.DISPLAY)));
+                BlockBox container = (BlockBox)getParent().getParent();
+                e = container.getElement();
+                style = c.getSharedContext().getStyle(e, true);
+                style = style.deriveStyle(c.getCss().getPseudoElementStyle(e, pe));
+                style = style.createAnonymousStyle(IdentValue.INLINE);
             }
         } else {
-            Box parent = getParent();
-            if (parent != null) {
-                e = parent.getElement();
-                if (e != null) {
-                    CalculatedStyle style = c.getSharedContext().getStyle(e, true);
-                    setStyle(style.createAnonymousStyle(IdentValue.INLINE));
+            if (e != null) {    
+                style = c.getSharedContext().getStyle(e, true);
+                if (isAnonymous()) {
+                    style = style.createAnonymousStyle(getStyle().getIdent(CSSName.DISPLAY));
+                }
+            } else {
+                Box parent = getParent();
+                if (parent != null) {
+                    e = parent.getElement();
+                    if (e != null) {
+                        style = c.getSharedContext().getStyle(e, true);
+                        style = style.createAnonymousStyle(IdentValue.INLINE);
+                    }
                 }
             }
+        }
+        
+        if (style != null) {
+            setStyle(style);
         }
         
         restyleChildren(c);
@@ -859,6 +877,10 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.128  2007/02/22 15:52:46  peterbrant
+ * Restyle generated content correctly (although the CSS matcher needs more
+ * work before restyle with generated content and dynamic pseudo classes will work)
+ *
  * Revision 1.127  2007/02/22 15:30:42  peterbrant
  * Internal links should be able to target block boxes too (plus other minor cleanup)
  *

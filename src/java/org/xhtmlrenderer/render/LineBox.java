@@ -28,8 +28,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.BoxCollector;
 import org.xhtmlrenderer.layout.InlineBoxing;
@@ -434,12 +436,27 @@ public class LineBox extends Box implements InlinePaintable {
     public Box getRestyleTarget() {
         return getParent();
     }
+    
+    public void restyle(LayoutContext c) {
+        Box parent = getParent();
+        Element e = parent.getElement();
+        if (e != null) {
+            CalculatedStyle style = c.getSharedContext().getStyle(e, true);
+            setStyle(style.createAnonymousStyle(IdentValue.BLOCK));
+        }
+        
+        restyleChildren(c);
+    }    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.60  2007/02/22 15:52:46  peterbrant
+ * Restyle generated content correctly (although the CSS matcher needs more
+ * work before restyle with generated content and dynamic pseudo classes will work)
+ *
  * Revision 1.59  2007/02/21 23:11:02  peterbrant
  * Correct margin edge calculation (as it turns out the straightforward approach is also the correct one)
  *
