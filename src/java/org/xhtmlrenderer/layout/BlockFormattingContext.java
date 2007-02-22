@@ -37,18 +37,11 @@ public class BlockFormattingContext {
         _persistentBFC = new PersistentBFC(block, c);
     }
     
-    /* ====== positioning stuff ======== */
-
     public Point getOffset() {
-        //return new Point(x, y);
         return new Point(_x, _y);
     }
 
-    // we want to preserve the block formatting contexts position
-    // relative to the current block, so we do a reverse translate
-    // of the graphics
     public void translate(int x, int y) {
-        //Uu.p("trans : " + x + " " + y);
         _x -= x;
         _y -= y;
     }
@@ -79,6 +72,6 @@ public class BlockFormattingContext {
     }
     
     public String toString() {
-        return "BFC: (" + _x + "," + _y + ")";
+        return "BlockFormattingContext: (" + _x + "," + _y + ")";
     }
 }
