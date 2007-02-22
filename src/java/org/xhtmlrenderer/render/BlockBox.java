@@ -722,6 +722,15 @@ public class BlockBox extends Box implements InlinePaintable {
         layoutBlock(c);
     }
     
+    private void addBoxID(LayoutContext c) {
+        if (! isAnonymous()) {
+            String id = c.getNamespaceHandler().getID(getElement());
+            if (id != null) {
+                c.addBoxId(id, this);
+            }
+        }
+    }
+    
     private void layoutBlock(LayoutContext c) {
         CalculatedStyle style = getStyle();
         
@@ -746,6 +755,8 @@ public class BlockBox extends Box implements InlinePaintable {
             BlockFormattingContext bfc = new BlockFormattingContext(this, c);
             c.pushBFC(bfc);
         }
+        
+        addBoxID(c);
         
         calcDimensions(c);
         collapseMargins(c);
@@ -1674,6 +1685,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.65  2007/02/22 15:30:42  peterbrant
+ * Internal links should be able to target block boxes too (plus other minor cleanup)
+ *
  * Revision 1.64  2007/02/21 23:49:41  peterbrant
  * Can't calculate clearance until margins have been collapsed / Clearance must be calculated relative to the box's border edge, not margin edge
  *

@@ -39,6 +39,7 @@ import java.util.logging.Level;
 
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -477,10 +478,18 @@ public abstract class BasicPanel extends RootPanel {
     protected void setDocumentRelative(String filename) {
         String url = getSharedContext().getUac().resolveURI(filename);
         if (isAnchorInCurrentDocument(filename)) {
-            String id = getAnchorID(filename);
-            Box bxx = getSharedContext().getIDBox(id);
-            if (bxx != null) {
-                Point pt = new Point(bxx.getAbsX(), bxx.getAbsY());
+            String id = getAnchorId(filename);
+            Box box = getSharedContext().getBoxId(id);
+            if (box != null) {
+                Point pt;
+                if (box.getStyle().isInline()) {
+                    pt = new Point(box.getAbsX(), box.getAbsY());
+                } else {
+                    RectPropertySet margin = box.getMargin(layout_context);
+                    pt = new Point(
+                            box.getAbsX() + (int)margin.left(),
+                            box.getAbsY() + (int)margin.top());
+                }
                 scrollTo(pt);
                 return;
             }
@@ -686,13 +695,10 @@ public abstract class BasicPanel extends RootPanel {
     }
 
     private boolean isAnchorInCurrentDocument(String str) {
-        if (str.startsWith("#")) {
-            return true;
-        }
-        return false;
+        return str.charAt(0) == '#';
     }
 
-    private String getAnchorID(String url) {
+    private String getAnchorId(String url) {
         return url.substring(1, url.length());
     }
 
@@ -720,6 +726,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.108  2007/02/22 15:30:43  peterbrant
+ * Internal links should be able to target block boxes too (plus other minor cleanup)
+ *
  * Revision 1.107  2007/02/07 16:33:29  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

@@ -138,8 +138,8 @@ public class InlineBoxing {
                             c.addNamedAnchor(name, currentIB);
                         }
                         String id = c.getNamespaceHandler().getID(currentIB.getElement());
-                        if (id != null && ! id.equals("")) {
-                            c.addIDBox(id, currentIB);
+                        if (id != null) {
+                            c.addBoxId(id, currentIB);
                         }
                     }
                     

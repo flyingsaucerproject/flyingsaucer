@@ -69,7 +69,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @return The iD value
      */
     public String getID(org.w3c.dom.Element e) {
-        return e.getAttribute("id");
+        String result = e.getAttribute("id").trim();
+        return result.length() == 0 ? null : result;
     }
     
     protected String convertToLength(String value) {

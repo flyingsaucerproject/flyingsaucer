@@ -224,9 +224,5 @@ public class RenderingContext implements CssContext {
     public StyleReference getCss() {
         return sharedContext.getCss();
     }
-    
-    public Box getIDBox(String id) {
-        return sharedContext.getIDBox(id);
-    }
 }
 

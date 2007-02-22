@@ -473,6 +473,14 @@ public abstract class Box implements Styleable {
         if (anchorName != null) {
             c.removeNamedAnchor(anchorName);
         }
+        
+        Element e = getElement();
+        if (e != null) {
+            String id = c.getNamespaceHandler().getID(e);
+            if (id != null) {
+                c.removeBoxId(id);
+            }
+        }
     }
     
     public void detach(LayoutContext c) {
@@ -851,6 +859,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.127  2007/02/22 15:30:42  peterbrant
+ * Internal links should be able to target block boxes too (plus other minor cleanup)
+ *
  * Revision 1.126  2007/02/21 23:49:41  peterbrant
  * Can't calculate clearance until margins have been collapsed / Clearance must be calculated relative to the box's border edge, not margin edge
  *

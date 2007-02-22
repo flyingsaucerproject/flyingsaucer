@@ -202,8 +202,12 @@ public class LayoutContext implements CssContext {
     }
 
     /* code to keep track of all of the id'd boxes */
-    public void addIDBox(String id, Box box) {
-        this.sharedContext.addIDBox(id, box);
+    public void addBoxId(String id, Box box) {
+        this.sharedContext.addBoxId(id, box);
+    }
+    
+    public void removeBoxId(String id) {
+        this.sharedContext.removeBoxId(id);
     }
     
     public void addNamedAnchor(String name, Box box) {

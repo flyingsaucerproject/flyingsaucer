@@ -58,6 +58,9 @@ public class SharedContext {
     private UserAgentCallback uac;
 
     private boolean interactive = true;
+    
+    private Map idMap;
+    private Map namedAnchors;
 
     /*
      * used to adjust fonts, ems, points, into screen resolution
@@ -383,16 +386,26 @@ public class SharedContext {
         return namespaceHandler;
     }
 
-    private Map id_map;
-
-    public void addIDBox(String id, Box box) {
-        if (id_map == null) {
-            id_map = new HashMap();
+    public void addBoxId(String id, Box box) {
+        if (idMap == null) {
+            idMap = new HashMap();
         }
-        id_map.put(id, box);
+        idMap.put(id, box);
     }
     
-    private Map namedAnchors;
+
+    public Box getBoxId(String id) {
+        if (idMap == null) {
+            idMap = new HashMap();
+        }
+        return (Box) idMap.get(id);
+    }
+    
+    public void removeBoxId(String id) {
+        if (idMap != null) {
+            idMap.remove(id);
+        }
+    }
     
     public void addNamedAnchor(String name, Box box) {
         if (namedAnchors == null) {
@@ -415,14 +428,6 @@ public class SharedContext {
         }
         return (Box)namedAnchors.get(name);
     }
-
-    public Box getIDBox(String id) {
-        if (id_map == null) {
-            id_map = new HashMap();
-        }
-        return (Box) id_map.get(id);
-    }
-
 
     /**
      * Sets the textRenderer attribute of the RenderingContext object
@@ -651,7 +656,7 @@ public class SharedContext {
     
     public void reset() {
        styleMap = null;
-       id_map = null;
+       idMap = null;
        namedAnchors = null;
     }
 }
@@ -660,6 +665,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2007/02/22 15:30:43  peterbrant
+ * Internal links should be able to target block boxes too (plus other minor cleanup)
+ *
  * Revision 1.33  2007/02/20 17:07:13  peterbrant
  * Clean up ex calculation
  *
