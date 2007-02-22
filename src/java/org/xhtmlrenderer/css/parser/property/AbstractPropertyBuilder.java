@@ -154,7 +154,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
     
     protected void checkValidity(CSSName cssName, BitSet validValues, IdentValue value) {
         if (! validValues.get(value.FS_ID)) {
-            throw new CSSParseException("Ident " + value + " is not a valid value for " + cssName, -1);
+            throw new CSSParseException("Ident " + value + " is an invalid or unsupported value for " + cssName, -1);
         }
     }
     

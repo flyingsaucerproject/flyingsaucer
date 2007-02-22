@@ -909,7 +909,7 @@ public class CSSParser {
         if (cssName == null) {
             _errorHandler.error(
                     _URI, 
-                    propertyName + " is not a recognized CSS property at line " 
+                    propertyName + " is an unrecognized CSS property at line " 
                         + getCurrentLine() + ".");
             return false;
         }
