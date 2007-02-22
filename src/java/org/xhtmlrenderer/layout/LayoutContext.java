@@ -155,7 +155,7 @@ public class LayoutContext implements CssContext {
         } else {
             Layer parent = getLayer();
             
-            if (master.getStyle().isFixed() || master.getStyle().isAlternateFlow()) {
+            if (master.getStyle().isAlternateFlow()) {
                 while (parent.getParent() != null) {
                     parent = parent.getParent();
                 }
