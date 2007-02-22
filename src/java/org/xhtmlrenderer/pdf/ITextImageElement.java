@@ -56,4 +56,9 @@ public class ITextImageElement implements ReplacedElement {
     
     public void detach(LayoutContext c) {
     }
+    
+    public boolean isRequiresInteractivePaint() {
+        // N/A
+        return false;
+    }
 }

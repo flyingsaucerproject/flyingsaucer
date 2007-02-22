@@ -58,4 +58,8 @@ public class SwingReplacedElement implements ReplacedElement {
             c.getCanvas().remove(getJComponent());
         }
     }
+    
+    public boolean isRequiresInteractivePaint() {
+        return false;
+    }
 }

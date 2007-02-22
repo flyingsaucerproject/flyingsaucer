@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2006 Wisconsin Court System
+ * Copyright (c) 2007 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -17,47 +17,47 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.pdf;
+package org.xhtmlrenderer.swing;
 
+import java.awt.Image;
 import java.awt.Point;
 
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 
-public class BookmarkElement implements ReplacedElement {
-    private Point _location = new Point(0, 0);
-    private String _anchorName;
+public class ImageReplacedElement implements ReplacedElement {
+    private Image _image;
     
-    public int getIntrinsicWidth() {
-        return 0;
+    private Point _location = new Point(0, 0);
+    
+    public ImageReplacedElement(Image image) {
+        _image = image;
+    }
+    
+    public void detach(LayoutContext c) {
     }
 
     public int getIntrinsicHeight() {
-        return 0;
+        return _image.getHeight(null);
+    }
+
+    public int getIntrinsicWidth() {
+        return _image.getWidth(null);
     }
 
     public Point getLocation() {
         return _location;
     }
 
+    public boolean isRequiresInteractivePaint() {
+        return true;
+    }
+
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }
     
-    public void detach(LayoutContext c) {
-        c.removeNamedAnchor(getAnchorName());
-    }
-
-    public String getAnchorName() {
-        return _anchorName;
-    }
-
-    public void setAnchorName(String anchorName) {
-        _anchorName = anchorName;
-    }
-    
-    public boolean isRequiresInteractivePaint() {
-        // N/A
-        return false;
+    public Image getImage() {
+        return _image;
     }
 }

@@ -49,12 +49,26 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         if (e.getNodeName().equals("img")) {
             cc = getImageComponent(e);
             if (cc == null) {
-                JLabel lbl = null;
                 Image im = null;
                 FSImage fsImage = uac.getImageResource(e.getAttribute("src")).getImage();
                 if (fsImage != null) {
                     im = ((AWTFSImage) fsImage).getImage();
                 }
+                
+                if (im != null) {
+                    if (cssWidth != -1 || cssHeight != -1) {
+                        im = im.getScaledInstance(cssWidth, cssHeight, Image.SCALE_FAST);
+                    }
+                    return new ImageReplacedElement(im);
+                } else {
+                    // XXX Should return "broken" image icon
+                    return new EmptyReplacedElement(
+                            cssWidth < 0 ? 0 : cssWidth,
+                            cssHeight < 0 ? 0 : cssHeight);
+                }
+                
+                /*
+                JLabel lbl = null;
                 if (im == null) {
                     lbl = new JLabel("Image unreachable. " + e.getAttribute("alt"));
                 } else {
@@ -69,6 +83,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
 
                 addImageComponent(e, lbl);
                 cc = lbl;
+                */
             }
         } else {
             //form components

@@ -31,4 +31,6 @@ public interface ReplacedElement {
     public void setLocation(int x, int y);
     
     public void detach(LayoutContext c);
+    
+    public boolean isRequiresInteractivePaint();
 }

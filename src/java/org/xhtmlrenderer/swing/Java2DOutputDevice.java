@@ -21,6 +21,8 @@ package org.xhtmlrenderer.swing;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -30,6 +32,7 @@ import javax.swing.JComponent;
 
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
+import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;
@@ -72,12 +75,20 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     }
 
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
-        JComponent component = ((SwingReplacedElement)box.getReplacedElement()).getJComponent();
-        
-        Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
-        translate(contentBounds.x, contentBounds.y);
-        component.paint(_graphics);
-        translate(-contentBounds.x, -contentBounds.y);
+        ReplacedElement replaced = box.getReplacedElement();
+        if (replaced instanceof SwingReplacedElement) {
+            Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+            translate(contentBounds.x, contentBounds.y);
+            JComponent component = ((SwingReplacedElement)box.getReplacedElement()).getJComponent();
+            component.paint(_graphics);
+            translate(-contentBounds.x, -contentBounds.y);
+        } else if (replaced instanceof ImageReplacedElement) {
+            Image image = ((ImageReplacedElement)replaced).getImage();
+            
+            Point location = replaced.getLocation();
+            _graphics.drawImage(
+                    image, (int)location.getX(), (int)location.getY(), null);
+        }
     }
     
     public void setColor(Color color) {
