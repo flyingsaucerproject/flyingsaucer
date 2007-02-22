@@ -766,8 +766,7 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "visible",
                     NOT_INHERITED,
-                    false,
-                    null
+                    new PrimitivePropertyBuilders.Overflow()
             );
 
     /**
@@ -1676,6 +1675,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2007/02/22 18:21:19  peterbrant
+ * Add support for overflow: visible/hidden
+ *
  * Revision 1.28  2007/02/20 00:59:14  peterbrant
  * Fix wrong property builder for caption-side / Use new CSS parser for
  * parsing default values

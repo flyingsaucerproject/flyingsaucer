@@ -959,6 +959,20 @@ public class PrimitivePropertyBuilders {
     public static class MinWidth extends NonNegativeLengthLike {
     }
     
+    public static class Overflow extends SingleIdent {
+        // visible | hidden | scroll | auto | inherit  
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] { 
+                        IdentValue.VISIBLE, IdentValue.HIDDEN,
+                        /* IdentValue.SCROLL, IdentValue.AUTO, */ });
+        
+        // We only support visible or hidden for now
+        
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }     
+    }
+    
     public static class PaddingTop extends NonNegativeLengthLike {
     }
     

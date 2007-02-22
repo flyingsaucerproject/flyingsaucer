@@ -869,6 +869,10 @@ public class CalculatedStyle {
     public boolean isPostionedOrFloated() {
         return isAbsolute() || isFixed() || isFloated() || isRelative();
     }
+    
+    public boolean isPositioned() {
+        return isAbsolute() || isFixed() || isRelative();
+    }
 
     public boolean isAutoWidth() {
         return isIdent(CSSName.WIDTH, IdentValue.AUTO);
@@ -888,15 +892,30 @@ public class CalculatedStyle {
         
         return isFloated() || 
             position == IdentValue.ABSOLUTE || position == IdentValue.FIXED ||
-            display == IdentValue.INLINE_BLOCK || display == IdentValue.TABLE_CELL 
-            /* || ! isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) */;
+            display == IdentValue.INLINE_BLOCK || display == IdentValue.TABLE_CELL || 
+            ! isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
     }
     
     public boolean requiresLayer() {
         IdentValue position = getIdent(CSSName.POSITION);
         
-        return position == IdentValue.ABSOLUTE || position == IdentValue.RELATIVE ||
-            position == IdentValue.FIXED;
+        if (position == IdentValue.ABSOLUTE || 
+                    position == IdentValue.RELATIVE || position == IdentValue.FIXED) {
+            return true;
+        }
+        
+        if (! isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) && isOverflowApplies()) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public boolean isOverflowApplies() {
+        IdentValue display = getIdent(CSSName.DISPLAY);
+        return display == IdentValue.BLOCK || display == IdentValue.LIST_ITEM ||
+                    display == IdentValue.TABLE || display == IdentValue.INLINE_BLOCK ||
+                    display == IdentValue.TABLE_CELL;
     }
     
     public boolean isHorizontalBackgroundRepeat() {
@@ -970,8 +989,8 @@ public class CalculatedStyle {
         return isFloated() || isAbsolute() || isFixed();
     }
     
-    public boolean isMayCollapseWithChildren() {
-        return /* isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) && */ 
+    public boolean isMayCollapseMarginsWithChildren() {
+        return isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) &&  
             ! (isFloated() || isAbsolute() || isFixed() || isInlineBlock());
     }
     
@@ -1048,6 +1067,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.82  2007/02/22 18:21:20  peterbrant
+ * Add support for overflow: visible/hidden
+ *
  * Revision 1.81  2007/02/21 01:19:12  peterbrant
  * Need to take unit into account when creating Length objects with non-pixel units
  *

@@ -283,6 +283,10 @@ public abstract class Box implements Styleable {
         return getBorderEdge(getAbsX(), getAbsY(), cssCtx);
     }
     
+    public Rectangle getPaintingPaddingEdge(CssContext cssCtx) {
+        return getPaddingEdge(getAbsX(), getAbsY(), cssCtx);
+    }
+    
     public Rectangle getPaintingClipEdge(CssContext cssCtx) {
         return getPaintingBorderEdge(cssCtx);
     }
@@ -861,6 +865,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.130  2007/02/22 18:21:19  peterbrant
+ * Add support for overflow: visible/hidden
+ *
  * Revision 1.129  2007/02/22 16:10:54  peterbrant
  * Remove unused API
  *

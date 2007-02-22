@@ -944,7 +944,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
     
     protected boolean isMayCollapseMarginsWithChildren() {
-        return (! isRoot()) && getStyle().isMayCollapseWithChildren();
+        return (! isRoot()) && getStyle().isMayCollapseMarginsWithChildren();
     }
     
     // This will require a rethink if we ever truly layout incrementally
@@ -1672,6 +1672,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.67  2007/02/22 18:21:19  peterbrant
+ * Add support for overflow: visible/hidden
+ *
  * Revision 1.66  2007/02/22 16:10:54  peterbrant
  * Remove unused API
  *

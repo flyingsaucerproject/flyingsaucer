@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.EmptyStyle;
@@ -67,7 +69,8 @@ public class Layer {
     public Layer(Layer parent, Box master) {
         _parent = parent;
         _master = master;
-        setStackingContext(!master.getStyle().isAutoZIndex());
+        setStackingContext(
+                master.getStyle().isPositioned() && ! master.getStyle().isAutoZIndex());
         master.setLayer(this);
         master.setContainingLayer(this);
     }
@@ -240,7 +243,7 @@ public class Layer {
         if (getMaster().getStyle().isFixed()) {
             positionFixedLayer(c);
         }
-
+        
         if (! isInline() && ((BlockBox)getMaster()).isReplaced()) {
             paintLayerBackgroundAndBorder(c);
             paintReplacedElement(c, (BlockBox)getMaster());
@@ -259,21 +262,35 @@ public class Layer {
                 }
             }
             
-            if (isRootLayer() || isStackingContext() || isAlternateFlow()) {
-                paintLayers(c, getSortedLayers(NEGATIVE));
+            boolean needClip = getMaster().getStyle().isOverflowApplies() &&
+                                    getMaster().getStyle().isIdent(CSSName.OVERFLOW, IdentValue.HIDDEN);
+            Shape oldClip = null;
+            if (needClip) {
+                oldClip = c.getOutputDevice().getClip();
+                c.getOutputDevice().clip(getMaster().getPaintingPaddingEdge(c));
             }
-    
-            paintBackgroundsAndBorders(c, blocks);
-            paintFloats(c);
-            paintListMarkers(c, blocks);
-            paintInlineContent(c, lines);
-            paintReplacedElements(c, blocks);
-    
-            if (isRootLayer() || isStackingContext() || isAlternateFlow()) {
-                paintLayers(c, collectLayers(AUTO));
-                // TODO z-index: 0 layers should be painted atomically
-                paintLayers(c, getSortedLayers(ZERO));
-                paintLayers(c, getSortedLayers(POSITIVE));
+            
+            try {
+                if (isRootLayer() || isStackingContext() || isAlternateFlow()) {
+                    paintLayers(c, getSortedLayers(NEGATIVE));
+                }
+        
+                paintBackgroundsAndBorders(c, blocks);
+                paintFloats(c);
+                paintListMarkers(c, blocks);
+                paintInlineContent(c, lines);
+                paintReplacedElements(c, blocks);
+        
+                if (isRootLayer() || isStackingContext() || isAlternateFlow()) {
+                    paintLayers(c, collectLayers(AUTO));
+                    // TODO z-index: 0 layers should be painted atomically
+                    paintLayers(c, getSortedLayers(ZERO));
+                    paintLayers(c, getSortedLayers(POSITIVE));
+                }
+            } finally {
+                if (needClip) {
+                    c.getOutputDevice().setClip(oldClip);
+                }
             }
         }
     }
