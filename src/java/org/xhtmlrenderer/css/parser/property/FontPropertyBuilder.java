@@ -161,7 +161,7 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
                     CSSName.LINE_HEIGHT, new PropertyValue(IdentValue.NORMAL), important, origin);
         }
         
-        // XXX font-family should be reset too
+        // XXX font-family should be reset too (although does this really make sense?)
         
         result = new ArrayList(ALL.length);
         result.add(fontStyle);
