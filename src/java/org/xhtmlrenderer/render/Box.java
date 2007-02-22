@@ -649,22 +649,6 @@ public abstract class Box implements Styleable {
         }
     }
     
-    protected final void translatePaintingInfo(LayoutContext c, int tx, int ty) {
-        PaintingInfo cached = getPaintingInfo();
-        if (cached != null) {
-            cached.translate(tx, ty);
-        }
-        
-        translateChildPaintingInfo(c, tx, ty);
-    }
-    
-    protected void translateChildPaintingInfo(LayoutContext c, int tx, int ty) {
-        for (int i = 0; i < getChildCount(); i++) {
-            Box child = (Box)getChild(i);
-            child.translatePaintingInfo(c, tx, ty);
-        }
-    }
-    
     public PaintingInfo calcPaintingInfo(CssContext c, boolean useCache) {
         PaintingInfo cached = getPaintingInfo();
         if (cached != null && useCache) {
@@ -877,6 +861,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.129  2007/02/22 16:10:54  peterbrant
+ * Remove unused API
+ *
  * Revision 1.128  2007/02/22 15:52:46  peterbrant
  * Restyle generated content correctly (although the CSS matcher needs more
  * work before restyle with generated content and dynamic pseudo classes will work)

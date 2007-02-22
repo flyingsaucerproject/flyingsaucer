@@ -1559,19 +1559,6 @@ public class BlockBox extends Box implements InlinePaintable {
         super.calcChildPaintingInfo(c, result, useCache);
     }  
     
-    protected void translateChildPaintingInfo(
-            final LayoutContext c, final int tx, final int ty) {
-        if (getPersistentBFC() != null) {
-            ((BlockBox)this).getPersistentBFC().getFloatManager().performFloatOperation(
-                    new FloatManager.FloatOperation() {
-                        public void operate(Box floater) {
-                            floater.translatePaintingInfo(c, tx, ty);
-                        }
-                    });
-        }
-        super.translateChildPaintingInfo(c, tx, ty);
-    }     
-    
     public CascadedStyle getFirstLetterStyle() {
         return _firstLetterStyle;
     }
@@ -1685,6 +1672,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.66  2007/02/22 16:10:54  peterbrant
+ * Remove unused API
+ *
  * Revision 1.65  2007/02/22 15:30:42  peterbrant
  * Internal links should be able to target block boxes too (plus other minor cleanup)
  *

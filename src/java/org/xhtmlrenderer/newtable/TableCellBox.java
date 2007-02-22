@@ -135,8 +135,6 @@ public class TableCellBox extends BlockBox {
                 });
         
         calcChildLocations();
-        
-        translateChildPaintingInfo(c, 0, deltaY);
     }
     
     public IdentValue getVerticalAlign() {

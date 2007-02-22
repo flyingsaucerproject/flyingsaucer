@@ -625,15 +625,6 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         }
     }
     
-    protected void translateChildPaintingInfo(LayoutContext c, int tx, int ty) {
-        for (int i = 0; i < getInlineChildCount(); i++) {
-            Object obj = getInlineChild(i);
-            if (obj instanceof Box) {   
-                ((Box)obj).translatePaintingInfo(c, tx, ty);
-            }
-        }
-    }    
-    
     public void lookForDynamicFunctions(RenderingContext c) {
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object obj = getInlineChild(i);
