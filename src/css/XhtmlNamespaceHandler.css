@@ -22,7 +22,7 @@ h5              { font-size: .83em; margin: 1.5em 0 }
 h6              { font-size: .75em; margin: 1.67em 0 }
 h1, h2, h3, h4,
 h5, h6, b,
-strong          { font-weight: bolder }
+strong          { font-weight: bold; }
 blockquote      { margin-left: 40px; margin-right: 40px }
 i, cite, em,
 var, address    { font-style: italic }
@@ -64,8 +64,6 @@ a:link, a:visited { text-decoration: underline }
 
 /* Flying Saucer overrides, usually compensate for unimplemented stuff */
 
-/* font stuff should rather be controlled by rendering context or user agent, hmmm */
-html { font-size: 12pt; }
 body {
     font-family: serif;
 }
