@@ -176,9 +176,9 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         if (backgroundImage != null) {
             Shape oldclip = getClip();
     
-            if (box.getStyle().isFixedBackground() && ! c.isPrint()) {
-                yoff = c.getCanvas().getLocation().y;
-                setClip(c.getCanvas().getVisibleRect());
+            if (box.getStyle().isFixedBackground()) {
+                Rectangle rect = c.getFixedRectangle();
+                yoff = rect.y;
             }
     
             clip(backgroundBounds);

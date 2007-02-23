@@ -127,13 +127,16 @@ public class RenderingContext implements CssContext {
     }
 
     public Rectangle getFixedRectangle() {
+        Rectangle result;
         if (! isPrint()) {
-            return sharedContext.getFixedRectangle();
+            result = sharedContext.getFixedRectangle();
         } else {
-            return new Rectangle(0, -this.page.getTop(), 
+            result = new Rectangle(0, -this.page.getTop(), 
                     this.page.getContentWidth(this),
                     this.page.getContentHeight(this)-1);
         }
+        result.translate(-1, -1);
+        return result;
     }
 
     public boolean debugDrawBoxes() {
