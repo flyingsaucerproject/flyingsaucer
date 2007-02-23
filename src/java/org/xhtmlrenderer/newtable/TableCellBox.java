@@ -160,20 +160,38 @@ public class TableCellBox extends BlockBox {
     public void paintBackground(RenderingContext c) {
         if (isPaintBackgroundsAndBorders() && getStyle().isVisible()) {
             Rectangle bounds = getPaintingBorderEdge(c);
+            Rectangle imageContainer;
             
             TableColumn column = getTable().colElement(getCol());
             if (column != null) {
-                c.getOutputDevice().paintBackground(c, column.getStyle(), bounds);
+                c.getOutputDevice().paintBackground(
+                        c, column.getStyle(), 
+                        bounds, getTable().getColumnBounds(c, getCol()));
             }
             
             Box row = getParent();
             Box section = row.getParent();
             
+            CalculatedStyle tableStyle = getTable().getStyle();
+            
             CalculatedStyle sectionStyle = section.getStyle();
-            c.getOutputDevice().paintBackground(c, sectionStyle, bounds);
+            
+            imageContainer = section.getPaintingBorderEdge(c);
+            imageContainer.y += tableStyle.getBorderVSpacing(c);
+            imageContainer.height -= tableStyle.getBorderVSpacing(c);
+            imageContainer.x += tableStyle.getBorderHSpacing(c);
+            imageContainer.width -= 2*tableStyle.getBorderHSpacing(c);
+            
+            c.getOutputDevice().paintBackground(c, sectionStyle, bounds, imageContainer);
             
             CalculatedStyle rowStyle = row.getStyle();
-            c.getOutputDevice().paintBackground(c, rowStyle, bounds);
+            
+            imageContainer = row.getPaintingBorderEdge(c);
+            imageContainer.x += tableStyle.getBorderHSpacing(c);
+            imageContainer.width -= 2*tableStyle.getBorderHSpacing(c);
+            
+            c.getOutputDevice().paintBackground(c, rowStyle, bounds, imageContainer);
+            
             
             super.paintBackground(c);
         }

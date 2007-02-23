@@ -221,5 +221,5 @@ public class TableRowBox extends BlockBox {
     
     public void paintBackground(RenderingContext c) {
         // painted at the cell level
-    }    
+    }   
 }

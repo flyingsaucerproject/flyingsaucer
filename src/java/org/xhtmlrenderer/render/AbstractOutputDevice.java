@@ -148,8 +148,9 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     }
     
     public void paintBackground(
-            RenderingContext c, CalculatedStyle style, Rectangle bounds) {
-        paintBackground0(c, style, bounds);
+            RenderingContext c, CalculatedStyle style, 
+            Rectangle bounds, Rectangle bgImageContainer) {
+        paintBackground0(c, style, bounds, bgImageContainer);
     }
     
     public void paintBackground(RenderingContext c, Box box) {
@@ -158,11 +159,12 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
         
         Rectangle backgroundBounds = box.getPaintingBorderEdge(c);
-        paintBackground0(c, box.getStyle(), backgroundBounds);
+        paintBackground0(c, box.getStyle(), backgroundBounds, backgroundBounds);
     }
 
     private void paintBackground0(
-            RenderingContext c, CalculatedStyle style, Rectangle backgroundBounds) {
+            RenderingContext c, CalculatedStyle style, 
+            Rectangle backgroundBounds, Rectangle bgImageContainer) {
         if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
             return;
         }
@@ -181,15 +183,13 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
                 
         if (backgroundImage != null) {
-            Rectangle bgImageContainer;
+            Rectangle localBGImageContainer = bgImageContainer;
             if (style.isFixedBackground()) {
-                bgImageContainer = c.getFixedRectangle();
-            } else {
-                bgImageContainer = backgroundBounds;
+                localBGImageContainer = c.getFixedRectangle();
             }
         
-            int xoff = bgImageContainer.x;
-            int yoff = bgImageContainer.y;
+            int xoff = localBGImageContainer.x;
+            int yoff = localBGImageContainer.y;
             
             Shape oldclip = getClip();
     
@@ -200,9 +200,9 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             
             BackgroundPosition position = style.getBackgroundPosition();
             xoff += calcOffset(
-                    c, style, position.getHorizontal(), bgImageContainer.width, imageWidth);
+                    c, style, position.getHorizontal(), localBGImageContainer.width, imageWidth);
             yoff += calcOffset(
-                    c, style, position.getVertical(), bgImageContainer.height, imageHeight);
+                    c, style, position.getVertical(), localBGImageContainer.height, imageHeight);
     
             boolean hrepeat = style.isHorizontalBackgroundRepeat();
             boolean vrepeat = style.isVerticalBackgroundRepeat();

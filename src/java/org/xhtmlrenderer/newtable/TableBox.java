@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -261,6 +262,22 @@ public class TableBox extends BlockBox {
         }
         return null;
     } 
+    
+    public Rectangle getColumnBounds(CssContext c, int col) {
+        int effCol = colToEffCol(col);
+        
+        int hspacing = getStyle().getBorderHSpacing(c);
+        int vspacing = getStyle().getBorderVSpacing(c);
+        
+        Rectangle result = getContentAreaEdge(getAbsX(), getAbsY(), c);
+        
+        result.y += vspacing;
+        result.height -= vspacing*2;
+        
+        result.x += _columnPos[effCol] + hspacing;
+        
+        return result;
+    }
     
     protected boolean isMayCollapseMarginsWithChildren() {
         return false;
