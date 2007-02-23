@@ -910,7 +910,7 @@ public class CSSParser {
             _errorHandler.error(
                     _URI, 
                     propertyName + " is an unrecognized CSS property at line " 
-                        + getCurrentLine() + ".");
+                        + getCurrentLine() + ". Ignoring declaration.");
             return false;
         }
         
@@ -918,7 +918,7 @@ public class CSSParser {
             _errorHandler.error(
                     _URI, 
                     propertyName + " is not implemented at line " 
-                        + getCurrentLine() + ".");
+                        + getCurrentLine() + ". Ignoring declaration.");
             return false;
         }
         
@@ -927,7 +927,7 @@ public class CSSParser {
             _errorHandler.error(
                     _URI, 
                     "(bug) No property builder defined for " + propertyName
-                        + " at line " + getCurrentLine() + ".");
+                        + " at line " + getCurrentLine() + ". Ignoring declaration.");
             return false;
         }
         
