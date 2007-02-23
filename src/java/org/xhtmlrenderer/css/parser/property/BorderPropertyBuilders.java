@@ -57,12 +57,6 @@ public class BorderPropertyBuilders {
                 
                 return result;
             } else {
-                // FIXME The above rule will set the width, style, and color of the border 
-                // below the H1 element. Omitted values are set to their 
-                // initial values. Since the following rule does not specify 
-                // a border color, the border will have the color specified 
-                // by the 'color' property
-               
                 checkValueCount(cssName, 1, 3, values.size());
                 boolean haveBorderStyle = false;
                 boolean haveBorderColor = false;
@@ -104,6 +98,18 @@ public class BorderPropertyBuilders {
                     if (! matched) {
                         throw new CSSParseException(value.getCssText() + " is not a border width, style, or color", -1);
                     }
+                }
+                
+                if (! haveBorderWidth) {
+                    addAll(result, props[0], new PropertyValue(IdentValue.FS_INITIAL_VALUE), origin, important);
+                }
+                
+                if (! haveBorderStyle) {
+                    addAll(result, props[1], new PropertyValue(IdentValue.FS_INITIAL_VALUE), origin, important);
+                }
+                
+                if (! haveBorderColor) {
+                    addAll(result, props[2], new PropertyValue(IdentValue.FS_INITIAL_VALUE), origin, important);
                 }
                 
                 return result;

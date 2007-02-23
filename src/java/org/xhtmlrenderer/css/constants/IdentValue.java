@@ -99,6 +99,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue FONT_WEIGHT_800 = addValue("800");
     public final static IdentValue FONT_WEIGHT_900 = addValue("900");
     public final static IdentValue FS_CONTENT_PLACEHOLDER = addValue("-fs-content-placeholder");
+    public final static IdentValue FS_INITIAL_VALUE = addValue("-fs-initial-value");
     public final static IdentValue GEORGIAN = addValue("georgian");
     public final static IdentValue GROOVE = addValue("groove");
     public final static IdentValue HEBREW = addValue("hebrew");
@@ -343,6 +344,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2007/02/23 16:54:38  peterbrant
+ * Allow special ident -fs-intial-value to reset a property value to its initial value (used by border related shorthand properties as 'color' won't be known at property construction time)
+ *
  * Revision 1.27  2007/02/20 20:05:40  peterbrant
  * Complete support for absolute and relative font sizes
  *

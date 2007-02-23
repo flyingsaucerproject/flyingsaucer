@@ -470,11 +470,13 @@ public class CalculatedStyle {
     public FSDerivedValue valueByName(CSSName cssName) {
         FSDerivedValue val = _derivedValuesById[cssName.FS_ID];
 
+        boolean needInitialValue = val == IdentValue.FS_INITIAL_VALUE;
+        
         // but the property may not be defined for this Element
-        if (val == null) {
+        if (val == null || needInitialValue) {
             // if it is inheritable (like color) and we are not root, ask our parent
             // for the value
-            if (CSSName.propertyInherits(cssName)
+            if (! needInitialValue && CSSName.propertyInherits(cssName)
                     && _parent != null
                     //
                     && (val = _parent.valueByName(cssName)) != null) {
@@ -1067,6 +1069,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.83  2007/02/23 16:54:38  peterbrant
+ * Allow special ident -fs-intial-value to reset a property value to its initial value (used by border related shorthand properties as 'color' won't be known at property construction time)
+ *
  * Revision 1.82  2007/02/22 18:21:20  peterbrant
  * Add support for overflow: visible/hidden
  *
