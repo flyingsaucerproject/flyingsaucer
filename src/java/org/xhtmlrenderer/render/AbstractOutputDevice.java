@@ -254,7 +254,9 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             while (result < target) {
                 result += imageDim;
             }
-            result -= imageDim;
+            if (result != target) {
+                result -= imageDim;
+            }
         }
         return result;
     }
