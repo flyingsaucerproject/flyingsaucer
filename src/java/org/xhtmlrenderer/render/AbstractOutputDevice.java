@@ -130,9 +130,9 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         BorderPainter.paint(edge, sides, style.getBorder(c), c, 0);
     }
     
-    private FSImage getBackgroundImage(RenderingContext c, Box box) {
-        String uri = box.getStyle().getStringProperty(CSSName.BACKGROUND_IMAGE);
-        if (! uri.equals("none")) {
+    private FSImage getBackgroundImage(RenderingContext c, CalculatedStyle style) {
+        if (! style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
+            String uri = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
             try {
                 return c.getUac().getImageResource(uri).getImage();
             } catch (Exception ex) {
@@ -142,27 +142,32 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
         return null;
     }
-
+    
+    public void paintBackground(RenderingContext c, CalculatedStyle style, Rectangle bounds) {
+        paintBackground0(c, style, bounds);
+    }
+    
     public void paintBackground(RenderingContext c, Box box) {
-        if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
-            return;
-        }
-        
         if (! box.getStyle().isVisible()) {
             return;
         }
         
-        Color backgroundColor = box.getStyle().getBackgroundColor();
-        FSImage backgroundImage = getBackgroundImage(c, box);
+        Rectangle backgroundBounds = box.getPaintingBorderEdge(c);
+        paintBackground0(c, box.getStyle(), backgroundBounds);
+    }
+
+    private void paintBackground0(
+            RenderingContext c, CalculatedStyle style, Rectangle backgroundBounds) {
+        if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
+            return;
+        }
+        
+        Color backgroundColor = style.getBackgroundColor();
+        FSImage backgroundImage = getBackgroundImage(c, style);
         
         if ( (backgroundColor == null || backgroundColor.equals(TRANSPARENT)) &&
                 backgroundImage == null) {
             return;
-        }
-    
-        Rectangle backgroundBounds = box.getPaintingBorderEdge(c);
-        if (! c.isPrint() && box.getState() != Box.DONE) {
-            backgroundBounds.height += c.getCanvas().getHeight();
         }
         
         if (backgroundColor != null && ! backgroundColor.equals(TRANSPARENT)) {
@@ -176,7 +181,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         if (backgroundImage != null) {
             Shape oldclip = getClip();
     
-            if (box.getStyle().isFixedBackground()) {
+            if (style.isFixedBackground()) {
                 Rectangle rect = c.getFixedRectangle();
                 yoff = rect.y;
             }
@@ -186,7 +191,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             int imageWidth = backgroundImage.getWidth();
             int imageHeight = backgroundImage.getHeight();
     
-            Point bgOffset = box.getStyle().getBackgroundPosition(backgroundBounds.width - imageWidth,
+            Point bgOffset = style.getBackgroundPosition(backgroundBounds.width - imageWidth,
                     backgroundBounds.height - imageHeight, c);
             xoff += bgOffset.x;
             yoff -= bgOffset.y;
@@ -194,8 +199,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             tileFill(backgroundImage,
                     backgroundBounds,
                     xoff, -yoff,
-                    box.getStyle().isHorizontalBackgroundRepeat(),
-                    box.getStyle().isVerticalBackgroundRepeat());
+                    style.isHorizontalBackgroundRepeat(),
+                    style.isVerticalBackgroundRepeat());
             setClip(oldclip);
         }
     } 

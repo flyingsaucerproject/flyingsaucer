@@ -29,6 +29,7 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.RenderingContext;
 
 public class TableRowBox extends BlockBox {
     private int _baseline;
@@ -212,5 +213,13 @@ public class TableRowBox extends BlockBox {
     
     protected boolean isSkipWhenCollapsingMargins() {
         return true;
+    }
+    
+    public void paintBorder(RenderingContext c) {
+        // rows never have borders
+    }
+    
+    public void paintBackground(RenderingContext c) {
+        // painted at the cell level
     }    
 }

@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.RenderingContext;
 
 public class TableSectionBox extends BlockBox {
     public static final TableCellBox SPANNING_CELL = new TableCellBox();
@@ -190,5 +191,13 @@ public class TableSectionBox extends BlockBox {
     
     protected boolean isSkipWhenCollapsingMargins() {
         return true;
-    }    
+    }
+    
+    public void paintBorder(RenderingContext c) {
+        // row groups never have borders
+    }
+    
+    public void paintBackground(RenderingContext c) {
+        // painted at the cell level
+    }
 }

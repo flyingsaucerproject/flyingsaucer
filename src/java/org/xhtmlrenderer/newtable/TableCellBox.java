@@ -23,6 +23,7 @@ import java.awt.Rectangle;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.Length;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
@@ -157,7 +158,23 @@ public class TableCellBox extends BlockBox {
     }
     
     public void paintBackground(RenderingContext c) {
-        if (isPaintBackgroundsAndBorders()) {
+        if (isPaintBackgroundsAndBorders() && getStyle().isVisible()) {
+            Rectangle bounds = getPaintingBorderEdge(c);
+            
+            TableColumn column = getTable().colElement(getCol());
+            if (column != null) {
+                c.getOutputDevice().paintBackground(c, column.getStyle(), bounds);
+            }
+            
+            Box row = getParent();
+            Box section = row.getParent();
+            
+            CalculatedStyle sectionStyle = section.getStyle();
+            c.getOutputDevice().paintBackground(c, sectionStyle, bounds);
+            
+            CalculatedStyle rowStyle = row.getStyle();
+            c.getOutputDevice().paintBackground(c, rowStyle, bounds);
+            
             super.paintBackground(c);
         }
     }

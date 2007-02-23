@@ -46,6 +46,7 @@ public interface OutputDevice {
     public void paintBorder(RenderingContext c, CalculatedStyle style, 
             Rectangle edge, int sides);
     public void paintBackground(RenderingContext c, Box box);
+    public void paintBackground(RenderingContext c, CalculatedStyle style, Rectangle bounds);
     
     public void paintReplacedElement(RenderingContext c, BlockBox box);
     
