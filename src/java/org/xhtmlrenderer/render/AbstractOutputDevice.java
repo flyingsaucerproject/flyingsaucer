@@ -207,8 +207,13 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             boolean hrepeat = style.isHorizontalBackgroundRepeat();
             boolean vrepeat = style.isVerticalBackgroundRepeat();
             
+            
+            
             if (! hrepeat && ! vrepeat) {
-                drawImage(backgroundImage, xoff, yoff);
+                Rectangle imageBounds = new Rectangle(xoff, yoff, (int)imageWidth, (int)imageHeight);
+                if (imageBounds.intersects(backgroundBounds)) {
+                    drawImage(backgroundImage, xoff, yoff);
+                }
             } else if (hrepeat && vrepeat) {
                 paintTiles(
                         backgroundImage,
@@ -217,31 +222,29 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                         backgroundBounds.x + backgroundBounds.width,
                         backgroundBounds.y + backgroundBounds.height);
             } else if (hrepeat) {
-                if (overlaps(yoff, backgroundBounds.y, (int)imageHeight, backgroundBounds.height)) {
+                xoff = adjustTo(backgroundBounds.x, xoff, (int)imageWidth);
+                Rectangle imageBounds = new Rectangle(xoff, yoff, (int)imageWidth, (int)imageHeight);
+                if (imageBounds.intersects(backgroundBounds)) {
                     paintHorizontalBand(
                             backgroundImage,
-                            adjustTo(backgroundBounds.x, xoff, (int)imageWidth),
+                            xoff,
                             yoff,
                             backgroundBounds.x + backgroundBounds.width);
                 }
             } else if (vrepeat) {
-                if (overlaps(xoff, backgroundBounds.x, (int)imageWidth, backgroundBounds.width)) {
+                yoff = adjustTo(backgroundBounds.y, yoff, (int)imageHeight);
+                Rectangle imageBounds = new Rectangle(xoff, yoff, (int)imageWidth, (int)imageHeight);
+                if (imageBounds.intersects(backgroundBounds)) {
                     paintVerticalBand(
                             backgroundImage,
                             xoff,
-                            adjustTo(backgroundBounds.y, yoff, (int)imageHeight),
+                            yoff,
                             backgroundBounds.y + backgroundBounds.height);
                 }
             }
             
             setClip(oldclip);
         }
-    }
-    
-    private boolean overlaps(int offset, int start, int sourceLength, int targetLength) {
-        return
-            (offset >= start && offset < start + targetLength) ||
-            (offset + sourceLength > start && offset + sourceLength < start + targetLength);
     }
     
     private int adjustTo(int target, int current, int imageDim) {
