@@ -304,13 +304,6 @@ public class IdentValue implements FSDerivedValue {
         throw new XRRuntimeException("Ident value is never a color; wrong class used for derived value.");
     }
 
-    public Point asPoint(CSSName cssName,
-                         float parentWidth,
-                         float parentHeight,
-                         CssContext ctx) {
-        throw new XRRuntimeException("Ident value is never a point; wrong class used for derived value.");
-    }
-
     public float getFloatProportionalTo(CSSName cssName,
                                         float baseValue,
                                         CssContext ctx) {
@@ -344,6 +337,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2007/02/23 21:04:27  peterbrant
+ * Implement complete support for background-position and background-attachment
+ *
  * Revision 1.28  2007/02/23 16:54:38  peterbrant
  * Allow special ident -fs-intial-value to reset a property value to its initial value (used by border related shorthand properties as 'color' won't be known at property construction time)
  *

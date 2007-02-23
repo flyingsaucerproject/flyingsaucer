@@ -74,14 +74,6 @@ public abstract class DerivedValue implements FSDerivedValue {
     public float asFloat() {
         throw new XRRuntimeException("asFloat() needs to be overridden in subclass.");
     }
-    public Point asPoint(
-            CSSName cssName,
-            float parentWidth,
-            float parentHeight,
-            CssContext ctx
-    ) {
-        throw new XRRuntimeException("asPoint() needs to be overridden in subclass.");
-    }
 
     public Color asColor() {
         throw new XRRuntimeException("asColor() needs to be overridden in subclass.");

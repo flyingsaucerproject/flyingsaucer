@@ -59,12 +59,7 @@ public class DerivedValueFactory {
                 }
                 return color;
             case PropertyValue.VALUE_TYPE_LIST:
-                if (cssName == CSSName.BACKGROUND_POSITION) {
-                    return new PointValue(style, cssName, value);
-                } else if (cssName == CSSName.CONTENT) {
-                    return IdentValue.FS_CONTENT_PLACEHOLDER; // HACK
-                }
-                // Fall through
+                return new ListValue(cssName, value);
             default:
                 throw new IllegalArgumentException();
         }

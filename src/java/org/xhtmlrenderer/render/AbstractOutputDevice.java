@@ -20,13 +20,17 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 
+import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.PropertyValue;
+import org.xhtmlrenderer.css.style.BackgroundPosition;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.util.Configuration;
@@ -143,7 +147,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         return null;
     }
     
-    public void paintBackground(RenderingContext c, CalculatedStyle style, Rectangle bounds) {
+    public void paintBackground(
+            RenderingContext c, CalculatedStyle style, Rectangle bounds) {
         paintBackground0(c, style, bounds);
     }
     
@@ -174,68 +179,126 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             setColor(backgroundColor);
             fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
         }
-    
-        int xoff = 0;
-        int yoff = 0;
-        
+                
         if (backgroundImage != null) {
-            Shape oldclip = getClip();
-    
+            Rectangle bgImageContainer;
             if (style.isFixedBackground()) {
-                Rectangle rect = c.getFixedRectangle();
-                yoff = rect.y;
+                bgImageContainer = c.getFixedRectangle();
+            } else {
+                bgImageContainer = backgroundBounds;
             }
+        
+            int xoff = bgImageContainer.x;
+            int yoff = bgImageContainer.y;
+            
+            Shape oldclip = getClip();
     
             clip(backgroundBounds);
     
-            int imageWidth = backgroundImage.getWidth();
-            int imageHeight = backgroundImage.getHeight();
+            float imageWidth = backgroundImage.getWidth();
+            float imageHeight = backgroundImage.getHeight();
+            
+            BackgroundPosition position = style.getBackgroundPosition();
+            xoff += calcOffset(
+                    c, style, position.getHorizontal(), bgImageContainer.width, imageWidth);
+            yoff += calcOffset(
+                    c, style, position.getVertical(), bgImageContainer.height, imageHeight);
     
-            Point bgOffset = style.getBackgroundPosition(backgroundBounds.width - imageWidth,
-                    backgroundBounds.height - imageHeight, c);
-            xoff += bgOffset.x;
-            yoff -= bgOffset.y;
-    
-            tileFill(backgroundImage,
-                    backgroundBounds,
-                    xoff, -yoff,
-                    style.isHorizontalBackgroundRepeat(),
-                    style.isVerticalBackgroundRepeat());
+            boolean hrepeat = style.isHorizontalBackgroundRepeat();
+            boolean vrepeat = style.isVerticalBackgroundRepeat();
+            
+            if (! hrepeat && ! vrepeat) {
+                drawImage(backgroundImage, xoff, yoff);
+            } else if (hrepeat && vrepeat) {
+                paintTiles(
+                        backgroundImage,
+                        adjustTo(backgroundBounds.x, xoff, (int)imageWidth),
+                        adjustTo(backgroundBounds.y, yoff, (int)imageHeight),
+                        backgroundBounds.x + backgroundBounds.width,
+                        backgroundBounds.y + backgroundBounds.height);
+            } else if (hrepeat) {
+                if (overlaps(yoff, backgroundBounds.y, (int)imageHeight, backgroundBounds.height)) {
+                    paintHorizontalBand(
+                            backgroundImage,
+                            adjustTo(backgroundBounds.x, xoff, (int)imageWidth),
+                            yoff,
+                            backgroundBounds.x + backgroundBounds.width);
+                }
+            } else if (vrepeat) {
+                if (overlaps(xoff, backgroundBounds.x, (int)imageWidth, backgroundBounds.width)) {
+                    paintVerticalBand(
+                            backgroundImage,
+                            xoff,
+                            adjustTo(backgroundBounds.y, yoff, (int)imageHeight),
+                            backgroundBounds.y + backgroundBounds.height);
+                }
+            }
+            
             setClip(oldclip);
         }
-    } 
+    }
     
-    private void tileFill(FSImage img, Rectangle rect, int xOffset, int yOffset, boolean horiz, boolean vert) {
-        int iWidth = img.getWidth();
-        int iHeight = img.getHeight();
-        int rWidth = rect.width;
-        int rHeight = rect.height;
+    private boolean overlaps(int offset, int start, int sourceLength, int targetLength) {
+        return
+            (offset >= start && offset < start + targetLength) ||
+            (offset + sourceLength > start && offset + sourceLength < start + targetLength);
+    }
+    
+    private int adjustTo(int target, int current, int imageDim) {
+        int result = current;
+        if (result > target) {
+            while (result > target) {
+                result -= imageDim;
+            }
+        } else if (result < target) {
+            while (result < target) {
+                result += imageDim;
+            }
+            result -= imageDim;
+        }
+        return result;
+    }
+    
+    private void paintTiles(FSImage image, int left, int top, int right, int bottom) {
+        int width = image.getWidth();
+        int height = image.getHeight();
         
-        int startX = xOffset;
-        int startY = yOffset;
-    
-        if (horiz && ! (startX == 0 && rWidth <= iWidth)) {
-            if (startX != 0) {
-                startX = startX % iWidth - iWidth;
-                rWidth += iWidth;
-            }
-        } else {
-            rWidth = iWidth;
-        }
-    
-        if (vert && ! (startY == 0 && rHeight <= iHeight)) {
-            if (startY != 0) {
-                startY = startY % iHeight - iHeight;
-                rHeight += iHeight;
-            }
-        } else {
-            rHeight = iHeight;
-        }
-    
-        for (int i = 0; i < rWidth; i += iWidth) {
-            for (int j = 0; j < rHeight; j += iHeight) {
-                drawImage(img, i + rect.x + startX, j + rect.y + startY);
+        for (int x = left; x < right; x+= width) {
+            for (int y = top; y < bottom; y+= height) {
+                drawImage(image, x, y);
             }
         }
-    }    
+    }
+    
+    private void paintVerticalBand(FSImage image, int left, int top, int bottom) {
+        int height = image.getHeight();
+        
+        for (int y = top; y < bottom; y+= height) {
+            drawImage(image, left, y);
+        }
+    }
+    
+    private void paintHorizontalBand(FSImage image, int left, int top, int right) {
+        int width = image.getWidth();
+        
+        for (int x = left; x < right; x+= width) {
+            drawImage(image, x, top);
+        }
+    }
+    
+    private int calcOffset(CssContext c, CalculatedStyle style, PropertyValue value, float boundsDim, float imageDim) {
+        if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_PERCENTAGE) {
+            float percent = value.getFloatValue() / 100.0f;
+            return Math.round(boundsDim*percent - imageDim*percent);
+        } else { /* it's a <length> */
+            return (int)LengthValue.calcFloatProportionalValue(
+                    style,
+                    CSSName.BACKGROUND_POSITION,
+                    value.getCssText(),
+                    value.getFloatValue(),
+                    value.getPrimitiveType(),
+                    0,
+                    c);
+        }
+    }
 }

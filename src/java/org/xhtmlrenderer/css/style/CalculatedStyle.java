@@ -21,9 +21,9 @@
 package org.xhtmlrenderer.css.style;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -37,6 +37,7 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.ColorValue;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
+import org.xhtmlrenderer.css.style.derived.ListValue;
 import org.xhtmlrenderer.css.style.derived.NumberValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
@@ -294,14 +295,12 @@ public class CalculatedStyle {
         } 
     }
 
-    /**
-     * @param parentWidth
-     * @param parentHeight
-     * @param ctx
-     * @return The "background-position" property as a Point
-     */
-    public Point getBackgroundPosition(float parentWidth, float parentHeight, CssContext ctx) {
-        return valueByName(CSSName.BACKGROUND_POSITION).asPoint(CSSName.BACKGROUND_POSITION, parentWidth, parentHeight, ctx);
+    public BackgroundPosition getBackgroundPosition() {
+        ListValue result = (ListValue)valueByName(CSSName.BACKGROUND_POSITION);
+        List values = result.getValues();
+        
+        return new BackgroundPosition(
+                (PropertyValue)values.get(0), (PropertyValue)values.get(1));
     }
 
     public BorderPropertySet getBorder(CssContext ctx) {
@@ -1069,6 +1068,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.84  2007/02/23 21:04:26  peterbrant
+ * Implement complete support for background-position and background-attachment
+ *
  * Revision 1.83  2007/02/23 16:54:38  peterbrant
  * Allow special ident -fs-intial-value to reset a property value to its initial value (used by border related shorthand properties as 'color' won't be known at property construction time)
  *

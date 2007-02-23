@@ -26,12 +26,6 @@ public interface FSDerivedValue {
 
     float asFloat();
     Color asColor();
-    Point asPoint(
-            CSSName cssName,
-            float parentWidth,
-            float parentHeight,
-            CssContext ctx
-    );
 
     float getFloatProportionalTo(
             CSSName cssName,
