@@ -859,12 +859,33 @@ public abstract class Box implements Styleable {
     public void setAnonymous(boolean anonymous) {
         _anonymous = anonymous;
     }
+    
+    public BoxDimensions getBoxDimensions() {
+        BoxDimensions result = new BoxDimensions();
+        
+        result.setLeftMBP(getLeftMBP());
+        result.setRightMBP(getRightMBP());
+        result.setContentWidth(getContentWidth());
+        result.setHeight(getHeight());
+        
+        return result;
+    }
+    
+    public void setBoxDimensions(BoxDimensions dimensions) {
+        setLeftMBP(dimensions.getLeftMBP());
+        setRightMBP(dimensions.getRightMBP());
+        setContentWidth(dimensions.getContentWidth());
+        setHeight(dimensions.getHeight());
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.131  2007/02/23 15:50:37  peterbrant
+ * Fix incorrect absolute box positioning with print medium
+ *
  * Revision 1.130  2007/02/22 18:21:19  peterbrant
  * Add support for overflow: visible/hidden
  *

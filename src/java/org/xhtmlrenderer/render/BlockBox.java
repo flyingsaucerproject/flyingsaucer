@@ -505,22 +505,23 @@ public class BlockBox extends Box implements InlinePaintable {
 
         if ((direction & POSITION_HORIZONTALLY) != 0) {
             setX(0);
-                if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-                    setX((int)style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx));
-                } else if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-                    setX(boundingBox.width -
-                            (int)style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth());
-                }
+            if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
+                setX((int)style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx));
+            } else if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
+                setX(boundingBox.width -
+                        (int)style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth());
+            }
+            setX(getX() + boundingBox.x);
         }
         
         if ((direction & POSITION_VERTICALLY) != 0) {
             setY(0);
-                if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-                    setY((int)style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx));
-                } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-                    setY(boundingBox.height -
-                            (int)style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight());
-                }
+            if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
+                setY((int)style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx));
+            } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
+                setY(boundingBox.height -
+                        (int)style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight());
+            }
 
             // Can't do this before now because our containing block
             // must be completed layed out
@@ -529,10 +530,9 @@ public class BlockBox extends Box implements InlinePaintable {
                 setHeight(pinnedHeight);
                 applyCSSMinMaxHeight(cssCtx);
             }
+            
+            setY(getY() + boundingBox.y);
         }
-        
-        setX(getX() + boundingBox.x);
-        setY(getY() + boundingBox.y);
         
         calcCanvasLocation();
         
@@ -1672,6 +1672,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.68  2007/02/23 15:50:37  peterbrant
+ * Fix incorrect absolute box positioning with print medium
+ *
  * Revision 1.67  2007/02/22 18:21:19  peterbrant
  * Add support for overflow: visible/hidden
  *
