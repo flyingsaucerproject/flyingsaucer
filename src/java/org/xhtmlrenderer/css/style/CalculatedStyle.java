@@ -1062,12 +1062,20 @@ public class CalculatedStyle {
         return isCollapseBorders() || isIdent(CSSName.EMPTY_CELLS, IdentValue.SHOW);
     }
     
+    public boolean isHasBackground() {
+        return ! (isIdent(CSSName.BACKGROUND_COLOR, IdentValue.TRANSPARENT) &&
+                    isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE));
+    }
+    
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.85  2007/02/24 00:46:38  peterbrant
+ * Paint root element background over entire canvas (or it's first child if the root element doesn't define a background)
+ *
  * Revision 1.84  2007/02/23 21:04:26  peterbrant
  * Implement complete support for background-position and background-attachment
  *

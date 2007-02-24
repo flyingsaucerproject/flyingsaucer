@@ -245,6 +245,10 @@ public class Layer {
             positionFixedLayer(c);
         }
         
+        if (isRootLayer()) {
+            getMaster().paintRootElementBackground(c);
+        }
+        
         if (! isInline() && ((BlockBox)getMaster()).isReplaced()) {
             paintLayerBackgroundAndBorder(c);
             paintReplacedElement(c, (BlockBox)getMaster());

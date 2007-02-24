@@ -402,9 +402,33 @@ public abstract class Box implements Styleable {
     public void paintBorder(RenderingContext c) {
         c.getOutputDevice().paintBorder(c, this);
     }
+    
+    private boolean isPaintsRootElementBackground() {
+        return (isRoot() && getStyle().isHasBackground()) ||
+                (isBody() && ! getParent().getStyle().isHasBackground());
+    }
 
     public void paintBackground(RenderingContext c) {
-        c.getOutputDevice().paintBackground(c, this);
+        if (! isPaintsRootElementBackground()) {
+            c.getOutputDevice().paintBackground(c, this);
+        }
+    }
+    
+    public void paintRootElementBackground(RenderingContext c) {
+        PaintingInfo pI = getPaintingInfo();
+        if (getStyle().isHasBackground()) {
+            paintRootElementBackground(c, pI);
+        } else if (getChildCount() > 0) {
+            Box body = getChild(0);
+            body.paintRootElementBackground(c, pI);
+        }
+    }
+    
+    private void paintRootElementBackground(RenderingContext c, PaintingInfo pI) {
+        Dimension marginCorner = pI.getOuterMarginCorner();
+        Rectangle canvasBounds = new Rectangle(0, 0, marginCorner.width, marginCorner.height);
+        canvasBounds.add(c.getFixedRectangle());
+        c.getOutputDevice().paintBackground(c, getStyle(), canvasBounds, canvasBounds);
     }
 
     public Layer getContainingLayer() {
@@ -588,6 +612,10 @@ public abstract class Box implements Styleable {
     
     public boolean isRoot() {
         return getElement() != null && getElement().getParentNode().getNodeType() == Node.DOCUMENT_NODE;
+    }
+    
+    public boolean isBody() {
+        return getParent() != null && getParent().isRoot();
     }
 
     public Element getElement() {
@@ -883,6 +911,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.132  2007/02/24 00:46:38  peterbrant
+ * Paint root element background over entire canvas (or it's first child if the root element doesn't define a background)
+ *
  * Revision 1.131  2007/02/23 15:50:37  peterbrant
  * Fix incorrect absolute box positioning with print medium
  *
