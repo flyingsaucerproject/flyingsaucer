@@ -416,11 +416,13 @@ public abstract class Box implements Styleable {
     
     public void paintRootElementBackground(RenderingContext c) {
         PaintingInfo pI = getPaintingInfo();
-        if (getStyle().isHasBackground()) {
-            paintRootElementBackground(c, pI);
-        } else if (getChildCount() > 0) {
-            Box body = getChild(0);
-            body.paintRootElementBackground(c, pI);
+        if (pI != null) {
+            if (getStyle().isHasBackground()) {
+                paintRootElementBackground(c, pI);
+            } else if (getChildCount() > 0) {
+                Box body = getChild(0);
+                body.paintRootElementBackground(c, pI);
+            }
         }
     }
     
@@ -911,6 +913,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.133  2007/02/24 01:36:57  peterbrant
+ * Fix potential NPE if layout fails
+ *
  * Revision 1.132  2007/02/24 00:46:38  peterbrant
  * Paint root element background over entire canvas (or it's first child if the root element doesn't define a background)
  *
