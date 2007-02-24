@@ -153,6 +153,15 @@ public class BlockBox extends Box implements InlinePaintable {
         }
         result.append(") ");
         
+        appendPositioningInfo(result);
+        result.append("(" + getAbsX() + "," + getAbsY() + ")->(" + getWidth() + " x " + getHeight() + ")");
+        return result.toString();
+    }
+    
+    protected void appendPositioningInfo(StringBuffer result) {
+        if (getStyle().isRelative()) {
+            result.append("(relative) ");
+        }
         if (getStyle().isFixed()) {
             result.append("(fixed) ");
         }
@@ -162,9 +171,7 @@ public class BlockBox extends Box implements InlinePaintable {
         if (getStyle().isFloated()) {
             result.append("(floated) ");
         }
-        result.append("(" + getAbsX() + "," + getAbsY() + ")->(" + getWidth() + " x " + getHeight() + ")");
-        return result.toString();
-    }
+    }  
     
     public String dump(LayoutContext c, String indent, int which) {
         StringBuffer result = new StringBuffer(indent);
@@ -1672,6 +1679,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.69  2007/02/24 01:57:30  peterbrant
+ * toString() changes
+ *
  * Revision 1.68  2007/02/23 15:50:37  peterbrant
  * Fix incorrect absolute box positioning with print medium
  *

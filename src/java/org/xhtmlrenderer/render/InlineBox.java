@@ -350,11 +350,29 @@ public class InlineBox implements Styleable {
             }
             result.append(") ");
         }
+        
+        appendPositioningInfo(result);
+        
         result.append("(");
         result.append(shortText());
         result.append(") ");
         return result.toString();
     }
+    
+    protected void appendPositioningInfo(StringBuffer result) {
+        if (getStyle().isRelative()) {
+            result.append("(relative) ");
+        }
+        if (getStyle().isFixed()) {
+            result.append("(fixed) ");
+        }
+        if (getStyle().isAbsolute()) {
+            result.append("(absolute) ");
+        }
+        if (getStyle().isFloated()) {
+            result.append("(floated) ");
+        }
+    } 
     
     private String shortText() {
         if (_text == null) {

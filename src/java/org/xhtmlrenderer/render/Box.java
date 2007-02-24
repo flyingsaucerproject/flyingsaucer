@@ -906,13 +906,16 @@ public abstract class Box implements Styleable {
         setRightMBP(dimensions.getRightMBP());
         setContentWidth(dimensions.getContentWidth());
         setHeight(dimensions.getHeight());
-    }
+    }  
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.134  2007/02/24 01:57:30  peterbrant
+ * toString() changes
+ *
  * Revision 1.133  2007/02/24 01:36:57  peterbrant
  * Fix potential NPE if layout fails
  *
