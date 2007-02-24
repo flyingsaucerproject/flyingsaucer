@@ -610,7 +610,8 @@ public class BoxBuilder {
         insertGeneratedContent(c, parent, parentStyle, "before", children, info);
 
         Node working = parent.getFirstChild();
-        boolean needInline = inline;
+        boolean needStartText = inline;
+        boolean needEndText = inline;
         if (working != null) {
             InlineBox previousIB = null;
             do {
@@ -635,19 +636,20 @@ public class BoxBuilder {
                     }
 
                     if (style.isInline()) {
-                        if (needInline) {
+                        if (needStartText) {
+                            needStartText = false;
                             InlineBox iB = createInlineBox("", parent, parentStyle);
                             iB.setStartsHere(true);
                             iB.setEndsHere(false);
                             children.add(iB);
                         }
                         createChildren(c, null, element, children, info, true);
-                        if (needInline) {
-                            InlineBox iB = createInlineBox("", parent, parentStyle);
-                            iB.setStartsHere(false);
-                            iB.setEndsHere(true);
-                            children.add(iB);
-                        }                        
+                        if (inline) {
+                            if (previousIB != null) {
+                                previousIB.setEndsHere(false);
+                            }
+                            needEndText = true;
+                        }
                     } else {
                         child = createBlockBox(style, info);
                         child.setStyle(style);
@@ -676,7 +678,9 @@ public class BoxBuilder {
                         }
                     }
                 } else if (working.getNodeType() == Node.TEXT_NODE) {
-                    needInline = false;
+                    needStartText = false;
+                    needEndText = false;
+                    
                     Text textNode = (Text) working;
                     StringBuffer text = new StringBuffer(textNode.getData());
 
@@ -709,6 +713,12 @@ public class BoxBuilder {
                     children.add(child);
                 }
             } while ((working = working.getNextSibling()) != null);
+        }
+        if (needStartText || needEndText) {
+            InlineBox iB = createInlineBox("", parent, parentStyle);
+            iB.setStartsHere(needStartText);
+            iB.setEndsHere(needEndText);
+            children.add(iB);
         }
         insertGeneratedContent(c, parent, parentStyle, "after", children, info);
     }

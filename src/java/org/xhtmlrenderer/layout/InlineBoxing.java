@@ -243,13 +243,15 @@ public class InlineBoxing {
                     currentIB.setEndsHere(true);
                     
                     if (currentIB.getStyle().requiresLayer()) {
-                        if (currentIB.getElement() == null || 
-                                currentIB.getElement() != c.getLayer().getMaster().getElement()) {
+                        if (! currentIB.isPending() && (currentIB.getElement() == null || 
+                                currentIB.getElement() != c.getLayer().getMaster().getElement())) {
                             throw new RuntimeException("internal error");
                         }
-                        c.getLayer().setEnd(currentIB);
-                        c.popLayer();
-                        pendingInlineLayers.add(currentIB.getContainingLayer());
+                        if (! currentIB.isPending()) {
+                            c.getLayer().setEnd(currentIB);
+                            c.popLayer();
+                            pendingInlineLayers.add(currentIB.getContainingLayer());
+                        }
                     }
 
                     previousIB = currentIB;
