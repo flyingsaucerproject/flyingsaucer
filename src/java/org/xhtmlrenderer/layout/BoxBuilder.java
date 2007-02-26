@@ -269,7 +269,7 @@ public class BoxBuilder {
             anonDisplay = next;
         }
         CalculatedStyle anonStyle = source.getStyle().createAnonymousStyle(anonDisplay);
-        BlockBox anonBox = createBlockBox(anonStyle, nested);
+        BlockBox anonBox = createBlockBox(anonStyle, nested, false);
         anonBox.setStyle(anonStyle);
         anonBox.setAnonymous(true);
         // XXX Doesn't really make sense, but what to do?
@@ -488,18 +488,23 @@ public class BoxBuilder {
     }
     
     private static List createGeneratedContent(LayoutContext c, Element element,
-            String peName, CalculatedStyle calculatedStyle, PropertyValue property, ChildBoxInfo info) {
+            String peName, CalculatedStyle style, PropertyValue property, ChildBoxInfo info) {
+        if (style.isDisplayNone() || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN)
+                || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN_GROUP)) {
+            return Collections.EMPTY_LIST;
+        }
+
         List inlineBoxes = createGeneratedInlineBoxes(c, element, property, peName);
 
-        if (calculatedStyle.isInline()) {
+        if (style.isInline()) {
             for (Iterator i = inlineBoxes.iterator(); i.hasNext(); ) {
                 InlineBox iB = (InlineBox)i.next();
-                iB.setStyle(calculatedStyle);
+                iB.setStyle(style);
                 iB.applyTextTransform();
             }
             return inlineBoxes;
         } else {
-            CalculatedStyle anon = calculatedStyle.createAnonymousStyle(IdentValue.INLINE);
+            CalculatedStyle anon = style.createAnonymousStyle(IdentValue.INLINE);
             for (Iterator i = inlineBoxes.iterator(); i.hasNext(); ) {
                 InlineBox iB = (InlineBox)i.next();
                 iB.setStyle(anon);
@@ -507,22 +512,23 @@ public class BoxBuilder {
                 iB.setElement(null);
             }
 
-            // XXX A table / table content display value won't work here.
-            // Should (somehow) reset to display: block
-            BlockBox result = createBlockBox(calculatedStyle, info);
-            result.setStyle(calculatedStyle);
+            BlockBox result = createBlockBox(style, info, true);
+            result.setStyle(style);
             result.setInlineContent(inlineBoxes);
             result.setElement(element);
             result.setChildrenContentType(BlockBox.CONTENT_INLINE);
             result.setPseudoElementOrClass(peName);
             
-            info.setContainsBlockLevelContent(true);
+            if (! style.isLayedOutInInlineContext()) {
+                info.setContainsBlockLevelContent(true);
+            }
 
             return new ArrayList(Collections.singletonList(result));
         }
     }
 
-    private static BlockBox createBlockBox(CalculatedStyle style, ChildBoxInfo info) {
+    private static BlockBox createBlockBox(
+            CalculatedStyle style, ChildBoxInfo info, boolean generated) {
         if (style.isFloated() && !(style.isAbsolute() || style.isFixed())) {
             BlockBox result;
             if (style.isTable() || style.isInlineTable()) {
@@ -534,15 +540,15 @@ public class BoxBuilder {
             return result;
         } else if (style.isSpecifiedAsBlock()) {
             return new BlockBox();
-        } else if (style.isTable() || style.isInlineTable()) {
+        } else if (! generated && (style.isTable() || style.isInlineTable())) {
             return new TableBox();
         } else if (style.isTableCell()) {
             info.setContainsTableContent(true);
             return new TableCellBox();
-        } else if (style.isTableRow()) {
+        } else if (! generated && style.isTableRow()) {
             info.setContainsTableContent(true);
             return new TableRowBox();
-        } else if (style.isTableSection()) {
+        } else if (! generated && style.isTableSection()) {
             info.setContainsTableContent(true);
             return new TableSectionBox();
         } else if (style.isTableCaption()) {
@@ -620,7 +626,7 @@ public class BoxBuilder {
                     Element element = (Element) working;
                     CalculatedStyle style = sharedContext.getStyle(element);
 
-                    if (style.isHidden()) {
+                    if (style.isDisplayNone()) {
                         continue;
                     }
 
@@ -651,7 +657,7 @@ public class BoxBuilder {
                             needEndText = true;
                         }
                     } else {
-                        child = createBlockBox(style, info);
+                        child = createBlockBox(style, info, false);
                         child.setStyle(style);
                         child.setElement(element);
                         
@@ -714,10 +720,10 @@ public class BoxBuilder {
                 }
             } while ((working = working.getNextSibling()) != null);
         }
-        if (needStartText || needEndText) {
+        if (! needStartText && needEndText) {
             InlineBox iB = createInlineBox("", parent, parentStyle);
-            iB.setStartsHere(needStartText);
-            iB.setEndsHere(needEndText);
+            iB.setStartsHere(false);
+            iB.setEndsHere(true);
             children.add(iB);
         }
         insertGeneratedContent(c, parent, parentStyle, "after", children, info);

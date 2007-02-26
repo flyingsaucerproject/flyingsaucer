@@ -804,7 +804,7 @@ public class CalculatedStyle {
         return isIdent(CSSName.DISPLAY, IdentValue.TABLE_ROW);
     }
     
-    public boolean isHidden() {
+    public boolean isDisplayNone() {
         return isIdent(CSSName.DISPLAY, IdentValue.NONE);
     }
     
@@ -1073,6 +1073,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.86  2007/02/26 16:25:51  peterbrant
+ * Method name change to avoid confusion with visibility: hidden / Don't create empty inline boxes after all (inline layout will ignore them anyway) / Robustness improvements to generated content (treat display: table/table row groups/table-row as regular block boxes)
+ *
  * Revision 1.85  2007/02/24 00:46:38  peterbrant
  * Paint root element background over entire canvas (or it's first child if the root element doesn't define a background)
  *
