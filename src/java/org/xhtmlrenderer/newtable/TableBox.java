@@ -171,9 +171,11 @@ public class TableBox extends BlockBox {
         
         // Recalc to pick up auto margins now that layout has been called on
         // containing block and the table has a content width
-        setDimensionsCalculated(false);
-        calcDimensions(c, getContentWidth());
-        
+        if (! isAnonymous()) {
+            setDimensionsCalculated(false);
+            calcDimensions(c, getContentWidth());
+        }
+            
         _tableLayout.layout(c);
         
         setCellWidths(c);
