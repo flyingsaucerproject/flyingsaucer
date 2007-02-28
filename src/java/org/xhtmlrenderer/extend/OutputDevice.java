@@ -33,6 +33,7 @@ import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.render.TextDecoration;
 
 public interface OutputDevice {
     public Color TRANSPARENT = new Color(0, 0, 0, 0);
@@ -40,7 +41,8 @@ public interface OutputDevice {
     public void drawText(RenderingContext c, InlineText inlineText);
     
     public void drawTextDecoration(RenderingContext c, LineBox lineBox);
-    public void drawTextDecoration(RenderingContext c, InlineLayoutBox inlineBox);
+    public void drawTextDecoration(
+            RenderingContext c, InlineLayoutBox iB, TextDecoration decoration);
     
     public void paintBorder(RenderingContext c, Box box);
     public void paintBorder(RenderingContext c, CalculatedStyle style, 

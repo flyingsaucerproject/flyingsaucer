@@ -22,6 +22,8 @@ package org.xhtmlrenderer.render;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.util.Iterator;
+import java.util.List;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -80,31 +82,35 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         drawLine(x, y, x + width, y);
     }
     
-    public void drawTextDecoration(RenderingContext c, InlineLayoutBox iB) {
+    public void drawTextDecoration(
+            RenderingContext c, InlineLayoutBox iB, TextDecoration decoration) {
         setColor(iB.getStyle().getColor());
         
         Rectangle edge = iB.getContentAreaEdge(iB.getAbsX(), iB.getAbsY(), c);
         
-        fillRect(edge.x, iB.getAbsY() + iB.getTextDecoration().getOffset(),
-                    edge.width, iB.getTextDecoration().getThickness());
+        fillRect(edge.x, iB.getAbsY() + decoration.getOffset(),
+                    edge.width, decoration.getThickness());
     }
     
     public void drawTextDecoration(RenderingContext c, LineBox lineBox) {
         setColor(lineBox.getStyle().getColor());
         Box parent = lineBox.getParent();
-        TextDecoration textDecoration = lineBox.getTextDecoration();
-        if (parent.getStyle().isIdent(
-                CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
-            fillRect(
-                lineBox.getAbsX(), 
-                lineBox.getAbsY() + textDecoration.getOffset(),
-                parent.getAbsX() + parent.getTx() + parent.getContentWidth() - lineBox.getAbsX(), 
-                textDecoration.getThickness());
-        } else {
-            fillRect(
-                lineBox.getAbsX(), lineBox.getAbsY() + textDecoration.getOffset(),
-                lineBox.getContentWidth(),
-                textDecoration.getThickness());
+        List decorations = lineBox.getTextDecorations();
+        for (Iterator i = decorations.iterator(); i.hasNext(); ) {
+            TextDecoration textDecoration = (TextDecoration)i.next();
+            if (parent.getStyle().isIdent(
+                    CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
+                fillRect(
+                    lineBox.getAbsX(), 
+                    lineBox.getAbsY() + textDecoration.getOffset(),
+                    parent.getAbsX() + parent.getTx() + parent.getContentWidth() - lineBox.getAbsX(), 
+                    textDecoration.getThickness());
+            } else {
+                fillRect(
+                    lineBox.getAbsX(), lineBox.getAbsY() + textDecoration.getOffset(),
+                    lineBox.getContentWidth(),
+                    textDecoration.getThickness());
+            }
         }
     }
     

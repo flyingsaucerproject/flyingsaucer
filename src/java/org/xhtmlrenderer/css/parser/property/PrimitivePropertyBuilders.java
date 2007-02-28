@@ -1063,17 +1063,54 @@ public class PrimitivePropertyBuilders {
         }          
     } 
     
-    public static class TextDecoration extends SingleIdent {
+    public static class TextDecoration extends AbstractPropertyBuilder {
         // none | [ underline || overline || line-through || blink ] | inherit 
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { 
-                        IdentValue.NONE, IdentValue.UNDERLINE,
+                        /* IdentValue.NONE, */ IdentValue.UNDERLINE,
                         IdentValue.OVERLINE, IdentValue.LINE_THROUGH,
-                        IdentValue.BLINK });
+                        /* IdentValue.BLINK */ });
         
-        protected BitSet getAllowed() {
+        private BitSet getAllowed() {
             return ALLOWED;
-        }         
+        }
+        
+        public List buildDeclarations(
+                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+            if (values.size() == 1) {
+                CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+                boolean goWithSingle = false;
+                if (value.getCssValueType() == CSSPrimitiveValue.CSS_INHERIT) {
+                    goWithSingle = true;
+                } else {
+                    checkIdentType(CSSName.TEXT_DECORATION, value);
+                    IdentValue ident = checkIdent(cssName, value);
+                    if (ident == IdentValue.NONE) {
+                        goWithSingle = true;
+                    }
+                }
+                
+                if (goWithSingle) {
+                    return Collections.singletonList(
+                            new PropertyDeclaration(cssName, value, important, origin));
+                }
+            }
+
+            for (Iterator i = values.iterator(); i.hasNext(); ) {
+                PropertyValue value = (PropertyValue)i.next();
+                checkInheritAllowed(value, false);
+                checkIdentType(cssName, value);
+                IdentValue ident = checkIdent(cssName, value);
+                if (ident == IdentValue.NONE) {
+                    throw new CSSParseException("Value none may not be used in this position", -1);
+                }
+                checkValidity(cssName, getAllowed(), ident);
+            }
+            
+            return Collections.singletonList(
+                    new PropertyDeclaration(cssName, new PropertyValue(values), important, origin));
+            
+        }
     }
     
     public static class TextIndent extends LengthLike {

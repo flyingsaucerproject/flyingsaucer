@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.css.style;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1067,12 +1068,30 @@ public class CalculatedStyle {
                     isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE));
     }
     
+    public List getTextDecorations() {
+        FSDerivedValue value = valueByName(CSSName.TEXT_DECORATION);
+        if (value == IdentValue.NONE) {
+            return null;
+        } else {
+            List idents = ((ListValue)value).getValues();
+            List result = new ArrayList(idents.size());
+            for (Iterator i = idents.iterator(); i.hasNext(); ) {
+                result.add(DerivedValueFactory.newDerivedValue(
+                        this, CSSName.TEXT_DECORATION, (PropertyValue)i.next())); 
+            }
+            return result;
+        }
+    }
+    
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.87  2007/02/28 18:16:32  peterbrant
+ * Support multiple values for text-decoration (per spec)
+ *
  * Revision 1.86  2007/02/26 16:25:51  peterbrant
  * Method name change to avoid confusion with visibility: hidden / Don't create empty inline boxes after all (inline layout will ignore them anyway) / Robustness improvements to generated content (treat display: table/table row groups/table-row as regular block boxes)
  *

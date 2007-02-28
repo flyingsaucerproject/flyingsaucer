@@ -47,7 +47,7 @@ public class LineBox extends Box implements InlinePaintable {
     
     private FloatDistances _floatDistances;
     
-    private TextDecoration _textDecoration;
+    private List _textDecorations;
     
     private int _paintingTop;
     private int _paintingHeight;
@@ -111,7 +111,7 @@ public class LineBox extends Box implements InlinePaintable {
             align();
         }
         
-        if (_textDecoration != null) {
+        if (_textDecorations != null) {
             c.getOutputDevice().drawTextDecoration(c, this);
         }
         
@@ -252,12 +252,12 @@ public class LineBox extends Box implements InlinePaintable {
         return false;
     }
 
-    public TextDecoration getTextDecoration() {
-        return _textDecoration;
+    public List getTextDecorations() {
+        return _textDecorations;
     }
 
-    public void setTextDecoration(TextDecoration textDecoration) {
-        _textDecoration = textDecoration;
+    public void setTextDecorations(List textDecorations) {
+        _textDecorations = textDecorations;
     }
 
     public int getPaintingHeight() {
@@ -453,6 +453,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.61  2007/02/28 18:16:29  peterbrant
+ * Support multiple values for text-decoration (per spec)
+ *
  * Revision 1.60  2007/02/22 15:52:46  peterbrant
  * Restyle generated content correctly (although the CSS matcher needs more
  * work before restyle with generated content and dynamic pseudo classes will work)

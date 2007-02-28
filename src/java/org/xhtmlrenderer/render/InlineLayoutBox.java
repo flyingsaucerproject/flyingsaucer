@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -55,7 +54,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     
     private int _inlineWidth;
     
-    private TextDecoration _textDecoration;
+    private List _textDecorations;
     
     private int _containingBlockWidth;
     
@@ -240,11 +239,14 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             paintDebugOutline(c);
         }
         
-        if (_textDecoration != null) {
-            IdentValue val = 
-                getStyle().getIdent(CSSName.TEXT_DECORATION);
-            if (val == IdentValue.UNDERLINE || val == IdentValue.OVERLINE) {
-                c.getOutputDevice().drawTextDecoration(c, this);
+        List textDecorations = getTextDecorations();
+        if (textDecorations != null) {
+            for (Iterator i = textDecorations.iterator(); i.hasNext(); ) {
+                TextDecoration tD = (TextDecoration)i.next();
+                IdentValue ident = tD.getIdentValue();
+                if (ident == IdentValue.UNDERLINE || ident == IdentValue.OVERLINE) {
+                    c.getOutputDevice().drawTextDecoration(c, this, tD);    
+                }
             }
         }
         
@@ -255,11 +257,13 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             }
         }
         
-        if (_textDecoration != null) {
-            IdentValue val = 
-                getStyle().getIdent(CSSName.TEXT_DECORATION);
-            if (val == IdentValue.LINE_THROUGH) {
-                c.getOutputDevice().drawTextDecoration(c, this);
+        if (textDecorations != null) {
+            for (Iterator i = textDecorations.iterator(); i.hasNext(); ) {
+                TextDecoration tD = (TextDecoration)i.next();
+                IdentValue ident = tD.getIdentValue();
+                if (ident == IdentValue.LINE_THROUGH) {
+                    c.getOutputDevice().drawTextDecoration(c, this, tD);    
+                }
             }
         }
     }
@@ -429,12 +433,12 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         return false;
     }
 
-    public TextDecoration getTextDecoration() {
-        return _textDecoration;
+    public List getTextDecorations() {
+        return _textDecorations;
     }
 
-    public void setTextDecoration(TextDecoration textDecoration) {
-        _textDecoration = textDecoration;
+    public void setTextDecorations(List textDecoration) {
+        _textDecorations = textDecoration;
     }
     
     private void addToContentList(List list) {
@@ -669,10 +673,10 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public void calculateTextDecoration(LayoutContext c) {
-        TextDecoration tD = 
-            InlineBoxing.calculateTextDecoration(this, getBaseline(), 
+        List decorations = 
+            InlineBoxing.calculateTextDecorations(this, getBaseline(), 
                     getStyle().getFSFontMetrics(c));
-        setTextDecoration(tD);
+        setTextDecorations(decorations);
     }
     
     public Box find(CssContext cssCtx, int absX, int absY) {
