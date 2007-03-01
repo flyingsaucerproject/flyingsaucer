@@ -123,8 +123,9 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         drawRect(rect.x, rect.y, rect.width, rect.height);
     }
     
-    public void paintCollapsedBorder(RenderingContext c, BorderPropertySet border, Rectangle bounds) {
-        BorderPainter.paint(bounds, BorderPainter.ALL, border, c, 0, false);
+    public void paintCollapsedBorder(
+            RenderingContext c, BorderPropertySet border, Rectangle bounds, int side) {
+        BorderPainter.paint(bounds, side, border, c, 0, false);
     }
     
     public void paintBorder(RenderingContext c, Box box) {

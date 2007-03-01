@@ -24,7 +24,9 @@ import java.awt.Color;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 
-public class CollapsedBorderValue {    
+public class CollapsedBorderValue {  
+    public static final CollapsedBorderValue NO_BORDER = new CollapsedBorderValue();
+    
     private IdentValue _style;
     private int _width;
     private Color _color;
@@ -37,7 +39,7 @@ public class CollapsedBorderValue {
         _precedence = precedence;
     }
 
-    public CollapsedBorderValue() {
+    private CollapsedBorderValue() {
         _style = IdentValue.NONE;
     }
 

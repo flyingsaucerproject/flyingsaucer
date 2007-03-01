@@ -48,7 +48,8 @@ public interface OutputDevice {
     public void paintBorder(RenderingContext c, Box box);
     public void paintBorder(RenderingContext c, CalculatedStyle style, 
             Rectangle edge, int sides);
-    public void paintCollapsedBorder(RenderingContext c, BorderPropertySet border, Rectangle bounds);
+    public void paintCollapsedBorder(
+            RenderingContext c, BorderPropertySet border, Rectangle bounds, int side);
     
     public void paintBackground(RenderingContext c, Box box);
     public void paintBackground(

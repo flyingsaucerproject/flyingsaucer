@@ -26,14 +26,19 @@ import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.EmptyStyle;
+import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxDimensions;
@@ -209,13 +214,23 @@ public class Layer {
         }
     }
     
-    private void paintBackgroundsAndBorders(RenderingContext c, List blocks) {
+    private void paintBackgroundsAndBorders(RenderingContext c, List blocks, Map collapsedTableBorders) {
         for (Iterator i = blocks.iterator(); i.hasNext();) {
             BlockBox box = (BlockBox) i.next();
             box.paintBackground(c);
             box.paintBorder(c);
             if (c.debugDrawBoxes()) {
                 box.paintDebugOutline(c);
+            }
+            
+            if (collapsedTableBorders != null && box instanceof TableCellBox) {
+                TableCellBox cell = (TableCellBox)box;
+                if (cell.hasCollapsedPaintingBorder()) {
+                    List borders = (List)collapsedTableBorders.get(cell);
+                    if (borders != null) {
+                        paintCollapsedTableBorders(c, borders);
+                    }
+                }
             }
         }
     }
@@ -279,8 +294,10 @@ public class Layer {
                 if (isRootLayer() || isStackingContext() || isAlternateFlow()) {
                     paintLayers(c, getSortedLayers(NEGATIVE));
                 }
+                
+                Map collapsedTableBorders = collectCollapsedTableBorders(c, blocks);
         
-                paintBackgroundsAndBorders(c, blocks);
+                paintBackgroundsAndBorders(c, blocks, collapsedTableBorders);
                 paintFloats(c);
                 paintListMarkers(c, blocks);
                 paintInlineContent(c, lines);
@@ -359,6 +376,56 @@ public class Layer {
         return result;
     }
     
+    // Bit of a kludge here.  We need to paint collapsed table borders according
+    // to priority so (for example) wider borders float to the top and aren't
+    // overpainted by thinner borders.  This method scans the block boxes
+    // we're about to draw and returns a map with the last cell in a given table
+    // we'll paint as a key and a sorted list of borders as values.  These are
+    // then painted after we've drawn the background for this cell.
+    private Map collectCollapsedTableBorders(RenderingContext c, List blocks) {
+        Map cellBordersByTable = new HashMap();
+        Map triggerCellsByTable = new HashMap();
+        
+        Set all = new HashSet();
+        for (Iterator i = blocks.iterator(); i.hasNext(); ) {
+            Box b = (Box)i.next();
+            if (b instanceof TableCellBox) {
+                TableCellBox cell = (TableCellBox)b;
+                if (cell.hasCollapsedPaintingBorder()) {
+                    List borders = (List)cellBordersByTable.get(cell.getTable());
+                    if (borders == null) {
+                        borders = new ArrayList();
+                        cellBordersByTable.put(cell.getTable(), borders);
+                    }
+                    triggerCellsByTable.put(cell.getTable(), cell);
+                    cell.addCollapsedBorders(all, borders);
+                }
+            }
+        }
+        
+        if (triggerCellsByTable.size() == 0) {
+            return null;
+        } else {
+            Map result = new HashMap();
+            
+            for (Iterator i = triggerCellsByTable.values().iterator(); i.hasNext(); ) {
+                TableCellBox cell = (TableCellBox)i.next();
+                List borders = (List)cellBordersByTable.get(cell.getTable());
+                Collections.sort(borders);
+                result.put(cell, borders);
+            }
+            
+            return result;
+        }
+    }
+    
+    private void paintCollapsedTableBorders(RenderingContext c, List borders) {
+        for (Iterator i = borders.iterator(); i.hasNext(); ) {
+            CollapsedBorderSide border = (CollapsedBorderSide)i.next();
+            border.getCell().paintCollapsedBorder(c, border.getSide());
+        }
+    }
+    
     public void paintAsLayer(RenderingContext c, BlockBox startingPoint) {
         List blocks = new ArrayList();
         List lines = new ArrayList();
@@ -367,7 +434,9 @@ public class Layer {
         collector.collect(c, c.getOutputDevice().getClip(), 
                 this, startingPoint, blocks, lines);
     
-        paintBackgroundsAndBorders(c, blocks);
+        Map collapsedTableBorders = collectCollapsedTableBorders(c, blocks);
+        
+        paintBackgroundsAndBorders(c, blocks, collapsedTableBorders);
         paintListMarkers(c, blocks);
         paintInlineContent(c, lines);
         paintReplacedElements(c, blocks);
