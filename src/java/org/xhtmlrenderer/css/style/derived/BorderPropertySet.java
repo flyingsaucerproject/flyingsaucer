@@ -83,13 +83,21 @@ public class BorderPropertySet extends RectPropertySet {
             CalculatedStyle style,
             CssContext ctx
     ) {
-        _top = ( style.isIdent(CSSName.BORDER_TOP_STYLE, IdentValue.NONE) ?
+        _top = ( style.isIdent(CSSName.BORDER_TOP_STYLE, IdentValue.NONE) ||
+                 style.isIdent(CSSName.BORDER_TOP_STYLE, IdentValue.HIDDEN)  
+                ?
             0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_TOP_WIDTH, 0, ctx));
-        _right = ( style.isIdent(CSSName.BORDER_RIGHT_STYLE, IdentValue.NONE) ?
+        _right = ( style.isIdent(CSSName.BORDER_RIGHT_STYLE, IdentValue.NONE) || 
+                   style.isIdent(CSSName.BORDER_RIGHT_STYLE, IdentValue.HIDDEN) 
+                  ?
             0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_RIGHT_WIDTH, 0, ctx));
-        _bottom = ( style.isIdent(CSSName.BORDER_BOTTOM_STYLE, IdentValue.NONE) ?
+        _bottom = ( style.isIdent(CSSName.BORDER_BOTTOM_STYLE, IdentValue.NONE) ||
+                    style.isIdent(CSSName.BORDER_BOTTOM_STYLE, IdentValue.HIDDEN)
+                   ?
             0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_BOTTOM_WIDTH, 0, ctx));
-        _left = ( style.isIdent(CSSName.BORDER_LEFT_STYLE, IdentValue.NONE) ?
+        _left = ( style.isIdent(CSSName.BORDER_LEFT_STYLE, IdentValue.NONE) ||
+                  style.isIdent(CSSName.BORDER_LEFT_STYLE, IdentValue.HIDDEN)
+                 ?
             0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_LEFT_WIDTH, 0, ctx));
 
         _topColor = style.asColor(CSSName.BORDER_TOP_COLOR);
