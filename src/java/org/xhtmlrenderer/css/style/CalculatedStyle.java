@@ -148,6 +148,8 @@ public class CalculatedStyle {
         if (v == IdentValue.TABLE_HEADER_GROUP || v == IdentValue.TABLE_ROW_GROUP ||
                  v == IdentValue.TABLE_FOOTER_GROUP || v == IdentValue.TABLE_ROW) {
             _paddingAllowed = false;
+        } else if ((v == IdentValue.TABLE || v == IdentValue.INLINE_TABLE) && isCollapseBorders()) {
+            _paddingAllowed = false;
         }
     }
     
@@ -1089,6 +1091,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.88  2007/03/01 20:17:10  peterbrant
+ * Tables with collapsed borders don't have padding
+ *
  * Revision 1.87  2007/02/28 18:16:32  peterbrant
  * Support multiple values for text-decoration (per spec)
  *
