@@ -55,21 +55,32 @@ public class CollapsedBorderSide implements Comparable {
         CollapsedBorderValue v1 = null;
         CollapsedBorderValue v2 = null;
         
-        switch (_side) {
+        switch (c1._side) {
             case BorderPainter.TOP:
                 v1 = c1._cell.getCollapsedBorderTop();
-                v2 = c2._cell.getCollapsedBorderTop();
                 break;
             case BorderPainter.RIGHT:
                 v1 = c1._cell.getCollapsedBorderRight();
-                v2 = c2._cell.getCollapsedBorderRight();
                 break;
             case BorderPainter.BOTTOM:
                 v1 = c1._cell.getCollapsedBorderBottom();
-                v2 = c2._cell.getCollapsedBorderBottom();
                 break;
             case BorderPainter.LEFT:
                 v1 = c1._cell.getCollapsedBorderLeft();
+                break;                
+        }
+        
+        switch (c2._side) {
+            case BorderPainter.TOP:
+                v2 = c2._cell.getCollapsedBorderTop();
+                break;
+            case BorderPainter.RIGHT:
+                v2 = c2._cell.getCollapsedBorderRight();
+                break;
+            case BorderPainter.BOTTOM:
+                v2 = c2._cell.getCollapsedBorderBottom();
+                break;
+            case BorderPainter.LEFT:
                 v2 = c2._cell.getCollapsedBorderLeft();
                 break;                
         }
