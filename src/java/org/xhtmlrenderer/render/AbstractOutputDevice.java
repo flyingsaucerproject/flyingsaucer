@@ -123,8 +123,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         drawRect(rect.x, rect.y, rect.width, rect.height);
     }
     
-    public void paintBorder(RenderingContext c, BorderPropertySet border, Rectangle bounds) {
-        BorderPainter.paint(bounds, BorderPainter.ALL, border, c, 0);
+    public void paintCollapsedBorder(RenderingContext c, BorderPropertySet border, Rectangle bounds) {
+        BorderPainter.paint(bounds, BorderPainter.ALL, border, c, 0, false);
     }
     
     public void paintBorder(RenderingContext c, Box box) {
@@ -134,11 +134,11 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         
         Rectangle borderBounds = box.getPaintingBorderEdge(c);
     
-        BorderPainter.paint(borderBounds, box.getBorderSides(), box.getBorder(c), c, 0);
+        BorderPainter.paint(borderBounds, box.getBorderSides(), box.getBorder(c), c, 0, true);
     }
     
     public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
-        BorderPainter.paint(edge, sides, style.getBorder(c), c, 0);
+        BorderPainter.paint(edge, sides, style.getBorder(c), c, 0, true);
     }
     
     private FSImage getBackgroundImage(RenderingContext c, CalculatedStyle style) {

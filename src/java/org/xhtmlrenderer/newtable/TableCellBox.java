@@ -261,7 +261,7 @@ public class TableCellBox extends BlockBox {
         if (isPaintBackgroundsAndBorders()) {
             if (getTable().getStyle().isCollapseBorders() && hasCollapsedPaintingBorder()) {
                 if (getStyle().isVisible()) {
-                    c.getOutputDevice().paintBorder(
+                    c.getOutputDevice().paintCollapsedBorder(
                             c, 
                             getCollapsedPaintingBorder(),
                             getCollapsedBorderBounds(c));
