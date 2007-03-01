@@ -255,6 +255,10 @@ public class BorderPropertySet extends RectPropertySet {
      * @param dB    change in brightness (result will be clipped to range 0.0-1.0)
      */
     private static Color modify(Color color, double dS, double dB) {
+        if (color == null) {
+            return null;
+        }
+        
         float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
         //
         //decreasing brightness and saturation gives a "shadowier", "blacker" look
