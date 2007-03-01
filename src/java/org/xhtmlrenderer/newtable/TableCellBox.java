@@ -259,17 +259,12 @@ public class TableCellBox extends BlockBox {
     
     public void paintBorder(RenderingContext c) {
         if (isPaintBackgroundsAndBorders()) {
-            if (getTable().getStyle().isCollapseBorders() && _collapsedPaintingBorder != null) {
+            if (getTable().getStyle().isCollapseBorders() && hasCollapsedPaintingBorder()) {
                 if (getStyle().isVisible()) {
-                    // XXX Should we override getPaintingBorderEdge() instead? (which would
-                    // cause cell backgrounds to overlap)
-                    BorderPropertySet border = _collapsedPaintingBorder;
-                    Rectangle bounds = getPaintingBorderEdge(c);
-                    bounds.x -= (int)border.left()/2;
-                    bounds.y -= (int)border.top()/2;
-                    bounds.width += (int)border.left()/2 + ((int)border.right()+1)/2;
-                    bounds.height += (int)border.top()/2 + ((int)border.bottom()+1)/2;
-                    c.getOutputDevice().paintBorder(c, _collapsedPaintingBorder, bounds);;
+                    c.getOutputDevice().paintBorder(
+                            c, 
+                            getCollapsedPaintingBorder(),
+                            getCollapsedBorderBounds(c));
                 }
             } else {
                 super.paintBorder(c);
@@ -645,6 +640,32 @@ public class TableCellBox extends BlockBox {
         }
 
         return result;
-    }    
+    }
     
+    private Rectangle getCollapsedBorderBounds(CssContext c) {
+        BorderPropertySet border = getCollapsedPaintingBorder();
+        Rectangle bounds = getPaintingBorderEdge(c);
+        bounds.x -= (int) border.left() / 2;
+        bounds.y -= (int) border.top() / 2;
+        bounds.width += (int) border.left() / 2 + ((int) border.right() + 1) / 2;
+        bounds.height += (int) border.top() / 2 + ((int) border.bottom() + 1) / 2;
+        
+        return bounds;
+    }
+    
+    public Rectangle getPaintingClipEdge(CssContext c) {
+        if (hasCollapsedPaintingBorder()) {
+            return getCollapsedBorderBounds(c);
+        } else {
+            return super.getPaintingClipEdge(c);
+        }
+    }
+    
+    private boolean hasCollapsedPaintingBorder() {
+        return _collapsedPaintingBorder != null;
+    }
+    
+    private BorderPropertySet getCollapsedPaintingBorder() {
+        return _collapsedPaintingBorder;
+    }
 }
