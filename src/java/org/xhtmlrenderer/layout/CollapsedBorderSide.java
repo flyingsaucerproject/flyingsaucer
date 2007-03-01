@@ -90,7 +90,6 @@ public class CollapsedBorderSide implements Comparable {
         if (result == null) {
             return 0;
         } else {
-            // Sort in descending order
             return result == v1 ? 1 : -1;
         }
     }
