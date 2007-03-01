@@ -26,6 +26,7 @@ import java.awt.Stroke;
 import java.awt.RenderingHints.Key;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
@@ -47,6 +48,8 @@ public interface OutputDevice {
     public void paintBorder(RenderingContext c, Box box);
     public void paintBorder(RenderingContext c, CalculatedStyle style, 
             Rectangle edge, int sides);
+    public void paintBorder(RenderingContext c, BorderPropertySet border, Rectangle bounds);
+    
     public void paintBackground(RenderingContext c, Box box);
     public void paintBackground(
             RenderingContext c, CalculatedStyle style, 

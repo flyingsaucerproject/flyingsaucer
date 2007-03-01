@@ -117,6 +117,9 @@ public class TableBox extends BlockBox {
     public void calcMinMaxWidth(LayoutContext c) {
         if (! isMinMaxCalculated()) {
             recalcSections(c);
+            if (getStyle().isCollapseBorders()) {
+                calcBorders(c);
+            }
             _tableLayout.calcMinMaxWidth(c);
             setMinMaxCalculated(true);
         }
@@ -159,6 +162,14 @@ public class TableBox extends BlockBox {
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             TableSectionBox section = (TableSectionBox)i.next();
             section.recalcCells(c);
+        }
+    }
+    
+    private void calcBorders(LayoutContext c) {
+        ensureChildren(c);
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            TableSectionBox section = (TableSectionBox)i.next();
+            section.calcBorders(c);
         }
     }
     
@@ -281,8 +292,143 @@ public class TableBox extends BlockBox {
         return result;
     }
     
+    public BorderPropertySet getBorder(CssContext cssCtx) {
+        if (getStyle().isCollapseBorders()) {
+            return BorderPropertySet.ALL_ZEROS;
+        } else {
+            return super.getBorder(cssCtx);
+        }
+    }
+    
     protected boolean isMayCollapseMarginsWithChildren() {
         return false;
+    }
+    
+    protected TableSectionBox sectionAbove(
+            TableSectionBox section, boolean skipEmptySections) {
+        TableSectionBox prevSection = (TableSectionBox)section.getPreviousSibling();
+        
+        if (prevSection == null) {
+            return null;
+        }
+        
+        while (prevSection != null) {
+            if (prevSection.numRows() > 0 || !skipEmptySections) {
+                break;
+            }
+            prevSection = (TableSectionBox)prevSection.getPreviousSibling();
+        }
+        
+        return prevSection;
+    }
+    
+    protected TableSectionBox sectionBelow(
+            TableSectionBox section, boolean skipEmptySections) {
+        TableSectionBox nextSection = (TableSectionBox)section.getNextSibling();
+        
+        if (nextSection == null) {
+            return null;
+        }
+        
+        while (nextSection != null) {
+            if (nextSection.numRows() > 0 || !skipEmptySections) {
+                break;
+            }
+            nextSection = (TableSectionBox)nextSection.getNextSibling();
+        }
+        
+        return nextSection;
+    }
+    
+    protected TableCellBox cellAbove(TableCellBox cell) {
+        // Find the section and row to look in
+        int r = cell.getRow();
+        TableSectionBox section = null;
+        int rAbove = 0;
+        if (r > 0) {
+            // cell is not in the first row, so use the above row in its own
+            // section
+            section = cell.getSection();
+            rAbove = r - 1;
+        } else {
+            section = sectionAbove(cell.getSection(), true);
+            if (section != null) {
+                rAbove = section.numRows() - 1;
+            }
+        }
+
+        // Look up the cell in the section's grid, which requires effective col
+        // index
+        if (section != null) {
+            int effCol = colToEffCol(cell.getCol());
+            TableCellBox aboveCell;
+            // If we hit a span back up to a real cell.
+            do {
+                aboveCell = section.cellAt(rAbove, effCol);
+                effCol--;
+            } while (aboveCell == TableCellBox.SPANNING_CELL && effCol >= 0);
+            return (aboveCell == TableCellBox.SPANNING_CELL) ? null : aboveCell;
+        } else {
+            return null;
+        }
+    }
+    
+    protected TableCellBox cellBelow(TableCellBox cell) {
+        // Find the section and row to look in
+        int r = cell.getRow() + cell.getStyle().getRowSpan() - 1;
+        TableSectionBox section = null;
+        int rBelow = 0;
+        if (r < cell.getSection().numRows() - 1) {
+            // The cell is not in the last row, so use the next row in the
+            // section.
+            section = cell.getSection();
+            rBelow = r + 1;
+        } else {
+            section = sectionBelow(cell.getSection(), true);
+            if (section != null)
+                rBelow = 0;
+        }
+
+        // Look up the cell in the section's grid, which requires effective col
+        // index
+        if (section != null) {
+            int effCol = colToEffCol(cell.getCol());
+            TableCellBox belowCell;
+            // If we hit a colspan back up to a real cell.
+            do {
+                belowCell = section.cellAt(rBelow, effCol);
+                effCol--;
+            } while (belowCell == TableCellBox.SPANNING_CELL && effCol >= 0);
+            return (belowCell == TableCellBox.SPANNING_CELL) ? null : belowCell;
+        } else {
+            return null;
+        }
+    }
+    
+    protected TableCellBox cellLeft(TableCellBox cell) {
+        TableSectionBox section = cell.getSection();
+        int effCol = colToEffCol(cell.getCol());
+        if (effCol == 0) {
+            return null;
+        }
+
+        // If we hit a colspan back up to a real cell.
+        TableCellBox prevCell;
+        do {
+            prevCell = section.cellAt(cell.getRow(), effCol - 1);
+            effCol--;
+        } while (prevCell == TableCellBox.SPANNING_CELL && effCol >= 0);
+        return (prevCell == TableCellBox.SPANNING_CELL) ? null : prevCell;
+    }
+
+
+    protected TableCellBox cellRight(TableCellBox cell) {
+        int effCol = colToEffCol(cell.getCol() + cell.getStyle().getColSpan());
+        if (effCol >= numEffCols()) {
+            return null;
+        }
+        TableCellBox result = cell.getSection().cellAt(cell.getRow(), effCol);
+        return (result == TableCellBox.SPANNING_CELL) ? null : result;
     }
     
     private interface TableLayout {
@@ -573,7 +719,7 @@ public class TableBox extends BlockBox {
                 int numRows = section.numRows();
                 for (int i = 0; i < numRows; i++) {
                     TableCellBox cell = section.cellAt(i, effCol);
-                    if (cell == TableSectionBox.SPANNING_CELL || cell == null) {
+                    if (cell == TableCellBox.SPANNING_CELL || cell == null) {
                         continue;
                     }
                     if (cell.getStyle().getColSpan() == 1) {

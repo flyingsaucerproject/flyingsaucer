@@ -101,7 +101,7 @@ public class TableRowBox extends BlockBox {
         for (int cCol = 0; cCol < row.size(); cCol++) {
             TableCellBox cell = (TableCellBox)row.get(cCol);
             
-            if (cell == null || cell == TableSectionBox.SPANNING_CELL) {
+            if (cell == null || cell == TableCellBox.SPANNING_CELL) {
                 continue;
             }
             if (cRow < totalRows - 1 && getSection().cellAt(cRow+1, cCol) == cell) {
@@ -147,7 +147,7 @@ public class TableRowBox extends BlockBox {
         for (int cCol = 0; cCol < row.size(); cCol++) {
             TableCellBox cell = (TableCellBox)row.get(cCol);
             
-            if (cell == null || cell == TableSectionBox.SPANNING_CELL) {
+            if (cell == null || cell == TableCellBox.SPANNING_CELL) {
                 continue;
             }
             if (cRow < totalRows - 1 && getSection().cellAt(cRow+1, cCol) == cell) {
@@ -174,7 +174,7 @@ public class TableRowBox extends BlockBox {
         for (int cCol = 0; cCol < row.size(); cCol++) {
             TableCellBox cell = (TableCellBox)row.get(cCol);
             
-            if (cell == null || cell == TableSectionBox.SPANNING_CELL) {
+            if (cell == null || cell == TableCellBox.SPANNING_CELL) {
                 continue;
             }
             if (cRow < totalRows - 1 && getSection().cellAt(cRow+1, cCol) == cell) {

@@ -32,6 +32,7 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.BackgroundPosition;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -122,16 +123,16 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         drawRect(rect.x, rect.y, rect.width, rect.height);
     }
     
-
+    public void paintBorder(RenderingContext c, BorderPropertySet border, Rectangle bounds) {
+        BorderPainter.paint(bounds, BorderPainter.ALL, border, c, 0);
+    }
+    
     public void paintBorder(RenderingContext c, Box box) {
         if (! box.getStyle().isVisible()) {
             return;
         }
         
         Rectangle borderBounds = box.getPaintingBorderEdge(c);
-        if (! c.isPrint() && box.getState() != Box.DONE) {
-            borderBounds.height += c.getCanvas().getHeight();
-        }
     
         BorderPainter.paint(borderBounds, box.getBorderSides(), box.getBorder(c), c, 0);
     }

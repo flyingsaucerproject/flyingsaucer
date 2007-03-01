@@ -4,6 +4,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 
 import java.awt.*;
 
@@ -54,6 +55,28 @@ public class BorderPropertySet extends RectPropertySet {
         this._left = left;
 
         this.buildKey(CSSName.BORDER_SHORTHAND);
+    }
+    
+    public BorderPropertySet(
+           CollapsedBorderValue top,
+           CollapsedBorderValue right,
+           CollapsedBorderValue bottom,
+           CollapsedBorderValue left
+    ) {
+        this(   top.width(),
+                right.width(),
+                bottom.width(),
+                left.width());
+        
+        this._topStyle = top.style();
+        this._rightStyle = right.style();
+        this._bottomStyle = bottom.style();
+        this._leftStyle = left.style();
+
+        this._topColor = top.color();
+        this._rightColor = right.color();
+        this._bottomColor = bottom.color();
+        this._leftColor = left.color();        
     }
 
     private BorderPropertySet(

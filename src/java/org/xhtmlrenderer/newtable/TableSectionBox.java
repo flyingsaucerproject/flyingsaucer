@@ -28,8 +28,6 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
 public class TableSectionBox extends BlockBox {
-    public static final TableCellBox SPANNING_CELL = new TableCellBox();
-    
     private List _grid = new ArrayList();
     
     public TableSectionBox() {
@@ -69,6 +67,18 @@ public class TableSectionBox extends BlockBox {
                 addCell(row, cell, cRow);
             }
             setTableRow(cRow, row);
+        }
+    }
+    
+    public void calcBorders(LayoutContext c) {
+        ensureChildren(c);
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            TableRowBox row = (TableRowBox)i.next();
+            row.ensureChildren(c);
+            for (Iterator j = row.getChildIterator(); j.hasNext(); ) {
+                TableCellBox cell = (TableCellBox)j.next();
+                cell.calcCollapsedBorder(c);
+            }
         }
     }
     
@@ -139,7 +149,7 @@ public class TableSectionBox extends BlockBox {
             }
             cCol++;
             cSpan -= currentSpan;
-            set = SPANNING_CELL;
+            set = TableCellBox.SPANNING_CELL;
         }
         
         cell.setRow(cRow);
@@ -162,7 +172,7 @@ public class TableSectionBox extends BlockBox {
             for (int j = 0; j < cols.size(); j++) {
                 TableCellBox cell = (TableCellBox)cols.get(j);
                 
-                if (cell == null || cell == SPANNING_CELL) {
+                if (cell == null || cell == TableCellBox.SPANNING_CELL) {
                     continue;
                 }
                 
@@ -199,5 +209,13 @@ public class TableSectionBox extends BlockBox {
     
     public void paintBackground(RenderingContext c) {
         // painted at the cell level
+    }
+    
+    public TableRowBox getLastRow() {
+        if (getChildCount() > 0) {
+            return (TableRowBox)getChild(getChildCount()-1);
+        } else {
+            return null;
+        }
     }
 }
