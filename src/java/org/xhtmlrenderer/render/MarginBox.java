@@ -39,7 +39,7 @@ public class MarginBox extends BlockBox {
     }
     
     public int getContentWidth() {
-        return _bounds.height;
+        return _bounds.width;
     }
     
     public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
