@@ -268,6 +268,7 @@ public class TableRowBox extends BlockBox {
     }   
     
     public void reset(LayoutContext c) {
+        super.reset(c);
         setHaveBaseline(false);
     }
 
