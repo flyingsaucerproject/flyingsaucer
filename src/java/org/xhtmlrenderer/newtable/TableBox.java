@@ -431,6 +431,27 @@ public class TableBox extends BlockBox {
         return (result == TableCellBox.SPANNING_CELL) ? null : result;
     }
     
+    public int calcInlineBaseline() {
+        int result = 0;
+        boolean found = false;
+        OUTER:
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            TableSectionBox section = (TableSectionBox)i.next();
+            for (Iterator j = section.getChildIterator(); j.hasNext(); ) {
+                TableRowBox row = (TableRowBox)j.next();
+                found = true;
+                result = row.getAbsY() + row.getBaseline() - getAbsY();
+                break OUTER;
+            }
+        }
+        
+        if (! found) {
+            result = getHeight();
+        }
+        
+        return result;
+    }
+    
     private interface TableLayout {
         public void calcMinMaxWidth(LayoutContext c);
         public void layout(LayoutContext c);

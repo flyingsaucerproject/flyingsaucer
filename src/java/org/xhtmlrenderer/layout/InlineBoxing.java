@@ -481,9 +481,12 @@ public class InlineBoxing {
         vaContext.popMeasurements();
     }
 
-    private static void positionInlineBlockVertically(LayoutContext c,
-                                                      VerticalAlignContext vaContext, Box inlineBlock) {
-        alignInlineContent(c, inlineBlock, inlineBlock.getHeight(), 0, vaContext);
+    private static void positionInlineBlockVertically(
+            LayoutContext c, VerticalAlignContext vaContext, BlockBox inlineBlock) {
+        int baseline = inlineBlock.calcInlineBaseline();
+        int ascent = baseline;
+        int descent = inlineBlock.getHeight() - baseline;
+        alignInlineContent(c, inlineBlock, ascent, descent, vaContext);
 
         vaContext.updateInlineTop(inlineBlock.getY());
         vaContext.updatePaintingTop(inlineBlock.getY());
@@ -678,7 +681,7 @@ public class InlineBoxing {
             InlineLayoutBox iB = (InlineLayoutBox) child;
             positionInlineVertically(c, vaTarget, iB);
         } else if (child instanceof Box) {
-            positionInlineBlockVertically(c, vaTarget, (Box) child);
+            positionInlineBlockVertically(c, vaTarget, (BlockBox)child);
         }
     }
 

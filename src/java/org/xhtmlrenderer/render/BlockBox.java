@@ -116,6 +116,10 @@ public class BlockBox extends Box implements InlinePaintable {
             setContentWidth(maxChildWidth);
         }
     }
+    
+    protected String getExtraBoxDescription() {
+        return "";
+    }
 
     public String toString() {
         StringBuffer result = new StringBuffer();
@@ -152,6 +156,8 @@ public class BlockBox extends Box implements InlinePaintable {
             break;
         }
         result.append(") ");
+        
+        result.append(getExtraBoxDescription());
         
         appendPositioningInfo(result);
         result.append("(" + getAbsX() + "," + getAbsY() + ")->(" + getWidth() + " x " + getHeight() + ")");
@@ -1631,6 +1637,39 @@ public class BlockBox extends Box implements InlinePaintable {
         return NO_BASELINE;
     }
     
+    public int calcInlineBaseline() {
+        LineBox lastLine = findLastLineBox();
+        if (lastLine == null) {
+            return getHeight();
+        } else {
+            return lastLine.getAbsY() + lastLine.getBaseline() - getAbsY();
+        }
+    }
+    
+    private LineBox findLastLineBox() {
+        int type = getChildrenContentType();
+        int ccount = getChildCount();
+        if (ccount > 0) {
+            if (type == CONTENT_INLINE) {
+                for (int i = ccount-1; i >= 0; i--) {
+                    LineBox result = (LineBox)getChild(i);
+                    if (result.getHeight() > 0) {
+                        return result;
+                    }
+                }
+            } else if (type == CONTENT_BLOCK) {
+                for (int i = ccount-1; i >= 0; i--) {
+                    LineBox result = ((BlockBox)getChild(i)).findLastLineBox();
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            } 
+        }
+        
+        return null;
+    }
+    
     public boolean isFloated() {
         return _floatedBoxData != null;
     }
@@ -1679,6 +1718,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.70  2007/03/02 00:45:15  peterbrant
+ * Calculate baseline correctly for inline-block and inline-table elements
+ *
  * Revision 1.69  2007/02/24 01:57:30  peterbrant
  * toString() changes
  *
