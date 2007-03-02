@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import org.xhtmlrenderer.render.RenderingContext;
 
 public class TableRowBox extends BlockBox {
     private int _baseline;
+    private boolean _haveBaseline = false;
     
     public TableRowBox() {
     }
@@ -71,6 +73,7 @@ public class TableRowBox extends BlockBox {
     private void alignBaselineAlignedCells(LayoutContext c) {
         int[] baselines = new int[getChildCount()];
         int lowest = Integer.MIN_VALUE;
+        boolean found = false;
         for (int i = 0; i < getChildCount(); i++) {
             TableCellBox cell = (TableCellBox)getChild(i);
             
@@ -80,6 +83,7 @@ public class TableRowBox extends BlockBox {
                 if (baseline > lowest) {
                     lowest = baseline;
                 }
+                found = true;
             }
         }
         for (int i = 0; i < getChildCount(); i++) {
@@ -91,6 +95,11 @@ public class TableRowBox extends BlockBox {
                     cell.moveContent(c, deltaY);
                 }
             }
+        }
+        
+        if (found) {
+            setBaseline(lowest - getAbsY());
+            setHaveBaseline(true);
         }
     }
     
@@ -117,10 +126,14 @@ public class TableRowBox extends BlockBox {
                     deltaY = getAbsY() + getHeight() - (cell.getAbsY() + cell.getChildrenHeight());
                 }
                 if (deltaY > 0) {
+                    // Set a provisional height in case we need to calculate
+                    // a default baseline
                     if (val == IdentValue.MIDDLE) {
                         cell.moveContent(c, deltaY / 2);
+                        cell.setHeight(cell.getHeight() + deltaY / 2);
                     } else if (val == IdentValue.BOTTOM) {
                         cell.moveContent(c, deltaY);
+                        cell.setHeight(cell.getHeight() + deltaY);
                     }
                 }
             }
@@ -164,7 +177,38 @@ public class TableRowBox extends BlockBox {
         
         alignMiddleAndBottomAlignedCells(c);
         
+        if (! isHaveBaseline()) {
+            calcDefaultBaseline(c);
+        }
+        
         setCellHeights(c);
+    }
+    
+    private void calcDefaultBaseline(LayoutContext c) {
+        int lowestCellEdge = 0;
+        int cRow = getIndex();
+        int totalRows = getSection().getChildCount();
+        List row = ((RowData)getSection().getGrid().get(cRow)).getRow();
+        for (int cCol = 0; cCol < row.size(); cCol++) {
+            TableCellBox cell = (TableCellBox)row.get(cCol);
+            
+            if (cell == null || cell == TableCellBox.SPANNING_CELL) {
+                continue;
+            }
+            if (cRow < totalRows - 1 && getSection().cellAt(cRow+1, cCol) == cell) {
+                continue;
+            }
+            
+            Rectangle contentArea = cell.getContentAreaEdge(cell.getAbsX(), cell.getAbsY(), c);
+            int bottomCellEdge = contentArea.y + contentArea.height;
+            if (bottomCellEdge > lowestCellEdge) {
+                lowestCellEdge = bottomCellEdge;
+            }
+        }
+        if (lowestCellEdge > 0) {
+            setBaseline(lowestCellEdge - getAbsY());
+        }
+        setHaveBaseline(true);
     }
     
     private void setCellHeights(LayoutContext c) {
@@ -222,4 +266,24 @@ public class TableRowBox extends BlockBox {
     public void paintBackground(RenderingContext c) {
         // painted at the cell level
     }   
+    
+    public void reset(LayoutContext c) {
+        setHaveBaseline(false);
+    }
+
+    public boolean isHaveBaseline() {
+        return _haveBaseline;
+    }
+
+    public void setHaveBaseline(boolean haveBaseline) {
+        _haveBaseline = haveBaseline;
+    }
+    
+    protected String getExtraBoxDescription() {
+        if (isHaveBaseline()) {
+            return "(baseline=" + getBaseline() + ") ";
+        } else {
+            return "";
+        }
+    }
 }
