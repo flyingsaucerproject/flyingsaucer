@@ -107,7 +107,7 @@ public class PrimitivePropertyBuilders {
     public static final PropertyBuilder BORDER_STYLE = new GenericBorderStyle();
     public static final PropertyBuilder BORDER_WIDTH = new GenericBorderWidth();
     public static final PropertyBuilder MARGIN = new LengthLikeWithAuto();
-    public static final PropertyBuilder PADDING = new LengthLike();
+    public static final PropertyBuilder PADDING = new NonNegativeLengthLike();
     
     private static BitSet setFor(IdentValue[] values) {
         BitSet result = new BitSet(IdentValue.getIdentCount());
