@@ -112,8 +112,11 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
         if (keepGoing) {
             i.previous();
             PropertyValue value = (PropertyValue)i.next();
-            String lowerCase = value.getStringValue().toLowerCase();
-            value = new PropertyValue(CSSPrimitiveValue.CSS_IDENT, lowerCase, lowerCase);
+            
+            if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+                String lowerCase = value.getStringValue().toLowerCase();
+                value = new PropertyValue(CSSPrimitiveValue.CSS_IDENT, lowerCase, lowerCase);
+            }
             
             PropertyBuilder fontSizeBuilder = CSSName.getPropertyBuilder(CSSName.FONT_SIZE);
             List l = fontSizeBuilder.buildDeclarations(
