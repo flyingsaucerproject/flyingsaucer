@@ -755,7 +755,9 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             if (obj instanceof Box) {
                 Box b = (Box)obj;
                 result.append(b.dump(c, indent + "  ", which));
-                result.deleteCharAt(result.length()-1);
+                if (result.charAt(result.length()-1) == '\n') {
+                    result.deleteCharAt(result.length()-1);
+                }
             } else {
                 result.append(indent + "  ");
                 result.append(obj.toString());

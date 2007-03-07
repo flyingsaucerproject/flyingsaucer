@@ -75,6 +75,9 @@ public class LineBox extends Box implements InlinePaintable {
         result.append('\n');
         
         dumpBoxes(c, indent, getNonFlowContent(), Box.DUMP_RENDER, result);
+        if (getNonFlowContent().size() > 0  ) {
+            result.append('\n');
+        }
         dumpBoxes(c, indent, getChildren(), Box.DUMP_RENDER, result);
         
         return result.toString();
@@ -453,6 +456,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.62  2007/03/07 17:15:16  peterbrant
+ * Minor fixes to dump() method
+ *
  * Revision 1.61  2007/02/28 18:16:29  peterbrant
  * Support multiple values for text-decoration (per spec)
  *
