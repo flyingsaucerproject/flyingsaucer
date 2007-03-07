@@ -142,7 +142,7 @@ public class Breaker {
             context.setEnd(context.getStart() + left);
             context.setUnbreakable(true);
             
-            if (left == 0) {
+            if (left == currentString.length()) {
                 context.setWidth(c.getTextRenderer().getWidth(
                         c.getFontContext(), font, context.getCalculatedSubstring()));
             } else {
