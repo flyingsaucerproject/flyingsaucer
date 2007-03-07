@@ -162,7 +162,7 @@ public class InlineBoxing {
 
                     int fit = 0;
                     if (lbContext.getStart() == 0) {
-                        fit += pendingLeftMBP;
+                        fit += pendingLeftMBP + pendingRightMBP;
                     }
 
                     if (hasTrimmableLeadingSpace(currentLine, style, lbContext)) {
@@ -202,8 +202,11 @@ public class InlineBoxing {
                             remainingWidth -= inlineText.getWidth();
                             
                             if (currentIB.isStartsHere()) {
-                                pendingLeftMBP -= currentIB.getStyle().getMarginBorderPadding(
+                                int marginBorderPadding = 
+                                    currentIB.getStyle().getMarginBorderPadding(
                                         c, maxAvailableWidth, CalculatedStyle.LEFT);
+                                pendingLeftMBP -= marginBorderPadding;
+                                remainingWidth -= marginBorderPadding;
                             }
                         } else {
                             lbContext.resetEnd();
