@@ -648,6 +648,7 @@ public class BoxBuilder {
                             iB.setStartsHere(true);
                             iB.setEndsHere(false);
                             children.add(iB);
+                            previousIB = iB;
                         }
                         createChildren(c, null, element, children, info, true);
                         if (inline) {
