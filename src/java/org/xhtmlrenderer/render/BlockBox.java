@@ -1306,6 +1306,15 @@ public class BlockBox extends Box implements InlinePaintable {
                     width +
                     (int)margin.right() + (int)border.right() + (int)padding.right();
             } else {
+                int cw = -1;
+                if (width != -1) {
+                    // Set a provisional content width on table cells so
+                    // percentage values resolve correctly (but save and reset
+                    // the existing value)
+                    cw = getContentWidth();
+                    setContentWidth(width);
+                }
+                
                 _minWidth = _maxWidth =
                     (int)margin.left() + (int)border.left() + (int)padding.left() +
                     (int)margin.right() + (int)border.right() + (int)padding.right();
@@ -1331,6 +1340,10 @@ public class BlockBox extends Box implements InlinePaintable {
                 
                 if (minimumMaxWidth > _maxWidth) {
                     _maxWidth = minimumMaxWidth;
+                }
+                
+                if (cw != -1) {
+                    setContentWidth(cw);
                 }
             }
             
@@ -1547,6 +1560,7 @@ public class BlockBox extends Box implements InlinePaintable {
                     }
                     
                     iB.setStyle(((CalculatedStyle)styles.getLast()));
+                    iB.applyTextTransform();
                     
                     if (iB.isEndsHere()) {
                         styles.removeLast();
@@ -1718,6 +1732,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.71  2007/03/07 20:34:51  peterbrant
+ * Set a provisional content width on table cells when calulating min/max width to make sure percentage values in children resolve to something other than zero / Make sure style changes correctly account for text-transform
+ *
  * Revision 1.70  2007/03/02 00:45:15  peterbrant
  * Calculate baseline correctly for inline-block and inline-table elements
  *

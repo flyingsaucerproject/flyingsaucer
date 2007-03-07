@@ -31,6 +31,7 @@ import org.xhtmlrenderer.layout.WhitespaceStripper;
 public class InlineBox implements Styleable {
     private Element _element;
     
+    private String _originalText;
     private String _text;
     private boolean _removableWhitespace;
     private boolean _startsHere;
@@ -51,6 +52,7 @@ public class InlineBox implements Styleable {
     
     public InlineBox(String text) {
         _text = text;
+        _originalText = text;
     }
     
     public String getText() {
@@ -59,9 +61,11 @@ public class InlineBox implements Styleable {
     
     public void setText(String text) {
         _text = text;
+        _originalText = text;
     }
     
     public void applyTextTransform() {
+        _text = _originalText;
         _text = TextUtil.transformText(_text, getStyle());
     }
 
