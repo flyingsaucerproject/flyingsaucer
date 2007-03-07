@@ -84,7 +84,7 @@ public class CSSParser {
         _URI = cssName + " property value";
         try {
             reset(new StringReader(expr));
-            List values = expr(cssName == CSSName.FONT_FAMILY);
+            List values = expr(cssName == CSSName.FONT_FAMILY || cssName == CSSName.FONT_SHORTHAND);
             
             PropertyBuilder builder = CSSName.getPropertyBuilder(cssName);
             List props;
@@ -951,7 +951,7 @@ public class CSSParser {
                 if (t == Token.TK_COLON) {
                     skip_whitespace();
                     
-                    List values = expr(cssName == CSSName.FONT_FAMILY);
+                    List values = expr(cssName == CSSName.FONT_FAMILY || cssName == CSSName.FONT_SHORTHAND);
                     boolean important = false;
                     
                     t = la();
@@ -1192,12 +1192,12 @@ public class CSSParser {
                 skip_whitespace();                
                 break;
             case Token.PC:
-                next();
-                skip_whitespace();
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PC, 
                         sign*Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t));
+                next();
+                skip_whitespace();
                 break;
             case Token.STRING:
                 String s = getTokenValue(t);

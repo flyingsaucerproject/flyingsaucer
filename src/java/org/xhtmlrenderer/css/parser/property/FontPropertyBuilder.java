@@ -59,6 +59,12 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
             PropertyValue value = (PropertyValue)i.next();
             int type = value.getPrimitiveType();
             if (type == CSSPrimitiveValue.CSS_IDENT) {
+                // The parser will have given us ident values as they appear
+                // (case-wise) in the CSS text since we might be creating
+                // a font-family list out of them.  Here we want the normalized
+                // (lowercase) version though.
+                String lowerCase = value.getStringValue().toLowerCase();
+                value = new PropertyValue(CSSPrimitiveValue.CSS_IDENT, lowerCase, lowerCase);
                 IdentValue ident = checkIdent(cssName, value);
                 if (ident == IdentValue.NORMAL) { // skip to avoid double set false positives
                     continue;
@@ -106,6 +112,8 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
         if (keepGoing) {
             i.previous();
             PropertyValue value = (PropertyValue)i.next();
+            String lowerCase = value.getStringValue().toLowerCase();
+            value = new PropertyValue(CSSPrimitiveValue.CSS_IDENT, lowerCase, lowerCase);
             
             PropertyBuilder fontSizeBuilder = CSSName.getPropertyBuilder(CSSName.FONT_SIZE);
             List l = fontSizeBuilder.buildDeclarations(

@@ -83,7 +83,9 @@ public class PropertyValue implements CSSPrimitiveValue {
     public PropertyValue(short type, String stringValue, String cssText) {
         _type = type;
         _stringValue = stringValue;
-        _cssValueType = _stringValue.equals("inherit") ? CSSValue.CSS_INHERIT : CSSValue.CSS_PRIMITIVE_VALUE;
+        // Must be a case-insensitive compare since ident values aren't normalized
+        // for font and font-family
+        _cssValueType = _stringValue.equalsIgnoreCase("inherit") ? CSSValue.CSS_INHERIT : CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = cssText;
         
         if (type == CSSPrimitiveValue.CSS_IDENT) {
