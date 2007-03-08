@@ -815,10 +815,33 @@ public class Layer {
         } else {
             PageBox last = (PageBox) pages.get(pages.size()-1);
             if (yOffset < last.getBottom()) {
-                for (int i = pages.size()-1; i >= 0; i--) {
+                // The page we're looking for is probably at the end of the
+                // document so do a linear search for the first few pages
+                // and then fall back to a binary search if that doesn't work 
+                // out
+                int count = pages.size();
+                for (int i = count-1; i >= 0 && i >= count-5; i--) {
                     PageBox pageBox = (PageBox)pages.get(i);
                     if (yOffset >= pageBox.getTop() && yOffset < pageBox.getBottom()) {
                         return pageBox;
+                    }
+                }
+                
+                int low = 0;
+                int high = count-6;
+                
+                while (low <= high) {
+                    int mid = (low + high) >> 1;
+                    PageBox pageBox = (PageBox)pages.get(mid);
+                    
+                    if (yOffset >= pageBox.getTop() && yOffset < pageBox.getBottom()) {
+                        return pageBox;
+                    }
+                    
+                    if (pageBox.getTop() < yOffset) {
+                        low = mid + 1;
+                    } else {
+                        high = mid - 1;
                     }
                 }
             } else {
