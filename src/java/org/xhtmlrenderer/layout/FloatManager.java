@@ -240,6 +240,10 @@ public class FloatManager {
 
     private void moveClear(CssContext cssCtx, BlockFormattingContext bfc,
                            Box current, List floats) {
+        if (floats.size() == 0) {
+            return;
+        }
+        
         // Translate from box coords to BFC coords
         Point offset = bfc.getOffset();
         Rectangle bounds = current.getBorderEdge(-offset.x, -offset.y, cssCtx);
