@@ -219,7 +219,6 @@ public class ITextRenderer {
         Rectangle content = page.getPrintingClippingBounds(c);
         _outputDevice.clip(content);
         
-        
         int top = -page.getPaintingTop() + 
             page.getMarginBorderPadding(c, CalculatedStyle.TOP);
         
