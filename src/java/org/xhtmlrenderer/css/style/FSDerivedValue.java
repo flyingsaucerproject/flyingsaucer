@@ -36,5 +36,6 @@ public interface FSDerivedValue {
     String[] asStringArray();
     IdentValue asIdentValue();
     boolean hasAbsoluteUnit();
+    boolean isDependentOnFontSize();
     boolean isIdent();
 }

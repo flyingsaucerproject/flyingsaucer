@@ -102,4 +102,7 @@ public abstract class DerivedValue implements FSDerivedValue {
     public boolean isIdent() {
         return false;
     }
+    public boolean isDependentOnFontSize() {
+        return false;
+    }
 }

@@ -3,6 +3,7 @@ package org.xhtmlrenderer.css.style.derived;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.FSDerivedValue;
 
 
 /**
@@ -115,9 +116,12 @@ public class RectPropertySet {
     ) {
         String key = null;
         boolean isAbs = true;
-        // HACK isLengthValue is part of margin auto hack
         for (int i = 0; i < sideProperties.length && isAbs; i++) {
-            isAbs = style.isLengthOrNumber(sideProperties[i]) && style.hasAbsoluteUnit(sideProperties[i]);
+            FSDerivedValue value = style.valueByName(sideProperties[i]);
+            isAbs = 
+                (value instanceof LengthValue || value instanceof NumberValue) &&
+                value.hasAbsoluteUnit() && 
+                ! value.isDependentOnFontSize();
         }
         
         if (isAbs) {

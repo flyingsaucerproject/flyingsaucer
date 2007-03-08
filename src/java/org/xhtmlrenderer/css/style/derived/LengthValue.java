@@ -86,6 +86,11 @@ public class LengthValue extends DerivedValue {
     public boolean hasAbsoluteUnit() {
         return ValueConstants.isAbsoluteUnit(getCssSacUnitType());
     }
+    
+    public boolean isDependentOnFontSize() {
+        return _lengthPrimitiveType == CSSPrimitiveValue.CSS_EXS ||
+                    _lengthPrimitiveType == CSSPrimitiveValue.CSS_EMS;
+    }
 
     public static float calcFloatProportionalValue(CalculatedStyle style,
                                                       CSSName cssName,

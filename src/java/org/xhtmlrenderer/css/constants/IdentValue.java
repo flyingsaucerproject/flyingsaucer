@@ -331,12 +331,19 @@ public class IdentValue implements FSDerivedValue {
     public boolean isIdent() {
         return true;
     }
+    
+    public boolean isDependentOnFontSize() {
+        return false;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2007/03/08 01:43:47  peterbrant
+ * Don't cache rectangles with em or ex dimensions.  They aren't constant (even ignoring DPI related issues)
+ *
  * Revision 1.29  2007/02/23 21:04:27  peterbrant
  * Implement complete support for background-position and background-attachment
  *
