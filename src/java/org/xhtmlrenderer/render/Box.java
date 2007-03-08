@@ -429,7 +429,7 @@ public abstract class Box implements Styleable {
     private void paintRootElementBackground(RenderingContext c, PaintingInfo pI) {
         Dimension marginCorner = pI.getOuterMarginCorner();
         Rectangle canvasBounds = new Rectangle(0, 0, marginCorner.width, marginCorner.height);
-        canvasBounds.add(c.getFixedRectangle());
+        canvasBounds.add(c.getViewportRectangle());
         c.getOutputDevice().paintBackground(c, getStyle(), canvasBounds, canvasBounds);
     }
 
@@ -913,6 +913,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.135  2007/03/08 01:46:34  peterbrant
+ * Fix calculation of viewport/page rectangle when calculating fixed background positions
+ *
  * Revision 1.134  2007/02/24 01:57:30  peterbrant
  * toString() changes
  *

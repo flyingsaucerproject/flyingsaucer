@@ -193,7 +193,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         if (backgroundImage != null) {
             Rectangle localBGImageContainer = bgImageContainer;
             if (style.isFixedBackground()) {
-                localBGImageContainer = c.getFixedRectangle();
+                localBGImageContainer = c.getViewportRectangle();
             }
         
             int xoff = localBGImageContainer.x;
@@ -214,8 +214,6 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     
             boolean hrepeat = style.isHorizontalBackgroundRepeat();
             boolean vrepeat = style.isVerticalBackgroundRepeat();
-            
-            
             
             if (! hrepeat && ! vrepeat) {
                 Rectangle imageBounds = new Rectangle(xoff, yoff, (int)imageWidth, (int)imageHeight);

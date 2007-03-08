@@ -138,7 +138,14 @@ public class RenderingContext implements CssContext {
         result.translate(-1, -1);
         return result;
     }
-
+    
+    public Rectangle getViewportRectangle() {
+        Rectangle result = new Rectangle(getFixedRectangle());
+        result.y *= -1;
+        
+        return result;
+    }
+    
     public boolean debugDrawBoxes() {
         return sharedContext.debugDrawBoxes();
     }
