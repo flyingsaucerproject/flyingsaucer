@@ -100,11 +100,13 @@ public class BlockBoxing {
                 listIndex--;
             }
 
-            // increase the final layout height by the height of the child
             Dimension relativeOffset = child.getRelativeOffset();
             if (relativeOffset == null) {
                 childOffset = child.getY() + child.getHeight();
             } else {
+                // Box will have been positioned by this point so calculate
+                // relative to where it would have been if it hadn't been
+                // moved
                 childOffset = child.getY() - relativeOffset.height + child.getHeight();
             }
             
@@ -455,6 +457,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.56  2007/03/08 19:47:04  peterbrant
+ * Comment change
+ *
  * Revision 1.55  2007/03/08 18:02:51  peterbrant
  * Fix regression in page-break-before/after: always
  *
