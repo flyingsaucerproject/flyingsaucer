@@ -723,7 +723,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
     
     private void calcClearance(LayoutContext c) {
-        if (getStyle().isCleared()) {
+        if (getStyle().isCleared() && ! getStyle().isFloated()) {
             c.translate(0, -getY());
             c.getBlockFormattingContext().clear(c, this);
             c.translate(0, getY());
@@ -747,10 +747,6 @@ public class BlockBox extends Box implements InlinePaintable {
     private void layoutBlock(LayoutContext c) {
         CalculatedStyle style = getStyle();
         
-        if (style.isFixedBackground()) {
-            c.getRootLayer().setFixedBackground(true);
-        }
-        
         boolean pushedLayer = false;
         if (isRoot() || style.requiresLayer()) {
             pushedLayer = true;
@@ -763,6 +759,10 @@ public class BlockBox extends Box implements InlinePaintable {
                 c.pushLayer(getLayer());
             }
         }
+        
+        if (style.isFixedBackground()) {
+            c.getRootLayer().setFixedBackground(true);
+        }        
 
         if (isRoot() || getStyle().establishesBFC()) {
             BlockFormattingContext bfc = new BlockFormattingContext(this, c);
@@ -1732,6 +1732,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.72  2007/03/08 01:41:50  peterbrant
+ * Don't calculate clearance for floated boxes (clear on floated boxes is handled directly by FloatManager) / Make sure we have a root layer before checking whether we have a fixed background or not
+ *
  * Revision 1.71  2007/03/07 20:34:51  peterbrant
  * Set a provisional content width on table cells when calulating min/max width to make sure percentage values in children resolve to something other than zero / Make sure style changes correctly account for text-transform
  *
