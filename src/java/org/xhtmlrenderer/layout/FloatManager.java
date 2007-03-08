@@ -78,13 +78,13 @@ public class FloatManager {
         if (!fitsInContainingBlock(current) ||
                 overlaps(cssCtx, bfc, current, getFloats(direction))) {
             moveAllTheWayOver(current, direction);
-            moveClear(cssCtx, bfc, current, getFloats(direction));
+            moveFloatBelow(cssCtx, bfc, current, getFloats(direction));
         }
 
         if (overlaps(cssCtx, bfc, current, getOpposingFloats(direction))) {
             moveAllTheWayOver(current, direction);
-            moveClear(cssCtx, bfc, current, getFloats(direction));
-            moveClear(cssCtx, bfc, current, getOpposingFloats(direction));
+            moveFloatBelow(cssCtx, bfc, current, getFloats(direction));
+            moveFloatBelow(cssCtx, bfc, current, getOpposingFloats(direction));
         }
 
         if (current.getStyle().isCleared()) {
@@ -93,7 +93,7 @@ public class FloatManager {
             } else if (current.getStyle().isClearRight() && direction == RIGHT) {
                 moveAllTheWayOver(current, RIGHT);
             }
-            clear(cssCtx, bfc, current);
+            moveFloatBelow(cssCtx, bfc, current, getFloats(direction));
         }
     }
 
@@ -221,6 +221,21 @@ public class FloatManager {
         }
 
         return false;
+    }
+    
+    private void moveFloatBelow(CssContext cssCtx, BlockFormattingContext bfc,
+                                   Box current, List floats) {
+        if (floats.size() == 0) {
+            return;
+        }
+        
+        Point offset = bfc.getOffset();
+        int boxY = current.getY() - offset.y;
+        int floatY = findLowestY(cssCtx, floats);
+        
+        if (floatY - boxY > 0) {
+            current.setY(current.getY() + (floatY - boxY));
+        }
     }
 
     private void moveClear(CssContext cssCtx, BlockFormattingContext bfc,
