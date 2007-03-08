@@ -115,6 +115,7 @@ public class BlockBoxing {
             if (c.isPrint()) {
                 if (child.getStyle().isForcePageBreakAfter()) {
                     block.expandToPageBottom(c);
+                    childOffset = block.getHeight();
                 }
                 
                 if (previousChildBox != null) {
@@ -187,12 +188,12 @@ public class BlockBoxing {
     
     private static int relayoutRun(
             LayoutContext c, List localChildren, BlockBox block, 
-            RelayoutDataList relayoutDataList, int start, int end, boolean onNewPage) {
+            RelayoutDataList relayoutDataList, int start, int end, boolean onNewPage) {        
+        int childOffset = relayoutDataList.get(start).getChildOffset();
         if (onNewPage) {
             block.expandToPageBottom(c);
+            childOffset = block.getHeight();
         }
-        
-        int childOffset = relayoutDataList.get(start).getChildOffset();
         
         for (int i = start; i <= end; i++) {
             BlockBox child = (BlockBox)localChildren.get(i);
@@ -234,6 +235,7 @@ public class BlockBoxing {
             
             if (child.getStyle().isForcePageBreakAfter()) {
                 block.expandToPageBottom(c);
+                childOffset = block.getHeight();
             }
         }
         
@@ -453,6 +455,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.55  2007/03/08 18:02:51  peterbrant
+ * Fix regression in page-break-before/after: always
+ *
  * Revision 1.54  2007/02/21 23:49:41  peterbrant
  * Can't calculate clearance until margins have been collapsed / Clearance must be calculated relative to the box's border edge, not margin edge
  *
