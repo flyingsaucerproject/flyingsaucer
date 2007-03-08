@@ -78,7 +78,7 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
                     if (fontVariant != null) {
                         throw new CSSParseException("font-variant cannot be set twice", -1);
                     }
-                    fontStyle = new PropertyDeclaration(CSSName.FONT_VARIANT, value, important, origin);
+                    fontVariant = new PropertyDeclaration(CSSName.FONT_VARIANT, value, important, origin);
                 } else if (PrimitivePropertyBuilders.FONT_WEIGHTS.get(ident.FS_ID)) {
                     if (fontWeight != null) {
                         throw new CSSParseException("font-weight cannot be set twice", -1);
