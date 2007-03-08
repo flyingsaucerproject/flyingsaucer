@@ -35,6 +35,7 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.PageBox;
 
 // Much of this code is directly inspired by (and even copied from) 
 // the equivalent code in KHTML (including the idea of "effective columns" to 
@@ -175,10 +176,9 @@ public class TableBox extends BlockBox {
     
     public void layout(LayoutContext c) {
         calcMinMaxWidth(c);
-
         calcDimensions(c);
-        
         calcWidth();
+        calcPageClearance(c);
         
         // Recalc to pick up auto margins now that layout has been called on
         // containing block and the table has a content width
@@ -192,6 +192,32 @@ public class TableBox extends BlockBox {
         setCellWidths(c);
         
         super.layout(c);
+    }
+
+    private void calcPageClearance(LayoutContext c) {
+        if (c.isPrint() && getStyle().isCollapseBorders()) {
+            PageBox page = c.getRootLayer().getFirstPage(c, this);
+            TableRowBox row = getFirstRow();
+            if (row != null) {
+                int spill = 0;
+                for (Iterator i = row.getChildIterator(); i.hasNext(); ) {
+                    TableCellBox cell = (TableCellBox)i.next();
+                    BorderPropertySet collapsed = cell.getCollapsedPaintingBorder();
+                    int tmp = (int)collapsed.top() / 2;
+                    if (tmp > spill) {
+                        spill = tmp;
+                    }
+                }
+                
+                int borderTop = getAbsY() + (int)getMargin(c).top() - spill;
+                int delta = page.getTop() - borderTop;
+                if (delta > 0) {
+                    setY(getY() + delta);
+                    calcCanvasLocation();
+                    c.translate(0, delta);
+                }
+            }
+        }
     }
     
     private void calcWidth() {

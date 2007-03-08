@@ -683,7 +683,7 @@ public class TableCellBox extends BlockBox {
         return _collapsedPaintingBorder != null;
     }
     
-    private BorderPropertySet getCollapsedPaintingBorder() {
+    protected BorderPropertySet getCollapsedPaintingBorder() {
         return _collapsedPaintingBorder;
     }
 
