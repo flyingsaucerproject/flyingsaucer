@@ -19,6 +19,10 @@
  */
 package org.xhtmlrenderer.layout;
 
+/**
+ * A bean which tracks various charactistics of an inline box.  It is used
+ * when calculating the vertical position of boxes in a line.  
+ */
 public class InlineBoxMeasurements {
     private int _textTop;
     private int _textBottom;

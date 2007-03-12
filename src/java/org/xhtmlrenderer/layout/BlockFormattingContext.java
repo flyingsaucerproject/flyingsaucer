@@ -27,6 +27,15 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
 
+/**
+ * This class represents a block formatting context as defined in the CSS spec.
+ * Its main purpose is to provide BFC relative coordinates for a {@link FloatManager}.
+ * This coordinate space is used when positioning floats and calculating the
+ * amount of space floated boxes take up at a given y position.
+ * 
+ * <b>NOTE:</b> The {@link #translate(int, int)} method must be called when a
+ * block box in the normal flow is moved (i.e. its static position changes)
+ */
 public class BlockFormattingContext {
     private int _x = 0;
     private int _y = 0;

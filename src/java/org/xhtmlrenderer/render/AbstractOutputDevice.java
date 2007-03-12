@@ -39,6 +39,10 @@ import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
+/**
+ * An abstract implementation of an {@link OutputDevice}.  It provides complete
+ * implementations for many <code>OutputDevice</code> methods.
+ */
 public abstract class AbstractOutputDevice implements OutputDevice {
     protected abstract void drawLine(int x1, int y1, int x2, int y2);
     

@@ -25,6 +25,8 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.FSFont;
 
 /**
+ * A utility class that scans the text of a single inline box, looking for the 
+ * next break point.
  * @author Torbj�rn Gannholm
  */
 public class Breaker {

@@ -34,6 +34,15 @@ import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
+/**
+ * Utility class for laying block content.  It is called when a block box
+ * contains block level content.  {@link BoxBuilder} will have made sure that
+ * the block we're working on will either contain only inline or block content.
+ * If we're in a paged media environment, the various page break related 
+ * properties are also handled here.  If a rule is violated, the affected run
+ * of boxes will be layed out again.  If the rule still cannot be satisfied,
+ * the rule will be dropped.
+ */
 public class BlockBoxing {
     private BlockBoxing() {
     }
@@ -72,8 +81,6 @@ public class BlockBoxing {
                 relayoutData.setResetMargins(resetMargins);
             }
 
-            //TODO:handle run-ins. For now, treat them as blocks
-            
             layoutBlockChild(
                     c, block, child, listIndex, resetMargins, false, childOffset);
             
@@ -457,6 +464,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.57  2007/03/12 21:11:21  peterbrant
+ * Documentation update
+ *
  * Revision 1.56  2007/03/08 19:47:04  peterbrant
  * Comment change
  *

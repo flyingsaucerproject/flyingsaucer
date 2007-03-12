@@ -48,6 +48,10 @@ import org.xhtmlrenderer.layout.PersistentBFC;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.newtable.TableRowBox;
 
+/**
+ * A block box as defined in the CSS spec.  It also provides a base class for
+ * other kinds of block content (for example table rows or cells).
+ */
 public class BlockBox extends Box implements InlinePaintable {
 
     public static final int POSITION_VERTICALLY = 1;
@@ -1732,6 +1736,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.73  2007/03/12 21:11:20  peterbrant
+ * Documentation update
+ *
  * Revision 1.72  2007/03/08 01:41:50  peterbrant
  * Don't calculate clearance for floated boxes (clear on floated boxes is handled directly by FloatManager) / Make sure we have a root layer before checking whether we have a fixed background or not
  *

@@ -23,6 +23,12 @@ import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BorderPainter;
 
+/**
+ * A class that contains a single border side of a collapsed cell.  Collapsed
+ * border sides are painted in order of priority (so for example, wider borders
+ * always paint over narrower borders regardless of the relative tree order of
+ * the cells in question). 
+ */
 public class CollapsedBorderSide implements Comparable {
     private TableCellBox _cell;
     private int _side;

@@ -23,6 +23,9 @@ import java.awt.Rectangle;
 
 import org.xhtmlrenderer.css.style.CssContext;
 
+/**
+ * A dummy box representing one side of the margin area of a page.
+ */
 public class MarginBox extends BlockBox {
     private Rectangle _bounds;
     

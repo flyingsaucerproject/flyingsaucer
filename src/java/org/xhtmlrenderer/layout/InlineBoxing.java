@@ -45,6 +45,11 @@ import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.TextDecoration;
 
+/**
+ * This class is responsible for flowing inline content into lines.  Block
+ * content which participates in an inline formatting context is also handled
+ * here as well as floating and absolutely positioned content.
+ */
 public class InlineBoxing {
     private InlineBoxing() {
     }

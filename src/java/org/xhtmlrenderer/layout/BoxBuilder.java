@@ -52,6 +52,19 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBoxData;
 import org.xhtmlrenderer.render.InlineBox;
 
+/**
+ * This class is responsible for creating the box tree from the DOM.  This is
+ * mostly just a one-to-one translation from the <code>Element</code> to an
+ * <code>InlineBox</code> or a <code>BlockBox</code> (or some subclass of
+ * <code>BlockBox</code>), but the tree is reorganized according to the CSS rules.
+ * This includes inserting anonymous block and inline boxes, anonymous table 
+ * content, and <code>:before</code> and <code>:after</code> content.  White
+ * space is also normalized at this point.  Table columns and table column groups
+ * are added to the table which owns them, but are not created as regular boxes.
+ * Floated and absolutely positioned content is always treated as inline
+ * content for purposes of inserting anonymous block boxes and calculating
+ * the kind of content contained in a given block box. 
+ */
 public class BoxBuilder {
     public static BlockBox createRootBox(LayoutContext c, Document document) {
         Element root = document.getDocumentElement();
@@ -115,6 +128,15 @@ public class BoxBuilder {
         return true;
     }
 
+    /**
+     * Handles the situation when we find table content, but our parent is not
+     * table related.  For example, <code>div</code> -> <code>td</td></code>.
+     * Anonymous tables are then constructed by repeatedly pulling together
+     * consecutive same-table-level siblings and wrapping them in the next
+     * highest table level (e.g. consecutive <code>td</code> elements will
+     * be wrapped in an anonymous <code>tr</code>, then a <code>tbody</code>, and
+     * finally a <code>table</code>).
+     */
     private static void resolveChildTableContent(
             LayoutContext c, BlockBox parent, List children, ChildBoxInfo info, IdentValue target) {
         List childrenForAnonymous = new ArrayList();
@@ -215,6 +237,12 @@ public class BoxBuilder {
         }
     }
 
+    /**
+     * Handles the situation when our current parent is table related.  If 
+     * everything is properly nested (e.g. a <code>tr</code> contains only
+     * <code>td</code> elements), nothing is done.  Otherwise anonymous boxes
+     * are inserted to ensure the integrity of the table model.
+     */
     private static void resolveTableContent(
             LayoutContext c, BlockBox parent, List children, ChildBoxInfo info) {
         IdentValue parentDisplay = parent.getStyle().getIdent(CSSName.DISPLAY);
@@ -283,6 +311,12 @@ public class BoxBuilder {
         }
     }
     
+    /**
+     * Reorganizes a table so that the header is the first row group and the
+     * footer the last.  If the table has caption boxes, they will be pulled
+     * out and added to an anonymous block box along with the table itself.
+     * If not, the table is returned.
+     */
     private static BlockBox reorderTableContent(TableBox table) {
         List topCaptions = new LinkedList();
         Box header = null;

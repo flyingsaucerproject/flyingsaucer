@@ -21,6 +21,11 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.render.RenderingContext;
 
+/**
+ * An interface which indicates that a box is able to paint itself in an
+ * inline context.  This includes lines and layed out inline content, but also
+ * block content which participates in an inline formatting context.
+ */
 public interface InlinePaintable {
     public void paintInline(RenderingContext c);
 }

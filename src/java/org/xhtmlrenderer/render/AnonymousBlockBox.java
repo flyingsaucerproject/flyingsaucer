@@ -30,6 +30,13 @@ import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
 
+/**
+ * An anonymous block box as defined in the CSS spec.  This class is only used
+ * when wrapping inline content in a block box in order to ensure that a block
+ * box only ever contains either block or inline content.  Other anonymous block
+ * boxes create a <code>BlockBox</code> directly with the anonymous property is
+ * true.
+ */
 public class AnonymousBlockBox extends BlockBox {
     private List _openInlineBoxes;
     
@@ -99,6 +106,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2007/03/12 21:11:20  peterbrant
+ * Documentation update
+ *
  * Revision 1.21  2007/02/07 16:33:24  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

@@ -29,6 +29,11 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.LineBox;
 
+/**
+ * A class to collect boxes which intersect a given clip region.  If available,
+ * aggregate bounds information will be used.  Block and inline content are
+ * added to separate lists as they are painted in separate render phases.
+ */
 public class BoxCollector {
     public void collect(
             CssContext c, Shape clip, Layer layer, 

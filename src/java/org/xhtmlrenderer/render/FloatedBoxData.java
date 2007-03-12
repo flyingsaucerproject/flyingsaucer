@@ -22,6 +22,12 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.layout.FloatManager;
 import org.xhtmlrenderer.layout.Layer;
 
+/**
+ * A bean containing additional information used by floated boxes.  The
+ * <code>marginFromSibiling</code> property contains the margin from our 
+ * previous inflow block level sibling (if it exists).  It is necessary to
+ * correctly position the box when collapsing vertical margins.
+ */
 public class FloatedBoxData {
     private Layer _drawingLayer;
     private FloatManager _manager;

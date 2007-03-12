@@ -27,6 +27,10 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.FSImage;
 
+/**
+ * A utility class to paint list markers (all types).
+ * @see MarkerData 
+ */
 public class ListItemPainter {
     public static void paint(RenderingContext c, BlockBox box) {
         if (box.getMarkerData() == null) {
@@ -134,6 +138,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2007/03/12 21:11:19  peterbrant
+ * Documentation update
+ *
  * Revision 1.36  2007/02/07 16:33:22  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

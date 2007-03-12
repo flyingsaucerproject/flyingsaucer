@@ -47,6 +47,17 @@ import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
 
+/**
+ * All positioned content as well as content with an overflow value other
+ * than visible creates a layer.  Layers which define stacking contexts
+ * provide the entry for rendering the box tree to an output device.  The main
+ * purpose of this class is to provide an implementation of Appendix E of the
+ * spec, but it also provides additional utility services including page
+ * management and mapping boxes to coordinates (for e.g. links).  When 
+ * rendering to a paged output device, the layer is also responsible for laying
+ * out absolute content (which is layed out after its containing block has
+ * completed layout).
+ */
 public class Layer {
     public static final short PAGED_MODE_SCREEN = 1;
     public static final short PAGED_MODE_PRINT = 2;

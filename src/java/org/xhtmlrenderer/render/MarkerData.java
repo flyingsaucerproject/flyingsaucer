@@ -21,6 +21,14 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.extend.FSImage;
 
+/**
+ * A bean containing information necessary to draw a list marker.  This includes
+ * font information from the block (for selecting the correct font when drawing
+ * a text marker) or the data necessary to draw other types of markers.  It
+ * also includes a reference to the first line box in the block box (which in
+ * turn may be nested inside of other block boxes).  All markers are drawn 
+ * relative to the baseline of this line box.
+ */
 public class MarkerData {
     private StrutMetrics _structMetrics;
     

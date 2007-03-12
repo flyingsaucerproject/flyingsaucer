@@ -30,6 +30,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * A class that manages all floated boxes in a given block formatting context.
+ * It is responsible for positioning floats and calculating clearance for 
+ * non-floated (block) boxes.
+ */
 public class FloatManager {
     private static final int LEFT = 1;
     private static final int RIGHT = 2;

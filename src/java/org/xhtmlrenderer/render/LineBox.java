@@ -41,6 +41,11 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.util.XRLog;
 
+/**
+ * A line box contains a single line of text (or other inline content).  It
+ * is created during layout.  It also tracks floated and absolute content
+ * added while laying out the line.
+ */
 public class LineBox extends Box implements InlinePaintable {
     private boolean _containsContent;
     private boolean _containsBlockLevelContent;
@@ -456,6 +461,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.63  2007/03/12 21:11:20  peterbrant
+ * Documentation update
+ *
  * Revision 1.62  2007/03/07 17:15:16  peterbrant
  * Minor fixes to dump() method
  *
