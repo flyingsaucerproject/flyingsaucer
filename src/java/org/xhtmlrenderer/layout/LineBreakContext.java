@@ -19,6 +19,11 @@
  */
 package org.xhtmlrenderer.layout;
 
+/**
+ * A bean which serves as a way for the layout code to pass information to the
+ * line breaking code and for the line breaking code to pass instructions back
+ * to the layout code.
+ */
 public class LineBreakContext {
     private String _master;
     private int _start;

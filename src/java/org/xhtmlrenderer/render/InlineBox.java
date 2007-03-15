@@ -28,6 +28,21 @@ import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
 
+/**
+ * A class which reprsents a portion of an inline element. If an inline element
+ * does not contain any nested elements, then a single <code>InlineBox</code>
+ * object will contain the content for the entire element. Otherwise multiple
+ * <code>InlineBox</code> objects will be created corresponding to each
+ * discrete chunk of text appearing in the elment. It is not rendered directly
+ * (and hence does not extend from {@link Box}), but does play an important
+ * role in layout (for example, when calculating min/max widths). Note that it
+ * does not contain children. Inline content is stored as a flat list in the
+ * layout tree. However, <code>InlineBox</code> does contain enough
+ * information to reconstruct the original element nesting and this is, in fact,
+ * done during inline layout.
+ * 
+ * @see InlineLayoutBox
+ */
 public class InlineBox implements Styleable {
     private Element _element;
     

@@ -28,6 +28,13 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 
+/**
+ * This class performs the real work of vertically positioning inline boxes
+ * within a line (i.e. implementing the vertical-align property).  Because
+ * of the requirements of vertical-align: top/bottom, a <code>VerticalAlignContext</code>
+ * is actually a tree of <code>VerticalAlignContext</code> objects which all
+ * must be taken into consideration when aligning content.
+ */
 public class VerticalAlignContext {
     private List _measurements = new ArrayList();
     

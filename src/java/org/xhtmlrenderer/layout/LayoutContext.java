@@ -37,6 +37,12 @@ import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.swing.RootPanel;
 
+/**
+ * This class tracks state which changes over the course of a layout run.
+ * Generally speaking, if possible, state information should be stored in the box
+ * tree and not here.  It also provides pass-though calls to many methods in
+ * {@link SharedContext}.
+ */
 public class LayoutContext implements CssContext {
     private SharedContext sharedContext;
     private RenderQueue renderQueue;

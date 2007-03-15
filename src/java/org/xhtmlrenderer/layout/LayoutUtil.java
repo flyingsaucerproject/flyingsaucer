@@ -26,6 +26,11 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
 
+/**
+ * Contains utility methods to layout floated and absolute content.
+ * 
+ * XXX Could/should be folded into BlockBox
+ */
 public class LayoutUtil {
 
     public static boolean layoutAbsolute(

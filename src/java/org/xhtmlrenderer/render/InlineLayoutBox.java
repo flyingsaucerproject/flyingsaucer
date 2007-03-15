@@ -42,6 +42,16 @@ import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PaintingInfo;
 
+/**
+ * A {@link Box} which contains the portion of an inline element layed out on a
+ * single line.  It may contain content from several {@link InlineBox} objects
+ * if the original inline element was interrupted by nested content.  
+ * Unlike other boxes, its children may be either <code>Box</code> objects
+ * (for example, a box with <code>display: inline-block</code>) or 
+ * <code>InlineText</code> objects.  For this reason, it's children are not
+ * stored in the <code>children</code> property, but instead stored in the 
+ * <code>inlineChildren</code> property.  
+ */
 public class InlineLayoutBox extends Box implements InlinePaintable {
     private int _baseline;
     

@@ -24,6 +24,12 @@ import java.awt.Color;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 
+/**
+ * This class encapsulates all information related to a particular border side
+ * along with an overall precedence (e.g. cell borders take precendence over
+ * row borders).  It is used when comparing overlapping borders when calculating
+ * collapsed borders.
+ */
 public class CollapsedBorderValue {  
     public static final CollapsedBorderValue NO_BORDER = new CollapsedBorderValue();
     

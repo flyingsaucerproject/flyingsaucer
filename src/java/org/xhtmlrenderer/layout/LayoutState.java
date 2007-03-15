@@ -23,6 +23,12 @@ import java.util.Stack;
 
 import org.xhtmlrenderer.render.MarkerData;
 
+/**
+ * A bean which captures all state necessary to lay out an arbitrary box.  
+ * Mutable objects must be copied when provided to this class.  It is far too
+ * expensive to maintain a bean of this class for each box.  
+ * It is only created as needed.
+ */
 public class LayoutState {
     private StyleTracker _firstLines;
     private StyleTracker _firstLetters;

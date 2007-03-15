@@ -22,6 +22,13 @@ package org.xhtmlrenderer.layout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 
+/**
+ * A bean which every box uses to provide its aggregate bounds (which may be 
+ * larger than the bounds of the box itself when there is overhanging content)
+ * and its outer margin corner (which is used to calculate the size of the
+ * canvas).  The aggregate bounds calculation does not take the value of the
+ * overflow property into account.
+ */
 public class PaintingInfo {
     private Dimension _outerMarginCorner;
     private Rectangle _aggregateBounds;

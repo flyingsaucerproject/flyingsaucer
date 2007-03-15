@@ -22,6 +22,12 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.render.BlockBox;
 
+/**
+ * The porition of a {@link BlockFormattingContext} which is saved with a box
+ * which defines a BFC.
+ *
+ * XXX This class can go away
+ */
 public class PersistentBFC {
     private FloatManager _floatManager = new FloatManager();
     

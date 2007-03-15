@@ -22,6 +22,14 @@ package org.xhtmlrenderer.layout;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 
+/**
+ * All objects appearing the layout tree must implement this interface.  It
+ * can roughly be thought of as a styled element (although an {@link InlineLayoutBox}
+ * may be split across many lines) and some <code>Styleable</code> objects may not
+ * define an element at all (e.g. anonymous inline boxes) and some 
+ * <code>Styleable</code> objects don't correspond to a real element 
+ * (e.g. <code>:before</code> and <code>:after</code> pseudo-elements))
+ */
 public interface Styleable {
     public CalculatedStyle getStyle();
     public void setStyle(CalculatedStyle style);

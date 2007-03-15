@@ -26,6 +26,11 @@ import java.util.List;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 
+/**
+ * A managed list of {@link CalculatedStyle} objects.  It is used when keeping
+ * track of the styles which apply to a :first-line or :first-letter pseudo 
+ * element.
+ */
 public class StyleTracker {
     private List _styles = new ArrayList();
     

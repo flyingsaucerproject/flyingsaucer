@@ -25,6 +25,11 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.util.Uu;
 
+/**
+ * A lightweight object which contains a chunk of text from an inline element.  
+ * It will never extend across a line break nor will it extend across an element 
+ * nested within its inline element.
+ */
 public class InlineText {
     private InlineLayoutBox _parent;
     
