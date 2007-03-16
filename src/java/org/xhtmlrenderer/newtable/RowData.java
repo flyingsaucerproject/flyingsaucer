@@ -24,7 +24,6 @@ import java.util.List;
 
 public class RowData {
     private List _row = new ArrayList();
-    private TableRowBox _tableRow;
     
     public List getRow() {
         return _row;
@@ -39,13 +38,5 @@ public class RowData {
     public void splitColumn(int pos) {
         TableCellBox current = (TableCellBox)_row.get(pos);
         _row.add(pos+1, current == null ? null : TableCellBox.SPANNING_CELL);
-    }
-
-    public TableRowBox getTableRow() {
-        return _tableRow;
-    }
-
-    public void setTableRow(TableRowBox tableRow) {
-        _tableRow = tableRow;
     }
 }

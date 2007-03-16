@@ -66,7 +66,6 @@ public class TableSectionBox extends BlockBox {
                 TableCellBox cell = (TableCellBox)j.next();
                 addCell(row, cell, cRow);
             }
-            setTableRow(cRow, row);
         }
     }
     
@@ -80,10 +79,6 @@ public class TableSectionBox extends BlockBox {
                 cell.calcCollapsedBorder(c);
             }
         }
-    }
-    
-    private void setTableRow(int row, TableRowBox tableRow) {
-        ((RowData)_grid.get(row)).setTableRow(tableRow);
     }
     
     public TableCellBox cellAt(int row, int col) {
