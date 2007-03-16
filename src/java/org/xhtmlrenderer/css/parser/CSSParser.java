@@ -960,6 +960,14 @@ public class CSSParser {
                         important = true;
                     }
                     
+                    t = la();
+                    if (! (t == Token.TK_SEMICOLON || t == Token.TK_RBRACE || t == Token.TK_EOF)) {
+                        throw new CSSParseException(
+                                t,
+                                new Token[] { Token.TK_SEMICOLON, Token.TK_RBRACE },
+                                getCurrentLine());
+                    }
+                    
                     if (valid) {
                         try {
                             PropertyBuilder builder = CSSName.getPropertyBuilder(cssName);
