@@ -45,7 +45,7 @@ public class BookmarkElement implements ReplacedElement {
     }
     
     public void detach(LayoutContext c) {
-        c.removeNamedAnchor(getAnchorName());
+        c.removeBoxId(getAnchorName());
     }
 
     public String getAnchorName() {

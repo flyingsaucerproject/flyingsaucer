@@ -741,6 +741,10 @@ public class BlockBox extends Box implements InlinePaintable {
     
     private void addBoxID(LayoutContext c) {
         if (! isAnonymous()) {
+            String name = c.getNamespaceHandler().getAnchorName(getElement());
+            if (name != null) {
+                c.addBoxId(name, this);
+            }            
             String id = c.getNamespaceHandler().getID(getElement());
             if (id != null) {
                 c.addBoxId(id, this);
@@ -1736,6 +1740,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.74  2007/03/17 22:55:51  peterbrant
+ * Remove distinction between box IDs and named anchors
+ *
  * Revision 1.73  2007/03/12 21:11:20  peterbrant
  * Documentation update
  *

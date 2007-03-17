@@ -135,12 +135,9 @@ public class InlineBoxing {
                     }
                     
                     if (currentIB.getElement() != null) {
-                        // FIXME Clean this up.  Name and id should be in same namespace
-                        // Also, only current use of id is for links.  Make that explicit
-                        // in the API?
                         String name = c.getNamespaceHandler().getAnchorName(currentIB.getElement());
                         if (name != null) {
-                            c.addNamedAnchor(name, currentIB);
+                            c.addBoxId(name, currentIB);
                         }
                         String id = c.getNamespaceHandler().getID(currentIB.getElement());
                         if (id != null) {

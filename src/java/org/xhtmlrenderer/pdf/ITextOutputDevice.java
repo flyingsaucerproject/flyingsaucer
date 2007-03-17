@@ -632,7 +632,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         String href = bookmark.getHRef();
         PdfDestination target = null;
         if (href.length() > 0 && href.charAt(0) == '#') {
-            Box box = _sharedContext.getNamedAnchor(href.substring(1));
+            Box box = _sharedContext.getBoxId(href.substring(1));
             if (box != null) {
                 PageBox page = root.getLayer().getPage(c,  getBookmarkRefY(box));
                 int distanceFromTop =

@@ -49,7 +49,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
             BookmarkElement result = new BookmarkElement();
             if (e.hasAttribute("name")) {
                 String name = e.getAttribute("name");
-                c.addNamedAnchor(name, box);
+                c.addBoxId(name, box);
                 result.setAnchorName(name);
             }
             return result;

@@ -501,7 +501,7 @@ public abstract class Box implements Styleable {
         
         String anchorName = c.getNamespaceHandler().getAnchorName(getElement());
         if (anchorName != null) {
-            c.removeNamedAnchor(anchorName);
+            c.removeBoxId(anchorName);
         }
         
         Element e = getElement();
@@ -913,6 +913,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.136  2007/03/17 22:55:51  peterbrant
+ * Remove distinction between box IDs and named anchors
+ *
  * Revision 1.135  2007/03/08 01:46:34  peterbrant
  * Fix calculation of viewport/page rectangle when calculating fixed background positions
  *

@@ -60,7 +60,6 @@ public class SharedContext {
     private boolean interactive = true;
     
     private Map idMap;
-    private Map namedAnchors;
 
     /*
      * used to adjust fonts, ems, points, into screen resolution
@@ -407,28 +406,6 @@ public class SharedContext {
         }
     }
     
-    public void addNamedAnchor(String name, Box box) {
-        if (namedAnchors == null) {
-            namedAnchors = new HashMap();
-        }
-        if (! namedAnchors.containsKey(name)) {
-            namedAnchors.put(name, box);
-        }
-    }
-    
-    public void removeNamedAnchor(String name) {
-        if (namedAnchors != null) {
-            namedAnchors.remove(name);
-        }
-    }
-    
-    public Box getNamedAnchor(String name) {
-        if (namedAnchors == null) {
-            return null;
-        }
-        return (Box)namedAnchors.get(name);
-    }
-
     /**
      * Sets the textRenderer attribute of the RenderingContext object
      *
@@ -657,7 +634,6 @@ public class SharedContext {
     public void reset() {
        styleMap = null;
        idMap = null;
-       namedAnchors = null;
     }
 }
 
@@ -665,6 +641,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2007/03/17 22:55:51  peterbrant
+ * Remove distinction between box IDs and named anchors
+ *
  * Revision 1.34  2007/02/22 15:30:43  peterbrant
  * Internal links should be able to target block boxes too (plus other minor cleanup)
  *
