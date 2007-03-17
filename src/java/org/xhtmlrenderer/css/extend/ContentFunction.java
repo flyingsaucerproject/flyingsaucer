@@ -26,6 +26,7 @@ import org.xhtmlrenderer.render.RenderingContext;
 
 /**
  * Interface for objects which implement a function which creates content
+ * (e.g. <code>counter(pages)</code>)
  */
 public interface ContentFunction {
     /**

@@ -22,6 +22,11 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
 
+/**
+ * A bean which contains all the information necessary to invoke a 
+ * {@link ContentFunction}.
+ * @see ContentFunction
+ */
 public class FunctionData {
     private ContentFunction _contentFunction;
     private FSFunction _function;

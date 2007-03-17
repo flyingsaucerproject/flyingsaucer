@@ -19,10 +19,15 @@
  */
 package org.xhtmlrenderer.newtable;
 
-import org.xhtmlrenderer.css.style.Length;
-
+/**
+ * Instances of this class are effective columns in the table grid. Table
+ * columns are managed in terms of effective columns which ensures that only the
+ * minimum number of columns necessary to manage the grid are created. For
+ * example, a table cell with colspan="1000" will only create a single effective
+ * column unless there are other table cells in other rows which force the
+ * column to be split.
+ */
 public class ColumnData {
-    private Length _width;
     private int _span = 1;
     
     public int getSpan() {
@@ -31,13 +36,5 @@ public class ColumnData {
     
     public void setSpan(int span) {
         _span = span;
-    }
-    
-    public Length getWidth() {
-        return _width;
-    }
-    
-    public void setWidth(Length width) {
-        _width = width;
     }
 }

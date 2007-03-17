@@ -23,6 +23,10 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Styleable;
 
+/**
+ * An object representing an element with <code>display: table-column</code> or
+ * <code>display: table-column-group</code>.
+ */
 public class TableColumn implements Styleable {
     private Element _element;
     private CalculatedStyle _style;
@@ -64,5 +68,4 @@ public class TableColumn implements Styleable {
     public void setParent(TableColumn parent) {
         _parent = parent;
     }
-
 }

@@ -19,9 +19,14 @@
  */
 package org.xhtmlrenderer.render;
 
+/**
+ * A bean containing the distances that floated content takes up as measured
+ * from the left and right content edge of the containing block.  Line boxes
+ * use this information to figure out where they need to position themselves
+ * within their containing block box.
+ */
 public class FloatDistances {
     private int _leftFloatDistance;
-
     private int _rightFloatDistance;
 
     public FloatDistances() {
@@ -42,5 +47,4 @@ public class FloatDistances {
     public void setRightFloatDistance(int rightFloatDistance) {
         _rightFloatDistance = rightFloatDistance;
     }
-
 }
