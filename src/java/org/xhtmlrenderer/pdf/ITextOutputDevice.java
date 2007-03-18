@@ -175,37 +175,35 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (elem != null) {
             NamespaceHandler handler = _sharedContext.getNamespaceHandler();
             String uri = handler.getLinkUri(elem);
-            if (uri != null) {
-                if (uri.length() > 1 && uri.charAt(0) == '#') {
-                    String anchor = uri.substring(1);
-                    Box target = _sharedContext.getBoxId(anchor);
-                    if (target != null) {
-                        PdfDestination dest = createDestination(c, target);
-                        
-                        PdfAction action = new PdfAction();
-                        action.put(PdfName.S, PdfName.GOTO);
-                        action.put(PdfName.D, dest);
+            if (uri != null && uri.length() > 1 && uri.charAt(0) == '#') {
+                String anchor = uri.substring(1);
+                Box target = _sharedContext.getBoxId(anchor);
+                if (target != null) {
+                    PdfDestination dest = createDestination(c, target);
+                    
+                    PdfAction action = new PdfAction();
+                    action.put(PdfName.S, PdfName.GOTO);
+                    action.put(PdfName.D, dest);
 
-                        Rectangle bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
-                        
-                        Point2D docCorner = new Point2D.Double(bounds.x, bounds.y + bounds.height);
-                        Point2D pdfCorner = new Point.Double();
-                        _transform.transform(docCorner, pdfCorner);
-                        pdfCorner.setLocation(pdfCorner.getX(), normalizeY((float)pdfCorner.getY()));
-                        
-                        com.lowagie.text.Rectangle targetArea = 
-                            new com.lowagie.text.Rectangle(
-                                    (float)pdfCorner.getX(),
-                                    (float)pdfCorner.getY(),
-                                    (float)pdfCorner.getX() + bounds.width / _dotsPerPoint,
-                                    (float)pdfCorner.getY() + bounds.height / _dotsPerPoint);
-                        
-                        PdfAnnotation annot = PdfAnnotation.createLink(
-                                _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
-                        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                        
-                        _writer.addAnnotation(annot);
-                    }
+                    Rectangle bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+                    
+                    Point2D docCorner = new Point2D.Double(bounds.x, bounds.y + bounds.height);
+                    Point2D pdfCorner = new Point.Double();
+                    _transform.transform(docCorner, pdfCorner);
+                    pdfCorner.setLocation(pdfCorner.getX(), normalizeY((float)pdfCorner.getY()));
+                    
+                    com.lowagie.text.Rectangle targetArea = 
+                        new com.lowagie.text.Rectangle(
+                                (float)pdfCorner.getX(),
+                                (float)pdfCorner.getY(),
+                                (float)pdfCorner.getX() + bounds.width / _dotsPerPoint,
+                                (float)pdfCorner.getY() + bounds.height / _dotsPerPoint);
+                    
+                    PdfAnnotation annot = PdfAnnotation.createLink(
+                            _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
+                    annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+                    
+                    _writer.addAnnotation(annot);
                 }
             }
         }
