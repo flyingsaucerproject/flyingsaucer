@@ -183,6 +183,8 @@ public class ITextRenderer {
         
         doc.open();
         
+        _outputDevice.setRoot(_root);
+        
         _outputDevice.start(_doc);
         _outputDevice.setWriter(writer);
         _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.height());

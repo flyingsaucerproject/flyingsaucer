@@ -21,6 +21,7 @@ package org.xhtmlrenderer.pdf;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -31,6 +32,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -59,9 +62,13 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
+import com.lowagie.text.pdf.PdfAction;
+import com.lowagie.text.pdf.PdfAnnotation;
+import com.lowagie.text.pdf.PdfBorderDictionary;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfDestination;
 import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfOutline;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
@@ -108,6 +115,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     private List _bookmarks = new ArrayList();
     
+    private Box _root;
+    
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
     }
@@ -153,6 +162,67 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     ((ITextImageElement)element).getImage(),
                     contentBounds.x, contentBounds.y);
         }
+    }
+    
+    public void paintBackground(RenderingContext c, Box box) {
+        super.paintBackground(c, box);
+        
+        processLink(c, box);
+    }
+
+    private void processLink(RenderingContext c, Box box) {
+        Element elem = box.getElement();
+        if (elem != null) {
+            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
+            String uri = handler.getLinkUri(elem);
+            if (uri != null) {
+                if (uri.length() > 1 && uri.charAt(0) == '#') {
+                    String anchor = uri.substring(1);
+                    Box target = _sharedContext.getBoxId(anchor);
+                    if (target != null) {
+                        PdfDestination dest = createDestination(c, target);
+                        
+                        PdfAction action = new PdfAction();
+                        action.put(PdfName.S, PdfName.GOTO);
+                        action.put(PdfName.D, dest);
+
+                        Rectangle bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+                        
+                        Point2D docCorner = new Point2D.Double(bounds.x, bounds.y + bounds.height);
+                        Point2D pdfCorner = new Point.Double();
+                        _transform.transform(docCorner, pdfCorner);
+                        pdfCorner.setLocation(pdfCorner.getX(), normalizeY((float)pdfCorner.getY()));
+                        
+                        com.lowagie.text.Rectangle targetArea = 
+                            new com.lowagie.text.Rectangle(
+                                    (float)pdfCorner.getX(),
+                                    (float)pdfCorner.getY(),
+                                    (float)pdfCorner.getX() + bounds.width / _dotsPerPoint,
+                                    (float)pdfCorner.getY() + bounds.height / _dotsPerPoint);
+                        
+                        PdfAnnotation annot = PdfAnnotation.createLink(
+                                _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
+                        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+                        
+                        _writer.addAnnotation(annot);
+                    }
+                }
+            }
+        }
+    }
+    
+    private PdfDestination createDestination(RenderingContext c, Box box) {
+        PdfDestination result;
+        
+        PageBox page = _root.getLayer().getPage(c, getPageRefY(box));
+        int distanceFromTop =
+            page.getMarginBorderPadding(c, CalculatedStyle.TOP);
+        distanceFromTop += box.getAbsY() + box.getMargin(c).top() - page.getTop();
+        result = new PdfDestination(PdfDestination.FITH, 
+                normalizeY(distanceFromTop / _dotsPerPoint));
+        result.addPage(_writer.getPageReference(page.getPageNo()+1));
+        
+        return result;
     }
     
     public void drawBorderLine(
@@ -619,7 +689,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
     
-    private int getBookmarkRefY(Box box) {
+    private int getPageRefY(Box box) {
         if (box instanceof InlineLayoutBox) {
             InlineLayoutBox iB = (InlineLayoutBox)box;
             return iB.getAbsY() + iB.getBaseline();
@@ -634,7 +704,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (href.length() > 0 && href.charAt(0) == '#') {
             Box box = _sharedContext.getBoxId(href.substring(1));
             if (box != null) {
-                PageBox page = root.getLayer().getPage(c,  getBookmarkRefY(box));
+                PageBox page = root.getLayer().getPage(c, getPageRefY(box));
                 int distanceFromTop =
                     page.getMarginBorderPadding(c, CalculatedStyle.TOP);
                 distanceFromTop += box.getAbsY() - page.getTop();
@@ -731,5 +801,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     public void setSharedContext(SharedContext sharedContext) {
         _sharedContext = sharedContext;
+    }
+    
+    public void setRoot(Box root) {
+        _root = root;
     }
 }
