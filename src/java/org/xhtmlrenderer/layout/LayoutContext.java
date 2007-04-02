@@ -58,8 +58,6 @@ public class LayoutContext implements CssContext {
     
     private boolean shouldStop = false;
     
-    private ReplacedElementFactory replacedElementFactory;
-    
     private FontContext fontContext;
     
     private ContentFunctionFactory contentFunctionFactory = new ContentFunctionFactory();
@@ -277,12 +275,7 @@ public class LayoutContext implements CssContext {
     }
 
     public ReplacedElementFactory getReplacedElementFactory() {
-        return replacedElementFactory;
-    }
-
-    public void setReplacedElementFactory(
-            ReplacedElementFactory replacedElementFactory) {
-        this.replacedElementFactory = replacedElementFactory;
+        return sharedContext.getReplacedElementFactory();
     }
 
     public FontContext getFontContext() {

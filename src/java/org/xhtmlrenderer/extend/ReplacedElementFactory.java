@@ -23,14 +23,22 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 
 public interface ReplacedElementFactory {
+    
     /**
-     * @param e
-     * @param setWidth  a non-negative value if the width is set by css, see css spec for allowed handling
-     * @param setHeight a non-negative value if the height is set by css, see css spec for allowed handling
-     * @return null if no custom component, else the custom component to draw
-     *         in place of this element and its descendants.
+     * @param cssWidth The CSS width of the element in dots (or <code>-1</code> if
+     * width is <code>auto</code>)
+     * @param cssHeight The CSS height of the element in dots (or <code>-1</code>
+     * if the height should be treated as <code>auto</code>)
+     * @return The <code>ReplacedElement</code> or <code>null</code> if no
+     * <code>ReplacedElement</code> applies 
      */
     public ReplacedElement createReplacedElement(
             LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight);
+    
+    /**
+     * Instructs the <code>ReplacedElementFactory</code> to discard any cached
+     * data (typically because a new page is above to be loaded).
+     */
+    public void reset();
 }

@@ -57,4 +57,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         
         return null;
     }
+    
+    public void reset() {
+    }
 }

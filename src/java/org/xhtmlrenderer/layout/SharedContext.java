@@ -37,6 +37,7 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.render.Box;
@@ -45,6 +46,7 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.RootPanel;
+import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.XRLog;
 
 /**
@@ -88,11 +90,14 @@ public class SharedContext {
     
     private Map styleMap;
     
+    private ReplacedElementFactory _replacedElementFactory;
+    
     /**
      * Constructor for the Context object
      */
     public SharedContext(UserAgentCallback uac) {
         font_resolver = new AWTFontResolver();
+        _replacedElementFactory = new SwingReplacedElementFactory();
         setMedia("screen");
         this.uac = uac;
         setCss(new StyleReference(uac));
@@ -634,6 +639,22 @@ public class SharedContext {
     public void reset() {
        styleMap = null;
        idMap = null;
+       _replacedElementFactory.reset();
+    }
+
+    public ReplacedElementFactory getReplacedElementFactory() {
+        return _replacedElementFactory;
+    }
+
+    public void setReplacedElementFactory(ReplacedElementFactory replacedElementFactory) {
+        if (replacedElementFactory == null) {
+            throw new NullPointerException("replacedElementFactory may not be null");
+        }
+        
+        if (_replacedElementFactory != null) {
+            _replacedElementFactory.reset();
+        }
+        _replacedElementFactory = replacedElementFactory;
     }
 }
 
@@ -641,6 +662,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2007/04/02 16:56:20  peterbrant
+ * Maintain ReplacedElementFactory across layout runs (to allow component caching to work) / Add reset() to ReplacedElementFactory to allow implementations to clean up after navigating away from a page
+ *
  * Revision 1.35  2007/03/17 22:55:51  peterbrant
  * Remove distinction between box IDs and named anchors
  *

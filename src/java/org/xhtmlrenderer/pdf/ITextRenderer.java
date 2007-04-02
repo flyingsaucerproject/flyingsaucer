@@ -77,6 +77,9 @@ public class ITextRenderer {
         ITextFontResolver fontResolver = new ITextFontResolver();
         _sharedContext.setFontResolver(fontResolver);
         
+        ITextReplacedElementFactory replacedElementFactory = new ITextReplacedElementFactory();
+        _sharedContext.setReplacedElementFactory(replacedElementFactory);
+        
         _sharedContext.setTextRenderer(new ITextTextRenderer());
         _sharedContext.setDPI(72*_dotsPerPoint);
         _sharedContext.setDotsPerPixel(dotsPerPixel);
@@ -113,6 +116,7 @@ public class ITextRenderer {
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
         _doc = doc;
         
+        _sharedContext.reset();
         if (Configuration.isTrue("xr.cache.stylesheets", true)) {
             _sharedContext.getCss().flushStyleSheets();
         } else {
@@ -156,7 +160,6 @@ public class ITextRenderer {
     private LayoutContext newLayoutContext() {
         LayoutContext result = _sharedContext.newLayoutContextInstance();
         result.setFontContext(new ITextFontContext());
-        result.setReplacedElementFactory(new ITextReplacedElementFactory());
         
         _sharedContext.getTextRenderer().setup(result.getFontContext());
         

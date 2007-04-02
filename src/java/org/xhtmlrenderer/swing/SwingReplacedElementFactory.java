@@ -19,10 +19,12 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
+import java.awt.Image;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import javax.swing.*;
+import java.util.Map;
+
+import javax.swing.JComponent;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -35,7 +37,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 public class SwingReplacedElementFactory implements ReplacedElementFactory {
-    protected HashMap imageComponents;
+    protected Map imageComponents;
     protected LinkedHashMap forms;
 
     public ReplacedElement createReplacedElement(
@@ -144,5 +146,10 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
             return null;
         }
         return (Element) n;
+    }
+    
+    public void reset() {
+        forms = null;
+        imageComponents = null;
     }
 }

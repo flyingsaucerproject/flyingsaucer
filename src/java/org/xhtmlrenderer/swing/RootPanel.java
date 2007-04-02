@@ -22,7 +22,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.Layer;
@@ -87,6 +86,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         } else {
             getSharedContext().getCss().flushAllStyleSheets();
         }
+        
         getSharedContext().reset();
         getSharedContext().setBaseURL(url);
         getSharedContext().setNamespaceHandler(nsh);
@@ -247,7 +247,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         Graphics2D layoutGraphics = 
             g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics();
         result.setFontContext(new Java2DFontContext(layoutGraphics));
-        result.setReplacedElementFactory(newReplacedElementFactory());
         
         getSharedContext().getTextRenderer().setup(result.getFontContext());
         
@@ -269,10 +268,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             return new Rectangle(0, 0, 
                     first.getContentWidth(c), first.getContentHeight(c));
         }
-    }
-
-    public ReplacedElementFactory newReplacedElementFactory() {
-        return new SwingReplacedElementFactory();
     }
 
     public Rectangle getScreenExtents() {
@@ -317,13 +312,13 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
         
-        /*
-        System.out.println(root.dump(c, "", BlockBox.DUMP_LAYOUT));
-        */
-        
         long end = System.currentTimeMillis();
         
         XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
+        
+        /*
+        System.out.println(root.dump(c, "", BlockBox.DUMP_RENDER));
+        */
         
         if (c.shouldStop()) {//interrupted layout
             return;
