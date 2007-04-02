@@ -38,7 +38,7 @@ public interface ReplacedElementFactory {
     
     /**
      * Instructs the <code>ReplacedElementFactory</code> to discard any cached
-     * data (typically because a new page is above to be loaded).
+     * data (typically because a new page is about to be loaded).
      */
     public void reset();
 }
