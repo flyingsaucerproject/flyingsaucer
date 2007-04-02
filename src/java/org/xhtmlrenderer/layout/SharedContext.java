@@ -396,9 +396,8 @@ public class SharedContext {
         }
         idMap.put(id, box);
     }
-    
 
-    public Box getBoxId(String id) {
+    public Box getBoxById(String id) {
         if (idMap == null) {
             idMap = new HashMap();
         }
@@ -662,6 +661,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2007/04/02 17:08:36  peterbrant
+ * Improve method name
+ *
  * Revision 1.36  2007/04/02 16:56:20  peterbrant
  * Maintain ReplacedElementFactory across layout runs (to allow component caching to work) / Add reset() to ReplacedElementFactory to allow implementations to clean up after navigating away from a page
  *
