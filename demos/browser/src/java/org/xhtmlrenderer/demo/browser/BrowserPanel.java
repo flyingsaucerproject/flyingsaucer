@@ -40,7 +40,8 @@ import java.util.logging.Logger;
  * @author empty
  */
 public class BrowserPanel extends JPanel implements DocumentListener {
-
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Description of the Field
      */
@@ -157,7 +158,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
         loadCustomFonts();
 
-        view.setErrorHandler(root.error_handler);
+        /* view.setErrorHandler(root.error_handler); */
         status = new BrowserStatus();
         status.init();
 
@@ -391,12 +392,24 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     }
 
 
+    public void onLayoutException(Throwable t) {
+        t.printStackTrace();
+        
+    }
+
+
+    public void onRenderException(Throwable t) {
+        t.printStackTrace();
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2007/04/03 13:18:15  peterbrant
+ * Implement new DocumentListener API
+ *
  * Revision 1.32  2006/08/06 21:27:00  pdoubleya
  * Removed printing for R6.
  *
