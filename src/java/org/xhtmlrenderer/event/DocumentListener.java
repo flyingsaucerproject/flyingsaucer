@@ -33,14 +33,18 @@ public interface DocumentListener {
     /**
      * Called when document layout failed with an exception.  All <code>Throwable</code>
      * objects thrown (except for <code>ThreadDeath</code>) during layout and not 
-     * otherwise handled will be provided to this method.
+     * otherwise handled will be provided to this method.  If a <code>DocumentListener</code>
+     * has been defined an XHTML panel, the listener is entirely responsibile for
+     * handling the exception.  No other action will be taken.
      */
     public void onLayoutException(Throwable t);
     
     /**
      * Called when document render failed with an exception.  All <code>Throwable</code>
      * objects thrown (except for <code>ThreadDeath</code>) during render and not 
-     * otherwise handled will be provided to this method.
+     * otherwise handled will be provided to this method.  If a <code>DocumentListener</code>
+     * has been defined an XHTML panel, the listener is entirely responsibile for
+     * handling the exception.  No other action will be taken.
      */
     public void onRenderException(Throwable t);
 }
@@ -49,6 +53,9 @@ public interface DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2007/04/03 13:38:13  peterbrant
+ * Javadoc clarification
+ *
  * Revision 1.4  2007/04/03 13:12:07  peterbrant
  * Add notification interface for layout and render exceptions / Minor clean up (remove obsolete body expand hack, remove unused API, method name improvements)
  *
