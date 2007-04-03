@@ -52,7 +52,6 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 
 //hmm, IntelliJ sees references to Xx below as being Xx in Component!
@@ -66,45 +65,10 @@ import org.xml.sax.InputSource;
 public abstract class BasicPanel extends RootPanel {
     private static final int PAGE_PAINTING_CLEARANCE = 10;
 
-    /**
-     * Description of the Field
-     */
-    protected ErrorHandler error_handler;
-
-    /**
-     * Description of the Field
-     */
-    private boolean anti_aliased = true;
-
     private boolean explicitlyOpaque;
-
-    /**
-     * Message used while layout is in progress and panel is being redrawn.
-     */
-    private String layoutInProgressMsg = "Layout in progress...";
 
     // The XMLResource proxing the current document in the BasicPanel
     private XMLResource xmlResource;
-
-    /**
-     * Returns the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
-     * as pages render so quickly.
-     *
-     * @return See desc.
-     */
-    public String getLayoutInProgressMsg() {
-        return layoutInProgressMsg;
-    }
-
-    /**
-     * Sets the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
-     * as pages render so quickly.
-     *
-     * @param layoutInProgressMsg See desc..
-     */
-    public void setLayoutInProgressMsg(String layoutInProgressMsg) {
-        this.layoutInProgressMsg = layoutInProgressMsg;
-    }
 
     public BasicPanel() {
         sharedContext = new SharedContext(new NaiveUserAgent());
@@ -150,17 +114,7 @@ public abstract class BasicPanel extends RootPanel {
         this.documentListeners.remove(listener);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param g PARAM
-     */
     public void paintComponent(Graphics g) {
-        if (anti_aliased) {
-            // TODO:
-            // ( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        }
-
         if (doc == null) {
             return;
         }
@@ -168,7 +122,7 @@ public abstract class BasicPanel extends RootPanel {
         // if this is the first time painting this document, then calc layout
         Layer root = getRootLayer();
         if ((root == null || isPendingResize()) && !isUseThreads()) {
-            doActualLayout(getGraphics());
+            doLayout(getGraphics());
             root = getRootLayer();
         }
         setPendingResize(false);
@@ -179,37 +133,51 @@ public abstract class BasicPanel extends RootPanel {
         } else {
             RenderingContext c = newRenderingContext((Graphics2D) g);
             long start = System.currentTimeMillis();
-            executeRenderThread(c, root);
+            doRender(c, root);
             long end = System.currentTimeMillis();
             XRLog.render(Level.FINE, "RENDERING TOOK " + (end - start) + " ms");
         }
     }
 
-    protected void executeRenderThread(RenderingContext c, Layer root) {
-        //Uu.p("do render called");
-        //Uu.p("last render event = " + last_event);
-		
-        // paint the normal swing background first
-        // but only if we aren't printing.
-        Graphics g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();
-        if (!(g instanceof PrinterGraphics) && explicitlyOpaque) {
-            g.setColor(getBackground());
-            g.fillRect(0, 0, getWidth(), getHeight());
+    protected void doRender(RenderingContext c, Layer root) {
+        try {
+            // paint the normal swing background first
+            // but only if we aren't printing.
+            Graphics g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();
+            if (!(g instanceof PrinterGraphics) && explicitlyOpaque) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+    
+            long start = System.currentTimeMillis();
+            if (!c.isPrint()) {
+                root.paint(c, 0, 0);
+            } else {
+                paintPagedView(c, root);
+            }
+            long after = System.currentTimeMillis();
+            if (Configuration.isTrue("xr.incremental.repaint.print-timing", false)) {
+                Uu.p("repaint took ms: " + (after - start));
+            }
+    
+            last_event = null;
+        } catch (ThreadDeath t) {
+            throw t;
+        } catch (Throwable t) {
+            if (documentListeners.size() > 0) {
+                fireOnRenderException(t);
+            } else {
+                if (t instanceof Error) {
+                    throw (Error)t;
+                }
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException)t;
+                }
+                
+                // "Shouldn't" happen
+                XRLog.exception(t.getMessage(), t);
+            }
         }
-
-        long start = System.currentTimeMillis();
-        if (!c.isPrint()) {
-            root.paint(c, 0, 0);
-        } else {
-            paintPagedView(c, root);
-        }
-        long after = System.currentTimeMillis();
-        if (Configuration.isTrue("xr.incremental.repaint.print-timing", false)) {
-            Uu.p("repaint took ms: " + (after - start));
-        }
-
-        last_event = null;
-
     }
     
     private void paintPagedView(RenderingContext c, Layer root) {
@@ -319,19 +287,10 @@ public abstract class BasicPanel extends RootPanel {
         getRootLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
     }
 
-    /**
-     * Description of the Method
-     */
     public void printTree() {
         printTree(getRootBox(), "");
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     * @param tab PARAM
-     */
     private void printTree(Box box, String tab) {
         XRLog.layout(Level.FINEST, tab + "Box = " + box);
         Iterator it = box.getChildIterator();
@@ -352,40 +311,10 @@ public abstract class BasicPanel extends RootPanel {
     public void setLayout(LayoutManager l) {
     }
 
-    /**
-     * Sets the renderingContext attribute of the BasicPanel object
-     *
-     * @param ctx The new renderingContext value
-     */
     public void setSharedContext(SharedContext ctx) {
         this.sharedContext = ctx;
     }
 
-    /**
-     * Sets the errorHandler attribute of the BasicPanel object
-     *
-     * @param error_handler The new errorHandler value
-     */
-    public void setErrorHandler(ErrorHandler error_handler) {
-        this.error_handler = error_handler;
-    }
-
-
-    /**
-     * Sets the antiAliased attribute of the BasicPanel object
-     *
-     * @param anti_aliased The new antiAliased value
-     */
-    public void setAntiAliased(boolean anti_aliased) {
-        this.anti_aliased = anti_aliased;
-    }
-
-
-    /**
-     * Sets the size attribute of the BasicPanel object
-     *
-     * @param d The new size value
-     */
     public void setSize(Dimension d) {
         XRLog.layout(Level.FINEST, "set size called");
         super.setSize(d);
@@ -401,26 +330,12 @@ public abstract class BasicPanel extends RootPanel {
 
     /* =========== set document utility methods =============== */
 
-    /**
-     * Sets the document attribute of the BasicPanel object
-     *
-     * @param stream The new document value
-     * @param url    The new document value
-     * @param nsh    The new document value
-     */
     public void setDocument(InputStream stream, String url, NamespaceHandler nsh) {
         Document dom = XMLResource.load(stream).getDocument();
 
         setDocument(dom, url, nsh);
     }
 
-    /**
-     * Sets the document attribute of the BasicPanel object
-     *
-     * @param content The new document value
-     * @param url    The new document value
-     * @param nsh    The new document value
-     */
     public void setDocumentFromString(String content, String url, NamespaceHandler nsh) {
         InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
         Document dom = XMLResource.load(is).getDocument();
@@ -428,41 +343,18 @@ public abstract class BasicPanel extends RootPanel {
         setDocument(dom, url, nsh);
     }
 
-    /**
-     * Sets the document attribute of the BasicPanel object
-     *
-     * @param doc The new document value
-     * @param url The new document value
-     */
     public void setDocument(Document doc, String url) {
         setDocument(doc, url, new NoNamespaceHandler());
     }
 
-    /**
-     * Sets the document attribute of the BasicPanel object
-     *
-     * @param url The new document value
-     */
     public void setDocument(String url) {
         setDocument(loadDocument(url), url, new NoNamespaceHandler());
     }
 
-    /**
-     * Sets the document attribute of the BasicPanel object
-     *
-     * @param url The new document value
-     */
     public void setDocument(String url, NamespaceHandler nsh) {
         setDocument(loadDocument(url), url, nsh);
     }
 
-    /**
-     * Sets the document attribute of the BasicPanel object
-     *
-     * @param stream The new document value
-     * @param url    The new document value
-     * @throws Exception Throws
-     */
     // TODO: should throw more specific exception (PWW 25/07/2006)
     protected void setDocument(InputStream stream, String url)
             throws Exception {
@@ -479,7 +371,7 @@ public abstract class BasicPanel extends RootPanel {
         String url = getSharedContext().getUac().resolveURI(filename);
         if (isAnchorInCurrentDocument(filename)) {
             String id = getAnchorId(filename);
-            Box box = getSharedContext().getBoxId(id);
+            Box box = getSharedContext().getBoxById(id);
             if (box != null) {
                 Point pt;
                 if (box.getStyle().isInline()) {
@@ -525,12 +417,6 @@ public abstract class BasicPanel extends RootPanel {
         setDocument(this.doc, getSharedContext().getBaseURL(), getSharedContext().getNamespaceHandler());
     }
 
-
-    /**
-     * Gets the uRL attribute of the BasicPanel object
-     *
-     * @return The uRL value
-     */
     public URL getURL() {
         URL base = null;
         try {
@@ -540,32 +426,15 @@ public abstract class BasicPanel extends RootPanel {
         }
         return base;
     }
-
-    /**
-     * Gets the document attribute of the BasicPanel object
-     *
-     * @return The document value
-     */
+    
     public Document getDocument() {
         return doc;
     }
 
-    /**
-     * Gets the documentTitle attribute of the BasicPanel object
-     *
-     * @return The documentTitle value
-     */
     public String getDocumentTitle() {
         return getSharedContext().getNamespaceHandler().getDocumentTitle(doc);
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param uri PARAM
-     * @return Returns
-     */
     protected Document loadDocument(final String uri) {
         xmlResource = sharedContext.getUac().getXMLResource(uri);
         return this.xmlResource.getDocument();
@@ -573,13 +442,6 @@ public abstract class BasicPanel extends RootPanel {
 
     /* ====== hover and active utility methods ========= */
 
-
-    /**
-     * Gets the hover attribute of the BasicPanel object
-     *
-     * @param e PARAM
-     * @return The hover value
-     */
     public boolean isHover(org.w3c.dom.Element e) {
         if (e == hovered_element) {
             return true;
@@ -587,12 +449,6 @@ public abstract class BasicPanel extends RootPanel {
         return false;
     }
 
-    /**
-     * Gets the active attribute of the BasicPanel object
-     *
-     * @param e PARAM
-     * @return The active value
-     */
     public boolean isActive(org.w3c.dom.Element e) {
         if (e == active_element) {
             return true;
@@ -600,12 +456,6 @@ public abstract class BasicPanel extends RootPanel {
         return false;
     }
 
-    /**
-     * Gets the focus attribute of the BasicPanel object
-     *
-     * @param e PARAM
-     * @return The focus value
-     */
     public boolean isFocus(org.w3c.dom.Element e) {
         if (e == focus_element) {
             return true;
@@ -659,38 +509,16 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
-    /**
-     * Gets the context attribute of the BasicPanel object
-     *
-     * @return The context value
-     */
     public SharedContext getSharedContext() {
         return sharedContext;
     }
 
-
-    /**
-     * Gets the fixedRectangle attribute of the BasicPanel object
-     *
-     * @return The fixedRectangle value
-     */
     public Rectangle getFixedRectangle() {
         if (enclosingScrollPane != null) {
             return enclosingScrollPane.getViewportBorderBounds();
         } else {
             Dimension dim = getSize();
             return new Rectangle(0, 0, dim.width, dim.height);
-        }
-    }
-
-    /**
-     * Description of the Method
-     */
-    protected void fireDocumentLoaded() {
-        Iterator it = this.documentListeners.keySet().iterator();
-        while (it.hasNext()) {
-            DocumentListener list = (DocumentListener) it.next();
-            list.documentLoaded();
         }
     }
 
@@ -726,6 +554,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.109  2007/04/03 13:12:07  peterbrant
+ * Add notification interface for layout and render exceptions / Minor clean up (remove obsolete body expand hack, remove unused API, method name improvements)
+ *
  * Revision 1.108  2007/02/22 15:30:43  peterbrant
  * Internal links should be able to target block boxes too (plus other minor cleanup)
  *

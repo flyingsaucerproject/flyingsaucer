@@ -81,7 +81,7 @@ public class Graphics2DRenderer {
         if (dim != null) {
             panel.setSize(dim);
         }
-        panel.doActualLayout(g2);
+        panel.doLayout(g2);
     }
 
 
@@ -184,8 +184,8 @@ public class Graphics2DRenderer {
     /**
      * A static utility method to automatically create an image from a
      * document, where height is determined based on document content.
-     * To estimate a size before rendering, use {@link setDocument(String)}
-     * and then {@link getMinimumSize()}.
+     * To estimate a size before rendering, use {@link #setDocument(String)}
+     * and then {@link #getMinimumSize()}.
      *
      * @param url    java.net.URL for the document to render.
      * @param width  Width in pixels of the layout container
@@ -221,6 +221,9 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2007/04/03 13:12:06  peterbrant
+ * Add notification interface for layout and render exceptions / Minor clean up (remove obsolete body expand hack, remove unused API, method name improvements)
+ *
  * Revision 1.18  2006/05/12 18:18:10  peterbrant
  * Remove dead code
  *

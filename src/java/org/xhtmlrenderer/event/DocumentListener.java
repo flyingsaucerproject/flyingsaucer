@@ -19,22 +19,39 @@
  */
 package org.xhtmlrenderer.event;
 
-
-
 /**
- * Description of the Interface
- *
- * @author   empty
+ * Implementations of this listener interface receive notifications about various
+ * document and layout events.
  */
 public interface DocumentListener {
-    /** Description of the Method */
+    /**
+     * Indicates document layout has completed.  This will be called on every layout
+     * run (including, for example, after panel resizes).
+     */
     public void documentLoaded();
+    
+    /**
+     * Called when document layout failed with an exception.  All <code>Throwable</code>
+     * objects thrown (except for <code>ThreadDeath</code>) during layout and not 
+     * otherwise handled will be provided to this method.
+     */
+    public void onLayoutException(Throwable t);
+    
+    /**
+     * Called when document render failed with an exception.  All <code>Throwable</code>
+     * objects thrown (except for <code>ThreadDeath</code>) during render and not 
+     * otherwise handled will be provided to this method.
+     */
+    public void onRenderException(Throwable t);
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2007/04/03 13:12:07  peterbrant
+ * Add notification interface for layout and render exceptions / Minor clean up (remove obsolete body expand hack, remove unused API, method name improvements)
+ *
  * Revision 1.3  2005/01/29 20:22:17  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

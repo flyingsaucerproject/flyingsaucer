@@ -282,116 +282,114 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return extents;
     }
 
-    public void doActualLayout(Graphics g) {
-        //Uu.p("doActualLayout called");
-        this.removeAll();
-        if (g == null) {
-            return;
-        }
-        if (doc == null) {
-            return;
-        }
-        
-        LayoutContext c = newLayoutContext((Graphics2D) g);
-        synchronized (this) {
-            if (this.layout_context != null) this.layout_context.stopRendering();
-            this.layout_context = c;
-        }
-        c.setRenderQueue(queue);
-        
-        long start = System.currentTimeMillis();
-        
-        BlockBox root = (BlockBox)getRootBox(); 
-        if (root != null && isPendingResize()) {
-            root.reset(c);
-        } else {
-            root = BoxBuilder.createRootBox(c, doc);
-            setRootBox(root);            
-        }
-        
-        root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
-        root.layout(c);
-        
-        long end = System.currentTimeMillis();
-        
-        XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
-        
-        /*
-        System.out.println(root.dump(c, "", BlockBox.DUMP_RENDER));
-        */
-        
-        if (c.shouldStop()) {//interrupted layout
-            return;
-        }
-// if there is a fixed child then we need to set opaque to false
-// so that the entire viewport will be repainted. this is slower
-// but that's the hit you get from using fixed layout
-        if (root.getLayer().containsFixedContent()) {
-            super.setOpaque(false);
-        } else {
-            super.setOpaque(true);
-        }
-        
-        XRLog.layout(Level.FINEST, "after layout: " + root);
-        
-        Dimension intrinsic_size = root.getLayer().getPaintingDimension(c);
-        
-        if (c.isPrint()) {
-            root.getLayer().trimEmptyPages(c, intrinsic_size.height);
-        }
-        
-        setPreferredSize(intrinsic_size);
-        revalidate();
-        
-        // if doc is shorter than viewport
-        // then stretch canvas to fill viewport exactly
-        // then adjust the body element accordingly
-        if (enclosingScrollPane != null) {
-            if (intrinsic_size.height < enclosingScrollPane.getViewport().getHeight()) {
-                //Uu.p("int height is less than viewport height");
-                // XXX Not threadsafe
-                if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
-                    this.setPreferredSize(new Dimension(
-                            intrinsic_size.width, enclosingScrollPane.getViewport().getHeight()));
-                    this.revalidate();
-                }
-                //Uu.p("need to do the body hack");
-                if (root != null && ! c.isPrint()) {
-                    root.setHeight(enclosingScrollPane.getViewport().getHeight());
-                    bodyExpandHack(root, root.getHeight());
-                    intrinsic_size.height = root.getHeight();
+    public void doLayout(Graphics g) {
+        try {
+            this.removeAll();
+            if (g == null) {
+                return;
+            }
+            if (doc == null) {
+                return;
+            }
+            
+            LayoutContext c = newLayoutContext((Graphics2D) g);
+            synchronized (this) {
+                if (this.layout_context != null) this.layout_context.stopRendering();
+                this.layout_context = c;
+            }
+            c.setRenderQueue(queue);
+            
+            long start = System.currentTimeMillis();
+            
+            BlockBox root = (BlockBox)getRootBox(); 
+            if (root != null && isPendingResize()) {
+                root.reset(c);
+            } else {
+                root = BoxBuilder.createRootBox(c, doc);
+                setRootBox(root);            
+            }
+            
+            root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
+            root.layout(c);
+            
+            long end = System.currentTimeMillis();
+            
+            XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
+            
+            /*
+            System.out.println(root.dump(c, "", BlockBox.DUMP_RENDER));
+            */
+            
+            if (c.shouldStop()) {//interrupted layout
+                return;
+            }
+    // if there is a fixed child then we need to set opaque to false
+    // so that the entire viewport will be repainted. this is slower
+    // but that's the hit you get from using fixed layout
+            if (root.getLayer().containsFixedContent()) {
+                super.setOpaque(false);
+            } else {
+                super.setOpaque(true);
+            }
+            
+            XRLog.layout(Level.FINEST, "after layout: " + root);
+            
+            Dimension intrinsic_size = root.getLayer().getPaintingDimension(c);
+            
+            if (c.isPrint()) {
+                root.getLayer().trimEmptyPages(c, intrinsic_size.height);
+            }
+            
+            setPreferredSize(intrinsic_size);
+            revalidate();
+            
+            // if doc is shorter than viewport
+            // then stretch canvas to fill viewport exactly
+            // then adjust the body element accordingly
+            if (enclosingScrollPane != null) {
+                if (intrinsic_size.height < enclosingScrollPane.getViewport().getHeight()) {
+                    //Uu.p("int height is less than viewport height");
+                    // XXX Not threadsafe
+                    if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
+                        this.setPreferredSize(new Dimension(
+                                intrinsic_size.width, enclosingScrollPane.getViewport().getHeight()));
+                        this.revalidate();
+                    }
+                    //Uu.p("need to do the body hack");
+                    if (root != null && ! c.isPrint()) {
+                        intrinsic_size.height = root.getHeight();
+                    }
+                } 
+                
+                // turn on simple scrolling mode if there's any fixed elements
+                if (root.getLayer().containsFixedContent()) {
+                    // Uu.p("is fixed");
+                    enclosingScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+                } else {
+                    // Uu.p("is not fixed");
+                    enclosingScrollPane.getViewport().setScrollMode(default_scroll_mode);
                 }
             } 
-            
-            // turn on simple scrolling mode if there's any fixed elements
-            if (root.getLayer().containsFixedContent()) {
-                // Uu.p("is fixed");
-                enclosingScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
-            } else {
-                // Uu.p("is not fixed");
-                enclosingScrollPane.getViewport().setScrollMode(default_scroll_mode);
+    
+            if (isUseThreads()) {
+                queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
             }
-        } 
-
-        if (isUseThreads()) {
-            queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
-        }
-        this.fireDocumentLoaded();
-    }
-
-    private static void bodyExpandHack(Box root, int view_height) {
-        for (int i = 0; i < root.getChildCount(); i++) {
-            // set the html box to the max
-            Box html = root.getChild(i);
-            if (html.getElement() != null && html.getElement().getNodeName().equals("html")) {
-                html.setHeight(view_height);
-                // set the body box to the max
-                for (int j = 0; j < html.getChildCount(); j++) {
-                    Box body = html.getChild(j);
-                    if (body.getElement() != null && body.getElement().getNodeName().equals("body")) {
-                        body.setHeight(view_height);
-                    }
+            this.fireDocumentLoaded();
+        } catch (ThreadDeath t) {
+            throw t;
+        } catch (Throwable t) {
+            if (documentListeners.size() > 0) {
+                fireOnLayoutException(t);
+            } else {
+                if (t instanceof Error) {
+                    throw (Error)t;
                 }
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException)t;
+                }
+                
+                // "Shouldn't" happen
+                XRLog.exception(t.getMessage(), t);
             }
         }
     }
@@ -401,6 +399,22 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         while (it.hasNext()) {
             DocumentListener list = (DocumentListener) it.next();
             list.documentLoaded();
+        }
+    }
+    
+    protected void fireOnLayoutException(Throwable t) {
+        Iterator it = this.documentListeners.keySet().iterator();
+        while (it.hasNext()) {
+            DocumentListener list = (DocumentListener) it.next();
+            list.onLayoutException(t);
+        }
+    }
+    
+    protected void fireOnRenderException(Throwable t) {
+        Iterator it = this.documentListeners.keySet().iterator();
+        while (it.hasNext()) {
+            DocumentListener list = (DocumentListener) it.next();
+            list.onRenderException(t);
         }
     }
 

@@ -205,7 +205,6 @@ public class Eeze {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     html = new XHTMLPanel();
-                    html.setLayoutInProgressMsg("");
                     scroll = new FSScrollPane(html);
                     frame.getContentPane().add(scroll);
                     frame.pack();

@@ -87,7 +87,7 @@ public class LayoutLoop implements Runnable {
             public void run() {
                 // Uu.p("starting up another thread for layout");
                 //root.layoutInProgress = true;
-                root.doActualLayout(root.getGraphics());
+                root.doLayout(root.getGraphics());
                 //root.layoutInProgress = false;
                 // Uu.p("layout thread finished");
             }

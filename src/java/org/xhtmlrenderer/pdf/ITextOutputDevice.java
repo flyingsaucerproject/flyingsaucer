@@ -177,7 +177,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             String uri = handler.getLinkUri(elem);
             if (uri != null && uri.length() > 1 && uri.charAt(0) == '#') {
                 String anchor = uri.substring(1);
-                Box target = _sharedContext.getBoxId(anchor);
+                Box target = _sharedContext.getBoxById(anchor);
                 if (target != null) {
                     PdfDestination dest = createDestination(c, target);
                     
@@ -700,7 +700,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         String href = bookmark.getHRef();
         PdfDestination target = null;
         if (href.length() > 0 && href.charAt(0) == '#') {
-            Box box = _sharedContext.getBoxId(href.substring(1));
+            Box box = _sharedContext.getBoxById(href.substring(1));
             if (box != null) {
                 PageBox page = root.getLayer().getPage(c, getPageRefY(box));
                 int distanceFromTop =
