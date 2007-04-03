@@ -42,10 +42,10 @@ import org.xhtmlrenderer.util.XRLog;
 public class RootPanel extends JPanel implements ComponentListener, UserInterface {
     static final long serialVersionUID = 1L;
     
-    private boolean useThreads;
+    private boolean useThreads = false;
 
     public RootPanel(boolean useThreads) {
-        this.useThreads = useThreads;
+        /* this.useThreads = useThreads; */
     }
 
     public RootPanel() {
@@ -495,7 +495,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     }
 
     public void setUseThreads(boolean useThreads) {
-        this.useThreads = useThreads;
+        /* this.useThreads = useThreads; */
     }
     
     public synchronized Box getRootBox() {
