@@ -110,4 +110,8 @@ public class SVGSalamanderReplacedElementFactory implements ReplacedElementFacto
         }
         return panel;
     }
+
+    public void reset() {
+
+    }
 }

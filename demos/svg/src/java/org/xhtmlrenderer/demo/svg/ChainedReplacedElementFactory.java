@@ -33,4 +33,11 @@ public class ChainedReplacedElementFactory implements ReplacedElementFactory {
     public void addFactory(ReplacedElementFactory ref) {
         this.factoryList.add(ref);
     }
+
+    public void reset() {
+        for (Iterator i = this.factoryList.iterator(); i.hasNext(); ) {
+            ReplacedElementFactory factory = (ReplacedElementFactory)i.next();
+            factory.reset();
+        }       
+    }
 }
