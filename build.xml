@@ -135,6 +135,11 @@
 			<include name="*.css"/>
 		</fileset>
 	</copy>
+    <copy todir="${dest.resources.img.dir}">
+      <fileset dir="${src.resources.img.dir}">
+          <include name="*"/>
+      </fileset>
+    </copy>
     <copy todir="${dest.resources.conf.dir}" file="${src.resources.conf.dir}/xhtmlrenderer.conf"/>
     <copy todir="${dest.resources.schema.dir}">
       <fileset dir="${src.resources.schema.dir}">
@@ -285,6 +290,9 @@
 $Id$
 
 $Log$
+Revision 1.95  2007/04/07 15:22:08  pdoubleya
+Copy image resources (for "missing img" image) to main jar
+
 Revision 1.94  2006/07/28 10:17:32  pdoubleya
 Added support for docbook demo.
 
