@@ -58,7 +58,7 @@ public class GeneralUtil {
             }
             if (readStream == null) {
                 URL stream = resource.getClass().getResource(resource);
-                readStream = stream.openStream();
+                if ( stream != null ) readStream = stream.openStream();
             }
         } catch (Exception ex) {
             XRLog.exception("Could not open stream from CLASSPATH: " + resource, ex);
@@ -273,6 +273,9 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2007/04/10 20:46:38  pdoubleya
+ * Fix, was not checking if resource was actually available before opening it
+ *
  * Revision 1.13  2006/07/26 18:17:09  pdoubleya
  * Added convenience method, write string to file.
  *
