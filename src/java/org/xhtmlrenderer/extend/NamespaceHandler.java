@@ -44,20 +44,20 @@ public interface NamespaceHandler {
     /**
      * @return the default CSS stylesheet for this namespace
      */
-    public InputStream getDefaultStylesheet();
+    InputStream getDefaultStylesheet();
 
     /**
      * @param doc
      * @return the title for this document, if any exists
      */
-    public String getDocumentTitle(Document doc);
+    String getDocumentTitle(Document doc);
 
     /**
      * @param doc
      * @return all links to CSS stylesheets (type="text/css") in this
      *         document
      */
-    public StylesheetInfo[] getStylesheets(Document doc);
+    StylesheetInfo[] getStylesheets(Document doc);
 
     /**
      * may return null. Required to return null if attribute does not exist and
@@ -67,7 +67,7 @@ public interface NamespaceHandler {
      * @param attrName PARAM
      * @return The attributeValue value
      */
-    public String getAttributeValue(org.w3c.dom.Element e, String attrName);
+    String getAttributeValue(org.w3c.dom.Element e, String attrName);
 
     /**
      * may return null
@@ -75,7 +75,7 @@ public interface NamespaceHandler {
      * @param e PARAM
      * @return The class value
      */
-    public String getClass(org.w3c.dom.Element e);
+    String getClass(org.w3c.dom.Element e);
 
     /**
      * may return null
@@ -83,7 +83,7 @@ public interface NamespaceHandler {
      * @param e PARAM
      * @return The iD value
      */
-    public String getID(org.w3c.dom.Element e);
+    String getID(org.w3c.dom.Element e);
 
     /**
      * may return null
@@ -91,7 +91,7 @@ public interface NamespaceHandler {
      * @param e PARAM
      * @return The elementStyling value (style attribute)
      */
-    public String getElementStyling(org.w3c.dom.Element e);
+    String getElementStyling(org.w3c.dom.Element e);
 
     /**
      * may return null
@@ -99,7 +99,7 @@ public interface NamespaceHandler {
      * @param e
      * @return The corresponding css properties for styling that is obtained in other ways.
      */
-    public String getNonCssStyling(org.w3c.dom.Element e);
+    String getNonCssStyling(org.w3c.dom.Element e);
 
     /**
      * may return null
@@ -107,7 +107,7 @@ public interface NamespaceHandler {
      * @param e PARAM
      * @return The lang value
      */
-    public String getLang(org.w3c.dom.Element e);
+    String getLang(org.w3c.dom.Element e);
 
     /**
      * should return null if element is not a link
@@ -115,8 +115,28 @@ public interface NamespaceHandler {
      * @param e PARAM
      * @return The linkUri value
      */
-    public String getLinkUri(org.w3c.dom.Element e);
-    
-    public String getAnchorName(Element e);
+    String getLinkUri(org.w3c.dom.Element e);
+
+    /**
+     * 
+     * @param e
+     * @return
+     */
+    String getAnchorName(Element e);
+
+    /** @return Returns true if the Element represents an image. */
+    boolean isImageElement(Element e);
+
+    /**
+     * For an element where isImageElement returns true, retrieves the URI associated with that Image, as
+     * reported by the element; makes no guarrantee that the URI is correct, complete or points to anything in
+     * particular. For elements where {@link #isImageElement(org.w3c.dom.Element)} returns false, this method may
+     * return false, and may also return false if the Element is not correctly formed and contains no URI; check the
+     * return value carefully.
+     * 
+     * @param e The element to extract image info from.
+     * @return String containing the URI for the image.
+     */
+    String getImageSourceURI(Element e);
 }
 
