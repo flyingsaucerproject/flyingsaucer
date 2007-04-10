@@ -356,7 +356,7 @@ public class XhtmlForm {
                 data.append("=");
                 data.append(URLUTF8Encoder.encode(ta.getText()));//TODO:check if we have to make linefeeds into CR-LF
             } else if (e.getNodeName().equals("select")) {
-                JComboBox select = new JComboBox();
+                JComboBox select = (JComboBox) cc;
                 data.append('&');
                 data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
                 data.append("=");
