@@ -22,6 +22,7 @@ package org.xhtmlrenderer.swing;
 import java.awt.Image;
 
 import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.util.ImageUtil;
 
 public class AWTFSImage implements FSImage {
     private Image _image;
@@ -43,6 +44,6 @@ public class AWTFSImage implements FSImage {
     }
     
     public void scale(int width, int height) {
-        _image = _image.getScaledInstance(width, height, Image.SCALE_FAST);
+        _image = ImageUtil.getScaledInstance(_image, width, height);
     }
 }
