@@ -30,6 +30,19 @@ import org.w3c.dom.Node;
  * @author Torbjörn Gannholm
  */
 public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
+    /** {@inheritDoc} */
+    public boolean isImageElement(Element e) {
+        return ( e != null && e.getNodeName().equalsIgnoreCase("img"));
+    }
+
+
+    public String getImageSourceURI(Element e) {
+        String uri = null;
+        if (e != null) {
+            uri = e.getAttribute("src");
+        }
+        return uri;
+    }
 
     public String getNonCssStyling(Element e) {
         if (e.getNodeName().equals("table")) {

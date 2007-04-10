@@ -82,6 +82,14 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
         return null;
     }
 
+    public boolean isImageElement(Element e) {
+        return false;
+    }
+
+    public String getImageSourceURI(Element e) {
+        return null;
+    }
+
     private Pattern _typePattern = Pattern.compile("type\\s?=\\s?");
     private Pattern _hrefPattern = Pattern.compile("href\\s?=\\s?");
     private Pattern _titlePattern = Pattern.compile("title\\s?=\\s?");
