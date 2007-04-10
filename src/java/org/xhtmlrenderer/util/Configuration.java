@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.lang.reflect.Field;
 
 
 /**
@@ -667,12 +668,67 @@ public class Configuration {
         }
         return Configuration.sInstance;
     }// end main()
+
+    /**
+     * Given a property, resolves the value to a public constant field on some class, where the field is of type Object.
+     * The property value must the the FQN of the class and field, e.g.
+     * aKey=java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR will return the value of the
+     * VALUE_INTERPOLATION_NEAREST_NEIGHBOR constant on the RendingHints class.
+     *
+     * @param key Name of the property
+     * @param defaultValue Returned in case of error.
+     * @return Value of the constant, or defaultValue in case of error.
+     */
+    public static Object valueFromClassConstant(String key, Object defaultValue) {
+        Configuration conf = instance();
+        String val = valueFor(key);
+        if ( val == null ) {
+            return defaultValue;
+        }
+        int idx = val.lastIndexOf(".");
+        String klassname;
+        String cnst;
+        try {
+            klassname = val.substring(0, idx);
+            cnst = val.substring(idx + 1);
+        } catch (IndexOutOfBoundsException e) {
+            conf.warning("Property key " + key + " for object value constant is not properly formatted; " +
+                    "should be FQN<dot>constant, is " + val);
+            return defaultValue;
+        }
+        Class klass = null;
+        try {
+            klass = Class.forName(klassname);
+        } catch (ClassNotFoundException e) {
+            conf.warning("Property for object value constant " + key + " is not a FQN: " + klassname);
+            return defaultValue;
+        }
+
+        Object cnstVal = null;
+        try {
+            Field fld = klass.getDeclaredField(cnst);
+            try {
+                cnstVal = fld.get(klass);
+            } catch (IllegalAccessException e) {
+                conf.warning("Property for object value constant " + key + ", field is not public: " + klassname +
+                        "." + cnst);
+                return defaultValue;
+            }
+        } catch (NoSuchFieldException e) {
+            conf.warning("Property for object value constant " + key + " is not a FQN: " + klassname);
+            return defaultValue;
+        }
+        return cnstVal;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2007/04/10 20:39:07  pdoubleya
+ * Added support for object-constants as properties.
+ *
  * Revision 1.15  2006/07/26 18:15:50  pdoubleya
  * Check for SecurityExceptions to avoid WebStart problems.
  *
