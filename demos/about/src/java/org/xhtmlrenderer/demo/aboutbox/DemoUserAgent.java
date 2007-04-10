@@ -120,16 +120,24 @@ public class DemoUserAgent implements UserAgentCallback {
             }
         }
         XMLResource xr = null;
+        InputStream inputStream = null;
         try {
             URLConnection uc = new URL(uri).openConnection();
             uc.connect();
             String contentType = uc.getContentType();
             //Maybe should popup a choice when content/unknown!
-            xr = XMLResource.load(uc.getInputStream());
+            inputStream = uc.getInputStream();
+            xr = XMLResource.load(inputStream);
         } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
+        } finally {
+            if ( inputStream != null ) try {
+                inputStream.close();
+            } catch (IOException e) {
+                // swallow
+            }
         }
         if (xr == null) {
             String notFound = "<h1>Document not found</h1>";
