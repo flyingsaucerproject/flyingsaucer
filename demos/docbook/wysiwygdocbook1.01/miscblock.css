@@ -23,7 +23,7 @@ question>para, answer>para {
 }
 /* see language specific files for content */
 question:before {
-	display:marker;
+	display: marker;
 	font-weight:bolder;
 }
 answer:before {
@@ -45,9 +45,9 @@ blockquote>blockinfo+para:before, blockquote>title+para:before, blockquote>attri
 blockquote>para:after {
 	content: no-close-quote;
 }
-blockquote>para:last-child:after {
+/*blockquote>para:last-child:after {
 	content: close-quote;
-}
+}*/
 
 epigraph+* {
 	padding-top:1em;
@@ -60,9 +60,9 @@ epigraph {
 epigraph>attribution+para:before, epigraph>para:first-child:before {
 	content: open-quote;
 }
-epigraph>para:last-child:after {
+/*epigraph>para:last-child:after {
 	content: close-quote;
-}
+}*/
 
 attribution {
 	text-align:right;
