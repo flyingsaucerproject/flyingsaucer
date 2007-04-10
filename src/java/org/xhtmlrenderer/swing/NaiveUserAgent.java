@@ -112,7 +112,18 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
     }
 
     public XMLResource getXMLResource(String uri) {
-        return XMLResource.load(getInputStream(uri));
+        InputStream inputStream = getInputStream(uri);
+        XMLResource xmlResource;
+        try {
+            xmlResource = XMLResource.load(inputStream);
+        } finally {
+            if ( inputStream != null ) try {
+                inputStream.close();
+            } catch (IOException e) {
+                // swallow
+            }
+        }
+        return xmlResource;
     }
 
 
@@ -164,6 +175,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2007/04/10 20:46:02  pdoubleya
+ * Fix, was not closing XML source stream when done
+ *
  * Revision 1.28  2007/02/07 16:33:31  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *
