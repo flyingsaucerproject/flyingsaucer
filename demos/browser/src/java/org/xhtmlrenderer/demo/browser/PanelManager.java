@@ -100,18 +100,31 @@ public class PanelManager implements UserAgentCallback {
                 try {
                     Image img = ImageIO.read(is);
                     if (img == null) {
-                        throw new IOException("ImageIO.read() returned null");
+                        XRLog.exception("ImageIO.read() returned null for uri " + uri);
+                    } else {
+                        img = GraphicsUtil.cleanImage(img);
+                        ir = new ImageResource(new AWTFSImage(img));
+                        imageCache.put(uri, ir);
                     }
-                    img = GraphicsUtil.cleanImage(img);
-                    ir = new ImageResource(new AWTFSImage(img));
-                    imageCache.put(uri, ir);
                 } catch (IOException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
                 }
             }
         }
-        if (ir == null) ir = new ImageResource(null);
+        if (ir == null) {
+            ir = new DummyImageResource(uri);
+            imageCache.put(uri, ir);
+        }
         return ir;
+    }
+
+    class DummyImageResource extends ImageResource {
+        private final String uri;
+
+        public DummyImageResource(String uri) {
+            super(null);
+            this.uri = uri;
+        }
     }
 
     public XMLResource getXMLResource(String uri) {
@@ -134,25 +147,39 @@ public class PanelManager implements UserAgentCallback {
             }
         }
         XMLResource xr = null;
+        URLConnection uc = null;
+        InputStream inputStream = null;
         try {
-            URLConnection uc = new URL(uri).openConnection();
+            uc = new URL(uri).openConnection();
             uc.connect();
             String contentType = uc.getContentType();
             //Maybe should popup a choice when content/unknown!
             if (contentType.equals("text/plain") || contentType.equals("content/unknown")) {
                 //sorry, mucking about a bit here - tobe
-                SAXSource source = new SAXSource(new PlainTextXMLReader(uc.getInputStream()), new InputSource());
+                inputStream = uc.getInputStream();
+                SAXSource source = new SAXSource(new PlainTextXMLReader(inputStream), new InputSource());
                 xr = XMLResource.load(source);
             } else if (contentType.startsWith("image")) {
                 String doc = "<img src='" + uri + "'/>";
                 xr = XMLResource.load(new StringReader(doc));
-            } else
-                xr = XMLResource.load(uc.getInputStream());
+            } else {
+                inputStream = uc.getInputStream();
+                xr = XMLResource.load(inputStream);
+            }
         } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    // swallow
+                }
+            }
         }
+
         if (xr == null) {
             xr = getNotFoundDocument(uri);
         }
