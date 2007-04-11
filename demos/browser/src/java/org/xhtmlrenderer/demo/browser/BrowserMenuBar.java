@@ -259,9 +259,8 @@ public class BrowserMenuBar extends JMenuBar {
 
     private void populateDemoList() {
         List demoList = new ArrayList();
-        URL url = BrowserMenuBar.class.getResource("/demos/r6/file-list.txt");
+        URL url = BrowserMenuBar.class.getResource("/demos/r7/file-list.txt");
         try {
-            String urls = url.toExternalForm();
             InputStream is = url.openStream();
             InputStreamReader reader = new InputStreamReader(is);
             LineNumberReader lnr = new LineNumberReader(reader);
@@ -662,6 +661,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.41  2007/04/11 21:07:02  pdoubleya
+* Prepare to point to R7 versions of files
+*
 * Revision 1.40  2007/02/07 16:33:38  peterbrant
 * Initial commit of rewritten table support and associated refactorings
 *

@@ -252,7 +252,7 @@ public class BrowserActions {
         usersManual = new EmptyAction("FS User's Guide", "Flying Saucer User's Guide", null) {
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    root.panel.loadPage("/r6/users-guide-r6.html");
+                    root.panel.loadPage("/r7/users-guide-r7.html");
                     root.panel.view.repaint();
                 } catch (Exception ex) {
                     Uu.p(ex);
@@ -302,7 +302,7 @@ public class BrowserActions {
         XHTMLPanel panel = new XHTMLPanel(new PanelManager());
         panel.setOpaque(false);
 
-        panel.setDocument("demo:/demos/r6/about.xhtml");
+        panel.setDocument("demo:/demos/r7/about.xhtml");
 
         JPanel outer = new JPanel(new BorderLayout());
         outer.add(panel, BorderLayout.CENTER);
@@ -411,6 +411,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2007/04/11 21:06:23  pdoubleya
+ * Prepare to point to R7 versions of files
+ *
  * Revision 1.26  2006/08/06 21:27:00  pdoubleya
  * Removed printing for R6.
  *
