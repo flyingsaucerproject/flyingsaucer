@@ -107,6 +107,9 @@ public class ImageUtil {
      */
     static class OldScaler implements Scaler {
         public Image getScaledInstance(Image img, int imageType, Object hint, int targetWidth, int targetHeight) {
+            // target is always >= 1
+            targetWidth = Math.max(1, targetWidth);
+            targetHeight = Math.max(1, targetHeight);
             return img.getScaledInstance(targetWidth, targetHeight, Image.SCALE_FAST);
         }
     }
@@ -116,11 +119,10 @@ public class ImageUtil {
      */
     static class FastScaler implements Scaler {
         public Image getScaledInstance(Image img, int imageType, Object hint, int targetWidth, int targetHeight) {
-            /*int type = (img.getTransparency() == Transparency.OPAQUE) ?
-                    BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;*/
             int w, h;
-            int imgw = img.getWidth(null);
-            int imgh = img.getHeight(null);
+            // target is always >= 1
+            targetWidth = Math.max(1, targetWidth);
+            targetHeight = Math.max(1, targetHeight);
 
             // Use one-step technique: scale directly from original
             // size to target size with a single drawImage() call
@@ -148,6 +150,10 @@ public class ImageUtil {
             int w, h;
             int imgw = img.getWidth(null);
             int imgh = img.getHeight(null);
+
+            // target is always >= 1
+            targetWidth = Math.max(1, targetWidth);
+            targetHeight = Math.max(1, targetHeight);
 
             // multi-pass only if higher quality requested and we are shrinking image
             if (imgw < targetWidth && imgh < targetHeight) {
