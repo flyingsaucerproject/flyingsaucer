@@ -28,13 +28,6 @@ import org.xml.sax.InputSource;
 public class ImageResource extends AbstractResource {
     private FSImage _img;
 
-    /**
-     * Creates a new instance of ImageResource
-     */
-    /*public ImageResource(InputSource source) {
-        super(source);
-    }*/
-
     //HACK: at least for now, till we know what we want to do here
     public ImageResource(FSImage img) {
         super((InputSource) null);
@@ -50,6 +43,9 @@ public class ImageResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2007/04/11 21:09:06  pdoubleya
+ * Remove commented block
+ *
  * Revision 1.3  2006/02/02 02:47:36  peterbrant
  * Support non-AWT images
  *
