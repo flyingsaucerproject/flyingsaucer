@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.css.newmatch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -68,11 +69,48 @@ public class CascadedStyle {
      */
     public static CascadedStyle createAnonymousStyle(IdentValue display) {
         CSSPrimitiveValue val = new PropertyValue(display);
-        // Urk... kind of ugly, but we really want this value to be used
+        
         List props = Collections.singletonList(
                 new PropertyDeclaration(CSSName.DISPLAY, val, true, StylesheetInfo.USER));
         
         return new CascadedStyle(props.iterator());
+    }
+    
+    /**
+     * Creates a <code>CascadedStyle</code> using the provided property
+     * declarations.  It is used when a box requires a style that does not
+     * correspond to anything in the parsed stylesheets.
+     * @param decls An array of PropertyDeclaration objects created with 
+     * {@link #createLayoutPropertyDeclaration(CSSName, IdentValue)}
+     * @see #createLayoutPropertyDeclaration(CSSName, IdentValue)
+     */
+    public static CascadedStyle createLayoutStyle(PropertyDeclaration[] decls) {
+        return new CascadedStyle(Arrays.asList(decls).iterator());
+    }
+    
+    /**
+     * Creates a <code>CascadedStyle</code> using style information from
+     * <code>startingPoint</code> and then adding the property declarations
+     * from <code>decls</code>.
+     * @param decls An array of PropertyDeclaration objects created with 
+     * {@link #createLayoutPropertyDeclaration(CSSName, IdentValue)}
+     * @see #createLayoutPropertyDeclaration(CSSName, IdentValue)
+     */
+    public static CascadedStyle createLayoutStyle(
+            CascadedStyle startingPoint, PropertyDeclaration[] decls) {
+        return new CascadedStyle(startingPoint, Arrays.asList(decls).iterator());
+    }
+
+    /**
+     * Creates a <code>PropertyDeclaration</code> suitable for passing to
+     * {@link #createLayoutStyle(PropertyDeclaration[])} or
+     * {@link #createLayoutStyle(CascadedStyle, PropertyDeclaration[])}
+     */
+    public static PropertyDeclaration createLayoutPropertyDeclaration(
+            CSSName cssName, IdentValue display) {
+        CSSPrimitiveValue val = new PropertyValue(display);
+        // Urk... kind of ugly, but we really want this value to be used
+        return new PropertyDeclaration(cssName, val, true, StylesheetInfo.USER);
     }
 
     /**
@@ -90,6 +128,10 @@ public class CascadedStyle {
     CascadedStyle(java.util.Iterator iter) {
         this();
 
+        addProperties(iter);
+    }
+
+    private void addProperties(java.util.Iterator iter) {
         //do a bucket-sort on importance and origin
         //properties should already be in order of specificity
         java.util.List[] buckets = new java.util.List[PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT];
@@ -108,6 +150,12 @@ public class CascadedStyle {
                 cascadedProperties.put(prop.getCSSName(), prop);
             }
         }
+    }
+    
+    private CascadedStyle(CascadedStyle startingPoint, Iterator props) {
+        cascadedProperties = new TreeMap(startingPoint.cascadedProperties);
+        
+        addProperties(props);
     }
 
 
@@ -202,6 +250,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2007/04/12 12:29:11  peterbrant
+ * Properly handle floated tables with captions
+ *
  * Revision 1.17  2007/02/20 17:23:15  peterbrant
  * Optimize fingerprint calculation
  *

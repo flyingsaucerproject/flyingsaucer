@@ -100,6 +100,8 @@ public class BlockBox extends Box implements InlinePaintable {
     
     private int _childrenHeight;
     
+    private boolean _fromCaptionedTable;
+    
     public BlockBox() {
         super();
     }
@@ -684,7 +686,7 @@ public class BlockBox extends Box implements InlinePaintable {
             setContentWidth((int) (getContainingBlockWidth() - getLeftMBP() - getRightMBP()));
             setHeight(0);
             
-            if (! isAnonymous()) {
+            if (! isAnonymous() || (isFromCaptionedTable() && isFloated())) {
                 int pinnedContentWidth = -1;
                 
                 if (cssWidth != -1) {
@@ -1733,6 +1735,14 @@ public class BlockBox extends Box implements InlinePaintable {
 
     protected void setChildrenHeight(int childrenHeight) {
         _childrenHeight = childrenHeight;
+    }
+
+    public boolean isFromCaptionedTable() {
+        return _fromCaptionedTable;
+    }
+
+    public void setFromCaptionedTable(boolean fromTable) {
+        _fromCaptionedTable = fromTable;
     }    
 }
 
@@ -1740,6 +1750,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.75  2007/04/12 12:29:10  peterbrant
+ * Properly handle floated tables with captions
+ *
  * Revision 1.74  2007/03/17 22:55:51  peterbrant
  * Remove distinction between box IDs and named anchors
  *

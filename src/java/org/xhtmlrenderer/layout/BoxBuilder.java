@@ -305,7 +305,7 @@ public class BoxBuilder {
         resolveTableContent(c, anonBox, childrenForAnonymous, nested);
 
         if (next == IdentValue.TABLE) {
-            childrenWithAnonymous.add(reorderTableContent((TableBox)anonBox));
+            childrenWithAnonymous.add(reorderTableContent(c, (TableBox)anonBox));
         } else {
             childrenWithAnonymous.add(anonBox);
         }
@@ -317,7 +317,7 @@ public class BoxBuilder {
      * out and added to an anonymous block box along with the table itself.
      * If not, the table is returned.
      */
-    private static BlockBox reorderTableContent(TableBox table) {
+    private static BlockBox reorderTableContent(LayoutContext c, TableBox table) {
         List topCaptions = new LinkedList();
         Box header = null;
         List bodies = new LinkedList();
@@ -355,16 +355,48 @@ public class BoxBuilder {
         if (topCaptions.size() == 0 && bottomCaptions.size() == 0) {
             return table;
         } else {
-            CalculatedStyle anonStyle = table.getStyle().createAnonymousStyle(IdentValue.BLOCK);
+            // If we have a floated table with a caption, we need to float the
+            // outer anonymous box and not the table
+            CalculatedStyle anonStyle;
+            if (table.getStyle().isFloated()) {
+                CascadedStyle cascadedStyle = CascadedStyle.createLayoutStyle(
+                        new PropertyDeclaration[] {
+                                CascadedStyle.createLayoutPropertyDeclaration(
+                                        CSSName.DISPLAY, IdentValue.BLOCK),
+                                CascadedStyle.createLayoutPropertyDeclaration(
+                                        CSSName.FLOAT, table.getStyle().getIdent(CSSName.FLOAT)) });
+                
+                anonStyle = table.getStyle().deriveStyle(cascadedStyle);
+            }
+            else {
+                anonStyle = table.getStyle().createAnonymousStyle(IdentValue.BLOCK);
+            }
+            
             BlockBox anonBox = new BlockBox();
             anonBox.setStyle(anonStyle);
             anonBox.setAnonymous(true);
+            anonBox.setFromCaptionedTable(true);
             anonBox.setElement(table.getElement());
             
             anonBox.setChildrenContentType(BlockBox.CONTENT_BLOCK);
             anonBox.addAllChildren(topCaptions);
             anonBox.addChild(table);
             anonBox.addAllChildren(bottomCaptions);
+            
+            if (table.getStyle().isFloated()) {
+                anonBox.setFloatedBoxData(new FloatedBoxData());
+                table.setFloatedBoxData(null);
+                
+                CascadedStyle original = c.getSharedContext().getCss().getCascadedStyle(
+                        table.getElement(), false);
+                CascadedStyle modified = CascadedStyle.createLayoutStyle(
+                        original,
+                        new PropertyDeclaration[] {
+                                CascadedStyle.createLayoutPropertyDeclaration(
+                                        CSSName.FLOAT, IdentValue.NONE)
+                        });
+                table.setStyle(table.getStyle().getParent().deriveStyle(modified));
+            }
             
             return anonBox;
         }
@@ -700,7 +732,7 @@ public class BoxBuilder {
                             TableBox table = (TableBox)child;
                             table.ensureChildren(c);
                             
-                            child = reorderTableContent(table);
+                            child = reorderTableContent(c, table);
                         }
 
                         if (!info.isContainsBlockLevelContent()
