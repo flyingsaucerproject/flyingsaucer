@@ -260,24 +260,26 @@ public class BrowserMenuBar extends JMenuBar {
     private void populateDemoList() {
         List demoList = new ArrayList();
         URL url = BrowserMenuBar.class.getResource("/demos/r7/file-list.txt");
-        try {
-            InputStream is = url.openStream();
-            InputStreamReader reader = new InputStreamReader(is);
-            LineNumberReader lnr = new LineNumberReader(reader);
-            String line = null;
-            while ((line = lnr.readLine()) != null) {
-                demoList.add(line);
+        if (url != null) {
+            try {
+                InputStream is = url.openStream();
+                InputStreamReader reader = new InputStreamReader(is);
+                LineNumberReader lnr = new LineNumberReader(reader);
+                String line = null;
+                while ((line = lnr.readLine()) != null) {
+                    demoList.add(line);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        for (Iterator itr = demoList.iterator(); itr.hasNext();) {
-            String s = (String) itr.next();
-            String s1[] = s.split(",");
-            allDemos.put(s1[0], s1[1]);
+    
+            for (Iterator itr = demoList.iterator(); itr.hasNext();) {
+                String s = (String) itr.next();
+                String s1[] = s.split(",");
+                allDemos.put(s1[0], s1[1]);
+            }
         }
     }
 
@@ -661,6 +663,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.42  2007/04/12 12:39:25  peterbrant
+* Fix NPE if demo list is not found
+*
 * Revision 1.41  2007/04/11 21:07:02  pdoubleya
 * Prepare to point to R7 versions of files
 *
