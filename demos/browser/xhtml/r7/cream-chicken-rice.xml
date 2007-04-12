@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="recipebook-xml.css" type="text/css"?>
+<?xml-stylesheet href="general.css" type="text/css"?>
+
+<html>
+  <head>
+    <title>Flying Saucer: Direct XML Rendering via CSS</title>
+  </head>
+  <body>
+    <p class="link left-link"><a href="box.xhtml">Previous Page</a></p>
+    <p class="link right-link"><a href="position.xhtml">Next Page</a></p>
+    <p id="fslogo">Flying Saucer XML/CSS2 Renderer</p>
+
+    <span id="pagebyline">Support for Direct XML Rendering via Pure CSS</span>
+    <br />
+      <p><b>XML/CSS support includes</b>: You can render XML directly using CSS as this page shows. David Horton prepared
+      a CSS stylesheet that takes a custom XML format for cooking recipes and lays it out on the page. What you see below
+      is actually XML embedded within an XHTML page; you could also just pass in the XML to Flying Saucer, using the
+      xml-stylesheet directory to point to your CSS file. Without even bothering to convert the XML to XHTML--you can render 
+      it. Our project website also includes a downloadable demo of rendering DocBook XML directly via CSS.</p>
+      <br />
+
+    <recipe>
+      <title>Cream of Chicken and Rice Soup</title>
+
+      <recipeinfo>
+        <blurb>An tasty way to use leftover chicken</blurb>
+
+        <genre>Soup</genre>
+
+        <author>David Horton</author>
+
+        <yield>4 servings</yield>
+      </recipeinfo>
+
+      <ingredientlist>
+        <ingredient><quantity>6</quantity> <unit>oz.</unit> <fooditem>chicken
+        scraps</fooditem></ingredient>
+
+        <ingredient><quantity>2</quantity> <unit>Tbsp.</unit>
+        <fooditem>flour</fooditem></ingredient>
+
+        <ingredient><quantity>2</quantity> <unit>Tbsp.</unit>
+        <fooditem>butter</fooditem></ingredient>
+
+        <ingredient><quantity>2</quantity> <unit>C.</unit> <fooditem>chicken
+        broth</fooditem></ingredient>
+
+        <ingredient><quantity>1/4</quantity> <unit>C.</unit>
+        <fooditem>rice</fooditem></ingredient>
+
+        <ingredient><quantity>1/2</quantity> <unit>tsp.</unit>
+        <fooditem>parsley</fooditem></ingredient>
+
+        <ingredient><quantity>1/4</quantity> <unit>tsp.</unit>
+        <fooditem>pepper</fooditem></ingredient>
+
+        <ingredient><fooditem>salt</fooditem> to taste</ingredient>
+
+        <ingredient><quantity>2</quantity> <unit>C.</unit>
+        <fooditem>milk</fooditem></ingredient>
+      </ingredientlist>
+
+      <preparation>Cut chicken into bite-sized pieces. Combine chicken and flour
+      in a mixing bowl and stir until chicken is well coated. Melt butter in a
+      <equipment>3-quart saucepan</equipment> over medium heat. Add chicken and
+      any excess flour. Cook until mixture begins to brown, stiring often. Slowly
+      stir in chicken broth and bring to a boil. Add rice, parsley, salt and
+      pepper. Reduce heat to low. Cover and cook until rice is tender, stiring
+      occasionally to prevent sticking. Just before serving add milk and warm
+      through. Do not allow soup to boil after adding milk as it will cause the
+      milk to curdle and ruin the smooth texture of the soup.</preparation>
+
+      <serving>Serve as an appetizer or combine with a sandwich and salad for a
+      meal.</serving>
+
+      <notes>This soup can be partially made ahead of time and frozen for a quick
+      meal later on. Follow the recipe to the point just before adding the milk.
+      Measure the soup into freezer-safe containers and cool rapidly in an ice
+      bath. When ready to eat, thaw the soup and continue the recipe by adding the
+      milk and warming through.</notes>
+    </recipe>
+  </body>
+</html>

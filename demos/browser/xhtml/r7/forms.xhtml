@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Flying Saucer: XHTML Forms Support</title>
+    <link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen" />
+    <link rel="stylesheet" type="text/css" href="print.css" title="Style" media="print" />
+    <style>
+      input {
+        padding-right: 5px;
+        padding-left: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="link left-link"><a href="demoNav:back">Previous Page</a></p>
+    <p class="link right-link"><a href="demoNav:forward">Next Page</a></p>
+
+    <p id="fslogo">Flying Saucer XML/CSS2 Renderer</p>
+    <span id="pagebyline">XHTML Forms Support</span>
+    <br />
+      <p><b>Forms support includes</b>: Any XML/XHTML element can be "replaced" during the rendering cycle with a component
+      that knows how to draw itself. This means we can replace XHTML form elements with, for example, Swing components. It also
+      allows us to replace SVG tags with rendered SVG images, and so on. This page shows how a XHTML form is rendered via Swing;
+      one could also use another GUI toolkit for Java (AWT, Thinlet, etc). FS doesn't currently support form submission out of
+      the box, but it can be added--the Swing components replaced in the page are just normal Swing components to which listeners
+      can be attached. Note that as with HTML, you can freely mix formatted text, images and CSS formatting with form elements.</p>
+    <br />
+        
+    <h3>General Form Components</h3>
+    <form>
+        <input type="button" value="Panic!"/> normal button<br/>
+        <input type="checkbox" value="radio" checked="checked"/> checked<br/>
+        <input name="rad" type="radio" value="radio"/>not checked<br/>
+        <input name="rad" type="radio" value="radio" checked="checked"/>checked<br/>
+        <input name="rad" type="radio" value="radio" checked="checked" disabled="disabled"/>checked and disabled<br/>
+        <select>
+            <option>option 1</option>
+            <option>option 2</option>
+            <option>option 3</option>
+        </select>
+        <select>
+            <option>option1</option>
+            <option>option 2</option>
+            <option selected="selected">pre selected</option>
+        </select>
+        empty <input type="text" value=""/><br/>
+        with value <input type="text" value="my value"/><br/>
+        empty with size = 6<input type="text" size="6"/><br/>
+        empty with maxlength = 6 <input type="text" maxlength="6"/><br/>
+        readonly = readonly <input type="text" readonly="readonly" value="can't touch this"/><br/>
+    </form>
+        
+    <h3>TextArea</h3>
+    <form>
+        <textarea>some text</textarea> default textarea size<br/>
+        <textarea rows="15" cols="40"></textarea> empty with
+        rows = 15, cols = 40<br/>
+    </form>
+  </body>
+</html>
+
