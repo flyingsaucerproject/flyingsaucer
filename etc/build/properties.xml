@@ -129,20 +129,8 @@
     <include name="org/xhtmlrenderer/simple/**"/>
   </patternset>
 
-    <!--include name="**/*.css"/>
-        <include name="*.xhtml"/>
-        <include name="*.gif"/>
-        <include name="*.jpg"/>
-        <include name="*.png"/>
-        <include name="splash/**"/>
-        <include name="about/**"/>
-        <include name="alice/**"/>
-        <include name="game/**"/>
-        <include name="fonts/**"/>
-        <include name="layout/**/*.xhtml"/ -->
-
   <patternset id="xhtml-files">
-    <include name="r6/**"/>
+    <include name="r7/**"/>
     <include name="fonts/**"/>
   </patternset>
 
