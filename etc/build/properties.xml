@@ -50,8 +50,6 @@
   <property name="dest.resources.conf.dir" location="${dest.java.dir}/resources/conf"/>
   <property name="src.resources.schema.dir" location="${src.dir}/schema"/>
   <property name="dest.resources.schema.dir" location="${dest.java.dir}/resources/schema"/>
-  <property name="src.resources.img.dir" location="${src.dir}/images"/>
-  <property name="dest.resources.img.dir" location="${dest.java.dir}/resources/images"/>
   <property name="src.packaging.dir" location="${src.dir}/packaging"/>
   <property name="src.demo.xhtml.dir" location="demos/browser/xhtml"/>
   <property name="src.demo.svg.dir" location="demos/svg/xhtml"/>
