@@ -251,7 +251,8 @@ public class FloatManager {
         
         // Translate from box coords to BFC coords
         Point offset = bfc.getOffset();
-        Rectangle bounds = current.getBorderEdge(-offset.x, -offset.y, cssCtx);
+        Rectangle bounds = current.getBorderEdge(
+                current.getX()-offset.x, current.getY()-offset.y, cssCtx);
         
         int y = findLowestY(cssCtx, floats);
         
