@@ -709,12 +709,16 @@ public class CalculatedStyle {
         return getIdent(CSSName.WHITE_SPACE);
     }
 
-    private static final synchronized Object getCachedRect(String key) {
+    private static synchronized Object getCachedRect(String key) {
         return _cachedRects.get(key);
     }
 
-    private static final synchronized void putCachedRect(String key, Object value) {
+    private static synchronized void putCachedRect(String key, Object value) {
         _cachedRects.put(key, value);
+    }
+    
+    public static synchronized void clearCachedRects() {
+        _cachedRects.clear();
     }
 
     public FSFont getFSFont(CssContext cssContext) {
@@ -1091,6 +1095,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.89  2007/04/14 20:09:39  peterbrant
+ * Add method to clear cached rects
+ *
  * Revision 1.88  2007/03/01 20:17:10  peterbrant
  * Tables with collapsed borders don't have padding
  *
