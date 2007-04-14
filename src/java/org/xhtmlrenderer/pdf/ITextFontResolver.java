@@ -72,9 +72,14 @@ public class ITextFontResolver implements FontResolver {
     
     public void addFont(String path, boolean embedded) 
             throws DocumentException, IOException {
+        addFont(path, BaseFont.CP1252, embedded);
+    }
+    
+    public void addFont(String path, String encoding, boolean embedded) 
+            throws DocumentException, IOException {
         String lower = path.toLowerCase();
         if (lower.endsWith(".otf") || lower.endsWith(".ttf")) {
-            BaseFont font = BaseFont.createFont(path, BaseFont.CP1252, embedded);
+            BaseFont font = BaseFont.createFont(path, encoding, embedded);
             
             String fontFamilyName = TrueTypeUtil.getFamilyName(font);
             FontFamily fontFamily = (FontFamily)_fontFamilies.get(fontFamilyName);
