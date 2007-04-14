@@ -360,7 +360,9 @@ public class XhtmlForm {
                 data.append('&');
                 data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
                 data.append("=");
-                data.append(URLUTF8Encoder.encode(select.getSelectedItem().toString()));
+                if (select.getSelectedItem() != null) {
+                    data.append(URLUTF8Encoder.encode(select.getSelectedItem().toString()));
+                }
             }
         }
         data.deleteCharAt(0);//remove the first &
