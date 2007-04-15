@@ -58,7 +58,7 @@ public abstract class Box implements Styleable {
     private int _contentWidth;
     private int _rightMBP = 0;
     private int _leftMBP = 0;
-
+    
     /**
      * Box height.
      */
@@ -361,6 +361,9 @@ public abstract class Box implements Styleable {
             CalculatedStyle cbStyle = getContainingBlock().getStyle();
             cbContentHeight = (int)cbStyle.getFloatPropertyProportionalHeight(
                     CSSName.HEIGHT, 0, cssCtx);
+        } else if (isInlineBlock()) {
+            // FIXME Should be content height, not overall height
+            cbContentHeight = getContainingBlock().getHeight();
         }
         
         if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
@@ -373,6 +376,11 @@ public abstract class Box implements Styleable {
         
         setRelativeOffset(new Dimension(getX() - initialX, getY() - initialY));
         return getRelativeOffset();
+    }
+    
+    protected boolean isInlineBlock()
+    {
+        return false;
     }
     
     public void setAbsY(int absY) {
@@ -913,6 +921,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.137  2007/04/15 00:34:40  peterbrant
+ * Allow inline-block / inline-table content to be relatively positioned
+ *
  * Revision 1.136  2007/03/17 22:55:51  peterbrant
  * Remove distinction between box IDs and named anchors
  *

@@ -548,10 +548,17 @@ public class Layer {
     }
     
     private void position(LayoutContext c) {
+        
         if (getMaster().getStyle().isAbsolute() && ! c.isPrint()) {
             ((BlockBox)getMaster()).positionAbsolute(c, BlockBox.POSITION_BOTH);
-        } else if (getMaster().getStyle().isRelative() && isInline()) {
+        } else if (getMaster().getStyle().isRelative() && 
+                (isInline() || ((BlockBox)getMaster()).isInline())) {
             getMaster().positionRelative(c);
+            if (! isInline()) {
+                getMaster().calcCanvasLocation();
+                getMaster().calcChildLocations();
+            }
+             
         }
     }
 

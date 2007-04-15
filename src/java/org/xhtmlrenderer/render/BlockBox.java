@@ -106,23 +106,6 @@ public class BlockBox extends Box implements InlinePaintable {
         super();
     }
     
-    public void expandToMaxChildWidth() {
-        int maxChildWidth = 0;
-        for (int i = 0; i < getChildCount(); i++) {
-            Box child = (Box)getChild(i);
-            if (child instanceof BlockBox) {
-                ((BlockBox)child).expandToMaxChildWidth();
-            }
-            int childWidth = child.getWidth();
-            if (childWidth > maxChildWidth) {
-                maxChildWidth = childWidth;
-            }
-        }
-        if (getStyle().isAutoWidth() && maxChildWidth > getContentWidth()) {
-            setContentWidth(maxChildWidth);
-        }
-    }
-    
     protected String getExtraBoxDescription() {
         return "";
     }
@@ -1705,6 +1688,26 @@ public class BlockBox extends Box implements InlinePaintable {
     public void setFloatedBoxData(FloatedBoxData floatedBoxData) {
         _floatedBoxData = floatedBoxData;
     }
+
+    public int getChildrenHeight() {
+        return _childrenHeight;
+    }
+
+    protected void setChildrenHeight(int childrenHeight) {
+        _childrenHeight = childrenHeight;
+    }
+
+    public boolean isFromCaptionedTable() {
+        return _fromCaptionedTable;
+    }
+
+    public void setFromCaptionedTable(boolean fromTable) {
+        _fromCaptionedTable = fromTable;
+    } 
+    
+    protected boolean isInlineBlock() {
+        return isInline();
+    }
     
     private static class MarginCollapseResult {
         private int maxPositive;
@@ -1728,28 +1731,15 @@ public class BlockBox extends Box implements InlinePaintable {
             return maxPositive != 0 || maxNegative != 0;
         }
     }
-
-    public int getChildrenHeight() {
-        return _childrenHeight;
-    }
-
-    protected void setChildrenHeight(int childrenHeight) {
-        _childrenHeight = childrenHeight;
-    }
-
-    public boolean isFromCaptionedTable() {
-        return _fromCaptionedTable;
-    }
-
-    public void setFromCaptionedTable(boolean fromTable) {
-        _fromCaptionedTable = fromTable;
-    }    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.76  2007/04/15 00:34:40  peterbrant
+ * Allow inline-block / inline-table content to be relatively positioned
+ *
  * Revision 1.75  2007/04/12 12:29:10  peterbrant
  * Properly handle floated tables with captions
  *
