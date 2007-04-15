@@ -30,29 +30,55 @@
     <br />
         
     <h3>General Form Components</h3>
-    <form>
-        <input type="button" value="Panic!"/> normal button<br/>
-        <input type="checkbox" value="radio" checked="checked"/> checked<br/>
-        <input name="rad" type="radio" value="radio"/>not checked<br/>
-        <input name="rad" type="radio" value="radio" checked="checked"/>checked<br/>
-        <input name="rad" type="radio" value="radio" checked="checked" disabled="disabled"/>checked and disabled<br/>
-        <select>
-            <option>option 1</option>
-            <option>option 2</option>
-            <option>option 3</option>
-        </select>
-        <select>
-            <option>option1</option>
-            <option>option 2</option>
-            <option selected="selected">pre selected</option>
-        </select>
-        empty <input type="text" value=""/><br/>
-        with value <input type="text" value="my value"/><br/>
-        empty with size = 6<input type="text" size="6"/><br/>
-        empty with maxlength = 6 <input type="text" maxlength="6"/><br/>
-        readonly = readonly <input type="text" readonly="readonly" value="can't touch this"/><br/>
+    <form action="">
+        <table>
+            <thead><tr><th>Component</th><th>Sample</th></tr></thead>
+            <tbody>
+            <tr><td>Button</td><td><input type="button" value="Panic!"/> normal button</td></tr>
+            <tr><td>Checkbox</td><td><input type="checkbox" value="radio" checked="checked"/> checked</td></tr>
+            <tr><td>Radio buttons</td><td><input name="rad" type="radio" value="radio"/>not checked</td></tr>
+            <tr><td></td><td><input name="rad" type="radio" value="radio" checked="checked"/>checked</td></tr>
+            <tr><td></td><td><input name="rad" type="radio" value="radio" checked="checked" disabled="disabled"/>checked and disabled</td></tr>
+            <tr>
+                <td>Select list</td>
+                <td>
+                    <select>
+                        <option>option 1</option>
+                        <option>option 2</option>
+                        <option>option 3</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Select with selection</td>
+                <td>
+                    <select>
+                        <option>option1</option>
+                        <option>option 2</option>
+                        <option selected="selected">pre selected</option>
+                    </select>
+                </td>
+            </tr>
+                <tr>
+                    <td>List selection</td>
+                    <td>
+                        <select multiple="true">
+                            <option>option1</option>
+                            <option>option 2</option>
+                            <option selected="selected">pre selected</option>
+                            <option selected="selected">pre selected</option>
+                        </select>
+                    </td>
+                </tr>
+            <tr><td>Text field</td><td>empty <input type="text" value=""/></td></tr>
+            <tr><td></td><td>with value <input type="text" value="my value"/></td></tr>
+            <tr><td></td><td>empty with size = 6<input type="text" size="6"/></td></tr>
+            <tr><td></td><td>empty with maxlength = 6 <input type="text" maxlength="6"/></td></tr>
+            <tr><td></td><td>readonly = readonly <input type="text" readonly="readonly" value="can't touch this"/></td></tr>
+            </tbody>
+        </table>
     </form>
-        
+
     <h3>TextArea</h3>
     <form>
         <textarea>some text</textarea> default textarea size<br/>
