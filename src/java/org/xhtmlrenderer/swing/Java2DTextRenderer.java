@@ -29,6 +29,7 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.LineMetricsAdapter;
+import org.xhtmlrenderer.util.Configuration;
 
 /**
  * @author   Joshua Marinacci
@@ -36,16 +37,27 @@ import org.xhtmlrenderer.render.LineMetricsAdapter;
  */
 public class Java2DTextRenderer implements TextRenderer {
 
-    protected float scale = 1.0f;
+    protected float scale;
 
-    protected float threshold = 25;
+    protected float threshold;
 
-    protected int level = HIGH;
+    protected int level;
 
+    protected Object antiAliasRenderingHint;
+
+    public Java2DTextRenderer() {
+        scale = Configuration.valueAsFloat("xr.text.scale", 1.0f);
+        threshold = Configuration.valueAsFloat("xr.text.aa-fontsize-threshhold", 25);
+        level = Configuration.valueAsInt("xr.text.aa-smoothing-level", HIGH);
+        antiAliasRenderingHint = Configuration.valueFromClassConstant("xr.text.aa-rendering-hint",
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    }
+
+    /** {@inheritDoc} */
     public void drawString(OutputDevice outputDevice, String string, float x, float y ) {
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
         if ( graphics.getFont().getSize() > threshold && level > NONE ) {
-            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
         }
         graphics.drawString( string, (int)x, (int)y );
         if ( graphics.getFont().getSize() > threshold && level > NONE ) {
@@ -53,6 +65,7 @@ public class Java2DTextRenderer implements TextRenderer {
         }
     }
 
+    /** {@inheritDoc} */
     public void setup(FontContext fontContext) {
         //Uu.p("setup graphics called");
         ((Java2DFontContext)fontContext).getGraphics().setRenderingHint( 
@@ -91,6 +104,26 @@ public class Java2DTextRenderer implements TextRenderer {
 
     public int getSmoothingLevel() {
         return level;
+    }
+
+    /**
+     * If anti-alias text is enabled, the value from RenderingHints to use for AA smoothing in Java2D. Defaults to
+     * {@link java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON}.
+     *
+     * @return Current AA rendering hint
+     */
+    public Object getAntiAliasRenderingHint() {
+        return antiAliasRenderingHint;
+    }
+
+    /**
+     * If anti-alias text is enabled, the value from RenderingHints to use for AA smoothing in Java2D. Defaults to
+     * {@link java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON}.
+     *
+     * @param antiAliasRenderingHint  rendering hint for AA smoothing in Java2D
+     */
+    public void setAntiAliasRenderingHint(Object antiAliasRenderingHint) {
+        this.antiAliasRenderingHint = antiAliasRenderingHint;
     }
 }
 

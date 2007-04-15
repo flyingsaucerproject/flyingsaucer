@@ -30,6 +30,7 @@ import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.LineMetricsAdapter;
+import org.xhtmlrenderer.util.Configuration;
 
 
 /**
@@ -39,22 +40,17 @@ import org.xhtmlrenderer.render.LineMetricsAdapter;
 public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer {
     public org.sektor37.minium.TextRenderer renderer;
 
-    protected float scale = 1.0f;
-    protected int level = HIGH;
+    protected float scale;
+    protected int level;
 
     public MiniumTextRenderer() {
+        scale = Configuration.valueAsFloat("xr.text.scale", 1.0f);
+        level = Configuration.valueAsInt("xr.text.aa-smoothing-level", HIGH);
+
         TextRendererFactory text_renderer_factory = TextRendererFactory.newOversamplingInstance();
         renderer = text_renderer_factory.newTextRenderer();
 
-        String text_renderer_quality = null;
-        try {
-            System.getProperty("org.xhtmlrenderer.minium.quality");
-        } catch (SecurityException e) {
-            System.err.println(e.getLocalizedMessage());
-        }
-        if (null == text_renderer_quality) {
-            text_renderer_quality = "lowest";
-        }
+        String text_renderer_quality = Configuration.valueFor("xr.text.aa-smoothing.minium", "lowest");
 
         Map defaultHints;
         if ("low".equals(text_renderer_quality)) {
