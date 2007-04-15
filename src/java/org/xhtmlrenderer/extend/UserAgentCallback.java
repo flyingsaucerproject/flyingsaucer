@@ -29,36 +29,63 @@ import org.xhtmlrenderer.resource.XMLResource;
  * term defined by the W3C in the documentation for XHTML and CSS; in most
  * cases, you can think of this as the rendering component for a browser.</p>
  * <p/>
+ *
  * <p>This interface defines a simple callback mechanism for Flying Saucer to
  * interact with a user agent. The FS toolkit provides a default implementation
  * for this interface which in most cases you can leave as is. You can provide your
  * own UserAgentCallback when constructing an {@link org.xhtmlrenderer.simple.XHTMLPanel}
  * or {@link org.xhtmlrenderer.swing.BasicPanel}.</p>
  *
+ * <p>The user agent in this case is responsible for retrieving external resources. For
+ * privacy reasons, if using the library in an application that can access URIs
+ * in an unrestricted fashion, you may decide to restrict access to XML, CSS or images
+ * retrieved from external sources; that's one of the purposes of the UAC.</p>
+ *
+ * <p>To understand how to create your own UAC, it's best to look at some of the
+ * implemetations shipped with the library, like the {@link org.xhtmlrenderer.swing.NaiveUserAgent}.
+ * </p>
+ *
  * @author Torbjörn Gannholm
  */
 public interface UserAgentCallback {
-
-    public CSSResource getCSSResource(String uri);
-
-    public ImageResource getImageResource(String uri);
-
-    public XMLResource getXMLResource(String uri);
+    /**
+     * Retrieves the CSS at the given URI. This is a synchronous call.
+     *
+     * @param uri Location of the CSS
+     * @return A CSSResource for the content at the URI.
+     */
+    CSSResource getCSSResource(String uri);
 
     /**
-     * UserAgent should consider if it should answer truthfully or not for
-     * privacy reasons
+     * Retrieves the Image at the given URI. This is a synchronous call.
      *
-     * @param uri PARAM
+     * @param uri Location of the image
+     * @return An ImageResource for the content at the URI.
+     */
+    ImageResource getImageResource(String uri);
+
+    /**
+     * Retrieves the XML at the given URI. This is a synchronous call.
+     *
+     * @param uri Location of the XML
+     * @return A XMLResource for the content at the URI.
+     */
+    XMLResource getXMLResource(String uri);
+
+    /**
+     * Normally, returns true if the user agent has visited this URI. UserAgent should consider
+     * if it should answer truthfully or not for privacy reasons.
+     *  
+     * @param uri A URI which may have been visited by this user agent.
      * @return The visited value
      */
-    public boolean isVisited(String uri);
+    boolean isVisited(String uri);
 
     /**
      * Does not need to be a correct URL, only an identifier that the
      * implementation can resolve.
      *
-     * @param url
+     * @param url A URL against which relative references can be resolved.
      */
     void setBaseURL(String url);
 
