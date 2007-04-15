@@ -27,6 +27,7 @@ import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.swing.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
@@ -173,6 +174,40 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         return null;
     }
+    
+    private static String readTextContent(Element element) {
+        StringBuffer result = new StringBuffer();
+        Node current = element.getFirstChild();
+        while (current != null) {
+            if (current.getNodeType() == Node.TEXT_NODE) {
+                Text t = (Text)current;
+                result.append(t.getData());
+            }
+            current = current.getNextSibling();
+        }
+        return result.toString();
+    }
+    
+    private static String collapseWhiteSpace(String text) {
+        StringBuffer result = new StringBuffer();
+        int l = text.length();
+        for (int i = 0; i < l; i++) {
+            char c = text.charAt(i);
+            if (Character.isWhitespace(c)) {
+                result.append(' ');
+                while (++i < l) {
+                    c = text.charAt(i);
+                    if (! Character.isWhitespace(c)) {
+                        i--;
+                        break;
+                    }
+                }
+            } else {
+                result.append(c);
+            }
+        }
+        return result.toString();
+    }
 
     /**
      * Gets the documentTitle attribute of the XhtmlNamespaceHandler object
@@ -182,27 +217,14 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      */
     public String getDocumentTitle(org.w3c.dom.Document doc) {
         String title = "TITLE UNKNOWN";
-        try {
-            for (int i = 0; i < 1; i++) {//smart HACK
-                Element html = doc.getDocumentElement();
-                NodeList nl = html.getElementsByTagName("head");
-                if (nl.getLength() == 0) {
-                    break;
-                }
-                nl = ((Element) nl.item(0)).getElementsByTagName("title");
-                if (nl.getLength() == 0) {
-                    break;
-                }
-                nl = ((Element) nl.item(0)).getChildNodes();
-                if (nl.getLength() == 0) {
-                    break;
-                }
-                title = nl.item(0).getNodeValue();
-            }
-        } catch (Exception ex) {
-            System.err.println("Error retrieving document title. " + ex.getMessage());
-            title = "";
+        
+        Element html = doc.getDocumentElement();
+        Element head = findFirstChild(html, "head");
+        if (head != null) {
+            Element titleElem = findFirstChild(head, "title");
+            title = collapseWhiteSpace(readTextContent(titleElem).trim());
         }
+        
         return title;
     }
     
