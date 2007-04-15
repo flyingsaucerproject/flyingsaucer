@@ -240,23 +240,52 @@ public class XhtmlForm {
             cc = sp;
 
         } else if (e.getNodeName().equals("select")) {
-            JComboBox select = new JComboBox();
-            select.setEditable(false);//cannot edit it in HTML
-            NodeList options = e.getElementsByTagName("option");
-            int selected = -1;
-            for (int i = 0; i < options.getLength(); i++) {
-                Element value = (Element) options.item(i);
-                String svalue = collectText(value);
-                select.addItem(svalue);
-                if (value.hasAttribute("selected") && value.getAttribute("selected").equals("selected")) {
-                    selected = i;
-                }
-            }
+            // either a select list or a drop down/combobox
+            if (e.hasAttribute("multiple") && e.getAttribute("multiple").equals("true")) {
+                // select list.
+                //    we'll pass the items in to the constructor, so put the list together first
+                DefaultListModel listModel = new DefaultListModel();
 
-            if (selected != -1) {
-                select.setSelectedIndex(selected);
+                //    and capture selection at the same time
+                ListSelectionModel selModel = new DefaultListSelectionModel();
+
+                NodeList options = e.getElementsByTagName("option");
+                for (int i = 0; i < options.getLength(); i++) {
+                    Element value = (Element) options.item(i);
+                    String svalue = collectText(value);
+                    listModel.addElement(svalue);
+                    if (value.hasAttribute("selected") && value.getAttribute("selected").equals("selected")) {
+                        selModel.addSelectionInterval(i, i);
+                    }
+                }
+
+                JList list = new JList(listModel);
+                list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                list.setSelectionModel(selModel);
+
+                // the component is actually a scrollpane
+                JScrollPane sp = new JScrollPane(list);
+                cc = sp;
+            } else {
+                // drop down list
+                JComboBox select = new JComboBox();
+                select.setEditable(false); //cannot edit it in HTML
+                NodeList options = e.getElementsByTagName("option");
+                int selected = -1;
+                for (int i = 0; i < options.getLength(); i++) {
+                    Element value = (Element) options.item(i);
+                    String svalue = collectText(value);
+                    select.addItem(svalue);
+                    if (value.hasAttribute("selected") && value.getAttribute("selected").equals("selected")) {
+                        selected = i;
+                    }
+                }
+
+                if (selected != -1) {
+                    select.setSelectedIndex(selected);
+                }
+                cc = select;
             }
-            cc = select;
         }
         if (cc != null) {//was a form object
             cc.setSize(cc.getPreferredSize());
@@ -373,10 +402,7 @@ public class XhtmlForm {
         }
         String formData = data.toString();
         //TODO: make a real submission via uac
-        System.out.println("Submitting form");
-        System.out.println("action: " + action);
-        System.out.println("method: " + method);
-        System.out.println("form data: " + formData);
+
     }
 }
 
