@@ -186,9 +186,7 @@ public class PanelManager implements UserAgentCallback {
         return xr;
     }
 
-    private XMLResource getNotFoundDocument
-            (String
-                    uri) {
+    private XMLResource getNotFoundDocument(String uri) {
         XMLResource xr;
         String notFound = "<html><h1>Document not found</h1><p>Could not access URI <pre>" + uri + "</pre></p></html>";
         System.out.println(notFound);
@@ -196,9 +194,7 @@ public class PanelManager implements UserAgentCallback {
         return xr;
     }
 
-    public boolean isVisited
-            (String
-                    uri) {
+    public boolean isVisited(String uri) {
         if (uri == null) return false;
         uri = resolveURI(uri);
         return history.contains(uri);
@@ -219,9 +215,7 @@ public class PanelManager implements UserAgentCallback {
         history.add(index, baseUrl);
     }
 
-    public String resolveURI
-            (String
-                    uri) {
+    public String resolveURI(String uri) {
         URL ref = null;
         if (uri == null) return baseUrl;
         if (uri.trim().equals("")) return baseUrl;//jar URLs don't resolve this right
@@ -240,7 +234,11 @@ public class PanelManager implements UserAgentCallback {
                 short_url = "/" + short_url;
             }
             ref = marker.getClass().getResource(short_url);
-            Uu.p("ref = " + ref);
+            Uu.p("Demo navigation URI, ref = " + ref);
+        } else if (uri.startsWith("javascript")) {
+            Uu.p("Javascript URI, ignoring: " + uri);
+        } else if (uri.startsWith("news")) {
+            Uu.p("News URI, ignoring: " + uri);
         } else {
             try {
                 URL base;
@@ -251,7 +249,7 @@ public class PanelManager implements UserAgentCallback {
                 }
                 ref = new URL(base, uri);
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                Uu.p("URI/URL is malformed: " + baseUrl + " or " + uri);
             }
         }
 
@@ -261,26 +259,22 @@ public class PanelManager implements UserAgentCallback {
             return ref.toExternalForm();
     }
 
-    public String getBaseURL
-            () {
+    public String getBaseURL() {
         return baseUrl;
     }
 
 
-    public String getForward
-            () {
+    public String getForward() {
         index++;
         return (String) history.get(index);
     }
 
-    public String getBack
-            () {
+    public String getBack() {
         index--;
         return (String) history.get(index);
     }
 
-    public boolean hasForward
-            () {
+    public boolean hasForward() {
         if (index + 1 < history.size() && index >= 0) {
             return true;
         } else {
@@ -288,8 +282,7 @@ public class PanelManager implements UserAgentCallback {
         }
     }
 
-    public boolean hasBack
-            () {
+    public boolean hasBack() {
         if (index >= 0) {
             return true;
         } else {
