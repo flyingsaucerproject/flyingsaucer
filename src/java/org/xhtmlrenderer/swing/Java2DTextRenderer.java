@@ -19,9 +19,9 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -49,19 +49,39 @@ public class Java2DTextRenderer implements TextRenderer {
         scale = Configuration.valueAsFloat("xr.text.scale", 1.0f);
         threshold = Configuration.valueAsFloat("xr.text.aa-fontsize-threshhold", 25);
         level = Configuration.valueAsInt("xr.text.aa-smoothing-level", HIGH);
-        antiAliasRenderingHint = Configuration.valueFromClassConstant("xr.text.aa-rendering-hint",
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        Object dummy = new Object();
+
+        Object aaHint = Configuration.valueFromClassConstant("xr.text.aa-rendering-hint", dummy);
+        if (aaHint == dummy) {
+            try {
+                Map map = null;
+                // we should be able to look up the "recommended" AA settings (that correspond to the user's
+                // desktop preferences and machine capabilities
+                // see: http://java.sun.com/javase/6/docs/api/java/awt/doc-files/DesktopProperties.html
+                Toolkit tk = Toolkit.getDefaultToolkit();
+                map = (Map)(tk.getDesktopProperty("awt.font.desktophints"));
+                antiAliasRenderingHint = map.get(RenderingHints.KEY_TEXT_ANTIALIASING);
+            } catch (Exception e) {
+                // conceivably could get an exception in a webstart environment? not sure
+            }
+        }
+        if (antiAliasRenderingHint == null) {
+            antiAliasRenderingHint = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
+        }
     }
 
     /** {@inheritDoc} */
     public void drawString(OutputDevice outputDevice, String string, float x, float y ) {
+        Object prevHint = null;
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
         if ( graphics.getFont().getSize() > threshold && level > NONE ) {
+            prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
         }
         graphics.drawString( string, (int)x, (int)y );
         if ( graphics.getFont().getSize() > threshold && level > NONE ) {
-            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF );
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
         }
     }
 
@@ -112,7 +132,7 @@ public class Java2DTextRenderer implements TextRenderer {
      *
      * @return Current AA rendering hint
      */
-    public Object getAntiAliasRenderingHint() {
+    public Object getRenderingHints() {
         return antiAliasRenderingHint;
     }
 
@@ -120,10 +140,10 @@ public class Java2DTextRenderer implements TextRenderer {
      * If anti-alias text is enabled, the value from RenderingHints to use for AA smoothing in Java2D. Defaults to
      * {@link java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON}.
      *
-     * @param antiAliasRenderingHint  rendering hint for AA smoothing in Java2D
+     * @param renderingHints  rendering hint for AA smoothing in Java2D
      */
-    public void setAntiAliasRenderingHint(Object antiAliasRenderingHint) {
-        this.antiAliasRenderingHint = antiAliasRenderingHint;
+    public void setRenderingHints(Object renderingHints) {
+        this.antiAliasRenderingHint = renderingHints;
     }
 }
 
