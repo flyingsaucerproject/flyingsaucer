@@ -19,13 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.RenderingHints.Key;
 
 import javax.swing.JComponent;
@@ -41,9 +36,13 @@ import org.xhtmlrenderer.render.RenderingContext;
 
 public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDevice {
     private Graphics2D _graphics;
-    
+
     public Java2DOutputDevice(Graphics2D graphics) {
         _graphics = graphics;
+    }
+
+    public Java2DOutputDevice(BufferedImage outputImage) {
+        this(outputImage.createGraphics());
     }
 
     public void drawBorderLine(

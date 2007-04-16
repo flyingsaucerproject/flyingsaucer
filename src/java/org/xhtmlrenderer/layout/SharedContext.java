@@ -91,7 +91,8 @@ public class SharedContext {
     private Map styleMap;
     
     private ReplacedElementFactory _replacedElementFactory;
-    
+    private Rectangle temp_canvas;
+
     /**
      * Constructor for the Context object
      */
@@ -372,12 +373,20 @@ public class SharedContext {
         this.canvas = canvas;
     }
 
+    public void set_TempCanvas(Rectangle rect) {
+        this.temp_canvas = rect;
+    }
+
 
     public Rectangle getFixedRectangle() {
         //Uu.p("this = " + canvas);
-        Rectangle rect = getCanvas().getFixedRectangle();
-        rect.translate(getCanvas().getX(), getCanvas().getY());
-        return rect;
+        if (getCanvas() == null) {
+            return this.temp_canvas;
+        } else {
+            Rectangle rect = getCanvas().getFixedRectangle();
+            rect.translate(getCanvas().getX(), getCanvas().getY());
+            return rect;
+        }
     }
 
     private NamespaceHandler namespaceHandler;
@@ -661,6 +670,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2007/04/16 20:56:49  pdoubleya
+ * New image rendering based on PDF rendering approach. Hacked small change in SharedContext which is dependent on panel for sizing, currently.
+ *
  * Revision 1.37  2007/04/02 17:08:36  peterbrant
  * Improve method name
  *
