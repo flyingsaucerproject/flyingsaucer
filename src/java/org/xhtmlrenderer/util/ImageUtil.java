@@ -25,6 +25,42 @@ public class ImageUtil {
         qual.put(DOWNSCALE_LOW_QUALITY, new FastScaler());
     }
 
+    /**
+     * Creates a BufferedImage compatible with the local graphics environment; this is a helper method for a
+     * common process and just sets up and calls
+     * {@link java.awt.GraphicsConfiguration#createCompatibleImage(int, int, int)}.
+     *
+     * @param width Target width for the image
+     * @param height Target height for the image
+     * @param transparency Value from the {@link java.awt.Transparency} class; see docs for
+     * {@link java.awt.GraphicsConfiguration#createCompatibleImage(int, int, int)}.
+     *
+     * @return A BufferedImage compatible with the screen (best fit).
+     */
+    public static BufferedImage createCompatibleBufferedImage(int width, int height, int transparency) {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gs = ge.getDefaultScreenDevice();
+        GraphicsConfiguration gc = gs.getDefaultConfiguration();
+
+        // Create an image that does not support transparency
+        BufferedImage bimage = gc.createCompatibleImage(width, height, transparency);
+        return bimage;
+    }
+
+    /**
+     * Creates a BufferedImage compatible with the local graphics environment; this is a helper method for a
+     * common process and just sets up and calls
+     * {@link java.awt.GraphicsConfiguration#createCompatibleImage(int, int, int)}. The image will support
+     * transparent pixels.
+     *
+     * @param width Target width for the image
+     * @param height Target height for the image
+     * @return A BufferedImage compatible with the screen (best fit) supporting transparent pixels.
+     */
+    public static BufferedImage createCompatibleBufferedImage(int width, int height) {
+        return createCompatibleBufferedImage(width, height, Transparency.BITMASK);
+    }
+
 
     /**
      * Scales an image to the requested width and height, assuming these are both >= 1; size given in pixels.
@@ -156,7 +192,7 @@ public class ImageUtil {
             targetHeight = Math.max(1, targetHeight);
 
             // multi-pass only if higher quality requested and we are shrinking image
-            if (imgw < targetWidth && imgh < targetHeight) {
+            if (targetWidth < imgw && targetHeight < imgh) {
                 // Use multi-step technique: start with original size, then
                 // scale down in multiple passes with drawImage()
                 // until the target size is reached
