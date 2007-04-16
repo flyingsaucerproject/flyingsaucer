@@ -417,12 +417,17 @@ public class CalculatedStyle {
      * @return The marginWidth value
      */
     public RectPropertySet getMarginRect(float cbWidth, CssContext ctx) {
+        return getMarginRect(cbWidth, ctx, true);
+    }
+    
+    public RectPropertySet getMarginRect(float cbWidth, CssContext ctx, boolean useCache) {
         if (! _marginsAllowed) {
             return RectPropertySet.ALL_ZEROS;
         } else {
-            return getMarginProperty(this, CSSName.MARGIN_SHORTHAND, CSSName.MARGIN_SIDE_PROPERTIES, cbWidth, ctx);
+            return getMarginProperty(
+                    this, CSSName.MARGIN_SHORTHAND, CSSName.MARGIN_SIDE_PROPERTIES, cbWidth, ctx, useCache);
         }
-    }
+    }    
 
     /**
      * Convenience property accessor; returns a Border initialized with the
@@ -433,13 +438,17 @@ public class CalculatedStyle {
      * @param ctx
      * @return The paddingWidth value
      */
-    public RectPropertySet getPaddingRect(float cbWidth, CssContext ctx) {
+    public RectPropertySet getPaddingRect(float cbWidth, CssContext ctx, boolean useCache) {
         if (! _paddingAllowed) {
             return RectPropertySet.ALL_ZEROS;
         } else {
-            return getPaddingProperty(this, CSSName.PADDING_SHORTHAND, CSSName.PADDING_SIDE_PROPERTIES, cbWidth, ctx);
+            return getPaddingProperty(this, CSSName.PADDING_SHORTHAND, CSSName.PADDING_SIDE_PROPERTIES, cbWidth, ctx, useCache);
         }
     }
+    
+    public RectPropertySet getPaddingRect(float cbWidth, CssContext ctx) {
+        return getPaddingRect(cbWidth, ctx, true);
+    }    
 
     /**
      * @param cssName
@@ -575,55 +584,64 @@ public class CalculatedStyle {
                                                       CSSName shorthandProp,
                                                       CSSName[] sides,
                                                       float cbWidth,
-                                                      CssContext ctx) {
-        String key = null;
-
-        if (style._padding == null) {
-            key = RectPropertySet.deriveKey(style, sides);
-            if (key == null) {
-                style._padding = newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
-                return style._padding;
-            } else {
-                style._padding = (RectPropertySet) getCachedRect(key);
-                if (style._padding == null) {
+                                                      CssContext ctx,
+                                                      boolean useCache) {
+        if (! useCache) {
+            return newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
+        } else {
+            String key = null;
+    
+            if (style._padding == null) {
+                key = RectPropertySet.deriveKey(style, sides);
+                if (key == null) {
                     style._padding = newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
-                    putCachedRect(key, style._padding);
+                    return style._padding;
+                } else {
+                    style._padding = (RectPropertySet) getCachedRect(key);
+                    if (style._padding == null) {
+                        style._padding = newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
+                        putCachedRect(key, style._padding);
+                    }
+                }
+    
+                // HACK, would really rather do this earlier in the process to take
+                // advantage of caching, but this is the lowest impact approach
+                if (hasNegativeValues(style._padding)) {
+                    style._padding = style._padding.copyOf();
+                    resetNegativeValues(style._padding);
                 }
             }
-
-            // HACK, would really rather do this earlier in the process to take
-            // advantage of caching, but this is the lowest impact approach
-            if (hasNegativeValues(style._padding)) {
-                style._padding = style._padding.copyOf();
-                resetNegativeValues(style._padding);
-            }
+    
+            return style._padding;
         }
-
-        return style._padding;
     }
 
     private static RectPropertySet getMarginProperty(CalculatedStyle style,
                                                      CSSName shorthandProp,
                                                      CSSName[] sides,
                                                      float cbWidth,
-                                                     CssContext ctx) {
-        String key = null;
-
-        if (style._margin == null) {
-            key = RectPropertySet.deriveKey(style, sides);
-            if (key == null) {
-                style._margin = newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
-                return style._margin;
-            } else {
-                style._margin = (RectPropertySet) getCachedRect(key);
-                if (style._margin == null) {
+                                                     CssContext ctx,
+                                                     boolean useCache) {
+        if (! useCache) {
+            return newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
+        } else {
+            String key = null;
+    
+            if (style._margin == null) {
+                key = RectPropertySet.deriveKey(style, sides);
+                if (key == null) {
                     style._margin = newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
-                    putCachedRect(key, style._margin);
+                } else {
+                    style._margin = (RectPropertySet) getCachedRect(key);
+                    if (style._margin == null) {
+                        style._margin = newRectInstance(style, shorthandProp, sides, cbWidth, ctx);
+                        putCachedRect(key, style._margin);
+                    }
                 }
             }
+    
+            return style._margin;
         }
-
-        return style._margin;
     }
 
     private static RectPropertySet newRectInstance(CalculatedStyle style,
@@ -1095,6 +1113,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.90  2007/04/16 01:10:06  peterbrant
+ * Vertical margin and padding with percentage values may be incorrect if box participated in a shrink-to-fit calculation.  Fix margin calculation.
+ *
  * Revision 1.89  2007/04/14 20:09:39  peterbrant
  * Add method to clear cached rects
  *

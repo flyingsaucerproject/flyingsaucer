@@ -32,7 +32,9 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -661,6 +663,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 resolveAutoMargins(c, cssWidth, padding, border);
             }
             
+            recalcMargin(c);
             RectPropertySet margin = getMargin(c);
             
             // CLEAN: cast to int
@@ -765,10 +768,10 @@ public class BlockBox extends Box implements InlinePaintable {
         addBoxID(c);
         
         calcDimensions(c);
+        calcShrinkToFitWidthIfNeeded(c);
         collapseMargins(c);
         
         calcClearance(c);
-        calcShrinkToFitWidthIfNeeded(c);
         
         BorderPropertySet border = getBorder(c);
         RectPropertySet margin = getMargin(c);
@@ -958,6 +961,7 @@ public class BlockBox extends Box implements InlinePaintable {
     // bottom margins by looking back up the tree.
     private void collapseMargins(LayoutContext c) {
         if (! isTopMarginCalculated() || ! isBottomMarginCalculated()) {
+            recalcMargin(c);
             RectPropertySet margin = getMargin(c);
             
             if (! isTopMarginCalculated() && ! isBottomMarginCalculated() && isVerticalMarginsAdjoin(c)) {
@@ -1270,6 +1274,42 @@ public class BlockBox extends Box implements InlinePaintable {
     protected boolean isFixedWidthAdvisoryOnly() {
         return false;
     }
+    
+    
+    private void recalcMargin(LayoutContext c) {
+        if (true || isTopMarginCalculated() && isBottomMarginCalculated()) {
+            return;
+        }
+        
+        // Check if we're a potential candidate upfront to avoid expensive
+        // getStyleMargin(c, false) call
+        FSDerivedValue topMargin = getStyle().valueByName(CSSName.MARGIN_TOP);
+        boolean resetTop = topMargin instanceof LengthValue && ! topMargin.hasAbsoluteUnit();
+        
+        FSDerivedValue bottomMargin = getStyle().valueByName(CSSName.MARGIN_BOTTOM);
+        boolean resetBottom = bottomMargin instanceof LengthValue && ! bottomMargin.hasAbsoluteUnit();
+        
+        if (! resetTop && ! resetBottom) {
+            return;
+        }
+        
+        RectPropertySet styleMargin = getStyleMargin(c, false);
+        RectPropertySet workingMargin = getMargin(c);
+        
+        // A shrink-to-fit calculation may have set incorrect values for
+        // percentage margins (as the containing block width
+        // hasn't been calculated yet).  Reset top and bottom margins
+        // in this case.
+        if ( ! isTopMarginCalculated() &&
+                styleMargin.top() != workingMargin.top()) {
+            setMarginTop(c, (int)styleMargin.top());
+        }
+        
+        if ( ! isBottomMarginCalculated() &&
+                styleMargin.bottom() != workingMargin.bottom()) {
+            setMarginBottom(c, (int)styleMargin.bottom());
+        }
+    }    
     
     public void calcMinMaxWidth(LayoutContext c) {
         if (! isMinMaxCalculated()) {
@@ -1737,6 +1777,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.77  2007/04/16 01:10:05  peterbrant
+ * Vertical margin and padding with percentage values may be incorrect if box participated in a shrink-to-fit calculation.  Fix margin calculation.
+ *
  * Revision 1.76  2007/04/15 00:34:40  peterbrant
  * Allow inline-block / inline-table content to be relatively positioned
  *

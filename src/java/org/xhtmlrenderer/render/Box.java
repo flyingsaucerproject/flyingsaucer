@@ -666,8 +666,12 @@ public abstract class Box implements Styleable {
         return _workingMargin != null ? _workingMargin : getStyleMargin(cssContext);
     }
     
-    private RectPropertySet getStyleMargin(CssContext cssContext) {
+    protected RectPropertySet getStyleMargin(CssContext cssContext) {
         return getStyle().getMarginRect(getContainingBlockWidth(), cssContext);
+    }
+    
+    protected RectPropertySet getStyleMargin(CssContext cssContext, boolean useCache) {
+        return getStyle().getMarginRect(getContainingBlockWidth(), cssContext, useCache);
     }
     
     public RectPropertySet getPadding(CssContext cssCtx) {
@@ -921,6 +925,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.138  2007/04/16 01:10:05  peterbrant
+ * Vertical margin and padding with percentage values may be incorrect if box participated in a shrink-to-fit calculation.  Fix margin calculation.
+ *
  * Revision 1.137  2007/04/15 00:34:40  peterbrant
  * Allow inline-block / inline-table content to be relatively positioned
  *
