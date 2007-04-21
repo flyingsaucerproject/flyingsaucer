@@ -6,13 +6,15 @@ include. ../include/menu.xil
 
 h1. Flying Saucer Supported Features from CSS 2.1
 
+_Note: this page is currently being re-worked with the advent of our R7 release, which covers most of the CSS 2.1 specification. If you have questions about our support for specific features, please contact us on our mailing list. Thanks!_
+
 Flying Saucer supports the bulk of the strict XHTML and CSS 2.1 standards. We are working towards complete (and correct) feature support of these standards, but not everything works yet. Most of it is there, though.
 
 h3(fs_heading){clear:none}. General XHTML / CSS features
 
 * Formatted text: basically everything: paragraphs and spans, bold, italic, font sizes, text alignment, horizontal alignment, different fonts
 * Box model: border, padding, margin, colors, background images, styled borders
-* Full positioning support: static, relative, absolute, and fixed, and floats. -There are still some issues dealing with multiple stacked floats. This code is being rewritten.-
+* Full positioning support: static, relative, absolute, and fixed, and floats. 
 * Tables: Table support is currently being rewritten so check on the mailing list to see what works.
 * Forms: Every standard form control is represented. There are still some bugs with alignment.
 * Images: both as inline images with the <img> tag and with background images.
@@ -33,7 +35,7 @@ h3(fs_heading){clear:none}. Special Features
 
 h3(fs_heading){clear:none}. What's not Supported (yet)
 
-* Parts of absolute, fixed, and float positioning. Things like setting a left and right with width = auto. There are probably a lot of bugs when you nest positioned boxes too.
+* Parts of absolute, fixed, and float positioning. Things like setting a left and right with width = auto. 
 * Shrink-to-fit sizing. You need an explicit width on any positioned for floated box. (in R7pre1)
 * Auto-fit tables. You must use explicit table widths and sizes (%,px, em, etc).
 * Incremental rendering and dynamic layout
