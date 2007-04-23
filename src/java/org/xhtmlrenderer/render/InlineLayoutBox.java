@@ -795,10 +795,12 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public Box getRestyleTarget() {
-        if (getElement() != null) {
-            return this;
-        } else {
-            return getParent();
+        // Inline boxes may be broken across lines so back out
+        // to the nearest block box
+        Box result = getParent();
+        while (result instanceof InlineLayoutBox) {
+            result = result.getParent();
         }
+        return result.getParent();
     }
 }

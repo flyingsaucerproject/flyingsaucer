@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.swing;
 
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
 import javax.swing.event.MouseInputAdapter;
@@ -7,6 +8,7 @@ import javax.swing.event.MouseInputAdapter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.render.Box;
 
 public class HoverListener extends MouseInputAdapter {
@@ -43,12 +45,8 @@ public class HoverListener extends MouseInputAdapter {
             return;
         }
         
-        //Uu.p("under cursor = " + ib);
         boolean needRepaint = false;
-        // return this box or one if it's parents to find the deepest hovered element.
-        // if none then just return null
-        //ib = getDeepestHover(ib);
-        //Uu.p("deepest hover = " + ib);
+
         Element hovered_element = getHoveredElement(ib);
 
         if (hovered_element == panel.hovered_element) {
@@ -56,22 +54,52 @@ public class HoverListener extends MouseInputAdapter {
         }
         
         panel.hovered_element = hovered_element;
+        
+        boolean targetedRepaint = true;
+        Rectangle repaintRegion = null;
 
         // if moved out of the old block then unstyle it
         if (prev != null) {
-            //prev.hover = false;
             needRepaint = true;
-            prev.getRestyleTarget().restyle(c);
+            prev.restyle(c);
+            
+            PaintingInfo pI = prev.getPaintingInfo();
+            if (pI != null) {
+                repaintRegion = new Rectangle(pI.getAggregateBounds());
+            } else {
+                targetedRepaint = false;
+            }
+            
             prev = null;
         }
+        
         if (hovered_element != null) {
             needRepaint = true;
-            ib.getRestyleTarget().restyle(c);
-            prev = ib;
+            Box target = ib.getRestyleTarget();
+            target.restyle(c);
+            
+            if (targetedRepaint) {
+                PaintingInfo pI = target.getPaintingInfo();
+                if (pI != null) {
+                    if (repaintRegion == null) {
+                        repaintRegion = new Rectangle(pI.getAggregateBounds());
+                    } else {
+                        repaintRegion.add(pI.getAggregateBounds());
+                    }
+                } else {
+                    targetedRepaint = false;
+                }
+            }
+            
+            prev = target;
         }
         
         if (needRepaint) {
-            panel.repaint();
+            if(! targetedRepaint) {
+                panel.repaint();
+            } else {
+                panel.repaint(repaintRegion);
+            }
         }
     }
     
