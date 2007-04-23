@@ -222,7 +222,9 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         Element head = findFirstChild(html, "head");
         if (head != null) {
             Element titleElem = findFirstChild(head, "title");
-            title = collapseWhiteSpace(readTextContent(titleElem).trim());
+            if (titleElem != null) {
+                title = collapseWhiteSpace(readTextContent(titleElem).trim());
+            }
         }
         
         return title;
