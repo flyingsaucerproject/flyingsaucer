@@ -724,4 +724,29 @@ public class TableCellBox extends BlockBox {
             borders.add(new CollapsedBorderSide(this, BorderPainter.LEFT));
         }
     }
+    
+    // Treat height as if it specifies border height (i.e. 
+    // box-sizing: border-box in CSS3).  There doesn't seem to be any
+    // justification in the spec for this, but everybody does it 
+    // (in standards mode) so I guess we will too
+    protected int getCSSHeight(CssContext c) {
+        if (getStyle().isAutoHeight()) {
+            return -1;
+        } else {
+            int result = (int)getStyle().getFloatPropertyProportionalWidth(
+                    CSSName.HEIGHT, getContainingBlock().getContentWidth(), c);
+            
+            BorderPropertySet border = getBorder(c);
+            result -= (int)border.top() + (int)border.bottom();
+            
+            RectPropertySet padding = getPadding(c);
+            result -= (int)padding.top() + (int)padding.bottom();
+            
+            return result >= 0 ? result : -1;
+        }
+    }
+    
+    protected boolean isAllowHeightToShrink() {
+        return false;
+    }    
 }

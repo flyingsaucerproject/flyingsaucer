@@ -814,7 +814,10 @@ public class BlockBox extends Box implements InlinePaintable {
         
         if (! isReplaced()) {
             if (! isAutoHeight()) {
-                setHeight(originalHeight);
+                int delta = originalHeight - getHeight();
+                if (delta > 0 || isAllowHeightToShrink()) {
+                    setHeight(originalHeight);
+                }
             }
             
             applyCSSMinMaxHeight(c);
@@ -842,6 +845,10 @@ public class BlockBox extends Box implements InlinePaintable {
         if (pushedLayer) {
             c.popLayer();
         }
+    }
+    
+    protected boolean isAllowHeightToShrink() {
+        return true;
     }
 
     protected void calcLayoutHeight(
@@ -1181,7 +1188,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return -1;
     }
     
-    private int getCSSHeight(CssContext c) {
+    protected int getCSSHeight(CssContext c) {
         if (! isAnonymous()) {
             if (! isAutoHeight()) {
                 if (! getContainingBlock().getStyle().isAutoHeight()) {
@@ -1777,6 +1784,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.78  2007/04/23 21:13:16  peterbrant
+ * Calculate table cell height as if it included borders and padding (matches FF and Opera behavior)
+ *
  * Revision 1.77  2007/04/16 01:10:05  peterbrant
  * Vertical margin and padding with percentage values may be incorrect if box participated in a shrink-to-fit calculation.  Fix margin calculation.
  *
