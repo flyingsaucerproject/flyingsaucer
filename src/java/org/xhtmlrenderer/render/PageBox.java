@@ -20,10 +20,14 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Rectangle;
+import java.util.Locale;
 
+import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.Layer;
 
@@ -40,16 +44,112 @@ public class PageBox {
     
     private int _outerPageWidth;
     
+    private PageDimensions _pageDimensions;
+    
     public int getWidth(CssContext cssCtx) {
-        return (int)getStyle().getFloatPropertyProportionalTo(
-                CSSName.FS_PAGE_WIDTH, 0, cssCtx);
+        resolvePageDimensions(cssCtx);
+        
+        return _pageDimensions.getWidth();
     }
-    
+
     public int getHeight(CssContext cssCtx) {
-        return (int)getStyle().getFloatPropertyProportionalTo(
-                CSSName.FS_PAGE_HEIGHT, 0, cssCtx);
+        resolvePageDimensions(cssCtx);
+        
+        return _pageDimensions.getHeight();
     }
     
+    private void resolvePageDimensions(CssContext cssCtx) {
+        if (_pageDimensions == null) {
+            CalculatedStyle style = getStyle();
+            
+            int width;
+            int height;
+            
+            if (style.isLength(CSSName.FS_PAGE_WIDTH)) {
+                width = (int)style.getFloatPropertyProportionalTo(
+                        CSSName.FS_PAGE_WIDTH, 0, cssCtx);
+            } else {
+                width = resolveAutoPageWidth(cssCtx);
+            }
+            
+            if (style.isLength(CSSName.FS_PAGE_HEIGHT)) {
+                height = (int)style.getFloatPropertyProportionalTo(
+                        CSSName.FS_PAGE_HEIGHT, 0, cssCtx);
+            } else {
+                height = resolveAutoPageHeight(cssCtx);
+            }
+            
+            if (style.isIdent(CSSName.FS_PAGE_ORIENTATION, IdentValue.LANDSCAPE)) {
+                int temp;
+                
+                temp = width;
+                width = height;
+                height = temp;
+            }
+            
+            PageDimensions dim = new PageDimensions();
+            dim.setWidth(width);
+            dim.setHeight(height);
+            
+            _pageDimensions = dim;
+        }
+    }
+    
+    private boolean isUseLetterSize() {
+        Locale l = Locale.getDefault();
+        String county = l.getCountry();
+        
+        // Per http://en.wikipedia.org/wiki/Paper_size, letter paper is
+        // a de facto standard in Canada (although the government uses
+        // its own standard) and Mexico (even though it is officially an ISO
+        // country)
+        return county.equals("US") || county.equals("CA") || county.equals("MX"); 
+    }
+    
+    private int resolveAutoPageWidth(CssContext cssCtx) {
+        if (isUseLetterSize()) {
+            return (int)LengthValue.calcFloatProportionalValue(
+                    getStyle(),
+                    CSSName.FS_PAGE_WIDTH,
+                    "8.5in",
+                    8.5f,
+                    CSSPrimitiveValue.CSS_IN,
+                    0,
+                    cssCtx);
+        } else {
+            return (int)LengthValue.calcFloatProportionalValue(
+                    getStyle(),
+                    CSSName.FS_PAGE_WIDTH,
+                    "210mm",
+                    210f,
+                    CSSPrimitiveValue.CSS_MM,
+                    0,
+                    cssCtx);            
+        }
+    }
+    
+    private int resolveAutoPageHeight(CssContext cssCtx) {
+        if (isUseLetterSize()) {
+            return (int)LengthValue.calcFloatProportionalValue(
+                    getStyle(),
+                    CSSName.FS_PAGE_HEIGHT,
+                    "11in",
+                    11f,
+                    CSSPrimitiveValue.CSS_IN,
+                    0,
+                    cssCtx);
+        } else {
+            return (int)LengthValue.calcFloatProportionalValue(
+                    getStyle(),
+                    CSSName.FS_PAGE_HEIGHT,
+                    "297mm",
+                    297f,
+                    CSSPrimitiveValue.CSS_MM,
+                    0,
+                    cssCtx);            
+        }
+    }    
+
     public int getContentHeight(CssContext cssCtx) {
         return getHeight(cssCtx) 
             - getMarginBorderPadding(cssCtx, CalculatedStyle.TOP)
@@ -318,5 +418,26 @@ public class PageBox {
     public int getMarginBorderPadding(CssContext cssCtx, int which) {
         return getStyle().getMarginBorderPadding(
                 cssCtx, (int)getOuterPageWidth(), which);
-    }     
+    }
+    
+    private static final class PageDimensions {
+        private int _width;
+        private int _height;
+
+        public int getHeight() {
+            return _height;
+        }
+
+        public void setHeight(int height) {
+            _height = height;
+        }
+
+        public int getWidth() {
+            return _width;
+        }
+
+        public void setWidth(int width) {
+            _width = width;
+        }
+    }
 }

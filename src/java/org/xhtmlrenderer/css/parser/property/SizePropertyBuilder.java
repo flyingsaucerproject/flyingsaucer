@@ -95,7 +95,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
             }
         } else { /* values.size == 2 */
             PropertyValue value1 = (PropertyValue)values.get(0);
-            PropertyValue value2 = (PropertyValue)values.get(0);
+            PropertyValue value2 = (PropertyValue)values.get(1);
             
             checkInheritAllowed(value2, false);
             
@@ -125,7 +125,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
                     value2 = temp;
                 }
                 
-                if (! (value1.equals("landscape") || value2.equals("portrait"))) {
+                if (! (value1.equals("landscape") || value1.equals("portrait"))) {
                     throw new CSSParseException("Value " + value1 + " is not a valid page orientation", -1);
                 }
                 
