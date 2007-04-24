@@ -119,18 +119,18 @@ public class BorderPropertySet extends RectPropertySet {
      * @param style
      * @return Returns
      */
-    public BorderPropertySet brighter(IdentValue style) {
+    public BorderPropertySet lighten(IdentValue style) {
         BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = brightenColor(_topColor);
-        bc._bottomColor = brightenColor(_bottomColor);
-        bc._leftColor = brightenColor(_leftColor);
-        bc._rightColor = brightenColor(_rightColor);
+        bc._topColor = lightenColor(_topColor);
+        bc._bottomColor = lightenColor(_bottomColor);
+        bc._leftColor = lightenColor(_leftColor);
+        bc._rightColor = lightenColor(_rightColor);
         bc.buildKey(CSSName.BORDER_SHORTHAND);
 
         return bc;
     }
     
-    private Color brightenColor(Color color) {
+    private Color lightenColor(Color color) {
         if (color == null) {
             return null;
         }
@@ -153,7 +153,7 @@ public class BorderPropertySet extends RectPropertySet {
      * @param style
      * @return Returns
      */
-    public BorderPropertySet darker(IdentValue style) {
+    public BorderPropertySet darken(IdentValue style) {
         BorderPropertySet bc = new BorderPropertySet(this);
         bc._topColor = darkenColor(_topColor);
         bc._bottomColor = darkenColor(_bottomColor);

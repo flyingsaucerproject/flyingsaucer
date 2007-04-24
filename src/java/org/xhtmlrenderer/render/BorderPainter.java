@@ -93,27 +93,27 @@ public class BorderPainter {
                     (int) (border.left() / 2));
             if (borderSideStyle == IdentValue.RIDGE) {
                 paintBorderSidePolygon(
-                        outputDevice, bounds, border, border.darker(borderSideStyle), 
-                        border.brighter(borderSideStyle), sides, currentSide, bevel);
+                        outputDevice, bounds, border, border.darken(borderSideStyle), 
+                        border.lighten(borderSideStyle), sides, currentSide, bevel);
                 paintBorderSidePolygon(
-                        outputDevice, bounds, bd2, border.brighter(borderSideStyle), 
-                        border.darker(borderSideStyle), sides, currentSide, bevel);
+                        outputDevice, bounds, bd2, border.lighten(borderSideStyle), 
+                        border.darken(borderSideStyle), sides, currentSide, bevel);
             } else {
                 paintBorderSidePolygon(
-                        outputDevice, bounds, border, border.brighter(borderSideStyle),
-                        border.darker(borderSideStyle), sides, currentSide, bevel);
+                        outputDevice, bounds, border, border.lighten(borderSideStyle),
+                        border.darken(borderSideStyle), sides, currentSide, bevel);
                 paintBorderSidePolygon(
-                        outputDevice, bounds, bd2, border.darker(borderSideStyle),
-                        border.brighter(borderSideStyle), sides, currentSide, bevel);
+                        outputDevice, bounds, bd2, border.darken(borderSideStyle),
+                        border.lighten(borderSideStyle), sides, currentSide, bevel);
             }
         } else if (borderSideStyle == IdentValue.OUTSET) {
             paintBorderSidePolygon(outputDevice, bounds, border,
-                    border.brighter(borderSideStyle),
-                    border.darker(borderSideStyle), sides, currentSide, bevel);
+                    border.lighten(borderSideStyle),
+                    border.darken(borderSideStyle), sides, currentSide, bevel);
         } else if (borderSideStyle == IdentValue.INSET) {
             paintBorderSidePolygon(outputDevice, bounds, border,
-                    border.darker(borderSideStyle),
-                    border.brighter(borderSideStyle), sides, currentSide, bevel);
+                    border.darken(borderSideStyle),
+                    border.lighten(borderSideStyle), sides, currentSide, bevel);
         } else if (borderSideStyle == IdentValue.SOLID) {
             paintSolid(outputDevice, bounds, border, border, sides, currentSide, bevel);
         } else if (borderSideStyle == IdentValue.DOUBLE) {
@@ -382,6 +382,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.47  2007/04/24 17:04:31  peterbrant
+ * Method name improvements
+ *
  * Revision 1.46  2007/03/01 18:00:10  peterbrant
  * Fix rounding problems with double borders / Light BorderPainter cleanup (more needed) / Don't bevel collapsed table borders
  *
