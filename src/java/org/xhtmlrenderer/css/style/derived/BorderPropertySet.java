@@ -120,23 +120,31 @@ public class BorderPropertySet extends RectPropertySet {
      * @return Returns
      */
     public BorderPropertySet brighter(IdentValue style) {
-        double dS = -0.1;
-        double dB = 0.2;
-        if (style == IdentValue.INSET || style == IdentValue.GROOVE) {
-            dS = 0.05;
-            dB = 0;
-        } else if (style == IdentValue.RIDGE || style == IdentValue.OUTSET) {
-            dS = -0.1;
-            dB = 0.1;
-        }
         BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = modify(_topColor, dS, dB);
-        bc._bottomColor = modify(_bottomColor, dS, dB);
-        bc._leftColor = modify(_leftColor, dS, dB);
-        bc._rightColor = modify(_rightColor, dS, dB);
+        bc._topColor = brightenColor(_topColor);
+        bc._bottomColor = brightenColor(_bottomColor);
+        bc._leftColor = brightenColor(_leftColor);
+        bc._rightColor = brightenColor(_rightColor);
         bc.buildKey(CSSName.BORDER_SHORTHAND);
 
         return bc;
+    }
+    
+    private Color brightenColor(Color color) {
+        if (color == null) {
+            return null;
+        }
+        
+        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+        float hBase = hsb[0];
+        float sBase = hsb[1];
+        float bBase = hsb[2];
+        
+        float hLighter = hBase;
+        float sLighter = 0.35f*bBase*sBase;
+        float bLighter = 0.6999f + 0.3f*bBase;
+        
+        return Color.getHSBColor(hLighter, sLighter, bLighter);
     }
 
     /**
@@ -146,23 +154,31 @@ public class BorderPropertySet extends RectPropertySet {
      * @return Returns
      */
     public BorderPropertySet darker(IdentValue style) {
-        double dS = 0.1;
-        double dB = -0.2;
-        if (style == IdentValue.GROOVE) {
-            dS = 0;
-        } else if (style == IdentValue.OUTSET) {
-            dB = -0.3;
-        }
         BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = modify(_topColor, dS, dB);
-        bc._bottomColor = modify(_bottomColor, dS, dB);
-        bc._leftColor = modify(_leftColor, dS, dB);
-        bc._rightColor = modify(_rightColor, dS, dB);
+        bc._topColor = darkenColor(_topColor);
+        bc._bottomColor = darkenColor(_bottomColor);
+        bc._leftColor = darkenColor(_leftColor);
+        bc._rightColor = darkenColor(_rightColor);
         bc.buildKey(CSSName.BORDER_SHORTHAND);
         return bc;
     }
-
-
+    
+    private Color darkenColor(Color color) {
+        if (color == null) {
+            return null;
+        }
+        
+        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+        float hBase = hsb[0];
+        float sBase = hsb[1];
+        float bBase = hsb[2];
+        
+        float hDarker = hBase;
+        float sDarker = sBase;
+        float bDarker = 0.56f*bBase;
+        
+        return Color.getHSBColor(hDarker, sDarker, bDarker);
+    }
 
     public static BorderPropertySet newInstance(
             CalculatedStyle style,
@@ -247,35 +263,6 @@ public class BorderPropertySet extends RectPropertySet {
 
     protected void buildKey(CSSName name) {
         this._key = new StringBuffer().toString();
-    }
-
-
-    /**
-     * Decreasing saturation gives a "whiter" look.
-     * Decreasing brightness gives a "shadowier", "blacker" look.
-     * Increasing them goes toward the pure, full, color
-     * 0.0 brightness gives black.
-     * 0.0 saturation gives grayscale.
-     * 0.0 saturation and 1.0 brightness gives white.
-     *
-     * @param color the base color
-     * @param dS    change in saturation (result will be clipped to range 0.0-1.0)
-     * @param dB    change in brightness (result will be clipped to range 0.0-1.0)
-     */
-    private static Color modify(Color color, double dS, double dB) {
-        if (color == null) {
-            return null;
-        }
-        
-        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-        //
-        //decreasing brightness and saturation gives a "shadowier", "blacker" look
-        //0.0 brightness gives black
-        //0.0 saturation gives grayscale
-        float s = (float) Math.max(0.0, Math.min(1.0, hsb[1] + dS));
-        float b = (float) Math.max(0.0, Math.min(1.0, hsb[2] + dB));
-        int code = Color.HSBtoRGB(hsb[0], s, b);
-        return new Color(code);
     }
 }
 
