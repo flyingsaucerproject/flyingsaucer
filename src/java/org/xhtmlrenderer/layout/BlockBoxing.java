@@ -48,7 +48,6 @@ public class BlockBoxing {
     }
     
     public static void layoutContent(final LayoutContext c, final BlockBox block) {
-        boolean resetMargins = false;
         int listIndex = 0;
         int offset = -1;
         
@@ -78,24 +77,23 @@ public class BlockBoxing {
                 relayoutData.setLayoutState(c.copyStateForRelayout());
                 relayoutData.setChildOffset(childOffset);
                 relayoutData.setListIndex(listIndex);
-                relayoutData.setResetMargins(resetMargins);
             }
 
             layoutBlockChild(
-                    c, block, child, listIndex, resetMargins, false, childOffset);
+                    c, block, child, listIndex, false, childOffset);
             
             if (c.isPrint() && child.getStyle().isAvoidPageBreakInside() &&
                     child.crossesPageBreak(c)) {
                 c.restoreStateForRelayout(relayoutData.getLayoutState());
                 child.reset(c);
                 layoutBlockChild(
-                        c, block, child, listIndex, resetMargins, true, childOffset);
+                        c, block, child, listIndex, true, childOffset);
                 
                 if (child.crossesPageBreak(c)) {
                     c.restoreStateForRelayout(relayoutData.getLayoutState());
                     child.reset(c);
                     layoutBlockChild(
-                            c, block, child, listIndex, resetMargins, false, childOffset);
+                            c, block, child, listIndex, false, childOffset);
                 }
             }
             
@@ -140,7 +138,6 @@ public class BlockBoxing {
                         block.setHeight(childOffset);
                     }
                 }
-                resetMargins = child.getStyle().isForcePageBreakBefore();
             }
             
             if (c.shouldStop()) {
@@ -213,23 +210,20 @@ public class BlockBoxing {
             
             c.restoreStateForRelayout(relayoutData.getLayoutState());
             layoutBlockChild(
-                    c, block, child, relayoutData.getListIndex(),
-                   relayoutData.isResetMargins(), false, childOffset);
+                    c, block, child, relayoutData.getListIndex(), false, childOffset);
             
             if (child.getStyle().isAvoidPageBreakInside() &&
                     child.crossesPageBreak(c)) {
                 c.restoreStateForRelayout(relayoutData.getLayoutState());
                 child.reset(c);
                 layoutBlockChild(
-                        c, block, child, relayoutData.getListIndex(), 
-                        relayoutData.isResetMargins(), true, childOffset);
+                        c, block, child, relayoutData.getListIndex(), true, childOffset);
                 
                 if (child.crossesPageBreak(c)) {
                     c.restoreStateForRelayout(relayoutData.getLayoutState());
                     child.reset(c);
                     layoutBlockChild(
-                            c, block, child, relayoutData.getListIndex(), 
-                            relayoutData.isResetMargins(), false, childOffset);
+                            c, block, child, relayoutData.getListIndex(), false, childOffset);
                 }                    
             }
             
@@ -253,9 +247,7 @@ public class BlockBoxing {
 
     private static void layoutBlockChild(
             LayoutContext c, BlockBox parent, BlockBox child, 
-            int listIndex, boolean resetMargins, boolean needPageClear,
-            int childOffset) {
-        child.setResetMargins(resetMargins);
+            int listIndex, boolean needPageClear, int childOffset) {
         child.setNeedPageClear(needPageClear);
         
         // update the counter for printing OL list items
@@ -391,7 +383,6 @@ public class BlockBoxing {
     
     private static class RelayoutData {
         private LayoutState _layoutState;
-        private boolean _resetMargins;
         private int _listIndex;
         
         private boolean _startsRun;
@@ -442,14 +433,6 @@ public class BlockBoxing {
             _childOffset = childOffset;
         }
 
-        public boolean isResetMargins() {
-            return _resetMargins;
-        }
-
-        public void setResetMargins(boolean resetMargins) {
-            _resetMargins = resetMargins;
-        }
-
         public int getListIndex() {
             return _listIndex;
         }
@@ -464,6 +447,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.58  2007/04/25 18:09:41  peterbrant
+ * Always reset block box margin if it is the first thing on a page
+ *
  * Revision 1.57  2007/03/12 21:11:21  peterbrant
  * Documentation update
  *

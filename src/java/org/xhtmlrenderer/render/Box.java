@@ -686,12 +686,11 @@ public abstract class Box implements Styleable {
         return getContainingBlock().getContentWidth();
     }
     
-    public void resetCollapsedMargin(CssContext cssContext) {
+    protected void resetTopMargin(CssContext cssContext) {
         if (_workingMargin != null) {
             RectPropertySet styleMargin = getStyleMargin(cssContext);
             
             _workingMargin.setTop(styleMargin.top());
-            _workingMargin.setBottom(styleMargin.bottom());
         }
     }
     
@@ -925,6 +924,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.139  2007/04/25 18:09:41  peterbrant
+ * Always reset block box margin if it is the first thing on a page
+ *
  * Revision 1.138  2007/04/16 01:10:05  peterbrant
  * Vertical margin and padding with percentage values may be incorrect if box participated in a shrink-to-fit calculation.  Fix margin calculation.
  *

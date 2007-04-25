@@ -75,7 +75,6 @@ public class BlockBox extends Box implements InlinePaintable {
     
     private Box _staticEquivalent;
     
-    private boolean _resetMargins;
     private boolean _needPageClear;
     
     private ReplacedElement _replacedElement;
@@ -176,6 +175,13 @@ public class BlockBox extends Box implements InlinePaintable {
         ensureChildren(c);
         
         result.append(this);
+        
+        RectPropertySet margin = getMargin(c);
+        result.append(" effMargin=[" + margin.top() + ", " + margin.right() + ", " + 
+                    margin.bottom() + ", " + margin.right() + "] ");
+        RectPropertySet styleMargin = getStyleMargin(c);
+        result.append(" styleMargin=[" + styleMargin.top() + ", " + styleMargin.right() + ", " + 
+                styleMargin.bottom() + ", " + styleMargin.right() + "] ");        
         
         if (getChildrenContentType() != CONTENT_EMPTY) {
             result.append('\n');
@@ -468,14 +474,6 @@ public class BlockBox extends Box implements InlinePaintable {
         if (_persistentBFC != null) {
             _persistentBFC.getFloatManager().calcFloatLocations();
         }
-    }
-
-    public boolean isResetMargins() {
-        return _resetMargins;
-    }
-
-    public void setResetMargins(boolean resetMargins) {
-        _resetMargins = resetMargins;
     }
 
     public boolean isNeedPageClear() {
@@ -773,14 +771,16 @@ public class BlockBox extends Box implements InlinePaintable {
         
         calcClearance(c);
         
+        if (c.isPrint()) {
+            PageBox firstPage = c.getRootLayer().getFirstPage(c, this);
+            if (firstPage.getTop() == getAbsY()) {
+                resetTopMargin(c);
+            }
+        }
+        
         BorderPropertySet border = getBorder(c);
         RectPropertySet margin = getMargin(c);
         RectPropertySet padding = getPadding(c);
-        
-        if (isResetMargins()) {
-            resetCollapsedMargin(c);
-            setResetMargins(false);
-        }
         
         // save height incase fixed height
         int originalHeight = getHeight();
@@ -1784,6 +1784,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.79  2007/04/25 18:09:41  peterbrant
+ * Always reset block box margin if it is the first thing on a page
+ *
  * Revision 1.78  2007/04/23 21:13:16  peterbrant
  * Calculate table cell height as if it included borders and padding (matches FF and Opera behavior)
  *
