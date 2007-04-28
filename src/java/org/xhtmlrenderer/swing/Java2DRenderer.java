@@ -109,7 +109,6 @@ public class Java2DRenderer {
 	 * @param url The location of the document to be rendered.
 	 * @param baseurl The base url for the document, against which  relative paths are resolved.
 	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-	 * @param height Target height, in pixels, for the image
 	 */
 	public Java2DRenderer(String url, String baseUrl, int width, int height) {
 		// bypass scaling routines based on DPI -- see PDFRenderer and compare--dotsPerPoint is not implemented
@@ -128,6 +127,20 @@ public class Java2DRenderer {
 	 * the first time.
 	 *
 	 * @param file The file to be rendered.
+	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+	 * @param height Target height, in pixels, for the image
+	 */
+	public Java2DRenderer(File file, int width, int height) throws IOException {
+		this(file.toURI().toURL().toExternalForm(), width, height);
+	}
+
+	/**
+	 * Creates a new instance for a given File. Does not render until {@link #getImage(int)} is called for
+	 * the first time.
+	 *
+	 * @param file The file to be rendered.
+	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+	 * Heght is calculated based on content
 	 */
 	public Java2DRenderer(File file, int width) throws IOException {
 		this(file.toURI().toURL().toExternalForm(), width);
@@ -140,6 +153,7 @@ public class Java2DRenderer {
 	 *
 	 * @param url The location of the document to be rendered.
 	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+	 * Heght is calculated based on content
 	 */
 	public Java2DRenderer(String url, int width) {
 		this(url, url, width, NO_HEIGHT);
@@ -152,9 +166,23 @@ public class Java2DRenderer {
 	 * @param url The location of the document to be rendered.
 	 * @param baseurl The base url for the document, against which  relative paths are resolved.
 	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+	 * Heght is calculated based on content
 	 */
 	public Java2DRenderer(String url, String baseurl, int width) {
 		this(url, baseurl, width, NO_HEIGHT);
+	}
+
+	/**
+	 * Renderer for a given URL and a specified width; height is calculated
+	 * automatically.
+	 *
+	 * @param url The location of the document to be rendered.
+	 * @param baseurl The base url for the document, against which  relative paths are resolved.
+	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+	 * @param height Target height, in pixels, for the image
+	 */
+	public Java2DRenderer(String url, int width, int height) {
+		this(url, url, width, height);
 	}
 
 	/**
