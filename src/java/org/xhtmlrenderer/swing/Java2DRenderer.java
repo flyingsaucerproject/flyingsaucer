@@ -222,7 +222,7 @@ public class Java2DRenderer {
 			layout(this.width);
 
 			height = this.height == -1 ? root.getHeight() : this.height;
-			outputImage = ImageUtil.createCompatibleBufferedImage(this.width, height);
+			outputImage = createBufferedImage(this.width, height);
 			outputDevice = new Java2DOutputDevice(outputImage);
 			Graphics2D newG = (Graphics2D) outputImage.getGraphics();
 			if ( renderingHints != null ) {
@@ -241,6 +241,18 @@ public class Java2DRenderer {
 		}
 
 		return outputImage;
+	}
+
+	/**
+	 * Returns a BufferedImage using the specified width and height. By default this returns an image compatible
+	 * with the screen that supports transparent pixels.
+	 *
+	 * @param width target width
+	 * @param height target height
+	 * @return new BI
+	 */
+	protected BufferedImage createBufferedImage(int width, int height) {
+		return ImageUtil.createCompatibleBufferedImage(width, height);
 	}
 
 	private void setDocument(Document doc, String url, NamespaceHandler nsh) {
