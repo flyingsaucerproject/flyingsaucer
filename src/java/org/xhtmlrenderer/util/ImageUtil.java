@@ -196,11 +196,9 @@ public class ImageUtil {
 			Dimension dim = (Dimension) iter.next();
 			opt.setTargetDimensions(dim);
 
-			Image scaled = getScaledInstance(opt, img);
+			BufferedImage scaled = getScaledInstance(opt, img);
 
-			BufferedImage bimg = convertToBufferedImage(scaled);
-
-			scaledImages.add(bimg);
+			scaledImages.add(scaled);
 		}
 		return scaledImages;
 	}
@@ -210,14 +208,16 @@ public class ImageUtil {
 	 * with current display device.
 	 *
 	 * @param awtImg image to convert; if already a BufferedImage, returned unmodified
+	 * @param type   the type of BufferedImage to create; see
+	 *               {@link java.awt.image.BufferedImage#BufferedImage(int,int,int)}
 	 * @return BufferedImage with same content.
 	 */
-	public static BufferedImage convertToBufferedImage(Image awtImg) {
+	public static BufferedImage convertToBufferedImage(Image awtImg, int type) {
 		BufferedImage bimg;
 		if (awtImg instanceof BufferedImage) {
 			bimg = (BufferedImage) awtImg;
 		} else {
-			bimg = createCompatibleBufferedImage(awtImg.getWidth(null), awtImg.getHeight(null));
+			bimg = createCompatibleBufferedImage(awtImg.getWidth(null), awtImg.getHeight(null), type);
 			Graphics2D g = bimg.createGraphics();
 			g.drawImage(awtImg, 0, 0, null, null);
 			g.dispose();
@@ -259,7 +259,7 @@ public class ImageUtil {
 			// target is always >= 1
 			Image scaled = img.getScaledInstance(opt.getTargetWidth(), opt.getTargetHeight(), getImageScalingMethod());
 
-			return ImageUtil.convertToBufferedImage(scaled);
+			return ImageUtil.convertToBufferedImage(scaled, img.getType());
 		}
 
 		abstract protected int getImageScalingMethod();
@@ -314,7 +314,6 @@ public class ImageUtil {
 			int imgw = img.getWidth(null);
 			int imgh = img.getHeight(null);
 			int type = -1;
-
 
 			// multi-pass only if higher quality requested and we are shrinking image
 			if (opt.getTargetWidth() < imgw && opt.getTargetHeight() < imgh) {

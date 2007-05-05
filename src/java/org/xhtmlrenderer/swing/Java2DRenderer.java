@@ -213,15 +213,6 @@ public class Java2DRenderer {
 	}
 
 	/**
-	 * Returns the type of BufferedImage to create; see docs for {@link #setBufferedImageType(int)}.
-	 *
-	 * @return type of BufferedImage we will render to.
-	 */
-	public int getBufferedImageType() {
-		return bufferedImageType;
-	}
-
-	/**
 	 * Sets the type for the BufferedImage used as output for this renderer; must be one of the values from
 	 * {@link java.awt.image.BufferedImage} allowed in that class' constructor as a type argument. See docs for
 	 * the type parameter in {@link java.awt.image.BufferedImage#BufferedImage(int, int, int)}. Defaults to RGB with
@@ -291,7 +282,7 @@ public class Java2DRenderer {
 	 * @return new BI
 	 */
 	protected BufferedImage createBufferedImage(int width, int height) {
-		BufferedImage image = ImageUtil.createCompatibleBufferedImage(width, height);
+		BufferedImage image = ImageUtil.createCompatibleBufferedImage(width, height, this.bufferedImageType);
 		ImageUtil.clearImage(image);
 		return image;
 	}
