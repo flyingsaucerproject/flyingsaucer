@@ -101,7 +101,6 @@ public class PanelManager implements UserAgentCallback {
                     if (img == null) {
                         XRLog.exception("ImageIO.read() returned null for uri " + uri);
                     } else {
-                        img = GraphicsUtil.cleanImage(img);
                         ir = new ImageResource(new AWTFSImage(img));
                         imageCache.put(uri, ir);
                     }
