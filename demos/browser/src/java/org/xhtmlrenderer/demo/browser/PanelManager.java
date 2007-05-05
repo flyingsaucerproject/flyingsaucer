@@ -24,7 +24,6 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.AWTFSImage;
-import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.GeneralUtil;
