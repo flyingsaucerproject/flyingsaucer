@@ -61,6 +61,11 @@ import org.xhtmlrenderer.util.ImageUtil;
  * {@link org.xhtmlrenderer.layout.SharedContext} instance that will be used by this renderer and change settings
  * to control the rendering process; use {@link #getSharedContext()}.</p>
  *
+ * <p>By default, this renderer will render to an RGB image which does not support transparency. To use another type
+ * of BufferedImage, either set the image type using {@link #setBufferedImageType(int)} before calling
+ * {@link #getImage()}, or else override the {@link #createBufferedImage(int, int)} to have full control over
+ * the image we render to.</p>
+ *
  * <p>Not thread-safe.</p>
  *
  * @see ITextRenderer
@@ -69,6 +74,7 @@ public class Java2DRenderer {
 	private static final int DEFAULT_HEIGHT = 1000;
 	private static final int DEFAULT_DOTS_PER_POINT = 1;
 	private static final int DEFAULT_DOTS_PER_PIXEL = 1;
+	private static final int DEFAULT_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
 
 	private SharedContext sharedContext;
 	private Java2DOutputDevice outputDevice;
@@ -78,6 +84,7 @@ public class Java2DRenderer {
 
 	private float dotsPerPoint;
 	private BufferedImage outputImage;
+	private int bufferedImageType;
 
 
 	/**
@@ -93,12 +100,20 @@ public class Java2DRenderer {
 
 
 	/**
+	 * Base constructor
+	 */
+	private Java2DRenderer() {
+		this.bufferedImageType = DEFAULT_IMAGE_TYPE;
+	}
+
+	/**
 	 * Creates a new instance with specific scaling paramters; these are currently ignored.
 	 *
 	 * @param dotsPerPoint Layout XML at so many dots per point
 	 * @param dotsPerPixel Layout XML at so many dots per pixel
 	 */
 	private Java2DRenderer(float dotsPerPoint, int dotsPerPixel) {
+		this();
 		init(dotsPerPoint, dotsPerPixel);
 	}
 
@@ -198,6 +213,29 @@ public class Java2DRenderer {
 	}
 
 	/**
+	 * Returns the type of BufferedImage to create; see docs for {@link #setBufferedImageType(int)}.
+	 *
+	 * @return type of BufferedImage we will render to.
+	 */
+	public int getBufferedImageType() {
+		return bufferedImageType;
+	}
+
+	/**
+	 * Sets the type for the BufferedImage used as output for this renderer; must be one of the values from
+	 * {@link java.awt.image.BufferedImage} allowed in that class' constructor as a type argument. See docs for
+	 * the type parameter in {@link java.awt.image.BufferedImage#BufferedImage(int, int, int)}. Defaults to RGB with
+	 * no support for transparency. The type is used when the image is first created, so to change the default type
+	 * do so before calling {@link #getImage()}.
+	 *
+	 * @param bufferedImageType the BufferedImage type to be used to create the image on which the document
+	 * will be rendered.
+	 */
+	public void setBufferedImageType(int bufferedImageType) {
+		this.bufferedImageType = bufferedImageType;
+	}
+
+	/**
 	 * Returns the SharedContext to be used by renderer. Is instantiated along with the class, so can be accessed
 	 * before {@link #getImage()} is called to tune the rendering process.
 	 *
@@ -245,14 +283,17 @@ public class Java2DRenderer {
 
 	/**
 	 * Returns a BufferedImage using the specified width and height. By default this returns an image compatible
-	 * with the screen that supports transparent pixels.
+	 * with the screen (if not in "headless" mode) using the BufferedImage type specified in
+	 * {@link #setBufferedImageType(int)}, or else RGB if none if specified.
 	 *
 	 * @param width target width
 	 * @param height target height
 	 * @return new BI
 	 */
 	protected BufferedImage createBufferedImage(int width, int height) {
-		return ImageUtil.createCompatibleBufferedImage(width, height);
+		BufferedImage image = ImageUtil.createCompatibleBufferedImage(width, height);
+		ImageUtil.clearImage(image);
+		return image;
 	}
 
 	private void setDocument(Document doc, String url, NamespaceHandler nsh) {
@@ -318,7 +359,6 @@ public class Java2DRenderer {
 		sharedContext.setPrint(false);
 		sharedContext.setInteractive(false);
 	}
-
 
 	private static final class NullUserInterface implements UserInterface {
 
