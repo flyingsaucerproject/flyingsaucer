@@ -45,11 +45,34 @@ public class ImageUtil {
 	}
 
 	/**
+	 * Sets the background of the image to the specified color
+	 * @param image the image
+	 * @param bgColor the color
+	 */
+	public static void clearImage(BufferedImage image, Color bgColor) {
+		Graphics2D g2d = (Graphics2D) image.getGraphics();
+		g2d.setColor(bgColor);
+		g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
+		g2d.dispose();
+	}
+
+	/**
+	 * Sets the background of the image to white.
+	 *
+	 * @param image the image
+	 */
+	public static void clearImage(BufferedImage image) {
+		clearImage(image, Color.WHITE);
+	}
+
+	/**
 	 * Helper method to instantiate new BufferedImages; if the graphics environment is actually connected to real
 	 * screen devices (e.g. not in headless mode), the image will be compatible with the screen device allowing
 	 * for best performance. In a headless environment, simply creates a new BufferedImage. For non-headless
 	 * environments, this just sets up and calls
-	 * {@link java.awt.GraphicsConfiguration#createCompatibleImage(int,int,int)} for
+	 * {@link java.awt.GraphicsConfiguration#createCompatibleImage(int,int,int)}. The image will not have anything
+	 * drawn to it, not even a white background; you must do this yourself. The {@link #clearBackground(BufferedImage)}
+	 * method will do this for you if you like.
 	 *
 	 * @param width		Target width for the image
 	 * @param height	   Target height for the image
@@ -71,6 +94,7 @@ public class ImageUtil {
 
 			bimage = gc.createCompatibleImage(width, height, transparency);
 		}
+		
 		return bimage;
 	}
 
