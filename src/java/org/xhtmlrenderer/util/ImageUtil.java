@@ -45,22 +45,32 @@ public class ImageUtil {
 	}
 
 	/**
-	 * Creates a BufferedImage compatible with the local graphics environment; this is a helper method for a
-	 * common process and just sets up and calls
-	 * {@link java.awt.GraphicsConfiguration#createCompatibleImage(int,int,int)}.
+	 * Helper method to instantiate new BufferedImages; if the graphics environment is actually connected to real
+	 * screen devices (e.g. not in headless mode), the image will be compatible with the screen device allowing
+	 * for best performance. In a headless environment, simply creates a new BufferedImage. For non-headless
+	 * environments, this just sets up and calls
+	 * {@link java.awt.GraphicsConfiguration#createCompatibleImage(int,int,int)} for
 	 *
 	 * @param width		Target width for the image
 	 * @param height	   Target height for the image
 	 * @param transparency Value from the {@link java.awt.Transparency} class; see docs for
-	 *                     {@link java.awt.GraphicsConfiguration#createCompatibleImage(int,int,int)}.
+	 *                     {@link java.awt.GraphicsConfiguration#createCompatibleImage(int,int,int)}. Use
+	 *                     {@link java.awt.Transparency#OPAQUE} for images with no support for transparency.
 	 * @return A BufferedImage compatible with the screen (best fit).
 	 */
 	public static BufferedImage createCompatibleBufferedImage(int width, int height, int transparency) {
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice gs = ge.getDefaultScreenDevice();
-		GraphicsConfiguration gc = gs.getDefaultConfiguration();
+		BufferedImage bimage = null;
 
-		BufferedImage bimage = gc.createCompatibleImage(width, height, transparency);
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		if ( ge.isHeadlessInstance()) {
+			int type = (transparency == Transparency.OPAQUE ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB);
+			bimage = new BufferedImage(width, height, type);
+		} else {
+			GraphicsDevice gs = ge.getDefaultScreenDevice();
+			GraphicsConfiguration gc = gs.getDefaultConfiguration();
+
+			bimage = gc.createCompatibleImage(width, height, transparency);
+		}
 		return bimage;
 	}
 
@@ -225,6 +235,7 @@ public class ImageUtil {
 			return img.getScaledInstance(opt.getTargetWidth(), opt.getTargetHeight(), Image.SCALE_FAST);
 		}
 	}
+
 	/**
 	 * AWT-style one-step scaling, using area averaging
 	 */
