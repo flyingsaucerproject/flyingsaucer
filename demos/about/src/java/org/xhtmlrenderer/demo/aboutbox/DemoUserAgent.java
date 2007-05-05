@@ -1,6 +1,6 @@
 /*
  * PanelManager.java
- * Copyright (c) 2005 Torbjörn Gannholm
+ * Copyright (c) 2005 Torbj?rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -24,12 +24,10 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.AWTFSImage;
-import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.XRLog;
-import org.xml.sax.InputSource;
 
 import javax.imageio.ImageIO;
-import javax.xml.transform.sax.SAXSource;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +95,6 @@ public class DemoUserAgent implements UserAgentCallback {
             if (is != null) {
                 try {
                     Image img = ImageIO.read(is);
-                    img = GraphicsUtil.cleanImage(img);
                     ir = new ImageResource(new AWTFSImage(img));
                     imageCache.put(uri, ir);
                 } catch (IOException e) {

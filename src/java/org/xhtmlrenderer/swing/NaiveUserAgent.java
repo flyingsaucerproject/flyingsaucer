@@ -22,7 +22,6 @@ package org.xhtmlrenderer.swing;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
-import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
@@ -97,7 +96,6 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
                     if (img == null) {
                         throw new IOException("ImageIO.read() returned null");
                     }
-                    img = GraphicsUtil.cleanImage(img);
                     ir = new ImageResource(new AWTFSImage(img));
                     imageCache.put(uri, ir);
                 } catch (IOException e) {
@@ -175,6 +173,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2007/05/05 18:05:21  pdoubleya
+ * Remove references to GraphicsUtil and the class itself, no longer needed
+ *
  * Revision 1.29  2007/04/10 20:46:02  pdoubleya
  * Fix, was not closing XML source stream when done
  *
