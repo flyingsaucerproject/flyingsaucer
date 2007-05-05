@@ -41,6 +41,7 @@ public class ImageUtil {
 		qual.put(DownscaleQuality.FAST, new OldScaler());
 		qual.put(DownscaleQuality.HIGH_QUALITY, new HighQualityScaler());
 		qual.put(DownscaleQuality.LOW_QUALITY, new FastScaler());
+		qual.put(DownscaleQuality.AREA, new AreaAverageScaler());
 	}
 
 	/**
@@ -222,6 +223,15 @@ public class ImageUtil {
 		public Image getScaledInstance(Image img, ScalingOptions opt) {
 			// target is always >= 1
 			return img.getScaledInstance(opt.getTargetWidth(), opt.getTargetHeight(), Image.SCALE_FAST);
+		}
+	}
+	/**
+	 * AWT-style one-step scaling, using area averaging
+	 */
+	static class AreaAverageScaler implements Scaler {
+		public Image getScaledInstance(Image img, ScalingOptions opt) {
+			// target is always >= 1
+			return img.getScaledInstance(opt.getTargetWidth(), opt.getTargetHeight(), Image.SCALE_AREA_AVERAGING);
 		}
 	}
 

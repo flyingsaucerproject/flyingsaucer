@@ -45,6 +45,9 @@ public class DownscaleQuality {
 	/** Low quality, but very fast. */
 	public static final DownscaleQuality FAST = addConstant("LOW");
 
+	/** One step, fast, but should be better than low-quality. */
+	public static final DownscaleQuality AREA = addConstant("AREA");
+
 	private final String type;
 
 	/**
