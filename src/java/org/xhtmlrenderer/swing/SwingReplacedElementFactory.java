@@ -37,6 +37,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.ImageUtil;
 
 /**
  * A ReplacedElementFactory where Elements are replaced by Swing components.
@@ -110,7 +111,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         // lookup in cache, or instantiate
         re = lookupImageReplacedElement(elem);
         if (re == null) {
-            Image im = null;
+            BufferedImage im = null;
             String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
             if (imageSrc == null || imageSrc.length() == 0) {
                 XRLog.layout(Level.WARNING, "No source provided for img element.");
@@ -147,7 +148,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         ReplacedElement mre;
         try {
             // TODO: we can come up with something better; not sure if we should use Alt text, how text should size, etc.
-            missingImage = new BufferedImage(cssWidth, cssHeight, BufferedImage.TYPE_INT_ARGB);
+            missingImage = ImageUtil.createCompatibleBufferedImage(cssWidth, cssHeight, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = missingImage.createGraphics();
             g.setColor(Color.BLACK);
             g.setBackground(Color.WHITE);

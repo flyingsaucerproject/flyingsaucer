@@ -45,7 +45,7 @@ public class ImageReplacedElement implements ReplacedElement {
      * @param targetWidth The width we'd like the image to have, in pixels.
      * @param targetHeight The height we'd like the image to have, in pixels.
      */
-    public ImageReplacedElement(Image image, int targetWidth, int targetHeight) {
+    public ImageReplacedElement(BufferedImage image, int targetWidth, int targetHeight) {
         if (targetWidth != -1 || targetHeight != -1) {
             image = ImageUtil.getScaledInstance(image, targetWidth, targetHeight);
         }
@@ -88,23 +88,5 @@ public class ImageReplacedElement implements ReplacedElement {
      */
     public Image getImage() {
         return _image;
-    }
-
-    /**
-     * Creates a new ImageReplacedElement by copying this element's image to the requested size.
-     *
-     * @param cssWidth The target width
-     * @param cssHeight The target height
-     * @return Clone of this ImageReplacedElement (same image).
-     */
-    public ReplacedElement clone(int cssWidth, int cssHeight) {
-        int w = ( cssWidth < 1 ? _image.getWidth(null) : cssWidth );
-        int h = ( cssHeight < 1 ? _image.getHeight(null) : cssHeight );
-        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = bi.createGraphics();
-        g.drawImage(_image, 0, 0, null);
-        g.dispose();
-
-        return new ImageReplacedElement(bi, cssWidth, cssHeight);
     }
 }

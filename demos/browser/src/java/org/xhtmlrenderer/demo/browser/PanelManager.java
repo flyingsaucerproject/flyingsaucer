@@ -32,6 +32,7 @@ import org.xml.sax.InputSource;
 import javax.imageio.ImageIO;
 import javax.xml.transform.sax.SAXSource;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public class PanelManager implements UserAgentCallback {
             }
             if (is != null) {
                 try {
-                    Image img = ImageIO.read(is);
+                    BufferedImage img = ImageIO.read(is);
                     if (img == null) {
                         XRLog.exception("ImageIO.read() returned null for uri " + uri);
                     } else {

@@ -26,6 +26,7 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -92,7 +93,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
             InputStream is = getInputStream(uri);
             if (is != null) {
                 try {
-                    Image img = ImageIO.read(is);
+                    BufferedImage img = ImageIO.read(is);
                     if (img == null) {
                         throw new IOException("ImageIO.read() returned null");
                     }
@@ -173,6 +174,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2007/05/05 21:08:27  pdoubleya
+ * Changed image-related interfaces (FSImage, ImageUtil, scaling) to all use BufferedImage, since there were no Image-specific APIs we depended on, and we have more control over what we do with BIs as compared to Is.
+ *
  * Revision 1.30  2007/05/05 18:05:21  pdoubleya
  * Remove references to GraphicsUtil and the class itself, no longer needed
  *

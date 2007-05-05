@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.util;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,49 +34,46 @@ import java.util.Map;
 public class ScalingOptions {
 	private DownscaleQuality downscalingHint;
 	private Object renderingHint;
-	private int bufferedImageType;
 	private int targetWidth;
 	private int targetHeight;
 
 	/**
 	 * Constructor with all options.
 	 *
-	 * @param bufferedImageType Type of {@link java.awt.image.BufferedImage} to create for output; see docs for
-	 *                          {@link java.awt.image.BufferedImage#BufferedImage(int,int,int)}
-	 * @param downscalingHint   Directs downscaling quality. One of {@link org.xhtmlrenderer.util.ImageUtil.DOWNSCALE_FAST},
-	 *                          {@link org.xhtmlrenderer.util.ImageUtil.DOWNSCALE_HIGH_QUALITY} or
-	 *                          {@link org.xhtmlrenderer.util.ImageUtil.DOWNSCALE_LOW_QUALITY}.
+	 * @param downscalingHint   Directs downscaling quality. One of the enumerated types of
+	 *                          {@link org.xhtmlrenderer.util.DownscaleQuality} such as
+	 *                          {@link org.xhtmlrenderer.util.ImageUtil.DOWNSCALE_FAST}.
 	 * @param interpolationHint Hint for interpolation to AWT image renderer, one of the Object constants from
 	 *                          {@link java.awt.RenderingHints} using {@link java.awt.RenderingHints.KEY_INTERPOLATION}
 	 */
-	public ScalingOptions(int bufferedImageType, DownscaleQuality downscalingHint, Object interpolationHint) {
+	public ScalingOptions(DownscaleQuality downscalingHint, Object interpolationHint) {
 		this.downscalingHint = downscalingHint;
 		this.renderingHint = interpolationHint;
-		this.bufferedImageType = bufferedImageType;
 	}
 
 	/**
-	 * Default scaling options, with image type of ARGB, bilinear interpolation, and fast downscaling.
+	 * Default scaling options, nearest neighbor interpolation, and fast downscaling. This is fast, but not great
+	 * quality.
 	 */
 	public ScalingOptions() {
-		this(BufferedImage.TYPE_INT_ARGB, DownscaleQuality.FAST, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+		this(DownscaleQuality.FAST, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 	}
 
 	/**
 	 * Constructor with all options.
 	 *
-	 * @param targetWidth Target width in pixels of image once scaled
+	 * @param targetWidth  Target width in pixels of image once scaled
 	 * @param targetHeight Target height in pixels of image once scaled
-	 * @param type Type of {@link java.awt.image.BufferedImage} to create for output; see docs for
-	 *                          {@link java.awt.image.BufferedImage#BufferedImage(int,int,int)}
-	 * @param quality   Directs downscaling quality. One of {@link org.xhtmlrenderer.util.ImageUtil.DOWNSCALE_FAST},
-	 *                          {@link org.xhtmlrenderer.util.ImageUtil.DOWNSCALE_HIGH_QUALITY} or
-	 *                          {@link org.xhtmlrenderer.util.ImageUtil.DOWNSCALE_LOW_QUALITY}.
-	 * @param hint Hint for interpolation to AWT image renderer, one of the Object constants from
-	 *                          {@link java.awt.RenderingHints} using {@link java.awt.RenderingHints.KEY_INTERPOLATION}
+	 * @param type		 Type of {@link java.awt.image.BufferedImage} to create for output; see docs for
+	 *                     {@link java.awt.image.BufferedImage#BufferedImage(int,int,int)}
+	 * @param downscalingHint   Directs downscaling quality. One of the enumerated types of
+	 *                          {@link org.xhtmlrenderer.util.DownscaleQuality} such as
+	 *                          {@link org.xhtmlrenderer.util.ImageUtil.DOWNSCALE_FAST}.
+	 * @param hint		 Hint for interpolation to AWT image renderer, one of the Object constants from
+	 *                     {@link java.awt.RenderingHints} using {@link java.awt.RenderingHints.KEY_INTERPOLATION}
 	 */
-	public ScalingOptions(int targetWidth, int targetHeight, int type, DownscaleQuality quality, Object hint) {
-		this(type, quality, hint);
+	public ScalingOptions(int targetWidth, int targetHeight, int type, DownscaleQuality downscalingHint, Object hint) {
+		this(downscalingHint, hint);
 		this.setTargetHeight(Math.max(1, targetHeight));
 		this.setTargetWidth(Math.max(1, targetWidth));
 	}
@@ -94,13 +90,6 @@ public class ScalingOptions {
 	 */
 	public Object getRenderingHint() {
 		return renderingHint;
-	}
-
-	/**
-	 * @return {@link ScalingOptions#ScalingOptions(int,DownscaleQuality,Object)} docs.
-	 */
-	public int getBufferedImageType() {
-		return bufferedImageType;
 	}
 
 	/**
@@ -127,19 +116,9 @@ public class ScalingOptions {
 	}
 
 	/**
-	 * Creates a new BufferedImage in the requested size, with the image type specified in these ScalingOptions.
-	 *
-	 * @param w image width
-	 * @param h image height
-	 * @return A BufferedImage instance.
-	 */
-	public BufferedImage createBufferedImage(int w, int h) {
-		return new BufferedImage(w, h, getBufferedImageType());
-	}
-
-	/**
 	 * Returns true if the target size specified by these options matches the size provided (e.g. image is
 	 * already at target size).
+	 *
 	 * @param w an image width
 	 * @param h an image height
 	 * @return true if image dimensions already match target size
@@ -151,6 +130,7 @@ public class ScalingOptions {
 	/**
 	 * Returns true if the target size specified by these options matches the size provided (e.g. image is
 	 * already at target size).
+	 *
 	 * @param img
 	 * @return true if image dimensions already match target size
 	 */

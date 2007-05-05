@@ -29,6 +29,7 @@ import org.xhtmlrenderer.util.XRLog;
 import javax.imageio.ImageIO;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,7 +95,7 @@ public class DemoUserAgent implements UserAgentCallback {
             }
             if (is != null) {
                 try {
-                    Image img = ImageIO.read(is);
+                    BufferedImage img = ImageIO.read(is);
                     ir = new ImageResource(new AWTFSImage(img));
                     imageCache.put(uri, ir);
                 } catch (IOException e) {

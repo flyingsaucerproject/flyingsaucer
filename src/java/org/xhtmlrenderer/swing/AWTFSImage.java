@@ -20,18 +20,19 @@
 package org.xhtmlrenderer.swing;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.util.ImageUtil;
 
 public class AWTFSImage implements FSImage {
-    private Image _image;
+    private BufferedImage _image;
     
-    public AWTFSImage(Image image) {
+    public AWTFSImage(BufferedImage image) {
         _image = image;
     }
     
-    public Image getImage() {
+    public BufferedImage getImage() {
         return _image;
     }
     

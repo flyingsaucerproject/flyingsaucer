@@ -46,7 +46,8 @@ public class ImageUtil {
 
 	/**
 	 * Sets the background of the image to the specified color
-	 * @param image the image
+	 *
+	 * @param image   the image
 	 * @param bgColor the color
 	 */
 	public static void clearImage(BufferedImage image, Color bgColor) {
@@ -74,27 +75,30 @@ public class ImageUtil {
 	 * drawn to it, not even a white background; you must do this yourself. The {@link #clearBackground(BufferedImage)}
 	 * method will do this for you if you like.
 	 *
-	 * @param width		Target width for the image
-	 * @param height	   Target height for the image
-	 * @param transparency Value from the {@link java.awt.Transparency} class; see docs for
-	 *                     {@link java.awt.GraphicsConfiguration#createCompatibleImage(int,int,int)}. Use
-	 *                     {@link java.awt.Transparency#OPAQUE} for images with no support for transparency.
+	 * @param width  Target width for the image
+	 * @param height Target height for the image
+	 * @param biType Value from the {@link java.awt.image.BufferedImage} class; see docs for
+	 *               {@link java.awt.image.BufferedImage#BufferedImage(int,int,int)}. The actual type used will
+	 *               be the type specified in this parameter, if in headless mode, or the type most compatible with the screen, if
+	 *               in non-headless more.
 	 * @return A BufferedImage compatible with the screen (best fit).
 	 */
-	public static BufferedImage createCompatibleBufferedImage(int width, int height, int transparency) {
+	public static BufferedImage createCompatibleBufferedImage(int width, int height, int biType) {
 		BufferedImage bimage = null;
 
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		if ( ge.isHeadlessInstance()) {
-			int type = (transparency == Transparency.OPAQUE ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB);
-			bimage = new BufferedImage(width, height, type);
+		if (ge.isHeadlessInstance()) {
+			bimage = new BufferedImage(width, height, biType);
 		} else {
 			GraphicsDevice gs = ge.getDefaultScreenDevice();
 			GraphicsConfiguration gc = gs.getDefaultConfiguration();
 
-			bimage = gc.createCompatibleImage(width, height, transparency);
+			int type = (biType == BufferedImage.TYPE_INT_ARGB || biType == BufferedImage.TYPE_INT_ARGB_PRE ?
+					Transparency.TRANSLUCENT : Transparency.OPAQUE);
+
+			bimage = gc.createCompatibleImage(width, height, type);
 		}
-		
+
 		return bimage;
 	}
 
@@ -129,7 +133,7 @@ public class ImageUtil {
 	 * @param orgImage The image to scale
 	 * @return The scaled image instance.
 	 */
-	public static Image getScaledInstance(ScalingOptions opt, Image orgImage) {
+	public static BufferedImage getScaledInstance(ScalingOptions opt, BufferedImage orgImage) {
 		int w = orgImage.getWidth(null);
 		int h = orgImage.getHeight(null);
 
@@ -139,7 +143,7 @@ public class ImageUtil {
 		h = (opt.getTargetHeight() <= 0 ? h : opt.getTargetHeight());
 
 		Scaler scaler = (ImageUtil.Scaler) qual.get(opt.getDownscalingHint());
-		Image tmp = scaler.getScaledInstance(orgImage, opt);
+		BufferedImage tmp = scaler.getScaledInstance(orgImage, opt);
 
 		return tmp;
 	}
@@ -162,7 +166,7 @@ public class ImageUtil {
 	 * @param targetHeight The target height in pixels
 	 * @return The scaled image instance.
 	 */
-	public static Image getScaledInstance(Image orgImage, int targetWidth, int targetHeight) {
+	public static BufferedImage getScaledInstance(BufferedImage orgImage, int targetWidth, int targetHeight) {
 		String downscaleQuality = Configuration.valueFor("xr.image.scale", DownscaleQuality.HIGH_QUALITY.asString());
 		DownscaleQuality quality = DownscaleQuality.forString(downscaleQuality, DownscaleQuality.HIGH_QUALITY);
 
@@ -247,26 +251,35 @@ public class ImageUtil {
 		 *                      in pixels
 		 * @return a scaled version of the original {@code BufferedImage}
 		 */
-		Image getScaledInstance(Image img, ScalingOptions opt);
+		BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt);
+	}
+
+	abstract static class AbstractFastScaler implements Scaler {
+		public BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt) {
+			// target is always >= 1
+			Image scaled = img.getScaledInstance(opt.getTargetWidth(), opt.getTargetHeight(), getImageScalingMethod());
+
+			return ImageUtil.convertToBufferedImage(scaled);
+		}
+
+		abstract protected int getImageScalingMethod();
 	}
 
 	/**
 	 * Old AWT-style scaling, poor quality
 	 */
-	static class OldScaler implements Scaler {
-		public Image getScaledInstance(Image img, ScalingOptions opt) {
-			// target is always >= 1
-			return img.getScaledInstance(opt.getTargetWidth(), opt.getTargetHeight(), Image.SCALE_FAST);
+	static class OldScaler extends AbstractFastScaler {
+		protected int getImageScalingMethod() {
+			return Image.SCALE_FAST;
 		}
 	}
 
 	/**
 	 * AWT-style one-step scaling, using area averaging
 	 */
-	static class AreaAverageScaler implements Scaler {
-		public Image getScaledInstance(Image img, ScalingOptions opt) {
-			// target is always >= 1
-			return img.getScaledInstance(opt.getTargetWidth(), opt.getTargetHeight(), Image.SCALE_AREA_AVERAGING);
+	static class AreaAverageScaler extends AbstractFastScaler {
+		protected int getImageScalingMethod() {
+			return Image.SCALE_AREA_AVERAGING;
 		}
 	}
 
@@ -274,7 +287,7 @@ public class ImageUtil {
 	 * Fast but decent scaling
 	 */
 	static class FastScaler implements Scaler {
-		public Image getScaledInstance(Image img, ScalingOptions opt) {
+		public BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt) {
 			int w, h;
 
 			// Use one-step technique: scale directly from original
@@ -282,15 +295,12 @@ public class ImageUtil {
 			w = opt.getTargetWidth();
 			h = opt.getTargetHeight();
 
-			Image scaled = img;
-
-			BufferedImage tmp = opt.createBufferedImage(w, h);
-			Graphics2D g2 = tmp.createGraphics();
+			BufferedImage scaled = ImageUtil.createCompatibleBufferedImage(w, h, img.getType());
+			Graphics2D g2 = scaled.createGraphics();
 			opt.applyRenderingHints(g2);
-			g2.drawImage(scaled, 0, 0, w, h, null);
+			g2.drawImage(img, 0, 0, w, h, null);
 			g2.dispose();
 
-			scaled = tmp;
 			return scaled;
 		}
 	}
@@ -299,10 +309,12 @@ public class ImageUtil {
 	 * Step-wise downscaling
 	 */
 	static class HighQualityScaler implements Scaler {
-		public Image getScaledInstance(Image img, ScalingOptions opt) {
+		public BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt) {
 			int w, h;
 			int imgw = img.getWidth(null);
 			int imgh = img.getHeight(null);
+			int type = -1;
+
 
 			// multi-pass only if higher quality requested and we are shrinking image
 			if (opt.getTargetWidth() < imgw && opt.getTargetHeight() < imgh) {
@@ -318,7 +330,7 @@ public class ImageUtil {
 				h = opt.getTargetHeight();
 			}
 
-			Image scaled = img;
+			BufferedImage scaled = img;
 
 			do {
 				if (w > opt.getTargetWidth()) {
@@ -335,7 +347,7 @@ public class ImageUtil {
 					}
 				}
 
-				BufferedImage tmp = new BufferedImage(w, h, opt.getBufferedImageType());
+				BufferedImage tmp = ImageUtil.createCompatibleBufferedImage(w, h, img.getType());
 				Graphics2D g2 = tmp.createGraphics();
 				opt.applyRenderingHints(g2);
 				g2.drawImage(scaled, 0, 0, w, h, null);
