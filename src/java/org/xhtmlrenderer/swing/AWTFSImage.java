@@ -25,26 +25,41 @@ import java.awt.image.BufferedImage;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.util.ImageUtil;
 
-public class AWTFSImage implements FSImage {
-    private BufferedImage _image;
-    
-    public AWTFSImage(BufferedImage image) {
-        _image = image;
+public abstract class AWTFSImage implements FSImage {
+    public static FSImage createLegacyImage(Image img) {
+        return new OldAWTFSImage(img);
     }
-    
-    public BufferedImage getImage() {
-        return _image;
-    }
-    
-    public int getHeight() {
-        return _image.getHeight(null);
-    }
-    
-    public int getWidth() {
-        return _image.getWidth(null);
-    }
-    
-    public void scale(int width, int height) {
-        _image = ImageUtil.getScaledInstance(_image, width, height);
+
+    protected AWTFSImage() { }
+
+    public abstract Image getImage();
+
+    static class OldAWTFSImage extends AWTFSImage {
+        private Image img;
+
+        public OldAWTFSImage(Image img) {
+            // we "clean" the image here to force conversion to a Toolkit
+            // image (hence "old" AWT) instead of a BufferedImage
+            if ( img instanceof BufferedImage )
+                img = img.getScaledInstance(img.getWidth(null), img.getHeight(null), Image.SCALE_FAST);
+
+            this.img = img;
+        }
+
+        public int getWidth() {
+            return img.getWidth(null);
+        }
+
+        public int getHeight() {
+            return img.getHeight(null);
+        }
+
+        public Image getImage() {
+            return img;
+        }
+
+        public void scale(int width, int height) {
+            img = img.getScaledInstance(width, height, Image.SCALE_FAST);
+        }
     }
 }

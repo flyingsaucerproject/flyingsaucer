@@ -111,7 +111,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         // lookup in cache, or instantiate
         re = lookupImageReplacedElement(elem);
         if (re == null) {
-            BufferedImage im = null;
+            Image im = null;
             String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
             if (imageSrc == null || imageSrc.length() == 0) {
                 XRLog.layout(Level.WARNING, "No source provided for img element.");

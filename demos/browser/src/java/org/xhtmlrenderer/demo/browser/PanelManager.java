@@ -1,6 +1,6 @@
 /*
  * PanelManager.java
- * Copyright (c) 2005 Torbj�rn Gannholm
+ * Copyright (c) 2005 Torbj?rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -32,7 +32,6 @@ import org.xml.sax.InputSource;
 import javax.imageio.ImageIO;
 import javax.xml.transform.sax.SAXSource;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -98,11 +97,11 @@ public class PanelManager implements UserAgentCallback {
             }
             if (is != null) {
                 try {
-                    BufferedImage img = ImageIO.read(is);
+                    Image img = ImageIO.read(is);
                     if (img == null) {
                         XRLog.exception("ImageIO.read() returned null for uri " + uri);
                     } else {
-                        ir = new ImageResource(new AWTFSImage(img));
+                        ir = new ImageResource(AWTFSImage.createLegacyImage(img));
                         imageCache.put(uri, ir);
                     }
                 } catch (IOException e) {

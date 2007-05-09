@@ -97,7 +97,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
                     if (img == null) {
                         throw new IOException("ImageIO.read() returned null");
                     }
-                    ir = new ImageResource(new AWTFSImage(img));
+                    ir = new ImageResource(AWTFSImage.createLegacyImage(img));
                     imageCache.put(uri, ir);
                 } catch (IOException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
@@ -174,6 +174,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2007/05/09 21:52:06  pdoubleya
+ * Fix for rendering problems introduced by removing GraphicsUtil class. Use Image instead of BufferedImage in most cases, convert to AWT image if necessary. Not complete, requires cleanup.
+ *
  * Revision 1.31  2007/05/05 21:08:27  pdoubleya
  * Changed image-related interfaces (FSImage, ImageUtil, scaling) to all use BufferedImage, since there were no Image-specific APIs we depended on, and we have more control over what we do with BIs as compared to Is.
  *
