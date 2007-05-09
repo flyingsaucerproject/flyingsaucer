@@ -285,7 +285,6 @@ public class Layer {
             BoxCollector collector = new BoxCollector();
             collector.collect(c, c.getOutputDevice().getClip(), this, blocks, lines);
     
-            // TODO root layer needs to be handled correctly (paint over entire canvas)
             if (! isInline()) {
                 paintLayerBackgroundAndBorder(c);
                 if (c.debugDrawBoxes()) {
