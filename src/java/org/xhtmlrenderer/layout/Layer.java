@@ -565,7 +565,7 @@ public class Layer {
         for (Iterator i = getChildren().iterator(); i.hasNext();) {
             Layer child = (Layer) i.next();
 
-            if (child.getMaster().getStyle().isFixed()) {
+            if (child.getMaster().getStyle().isFixed() || child.containsFixedLayer()) {
                 return true;
             }
         }
