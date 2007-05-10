@@ -38,7 +38,7 @@ public class ImageRender {
 				imageWriter.write(image, path + ".png");
 
 				// compare to old
-				BufferedImage img = Graphics2DRenderer.renderToImage(f.toURL().toExternalForm(), 700);
+				BufferedImage img = Graphics2DRenderer.renderToImage(f.toURL().toExternalForm(), 1024);
 				ImageIO.write(img, "png", new File(path + "-G2DR.png"));
 
 			} else {
