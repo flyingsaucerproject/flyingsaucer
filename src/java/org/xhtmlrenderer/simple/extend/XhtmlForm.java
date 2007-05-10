@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -18,14 +18,30 @@
  */
 package org.xhtmlrenderer.simple.extend;
 
-import java.awt.*;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -43,7 +59,7 @@ import org.xhtmlrenderer.util.XRLog;
 /**
  * Represents a form object
  *
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  */
 public class XhtmlForm {
     /**
@@ -137,18 +153,8 @@ public class XhtmlForm {
                     pw.setColumns(15);
                 }
                 if (e.hasAttribute("maxlength")) {
-                    final int maxlength = Integer.parseInt(e.getAttribute("maxlength"));
-                    pw.setDocument(new PlainDocument() {
-                        public void insertString(int offset, String str, AttributeSet attr)
-                                throws BadLocationException {
-                            if (str == null) {
-                                return;
-                            }
-                            if ((getLength() + str.length()) <= maxlength) {
-                                super.insertString(offset, str, attr);
-                            }
-                        }
-                    });
+                    int maxlength = Integer.parseInt(e.getAttribute("maxlength"));
+                    pw.setDocument(new SizeLimitedDocument(maxlength));
                 }
                 cc = pw;
             } else if (type.equals("radio")) {
@@ -181,18 +187,8 @@ public class XhtmlForm {
                     text.setColumns(15);
                 }
                 if (e.hasAttribute("maxlength")) {
-                    final int maxlength = Integer.parseInt(e.getAttribute("maxlength"));
-                    text.setDocument(new PlainDocument() {
-                        public void insertString(int offset, String str, AttributeSet attr)
-                                throws BadLocationException {
-                            if (str == null) {
-                                return;
-                            }
-                            if ((getLength() + str.length()) <= maxlength) {
-                                super.insertString(offset, str, attr);
-                            }
-                        }
-                    });
+                    int maxlength = Integer.parseInt(e.getAttribute("maxlength"));
+                    text.setDocument(new SizeLimitedDocument(maxlength));
                 }
                 if (e.hasAttribute("readonly") &&
                         e.getAttribute("readonly").equals("readonly")) {
@@ -251,10 +247,18 @@ public class XhtmlForm {
 
                 NodeList options = e.getElementsByTagName("option");
                 for (int i = 0; i < options.getLength(); i++) {
-                    Element value = (Element) options.item(i);
-                    String svalue = collectText(value);
-                    listModel.addElement(svalue);
-                    if (value.hasAttribute("selected") && value.getAttribute("selected").equals("selected")) {
+                    Element option = (Element) options.item(i);
+                    
+                    String optionText = collectText(option);
+                    String optionValue = optionText;
+                    
+                    if (option.hasAttribute("value")) {
+                        optionValue = option.getAttribute("value");
+                    }
+
+                    listModel.addElement(new NameValuePair(optionText, optionValue));
+
+                    if (option.hasAttribute("selected") && option.getAttribute("selected").equals("selected")) {
                         selModel.addSelectionInterval(i, i);
                     }
                 }
@@ -273,10 +277,18 @@ public class XhtmlForm {
                 NodeList options = e.getElementsByTagName("option");
                 int selected = -1;
                 for (int i = 0; i < options.getLength(); i++) {
-                    Element value = (Element) options.item(i);
-                    String svalue = collectText(value);
-                    select.addItem(svalue);
-                    if (value.hasAttribute("selected") && value.getAttribute("selected").equals("selected")) {
+                    Element option = (Element) options.item(i);
+                    
+                    String optionText = collectText(option);
+                    String optionValue = optionText;
+                    
+                    if (option.hasAttribute("value")) {
+                        optionValue = option.getAttribute("value");
+                    }
+
+                    select.addItem(new NameValuePair(optionText, optionValue));
+
+                    if (option.hasAttribute("selected") && option.getAttribute("selected").equals("selected")) {
                         selected = i;
                     }
                 }
@@ -385,24 +397,102 @@ public class XhtmlForm {
                 data.append("=");
                 data.append(URLUTF8Encoder.encode(ta.getText()));//TODO:check if we have to make linefeeds into CR-LF
             } else if (e.getNodeName().equals("select")) {
-                JComboBox select = (JComboBox) cc;
-                data.append('&');
-                data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
-                data.append("=");
-                if (select.getSelectedItem() != null) {
-                    data.append(URLUTF8Encoder.encode(select.getSelectedItem().toString()));
+                if (e.hasAttribute("multiple") && e.getAttribute("multiple").equals("true")) {
+                    JScrollPane scrollpane = (JScrollPane) cc;
+
+                    // This is ugly, but I plan to re-write most of this class anyway...
+                    JList list = (JList) scrollpane.getViewport().getView();
+
+                    Object [] selectedItems = list.getSelectedValues();
+                    
+                    for (int i = 0; i < selectedItems.length; i++) {
+                        NameValuePair selectedItem = (NameValuePair) selectedItems[i];
+
+                        data.append('&');
+                        data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
+                        data.append("=");
+                        data.append(URLUTF8Encoder.encode(selectedItem.getValue()));
+                    }
+                } else {
+                    JComboBox select = (JComboBox) cc;
+
+                    data.append('&');
+                    data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
+                    data.append("=");
+
+                    if (select.getSelectedItem() != null) {
+                        NameValuePair selectedItem = (NameValuePair) select.getSelectedItem();
+
+                        data.append(URLUTF8Encoder.encode(selectedItem.getValue()));
+                    }
                 }
             }
         }
         data.deleteCharAt(0);//remove the first &
+        // TODO: Make this all work but comment out for now because its making eclipse angry
+        /*
         String action = formElement.getAttribute("action");
         String method = formElement.getAttribute("method");
         if (method.equals("")) {
             method = "get";
         }
         String formData = data.toString();
+        */
         //TODO: make a real submission via uac
+    }
+}
 
+/**
+ * When applied to a Swing component, limits the total number of
+ * characters that can be entered.
+ */
+class SizeLimitedDocument extends PlainDocument
+{
+    private static final long serialVersionUID = 1L;
+
+    private int maximumLength;
+    
+    public SizeLimitedDocument(int maximumLength) {
+        this.maximumLength = maximumLength;
+    }
+    
+    public int getMaximumLength() {
+        return this.maximumLength;
+    }
+
+    public void insertString(int offset, String str, AttributeSet attr)
+        throws BadLocationException {
+        if (str == null) {
+            return;
+        }
+        if ((getLength() + str.length()) <= this.maximumLength) {
+            super.insertString(offset, str, attr);
+        }
+    }
+}
+/**
+ * Provides a simple container for name/value data, such as that used
+ * by the &lt;option&gt; elements in a &lt;select&gt; list.
+ */
+class NameValuePair {
+    private String name;
+    private String value;
+    
+    public NameValuePair(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
+    
+    public String getValue() {
+        return this.value;
+    }
+    
+    public String toString() {
+        return this.getName();
     }
 }
 
