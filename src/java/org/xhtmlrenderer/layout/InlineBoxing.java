@@ -537,8 +537,7 @@ public class InlineBoxing {
         CalculatedStyle style = iB.getStyle();
         float lineHeight = style.getLineHeight(c);
 
-        int halfLeading = Math.round((lineHeight - 
-                (fm.getAscent() + fm.getDescent())) / 2);
+        int halfLeading = Math.round((lineHeight - iB.getStyle().getFont(c).size) / 2);
 
         iB.setBaseline(Math.round(fm.getAscent()));
 
