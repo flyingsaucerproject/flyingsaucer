@@ -21,7 +21,11 @@
 		<copy todir="build/classes/eeze" file="${src.java.dir}/eeze/eeze_help.html" />
 	</target>
 
-    <!-- Compiles the compare tool -->
+	<target name="compile.samples" depends="compile,resources.browser">
+		<javac-full srcdir="${src.samples.java.dir}"/>
+	</target>
+
+	<!-- Compiles the compare tool -->
 	<target name="compile.fsc" depends="init">
 		<javac-full srcdir="${src.java.dir}/compare">
             <classpath >

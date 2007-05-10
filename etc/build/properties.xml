@@ -38,6 +38,7 @@
   <property name="src.about.java.dir" location="demos/about/src/java"/>
   <property name="src.photogallery.java.dir" location="demos/photogallery/src/java"/>
   <property name="src.filebrowser.java.dir" location="demos/filebrowser/src/java"/>
+  <property name="src.samples.java.dir" location="demos/samples/src"/>
   <property name="dest.dir" location="build"/>
   <property name="dest.javadoc.full.dir" location="${doc.dir}/full/api"/>
   <property name="dest.javadoc.user.dir" location="${doc.dir}/user/api"/>
