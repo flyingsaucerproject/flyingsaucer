@@ -420,4 +420,9 @@ public class InlineBox implements Styleable {
     public void setFunction(FSFunction function) {
         _function = function;
     }
+    
+    public void truncateText() {
+        _text = "";
+        _originalText = "";
+    }
 }

@@ -455,12 +455,31 @@ public class LineBox extends Box implements InlinePaintable {
         
         restyleChildren(c);
     }    
+    
+    public boolean isContainsVisibleContent() {
+        for (int i = 0; i < getChildCount(); i++) {
+            Box b = (Box)getChild(i);
+            if (b instanceof BlockBox) {
+                return true;
+            } else {
+                boolean maybeResult = ((InlineLayoutBox)b).isContainsVisibleContent();
+                if (maybeResult) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.64  2007/05/10 00:43:55  peterbrant
+ * Empty inline elements should generate boxes and participate in line height calculations
+ *
  * Revision 1.63  2007/03/12 21:11:20  peterbrant
  * Documentation update
  *

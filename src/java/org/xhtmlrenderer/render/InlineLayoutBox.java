@@ -205,7 +205,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         _pending = b;
     }
     
-    private void unmarkPending(LayoutContext c) {
+    public void unmarkPending(LayoutContext c) {
         _pending = false;
         
         if (getParent() instanceof InlineLayoutBox) {
@@ -401,8 +401,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         _inlineWidth = inlineWidth;
     }
     
-    // XXX Could we just not add them in the first place?
-    public boolean containsContent() {
+    public boolean isContainsVisibleContent() {
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object child = (Object)getInlineChild(i);
             if (child instanceof InlineText) {
@@ -412,7 +411,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
                 }
             } else if (child instanceof InlineLayoutBox) {
                 InlineLayoutBox iB = (InlineLayoutBox)child;
-                if (iB.containsContent()) {
+                if (iB.isContainsVisibleContent()) {
                     return true;
                 }
             } else {

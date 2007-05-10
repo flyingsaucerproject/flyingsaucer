@@ -33,8 +33,6 @@ public class InlineBoxMeasurements {
     private int _paintingTop;
     private int _paintingBottom;
     
-    private boolean _containsContent;
-    
     public InlineBoxMeasurements() {
         
     }
@@ -77,14 +75,6 @@ public class InlineBoxMeasurements {
 
     public void setTextTop(int textTop) {
         _textTop = textTop;
-    }
-
-    public boolean isContainsContent() {
-        return _containsContent;
-    }
-
-    public void setContainsContent(boolean containsContent) {
-        _containsContent = containsContent;
     }
 
     public int getPaintingBottom() {

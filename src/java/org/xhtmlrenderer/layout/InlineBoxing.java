@@ -244,6 +244,13 @@ public class InlineBoxing {
                     remainingWidth -= rightMBP;
 
                     openInlineBoxes.remove(openInlineBoxes.size() - 1);
+                    
+                    if (currentIB.isPending()) {
+                        currentIB.unmarkPending(c);
+                        
+                        // Reset to correct value
+                        currentIB.setStartsHere(iB.isStartsHere());
+                    }
 
                     currentIB.setEndsHere(true);
                     
@@ -426,7 +433,7 @@ public class InlineBoxing {
 
     private static void positionVertically(
             LayoutContext c, Box container, LineBox current, MarkerData markerData) {
-        if (current.getChildCount() == 0) {
+        if (current.getChildCount() == 0 || ! current.isContainsVisibleContent()) {
             current.setHeight(0);
         } else {
             FSFontMetrics strutM = container.getStyle().getFSFontMetrics(c);
@@ -555,8 +562,6 @@ public class InlineBoxing {
         result.setPaintingBottom((int)Math.ceil(iB.getY() +
                 fm.getAscent() + fm.getDescent() + 
                 border.bottom() + padding.bottom()));
-
-        result.setContainsContent(iB.containsContent());
 
         return result;
     }

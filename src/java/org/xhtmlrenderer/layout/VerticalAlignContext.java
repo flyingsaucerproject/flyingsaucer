@@ -115,13 +115,11 @@ public class VerticalAlignContext {
     public void pushMeasurements(InlineBoxMeasurements measurements) {
         _measurements.add(measurements);
         
-        if (measurements.isContainsContent()) {
-            updateInlineTop(measurements.getInlineTop());
-            updateInlineBottom(measurements.getInlineBottom());
-            
-            updatePaintingTop(measurements.getPaintingTop());
-            updatePaintingBottom(measurements.getPaintingBottom());
-        }
+        updateInlineTop(measurements.getInlineTop());
+        updateInlineBottom(measurements.getInlineBottom());
+        
+        updatePaintingTop(measurements.getPaintingTop());
+        updatePaintingBottom(measurements.getPaintingBottom());
     }
     
     public InlineBoxMeasurements getParentMeasurements() {

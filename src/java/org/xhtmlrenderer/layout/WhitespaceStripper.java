@@ -86,10 +86,25 @@ public class WhitespaceStripper {
     }
 
     private static void stripTextContent(List stripped) {
+        boolean onlyAnonymous = true;
         for (Iterator i = stripped.iterator(); i.hasNext(); ) {
             Styleable node = (Styleable)i.next();
             if (node.getStyle().isInline()) {
-                i.remove();
+                InlineBox iB = (InlineBox)node;
+                if (iB.getElement() != null) {
+                    onlyAnonymous = false;
+                }
+                
+                iB.truncateText();
+            }
+        }
+        
+        if (onlyAnonymous) {
+            for (Iterator i = stripped.iterator(); i.hasNext(); ) {
+                Styleable node = (Styleable)i.next();
+                if (node.getStyle().isInline()) {
+                    i.remove();
+                }
             }
         }
     }

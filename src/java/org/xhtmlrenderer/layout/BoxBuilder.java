@@ -787,10 +787,10 @@ public class BoxBuilder {
                 }
             } while ((working = working.getNextSibling()) != null);
         }
-        if (! needStartText && needEndText) {
+        if (needStartText || needEndText) {
             InlineBox iB = createInlineBox("", parent, parentStyle);
-            iB.setStartsHere(false);
-            iB.setEndsHere(true);
+            iB.setStartsHere(needStartText);
+            iB.setEndsHere(needEndText);
             children.add(iB);
         }
         insertGeneratedContent(c, parent, parentStyle, "after", children, info);
