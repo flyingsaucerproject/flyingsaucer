@@ -2,8 +2,11 @@ import java.io.IOException;
 import java.io.File;
 import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
+
 import org.xhtmlrenderer.swing.Java2DRenderer;
 import org.xhtmlrenderer.simple.ImageRenderer;
+import org.xhtmlrenderer.simple.Graphics2DRenderer;
 import org.xhtmlrenderer.util.FSImageWriter;
 
 /**
@@ -26,13 +29,18 @@ public class ImageRender {
 			File f = new File(url);
 			if (f.exists()) {
 				Java2DRenderer renderer = new Java2DRenderer(f, 1024);
-				renderer.setBufferedImageType(BufferedImage.TYPE_INT_ARGB);
+				renderer.setBufferedImageType(BufferedImage.TYPE_INT_RGB);
 				BufferedImage image = renderer.getImage();
 
 				FSImageWriter imageWriter = new FSImageWriter();
 				String path = f.getAbsolutePath();
-				path = path.substring(0, path.lastIndexOf(".")) + ".png";
-				imageWriter.write(image, path);
+				path = path.substring(0, path.lastIndexOf("."));
+				imageWriter.write(image, path + ".png");
+
+				// compare to old
+				BufferedImage img = Graphics2DRenderer.renderToImage(f.toURL().toExternalForm(), 700);
+				ImageIO.write(img, "png", new File(path + "-G2DR.png"));
+
 			} else {
 				usage("File to render is not found: " + url);
 			}
