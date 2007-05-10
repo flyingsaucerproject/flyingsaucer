@@ -71,7 +71,7 @@ public class AnonymousBlockBox extends BlockBox {
     
     public boolean isSkipWhenCollapsingMargins() {
         // An anonymous block will already have its children provided to it
-        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+        for (Iterator i = getInlineContent().iterator(); i.hasNext(); ) {
             Styleable styleable = (Styleable)i.next();
             CalculatedStyle style = styleable.getStyle();
             if (! (style.isFloated() || style.isAbsolute() || style.isFixed())) {
@@ -106,6 +106,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2007/05/10 00:39:38  peterbrant
+ * Anonymous block boxes were always being skipped when collapsing margins
+ *
  * Revision 1.22  2007/03/12 21:11:20  peterbrant
  * Documentation update
  *
