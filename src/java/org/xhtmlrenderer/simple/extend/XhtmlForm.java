@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -53,13 +53,14 @@ import org.w3c.dom.Text;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.swing.AWTFSImage;
+import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 
 
 /**
  * Represents a form object
  *
- * @author Torbjï¿½rn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class XhtmlForm {
     /**
@@ -145,18 +146,6 @@ public class XhtmlForm {
                     checkbox.setSelected(true);
                 }
                 cc = checkbox;
-            } else if (type.equals("password")) {
-                JPasswordField pw = new JPasswordField();
-                if (e.hasAttribute("size")) {
-                    pw.setColumns(Integer.parseInt(e.getAttribute("size")));
-                } else {
-                    pw.setColumns(15);
-                }
-                if (e.hasAttribute("maxlength")) {
-                    int maxlength = Integer.parseInt(e.getAttribute("maxlength"));
-                    pw.setDocument(new SizeLimitedDocument(maxlength));
-                }
-                cc = pw;
             } else if (type.equals("radio")) {
                 JRadioButton radio = new JRadioButton();
                 radio.setText("");
@@ -176,25 +165,40 @@ public class XhtmlForm {
                 }
                 group.add(radio);
                 cc = radio;
-            } else if (type.equals("text")) {
-                JTextField text = new JTextField();
+            } else if (type.equals("text") || type.equals("password")) {
+                JTextField textfield = null;
+                
+                if (type.equals("text")) {
+                    textfield = new JTextField();
+                } else {
+                    textfield = new JPasswordField();
+                }
+
                 if (e.hasAttribute("value")) {
-                    text.setText(e.getAttribute("value"));
+                    textfield.setText(e.getAttribute("value"));
                 }
                 if (e.hasAttribute("size")) {
-                    text.setColumns(Integer.parseInt(e.getAttribute("size")));
+                    int size = GeneralUtil.parseIntRelaxed(e.getAttribute("size"));
+                    
+                    // Size of 0 doesn't make any sense, so use default value
+                    if (size == 0) {
+                        textfield.setColumns(15);
+                    } else {
+                        textfield.setColumns(size);
+                    }
                 } else {
-                    text.setColumns(15);
+                    textfield.setColumns(15);
                 }
                 if (e.hasAttribute("maxlength")) {
-                    int maxlength = Integer.parseInt(e.getAttribute("maxlength"));
-                    text.setDocument(new SizeLimitedDocument(maxlength));
+                    textfield.setDocument(
+                            new SizeLimitedDocument(
+                                    GeneralUtil.parseIntRelaxed(e.getAttribute("maxlength"))));
                 }
                 if (e.hasAttribute("readonly") &&
                         e.getAttribute("readonly").equals("readonly")) {
-                    text.setEditable(false);
+                    textfield.setEditable(false);
                 }
-                cc = text;
+                cc = textfield;
             } else if (type.equals("text")) {
                 JTextField text = new JTextField();
                 if (e.hasAttribute("value")) {
@@ -218,11 +222,20 @@ public class XhtmlForm {
         } else if (e.getNodeName().equals("textarea")) {
             int rows = 4;
             int cols = 10;
+
             if (e.hasAttribute("rows")) {
-                rows = Integer.parseInt(e.getAttribute("rows"));
+                int parsedRows = GeneralUtil.parseIntRelaxed(e.getAttribute("rows"));
+                
+                if (parsedRows > 0) {
+                    rows = parsedRows;
+                }
             }
             if (e.hasAttribute("cols")) {
-                cols = Integer.parseInt(e.getAttribute("cols"));
+                int parsedCols = GeneralUtil.parseIntRelaxed(e.getAttribute("cols"));
+                
+                if (parsedCols > 0) {
+                    cols = parsedCols;
+                }
             }
 
             JTextArea ta = new JTextArea(rows, cols);

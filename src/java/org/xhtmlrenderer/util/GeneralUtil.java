@@ -267,12 +267,60 @@ public class GeneralUtil {
         fos.close();
         System.out.println("Wrote file: " + f.getAbsolutePath());
     }
+
+    /**
+     * Parses an integer from a string using less restrictive rules about which
+     * characters we won't accept.  This scavenges the supplied string for any
+     * numeric character, while dropping all others.
+     * 
+     * @param s The string to parse
+     * @return The number represented by the passed string, or 0 if the string
+     *         is null, empty, white-space only, contains only non-numeric
+     *         characters, or simply evaluates to 0 after parsing (e.g. "0")
+     */
+    public static int parseIntRelaxed(String s)
+    {
+        // An edge-case short circuit...
+        if (s == null || s.length() == 0 || s.trim().length() == 0) {
+            return 0;
+        }
+    
+        StringBuffer buffer = new StringBuffer();
+        
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+    
+            if (Character.isDigit(c)) {
+                buffer.append(c);
+            } else {
+                // If we hit a non-numeric with numbers already in the
+                // buffer, we're done.
+                if (buffer.length() > 0) {
+                    break;
+                }
+            }
+        }
+        
+        if (buffer.length() == 0) {
+            return 0;
+        }
+        
+        try {
+            return Integer.parseInt(buffer.toString());
+        } catch (NumberFormatException exception) {
+            // The only way we get here now is if s > Integer.MAX_VALUE
+            return Integer.MAX_VALUE;
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2007/05/11 22:51:35  peterbrant
+ * Patch from Sean Bright
+ *
  * Revision 1.14  2007/04/10 20:46:38  pdoubleya
  * Fix, was not checking if resource was actually available before opening it
  *
