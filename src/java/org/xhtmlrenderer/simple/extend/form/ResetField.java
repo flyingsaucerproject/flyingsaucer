@@ -57,7 +57,7 @@ public class ResetField extends InputField {
     }
     
     protected String[] getFieldValues() {
-        return new String [] {
+        return new String[] {
                 hasAttribute("value") ? getAttribute("value") : "Reset" // TODO: Don't hardcode 
         };
     }
