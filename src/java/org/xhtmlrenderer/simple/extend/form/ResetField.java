@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.XRLog;
 
-public class ResetField extends InputField {
+class ResetField extends InputField {
     public ResetField(Element e, XhtmlForm form) {
         super(e, form);
     }

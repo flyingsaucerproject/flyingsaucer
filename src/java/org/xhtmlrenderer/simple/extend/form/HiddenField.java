@@ -25,7 +25,7 @@ import javax.swing.JTextField;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
-public class HiddenField extends InputField {
+class HiddenField extends InputField {
     public HiddenField(Element e, XhtmlForm form) {
         super(e, form);
     }

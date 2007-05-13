@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.GeneralUtil;
 
-public class PasswordField extends InputField {
+class PasswordField extends InputField {
     public PasswordField(Element e, XhtmlForm form) {
         super(e, form);
     }

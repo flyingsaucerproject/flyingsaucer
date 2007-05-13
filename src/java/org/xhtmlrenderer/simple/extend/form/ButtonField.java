@@ -25,7 +25,7 @@ import javax.swing.JComponent;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
-public class ButtonField extends InputField {
+class ButtonField extends InputField {
     public ButtonField(Element e, XhtmlForm form) {
         super(e, form);
     }

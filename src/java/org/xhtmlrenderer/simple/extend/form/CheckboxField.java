@@ -26,7 +26,7 @@ import javax.swing.JToggleButton;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
-public class CheckboxField extends InputField {
+class CheckboxField extends InputField {
     public CheckboxField(Element e, XhtmlForm form) {
         super(e, form);
     }

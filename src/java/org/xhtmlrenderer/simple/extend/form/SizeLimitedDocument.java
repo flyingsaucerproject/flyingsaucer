@@ -27,7 +27,7 @@ import javax.swing.text.PlainDocument;
  * When applied to a Swing component, limits the total number of
  * characters that can be entered.
  */
-public class SizeLimitedDocument extends PlainDocument
+class SizeLimitedDocument extends PlainDocument
 {
     private static final long serialVersionUID = 1L;
 

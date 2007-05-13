@@ -33,7 +33,7 @@ import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.GeneralUtil;
 
-public class SelectField extends FormField {
+class SelectField extends FormField {
     public SelectField(Element e, XhtmlForm form) {
         super(e, form);
     }

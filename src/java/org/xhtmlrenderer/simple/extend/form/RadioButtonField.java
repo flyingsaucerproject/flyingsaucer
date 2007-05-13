@@ -26,7 +26,7 @@ import javax.swing.JToggleButton;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
-public class RadioButtonField extends InputField {
+class RadioButtonField extends InputField {
     private static final String FS_DEFAULT_GROUP = "__fs_default_group_";
     
     private static int _defaultGroupCount = 1;

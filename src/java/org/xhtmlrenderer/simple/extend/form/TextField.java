@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.GeneralUtil;
 
-public class TextField extends InputField {
+class TextField extends InputField {
     public TextField(Element e, XhtmlForm form) {
         super(e, form);
     }

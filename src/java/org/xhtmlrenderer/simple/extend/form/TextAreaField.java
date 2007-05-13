@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.GeneralUtil;
 
-public class TextAreaField extends FormField {
+class TextAreaField extends FormField {
     public TextAreaField(Element e, XhtmlForm form) {
         super(e, form);
     }
