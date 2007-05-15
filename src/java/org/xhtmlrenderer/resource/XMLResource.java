@@ -19,12 +19,9 @@
  */
 package org.xhtmlrenderer.resource;
 
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
-import org.xml.sax.*;
-import org.xml.sax.helpers.XMLReaderFactory;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
@@ -34,18 +31,25 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.List;
-import java.util.logging.Level;
+
+import org.w3c.dom.Document;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 
 /**
  * @author Patrick Wright
  */
 public class XMLResource extends AbstractResource {
-    private String documentTitle;
-    private List inlineStyles;
     private Document document;
     private static final XMLResourceBuilder XML_RESOURCE_BUILDER;
     private static boolean useConfiguredParser;
@@ -77,24 +81,6 @@ public class XMLResource extends AbstractResource {
 
     public static XMLResource load(Source source) {
         return XML_RESOURCE_BUILDER.createXMLResource(source);
-    }
-
-    public String getDocumentTitle() {
-        return documentTitle;
-    }
-
-    /*package*/
-    void setDocumentTitle(String documentTitle) {
-        this.documentTitle = documentTitle;
-    }
-
-    public List getInlineStyles() {
-        return inlineStyles;
-    }
-
-    /*package*/
-    void setInlineStyles(List inlineStyles) {
-        this.inlineStyles = inlineStyles;
     }
 
     public Document getDocument() {
@@ -334,6 +320,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2007/05/15 22:01:42  peterbrant
+ * Remove unused code
+ *
  * Revision 1.19  2006/07/26 18:09:42  pdoubleya
  * Clean exception throws.
  *
