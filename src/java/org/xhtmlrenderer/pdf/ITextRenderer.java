@@ -60,6 +60,9 @@ public class ITextRenderer {
     
     private float _dotsPerPoint;
     
+    private com.lowagie.text.Document _pdfDoc;
+    private PdfWriter _writer;
+    
     public ITextRenderer() {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
     }
@@ -166,11 +169,39 @@ public class ITextRenderer {
         return result;
     }
     
+    public void createPDF(OutputStream os) throws DocumentException {
+        createPDF(os, true);
+    }
+    
+    public void writeNextDocument() throws DocumentException {
+        List pages = _root.getLayer().getPages();
+        
+        RenderingContext c = newRenderingContext();
+        PageBox firstPage = (PageBox)pages.get(0);
+        com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(
+                0, 0, 
+                firstPage.getWidth(c) / _dotsPerPoint, 
+                firstPage.getHeight(c) / _dotsPerPoint);
+        
+        _outputDevice.setStartPageNo(_writer.getPageNumber());
+        
+        _pdfDoc.setPageSize(firstPageSize);
+        _pdfDoc.newPage();  
+        
+        writePDF(pages, c, firstPageSize, _pdfDoc, _writer);
+    }
+    
+    public void finishPDF() {
+        if (_pdfDoc != null) {
+            _pdfDoc.close();
+        }
+    }
+    
     /**
      * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream if something
      * goes wrong.
      */
-    public void createPDF(OutputStream os) throws DocumentException {
+    public void createPDF(OutputStream os, boolean finish) throws DocumentException {
         List pages = _root.getLayer().getPages();
         
         RenderingContext c = newRenderingContext();
@@ -186,6 +217,19 @@ public class ITextRenderer {
         
         doc.open();
         
+        if (! finish) {
+            _pdfDoc = doc;
+            _writer = writer;
+        }
+        
+        writePDF(pages, c, firstPageSize, doc, writer);
+        
+        if (finish) {
+            doc.close();
+        }
+    }
+
+    private void writePDF(List pages, RenderingContext c, com.lowagie.text.Rectangle firstPageSize, com.lowagie.text.Document doc, PdfWriter writer) throws DocumentException {
         _outputDevice.setRoot(_root);
         
         _outputDevice.start(_doc);
@@ -215,7 +259,6 @@ public class ITextRenderer {
         }
         
         _outputDevice.finish(c, _root);
-        doc.close();
     }
     
     private void paintPage(RenderingContext c, PageBox page) {

@@ -117,6 +117,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     private Box _root;
     
+    private int _startPageNo;
+    
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
     }
@@ -218,7 +220,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         distanceFromTop += box.getAbsY() + box.getMargin(c).top() - page.getTop();
         result = new PdfDestination(PdfDestination.FITH, 
                 normalizeY(distanceFromTop / _dotsPerPoint));
-        result.addPage(_writer.getPageReference(page.getPageNo()+1));
+        result.addPage(_writer.getPageReference(_startPageNo + page.getPageNo()+1));
         
         return result;
     }
@@ -708,7 +710,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 distanceFromTop += box.getAbsY() - page.getTop();
                 target = new PdfDestination(PdfDestination.FITH, 
                         normalizeY(distanceFromTop / _dotsPerPoint));
-                target.addPage(_writer.getPageReference(page.getPageNo()+1));
+                target.addPage(_writer.getPageReference(_startPageNo + page.getPageNo()+1));
             }
         }
         if (target == null) {
@@ -803,5 +805,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     public void setRoot(Box root) {
         _root = root;
+    }
+
+    public int getStartPageNo() {
+        return _startPageNo;
+    }
+
+    public void setStartPageNo(int startPageNo) {
+        _startPageNo = startPageNo;
     }
 }
