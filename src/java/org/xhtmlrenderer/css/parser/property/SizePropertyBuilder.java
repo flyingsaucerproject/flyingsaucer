@@ -125,7 +125,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
                     value2 = temp;
                 }
                 
-                if (! (value1.equals("landscape") || value1.equals("portrait"))) {
+                if (! (value1.toString().equals("landscape") || value1.toString().equals("portrait"))) {
                     throw new CSSParseException("Value " + value1 + " is not a valid page orientation", -1);
                 }
                 
