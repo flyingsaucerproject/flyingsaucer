@@ -1533,7 +1533,18 @@ public class CSSParser {
                 if (ch[end] == '\'' || ch[end] == '"') {
                     end--;
                 }
-                return processEscapes(ch, start, end+1);
+                
+                String uriResult = processEscapes(ch, start, end+1);
+                
+                // Relative URIs are resolved relative to CSS file, not XHTML file
+                if (uriResult.charAt(0) != '/') {
+                    int lastSlash = _URI.lastIndexOf('/');
+                    if (lastSlash != -1) {
+                        uriResult = _URI.substring(0, lastSlash+1) + uriResult;
+                    }
+                }
+                
+                return uriResult;
             case Token.IDENT:
             case Token.FUNCTION:
                 count = _lexer.yylength();
