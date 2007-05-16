@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
+import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 /**
@@ -155,7 +156,7 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
         return (StylesheetInfo[])list.toArray(new StylesheetInfo[list.size()]);
     }
 
-    public InputStream getDefaultStylesheet() {
+    public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
         return null;
     }
 

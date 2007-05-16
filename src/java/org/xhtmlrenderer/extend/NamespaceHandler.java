@@ -23,6 +23,8 @@ import java.io.InputStream;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.extend.StylesheetFactory;
+import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 
@@ -42,7 +44,7 @@ public interface NamespaceHandler {
     /**
      * @return the default CSS stylesheet for this namespace
      */
-    InputStream getDefaultStylesheet();
+    StylesheetInfo getDefaultStylesheet(StylesheetFactory factory);
 
     /**
      * @param doc

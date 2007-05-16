@@ -74,7 +74,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         });
     }
 
-    synchronized Stylesheet parse(Reader reader, StylesheetInfo info) {
+    public synchronized Stylesheet parse(Reader reader, StylesheetInfo info) {
         try {
             return _cssParser.parseStylesheet(info.getUri(), info.getOrigin(), reader);
         } catch (IOException e) {

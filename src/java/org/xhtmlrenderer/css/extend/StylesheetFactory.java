@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.css.extend;
 
+import java.io.Reader;
+
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
@@ -32,6 +34,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
  * @author Torbjörn Gannholm
  */
 public interface StylesheetFactory {
+    Stylesheet parse(Reader reader, StylesheetInfo info);
     Ruleset parseStyleDeclaration(int author, String style);
 
     Stylesheet getStylesheet(StylesheetInfo si);
@@ -41,6 +44,9 @@ public interface StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2007/05/16 22:27:14  peterbrant
+ * Only load default stylesheet once
+ *
  * Revision 1.1  2005/06/23 17:03:42  tobega
  * css now independent of DOM
  *

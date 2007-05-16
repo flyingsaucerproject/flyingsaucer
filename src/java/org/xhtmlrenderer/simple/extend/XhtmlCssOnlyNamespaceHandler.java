@@ -18,7 +18,9 @@
  */
 package org.xhtmlrenderer.simple.extend;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +30,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.xhtmlrenderer.css.extend.StylesheetFactory;
+import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.swing.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
@@ -43,6 +47,9 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * Description of the Field
      */
     final static String _namespace = "http://www.w3.org/1999/xhtml";
+    
+    private static StylesheetInfo _defaultStylesheet;
+    private static boolean _defaultStylesheetError = false;
 
     /**
      * Gets the namespace attribute of the XhtmlNamespaceHandler object
@@ -343,13 +350,56 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
         return (StylesheetInfo[])result.toArray(new StylesheetInfo[result.size()]);
     }
+    
+    public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
+        synchronized (XhtmlCssOnlyNamespaceHandler.class) {
+            if (_defaultStylesheet != null) {
+                return _defaultStylesheet;
+            }
+            
+            if (_defaultStylesheetError) {
+                return null;
+            }
+            
+            StylesheetInfo info = new StylesheetInfo();
+            info.setUri(getNamespace());
+            info.setOrigin(StylesheetInfo.USER_AGENT);
+            info.setMedia("all");
+            info.setType("text/css");
+            
+            InputStream is = null;
+            try {
+                is = getDefaultStylesheetStream();
 
-    /**
-     * Gets the defaultStylesheet attribute of the XhtmlNamespaceHandler object
-     *
-     * @return The defaultStylesheet value
-     */
-    public InputStream getDefaultStylesheet() {
+                if (_defaultStylesheetError) {
+                    return null;
+                }
+                
+                Stylesheet sheet = factory.parse(new InputStreamReader(is), info);
+                info.setStylesheet(sheet);
+                
+                is.close();
+                is = null;
+            } catch (Exception e) {
+                _defaultStylesheetError = true;
+                XRLog.exception("Could not parse default stylesheet", e);
+            } finally {
+                if (is != null) {
+                    try { 
+                        is.close();
+                    } catch (IOException e) {
+                        //  ignore
+                    }
+                }
+            }
+            
+            _defaultStylesheet = info;
+            
+            return _defaultStylesheet;
+        }
+    }
+
+    private InputStream getDefaultStylesheetStream() {
         InputStream stream = null;
         try {
             String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
@@ -358,12 +408,12 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             } else {
                 XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
                         "This file must be on your CLASSPATH. Please check before continuing.");
+                _defaultStylesheetError = true;
             }
 
         } catch (java.io.IOException ex) {
-
             XRLog.exception("Bad IO", ex);
-
+            _defaultStylesheetError = true;
         }
 
         return stream;

@@ -240,27 +240,17 @@ public class StyleReference {
         List infos = new LinkedList();
         long st = System.currentTimeMillis();
 
-        String uri = _nsh.getNamespace();
-        StylesheetInfo info = new StylesheetInfo();
-        info.setUri(_nsh.getNamespace());
-        info.setOrigin(StylesheetInfo.USER_AGENT);
-        info.setMedia("all");
-        info.setType("text/css");
-        if (!_stylesheetFactory.containsStylesheet(uri)) {
-            java.io.InputStream stream = _nsh.getDefaultStylesheet();
-            if (stream != null) {
-                Stylesheet sheet = _stylesheetFactory.parse(new InputStreamReader(stream), info);
-                _stylesheetFactory.putStylesheet(uri, sheet);
-                infos.add(info);
-            }
-        } else {
-            infos.add(info);
+        StylesheetInfo defaultStylesheet = _nsh.getDefaultStylesheet(_stylesheetFactory);
+        if (defaultStylesheet != null) {
+            infos.add(defaultStylesheet);
         }
 
         StylesheetInfo[] refs = _nsh.getStylesheets(_doc);
         int inlineStyleCount = 0;
         if (refs != null) {
             for (int i = 0; i < refs.length; i++) {
+                String uri;
+                
                 if (! refs[i].isInline()) {
                     uri = _uac.resolveURI(refs[i].getUri());
                     refs[i].setUri(uri);
@@ -288,6 +278,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2007/05/16 22:27:14  peterbrant
+ * Only load default stylesheet once
+ *
  * Revision 1.13  2007/02/20 23:44:51  peterbrant
  * Minor formatting change
  *
