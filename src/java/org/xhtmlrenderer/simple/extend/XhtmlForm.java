@@ -46,22 +46,23 @@ import org.xhtmlrenderer.util.XRLog;
  * @author Sean Bright
  */
 public class XhtmlForm {
+    private static final String FS_DEFAULT_GROUP = "__fs_default_group_";
     public static JComponent HIDDEN_FIELD = new JComponent() {
         private static final long serialVersionUID = 1L;
     };
 
+    private static int _defaultGroupCount = 1;
+
     private UserAgentCallback _userAgentCallback;
     private Map _componentCache;
     private Map _buttonGroups;
-    // TODO: Bring this back for the method/action
-    // private Element _parentFormElement;
+    private Element _parentFormElement;
 
     public XhtmlForm(UserAgentCallback uac, Element e) {
         _userAgentCallback = uac;
         _buttonGroups = new HashMap();
         _componentCache = new LinkedHashMap();
-        // TODO: Bring this back for the method/action
-        // _parentFormElement = e;
+        _parentFormElement = e;
     }
 
     public UserAgentCallback getUserAgentCallback() {
@@ -69,6 +70,10 @@ public class XhtmlForm {
     }
     
     public void addButtonToGroup(String groupName, AbstractButton button) {
+        if (groupName == null) {
+            groupName = createNewDefaultGroupName();
+        }
+
         ButtonGroupWrapper group = (ButtonGroupWrapper) _buttonGroups.get(groupName);
         
         if (group == null) {
@@ -79,8 +84,12 @@ public class XhtmlForm {
 
         group.add(button);
     }
+    
+    private static String createNewDefaultGroupName() {
+        return FS_DEFAULT_GROUP + ++_defaultGroupCount;
+    }
 
-    private boolean isFormField(Element e) {
+    private static boolean isFormField(Element e) {
         String nodeName = e.getNodeName();
         
         if (nodeName.equals("input") || nodeName.equals("select") || nodeName.equals("textarea")) {
@@ -127,6 +136,12 @@ public class XhtmlForm {
     }
 
     public void submit(JComponent source) {
+        // If we don't have a <form> to tell us what to do, don't
+        // do anything.
+        if (_parentFormElement == null) {
+            return;
+        }
+
         StringBuffer data = new StringBuffer();
         Iterator fields = _componentCache.entrySet().iterator();
 

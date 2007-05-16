@@ -74,7 +74,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
             return replaceImage(uac, context, e, cssWidth, cssHeight);
         } else {
             //form components
-            Element parentForm = getParentForm(e);
+            Element parentForm = getParentForm(e, context);
             //parentForm may be null! No problem! Assume action is this document and method is get.
             XhtmlForm form = getForm(parentForm);
             if (form == null) {
@@ -224,16 +224,19 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * @param e
      * @return
      */
-    protected Element getParentForm(Element e) {
-        // TODO: these attribute and node names belong in the NSH
-        Node n = e;
+    protected Element getParentForm(Element e, LayoutContext context) {
+        Node node = e;
+
         do {
-            n = n.getParentNode();
-        } while (n.getNodeType() == Node.ELEMENT_NODE && !n.getNodeName().equals("form"));
-        if (n.getNodeType() != Node.ELEMENT_NODE) {
+            node = node.getParentNode();
+        } while (node.getNodeType() == Node.ELEMENT_NODE &&
+                !context.getNamespaceHandler().isFormElement((Element) node));
+
+        if (node.getNodeType() != Node.ELEMENT_NODE) {
             return null;
         }
-        return (Element) n;
+
+        return (Element) node;
     }
 
     /**

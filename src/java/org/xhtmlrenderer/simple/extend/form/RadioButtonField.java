@@ -27,16 +27,8 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 class RadioButtonField extends InputField {
-    private static final String FS_DEFAULT_GROUP = "__fs_default_group_";
-    
-    private static int _defaultGroupCount = 1;
-    
     public RadioButtonField(Element e, XhtmlForm form) {
         super(e, form);
-    }
-    
-    private static String createNewDefaultGroup() {
-        return FS_DEFAULT_GROUP + ++_defaultGroupCount;
     }
 
     public JComponent create() {
@@ -48,11 +40,7 @@ class RadioButtonField extends InputField {
         String groupName = null;
 
         if (hasAttribute("name")) {
-            if (getAttribute("name").trim().length() > 0) {
-                groupName = getAttribute("name");
-            }
-        } else {
-            groupName = createNewDefaultGroup();
+            groupName = getAttribute("name");
         }
 
         // Add to the group for mutual exclusivity

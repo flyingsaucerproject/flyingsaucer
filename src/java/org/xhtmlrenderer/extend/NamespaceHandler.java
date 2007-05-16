@@ -34,8 +34,6 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
  */
 public interface NamespaceHandler {
 
-    //javax.xml.transform.Source getSource();
-
     /**
      * @return the namespace handled
      */
@@ -124,8 +122,19 @@ public interface NamespaceHandler {
      */
     String getAnchorName(Element e);
 
-    /** @return Returns true if the Element represents an image. */
+    /**
+     * @return Returns true if the Element represents an image.
+     */
     boolean isImageElement(Element e);
+
+    /**
+     * Determines whether or not the specified Element represents a
+     * &lt;form&gt;.
+     * 
+     * @param e The Element to evaluate.
+     * @return true if the Element is a &lt;form&gt; element, false otherwise.
+     */
+    boolean isFormElement(Element e);
 
     /**
      * For an element where isImageElement returns true, retrieves the URI associated with that Image, as
