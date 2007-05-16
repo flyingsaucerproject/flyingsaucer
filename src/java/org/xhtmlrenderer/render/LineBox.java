@@ -458,9 +458,11 @@ public class LineBox extends Box implements InlinePaintable {
     
     public boolean isContainsVisibleContent() {
         for (int i = 0; i < getChildCount(); i++) {
-            Box b = (Box)getChild(i);
+            Box b = getChild(i);
             if (b instanceof BlockBox) {
-                return true;
+                if (b.getWidth() > 0 || b.getHeight() > 0) {
+                    return true;
+                }
             } else {
                 boolean maybeResult = ((InlineLayoutBox)b).isContainsVisibleContent();
                 if (maybeResult) {
@@ -477,6 +479,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.65  2007/05/16 15:44:37  peterbrant
+ * inline-block/inline-table elements that take up no space should not be considered visible content
+ *
  * Revision 1.64  2007/05/10 00:43:55  peterbrant
  * Empty inline elements should generate boxes and participate in line height calculations
  *

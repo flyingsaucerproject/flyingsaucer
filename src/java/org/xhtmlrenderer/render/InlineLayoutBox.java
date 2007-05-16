@@ -415,7 +415,10 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
                     return true;
                 }
             } else {
-                return true;
+                Box b = (Box)child;
+                if (b.getWidth() > 0 || b.getHeight() > 0) {
+                    return true;
+                }
             }
         }
         return false;
