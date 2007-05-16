@@ -23,14 +23,14 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 public class FormFieldFactory {
+    private FormFieldFactory() {
+    }
+
     public static FormField create(Element e, XhtmlForm form) {
         String typeKey = null;
 
         if (e.getNodeName().equals("input")) {
             typeKey = e.getAttribute("type");  
-            if (typeKey.trim().length() == 0) {
-                typeKey = "text";
-            }
         } else if (e.getNodeName().equals("textarea")) {
             typeKey = "textarea";
         } else if (e.getNodeName().equals("select")) {
@@ -55,6 +55,8 @@ public class FormFieldFactory {
             return new CheckboxField(e, form);
         } else if (typeKey.equals("radio")) {
             return new RadioButtonField(e, form);
+        } else if (typeKey.equals("file")) {
+            return new FileField(e, form);
         } else if (typeKey.equals("textarea")) {
             return new TextAreaField(e, form);
         } else if (typeKey.equals("select")) {

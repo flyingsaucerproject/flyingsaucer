@@ -85,6 +85,8 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         }
         if (cc == null) {
             return null;
+        } else if (cc == XhtmlForm.HIDDEN_FIELD) {
+            return new EmptyReplacedElement(0, 0);
         } else {
             SwingReplacedElement result = new SwingReplacedElement(cc);
             if (context.isInteractive()) {

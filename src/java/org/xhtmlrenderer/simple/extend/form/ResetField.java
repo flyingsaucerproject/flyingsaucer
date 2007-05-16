@@ -56,6 +56,10 @@ class ResetField extends InputField {
         return button;
     }
     
+    public boolean includeInSubmission(JComponent source) {
+        return false;
+    }
+
     protected String[] getFieldValues() {
         return new String[] {
                 hasAttribute("value") ? getAttribute("value") : "Reset" // TODO: Don't hardcode 

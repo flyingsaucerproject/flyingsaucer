@@ -61,7 +61,7 @@ class TextField extends InputField {
         return textfield;
     }
     
-    public void applyOriginalState() {
+    protected void applyOriginalState() {
         JTextField textfield = (JTextField) getComponent();
         
         textfield.setText(getOriginalState().getValue());

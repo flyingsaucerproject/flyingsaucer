@@ -50,12 +50,20 @@ public abstract class FormField {
     public XhtmlForm getParentForm() {
         return _parentForm;
     }
+    
+    public void reset() {
+        applyOriginalState();
+    }
 
     protected UserAgentCallback getUserAgentCallback() {
         return _parentForm.getUserAgentCallback();
     }
 
     protected FormFieldState getOriginalState() {
+        if (_originalState == null) {
+            _originalState = loadOriginalState();
+        }
+
         return _originalState;
     }
     
@@ -79,15 +87,30 @@ public abstract class FormField {
             }
         }
 
-        _originalState = FormFieldState.fromElement(_element);
-
         applyOriginalState();
     }
 
     public abstract JComponent create();
 
-    public void applyOriginalState() {
+    protected FormFieldState loadOriginalState() {
+        return FormFieldState.fromString("");
+    }
+    
+    protected void applyOriginalState() {
         // Do nothing
+    }
+    
+    /**
+     * Returns true if the value of the current FormField should be
+     * sent along with the current submission.  This is used so that
+     * only the value of the submit button that is used to trigger the
+     * form's submission is sent.
+     * 
+     * @param source The JComponent that caused the submission
+     * @return true if it should
+     */
+    public boolean includeInSubmission(JComponent source) {
+        return true;
     }
 
     // These two methods are temporary but I am using them to clean up

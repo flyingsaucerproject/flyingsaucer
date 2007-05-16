@@ -61,7 +61,7 @@ class PasswordField extends InputField {
         return password;
     }
     
-    public void applyOriginalState() {
+    protected void applyOriginalState() {
         JPasswordField password = (JPasswordField) getComponent();
         
         password.setText(getOriginalState().getValue());

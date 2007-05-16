@@ -46,7 +46,7 @@ class SizeLimitedDocument extends PlainDocument
         if (str == null) {
             return;
         }
-        if ((getLength() + str.length()) <= _maximumLength) {
+        if (getLength() + str.length() <= _maximumLength) {
             super.insertString(offset, str, attr);
         }
     }

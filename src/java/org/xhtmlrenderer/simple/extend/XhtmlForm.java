@@ -45,6 +45,10 @@ import org.xhtmlrenderer.util.XRLog;
  * @author Sean Bright
  */
 public class XhtmlForm {
+    public static JComponent HIDDEN_FIELD = new JComponent() {
+        private static final long serialVersionUID = 1L;
+    };
+
     private UserAgentCallback _userAgentCallback;
     private Map _componentCache;
     private Map _buttonGroups;
@@ -110,14 +114,18 @@ public class XhtmlForm {
     }
     
     public void reset() {
-        Iterator fields = _componentCache.entrySet().iterator();
+        // JDK 6 specific code
+        /*
+        Iterator buttonGroups = _buttonGroups.values().iterator();
 
+        while (buttonGroups.hasNext()) {
+            ((ButtonGroup) buttonGroups.next()).clearSelection();
+        }
+        */
+
+        Iterator fields = _componentCache.values().iterator();
         while (fields.hasNext()) {
-            Map.Entry entry = (Map.Entry) fields.next();
-
-            FormField field = (FormField) entry.getValue();
-            
-            field.applyOriginalState();
+            ((FormField) fields.next()).reset();
         }
     }
 
@@ -129,15 +137,17 @@ public class XhtmlForm {
             Map.Entry entry = (Map.Entry) fields.next();
 
             FormField field = (FormField) entry.getValue();
-
-            String [] dataStrings = field.getFormDataStrings();
             
-            for (int i = 0; i < dataStrings.length; i++) {
-                if (data.length() > 0) {
-                    data.append('&');
+            if (field.includeInSubmission(source)) {
+                String [] dataStrings = field.getFormDataStrings();
+                
+                for (int i = 0; i < dataStrings.length; i++) {
+                    if (data.length() > 0) {
+                        data.append('&');
+                    }
+    
+                    data.append(dataStrings[i]);
                 }
-
-                data.append(dataStrings[i]);
             }
         }
         

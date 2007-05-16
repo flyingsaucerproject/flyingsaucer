@@ -19,22 +19,17 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 public class FormFieldState {
     private String _value;
     private boolean _checked;
-    private List _selected;
+    private int [] _selected;
     
     private FormFieldState() {
         _value = "";
         _checked = false;
-        _selected = new ArrayList();
+        _selected = null;
     }
     
     public String getValue() {
@@ -46,47 +41,36 @@ public class FormFieldState {
     }
 
     public int[] getSelectedIndices() {
-        
-        int[] indices = new int [_selected.size()];
-        
-        for (int i = 0; i < _selected.size(); i++) {
-            indices[i] = ((Integer) _selected.get(i)).intValue();
-        }
-        
-        return indices;
+        return _selected;
     }
     
-    public static FormFieldState fromElement(Element e) {
+    public static FormFieldState fromString(String s) {
         FormFieldState stateObject = new FormFieldState();
+        
+        stateObject._value = s;
 
-        if (e.getNodeName().equals("input")) {
-            String type = e.getAttribute("type");
-
-            if (type.trim().length() == 0) {
-                type = "text";
-            }
-
-            if (type.equals("text") || type.equals("password") || type.equals("hidden")) {
-                stateObject._value = e.getAttribute("value");
-            } else if (type.equals("checkbox") || type.equals("radio")) {
-                if (e.getAttribute("checked") != null && e.getAttribute("checked").equals("checked")) {
-                    stateObject._checked = true;
-                }
-            }
-        } else if (e.getNodeName().equals("textarea")) {
-            stateObject._value = XhtmlForm.collectText(e);
-        } else if (e.getNodeName().equals("select")) {
-            NodeList options = e.getElementsByTagName("option");
-
-            for (int i = 0; i < options.getLength(); i++) {
-                Element option = (Element) options.item(i);
-
-                if (option.hasAttribute("selected") && option.getAttribute("selected").equals("selected")) {
-                    stateObject._selected.add(new Integer(i));
-                }
-            }
+        return stateObject;
+    }
+    
+    public static FormFieldState fromBoolean(boolean b) {
+        FormFieldState stateObject = new FormFieldState();
+        
+        stateObject._checked = b;
+        
+        return stateObject;
+    }
+    
+    public static FormFieldState fromList(List list) {
+        FormFieldState stateObject = new FormFieldState();
+        
+        int [] indices = new int [list.size()];
+        
+        for (int i = 0; i < list.size(); i++) {
+            indices[i] = ((Integer) list.get(i)).intValue();
         }
         
+        stateObject._selected = indices;
+
         return stateObject;
     }
 }

@@ -74,7 +74,23 @@ class SelectField extends FormField {
         }
     }
     
-    public void applyOriginalState() {
+    protected FormFieldState loadOriginalState() {
+        ArrayList list = new ArrayList();
+        
+        NodeList options = getElement().getElementsByTagName("option");
+
+        for (int i = 0; i < options.getLength(); i++) {
+            Element option = (Element) options.item(i);
+
+            if (option.hasAttribute("selected") && option.getAttribute("selected").equals("selected")) {
+                list.add(new Integer(i));
+            }
+        }
+
+        return FormFieldState.fromList(list);
+    }
+    
+    protected void applyOriginalState() {
         if (shouldRenderAsList()) {
             JList select = (JList) ((JScrollPane) getComponent()).getViewport().getView();
 

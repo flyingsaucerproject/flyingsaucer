@@ -56,6 +56,10 @@ class SubmitField extends InputField {
         return button;
     }
     
+    public boolean includeInSubmission(JComponent source) {
+        return (source == getComponent());
+    }
+
     protected String[] getFieldValues() {
         return new String[] {
                 hasAttribute("value") ? getAttribute("value") : "Submit" // TODO: Don't hardcode 

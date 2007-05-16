@@ -20,39 +20,17 @@
 package org.xhtmlrenderer.simple.extend.form;
 
 import javax.swing.JComponent;
-import javax.swing.JTextField;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 class HiddenField extends InputField {
+    
     public HiddenField(Element e, XhtmlForm form) {
         super(e, form);
     }
 
     public JComponent create() {
-        JTextField textfield = new JTextField();
-
-        // Just so we can see it
-        textfield.setColumns(30);
-
-        textfield.setEditable(false);
-        textfield.setEnabled(false);
-
-        return textfield;
-    }
-    
-    public void applyOriginalState() {
-        JTextField textfield = (JTextField) getComponent();
-        
-        textfield.setText(getOriginalState().getValue());
-    }
-    
-    protected String[] getFieldValues() {
-        JTextField textfield = (JTextField) getComponent();
-        
-        return new String[] {
-                textfield.getText()
-        };
+        return XhtmlForm.HIDDEN_FIELD;
     }
 }

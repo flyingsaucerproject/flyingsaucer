@@ -61,7 +61,12 @@ class RadioButtonField extends InputField {
         return radio;
     }
     
-    public void applyOriginalState() {
+    protected FormFieldState loadOriginalState() {
+        return FormFieldState.fromBoolean(
+                getAttribute("checked").equals("checked"));
+    }
+
+    protected void applyOriginalState() {
         JToggleButton button = (JToggleButton) getComponent();
         
         button.setSelected(getOriginalState().isChecked());

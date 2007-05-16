@@ -22,12 +22,15 @@ package org.xhtmlrenderer.simple.extend.form;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.GeneralUtil;
 
 class TextAreaField extends FormField {
+    private JTextArea _textarea;
+
     public TextAreaField(Element e, XhtmlForm form) {
         super(e, form);
     }
@@ -52,19 +55,23 @@ class TextAreaField extends FormField {
             }
         }
 
-        JTextArea ta = new JTextArea(rows, cols);
-        JScrollPane sp = new JScrollPane(ta);
+        _textarea = new JTextArea(rows, cols);
 
-        sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        JScrollPane scrollpane = new JScrollPane(_textarea);
 
-        return sp;
+        scrollpane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollpane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+        return scrollpane;
+    }
+    
+    protected FormFieldState loadOriginalState() {
+        return FormFieldState.fromString(
+                XhtmlForm.collectText(getElement()));
     }
 
-    public void applyOriginalState() {
-        JTextArea textarea = (JTextArea) ((JScrollPane) getComponent()).getViewport().getView();
-        
-        textarea.setText(getOriginalState().getValue());
+    protected void applyOriginalState() {
+        _textarea.setText(getOriginalState().getValue());
     }
     
     protected String[] getFieldValues() {
