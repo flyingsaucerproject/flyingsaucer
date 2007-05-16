@@ -113,6 +113,7 @@ public class InlineBoxing {
         }
 
         boolean needFirstLetter = c.getFirstLettersTracker().hasStyles();
+        boolean zeroWidthInlineBlock = false;
         
         for (Iterator i = box.getInlineContent().iterator(); i.hasNext(); ) {
             Styleable node = (Styleable)i.next();
@@ -167,9 +168,12 @@ public class InlineBoxing {
                         fit += pendingLeftMBP + pendingRightMBP;
                     }
 
-                    if (hasTrimmableLeadingSpace(currentLine, style, lbContext)) {
+                    if (hasTrimmableLeadingSpace(
+                            currentLine, style, lbContext, zeroWidthInlineBlock)) {
                         lbContext.setStart(lbContext.getStart() + 1);
                     }
+                    
+                    zeroWidthInlineBlock = false;
                     
                     if (lbContext.getStartSubstring().length() == 0) {
                         break;
@@ -315,6 +319,10 @@ public class InlineBoxing {
                    }                     
                    
                    needFirstLetter = false;
+                   
+                   if (child.getWidth() == 0) {
+                       zeroWidthInlineBlock = true;
+                   }
                }
             }
         }
@@ -826,9 +834,11 @@ public class InlineBoxing {
         return result;
     }
 
-    private static boolean hasTrimmableLeadingSpace(LineBox line, CalculatedStyle style,
-                                                    LineBreakContext lbContext) {
-        if (!line.isContainsContent() && lbContext.getStartSubstring().startsWith(WhitespaceStripper.SPACE)) {
+    private static boolean hasTrimmableLeadingSpace(
+            LineBox line, CalculatedStyle style, LineBreakContext lbContext,
+            boolean zeroWidthInlineBlock) {
+        if ((! line.isContainsContent() || zeroWidthInlineBlock) && 
+                lbContext.getStartSubstring().startsWith(WhitespaceStripper.SPACE)) {
             IdentValue whitespace = style.getWhitespace();
             if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
                 return true;
