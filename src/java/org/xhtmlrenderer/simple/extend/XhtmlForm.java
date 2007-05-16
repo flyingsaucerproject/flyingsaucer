@@ -29,6 +29,7 @@ import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -68,11 +69,11 @@ public class XhtmlForm {
     }
     
     public void addButtonToGroup(String groupName, AbstractButton button) {
-        ButtonGroup group = (ButtonGroup) _buttonGroups.get(groupName);
+        ButtonGroupWrapper group = (ButtonGroupWrapper) _buttonGroups.get(groupName);
         
         if (group == null) {
-            group = new ButtonGroup();
-            
+            group = new ButtonGroupWrapper();
+
             _buttonGroups.put(groupName, group);
         }
 
@@ -114,14 +115,10 @@ public class XhtmlForm {
     }
     
     public void reset() {
-        // JDK 6 specific code
-        /*
         Iterator buttonGroups = _buttonGroups.values().iterator();
-
         while (buttonGroups.hasNext()) {
-            ((ButtonGroup) buttonGroups.next()).clearSelection();
+            ((ButtonGroupWrapper) buttonGroups.next()).clearSelection();
         }
-        */
 
         Iterator fields = _componentCache.values().iterator();
         while (fields.hasNext()) {
@@ -169,5 +166,37 @@ public class XhtmlForm {
             } while ((node = node.getNextSibling()) != null);
         }
         return result.toString().trim();
+    }
+    
+    private static class ButtonGroupWrapper {
+        private ButtonGroup _group;
+        private AbstractButton _dummy;
+        
+        public ButtonGroupWrapper() {
+            _group = new ButtonGroup();
+            _dummy = new JRadioButton();
+
+            // We need a dummy button to have the appearance of all of
+            // the radio buttons being in an unselected state.
+            //
+            // From:
+            //   http://java.sun.com/j2se/1.5/docs/api/javax/swing/ButtonGroup.html
+            //
+            // "There is no way to turn a button programmatically to 'off', in
+            // order to clear the button group. To give the appearance of 'none
+            // selected', add an invisible radio button to the group and then
+            // programmatically select that button to turn off all the displayed
+            // radio buttons. For example, a normal button with the label 'none'
+            // could be wired to select the invisible radio button.
+            _group.add(_dummy);
+        }
+        
+        public void add(AbstractButton b) {
+            _group.add(b);
+        }
+
+        public void clearSelection() {
+            _group.setSelected(_dummy.getModel(), true);
+        }
     }
 }
