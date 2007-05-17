@@ -32,14 +32,7 @@ import org.xhtmlrenderer.css.extend.TreeResolver;
  * @author tstgm
  */
 abstract class Condition {
-    /**
-     * Description of the Method
-     *
-     * @param e       PARAM
-     * @param attRes  PARAM
-     * @param treeRes
-     * @return Returns
-     */
+
     abstract boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes);
 
     /**
@@ -142,33 +135,14 @@ abstract class Condition {
         return new UnsupportedCondition();
     }
 
-    /**
-     * Description of the Class
-     */
     private static class AttributeExistsCondition extends Condition {
 
-        /**
-         * Description of the Field
-         */
         private String _name;
 
-        /**
-         * Constructor for the AttributeExistsCondition object
-         *
-         * @param name PARAM
-         */
         AttributeExistsCondition(String name) {
             _name = name;
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param e       PARAM
-         * @param attRes  PARAM
-         * @param treeRes
-         * @return Returns
-         */
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
@@ -181,39 +155,16 @@ abstract class Condition {
 
     }
 
-    /**
-     * Description of the Class
-     */
     private static class AttributeEqualsCondition extends Condition {
 
-        /**
-         * Description of the Field
-         */
         private String _name;
-        /**
-         * Description of the Field
-         */
         private String _value;
 
-        /**
-         * Constructor for the AttributeEqualsCondition object
-         *
-         * @param name  PARAM
-         * @param value PARAM
-         */
         AttributeEqualsCondition(String name, String value) {
             _name = name;
             _value = value;
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param e       PARAM
-         * @param attRes  PARAM
-         * @param treeRes
-         * @return Returns
-         */
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
@@ -229,39 +180,16 @@ abstract class Condition {
         }
     }
 
-    /**
-     * Description of the Class
-     */
     private static class AttributeMatchesListCondition extends Condition {
 
-        /**
-         * Description of the Field
-         */
         private String _name;
-        /**
-         * Description of the Field
-         */
         private String _value;
 
-        /**
-         * Constructor for the AttributeMatchesListCondition object
-         *
-         * @param name  PARAM
-         * @param value PARAM
-         */
         AttributeMatchesListCondition(String name, String value) {
             _name = name;
             _value = value;
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param e       PARAM
-         * @param attRes  PARAM
-         * @param treeRes
-         * @return Returns
-         */
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
@@ -281,39 +209,16 @@ abstract class Condition {
         }
     }
 
-    /**
-     * Description of the Class
-     */
     private static class AttributeMatchesFirstPartCondition extends Condition {
 
-        /**
-         * Description of the Field
-         */
         private String _name;
-        /**
-         * Description of the Field
-         */
         private String _value;
 
-        /**
-         * Constructor for the AttributeMatchesFirstPartCondition object
-         *
-         * @param name  PARAM
-         * @param value PARAM
-         */
         AttributeMatchesFirstPartCondition(String name, String value) {
             _name = name;
             _value = value;
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param e       PARAM
-         * @param attRes  PARAM
-         * @param treeRes
-         * @return Returns
-         */
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
@@ -330,33 +235,14 @@ abstract class Condition {
         }
     }
 
-    /**
-     * Description of the Class
-     */
     private static class ClassCondition extends Condition {
 
-        /**
-         * Description of the Field
-         */
         private String _className;
 
-        /**
-         * Constructor for the ClassCondition object
-         *
-         * @param className PARAM
-         */
         ClassCondition(String className) {
             _className = className;
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param e       PARAM
-         * @param attRes  PARAM
-         * @param treeRes
-         * @return Returns
-         */
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
@@ -377,33 +263,14 @@ abstract class Condition {
 
     }
 
-    /**
-     * Description of the Class
-     */
     private static class IDCondition extends Condition {
 
-        /**
-         * Description of the Field
-         */
         private String _id;
 
-        /**
-         * Constructor for the IDCondition object
-         *
-         * @param id PARAM
-         */
         IDCondition(String id) {
             _id = id;
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param e       PARAM
-         * @param attRes  PARAM
-         * @param treeRes
-         * @return Returns
-         */
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
@@ -416,33 +283,13 @@ abstract class Condition {
 
     }
 
-    /**
-     * Description of the Class
-     */
     private static class LangCondition extends Condition {
-
-        /**
-         * Description of the Field
-         */
         private String _lang;
 
-        /**
-         * Constructor for the LangCondition object
-         *
-         * @param lang PARAM
-         */
         LangCondition(String lang) {
             _lang = lang;
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param e       PARAM
-         * @param attRes  PARAM
-         * @param treeRes
-         * @return Returns
-         */
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
@@ -460,50 +307,22 @@ abstract class Condition {
 
     }
 
-    /**
-     * Description of the Class
-     */
     private static class FirstChildCondition extends Condition {
 
-        /**
-         * Constructor for the FirstChildCondition object
-         */
         FirstChildCondition() {
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param e       PARAM
-         * @param attRes  PARAM
-         * @param treeRes
-         * @return Returns
-         */
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             return treeRes.isFirstChildElement(e);
         }
 
     }
 
-    /**
-     * Description of the Class
-     */
     private static class LinkCondition extends Condition {
 
-        /**
-         * Constructor for the LinkCondition object
-         */
         LinkCondition() {
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param e       PARAM
-         * @param attRes  PARAM
-         * @param treeRes
-         * @return Returns
-         */
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             return attRes.isLink(e);
         }
@@ -515,20 +334,9 @@ abstract class Condition {
      */
     private static class UnsupportedCondition extends Condition {
 
-        /**
-         * Constructor for the UnsupportedCondition object
-         */
         UnsupportedCondition() {
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param e       PARAM
-         * @param attRes  PARAM
-         * @param treeRes
-         * @return Returns
-         */
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             return false;
         }

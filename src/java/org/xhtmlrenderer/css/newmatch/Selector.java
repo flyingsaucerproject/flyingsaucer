@@ -35,88 +35,31 @@ import java.util.logging.Level;
  */
 public class Selector {
 
-    /**
-     * Description of the Field
-     */
     private Ruleset _parent;
-    /**
-     * Description of the Field
-     */
     private Selector chainedSelector = null;
-    /**
-     * Description of the Field
-     */
     private Selector siblingSelector = null;
 
-    /**
-     * Description of the Field
-     */
     private int _axis;
-    /**
-     * Description of the Field
-     */
     private String _name;
-    /**
-     * Description of the Field
-     */
     private int _pc = 0;
-    /**
-     * Description of the Field
-     */
     private String _pe;
 
     //specificity - correct values are gotten from the last Selector in the chain
-    /**
-     * Description of the Field
-     */
     private int _specificityB;
-    /**
-     * Description of the Field
-     */
     private int _specificityC;
-    /**
-     * Description of the Field
-     */
     private int _specificityD;
 
-    /**
-     * Description of the Field
-     */
     private int _pos;//to distinguish between selectors of same specificity
 
-    /**
-     * Description of the Field
-     */
     private java.util.List conditions;
 
-    /**
-     * Description of the Field
-     */
     public final static int DESCENDANT_AXIS = 0;
-    /**
-     * Description of the Field
-     */
     public final static int CHILD_AXIS = 1;
-    /**
-     * Description of the Field
-     */
     public final static int IMMEDIATE_SIBLING_AXIS = 2;
 
-    /**
-     * Description of the Field
-     */
     public final static int VISITED_PSEUDOCLASS = 2;
-    /**
-     * Description of the Field
-     */
     public final static int HOVER_PSEUDOCLASS = 4;
-    /**
-     * Description of the Field
-     */
     public final static int ACTIVE_PSEUDOCLASS = 8;
-    /**
-     * Description of the Field
-     */
     public final static int FOCUS_PSEUDOCLASS = 16;
 
     /**
@@ -132,11 +75,6 @@ public class Selector {
     /**
      * Check if the given Element matches this selector. Note: the parser should
      * give all class
-     *
-     * @param e       PARAM
-     * @param attRes  PARAM
-     * @param treeRes
-     * @return Returns
      */
     public boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
         if (siblingSelector != null) {
@@ -166,11 +104,6 @@ public class Selector {
     /**
      * Check if the given Element matches this selector's dynamic properties.
      * Note: the parser should give all class
-     *
-     * @param e       PARAM
-     * @param attRes  PARAM
-     * @param treeRes
-     * @return Returns
      */
     public boolean matchesDynamic(Object e, AttributeResolver attRes, TreeResolver treeRes) {
         if (siblingSelector != null) {
@@ -230,8 +163,6 @@ public class Selector {
 
     /**
      * the CSS condition :lang(Xx)
-     *
-     * @param lang The feature to be added to the LangCondition attribute
      */
     public void addLangCondition(String lang) {
         _specificityC++;
@@ -240,8 +171,6 @@ public class Selector {
 
     /**
      * the CSS condition #ID
-     *
-     * @param id The feature to be added to the IDCondition attribute
      */
     public void addIDCondition(String id) {
         _specificityB++;
@@ -250,8 +179,6 @@ public class Selector {
 
     /**
      * the CSS condition .class
-     *
-     * @param className The feature to be added to the ClassCondition attribute
      */
     public void addClassCondition(String className) {
         _specificityC++;
@@ -260,9 +187,6 @@ public class Selector {
 
     /**
      * the CSS condition [attribute]
-     *
-     * @param name The feature to be added to the AttributeExistsCondition
-     *             attribute
      */
     public void addAttributeExistsCondition(String name) {
         _specificityC++;
@@ -271,11 +195,6 @@ public class Selector {
 
     /**
      * the CSS condition [attribute=value]
-     *
-     * @param name  The feature to be added to the AttributeEqualsCondition
-     *              attribute
-     * @param value The feature to be added to the AttributeEqualsCondition
-     *              attribute
      */
     public void addAttributeEqualsCondition(String name, String value) {
         _specificityC++;
@@ -284,11 +203,6 @@ public class Selector {
 
     /**
      * the CSS condition [attribute~=value]
-     *
-     * @param name  The feature to be added to the
-     *              AttributeMatchesListCondition attribute
-     * @param value The feature to be added to the
-     *              AttributeMatchesListCondition attribute
      */
     public void addAttributeMatchesListCondition(String name, String value) {
         _specificityC++;
@@ -297,11 +211,6 @@ public class Selector {
 
     /**
      * the CSS condition [attribute|=value]
-     *
-     * @param name  The feature to be added to the
-     *              AttributeMatchesFirstPartCondition attribute
-     * @param value The feature to be added to the
-     *              AttributeMatchesFirstPartCondition attribute
      */
     public void addAttributeMatchesFirstPartCondition(String name, String value) {
         _specificityC++;
