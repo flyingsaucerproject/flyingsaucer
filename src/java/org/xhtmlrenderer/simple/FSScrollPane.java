@@ -67,6 +67,8 @@ import javax.swing.KeyStroke;
  * @author Patrick Wright
  */
 public class FSScrollPane extends JScrollPane {
+    private static final long serialVersionUID = 1L;
+
     /** The panel we are hosting; expect it to be XHTMLPanel or BasicPanel */
     private JPanel view;
     
@@ -133,46 +135,58 @@ public class FSScrollPane extends JScrollPane {
     private void setDefaultActionMap() {
         view.getActionMap().put(PAGE_DOWN,
                 new AbstractAction() {
-            public void actionPerformed(ActionEvent evt) {
-                JScrollBar sb = getVerticalScrollBar();
-                sb.getModel().setValue(sb.getModel().getValue() + sb.getBlockIncrement(1));
-            }
-        });
+                    private static final long serialVersionUID = 1L;
+
+                    public void actionPerformed(ActionEvent evt) {
+                        JScrollBar sb = getVerticalScrollBar();
+                        sb.getModel().setValue(sb.getModel().getValue() + sb.getBlockIncrement(1));
+                    }
+                });
         view.getActionMap().put(PAGE_END,
                 new AbstractAction() {
-            public void actionPerformed(ActionEvent evt) {
-                JScrollBar sb = getVerticalScrollBar();
-                sb.getModel().setValue(sb.getModel().getMaximum());
-            }
-        });
+                    private static final long serialVersionUID = 1L;
+
+                    public void actionPerformed(ActionEvent evt) {
+                        JScrollBar sb = getVerticalScrollBar();
+                        sb.getModel().setValue(sb.getModel().getMaximum());
+                    }
+                });
         view.getActionMap().put(PAGE_UP,
                 new AbstractAction() {
-            public void actionPerformed(ActionEvent evt) {
-                JScrollBar sb = getVerticalScrollBar();
-                sb.getModel().setValue(sb.getModel().getValue() - sb.getBlockIncrement(-1));
-            }
-        });
+                    private static final long serialVersionUID = 1L;
+
+                    public void actionPerformed(ActionEvent evt) {
+                        JScrollBar sb = getVerticalScrollBar();
+                        sb.getModel().setValue(sb.getModel().getValue() - sb.getBlockIncrement(-1));
+                    }
+                });
         view.getActionMap().put(PAGE_START,
                 new AbstractAction() {
-            public void actionPerformed(ActionEvent evt) {
-                JScrollBar sb = getVerticalScrollBar();
-                sb.getModel().setValue(0);
-            }
-        });
+                    private static final long serialVersionUID = 1L;
+
+                    public void actionPerformed(ActionEvent evt) {
+                        JScrollBar sb = getVerticalScrollBar();
+                        sb.getModel().setValue(0);
+                    }
+                });
         view.getActionMap().put(LINE_DOWN,
                 new AbstractAction() {
-            public void actionPerformed(ActionEvent evt) {
-                JScrollBar sb = getVerticalScrollBar();
-                sb.getModel().setValue(sb.getModel().getValue() + sb.getUnitIncrement(1));
-            }
-        });
+                    private static final long serialVersionUID = 1L;
+
+                    public void actionPerformed(ActionEvent evt) {
+                        JScrollBar sb = getVerticalScrollBar();
+                        sb.getModel().setValue(sb.getModel().getValue() + sb.getUnitIncrement(1));
+                    }
+                });
         view.getActionMap().put(LINE_UP,
                 new AbstractAction() {
-            public void actionPerformed(ActionEvent evt) {
-                JScrollBar sb = getVerticalScrollBar();
-                sb.getModel().setValue(sb.getModel().getValue() - sb.getUnitIncrement(-1));
-            }
-        });
+                    private static final long serialVersionUID = 1L;
+
+                    public void actionPerformed(ActionEvent evt) {
+                        JScrollBar sb = getVerticalScrollBar();
+                        sb.getModel().setValue(sb.getModel().getValue() - sb.getUnitIncrement(-1));
+                    }
+                });
     }
     
     /** Adds a component listener on the view for resize events, to adjust the scroll increment. */

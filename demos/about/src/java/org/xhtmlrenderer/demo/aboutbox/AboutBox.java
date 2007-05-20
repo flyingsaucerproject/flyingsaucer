@@ -19,17 +19,22 @@
  */
 package org.xhtmlrenderer.demo.aboutbox;
 
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.Uu;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.Uu;
 
 
 /**
@@ -38,6 +43,8 @@ import java.net.MalformedURLException;
  * @author empty
  */
 public class AboutBox extends JDialog implements Runnable {
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Description of the Field
      */
@@ -105,8 +112,6 @@ public class AboutBox extends JDialog implements Runnable {
      * @param panel    PARAM
      */
     public void loadPage(String url_text, XHTMLPanel panel) throws MalformedURLException {
-Document doc = null;
-
 URL ref = null;
 
 if (url_text.startsWith("demo:")) {
@@ -193,6 +198,11 @@ Uu.p("url_text = " + url_text);
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2007/05/20 23:25:33  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.10  2006/07/31 14:32:40  pdoubleya
  * Fix throw claiuse
  *

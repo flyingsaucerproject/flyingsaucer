@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.context;
 
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -278,6 +277,11 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2007/05/20 23:25:34  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.14  2007/05/16 22:27:14  peterbrant
  * Only load default stylesheet once
  *

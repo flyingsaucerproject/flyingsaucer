@@ -2,10 +2,8 @@ package org.xhtmlrenderer.render;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import org.xhtmlrenderer.resource.ImageResource;
 
 public class ReflowEvent {
-	private int type;
 	public static int CANVAS_RESIZED = 1;
 	public static int IMAGE_SIZE_CHANGED = 2;
 	public static int PARENT_SIZE_CHANGED = 3;
@@ -21,19 +19,18 @@ public class ReflowEvent {
     
     public static int DOCUMENT_SET = 13;
 
-
-	public static int UNKNOWN_EVENT = 99;
+    public static int UNKNOWN_EVENT = 99;
 	
+    private int type;
 	private Box box;
 	private Dimension dim;
-	private ImageResource img_res;
-	public ReflowEvent(int type) {
+
+    public ReflowEvent(int type) {
 		this.type = type;
 	}
 	public ReflowEvent(int type, Dimension dim) {
 		this(type);
 		this.dim = dim;
-		this.g = g;
 	}
 	public ReflowEvent(int type, Box box) {
 		this.type = type;
@@ -43,10 +40,6 @@ public class ReflowEvent {
 		this.type = type;
 		this.box = box;
 		this.dim = dim;
-	}
-	public ReflowEvent(int type, ImageResource ir) {
-		this(type);
-		this.img_res = ir;
 	}
 	public Box getBox() {
 		return this.box;
@@ -68,19 +61,19 @@ public class ReflowEvent {
 		sb.append("ReflowEvent: ");
 		sb.append(" type = " + type);
 		
-		if(type == this.CANVAS_RESIZED) {
+		if(type == ReflowEvent.CANVAS_RESIZED) {
 			sb.append(" CANVAS_RESIZED event");
 		}
 		
-		if(type == this.MORE_BOXES_AVAILABLE) {
+		if(type == ReflowEvent.MORE_BOXES_AVAILABLE) {
 			sb.append(" MORE_BOXES_AVAILABLE event");
 		}
 		
-		if(type == this.LAYOUT_COMPLETE) {
+		if(type == ReflowEvent.LAYOUT_COMPLETE) {
 			sb.append(" LAYOUT_COMPLETE event");
 		}
 		
-		if(type == this.IMAGE_CONTENT_LOADED) {
+		if(type == ReflowEvent.IMAGE_CONTENT_LOADED) {
 			sb.append(" IMAGE_CONTENT_LOADED event");
 		}
 		

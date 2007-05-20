@@ -1,11 +1,10 @@
 package org.xhtmlrenderer.test;
 
-import org.xhtmlrenderer.simple.Graphics2DRenderer;
-import org.xhtmlrenderer.util.Uu;
-
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Date;
+
+import org.xhtmlrenderer.simple.Graphics2DRenderer;
+import org.xhtmlrenderer.util.Uu;
 
 public class SimplePageTest {
 
@@ -22,7 +21,7 @@ public class SimplePageTest {
         System.out.println("Testing with page " + page);
         for (int i = 0; i < cnt; i++) {
             Date start = new Date();
-            BufferedImage img = Graphics2DRenderer.renderToImage(new File(page).toURL().toExternalForm(),
+            Graphics2DRenderer.renderToImage(new File(page).toURL().toExternalForm(),
                     700, 700);
             Date end = new Date();
             long diff = (end.getTime() - start.getTime());

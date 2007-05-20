@@ -3,7 +3,6 @@ package org.xhtmlrenderer.test;
 import org.xhtmlrenderer.simple.Graphics2DRenderer;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Date;
@@ -43,7 +42,7 @@ public class AllPageTest {
         System.out.println("Testing with page " + page);
         for (int i = 0; i < cnt; i++) {
             Date start = new Date();
-            BufferedImage img = Graphics2DRenderer.renderToImage(page, 700, 700);
+            Graphics2DRenderer.renderToImage(page, 700, 700);
             Date end = new Date();
             long diff = (end.getTime() - start.getTime());
             Uu.p("ms = " + diff);

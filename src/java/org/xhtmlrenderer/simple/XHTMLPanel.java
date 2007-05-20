@@ -97,6 +97,8 @@ import org.xhtmlrenderer.util.Configuration;
  * @see RenderingContext
  */
 public class XHTMLPanel extends BasicPanel {
+    private static final long serialVersionUID = 1L;
+
     private float fontScalingFactor = 1.2F;
     private float minFontScale = 0.50F;
     private float maxFontScale = 3.0F;
@@ -349,6 +351,11 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2007/05/20 23:25:32  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.37  2007/02/07 16:33:31  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

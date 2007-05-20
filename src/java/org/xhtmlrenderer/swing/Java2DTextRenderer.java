@@ -21,7 +21,6 @@ package org.xhtmlrenderer.swing;
 
 import java.awt.*;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;

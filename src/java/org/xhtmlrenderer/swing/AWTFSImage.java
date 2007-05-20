@@ -23,7 +23,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import org.xhtmlrenderer.extend.FSImage;
-import org.xhtmlrenderer.util.ImageUtil;
 
 public abstract class AWTFSImage implements FSImage {
     public static FSImage createLegacyImage(Image img) {

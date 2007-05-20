@@ -22,7 +22,6 @@ package org.xhtmlrenderer.util;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Iterator;
-import java.util.Arrays;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;

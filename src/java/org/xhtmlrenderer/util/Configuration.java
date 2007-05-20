@@ -572,7 +572,7 @@ public class Configuration {
      */
     public static String valueFor(String key, String defaultVal) {
         Configuration conf = instance();
-        String val = conf.valueFor(key);
+        String val = conf.properties.getProperty(key);
         val = (val == null ? defaultVal : val);
         if (val == null) {
             conf.warning("CONFIGURATION: no value found for key " + key + " and no default given.");
@@ -726,6 +726,11 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2007/05/20 23:25:31  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.16  2007/04/10 20:39:07  pdoubleya
  * Added support for object-constants as properties.
  *

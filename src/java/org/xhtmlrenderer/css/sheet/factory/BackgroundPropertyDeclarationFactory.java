@@ -72,7 +72,6 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
         CSSPrimitiveValue bgPosPrimitive = null;
         StringBuffer bgPos = null;
         String val = null;
-        FSCssValue fsCssValue = null;
 
         for (int i = 0; i < primVals.length; i++) {
             primitive = primVals[i];
@@ -127,7 +126,6 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
      * @param val
      * @param primitive
      * @param bgPos
-     * @return
      */
     private Object[] parseSingle(String val, CSSPrimitiveValue primitive, StringBuffer bgPos) {
         Boolean wasBGP = Boolean.FALSE;
@@ -174,6 +172,11 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2007/05/20 23:25:33  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.9  2005/07/22 23:48:29  tobega
  * fixed background shorthand factory bug (hope no new ones introduced)
  *

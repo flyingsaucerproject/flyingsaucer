@@ -3,7 +3,6 @@ package org.xhtmlrenderer.test;
 import org.xhtmlrenderer.simple.Graphics2DRenderer;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Date;
 
@@ -13,7 +12,8 @@ public class HamletSpeedTest {
         long total = 0;
         for (int i = 0; i < 10; i++) {
             Date start = new Date();
-            BufferedImage img = Graphics2DRenderer.renderToImage(new File("demos/browser/xhtml/old/hamlet.xhtml").toURL().toExternalForm(),
+            Graphics2DRenderer.renderToImage(
+                    new File("demos/browser/xhtml/old/hamlet.xhtml").toURL().toExternalForm(),
                     700, 700);
             Date end = new Date();
             long diff = (end.getTime() - start.getTime());

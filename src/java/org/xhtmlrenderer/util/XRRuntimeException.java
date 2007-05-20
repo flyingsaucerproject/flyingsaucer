@@ -28,6 +28,8 @@ package org.xhtmlrenderer.util;
  * @author   Patrick Wright
  */
 public class XRRuntimeException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Instantiates a new Exception with a "reason" message.
      *
@@ -76,6 +78,11 @@ public class XRRuntimeException extends RuntimeException {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2007/05/20 23:25:31  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.4  2005/01/29 20:18:38  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

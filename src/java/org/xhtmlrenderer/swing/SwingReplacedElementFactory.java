@@ -222,7 +222,6 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
 
     /**
      * @param e
-     * @return
      */
     protected Element getParentForm(Element e, LayoutContext context) {
         Node node = e;

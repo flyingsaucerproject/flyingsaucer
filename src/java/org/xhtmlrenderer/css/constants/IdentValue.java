@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.css.constants;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -341,6 +340,11 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2007/05/20 23:25:32  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.30  2007/03/08 01:43:47  peterbrant
  * Don't cache rectangles with em or ex dimensions.  They aren't constant (even ignoring DPI related issues)
  *

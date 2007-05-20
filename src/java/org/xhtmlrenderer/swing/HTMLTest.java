@@ -38,6 +38,8 @@ import java.net.URL;
  * @author empty
  */
 public class HTMLTest extends JFrame {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Description of the Field
      */
@@ -62,8 +64,8 @@ public class HTMLTest extends JFrame {
         int height = 500;
         panel.setPreferredSize(new Dimension(width, height));
         JScrollPane scroll = new JScrollPane(panel);
-        scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(width, height));
         LinkListener ll = new LinkListener(panel);
         panel.addMouseListener(ll);
@@ -164,6 +166,8 @@ panel.addMouseMotionListener(hov);
      */
     public void addFileLoadAction(JMenu menu, String display, final String file) {
         menu.add(new AbstractAction(display) {
+            private static final long serialVersionUID = 1L;
+
             public void actionPerformed(ActionEvent evt) {
                 loadDocument(file);
             }
@@ -217,7 +221,7 @@ panel.addMouseMotionListener(hov);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         //frame.setSize( text_width, 300 );
-        frame.show();
+        frame.setVisible(true);
     }
 
     /**
@@ -226,6 +230,8 @@ panel.addMouseMotionListener(hov);
      * @author empty
      */
     class QuitAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Constructor for the QuitAction object
          */
@@ -239,7 +245,7 @@ panel.addMouseMotionListener(hov);
          *
          * @param evt PARAM
          */
-        public void actionPerformed(ActionEvent evt) {
+        public void actionPerformed(final ActionEvent evt) {
             System.exit(0);
         }
     }
@@ -250,6 +256,8 @@ panel.addMouseMotionListener(hov);
      * @author empty
      */
     class BoxOutlinesAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Constructor for the BoxOutlinesAction object
          */
@@ -275,6 +283,8 @@ panel.addMouseMotionListener(hov);
      * @author empty
      */
     class LineBoxOutlinesAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Constructor for the LineBoxOutlinesAction object
          */
@@ -300,6 +310,8 @@ panel.addMouseMotionListener(hov);
      * @author empty
      */
     class InlineBoxesAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Constructor for the InlineBoxesAction object
          */
@@ -320,6 +332,8 @@ panel.addMouseMotionListener(hov);
     }
 
     class FontMetricsAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Constructor for the InlineBoxesAction object
          */
@@ -340,6 +354,8 @@ panel.addMouseMotionListener(hov);
     }
 
     class AntiAliasedAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         int hint;
 
         AntiAliasedAction(String text, int hint) {
@@ -359,6 +375,8 @@ panel.addMouseMotionListener(hov);
      * @author empty
      */
     class ShowDOMInspectorAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Description of the Field
          */
@@ -394,11 +412,11 @@ panel.addMouseMotionListener(hov);
 
                 inspectorFrame.pack();
                 inspectorFrame.setSize(400, 600);
-                inspectorFrame.show();
+                inspectorFrame.setVisible(true);
             } else {
                 inspector.setForDocument(panel.doc, panel.getSharedContext(), panel.getSharedContext().getCss());
             }
-            inspectorFrame.show();
+            inspectorFrame.setVisible(true);
         }
     }
 
@@ -408,6 +426,8 @@ panel.addMouseMotionListener(hov);
      * @author empty
      */
     class RefreshPageAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Constructor for the RefreshPageAction object
          */
@@ -435,6 +455,8 @@ panel.addMouseMotionListener(hov);
      * @author empty
      */
     class ReloadPageAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Constructor for the ReloadPageAction object
          */
@@ -470,6 +492,11 @@ panel.addMouseMotionListener(hov);
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2007/05/20 23:25:33  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.34  2005/10/27 00:09:08  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

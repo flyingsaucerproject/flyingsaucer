@@ -110,7 +110,7 @@ public class Eeze {
             };
     private ReloadPageAction reloadPageAction;
     private ReloadFileListAction reloadFileList;
-    private boolean compareImages;
+    // private boolean compareImages;
 
     /**
      * Constructor for the Eeze object
@@ -159,7 +159,7 @@ public class Eeze {
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if (arg.equals("c")) {
-                this.compareImages = true;
+                // this.compareImages = true;
             } else {
                 f = new File(arg);
                 if ( !f.exists() ) {
@@ -389,6 +389,8 @@ public class Eeze {
      * @author Who?
      */
     class ImagePanel extends JPanel {
+        private static final long serialVersionUID = 1L;
+
         Image currentPageImg;
 
         /**
@@ -487,6 +489,7 @@ public class Eeze {
      * @author Who?
      */
     static class GridGlassPane extends JPanel {
+        private static final long serialVersionUID = 1L;
 
         /**
          * Description of the Field
@@ -532,7 +535,6 @@ public class Eeze {
                     .getWidth(), mainUltraLightColor,
                     mainMidColor, 0.6);
 
-            int width = this.getWidth();
             int height = this.getHeight();
             for (int row = 0; row < height; row = row + 10) {
                 if ((row % 2) == 0) {
@@ -581,6 +583,8 @@ public class Eeze {
      * @author Who?
      */
     class GrowAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Description of the Field
          */
@@ -611,6 +615,8 @@ public class Eeze {
      * @author Who?
      */
     class ShowGridAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         private boolean on;
         private Component originalGlassPane;
         private GridGlassPane gridGlassPane;
@@ -649,6 +655,7 @@ public class Eeze {
      * @author Who?
      */
     class CompareImageAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
 
         /**
          * Constructor for the ShowGridAction object
@@ -705,6 +712,8 @@ public class Eeze {
      * @author Who?
      */
     class ShrinkAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Description of the Field
          */
@@ -735,6 +744,7 @@ public class Eeze {
      * @author Who?
      */
     class ShowHelpAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
 
         /**
          * Constructor for the ShowHelpAction object
@@ -761,6 +771,7 @@ public class Eeze {
      * @author Who?
      */
     class NextDemoAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
 
         /**
          * Constructor for the ReloadPageAction object
@@ -802,6 +813,7 @@ public class Eeze {
     }
 
     class SaveAsImageAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
 
         /**
          * Constructor for the SaveAsImageAction object
@@ -872,6 +884,7 @@ public class Eeze {
      * @author Who?
      */
     class ReloadPageAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
 
         /**
          * Constructor for the ReloadPageAction object
@@ -902,6 +915,7 @@ public class Eeze {
      * @author Who?
      */
     class ChooseDemoAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
 
         /**
          * Constructor for the ReloadPageAction object
@@ -935,6 +949,8 @@ public class Eeze {
     }
 
     class ReloadFileListAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         public ReloadFileListAction() {
             super("Reload File List Page");
             putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_F));
@@ -954,6 +970,8 @@ public class Eeze {
      * @author Who?
      */
     class FontSizeAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Description of the Field
          */

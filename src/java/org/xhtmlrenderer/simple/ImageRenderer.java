@@ -163,7 +163,7 @@ public class ImageRenderer {
 				String output = f.getAbsolutePath();
 				output = output.substring(0, output.lastIndexOf(".")) + ".png";
 				System.out.println("Saving image to " + output);
-				BufferedImage image = renderToImage(f, output, DEFAULT_WIDTH);
+				renderToImage(f, output, DEFAULT_WIDTH);
 			} else {
 				usage("File to render is not found: " + url);
 			}

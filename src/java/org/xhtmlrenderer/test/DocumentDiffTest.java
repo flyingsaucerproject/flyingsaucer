@@ -217,7 +217,7 @@ public class DocumentDiffTest {
         if (new File(file).isDirectory()) {
             ddt.runTests(new File(file), width, height);
         } else {
-            System.out.println(ddt.xhtmlToDiff(file, 1280, 768));
+            System.out.println(xhtmlToDiff(file, 1280, 768));
         }
     }
 
@@ -227,6 +227,11 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2007/05/20 23:25:32  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.17  2007/02/07 16:33:40  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *

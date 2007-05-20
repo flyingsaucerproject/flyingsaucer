@@ -19,7 +19,7 @@ import java.awt.Graphics;
 
 public class LayoutThread implements Runnable {
     private boolean done;
-    private Graphics graphics;
+    //private Graphics graphics;
     private BasicPanel panel;
     private boolean threaded;
     private LayoutContext context;
@@ -27,7 +27,7 @@ public class LayoutThread implements Runnable {
     public LayoutThread(BasicPanel panel) {
         this.panel = panel;
         done = true;
-        graphics = null;
+        //graphics = null;
         threaded = true;
     }
 
@@ -40,7 +40,7 @@ public class LayoutThread implements Runnable {
             //Uu.p("really starting new thread: " + d);
             //Uu.p("threaded = " + threaded);
             //done = false;
-            graphics = g;
+            //graphics = g;
             if (threaded) {
                 new Thread(this).start();
             } else {
@@ -116,7 +116,7 @@ public class LayoutThread implements Runnable {
     private synchronized void completeLayout() {
         // Uu.p("layout thread ending");
         done = true;
-        graphics = null;
+        //graphics = null;
         panel.repaint();
         notifyAll();
         // Uu.p("body box = " + panel.body_box );

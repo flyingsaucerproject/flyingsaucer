@@ -296,8 +296,8 @@ public class Xx implements ErrorHandler {
             Uu.p(tab + "------ entity ref node");
             Uu.p(tab + "ent: " + node.getNodeName());
             Uu.p(tab + node.getNodeValue());
-            NodeList c = node.getChildNodes();
-            Node n = c.item(0);
+            //NodeList c = node.getChildNodes();
+            //Node n = c.item(0);
             //Uu.print_as_bytes(n.getNodeValue());
             //n.setNodeValue("blahfoo");
         }
@@ -364,47 +364,47 @@ public class Xx implements ErrorHandler {
             Uu.p(tab + "node type = element");
             return;
         }
-        if (node.getNodeType() == node.TEXT_NODE) {
+        if (node.getNodeType() == Node.TEXT_NODE) {
             Uu.p(tab + "node type = text node");
             return;
         }
-        if (node.getNodeType() == node.COMMENT_NODE) {
+        if (node.getNodeType() == Node.COMMENT_NODE) {
             Uu.p(tab + "node type = comment");
             return;
         }
-        if (node.getNodeType() == node.DOCUMENT_FRAGMENT_NODE) {
+        if (node.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE) {
             Uu.p(tab + "node type = document fragment node");
             return;
         }
-        if (node.getNodeType() == node.CDATA_SECTION_NODE) {
+        if (node.getNodeType() == Node.CDATA_SECTION_NODE) {
             Uu.p(tab + "node type = cdata section");
             return;
         }
-        if (node.getNodeType() == node.DOCUMENT_NODE) {
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
             Uu.p(tab + "node type = document node");
             return;
         }
-        if (node.getNodeType() == node.DOCUMENT_TYPE_NODE) {
+        if (node.getNodeType() == Node.DOCUMENT_TYPE_NODE) {
             Uu.p(tab + "node type = document type node");
             return;
         }
-        if (node.getNodeType() == node.ENTITY_NODE) {
+        if (node.getNodeType() == Node.ENTITY_NODE) {
             Uu.p(tab + "node type = entity node");
             return;
         }
-        if (node.getNodeType() == node.ENTITY_REFERENCE_NODE) {
+        if (node.getNodeType() == Node.ENTITY_REFERENCE_NODE) {
             Uu.p(tab + "node type = entity reference node");
             return;
         }
-        if (node.getNodeType() == node.NOTATION_NODE) {
+        if (node.getNodeType() == Node.NOTATION_NODE) {
             Uu.p(tab + "node type = notation node");
             return;
         }
-        if (node.getNodeType() == node.PROCESSING_INSTRUCTION_NODE) {
+        if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {
             Uu.p(tab + "node type = processing instruction node");
             return;
         }
-        if (node.getNodeType() == node.TEXT_NODE) {
+        if (node.getNodeType() == Node.TEXT_NODE) {
             Uu.p(tab + "node type = text node");
             return;
         }
@@ -493,13 +493,13 @@ public class Xx implements ErrorHandler {
     public static void write(PrintWriter writer, Node node)
             throws IOException {
         // handle atts
-        if (node.getNodeType() == node.ATTRIBUTE_NODE) {
+        if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             //Uu.p("att node = " + node);
             writer.print(" " + node.getNodeName() + "=\"" + node.getNodeValue() + "\" ");
         }
 
         // <open tag>
-        if (node.getNodeType() == node.ELEMENT_NODE) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
             //Uu.p("element = " + node);
             writer.print("<" + node.getNodeName());
             NamedNodeMap atts = node.getAttributes();
@@ -512,18 +512,18 @@ public class Xx implements ErrorHandler {
         }
 
         // if it's a text node
-        if (node.getNodeType() == node.TEXT_NODE) {
+        if (node.getNodeType() == Node.TEXT_NODE) {
             //Uu.p("text node: " + node);
             writer.print(node.getNodeValue());
         }
 
         // if it's a cdata node
-        if (node.getNodeType() == node.CDATA_SECTION_NODE) {
+        if (node.getNodeType() == Node.CDATA_SECTION_NODE) {
             writer.print("<![CDATA[");
             writer.print(node.getNodeValue());
             writer.print("]]>");
         }
-        if (node.getNodeType() != node.ATTRIBUTE_NODE) {
+        if (node.getNodeType() != Node.ATTRIBUTE_NODE) {
             NodeList children = node.getChildNodes();
             for (int i = 0; i < children.getLength(); i++) {
                 write(writer, children.item(i));
@@ -531,7 +531,7 @@ public class Xx implements ErrorHandler {
         }
 
         // </close tag>
-        if (node.getNodeType() == node.ELEMENT_NODE) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
             //Uu.p("close tag: " + node);
             writer.print("</" + node.getNodeName() + ">\n");
         }
@@ -727,8 +727,7 @@ public class Xx implements ErrorHandler {
      * @return Returns
      */
     public static String[] paths(Node node, String xpath) {
-        List paths = breakPath(xpath);
-        return null;
+        return (String []) breakPath(xpath).toArray();
     }
 
     /**
@@ -800,6 +799,11 @@ public class Xx implements ErrorHandler {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2007/05/20 23:25:31  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.2  2005/01/29 20:18:38  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

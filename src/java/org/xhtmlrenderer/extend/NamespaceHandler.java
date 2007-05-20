@@ -19,14 +19,10 @@
  */
 package org.xhtmlrenderer.extend;
 
-import java.io.InputStream;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
-import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-
 
 /**
  * Provides knowledge specific to a certain document type, like resolving
@@ -120,7 +116,6 @@ public interface NamespaceHandler {
     /**
      * 
      * @param e
-     * @return
      */
     String getAnchorName(Element e);
 

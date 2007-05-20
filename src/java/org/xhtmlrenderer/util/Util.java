@@ -523,7 +523,7 @@ public class Util {
      */
     public static void sleep(long msec) {
         try {
-            Thread.currentThread().sleep(msec);
+            Thread.sleep(msec);
         } catch (InterruptedException ex) {
             org.xhtmlrenderer.util.Uu.p(stack_to_string(ex));
         }
@@ -575,6 +575,11 @@ public class Util {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2007/05/20 23:25:31  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.5  2005/01/29 20:18:38  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

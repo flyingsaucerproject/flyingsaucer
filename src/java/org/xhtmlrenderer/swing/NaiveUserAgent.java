@@ -25,7 +25,6 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +45,8 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
     private int imageCacheCapacity = 16;
     private java.util.LinkedHashMap imageCache =
             new java.util.LinkedHashMap(imageCacheCapacity, 0.75f, true) {
+                private static final long serialVersionUID = 1L;
+
                 protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
                     return size() > imageCacheCapacity;
                 }
@@ -174,6 +175,11 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2007/05/20 23:25:33  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.32  2007/05/09 21:52:06  pdoubleya
  * Fix for rendering problems introduced by removing GraphicsUtil class. Use Image instead of BufferedImage in most cases, convert to AWT image if necessary. Not complete, requires cleanup.
  *

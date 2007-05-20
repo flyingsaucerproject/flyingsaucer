@@ -135,9 +135,11 @@ public class FSEntityResolver implements EntityResolver {
      * @param publicID The feature to be added to the Mapping attribute
      * @param URL      The feature to be added to the Mapping attribute
      */
+    /*
     private void addMapping(String publicID, String URL) {
         entities.put(publicID, URL);
     }
+    */
 
     /**
      * Gets an instance of this class.
@@ -156,6 +158,11 @@ public class FSEntityResolver implements EntityResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2007/05/20 23:25:34  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.5  2005/06/13 06:50:15  tobega
  * Fixed a bug in table content resolution.
  * Various "tweaks" in other stuff.

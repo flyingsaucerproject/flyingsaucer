@@ -52,6 +52,8 @@ import java.util.Map;
  * @author empty
  */
 public class DOMInspector extends JPanel {
+    private static final long serialVersionUID = 1L;
+
     // PW
     /**
      * Description of the Field
@@ -139,7 +141,7 @@ public class DOMInspector extends JPanel {
 
         close.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                getFrame(DOMInspector.this).hide();
+                getFrame(DOMInspector.this).setVisible(false);
             }
         });
     }
@@ -228,6 +230,7 @@ public class DOMInspector extends JPanel {
  * @author empty
  */
 class ElementPropertiesPanel extends JPanel {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Description of the Field
@@ -302,6 +305,8 @@ class ElementPropertiesPanel extends JPanel {
      * @author empty
      */
     class PropertiesJTable extends JTable {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Description of the Field
          */
@@ -354,6 +359,8 @@ class ElementPropertiesPanel extends JPanel {
      * @author Patrick Wright
      */
     class PropertiesTableModel extends AbstractTableModel {
+        private static final long serialVersionUID = 1L;
+
         /**
          * Description of the Field
          */
@@ -731,6 +738,7 @@ class DOMTreeModel implements TreeModel {
  * @author empty
  */
 class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Gets the treeCellRendererComponent attribute of the DOMTreeCellRenderer
@@ -788,6 +796,11 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2007/05/20 23:25:33  peterbrant
+ * Various code cleanups (e.g. remove unused imports)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.16  2005/10/27 00:09:08  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

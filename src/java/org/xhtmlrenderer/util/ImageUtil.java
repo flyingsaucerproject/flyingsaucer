@@ -313,7 +313,6 @@ public class ImageUtil {
 			int w, h;
 			int imgw = img.getWidth(null);
 			int imgh = img.getHeight(null);
-			int type = -1;
 
 			// multi-pass only if higher quality requested and we are shrinking image
 			if (opt.getTargetWidth() < imgw && opt.getTargetHeight() < imgh) {

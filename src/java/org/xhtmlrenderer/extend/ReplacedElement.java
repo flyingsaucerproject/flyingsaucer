@@ -32,13 +32,11 @@ import org.xhtmlrenderer.layout.LayoutContext;
 public interface ReplacedElement {
     /**
      *
-     * @return
      */
     int getIntrinsicWidth();
 
     /**
      *
-     * @return
      */
     int getIntrinsicHeight();
     
@@ -62,7 +60,6 @@ public interface ReplacedElement {
 
     /**
      *
-     * @return
      */
     boolean isRequiresInteractivePaint();
 }

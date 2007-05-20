@@ -19,24 +19,27 @@
  */
 package org.xhtmlrenderer.demo.aboutbox;
 
-import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.resource.CSSResource;
-import org.xhtmlrenderer.resource.ImageResource;
-import org.xhtmlrenderer.resource.XMLResource;
-import org.xhtmlrenderer.swing.AWTFSImage;
-import org.xhtmlrenderer.util.XRLog;
-
-import javax.imageio.ImageIO;
-
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+
+import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.resource.CSSResource;
+import org.xhtmlrenderer.resource.ImageResource;
+import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 
 
 /**
