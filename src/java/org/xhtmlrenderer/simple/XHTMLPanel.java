@@ -124,30 +124,6 @@ public class XHTMLPanel extends BasicPanel {
         setupListeners();
     }
 
-    /**
-     * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
-     *
-     * @param useThreads If true, use threads for better responsiveness.  Otherwise
-     *                   layout and rendering will occur synchronously.
-     */
-    public XHTMLPanel(boolean useThreads) {
-        super(useThreads);
-        setupListeners();
-    }
-
-    /**
-     * Instantiates a panel with a custom {@link org.xhtmlrenderer.extend.UserAgentCallback}
-     * implementation.
-     *
-     * @param useThreads If true, use threads for better responsiveness.  Otherwise
-     *                   layout and rendering will occur synchronously.
-     * @param uac        The custom UserAgentCallback implementation.
-     */
-    public XHTMLPanel(boolean useThreads, UserAgentCallback uac) {
-        super(useThreads, uac);
-        setupListeners();
-    }
-
     private void setupListeners() {
         if (Configuration.isTrue("xr.use.listeners", true)) {
             // install a default link listener
@@ -351,6 +327,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2007/05/21 21:58:47  peterbrant
+ * More cleanup (remove experimental threading code)
+ *
  * Revision 1.38  2007/05/20 23:25:32  peterbrant
  * Various code cleanups (e.g. remove unused imports)
  *

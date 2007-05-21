@@ -64,7 +64,7 @@ public class Graphics2DRenderer {
      * Creates a new renderer with no document specified.
      */
     public Graphics2DRenderer() {
-        panel = new XHTMLPanel(false);
+        panel = new XHTMLPanel();
         panel.setInteractive(false);
     }
 
@@ -221,6 +221,9 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2007/05/21 21:58:47  peterbrant
+ * More cleanup (remove experimental threading code)
+ *
  * Revision 1.19  2007/04/03 13:12:06  peterbrant
  * Add notification interface for layout and render exceptions / Minor clean up (remove obsolete body expand hack, remove unused API, method name improvements)
  *

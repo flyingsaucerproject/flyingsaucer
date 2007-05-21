@@ -80,18 +80,6 @@ public abstract class BasicPanel extends RootPanel {
         init();
     }
 
-    public BasicPanel(boolean useThreads) {
-        super(useThreads);
-        sharedContext = new SharedContext(new NaiveUserAgent());
-        init();
-    }
-
-    public BasicPanel(boolean useThreads, UserAgentCallback uac) {
-        super(useThreads);
-        sharedContext = new SharedContext(uac);
-        init();
-    }
-
     /**
      * Adds the specified Document listener to receive Document events from this
      * component. If listener l is null, no exception is thrown and no action is
@@ -121,7 +109,7 @@ public abstract class BasicPanel extends RootPanel {
         
         // if this is the first time painting this document, then calc layout
         Layer root = getRootLayer();
-        if ((root == null || isPendingResize()) && !isUseThreads()) {
+        if (root == null || isPendingResize()) {
             doLayout(getGraphics());
             root = getRootLayer();
         }
@@ -159,8 +147,6 @@ public abstract class BasicPanel extends RootPanel {
             if (Configuration.isTrue("xr.incremental.repaint.print-timing", false)) {
                 Uu.p("repaint took ms: " + (after - start));
             }
-    
-            last_event = null;
         } catch (ThreadDeath t) {
             throw t;
         } catch (Throwable t) {
@@ -554,6 +540,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.110  2007/05/21 21:58:48  peterbrant
+ * More cleanup (remove experimental threading code)
+ *
  * Revision 1.109  2007/04/03 13:12:07  peterbrant
  * Add notification interface for layout and render exceptions / Minor clean up (remove obsolete body expand hack, remove unused API, method name improvements)
  *

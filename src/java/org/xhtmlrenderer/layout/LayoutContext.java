@@ -34,7 +34,6 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.MarkerData;
-import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.swing.RootPanel;
 
 /**
@@ -45,7 +44,6 @@ import org.xhtmlrenderer.swing.RootPanel;
  */
 public class LayoutContext implements CssContext {
     private SharedContext sharedContext;
-    private RenderQueue renderQueue;
     
     private Layer rootLayer;
     
@@ -216,18 +214,6 @@ public class LayoutContext implements CssContext {
     
     public boolean isInteractive() {
         return sharedContext.isInteractive();
-    }
-
-    public RenderQueue getRenderQueue() {
-        return renderQueue;
-    }
-
-    public void setRenderQueue(RenderQueue renderQueue) {
-        this.renderQueue = renderQueue;
-    }
-
-    public boolean isRenderQueueAvailable() {
-        return this.renderQueue != null;
     }
 
     public float getMmPerDot() {

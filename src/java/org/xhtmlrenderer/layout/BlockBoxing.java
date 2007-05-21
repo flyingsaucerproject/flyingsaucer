@@ -30,9 +30,6 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.ReflowEvent;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
 
 /**
  * Utility class for laying block content.  It is called when a block box
@@ -145,8 +142,6 @@ public class BlockBoxing {
             }
             
             previousChildBox = child;
-
-            dispatchRepaintEvent(c, block);
         }
     }
 
@@ -283,25 +278,6 @@ public class BlockBoxing {
         }
         if (moved) {
             child.calcCanvasLocation();
-        }
-    }
-
-    private static void dispatchRepaintEvent(final LayoutContext c, final Box box) {
-        if (c.isInteractive() && ! c.isPrint()) {
-            if (Configuration.isTrue("xr.incremental.enabled", false) && c.isRenderQueueAvailable()) {
-                Dimension max_size = c.getRootLayer().getPaintingDimension(c);
-                c.getRenderQueue().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE, box, max_size));
-            }
-
-            int delay = Configuration.valueAsInt("xr.incremental.debug.layoutdelay", 0);
-            if (delay > 0) {
-                //Uu.p("sleeping for: " + delay);
-                try {
-                    Uu.sleep(delay);
-                } catch (Exception ex) {
-                    Uu.p("sleep was interrupted in BlockBoxing.layoutContent()!");
-                }
-            }
         }
     }
     
@@ -447,6 +423,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.59  2007/05/21 21:58:48  peterbrant
+ * More cleanup (remove experimental threading code)
+ *
  * Revision 1.58  2007/04/25 18:09:41  peterbrant
  * Always reset block box margin if it is the first thing on a page
  *

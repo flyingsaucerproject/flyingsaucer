@@ -30,8 +30,6 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
-import org.xhtmlrenderer.render.ReflowEvent;
-import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.util.Configuration;
@@ -41,16 +39,8 @@ import org.xhtmlrenderer.util.XRLog;
 
 public class RootPanel extends JPanel implements ComponentListener, UserInterface {
     static final long serialVersionUID = 1L;
-    
-    private boolean useThreads = false;
-
-    public RootPanel(boolean useThreads) {
-        /* this.useThreads = useThreads; */
-    }
 
     public RootPanel() {
-        /* this(Configuration.isTrue("xr.use.threads", true)); */
-        this(false);
     }
 
     protected Map documentListeners;
@@ -92,11 +82,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         getSharedContext().setNamespaceHandler(nsh);
         getSharedContext().getCss().setDocumentContext(getSharedContext(), getSharedContext().getNamespaceHandler(), doc, this);
 
-        if (isUseThreads()) {
-            queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.DOCUMENT_SET));
-        } else {
-            repaint();
-        }
+        repaint();
     }
 
     protected JScrollPane enclosingScrollPane;
@@ -172,27 +158,12 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     protected Document doc = null;
 
-    /**
-     * The queue to handle painting and layout events
-     */
-    RenderQueue queue;
-
     protected void init() {
 
 
         documentListeners = new HashMap();
         setBackground(Color.white);
         super.setLayout(null);
-
-        if (isUseThreads()) {
-            queue = new RenderQueue();
-
-            layoutThread = new Thread(new LayoutLoop(this), "FlyingSaucer-Layout");
-            renderThread = new Thread(new RenderLoop(this), "FlyingSaucer-Render");
-
-            layoutThread.start();
-            renderThread.start();
-        }
     }
 
     public synchronized void shutdown() {
@@ -215,9 +186,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     }
 
     boolean layoutInProgress = false;
-
-
-    public ReflowEvent last_event = null;
 
     protected RenderingContext newRenderingContext(Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
@@ -297,7 +265,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                 if (this.layout_context != null) this.layout_context.stopRendering();
                 this.layout_context = c;
             }
-            c.setRenderQueue(queue);
             
             long start = System.currentTimeMillis();
             
@@ -370,10 +337,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                     enclosingScrollPane.getViewport().setScrollMode(default_scroll_mode);
                 }
             } 
-    
-            if (isUseThreads()) {
-                queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
-            }
+
             this.fireDocumentLoaded();
         } catch (ThreadDeath t) {
             throw t;
@@ -465,13 +429,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     
     protected void relayout(Dimension viewportSize) {
         if (doc != null) {
-            if (isUseThreads()) {
-                queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,
-                        viewportSize));
-            } else {
-                setPendingResize(true);
-                repaint();
-            }
+            setPendingResize(true);
+            repaint();
         }
     }
 
@@ -490,14 +449,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return false;
     }
 
-    public boolean isUseThreads() {
-        return useThreads;
-    }
-
-    public void setUseThreads(boolean useThreads) {
-        /* this.useThreads = useThreads; */
-    }
-    
     public synchronized Box getRootBox() {
         return rootBox;
     }
