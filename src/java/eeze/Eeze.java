@@ -110,7 +110,6 @@ public class Eeze {
             };
     private ReloadPageAction reloadPageAction;
     private ReloadFileListAction reloadFileList;
-    // private boolean compareImages;
 
     /**
      * Constructor for the Eeze object
@@ -144,7 +143,6 @@ public class Eeze {
         try {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    //switchPage( (File)testFiles.get( 0 ) );
                     showHelpPage();
                 }
             });
@@ -158,18 +156,17 @@ public class Eeze {
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
-            if (arg.equals("c")) {
-                // this.compareImages = true;
-            } else {
-                f = new File(arg);
-                if ( !f.exists() ) {
-                    showUsageAndExit("Does not exist: " + arg, -1);
-                }
-                if (!f.isDirectory()) {
-                    showUsageAndExit("You specified a file, not a directory: " + arg, -1);
-                }
-                this.directory = f;
-            } 
+
+            f = new File(arg);
+
+            if (!f.exists()) {
+                showUsageAndExit("Does not exist: " + arg, -1);
+            }
+            if (!f.isDirectory()) {
+                showUsageAndExit("You specified a file, not a directory: " + arg, -1);
+            }
+
+            this.directory = f;
         }
         if ( this.directory == null ) {
             showUsageAndExit("Please specify a directory", -1);
@@ -367,11 +364,7 @@ public class Eeze {
                 .append("  A frame to walk through a set of XHTML/XML pages with Flying Saucer \n")
                 .append(" \n")
                 .append(" Usage: \n")
-                .append("    java eeze.Eeze [c] {directory}\n")
-                .append(" \n")
-                .append(" where [options] include")
-                .append("   c   look for reference images for current page, and overlay")
-                .append(" \n")
+                .append("    java eeze.Eeze {directory}\n")
                 .append(" \n")
                 .append(" where {directory} is a directory containing XHTML/XML files.\n")
                 .append(" \n")

@@ -33,30 +33,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-
 /**
- * <p/>
- * <p/>
+ * <p>
  * A SAX EntityResolver for common entity references and DTDs in X/HTML
  * processing. Maps official entity references to local copies to avoid network
  * lookup. The local copies are stored in the source tree under /entities, and
  * the references here are resolved by a system ClassLoader. As long as the
  * entity files are in the classpath (or bundled in the FS jar), they will be
- * picked up.</p> <p>
- * <p/>
+ * picked up.
+ * </p>
+ * <p>
  * The basic form of this class comes from Elliot Rusty Harold, on
- * http://www.cafeconleche.org/books/xmljava/chapters/ch07s02.html</p> <p>
- * <p/>
- * This class is a Singleton; use {@link #instance} to retrieve it.</p>
+ * http://www.cafeconleche.org/books/xmljava/chapters/ch07s02.html
+ * </p>
+ * <p>
+ * This class is a Singleton; use {@link #instance} to retrieve it.
+ * </p>
  *
  * @author Patrick Wright
  */
 public class FSEntityResolver implements EntityResolver {
-
-    /**
-     * Description of the Field
-     */
     private Map entities = new HashMap();
+
     /**
      * Singleton instance, use {@link #instance()} to retrieve.
      */
@@ -130,18 +128,6 @@ public class FSEntityResolver implements EntityResolver {
     }
 
     /**
-     * Adds a feature to the Mapping attribute of the FSEntityResolver object
-     *
-     * @param publicID The feature to be added to the Mapping attribute
-     * @param URL      The feature to be added to the Mapping attribute
-     */
-    /*
-    private void addMapping(String publicID, String URL) {
-        entities.put(publicID, URL);
-    }
-    */
-
-    /**
      * Gets an instance of this class.
      *
      * @return An instance of .
@@ -158,6 +144,9 @@ public class FSEntityResolver implements EntityResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2007/05/21 22:13:02  peterbrant
+ * Code cleanup (patch from Sean Bright)
+ *
  * Revision 1.6  2007/05/20 23:25:34  peterbrant
  * Various code cleanups (e.g. remove unused imports)
  *

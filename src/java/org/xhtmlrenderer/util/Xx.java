@@ -296,10 +296,6 @@ public class Xx implements ErrorHandler {
             Uu.p(tab + "------ entity ref node");
             Uu.p(tab + "ent: " + node.getNodeName());
             Uu.p(tab + node.getNodeValue());
-            //NodeList c = node.getChildNodes();
-            //Node n = c.item(0);
-            //Uu.print_as_bytes(n.getNodeValue());
-            //n.setNodeValue("blahfoo");
         }
 
         if (node.getNodeType() == Node.TEXT_NODE) {
@@ -799,6 +795,9 @@ public class Xx implements ErrorHandler {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2007/05/21 22:13:03  peterbrant
+ * Code cleanup (patch from Sean Bright)
+ *
  * Revision 1.3  2007/05/20 23:25:31  peterbrant
  * Various code cleanups (e.g. remove unused imports)
  *
