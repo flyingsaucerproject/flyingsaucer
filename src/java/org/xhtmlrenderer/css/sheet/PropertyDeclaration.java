@@ -19,11 +19,10 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.PropertyValue;
-import org.xhtmlrenderer.css.sheet.factory.*;
-import org.xhtmlrenderer.util.XRLog;
 
 
 /**
@@ -79,16 +78,6 @@ public class PropertyDeclaration {
      * ImportanceAndOrigin of stylesheet - how many different
      */
     public final static int IMPORTANCE_AND_ORIGIN_COUNT = 6;
-
-    /**
-     * Description of the Field
-     */
-    private final static PropertyDeclarationFactory[] PROPERTY_FACTORIES;
-
-    /**
-     * Description of the Field
-     */
-    private final static PropertyDeclarationFactory DEFAULT_PD_FACTORY;
 
     /**
      * ImportanceAndOrigin of stylesheet - user agent
@@ -240,58 +229,15 @@ public class PropertyDeclaration {
     public int getOrigin() {
         return origin;
     }
-    
-    /**
-     * Description of the Method
-     *
-     * @param cssName PARAM
-     * @return Returns
-     */
-    public static PropertyDeclarationFactory newFactory(CSSName cssName) {
-        PropertyDeclarationFactory pdf = null;
-        if (cssName == null) {
-            XRLog.cssParse("PropertyDeclarationFactory requested for NULL CSSName; returning default.");
-            pdf = DEFAULT_PD_FACTORY;
-        } else {
-            pdf = PROPERTY_FACTORIES[cssName.FS_ID];
-            if (pdf == null) {
-                pdf = DEFAULT_PD_FACTORY;
-            }
-        }
-        return pdf;
-    }
-    
-    static {
-        // HACK: size for up to 256 custom properties (PWW 06/16/05)
-        PROPERTY_FACTORIES = new PropertyDeclarationFactory[CSSName.countCSSNames() + 256];
-        DEFAULT_PD_FACTORY = DefaultPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BACKGROUND_SHORTHAND.FS_ID] = BackgroundPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BACKGROUND_POSITION.FS_ID] = BackgroundPositionPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_SHORTHAND.FS_ID] = BorderPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_COLOR_SHORTHAND.FS_ID] = BorderColorPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_SPACING.FS_ID] = BorderSpacingPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_STYLE_SHORTHAND.FS_ID] = BorderStylePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_WIDTH_SHORTHAND.FS_ID] = BorderWidthPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_TOP_SHORTHAND.FS_ID] = BorderSidePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_RIGHT_SHORTHAND.FS_ID] = BorderSidePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_BOTTOM_SHORTHAND.FS_ID] = BorderSidePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_LEFT_SHORTHAND.FS_ID] = BorderSidePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.FONT_SHORTHAND.FS_ID] = FontPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.FONT_FAMILY.FS_ID] = FontFamilyPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.LIST_STYLE_SHORTHAND.FS_ID] = ListStylePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.MARGIN_SHORTHAND.FS_ID] = MarginPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.OUTLINE_SHORTHAND.FS_ID] = OutlinePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.PADDING_SHORTHAND.FS_ID] = PaddingPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.SIZE_SHORTHAND.FS_ID] = SizePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.QUOTES.FS_ID] = QuotesPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.CONTENT.FS_ID] = ContentPropertyDeclarationFactory.instance();
-    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2007/05/21 21:47:30  peterbrant
+ * Final CSS clean up
+ *
  * Revision 1.20  2007/02/20 17:23:14  peterbrant
  * Optimize fingerprint calculation
  *
