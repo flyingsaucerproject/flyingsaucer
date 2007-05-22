@@ -54,8 +54,6 @@ public class LayoutContext implements CssContext {
     private Stack bfcs;
     private Stack layers;
     
-    private boolean shouldStop = false;
-    
     private FontContext fontContext;
     
     private ContentFunctionFactory contentFunctionFactory = new ContentFunctionFactory();
@@ -193,14 +191,6 @@ public class LayoutContext implements CssContext {
 
     public void translate(int x, int y) {
         getBlockFormattingContext().translate(x, y);
-    }
-
-    public boolean shouldStop() {
-        return shouldStop;
-    }
-
-    public void stopRendering() {
-        this.shouldStop = true;
     }
 
     /* code to keep track of all of the id'd boxes */

@@ -137,10 +137,6 @@ public class BlockBoxing {
                 }
             }
             
-            if (c.shouldStop()) {
-                break;
-            }
-            
             previousChildBox = child;
         }
     }
@@ -423,6 +419,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.60  2007/05/22 15:55:15  peterbrant
+ * Minor cleanup
+ *
  * Revision 1.59  2007/05/21 21:58:48  peterbrant
  * More cleanup (remove experimental threading code)
  *

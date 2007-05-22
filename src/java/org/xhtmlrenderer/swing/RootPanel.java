@@ -262,7 +262,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             
             LayoutContext c = newLayoutContext((Graphics2D) g);
             synchronized (this) {
-                if (this.layout_context != null) this.layout_context.stopRendering();
                 this.layout_context = c;
             }
             
@@ -287,9 +286,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             System.out.println(root.dump(c, "", BlockBox.DUMP_RENDER));
             */
             
-            if (c.shouldStop()) {//interrupted layout
-                return;
-            }
     // if there is a fixed child then we need to set opaque to false
     // so that the entire viewport will be repainted. this is slower
     // but that's the hit you get from using fixed layout
