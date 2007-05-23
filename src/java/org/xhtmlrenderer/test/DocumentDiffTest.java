@@ -19,18 +19,19 @@
  */
 package org.xhtmlrenderer.test;
 
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.simple.Graphics2DRenderer;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.Xx;
-
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
+
+import org.w3c.dom.Document;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.simple.Graphics2DRenderer;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XMLUtil;
+import org.xhtmlrenderer.util.XRLog;
 
 /**
  * Description of the Class
@@ -129,7 +130,7 @@ public class DocumentDiffTest {
      */
     public static String xhtmlToDiff(String xhtml, int width, int height)
             throws Exception {
-        Document doc = Xx.loadDocument(xhtml);
+        Document doc = XMLUtil.documentFromFile(xhtml);
         Graphics2DRenderer renderer = new Graphics2DRenderer();
         renderer.setDocument(doc, new File(xhtml).toURL().toString());
 
@@ -227,6 +228,9 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2007/05/23 00:12:18  peterbrant
+ * Code cleanup (patch from Sean Bright)
+ *
  * Revision 1.18  2007/05/20 23:25:32  peterbrant
  * Various code cleanups (e.g. remove unused imports)
  *
