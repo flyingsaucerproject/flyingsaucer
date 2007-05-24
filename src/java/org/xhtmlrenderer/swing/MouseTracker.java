@@ -20,8 +20,8 @@
 package org.xhtmlrenderer.swing;
 
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.swing.event.MouseInputAdapter;
@@ -36,7 +36,7 @@ class MouseTracker extends MouseInputAdapter {
 
     public MouseTracker(BasicPanel panel) {
         _panel = panel;
-        _handlers = new HashMap();
+        _handlers = new LinkedHashMap();
     }
     
     public void addListener(FSMouseListener l) {

@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.css.style;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1106,6 +1107,50 @@ public class CalculatedStyle {
             return result;
         }
     }
+
+    public Cursor getCursor() {
+        FSDerivedValue value = valueByName(CSSName.CURSOR);
+        
+        if (value == IdentValue.AUTO || value == IdentValue.DEFAULT) {
+            return Cursor.getDefaultCursor();
+        } else if (value == IdentValue.CROSSHAIR) {
+            return Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+        } else if (value == IdentValue.POINTER) {
+            return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+        } else if (value == IdentValue.MOVE) {
+            return Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
+        } else if (value == IdentValue.E_RESIZE) {
+            return Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
+        } else if (value == IdentValue.NE_RESIZE) {
+            return Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR);
+        } else if (value == IdentValue.NW_RESIZE) {
+            return Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR);
+        } else if (value == IdentValue.N_RESIZE) {
+            return Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR);
+        } else if (value == IdentValue.SE_RESIZE) {
+            return Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR);
+        } else if (value == IdentValue.SW_RESIZE) {
+            return Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR);
+        } else if (value == IdentValue.S_RESIZE) {
+            return Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR);
+        } else if (value == IdentValue.W_RESIZE) {
+            return Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR);
+        } else if (value == IdentValue.TEXT) {
+            return Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+        } else if (value == IdentValue.WAIT) {
+            return Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+        } else if (value == IdentValue.HELP) {
+             // We don't have a cursor for this by default, maybe we need
+             // a custom one for this (but I don't like it).
+            return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+        } else if (value == IdentValue.PROGRESS) {
+            // We don't have a cursor for this by default, maybe we need
+            // a custom one for this (but I don't like it).
+            return Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+        }
+
+        return null;
+    }
     
 }// end class
 
@@ -1113,6 +1158,11 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.91  2007/05/24 19:56:52  peterbrant
+ * Add support for cursor property (predefined cursors only)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.90  2007/04/16 01:10:06  peterbrant
  * Vertical margin and padding with percentage values may be incorrect if box participated in a shrink-to-fit calculation.  Fix margin calculation.
  *

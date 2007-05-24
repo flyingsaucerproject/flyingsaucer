@@ -29,6 +29,7 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
+import org.xhtmlrenderer.swing.CursorListener;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
@@ -124,6 +125,7 @@ public class XHTMLPanel extends BasicPanel {
         if (Configuration.isTrue("xr.use.listeners", true)) {
             addMouseTrackingListener(new HoverListener());
             addMouseTrackingListener(new LinkListener());
+            addMouseTrackingListener(new CursorListener());
         }
     }
 
@@ -314,6 +316,11 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2007/05/24 19:56:51  peterbrant
+ * Add support for cursor property (predefined cursors only)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.40  2007/05/24 13:22:38  peterbrant
  * Optimize and clean up hover and link listeners
  *

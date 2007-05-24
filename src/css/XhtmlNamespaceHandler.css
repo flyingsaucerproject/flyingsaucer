@@ -43,6 +43,7 @@ u, ins          { text-decoration: underline }
 br:before       { content: "\A"; white-space: pre-line; }
 /* :before, :after { white-space: pre-line } */
 center          { text-align: center }
+a:link          { cursor: pointer }
 a:link, a:visited { text-decoration: underline }
 /*
 :focus          { outline: thin dotted invert }

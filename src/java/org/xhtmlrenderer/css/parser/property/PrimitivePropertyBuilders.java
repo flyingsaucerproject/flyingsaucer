@@ -626,6 +626,27 @@ public class PrimitivePropertyBuilders {
     public static class Color extends GenericColor {
     }
     
+    public static class Cursor extends SingleIdent {
+        // [ [<uri> ,]* [ auto | crosshair | default | pointer | move | e-resize
+        // | ne-resize | nw-resize | n-resize | se-resize | sw-resize | s-resize
+        // | w-resize | text | wait | help | progress ] ] | inherit
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] {
+                        IdentValue.AUTO, IdentValue.CROSSHAIR,
+                        IdentValue.DEFAULT, IdentValue.POINTER,
+                        IdentValue.MOVE, IdentValue.E_RESIZE,
+                        IdentValue.NE_RESIZE, IdentValue.NW_RESIZE,
+                        IdentValue.N_RESIZE, IdentValue.SE_RESIZE,
+                        IdentValue.SW_RESIZE, IdentValue.S_RESIZE,
+                        IdentValue.W_RESIZE, IdentValue.TEXT,
+                        IdentValue.WAIT, IdentValue.HELP,
+                        IdentValue.PROGRESS});
+        
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+    }
+    
     public static class Display extends SingleIdent {
         // inline | block | list-item | run-in | inline-block | table | inline-table 
         // | table-row-group | table-header-group 

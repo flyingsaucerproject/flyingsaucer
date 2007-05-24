@@ -433,8 +433,8 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "auto",
                     INHERITS,
-                    false,
-                    null
+                    true,
+                    new PrimitivePropertyBuilders.Cursor()
             );
 
     /**
@@ -1675,6 +1675,11 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2007/05/24 19:56:51  peterbrant
+ * Add support for cursor property (predefined cursors only)
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.29  2007/02/22 18:21:19  peterbrant
  * Add support for overflow: visible/hidden
  *

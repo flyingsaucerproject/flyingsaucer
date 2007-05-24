@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Cursor;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.Box;
@@ -61,43 +59,15 @@ public class LinkListener implements FSMouseListener {
     }
 
     public void onMouseOut(BasicPanel panel, Box box) {
-        if (box == null || box.getElement() == null) {
-            return;
-        }
-
-        if (findLink(panel, box.getElement()) != null) {
-            Cursor c = getDefaultCursor();
-            if (!panel.getCursor().equals(c)) {
-                panel.setCursor(c);
-            }
-        }
     }
 
     public void onMouseOver(BasicPanel panel, Box box) {
-        if (box == null || box.getElement() == null) {
-            return;
-        }
-
-        if (findLink(panel, box.getElement()) != null) {
-            Cursor c = getHandCursor();
-            if (!panel.getCursor().equals(c)) {
-                panel.setCursor(c);
-            }
-        }
     }
 
     public void onMouseUp(BasicPanel panel, Box box) {
         checkForLink(panel, box);
     }
-    
-    private Cursor getDefaultCursor() {
-        return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
-    }
 
-    private Cursor getHandCursor() {
-        return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
-    }
-    
     public void reset() {
     }
 }
