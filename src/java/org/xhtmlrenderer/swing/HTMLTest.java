@@ -67,15 +67,9 @@ public class HTMLTest extends JFrame {
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(width, height));
-        LinkListener ll = new LinkListener(panel);
-        panel.addMouseListener(ll);
-        panel.addMouseMotionListener(ll);
-        /*
-HoverListener hov = new HoverListener(panel);
-panel.addMouseListener(hov);
-panel.addMouseMotionListener(hov);
-        */
-		
+
+        panel.addMouseTrackingListener(new LinkListener());
+
         if (args.length > 0) {
             loadDocument(args[0]);
         }
@@ -492,6 +486,11 @@ panel.addMouseMotionListener(hov);
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2007/05/24 13:22:38  peterbrant
+ * Optimize and clean up hover and link listeners
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.35  2007/05/20 23:25:33  peterbrant
  * Various code cleanups (e.g. remove unused imports)
  *

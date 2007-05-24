@@ -1,124 +1,135 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2007 xhtmlrenderer.dev.java.net
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.swing;
 
 import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-
-import javax.swing.event.MouseInputAdapter;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.render.Box;
 
-public class HoverListener extends MouseInputAdapter {
-    private BasicPanel panel;
-    private Box prev;
+public class HoverListener implements FSMouseListener {
+    private Box _previouslyHovered;
 
-    public HoverListener(BasicPanel panel) {
-        this.panel = panel;
-    }
-    
-    private Box find(MouseEvent evt) {
-        Box result = panel.find(evt);
-        return result;
+    public HoverListener() {
     }
 
-    public void mouseMoved(MouseEvent evt) {
-        Box ib = find(evt);
-        restyle(ib);
+    public void onMouseOut(BasicPanel panel, Box box) {
+        // Since we keep track of the most recently hovered element, we do not
+        // need to explicitly handle mouseout events.  This way we only try to
+        // restyle elements that were actually hoverable to begin with.
     }
 
-    public void mouseEntered(MouseEvent evt) {
-        Box ib = find(evt);
-        restyle(ib);
-    }
-
-    public void mouseExited(MouseEvent evt) {
-        Box ib = find(evt);
-        restyle(ib);
-    }
-
-    private void restyle(Box ib) {
+    public void onMouseOver(BasicPanel panel, Box box) {
         LayoutContext c = panel.getLayoutContext();
+
         if (c == null) {
             return;
         }
-        
+
         boolean needRepaint = false;
 
-        Element hovered_element = getHoveredElement(ib);
+        Element currentlyHovered = getHoveredElement(c.getCss(), box);
 
-        if (hovered_element == panel.hovered_element) {
+        if (currentlyHovered == panel.hovered_element) {
             return;
         }
-        
-        panel.hovered_element = hovered_element;
-        
+
+        panel.hovered_element = currentlyHovered;
+
         boolean targetedRepaint = true;
         Rectangle repaintRegion = null;
 
-        // if moved out of the old block then unstyle it
-        if (prev != null) {
+        // If we moved out of the old block then unstyle it
+        if (_previouslyHovered != null) {
             needRepaint = true;
-            prev.restyle(c);
-            
-            PaintingInfo pI = prev.getPaintingInfo();
-            if (pI != null) {
-                repaintRegion = new Rectangle(pI.getAggregateBounds());
-            } else {
+            _previouslyHovered.restyle(c);
+
+            PaintingInfo paintInfo = _previouslyHovered.getPaintingInfo();
+
+            if (paintInfo == null) {
                 targetedRepaint = false;
+            } else {
+                repaintRegion = new Rectangle(paintInfo.getAggregateBounds());
             }
-            
-            prev = null;
+
+            _previouslyHovered = null;
         }
-        
-        if (hovered_element != null) {
+
+        if (currentlyHovered != null) {
             needRepaint = true;
-            Box target = ib.getRestyleTarget();
+            Box target = box.getRestyleTarget();
             target.restyle(c);
-            
+
             if (targetedRepaint) {
-                PaintingInfo pI = target.getPaintingInfo();
-                if (pI != null) {
-                    if (repaintRegion == null) {
-                        repaintRegion = new Rectangle(pI.getAggregateBounds());
-                    } else {
-                        repaintRegion.add(pI.getAggregateBounds());
-                    }
-                } else {
+                PaintingInfo paintInfo = target.getPaintingInfo();
+
+                if (paintInfo == null) {
                     targetedRepaint = false;
+                } else {
+                    if (repaintRegion == null) {
+                        repaintRegion = new Rectangle(paintInfo.getAggregateBounds());
+                    } else {
+                        repaintRegion.add(paintInfo.getAggregateBounds());
+                    }
                 }
             }
-            
-            prev = target;
+
+            _previouslyHovered = box;
         }
-        
+
         if (needRepaint) {
-            if(! targetedRepaint) {
-                panel.repaint();
-            } else {
+            if (targetedRepaint) {
                 panel.repaint(repaintRegion);
+            } else {
+                panel.repaint();
             }
         }
     }
     
-    private Element getHoveredElement(Box ib) {
-        if (ib == null) return null;
-        Element e = ib.getElement();
-        while (e != null && !panel.getSharedContext().getCss().isHoverStyled(e)) {
-            Node n = e.getParentNode();
-            if (n.getNodeType() == Node.ELEMENT_NODE) {
-                e = (Element) n;
+    public void onMouseUp(BasicPanel panel, Box box) {
+    }
+
+    private Element getHoveredElement(StyleReference style, Box ib) {
+        if (ib == null) {
+            return null;
+        }
+
+        Element element = ib.getElement();
+
+        while (element != null && !style.isHoverStyled(element)) {
+            Node node = element.getParentNode();
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                element = (Element) node;
             } else {
-                e = null;
+                element = null;
             }
         }
-        return e;
+
+        return element;
     }
 
     public void reset() {
-        prev = null;
+        _previouslyHovered = null;
     }
 }
-

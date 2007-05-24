@@ -19,99 +19,86 @@
  */
 package org.xhtmlrenderer.swing;
 
+import java.awt.Cursor;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.Box;
 
-import javax.swing.event.MouseInputAdapter;
-import java.awt.Cursor;
-import java.awt.event.MouseEvent;
-
-public class LinkListener extends MouseInputAdapter {
-
-    protected BasicPanel panel;
-    private Box prev;
-
-    public LinkListener(BasicPanel panel) {
-        this.panel = panel;
+public class LinkListener implements FSMouseListener {
+    public LinkListener() {
     }
 
-    public void mouseEntered(MouseEvent evt) {
-        Box box = panel.find(evt);
-        setCursor(box);
-    }
-
-    public void mouseExited(MouseEvent evt) {
-        Box box = panel.find(evt);
-        setCursor(box);
-    }
-
-    public void mousePressed(MouseEvent evt) {
-    }
-
-    public void mouseReleased(MouseEvent evt) {
-        Box box = panel.find(evt);
-        //Uu.p("in link listener: box finder returned: " + box);
-        if (box == null) {
+    private void checkForLink(BasicPanel panel, Box box) {
+        if (box == null || box.getElement() == null) {
             return;
         }
 
-        Element elem = box.getElement();
-        if (elem == null) {
-            return;
-        }
+        String uri = findLink(panel, box.getElement());
 
-        String uri = findLink(elem);
         if (uri != null) {
-            linkClicked(uri);
+            linkClicked(panel, uri);
         }
     }
 
-    private String findLink(Element elem) {
+    private String findLink(BasicPanel panel, Element e) {
         String uri = null;
-        for (Node n = elem; uri == null && n.getNodeType() == Node.ELEMENT_NODE; n = n.getParentNode()) {
-            uri = panel.getSharedContext().getNamespaceHandler().getLinkUri((Element) n);
+
+        for (Node node = e; node.getNodeType() == Node.ELEMENT_NODE; node = node.getParentNode()) {
+            uri = panel.getSharedContext().getNamespaceHandler().getLinkUri((Element) node);
+            
+            if (uri != null) {
+                break;
+            }
         }
-        //Uu.p("found a link: " + uri);
+
         return uri;
     }
 
-    public void mouseMoved(MouseEvent evt) {
-        Box box = panel.find(evt);
-        setCursor(box);
-    }
-    
-    public void mouseDragged(MouseEvent evt) {
-        Box box = panel.find(evt);
-        setCursor(box);
-    }
-
-    public void linkClicked(String uri) {
-        //Uu.p("clicked on: " + uri);
+    public void linkClicked(BasicPanel panel, String uri) {
         panel.setDocumentRelative(uri);
         panel.repaint();
     }
 
-    private void setCursor(Box box) {
-        if (prev == box || box == null || box.getElement() == null) {
+    public void onMouseOut(BasicPanel panel, Box box) {
+        if (box == null || box.getElement() == null) {
             return;
         }
 
-        if (findLink(box.getElement()) != null) {
-            if (!panel.getCursor().equals(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))) {
-                panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            }
-        } else {
-            if (!panel.getCursor().equals(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR))) {
-                panel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        if (findLink(panel, box.getElement()) != null) {
+            Cursor c = getDefaultCursor();
+            if (!panel.getCursor().equals(c)) {
+                panel.setCursor(c);
             }
         }
-
-        prev = box;
     }
 
+    public void onMouseOver(BasicPanel panel, Box box) {
+        if (box == null || box.getElement() == null) {
+            return;
+        }
+
+        if (findLink(panel, box.getElement()) != null) {
+            Cursor c = getHandCursor();
+            if (!panel.getCursor().equals(c)) {
+                panel.setCursor(c);
+            }
+        }
+    }
+
+    public void onMouseUp(BasicPanel panel, Box box) {
+        checkForLink(panel, box);
+    }
+    
+    private Cursor getDefaultCursor() {
+        return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+    }
+
+    private Cursor getHandCursor() {
+        return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    }
+    
     public void reset() {
-        prev = null;
     }
 }
 

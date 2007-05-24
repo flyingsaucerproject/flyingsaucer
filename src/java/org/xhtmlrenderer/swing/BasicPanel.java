@@ -69,14 +69,17 @@ public abstract class BasicPanel extends RootPanel {
 
     // The XMLResource proxing the current document in the BasicPanel
     private XMLResource xmlResource;
+    
+    private MouseTracker mouseTracker;
 
     public BasicPanel() {
-        sharedContext = new SharedContext(new NaiveUserAgent());
-        init();
+        this(new NaiveUserAgent());
     }
 
     public BasicPanel(UserAgentCallback uac) {
         sharedContext = new SharedContext(uac);
+        mouseTracker = new MouseTracker(this);
+
         init();
     }
 
@@ -534,12 +537,29 @@ public abstract class BasicPanel extends RootPanel {
     public void setInteractive(boolean interactive) {
         this.getSharedContext().setInteractive(interactive);
     }
+    
+    public void addMouseTrackingListener(FSMouseListener l) {
+        mouseTracker.addListener(l);
+    }
+    
+    public void removeMouseTrackingListener(FSMouseListener l) {
+        mouseTracker.removeListener(l);
+    }
+    
+    protected void resetMouseTracker() {
+        mouseTracker.reset();
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.111  2007/05/24 13:22:38  peterbrant
+ * Optimize and clean up hover and link listeners
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.110  2007/05/21 21:58:48  peterbrant
  * More cleanup (remove experimental threading code)
  *

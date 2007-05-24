@@ -33,7 +33,6 @@ import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
 
-
 /**
  * <p/>
  * <p/>
@@ -103,9 +102,6 @@ public class XHTMLPanel extends BasicPanel {
     private float minFontScale = 0.50F;
     private float maxFontScale = 3.0F;
 
-    private LinkListener linkListener;
-    private HoverListener hoverListener;
-
     /**
      * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
      */
@@ -126,23 +122,14 @@ public class XHTMLPanel extends BasicPanel {
 
     private void setupListeners() {
         if (Configuration.isTrue("xr.use.listeners", true)) {
-            // install a default link listener
-            linkListener = new LinkListener(this);
-            addMouseListener(linkListener);
-            addMouseMotionListener(linkListener);
-
-            // install a default hover listener
-            hoverListener = new HoverListener(this);
-            
-            addMouseListener(hoverListener);
-            addMouseMotionListener(hoverListener);
+            addMouseTrackingListener(new HoverListener());
+            addMouseTrackingListener(new LinkListener());
         }
     }
 
     private void resetListeners() {
         if (Configuration.isTrue("xr.use.listeners", true)) {
-            linkListener.reset();
-            hoverListener.reset();
+            resetMouseTracker();
         }
     }
 
@@ -327,6 +314,11 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2007/05/24 13:22:38  peterbrant
+ * Optimize and clean up hover and link listeners
+ *
+ * Patch from Sean Bright
+ *
  * Revision 1.39  2007/05/21 21:58:47  peterbrant
  * More cleanup (remove experimental threading code)
  *

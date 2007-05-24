@@ -21,8 +21,8 @@ package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.DOMInspector;
-import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.swing.MiniumTextRenderer;
@@ -303,29 +303,27 @@ public class BrowserMenuBar extends JMenuBar {
                     root.panel.view.removeMouseListener(ll);
                 }
             }
-            
+
             /*                                                            
             SelectionMouseListener ma = new SelectionMouseListener();
             root.panel.view.addMouseListener(ma);
             root.panel.view.addMouseMotionListener(ma);
             */
-
-            LinkListener ll = new LinkListener(root.panel.view) {
-                public void linkClicked(String uri) {
-                    if (uri.startsWith("demoNav")) {
-                        String pg = uri.split(":")[1];
-                        if (pg.equals("back")) {
-                            navigateToPriorDemo();
-                        } else {
-                            navigateToNextDemo();
-                        }
-                    } else {
-                        super.linkClicked(uri);
-                    }
-                }
-            };
-            root.panel.view.addMouseListener(ll);
-            root.panel.view.addMouseMotionListener(ll);
+            
+            root.panel.view.addMouseTrackingListener(new LinkListener() {
+               public void linkClicked(BasicPanel panel, String uri) {
+                   if (uri.startsWith("demoNav")) {
+                       String pg = uri.split(":")[1];
+                       if (pg.equals("back")) {
+                           navigateToPriorDemo();
+                       } else {
+                           navigateToNextDemo();
+                       }
+                   } else {
+                       super.linkClicked(panel, uri);
+                   }
+               } 
+            });
         }
     }
 
@@ -663,6 +661,11 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.43  2007/05/24 13:22:39  peterbrant
+* Optimize and clean up hover and link listeners
+*
+* Patch from Sean Bright
+*
 * Revision 1.42  2007/04/12 12:39:25  peterbrant
 * Fix NPE if demo list is not found
 *

@@ -1,22 +1,33 @@
 package org.xhtmlrenderer.demo.filebrowser;
 
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.swing.HoverListener;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XMLUtil;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.GeneralUtil;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.Icon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileSystemView;
+
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.swing.HoverListener;
+import org.xhtmlrenderer.util.GeneralUtil;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XMLUtil;
+import org.xhtmlrenderer.util.XRLog;
 
 public class FileBrowser extends JPanel {
 
@@ -54,9 +65,8 @@ public class FileBrowser extends JPanel {
     }
 
     public void createEvents() {
-        HoverListener hov = new HoverListener(xhtml);
-        xhtml.addMouseListener(hov);
-        xhtml.addMouseMotionListener(hov);
+        xhtml.addMouseTrackingListener(new HoverListener());
+
         filelistmodel.showDir(new File("."));
         filelist.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent evt) {
@@ -101,7 +111,7 @@ public class FileBrowser extends JPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(this);
         frame.pack();
-        frame.show();
+        frame.setVisible(true);
     }
 
 
