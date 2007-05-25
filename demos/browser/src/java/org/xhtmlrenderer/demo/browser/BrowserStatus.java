@@ -1,11 +1,15 @@
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.util.Uu;
-
-import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.Insets;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class BrowserStatus extends JPanel {
+    private static final long serialVersionUID = 1L;
+    
     public JLabel text, memory;
 
     public void init() {
@@ -16,13 +20,17 @@ public class BrowserStatus extends JPanel {
 
     public void createComponents() {
         text = new JLabel("Status");
-        memory = new JLabel("XXX/XXX");
+        memory = new JLabel("? MB / ? MB");
     }
 
     public void createLayout() {
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(5, 5));
         add("Center", text);
         add("East", memory);
+    }
+    
+    public Insets getInsets() {
+        return new Insets(3, 4, 3, 4);
     }
 
     public void createEvents() {
@@ -38,15 +46,15 @@ public class BrowserStatus extends JPanel {
                         used = used / (1024 * 1024);
                         total = total / (1024 * 1024);
 
-                        final String text = used + "Mb / " + total + "Mb";
+                        final String text = used + "MB / " + total + "MB";
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 memory.setText(text);
                             }
                         });
-                        Thread.currentThread().sleep(5000);
-                    } catch (Exception ex) {
-                        Uu.p(ex);
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        break;
                     }
                 }
             }
