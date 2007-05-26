@@ -31,6 +31,7 @@ import org.xhtmlrenderer.css.parser.property.BackgroundPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.BorderPropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.BorderSpacingPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.ContentPropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.CounterPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.FontPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.ListStylePropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.OneToFourPropertyBuilders;
@@ -407,8 +408,8 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "none",
                     NOT_INHERITED,
-                    false,
-                    null
+                    true,
+                    new CounterPropertyBuilder.CounterIncrement()
             );
 
     /**
@@ -420,8 +421,8 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "none",
                     NOT_INHERITED,
-                    false,
-                    null
+                    true,
+                    new CounterPropertyBuilder.CounterReset()
             );
 
     /**
@@ -1675,6 +1676,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2007/05/26 22:08:16  peterbrant
+ * Begin work on counter support
+ *
  * Revision 1.30  2007/05/24 19:56:51  peterbrant
  * Add support for cursor property (predefined cursors only)
  *

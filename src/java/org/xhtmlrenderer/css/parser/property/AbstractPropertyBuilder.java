@@ -74,11 +74,11 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
         if ((type != CSSPrimitiveValue.CSS_IDENT && 
                 type != CSSPrimitiveValue.CSS_NUMBER) || 
             (type == CSSPrimitiveValue.CSS_NUMBER && 
-                    Math.floor(value.getFloatValue(CSSPrimitiveValue.CSS_NUMBER)) !=
-                        Math.ceil(value.getFloatValue(CSSPrimitiveValue.CSS_NUMBER)))) {
+                    (int)value.getFloatValue(CSSPrimitiveValue.CSS_NUMBER) !=
+                        Math.round(value.getFloatValue(CSSPrimitiveValue.CSS_NUMBER)))) {
             throw new CSSParseException("Value for " + cssName + " must be an identifier or an integer", -1);
         }
-    }  
+    } 
     
     protected void checkIdentOrLengthType(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
