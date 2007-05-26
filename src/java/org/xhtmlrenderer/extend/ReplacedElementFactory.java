@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.extend;
 
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 
@@ -41,4 +42,10 @@ public interface ReplacedElementFactory {
      * data (typically because a new page is about to be loaded).
      */
     public void reset();
+    
+    /**
+     * Removes any reference to <code>Element</code> <code>e</code>.
+     * @param e
+     */
+    public void remove(Element e);
 }

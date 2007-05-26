@@ -271,12 +271,21 @@ public class StyleReference {
 
         return infos;
     }
+    
+    public void removeStyle(Element e) {
+        if (_matcher != null) {
+            _matcher.removeStyle(e);
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2007/05/26 19:04:13  peterbrant
+ * Implement support for removing all references to a particular Element (in order to support limited dynamic DOM changes)
+ *
  * Revision 1.15  2007/05/20 23:25:34  peterbrant
  * Various code cleanups (e.g. remove unused imports)
  *

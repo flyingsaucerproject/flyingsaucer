@@ -69,6 +69,10 @@ public class Matcher {
         _pageRules = new ArrayList();
         docMapper = createDocumentMapper(stylesheets, medium);
     }
+    
+    public void removeStyle(Object e) {
+        _map.remove(e);
+    }
 
     public CascadedStyle getCascadedStyle(Object e, boolean restyle) {
         synchronized (e) {

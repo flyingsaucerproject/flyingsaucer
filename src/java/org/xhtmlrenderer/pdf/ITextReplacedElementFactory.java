@@ -60,4 +60,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
     
     public void reset() {
     }
+    
+    public void remove(Element e) {
+    }
 }

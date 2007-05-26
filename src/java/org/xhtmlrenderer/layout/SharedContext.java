@@ -29,6 +29,7 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.context.AWTFontResolver;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -664,12 +665,39 @@ public class SharedContext {
         }
         _replacedElementFactory = replacedElementFactory;
     }
+    
+    public void removeElementReferences(Element e) {
+        String id = namespaceHandler.getID(e);
+        if (id != null && id.length() > 0) {
+            removeBoxId(id);
+        }
+        
+        if (styleMap != null) {
+            styleMap.remove(e);
+        }
+        
+        getCss().removeStyle(e);
+        getReplacedElementFactory().remove(e);
+        
+        if (e.hasChildNodes()) {
+            NodeList children = e.getChildNodes();
+            for (int i = 0; i < children.getLength(); i++) {
+                Node child = children.item(i);
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    removeElementReferences((Element)child);
+                }
+            }
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2007/05/26 19:04:13  peterbrant
+ * Implement support for removing all references to a particular Element (in order to support limited dynamic DOM changes)
+ *
  * Revision 1.38  2007/04/16 20:56:49  pdoubleya
  * New image rendering based on PDF rendering approach. Hacked small change in SharedContext which is dependent on panel for sizing, currently.
  *
