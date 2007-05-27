@@ -247,7 +247,12 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     }
     
     public void remove(Element e) {
-        forms.remove(e);
-        imageComponents.remove(e);
+        if (forms != null) {
+            forms.remove(e);
+        }
+        
+        if (imageComponents != null) {
+            imageComponents.remove(e);
+        }
     }
 }
