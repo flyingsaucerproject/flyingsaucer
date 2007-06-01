@@ -98,7 +98,7 @@ public class XRLog {
      * @param msg PARAM
      */
     public static void cssParse(String msg) {
-        cssParse(Level.INFO, msg);
+        cssParse(Level.WARNING, msg);
     }
 
     /**
@@ -569,6 +569,9 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2007/06/01 21:44:08  peterbrant
+ * CSS parsing errors should be logged at WARNING, not INFO level
+ *
  * Revision 1.15  2006/08/17 17:32:25  joshy
  * intial patch to fix the logging config issues
  * https://xhtmlrenderer.dev.java.net/issues/show_bug.cgi?id=130
