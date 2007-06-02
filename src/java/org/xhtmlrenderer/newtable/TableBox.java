@@ -48,6 +48,8 @@ public class TableBox extends BlockBox {
     
     private List _styleColumns;
     
+    private int _pageClearance;
+    
     public void addStyleColumn(TableColumn col) {
         if (_styleColumns == null) {
             _styleColumns = new ArrayList();
@@ -213,6 +215,7 @@ public class TableBox extends BlockBox {
                 int delta = page.getTop() - borderTop;
                 if (delta > 0) {
                     setY(getY() + delta);
+                    setPageClearance(delta);
                     calcCanvasLocation();
                     c.translate(0, delta);
                 }
@@ -477,6 +480,14 @@ public class TableBox extends BlockBox {
         
         return result;
     }
+    
+    protected int getPageClearance() {
+        return _pageClearance;
+    }
+
+    protected void setPageClearance(int pageClearance) {
+        _pageClearance = pageClearance;
+    }    
     
     private interface TableLayout {
         public void calcMinMaxWidth(LayoutContext c);

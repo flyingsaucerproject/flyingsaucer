@@ -41,6 +41,7 @@ import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.BlockBoxing;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.BoxBuilder;
+import org.xhtmlrenderer.layout.CounterScope;
 import org.xhtmlrenderer.layout.FloatManager;
 import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.InlinePaintable;
@@ -102,6 +103,8 @@ public class BlockBox extends Box implements InlinePaintable {
     private int _childrenHeight;
     
     private boolean _fromCaptionedTable;
+    
+    private CounterScope _counterScope;
     
     public BlockBox() {
         super();
@@ -773,7 +776,7 @@ public class BlockBox extends Box implements InlinePaintable {
         
         if (c.isPrint()) {
             PageBox firstPage = c.getRootLayer().getFirstPage(c, this);
-            if (firstPage.getTop() == getAbsY()) {
+            if (firstPage.getTop() == getAbsY() - getPageClearance()) {
                 resetTopMargin(c);
             }
         }
@@ -849,6 +852,10 @@ public class BlockBox extends Box implements InlinePaintable {
     
     protected boolean isAllowHeightToShrink() {
         return true;
+    }
+    
+    protected int getPageClearance() {
+        return 0;
     }
 
     protected void calcLayoutHeight(
@@ -1778,12 +1785,23 @@ public class BlockBox extends Box implements InlinePaintable {
             return maxPositive != 0 || maxNegative != 0;
         }
     }
+
+    public CounterScope getCounterScope() {
+        return _counterScope;
+    }
+
+    public void setCounterScope(CounterScope counterScope) {
+        _counterScope = counterScope;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.80  2007/06/02 06:56:44  peterbrant
+ * Table page clearance should be taken into account when checking whether or not the top margin should be reset when a box is moved to a new page
+ *
  * Revision 1.79  2007/04/25 18:09:41  peterbrant
  * Always reset block box margin if it is the first thing on a page
  *
