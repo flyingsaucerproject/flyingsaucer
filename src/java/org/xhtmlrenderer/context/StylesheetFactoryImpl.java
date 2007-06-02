@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
+import java.util.logging.Level;
 
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.parser.CSSErrorHandler;
@@ -69,7 +70,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         _userAgent = userAgent;
         _cssParser = new CSSParser(new CSSErrorHandler() {
             public void error(String uri, String message) {
-                XRLog.cssParse("(" + uri + ") " + message);
+                XRLog.cssParse(Level.WARNING, "(" + uri + ") " + message);
             }
         });
     }

@@ -98,7 +98,7 @@ public class XRLog {
      * @param msg PARAM
      */
     public static void cssParse(String msg) {
-        cssParse(Level.WARNING, msg);
+        cssParse(Level.INFO, msg);
     }
 
     /**
@@ -569,6 +569,9 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2007/06/02 20:00:34  peterbrant
+ * Revert earlier change to default CSS parse logging level / Use WARNING explicitly for CSS parse errors
+ *
  * Revision 1.16  2007/06/01 21:44:08  peterbrant
  * CSS parsing errors should be logged at WARNING, not INFO level
  *
