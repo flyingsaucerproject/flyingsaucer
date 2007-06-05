@@ -306,6 +306,26 @@ public class CalculatedStyle {
         return new BackgroundPosition(
                 (PropertyValue)values.get(0), (PropertyValue)values.get(1));
     }
+    
+    public List getCounterReset() {
+        FSDerivedValue value = valueByName(CSSName.COUNTER_RESET);
+        
+        if (value == IdentValue.NONE) {
+            return null;
+        } else {
+            return ((ListValue)value).getValues();
+        }
+    }
+    
+    public List getCounterIncrement() {
+        FSDerivedValue value = valueByName(CSSName.COUNTER_INCREMENT);
+        
+        if (value == IdentValue.NONE) {
+            return null;
+        } else {
+            return ((ListValue)value).getValues();
+        }
+    }
 
     public BorderPropertySet getBorder(CssContext ctx) {
         if (! _bordersAllowed) {
@@ -1158,6 +1178,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.92  2007/06/05 19:29:54  peterbrant
+ * More progress on counter support
+ *
  * Revision 1.91  2007/05/24 19:56:52  peterbrant
  * Add support for cursor property (predefined cursors only)
  *

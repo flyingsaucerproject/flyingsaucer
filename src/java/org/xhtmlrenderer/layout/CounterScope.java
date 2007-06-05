@@ -35,7 +35,7 @@ public class CounterScope {
     public void reset(CounterScope parentScope, List counterData) {
         for (Iterator i = counterData.iterator(); i.hasNext(); ) {
             CounterData data = (CounterData)i.next();
-            CounterValue parent = (CounterValue)parentScope._counters.get(data.getName());
+            CounterValue parent = parentScope == null ? null : (CounterValue)parentScope._counters.get(data.getName());
             _counters.put(data.getName(), new CounterValue(parent, data.getValue()));
         }
     }
@@ -45,10 +45,10 @@ public class CounterScope {
             CounterData data = (CounterData)i.next();
             CounterValue current = (CounterValue)_counters.get(data.getName());
             if (current == null) {
-                _counters.put(data.getName(), new CounterValue(null, 1));
+                _counters.put(data.getName(), new CounterValue(null, data.getValue()));
             } else {
                 _counters.put(data.getName(), 
-                        new CounterValue(current.getParent(), current.getValue() + 1));
+                        new CounterValue(current.getParent(), current.getValue() + data.getValue()));
             }
         }
     }

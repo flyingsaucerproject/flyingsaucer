@@ -19,24 +19,28 @@
  */
 package org.xhtmlrenderer.layout;
 
-public class CounterValue {
-    private final CounterValue _parent;
-    private int _value;
+import org.xhtmlrenderer.css.constants.IdentValue;
+
+public class CounterFunction {
+    private String _counterName;
+    private IdentValue _listStyleType;
     
-    public CounterValue(CounterValue parent, int value) {
-        _parent = parent;
-        _value = value;
+    public CounterFunction() {
     }
     
-    public CounterValue getParent() {
-        return _parent;
+    public String getCounterName() {
+        return _counterName;
     }
     
-    public int getValue() {
-        return _value;
+    public void setCounterName(String counterName) {
+        _counterName = counterName;
     }
     
-    public void setValue(int i) {
-        _value = i;
+    public IdentValue getListStyleType() {
+        return _listStyleType;
+    }
+    
+    public void setListStyleType(IdentValue listStyleType) {
+        _listStyleType = listStyleType;
     }
 }

@@ -836,7 +836,6 @@ public class BlockBox extends Box implements InlinePaintable {
                     setChildrenHeight(getChildrenHeight() + delta);
                 }
             }
-            c.popBFC();
         }
         
         if (didSetMarkerData) {
@@ -844,6 +843,10 @@ public class BlockBox extends Box implements InlinePaintable {
         }
 
         calcLayoutHeight(c, border, margin, padding);
+        
+        if (isRoot() || getStyle().establishesBFC()) {
+            c.popBFC();
+        }
         
         if (pushedLayer) {
             c.popLayer();
@@ -1799,6 +1802,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.81  2007/06/05 19:29:53  peterbrant
+ * More progress on counter support
+ *
  * Revision 1.80  2007/06/02 06:56:44  peterbrant
  * Table page clearance should be taken into account when checking whether or not the top margin should be reset when a box is moved to a new page
  *

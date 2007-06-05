@@ -23,6 +23,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.CounterScope;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.layout.TextUtil;
@@ -64,6 +65,8 @@ public class InlineBox implements Styleable {
     private int _firstLineWidth;
     
     private String _pseudoElementOrClass;
+    
+    private CounterScope _counterScope;
     
     public InlineBox(String text) {
         _text = text;
@@ -424,5 +427,13 @@ public class InlineBox implements Styleable {
     public void truncateText() {
         _text = "";
         _originalText = "";
+    }
+
+    public CounterScope getCounterScope() {
+        return _counterScope;
+    }
+
+    public void setCounterScope(CounterScope counterScope) {
+        _counterScope = counterScope;
     }
 }
