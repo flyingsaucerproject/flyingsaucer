@@ -30,6 +30,9 @@ import org.xhtmlrenderer.render.RenderingContext;
 public class TableSectionBox extends BlockBox {
     private List _grid = new ArrayList();
     
+    private boolean _needCellWidthCalc;
+    private boolean _needCellRecalc;
+    
     public TableSectionBox() {
     }
     
@@ -105,6 +108,20 @@ public class TableSectionBox extends BlockBox {
         return (TableBox)getParent();
     }
     
+    protected void layoutChildren(LayoutContext c, int contentStart) {
+        if (isNeedCellRecalc()) {
+            recalcCells(c);
+            setNeedCellRecalc(false);
+        }
+        
+        if (isNeedCellWidthCalc()) {
+            setCellWidths(c);
+            setNeedCellWidthCalc(false);
+        }
+        
+        super.layoutChildren(c, contentStart);
+    }
+    
     private void addCell(TableRowBox row, TableCellBox cell, int cRow) {
         int rSpan = cell.getStyle().getRowSpan();
         int cSpan = cell.getStyle().getColSpan();
@@ -154,6 +171,8 @@ public class TableSectionBox extends BlockBox {
     public void reset(LayoutContext c) {
         super.reset(c);
         _grid.clear();
+        setNeedCellWidthCalc(true);
+        setNeedCellRecalc(true);
     }
     
     void setCellWidths(LayoutContext c)
@@ -212,5 +231,21 @@ public class TableSectionBox extends BlockBox {
         } else {
             return null;
         }
+    }
+
+    boolean isNeedCellWidthCalc() {
+        return _needCellWidthCalc;
+    }
+
+    void setNeedCellWidthCalc(boolean needCellWidthCalc) {
+        _needCellWidthCalc = needCellWidthCalc;
+    }
+
+    private boolean isNeedCellRecalc() {
+        return _needCellRecalc;
+    }
+
+    private void setNeedCellRecalc(boolean needCellRecalc) {
+        _needCellRecalc = needCellRecalc;
     }
 }

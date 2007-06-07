@@ -56,6 +56,12 @@ public class TableRowBox extends BlockBox {
         setState(Box.CHILDREN_FLUX);
         ensureChildren(c);
         
+        TableSectionBox section = getSection();
+        if (section.isNeedCellWidthCalc()) {
+            section.setCellWidths(c);
+            section.setNeedCellWidthCalc(false);
+        }
+        
         if (getChildrenContentType() != CONTENT_EMPTY) {
             int cCol = 0;
             for (Iterator i = getChildIterator(); i.hasNext(); ) {
@@ -307,6 +313,7 @@ public class TableRowBox extends BlockBox {
     public void reset(LayoutContext c) {
         super.reset(c);
         setHaveBaseline(false);
+        getSection().setNeedCellWidthCalc(true);
     }
 
     public boolean isHaveBaseline() {
