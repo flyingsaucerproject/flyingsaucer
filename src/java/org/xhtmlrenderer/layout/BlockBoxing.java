@@ -44,7 +44,7 @@ public class BlockBoxing {
     private BlockBoxing() {
     }
     
-    public static void layoutContent(final LayoutContext c, final BlockBox block) {
+    public static void layoutContent(LayoutContext c, BlockBox block, int contentStart) {
         int listIndex = 0;
         int offset = -1;
         
@@ -53,7 +53,7 @@ public class BlockBoxing {
             localChildren = new ArrayList(localChildren);
         }
         
-        int childOffset = block.getHeight();
+        int childOffset = block.getHeight() + contentStart;
         
         RelayoutDataList relayoutDataList = null;
         if (c.isPrint()) {
@@ -419,6 +419,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.61  2007/06/07 16:56:30  peterbrant
+ * When vertically aligning table cell content, call layout again on cells as necessary to make sure pagination properties are respected at the cell's final position (and to make sure line boxes can't straddle page breaks).
+ *
  * Revision 1.60  2007/05/22 15:55:15  peterbrant
  * Minor cleanup
  *

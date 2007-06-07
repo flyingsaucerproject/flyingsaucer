@@ -45,7 +45,7 @@ public class AnonymousBlockBox extends BlockBox {
     }
 
     public void layout(LayoutContext c) {
-        InlineBoxing.layoutContent(c, this);
+        InlineBoxing.layoutContent(c, this, 0);
     }
 
     public int getContentWidth() {
@@ -106,6 +106,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2007/06/07 16:56:29  peterbrant
+ * When vertically aligning table cell content, call layout again on cells as necessary to make sure pagination properties are respected at the cell's final position (and to make sure line boxes can't straddle page breaks).
+ *
  * Revision 1.23  2007/05/10 00:39:38  peterbrant
  * Anonymous block boxes were always being skipped when collapsing margins
  *

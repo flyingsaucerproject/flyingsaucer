@@ -52,7 +52,7 @@ public class TableRowBox extends BlockBox {
         return (TableSectionBox)getParent();
     }
     
-    public void layoutChildren(LayoutContext c) {
+    protected void layoutChildren(LayoutContext c, int contentStart) {
         setState(Box.CHILDREN_FLUX);
         ensureChildren(c);
         
@@ -61,7 +61,7 @@ public class TableRowBox extends BlockBox {
             for (Iterator i = getChildIterator(); i.hasNext(); ) {
                 TableCellBox cell = (TableCellBox)i.next();
                 
-                layoutCell(c, cell);
+                layoutCell(c, cell, 0);
                 
                 cCol++;
             }
@@ -92,7 +92,12 @@ public class TableRowBox extends BlockBox {
             if (cell.getVerticalAlign() == IdentValue.BASELINE) {
                 int deltaY = lowest - baselines[i];
                 if (deltaY != 0) {
-                    cell.moveContent(c, deltaY);
+                    if (c.isPrint() && cell.isPageBreaksChange(c, deltaY)) {
+                        relayoutCell(c, cell, deltaY);
+                    } else {
+                        cell.moveContent(c, deltaY);
+                        cell.setHeight(cell.getHeight() + deltaY);
+                    }
                 }
             }
         }
@@ -103,7 +108,9 @@ public class TableRowBox extends BlockBox {
         }
     }
     
-    private void alignMiddleAndBottomAlignedCells(LayoutContext c) {
+    private boolean alignMiddleAndBottomAlignedCells(LayoutContext c) {
+        boolean needRowHeightRecalc = false;
+        
         int cRow = getIndex();
         int totalRows = getSection().getChildCount();
         List row = ((RowData)getSection().getGrid().get(cRow)).getRow();
@@ -119,24 +126,39 @@ public class TableRowBox extends BlockBox {
             
             IdentValue val = cell.getVerticalAlign();
             if (val == IdentValue.MIDDLE || val == IdentValue.BOTTOM) {
-                int deltaY;
-                if (cell.getStyle().getRowSpan() == 1) {
-                    deltaY = getHeight() - cell.getChildrenHeight();
-                } else {
-                    deltaY = getAbsY() + getHeight() - (cell.getAbsY() + cell.getChildrenHeight());
-                }
+                int deltaY = calcMiddleBottomDeltaY(cell, val);
                 if (deltaY > 0) {
-                    // Set a provisional height in case we need to calculate
-                    // a default baseline
-                    if (val == IdentValue.MIDDLE) {
-                        cell.moveContent(c, deltaY / 2);
-                        cell.setHeight(cell.getHeight() + deltaY / 2);
-                    } else if (val == IdentValue.BOTTOM) {
+                    if (c.isPrint() && cell.isPageBreaksChange(c, deltaY)) {
+                        int oldCellHeight = cell.getHeight();
+                        relayoutCell(c, cell, deltaY);
+                        if (oldCellHeight + deltaY != cell.getHeight()) {
+                            needRowHeightRecalc = true;
+                        }
+                    } else {
                         cell.moveContent(c, deltaY);
+                        // Set a provisional height in case we need to calculate
+                        // a default baseline
                         cell.setHeight(cell.getHeight() + deltaY);
                     }
                 }
             }
+        }
+        
+        return needRowHeightRecalc;
+    }
+    
+    private int calcMiddleBottomDeltaY(TableCellBox cell, IdentValue verticalAlign) {
+        int result;
+        if (cell.getStyle().getRowSpan() == 1) {
+            result = getHeight() - cell.getChildrenHeight();
+        } else {
+            result = getAbsY() + getHeight() - (cell.getAbsY() + cell.getChildrenHeight());
+        }
+        
+        if (verticalAlign == IdentValue.MIDDLE) {
+            return result / 2;
+        } else {  /* verticalAlign == IdentValue.BOTTOM */
+            return result;
         }
     }
     
@@ -145,6 +167,22 @@ public class TableRowBox extends BlockBox {
             RectPropertySet margin, RectPropertySet padding) {
         alignBaselineAlignedCells(c);
         
+        calcRowHeight();
+        
+        boolean recalcRowHeight = alignMiddleAndBottomAlignedCells(c);
+        
+        if (recalcRowHeight) {
+            calcRowHeight();
+        }
+        
+        if (! isHaveBaseline()) {
+            calcDefaultBaseline(c);
+        }
+        
+        setCellHeights(c);
+    }
+
+    private void calcRowHeight() {
         int y1 = getAbsY();
         int y2;
         
@@ -174,14 +212,6 @@ public class TableRowBox extends BlockBox {
         }
         
         setHeight(y2 - y1);
-        
-        alignMiddleAndBottomAlignedCells(c);
-        
-        if (! isHaveBaseline()) {
-            calcDefaultBaseline(c);
-        }
-        
-        setCellHeights(c);
     }
     
     private void calcDefaultBaseline(LayoutContext c) {
@@ -233,11 +263,18 @@ public class TableRowBox extends BlockBox {
         }
     }
     
-    private void layoutCell(LayoutContext c, TableCellBox cell) {
+    private void relayoutCell(LayoutContext c, TableCellBox cell, int contentStart) {
+        int width = cell.getWidth();
+        cell.reset(c);
+        cell.setLayoutWidth(c, width);
+        layoutCell(c, cell, contentStart);
+    }
+    
+    private void layoutCell(LayoutContext c, TableCellBox cell, int contentStart) {
         cell.initContainingLayer(c);
         cell.calcCanvasLocation();
         
-        cell.layout(c);
+        cell.layout(c, contentStart);
     } 
     
     public void initStaticPos(LayoutContext c, BlockBox parent, int childOffset) {

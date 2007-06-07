@@ -36,6 +36,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
 public class TableCellBox extends BlockBox {
@@ -210,6 +211,15 @@ public class TableCellBox extends BlockBox {
                 });
         
         calcChildLocations();
+    }
+    
+    public boolean isPageBreaksChange(LayoutContext c, int posDeltaY) {
+        PageBox page = c.getRootLayer().getFirstPage(c, this);
+        
+        int bottomEdge = getAbsY() + getChildrenHeight();
+        
+        return bottomEdge >= page.getBottom() || 
+                    bottomEdge + posDeltaY >= page.getBottom();
     }
     
     public IdentValue getVerticalAlign() {

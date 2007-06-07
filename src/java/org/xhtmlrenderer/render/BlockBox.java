@@ -724,10 +724,6 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
     
-    public void layout(LayoutContext c) {
-        layoutBlock(c);
-    }
-    
     private void addBoxID(LayoutContext c) {
         if (! isAnonymous()) {
             String name = c.getNamespaceHandler().getAnchorName(getElement());
@@ -741,7 +737,11 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
     
-    private void layoutBlock(LayoutContext c) {
+    public void layout(LayoutContext c) {
+        layout(c, 0);
+    }
+    
+    public void layout(LayoutContext c, int contentStart) {
         CalculatedStyle style = getStyle();
         
         boolean pushedLayer = false;
@@ -807,7 +807,7 @@ public class BlockBox extends Box implements InlinePaintable {
         setTy(ty);        
         c.translate(getTx(), getTy());
         if (! isReplaced())
-            layoutChildren(c);
+            layoutChildren(c, contentStart);
         else {
             setState(Box.DONE);
         }
@@ -911,7 +911,7 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
     
-    public void layoutChildren(LayoutContext c) {
+    protected void layoutChildren(LayoutContext c, int contentStart) {
         setState(Box.CHILDREN_FLUX);
         ensureChildren(c);
         
@@ -924,10 +924,10 @@ public class BlockBox extends Box implements InlinePaintable {
         
         switch (getChildrenContentType()) {
             case CONTENT_INLINE:
-                InlineBoxing.layoutContent(c, this);
+                InlineBoxing.layoutContent(c, this, contentStart);
                 break;
             case CONTENT_BLOCK:
-                BlockBoxing.layoutContent(c, this);
+                BlockBoxing.layoutContent(c, this, contentStart);
                 break;
         }
         
@@ -1802,6 +1802,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.82  2007/06/07 16:56:29  peterbrant
+ * When vertically aligning table cell content, call layout again on cells as necessary to make sure pagination properties are respected at the cell's final position (and to make sure line boxes can't straddle page breaks).
+ *
  * Revision 1.81  2007/06/05 19:29:53  peterbrant
  * More progress on counter support
  *

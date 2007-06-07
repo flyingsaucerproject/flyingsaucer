@@ -54,11 +54,11 @@ public class InlineBoxing {
     private InlineBoxing() {
     }
     
-    public static void layoutContent(LayoutContext c, BlockBox box) {
+    public static void layoutContent(LayoutContext c, BlockBox box, int initialY) {
         int maxAvailableWidth = box.getContentWidth();
         int remainingWidth = maxAvailableWidth;
 
-        LineBox currentLine = newLine(c, null, box);
+        LineBox currentLine = newLine(c, initialY, box);
         LineBox previousLine = null;
 
         InlineLayoutBox currentIB = null;
@@ -220,7 +220,7 @@ public class InlineBoxing {
                     }
 
                     if (lbContext.isNeedsNewLine()) {
-                        saveLine(currentLine, previousLine, c, box, minimumLineHeight,
+                        saveLine(currentLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, pendingFloats, 
                                 hasFirstLinePEs, pendingInlineLayers, markerData,
                                 contentStart);
@@ -284,7 +284,7 @@ public class InlineBoxing {
                    layoutInlineBlockContent(c, box, child);
 
                    if (child.getWidth() > remainingWidth && currentLine.isContainsContent()) {
-                       saveLine(currentLine, previousLine, c, box, minimumLineHeight,
+                       saveLine(currentLine, c, box, minimumLineHeight,
                                maxAvailableWidth, pendingFloats,  hasFirstLinePEs, 
                                pendingInlineLayers, markerData, contentStart);
                        markerData = null;
@@ -328,7 +328,7 @@ public class InlineBoxing {
         }
 
         currentLine.trimTrailingSpace(c);
-        saveLine(currentLine, previousLine, c, box, minimumLineHeight,
+        saveLine(currentLine, c, box, minimumLineHeight,
                 maxAvailableWidth, pendingFloats, hasFirstLinePEs,
                 pendingInlineLayers, markerData, contentStart);
         if (currentLine.isFirstLine() && currentLine.getHeight() == 0 && markerData != null) {
@@ -702,9 +702,9 @@ public class InlineBoxing {
         }
     }
 
-    private static void saveLine(final LineBox current, LineBox previous,
-                                 final LayoutContext c, BlockBox block, int minHeight,
-                                 final int maxAvailableWidth, List pendingFloats, 
+    private static void saveLine(LineBox current, LayoutContext c, 
+                                 BlockBox block, int minHeight,
+                                 int maxAvailableWidth, List pendingFloats, 
                                  boolean hasFirstLinePCs, List pendingInlineLayers, 
                                  MarkerData markerData, int contentStart) {
         current.setContentStart(contentStart);
@@ -714,9 +714,6 @@ public class InlineBoxing {
         current.setContentWidth(totalLineWidth);
 
         positionVertically(c, block, current, markerData);
-
-        current.setY(previous == null ? 0 : previous.getY() + previous.getHeight());
-        current.calcCanvasLocation();
 
         // XXX Revisit this.  Do we need this when dealing with unbreakable
         // text?  Is a line required to always have a minimum height?
@@ -848,14 +845,22 @@ public class InlineBoxing {
     }
 
     private static LineBox newLine(LayoutContext c, LineBox previousLine, Box box) {
+        int y = 0;
+        
+        if (previousLine != null) {
+            y = previousLine.getY() + previousLine.getHeight();
+        }
+        
+        return newLine(c, y, box);
+    }
+    
+    private static LineBox newLine(LayoutContext c, int y, Box box) {
         LineBox result = new LineBox();
         result.setStyle(box.getStyle().createAnonymousStyle(IdentValue.BLOCK));
         result.setParent(box);
         result.initContainingLayer(c);
 
-        if (previousLine != null) {
-            result.setY(previousLine.getY() + previousLine.getHeight());
-        }
+        result.setY(y);
         
         result.calcCanvasLocation();
 
