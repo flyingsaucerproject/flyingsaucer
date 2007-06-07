@@ -114,4 +114,8 @@ public class SVGSalamanderReplacedElementFactory implements ReplacedElementFacto
     public void reset() {
 
     }
+
+    public void remove(Element e) {
+
+    }
 }

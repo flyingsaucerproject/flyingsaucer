@@ -6,6 +6,8 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 
+import org.w3c.dom.Element;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -38,6 +40,13 @@ public class ChainedReplacedElementFactory implements ReplacedElementFactory {
         for (Iterator i = this.factoryList.iterator(); i.hasNext(); ) {
             ReplacedElementFactory factory = (ReplacedElementFactory)i.next();
             factory.reset();
+        }       
+    }
+
+    public void remove(Element e) {
+        for (Iterator i = this.factoryList.iterator(); i.hasNext(); ) {
+            ReplacedElementFactory factory = (ReplacedElementFactory)i.next();
+            factory.remove(e);
         }       
     }
 }
