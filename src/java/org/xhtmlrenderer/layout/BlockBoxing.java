@@ -30,6 +30,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.PageBox;
 
 /**
  * Utility class for laying block content.  It is called when a block box
@@ -187,9 +188,11 @@ public class BlockBoxing {
             LayoutContext c, List localChildren, BlockBox block, 
             RelayoutDataList relayoutDataList, int start, int end, boolean onNewPage) {        
         int childOffset = relayoutDataList.get(start).getChildOffset();
+        
         if (onNewPage) {
-            block.expandToPageBottom(c);
-            childOffset = block.getHeight();
+            Box startBox = (Box)localChildren.get(start);
+            PageBox startPageBox = c.getRootLayer().getFirstPage(c, startBox);
+            childOffset += startPageBox.getBottom() - startBox.getAbsY();
         }
         
         for (int i = start; i <= end; i++) {
@@ -419,6 +422,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.62  2007/06/11 22:24:53  peterbrant
+ * Fix bug when calculating new initial position of a run of blocks tied together by page-break-before/after
+ *
  * Revision 1.61  2007/06/07 16:56:30  peterbrant
  * When vertically aligning table cell content, call layout again on cells as necessary to make sure pagination properties are respected at the cell's final position (and to make sure line boxes can't straddle page breaks).
  *
