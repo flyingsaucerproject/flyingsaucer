@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.Stack;
+import java.util.LinkedList;
 
 import org.xhtmlrenderer.render.MarkerData;
 
@@ -35,13 +35,13 @@ public class LayoutState {
     
     private MarkerData _currentMarkerData;
     
-    private Stack _BFCs;
+    private LinkedList _BFCs;
     
-    public Stack getBFCs() {
+    public LinkedList getBFCs() {
         return _BFCs;
     }
 
-    public void setBFCs(Stack s) {
+    public void setBFCs(LinkedList s) {
         _BFCs = s;
     }
 

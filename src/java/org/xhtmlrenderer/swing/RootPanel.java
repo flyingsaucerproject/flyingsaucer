@@ -56,13 +56,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     protected SharedContext sharedContext;
 
     //TODO: layout_context should not be stored!
-    protected volatile LayoutContext layout_context;
+    private volatile LayoutContext layout_context;
 
     private Box rootBox = null;
 
-    private Thread layoutThread;
-    private Thread renderThread;
-    
     private boolean pendingResize = false;
 
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
@@ -164,25 +161,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         documentListeners = new HashMap();
         setBackground(Color.white);
         super.setLayout(null);
-    }
-
-    public synchronized void shutdown() {
-        try {
-            if (layoutThread != null) {
-                layoutThread.interrupt();
-                layoutThread.join();
-                layoutThread = null;
-            }
-
-            if (renderThread != null) {
-                renderThread.interrupt();
-                renderThread.join();
-                renderThread = null;
-            }
-
-        } catch (InterruptedException e) {
-            // ignore
-        }
     }
 
     boolean layoutInProgress = false;

@@ -20,7 +20,7 @@
 package org.xhtmlrenderer.layout;
 
 import java.awt.Rectangle;
-import java.util.Stack;
+import java.util.LinkedList;
 
 import org.xhtmlrenderer.context.ContentFunctionFactory;
 import org.xhtmlrenderer.context.StyleReference;
@@ -43,115 +43,121 @@ import org.xhtmlrenderer.swing.RootPanel;
  * {@link SharedContext}.
  */
 public class LayoutContext implements CssContext {
-    private SharedContext sharedContext;
+    private SharedContext _sharedContext;
     
-    private Layer rootLayer;
+    private Layer _rootLayer;
     
-    private StyleTracker firstLines;
-    private StyleTracker firstLetters;
-    private MarkerData currentMarkerData;
+    private StyleTracker _firstLines;
+    private StyleTracker _firstLetters;
+    private MarkerData _currentMarkerData;
     
-    private Stack bfcs;
-    private Stack layers;
+    private LinkedList _bfcs;
+    private LinkedList _layers;
     
-    private FontContext fontContext;
+    private FontContext _fontContext;
     
-    private ContentFunctionFactory contentFunctionFactory = new ContentFunctionFactory();
-
+    private ContentFunctionFactory _contentFunctionFactory = new ContentFunctionFactory();
+    
+    private int _extraSpaceTop;
+    private int _extraSpaceBottom;
+    
     public TextRenderer getTextRenderer() {
-        return sharedContext.getTextRenderer();
+        return _sharedContext.getTextRenderer();
     }
 
     public StyleReference getCss() {
-        return sharedContext.getCss();
+        return _sharedContext.getCss();
     }
 
     public RootPanel getCanvas() {
-        return sharedContext.getCanvas();
+        return _sharedContext.getCanvas();
     }
 
     public Rectangle getFixedRectangle() {
-        return sharedContext.getFixedRectangle();
+        return _sharedContext.getFixedRectangle();
     }
 
     public NamespaceHandler getNamespaceHandler() {
-        return sharedContext.getNamespaceHandler();
+        return _sharedContext.getNamespaceHandler();
     }
     
     //the stuff that needs to have a separate instance for each run.
     LayoutContext(SharedContext sharedContext) {
-        this.sharedContext = sharedContext;
-        this.bfcs = new Stack();
-        this.layers = new Stack();
+        _sharedContext = sharedContext;
+        _bfcs = new LinkedList();
+        _layers = new LinkedList();
         
-        this.firstLines = new StyleTracker();
-        this.firstLetters = new StyleTracker();
+        _firstLines = new StyleTracker();
+        _firstLetters = new StyleTracker();
     }
     
     public void reInit() {
-        this.firstLines = new StyleTracker();
-        this.firstLetters = new StyleTracker();
-        this.currentMarkerData = null;
+        _firstLines = new StyleTracker();
+        _firstLetters = new StyleTracker();
+        _currentMarkerData = null;
         
-        this.bfcs = new Stack();
+        _bfcs = new LinkedList();
+        
+        _extraSpaceTop = 0;
+        _extraSpaceBottom = 0;
     }
     
     public LayoutState captureLayoutState() {
         LayoutState result = new LayoutState();
         
-        result.setFirstLines(this.firstLines);
-        result.setFirstLetters(this.firstLetters);
-        result.setCurrentMarkerData(this.currentMarkerData);
+        result.setFirstLines(_firstLines);
+        result.setFirstLetters(_firstLetters);
+        result.setCurrentMarkerData(_currentMarkerData);
         
-        result.setBFCs(this.bfcs);
+        result.setBFCs(_bfcs);
         
         return result;
     }
     
     public void restoreLayoutState(LayoutState layoutState) {
-        this.firstLines = layoutState.getFirstLines();
-        this.firstLetters = layoutState.getFirstLetters();
+        _firstLines = layoutState.getFirstLines();
+        _firstLetters = layoutState.getFirstLetters();
         
-        this.currentMarkerData = layoutState.getCurrentMarkerData();
+        _currentMarkerData = layoutState.getCurrentMarkerData();
         
-        this.bfcs = layoutState.getBFCs();
+        _bfcs = layoutState.getBFCs();
     }
     
     public LayoutState copyStateForRelayout() {
         LayoutState result = new LayoutState();
         
-        result.setFirstLetters(this.firstLetters.copyOf());
-        result.setFirstLines(this.firstLines.copyOf());
-        result.setCurrentMarkerData(this.currentMarkerData);
+        result.setFirstLetters(_firstLetters.copyOf());
+        result.setFirstLines(_firstLines.copyOf());
+        result.setCurrentMarkerData(_currentMarkerData);
         
         return result;
     }
     
     public void restoreStateForRelayout(LayoutState layoutState) {
-        this.firstLines = layoutState.getFirstLines();
-        this.firstLetters = layoutState.getFirstLetters();
+        _firstLines = layoutState.getFirstLines();
+        _firstLetters = layoutState.getFirstLetters();
         
-        this.currentMarkerData = layoutState.getCurrentMarkerData();
+        _currentMarkerData = layoutState.getCurrentMarkerData();
     }
 
     public BlockFormattingContext getBlockFormattingContext() {
-        return (BlockFormattingContext)bfcs.peek();
+        return (BlockFormattingContext)_bfcs.getLast();
     }
 
     public void pushBFC(BlockFormattingContext bfc) {
-        bfcs.push(bfc);
+        _bfcs.add(bfc);
     }
 
     public void popBFC() {
-        bfcs.pop();
+        _bfcs.removeLast();
     }
     
     public void pushLayer(Box master) {
         Layer layer = null;
         
-        if (rootLayer == null) {
+        if (_rootLayer == null) {
             layer = new Layer(master);
-            rootLayer = layer;
+            _rootLayer = layer;
         } else {
             Layer parent = getLayer();
             
@@ -170,7 +176,7 @@ public class LayoutContext implements CssContext {
     }
     
     public void pushLayer(Layer layer) {
-        layers.push(layer);
+        _layers.add(layer);
     }
     
     public void popLayer() {
@@ -178,15 +184,15 @@ public class LayoutContext implements CssContext {
 
         layer.finish(this);
         
-        layers.pop();
+        _layers.removeLast();
     }
     
     public Layer getLayer() {
-        return (Layer)layers.peek();
+        return (Layer)_layers.getLast();
     }
     
     public Layer getRootLayer() {
-        return rootLayer;
+        return _rootLayer;
     }
 
     public void translate(int x, int y) {
@@ -195,78 +201,94 @@ public class LayoutContext implements CssContext {
 
     /* code to keep track of all of the id'd boxes */
     public void addBoxId(String id, Box box) {
-        this.sharedContext.addBoxId(id, box);
+        _sharedContext.addBoxId(id, box);
     }
     
     public void removeBoxId(String id) {
-        this.sharedContext.removeBoxId(id);
+        _sharedContext.removeBoxId(id);
     }
     
     public boolean isInteractive() {
-        return sharedContext.isInteractive();
+        return _sharedContext.isInteractive();
     }
 
     public float getMmPerDot() {
-        return sharedContext.getMmPerPx();
+        return _sharedContext.getMmPerPx();
     }
     
     public int getDotsPerPixel() {
-        return sharedContext.getDotsPerPixel();
+        return _sharedContext.getDotsPerPixel();
     }
 
     public float getFontSize2D(FontSpecification font) {
-        return sharedContext.getFont(font).getSize2D();
+        return _sharedContext.getFont(font).getSize2D();
     }
 
     public float getXHeight(FontSpecification parentFont) {
-        return sharedContext.getXHeight(getFontContext(), parentFont);
+        return _sharedContext.getXHeight(getFontContext(), parentFont);
     }
 
     public FSFont getFont(FontSpecification font) {
-        return sharedContext.getFont(font);
+        return _sharedContext.getFont(font);
     }
 
     public UserAgentCallback getUac() {
-        return sharedContext.getUac();
+        return _sharedContext.getUac();
     }
 
     public boolean isPrint() {
-        return sharedContext.isPrint();
+        return _sharedContext.isPrint();
     }
 
     public StyleTracker getFirstLinesTracker() {
-        return firstLines;
+        return _firstLines;
     }
     
     public StyleTracker getFirstLettersTracker() {
-        return firstLetters;
+        return _firstLetters;
     }
 
     public MarkerData getCurrentMarkerData() {
-        return currentMarkerData;
+        return _currentMarkerData;
     }
 
     public void setCurrentMarkerData(MarkerData currentMarkerData) {
-        this.currentMarkerData = currentMarkerData;
+        _currentMarkerData = currentMarkerData;
     }
 
     public ReplacedElementFactory getReplacedElementFactory() {
-        return sharedContext.getReplacedElementFactory();
+        return _sharedContext.getReplacedElementFactory();
     }
 
     public FontContext getFontContext() {
-        return fontContext;
+        return _fontContext;
     }
 
     public void setFontContext(FontContext fontContext) {
-        this.fontContext = fontContext;
+        _fontContext = fontContext;
     }
     
     public ContentFunctionFactory getContentFunctionFactory() {
-        return contentFunctionFactory;
+        return _contentFunctionFactory;
     }
     
     public SharedContext getSharedContext() {
-        return sharedContext;
+        return _sharedContext;
+    }
+
+    public int getExtraSpaceBottom() {
+        return _extraSpaceBottom;
+    }
+
+    public void setExtraSpaceBottom(int extraSpaceBottom) {
+        _extraSpaceBottom = extraSpaceBottom;
+    }
+
+    public int getExtraSpaceTop() {
+        return _extraSpaceTop;
+    }
+
+    public void setExtraSpaceTop(int extraSpaceTop) {
+        _extraSpaceTop = extraSpaceTop;
     }
 }

@@ -366,7 +366,7 @@ public abstract class BasicPanel extends RootPanel {
                 if (box.getStyle().isInline()) {
                     pt = new Point(box.getAbsX(), box.getAbsY());
                 } else {
-                    RectPropertySet margin = box.getMargin(layout_context);
+                    RectPropertySet margin = box.getMargin(getLayoutContext());
                     pt = new Point(
                             box.getAbsX() + (int)margin.left(),
                             box.getAbsY() + (int)margin.top());
@@ -555,6 +555,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.112  2007/06/11 22:30:15  peterbrant
+ * Minor cleanup to LayoutContext / Start adding infrastructure to support better table pagination
+ *
  * Revision 1.111  2007/05/24 13:22:38  peterbrant
  * Optimize and clean up hover and link listeners
  *

@@ -564,7 +564,7 @@ public abstract class Box implements Styleable {
             if (page.getTop() == getAbsY()) {
                 return 0;
             } else {
-                int delta = page.getBottom() - getAbsY();
+                int delta = page.getBottom() + c.getExtraSpaceTop() - getAbsY();
                 setY(getY() + delta);
                 if (page == c.getRootLayer().getLastPage()) {
                     c.getRootLayer().addPage(c);
@@ -576,7 +576,7 @@ public abstract class Box implements Styleable {
 
     public void expandToPageBottom(LayoutContext c) {
         PageBox page = c.getRootLayer().getLastPage(c, this);
-        int delta = page.getBottom() - (getAbsY() + 
+        int delta = page.getBottom() + c.getExtraSpaceTop() - (getAbsY() + 
                 getMarginBorderPadding(c, CalculatedStyle.TOP) + getHeight());
         setHeight(getHeight() + delta);
         if (page == c.getRootLayer().getLastPage()) {   
@@ -589,7 +589,7 @@ public abstract class Box implements Styleable {
         if (pageBox == null) {
             return false;
         } else {
-            return getAbsY() + getHeight() >= pageBox.getBottom();
+            return getAbsY() + getHeight() >= pageBox.getBottom() - c.getExtraSpaceBottom();
         }
     }
 
@@ -924,6 +924,9 @@ public abstract class Box implements Styleable {
  * $Id$
  *
  * $Log$
+ * Revision 1.140  2007/06/11 22:30:15  peterbrant
+ * Minor cleanup to LayoutContext / Start adding infrastructure to support better table pagination
+ *
  * Revision 1.139  2007/04/25 18:09:41  peterbrant
  * Always reset block box margin if it is the first thing on a page
  *

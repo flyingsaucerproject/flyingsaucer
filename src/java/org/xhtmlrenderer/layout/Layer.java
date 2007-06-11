@@ -938,14 +938,8 @@ public class Layer {
         if (top < 0) {
             return false;
         }
-        List pages = getPages();
-        for (Iterator i = pages.iterator(); i.hasNext(); ) {
-            PageBox page = (PageBox)i.next();
-            if (top >= page.getTop() && top < page.getBottom()) {
-                return bottom >= page.getBottom();
-            }
-        }
-        throw new RuntimeException("Could not find page");
+        PageBox page = getPage(c, top);
+        return bottom >= page.getBottom() - c.getExtraSpaceBottom();
     }
     
     public Layer findRoot() {
