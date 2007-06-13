@@ -41,7 +41,6 @@ import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.BlockBoxing;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.BoxBuilder;
-import org.xhtmlrenderer.layout.CounterScope;
 import org.xhtmlrenderer.layout.FloatManager;
 import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.InlinePaintable;
@@ -103,8 +102,6 @@ public class BlockBox extends Box implements InlinePaintable {
     private int _childrenHeight;
     
     private boolean _fromCaptionedTable;
-    
-    private CounterScope _counterScope;
     
     public BlockBox() {
         super();
@@ -1788,20 +1785,15 @@ public class BlockBox extends Box implements InlinePaintable {
             return maxPositive != 0 || maxNegative != 0;
         }
     }
-
-    public CounterScope getCounterScope() {
-        return _counterScope;
-    }
-
-    public void setCounterScope(CounterScope counterScope) {
-        _counterScope = counterScope;
-    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.83  2007/06/13 15:04:55  peterbrant
+ * Remove obsolete counter related code
+ *
  * Revision 1.82  2007/06/07 16:56:29  peterbrant
  * When vertically aligning table cell content, call layout again on cells as necessary to make sure pagination properties are respected at the cell's final position (and to make sure line boxes can't straddle page breaks).
  *

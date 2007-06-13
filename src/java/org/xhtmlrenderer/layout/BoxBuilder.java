@@ -81,7 +81,7 @@ public class BoxBuilder {
 
         ChildBoxInfo info = new ChildBoxInfo();
 
-        createChildren(c, parent, parent.getElement(), children, info, false, parent.getCounterScope());
+        createChildren(c, parent, parent.getElement(), children, info, false);
 
         boolean parentIsNestingTableContent = isNestingTableContent(parent.getStyle().getIdent(
                 CSSName.DISPLAY));
@@ -94,25 +94,6 @@ public class BoxBuilder {
             } else {
                 resolveChildTableContent(c, parent, children, info, IdentValue.TABLE_CELL);
             }
-        }
-    }
-    
-    private static CounterScope resolveCounterScope(CounterScope parent, CalculatedStyle style) {
-        List resets = style.getCounterReset();
-        List increments = style.getCounterIncrement();
-        
-        if (resets == null && increments == null) {
-            return parent;
-        } else {
-            CounterScope result = parent == null ? new CounterScope() : parent.copyOf();
-            if (resets != null) {
-                result.reset(parent, resets);
-            }
-            if (increments != null) {
-                result.increment(increments);
-            }
-            
-            return result;
         }
     }
 
@@ -535,8 +516,8 @@ public class BoxBuilder {
     }
     
     private static List createGeneratedInlineBoxes(
-            LayoutContext c, Element element, PropertyValue propValue, 
-            String peName, CounterScope currentCS) {
+            LayoutContext c, Element element,  
+            PropertyValue propValue, String peName) {
         List values = propValue.getValues();
         
         if (values == null) {
@@ -565,7 +546,7 @@ public class BoxBuilder {
                     
                     cFunc = makeCounterFunction(value.getFunction());
                     if (cFunc != null) {
-                        content = currentCS == null ? "0" : currentCS.value(cFunc.getCounterName());
+                        // XXX Delete me!
                     } else {
                         contentFunction =
                             c.getContentFunctionFactory().lookupFunction(c, value.getFunction());
@@ -600,10 +581,9 @@ public class BoxBuilder {
         return result;
     }
 
-    private static CounterScope insertGeneratedContent(
+    private static void insertGeneratedContent(
             LayoutContext c, Element element, CalculatedStyle parentStyle, 
-            String peName, List children, ChildBoxInfo info, CounterScope currentCS) {
-        CounterScope result = currentCS;
+            String peName, List children, ChildBoxInfo info) {
         CascadedStyle peStyle = c.getCss().getPseudoElementStyle(element, peName);
         if (peStyle != null) {
             PropertyDeclaration contentDecl = (PropertyDeclaration)peStyle.propertyByName(CSSName.CONTENT);
@@ -615,28 +595,23 @@ public class BoxBuilder {
                 calculatedStyle = parentStyle.deriveStyle(peStyle);
             }
             
-            result = resolveCounterScope(currentCS, calculatedStyle);
-            
             if (contentDecl != null) {
                 CSSPrimitiveValue propValue = contentDecl.getValue();
                 children.addAll(createGeneratedContent(c, element, peName, calculatedStyle,
-                        (PropertyValue) propValue, info, result));
+                        (PropertyValue) propValue, info));
             }
         }
-        
-        return result;
     }
     
     private static List createGeneratedContent(
             LayoutContext c, Element element, String peName, 
-            CalculatedStyle style, PropertyValue property, ChildBoxInfo info,
-            CounterScope currentCS) {
+            CalculatedStyle style, PropertyValue property, ChildBoxInfo info) {
         if (style.isDisplayNone() || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN)
                 || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN_GROUP)) {
             return Collections.EMPTY_LIST;
         }
 
-        List inlineBoxes = createGeneratedInlineBoxes(c, element, property, peName, currentCS);
+        List inlineBoxes = createGeneratedInlineBoxes(c, element, property, peName);
 
         if (style.isInline()) {
             for (Iterator i = inlineBoxes.iterator(); i.hasNext(); ) {
@@ -751,13 +726,12 @@ public class BoxBuilder {
 
     private static void createChildren(
             LayoutContext c, BlockBox blockParent, Element parent, 
-            List children, ChildBoxInfo info, boolean inline, CounterScope counterScope) {
+            List children, ChildBoxInfo info, boolean inline) {
         SharedContext sharedContext = c.getSharedContext();
 
         CalculatedStyle parentStyle = sharedContext.getStyle(parent);
-        CounterScope currentCS;
         
-        currentCS = insertGeneratedContent(c, parent, parentStyle, "before", children, info, counterScope);
+        insertGeneratedContent(c, parent, parentStyle, "before", children, info);
         
         Node working = parent.getFirstChild();
         boolean needStartText = inline;
@@ -794,8 +768,7 @@ public class BoxBuilder {
                             children.add(iB);
                             previousIB = iB;
                         }
-                        CounterScope inlineCS = resolveCounterScope(currentCS, style);
-                        createChildren(c, null, element, children, info, true, inlineCS);
+                        createChildren(c, null, element, children, info, true);
                         if (inline) {
                             if (previousIB != null) {
                                 previousIB.setEndsHere(false);
@@ -803,9 +776,7 @@ public class BoxBuilder {
                             needEndText = true;
                         }
                     } else {
-                        currentCS = resolveCounterScope(currentCS, style);
                         child = createBlockBox(style, info, false);
-                        ((BlockBox)child).setCounterScope(currentCS);
                         child.setStyle(style);
                         child.setElement(element);
                         
@@ -874,7 +845,7 @@ public class BoxBuilder {
             iB.setEndsHere(needEndText);
             children.add(iB);
         }
-        currentCS = insertGeneratedContent(c, parent, parentStyle, "after", children, info, currentCS);
+        insertGeneratedContent(c, parent, parentStyle, "after", children, info);
     }
 
     private static void insertAnonymousBlocks(SharedContext c, Box parent, List children) {
