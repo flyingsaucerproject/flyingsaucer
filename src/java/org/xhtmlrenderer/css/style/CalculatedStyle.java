@@ -189,7 +189,7 @@ public class CalculatedStyle {
     }
 
     private void resolveCounters() {
-
+        /*
         //first the explicitly named counters
         for (Iterator i = getCounterReset().iterator(); i.hasNext();) {
             CounterData cd = (CounterData) i.next();
@@ -212,6 +212,7 @@ public class CalculatedStyle {
         //clear the counter scope for children
         _counters.clear();
         _listItemCounter = 0;
+        */
     }
 
     /**
@@ -1233,6 +1234,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.94  2007/06/13 14:16:00  peterbrant
+ * Comment out body of resolveCounters() for now
+ *
  * Revision 1.93  2007/06/12 22:59:23  tobega
  * Handling counters is done. Now we just need to get the values appropriately.
  *
