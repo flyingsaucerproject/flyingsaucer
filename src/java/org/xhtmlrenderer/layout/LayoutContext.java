@@ -19,22 +19,22 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Rectangle;
-import java.util.LinkedList;
-
 import org.xhtmlrenderer.context.ContentFunctionFactory;
 import org.xhtmlrenderer.context.StyleReference;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.CounterData;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.extend.FontContext;
-import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.ReplacedElementFactory;
-import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.swing.RootPanel;
+
+import java.awt.Rectangle;
+import java.util.*;
 
 /**
  * This class tracks state which changes over the course of a layout run.
@@ -44,23 +44,23 @@ import org.xhtmlrenderer.swing.RootPanel;
  */
 public class LayoutContext implements CssContext {
     private SharedContext _sharedContext;
-    
+
     private Layer _rootLayer;
-    
+
     private StyleTracker _firstLines;
     private StyleTracker _firstLetters;
     private MarkerData _currentMarkerData;
-    
+
     private LinkedList _bfcs;
     private LinkedList _layers;
-    
+
     private FontContext _fontContext;
-    
+
     private ContentFunctionFactory _contentFunctionFactory = new ContentFunctionFactory();
-    
+
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
-    
+
     public TextRenderer getTextRenderer() {
         return _sharedContext.getTextRenderer();
     }
@@ -80,68 +80,68 @@ public class LayoutContext implements CssContext {
     public NamespaceHandler getNamespaceHandler() {
         return _sharedContext.getNamespaceHandler();
     }
-    
+
     //the stuff that needs to have a separate instance for each run.
     LayoutContext(SharedContext sharedContext) {
         _sharedContext = sharedContext;
         _bfcs = new LinkedList();
         _layers = new LinkedList();
-        
+
         _firstLines = new StyleTracker();
         _firstLetters = new StyleTracker();
     }
-    
+
     public void reInit() {
         _firstLines = new StyleTracker();
         _firstLetters = new StyleTracker();
         _currentMarkerData = null;
-        
+
         _bfcs = new LinkedList();
-        
+
         _extraSpaceTop = 0;
         _extraSpaceBottom = 0;
     }
-    
+
     public LayoutState captureLayoutState() {
         LayoutState result = new LayoutState();
-        
+
         result.setFirstLines(_firstLines);
         result.setFirstLetters(_firstLetters);
         result.setCurrentMarkerData(_currentMarkerData);
-        
+
         result.setBFCs(_bfcs);
-        
+
         return result;
     }
-    
+
     public void restoreLayoutState(LayoutState layoutState) {
         _firstLines = layoutState.getFirstLines();
         _firstLetters = layoutState.getFirstLetters();
-        
+
         _currentMarkerData = layoutState.getCurrentMarkerData();
-        
+
         _bfcs = layoutState.getBFCs();
     }
-    
+
     public LayoutState copyStateForRelayout() {
         LayoutState result = new LayoutState();
-        
+
         result.setFirstLetters(_firstLetters.copyOf());
         result.setFirstLines(_firstLines.copyOf());
         result.setCurrentMarkerData(_currentMarkerData);
-        
+
         return result;
     }
-    
+
     public void restoreStateForRelayout(LayoutState layoutState) {
         _firstLines = layoutState.getFirstLines();
         _firstLetters = layoutState.getFirstLetters();
-        
+
         _currentMarkerData = layoutState.getCurrentMarkerData();
     }
 
     public BlockFormattingContext getBlockFormattingContext() {
-        return (BlockFormattingContext)_bfcs.getLast();
+        return (BlockFormattingContext) _bfcs.getLast();
     }
 
     public void pushBFC(BlockFormattingContext bfc) {
@@ -151,46 +151,46 @@ public class LayoutContext implements CssContext {
     public void popBFC() {
         _bfcs.removeLast();
     }
-    
+
     public void pushLayer(Box master) {
         Layer layer = null;
-        
+
         if (_rootLayer == null) {
             layer = new Layer(master);
             _rootLayer = layer;
         } else {
             Layer parent = getLayer();
-            
+
             if (master.getStyle().isAlternateFlow()) {
                 while (parent.getParent() != null) {
                     parent = parent.getParent();
                 }
             }
-            
+
             layer = new Layer(parent, master);
 
             parent.addChild(layer);
         }
-    
+
         pushLayer(layer);
     }
-    
+
     public void pushLayer(Layer layer) {
         _layers.add(layer);
     }
-    
+
     public void popLayer() {
         Layer layer = getLayer();
 
         layer.finish(this);
-        
+
         _layers.removeLast();
     }
-    
+
     public Layer getLayer() {
-        return (Layer)_layers.getLast();
+        return (Layer) _layers.getLast();
     }
-    
+
     public Layer getRootLayer() {
         return _rootLayer;
     }
@@ -203,11 +203,11 @@ public class LayoutContext implements CssContext {
     public void addBoxId(String id, Box box) {
         _sharedContext.addBoxId(id, box);
     }
-    
+
     public void removeBoxId(String id) {
         _sharedContext.removeBoxId(id);
     }
-    
+
     public boolean isInteractive() {
         return _sharedContext.isInteractive();
     }
@@ -215,7 +215,7 @@ public class LayoutContext implements CssContext {
     public float getMmPerDot() {
         return _sharedContext.getMmPerPx();
     }
-    
+
     public int getDotsPerPixel() {
         return _sharedContext.getDotsPerPixel();
     }
@@ -243,7 +243,7 @@ public class LayoutContext implements CssContext {
     public StyleTracker getFirstLinesTracker() {
         return _firstLines;
     }
-    
+
     public StyleTracker getFirstLettersTracker() {
         return _firstLetters;
     }
@@ -267,11 +267,11 @@ public class LayoutContext implements CssContext {
     public void setFontContext(FontContext fontContext) {
         _fontContext = fontContext;
     }
-    
+
     public ContentFunctionFactory getContentFunctionFactory() {
         return _contentFunctionFactory;
     }
-    
+
     public SharedContext getSharedContext() {
         return _sharedContext;
     }
@@ -290,5 +290,121 @@ public class LayoutContext implements CssContext {
 
     public void setExtraSpaceTop(int extraSpaceTop) {
         _extraSpaceTop = extraSpaceTop;
+    }
+
+    public void resolveCounters(CalculatedStyle style) {
+        //new context for child elements
+        CounterContext cc = new CounterContext(style);
+        counterContextMap.put(style, cc);
+    }
+
+    public CounterContext getCounterContext(CalculatedStyle style) {
+        return (CounterContext) counterContextMap.get(style);
+    }
+
+    private Map counterContextMap = new HashMap();
+
+    public class CounterContext {
+        private Map _counters = new HashMap();
+        /**
+         * This is different because it needs to work even when the counter- properties cascade
+         * and it should also logically be redefined on each level (think list-items within list-items)
+         */
+        private int _listItemCounter = 0;
+
+        private CounterContext _parent;
+
+        /**
+         * A CounterContext should really be reflected in the element hierarchy, but CalculatedStyles
+         * reflect the ancestor hierarchy just as well and also handles pseudo-elements seamlessly.
+         *
+         * @param style
+         */
+        CounterContext(CalculatedStyle style) {
+            _parent = (LayoutContext.CounterContext) counterContextMap.get(style.getParent());
+            if (_parent == null) _parent = new CounterContext();//top-level context, above root element
+            //first the explicitly named counters
+            List resets = style.getCounterReset();
+            if (resets != null) for (Iterator i = resets.iterator(); i.hasNext();) {
+                CounterData cd = (CounterData) i.next();
+                _parent.resetCounter(cd);
+            }
+
+            List increments = style.getCounterIncrement();
+            if (increments != null) for (Iterator i = increments.iterator(); i.hasNext();) {
+                CounterData cd = (CounterData) i.next();
+                if (!_parent.incrementCounter(cd)) {
+                    _parent.resetCounter(new CounterData(cd.getName(), 0));
+                    _parent.incrementCounter(cd);
+                }
+            }
+
+            //then the implicit list-item counter
+            if (style.isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM)) {
+                _parent.incrementListItemCounter(1);
+            }
+        }
+
+        private CounterContext() {
+
+        }
+
+        /**
+         * @param cd
+         * @return true if a counter was found and incremented
+         */
+        private boolean incrementCounter(CounterData cd) {
+            if ("list-item".equals(cd.getName())) {//reserved name for list-item counter in CSS3
+                incrementListItemCounter(cd.getValue());
+                return true;
+            } else {
+                Integer currentValue = (Integer) _counters.get(cd.getName());
+                if (currentValue == null) {
+                    if (_parent == null) return false;
+                    return _parent.incrementCounter(cd);
+                } else {
+                    _counters.put(cd.getName(), new Integer(currentValue.intValue() + cd.getValue()));
+                    return true;
+                }
+            }
+        }
+
+        private void incrementListItemCounter(int increment) {
+            _listItemCounter += increment;
+        }
+
+        private void resetCounter(CounterData cd) {
+            if ("list-item".equals(cd.getName())) {//reserved name for list-item counter in CSS3
+                _listItemCounter = cd.getValue();
+            } else {
+                _counters.put(cd.getName(), new Integer(cd.getValue()));
+            }
+        }
+
+        public int getCurrentCounterValue(String name) {
+            //only the counters of the parent are in scope
+            //_parent is never null for a publicly accessible CounterContext
+            if ("list-item".equals(name)) {//reserved name for list-item counter in CSS3
+                return _parent.getListItemCounter();
+            }
+            Integer value = _parent.getCounter(name);
+            if (value == null) {
+                _parent.resetCounter(new CounterData(name, 0));
+                return 0;
+            } else {
+                return value.intValue();
+            }
+        }
+
+        private int getListItemCounter() {
+            return _listItemCounter;
+        }
+
+        private Integer getCounter(String name) {
+            Integer value = (Integer) _counters.get(name);
+            if (value != null) return value;
+            if (_parent == null) return null;
+            return _parent.getCounter(name);
+        }
     }
 }

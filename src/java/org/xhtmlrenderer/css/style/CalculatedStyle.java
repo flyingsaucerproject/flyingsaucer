@@ -23,7 +23,6 @@ package org.xhtmlrenderer.css.style;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.parser.CounterData;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
@@ -106,12 +105,6 @@ public class CalculatedStyle {
      * The derived Font for this style
      */
     private FontSpecification _font;
-    private Map _counters = new HashMap();
-    /**
-     * This is different because it needs to work even when the counter- properties cascade
-     * and it should also logically be redefined on each level (think list-items within list-items)
-     */
-    private int _listItemCounter;
 
 
     /**
@@ -184,67 +177,7 @@ public class CalculatedStyle {
             cs = new CalculatedStyle(this, matched);
             _childCache.put(fingerprint, cs);
         }
-        cs.resolveCounters();
         return cs;
-    }
-
-    private void resolveCounters() {
-        /*
-        //first the explicitly named counters
-        for (Iterator i = getCounterReset().iterator(); i.hasNext();) {
-            CounterData cd = (CounterData) i.next();
-            _parent.resetCounter(cd);
-        }
-
-        for (Iterator i = getCounterIncrement().iterator(); i.hasNext();) {
-            CounterData cd = (CounterData) i.next();
-            if (!_parent.incrementCounter(cd)) {
-                _parent.resetCounter(new CounterData(cd.getName(), 0));
-                _parent.incrementCounter(cd);
-            }
-        }
-
-        //then the implicit list-item counter
-        if (isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM)) {
-            _parent.incrementListItemCounter(1);
-        }
-
-        //clear the counter scope for children
-        _counters.clear();
-        _listItemCounter = 0;
-        */
-    }
-
-    /**
-     * @param cd
-     * @return true if a counter was found and incremented
-     */
-    private boolean incrementCounter(CounterData cd) {
-        if ("list-item".equals(cd.getName())) {//reserved name for list-item counter in CSS3
-            incrementListItemCounter(cd.getValue());
-            return true;
-        } else {
-            Integer currentValue = (Integer) _counters.get(cd.getName());
-            if (currentValue == null) {
-                if (_parent == null) return false;
-                return _parent.incrementCounter(cd);
-            } else {
-                _counters.put(cd.getName(), new Integer(currentValue.intValue() + cd.getValue()));
-                return true;
-            }
-        }
-    }
-
-    private void incrementListItemCounter(int increment) {
-        _listItemCounter += increment;
-    }
-
-    private void resetCounter(CounterData cd) {
-        if ("list-item".equals(cd.getName())) {//reserved name for list-item counter in CSS3
-            _listItemCounter = cd.getValue();
-        } else {
-            _counters.put(cd.getName(), new Integer(cd.getValue()));
-        }
     }
 
     public int countAssigned() {
@@ -1234,6 +1167,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.95  2007/06/14 22:39:31  tobega
+ * Handling counters in LayoutContext instead. We still need to get the value from the counter function and change list-item counting.
+ *
  * Revision 1.94  2007/06/13 14:16:00  peterbrant
  * Comment out body of resolveCounters() for now
  *
