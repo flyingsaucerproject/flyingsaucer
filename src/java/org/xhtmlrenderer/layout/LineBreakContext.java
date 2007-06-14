@@ -32,6 +32,7 @@ public class LineBreakContext {
     private boolean _unbreakable;
     private boolean _needsNewLine;
     private int _width;
+    private boolean _endsOnNL;
     
     public int getLast() {
         return _master.length();
@@ -109,5 +110,13 @@ public class LineBreakContext {
     
     public void saveEnd() {
         _savedEnd = _end;
+    }
+
+    public boolean isEndsOnNL() {
+        return _endsOnNL;
+    }
+
+    public void setEndsOnNL(boolean b) {
+        _endsOnNL = b;
     }
 }

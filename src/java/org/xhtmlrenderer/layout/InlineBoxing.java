@@ -170,8 +170,10 @@ public class InlineBoxing {
 
                     if (hasTrimmableLeadingSpace(
                             currentLine, style, lbContext, zeroWidthInlineBlock)) {
-                        lbContext.setStart(lbContext.getStart() + 1);
+                        trimLeadingSpace(lbContext);
                     }
+                    
+                    lbContext.setEndsOnNL(false);
                     
                     zeroWidthInlineBlock = false;
                     
@@ -837,11 +839,22 @@ public class InlineBoxing {
         if ((! line.isContainsContent() || zeroWidthInlineBlock) && 
                 lbContext.getStartSubstring().startsWith(WhitespaceStripper.SPACE)) {
             IdentValue whitespace = style.getWhitespace();
-            if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
+            if ( (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP 
+                        || whitespace == IdentValue.PRE_LINE) ||
+                    ( whitespace == IdentValue.PRE_WRAP && ! lbContext.isEndsOnNL())) {
                 return true;
             }
         }
         return false;
+    }
+    
+    private static void trimLeadingSpace(LineBreakContext lbContext) {
+        String s = lbContext.getStartSubstring();
+        int i = 0;
+        while (i < s.length() && s.charAt(i) == ' ') {
+            i++;
+        }
+        lbContext.setStart(lbContext.getStart() + i);
     }
 
     private static LineBox newLine(LayoutContext c, LineBox previousLine, Box box) {

@@ -88,6 +88,7 @@ public class Breaker {
                 context.setWidth(c.getTextRenderer().getWidth(
                         c.getFontContext(), font, context.getCalculatedSubstring()));
                 context.setNeedsNewLine(true);
+                context.setEndsOnNL(true);
             } else if (whitespace == IdentValue.PRE) {
             	context.setEnd(context.getLast());
                 context.setWidth(c.getTextRenderer().getWidth(
@@ -96,9 +97,12 @@ public class Breaker {
         }
 
         //check if we may wrap
-        if (whitespace == IdentValue.PRE) {
+        if (whitespace == IdentValue.PRE || 
+                (context.isNeedsNewLine() && context.getWidth() <= avail)) {
             return;
         }
+        
+        context.setEndsOnNL(false);
 
         String currentString = context.getStartSubstring();
         int left = 0;

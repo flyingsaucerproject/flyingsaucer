@@ -156,8 +156,11 @@ public class WhitespaceStripper {
             text = linefeed_to_space.matcher(text).replaceAll(SPACE);
             text = tab_to_space.matcher(text).replaceAll(SPACE);
             text = space_collapse.matcher(text).replaceAll(SPACE);
-        } else if (whitespace == IdentValue.PRE) { // not correct, should treat as 8 space tab stops
+        } else if (whitespace == IdentValue.PRE || whitespace == IdentValue.PRE_WRAP) { // not correct, should treat as 8 space tab stops
             text = tab_to_space.matcher(text).replaceAll(SPACE);
+        } else if (whitespace == IdentValue.PRE_LINE) {
+            text = tab_to_space.matcher(text).replaceAll(SPACE);
+            text = space_collapse.matcher(text).replaceAll(SPACE);
         }
 
         if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
