@@ -461,38 +461,68 @@ public class BoxBuilder {
         return false;
     }
 
-    private static CounterFunction makeCounterFunction(FSFunction function) {
-        return null;
-        /*
-        CounterFunction result = null;
+    private static CounterFunction makeCounterFunction(FSFunction function, LayoutContext c, CalculatedStyle style) {
         if (function.getName().equals("counter")) {
-            result = new CounterFunction();
             List params = function.getParameters();
             if (params.size() < 1 || params.size() > 2) {
                 return null;
             }
 
-            PropertyValue value = (PropertyValue)params.get(0);
+            PropertyValue value = (PropertyValue) params.get(0);
             if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                 return null;
             }
 
-            result.setCounterName(value.getStringValue());
-
+            String counter = value.getStringValue();
+            IdentValue listStyleType = IdentValue.DECIMAL;
             if (params.size() == 2) {
-                value = (PropertyValue)params.get(1);
+                value = (PropertyValue) params.get(1);
                 if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                     return null;
                 }
 
-                // TODO set list-style-type (and check it for correctness)
+                listStyleType = value.getIdentValue();
             }
 
-            return result;
-        }
+            int counterValue = c.getCounterContext(style).getCurrentCounterValue(counter);
 
-        return result;
-        */
+            return new CounterFunction(counterValue, listStyleType);
+        } else if (function.getName().equals("counters")) {
+            List params = function.getParameters();
+            if (params.size() < 2 || params.size() > 3) {
+                return null;
+            }
+
+            PropertyValue value = (PropertyValue) params.get(0);
+            if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
+                return null;
+            }
+
+            String counter = value.getStringValue();
+
+            value = (PropertyValue) params.get(1);
+            if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_STRING) {
+                return null;
+            }
+
+            String separator = value.getStringValue();
+
+            IdentValue listStyleType = IdentValue.DECIMAL;
+            if (params.size() == 3) {
+                value = (PropertyValue) params.get(2);
+                if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
+                    return null;
+                }
+
+                listStyleType = value.getIdentValue();
+            }
+
+            List counterValues = c.getCounterContext(style).getCurrentCounterValues(counter);
+
+            return new CounterFunction(counterValues, separator, listStyleType);
+        } else {
+            return null;
+        }
     }
 
     private static String getAttributeValue(FSFunction attrFunc, Element e) {
@@ -502,7 +532,7 @@ public class BoxBuilder {
 
     private static List createGeneratedInlineBoxes(
             LayoutContext c, Element element,
-            PropertyValue propValue, String peName) {
+            PropertyValue propValue, String peName, CalculatedStyle style) {
         List values = propValue.getValues();
 
         if (values == null) {
@@ -529,9 +559,12 @@ public class BoxBuilder {
                 } else {
                     CounterFunction cFunc;
 
-                    cFunc = makeCounterFunction(value.getFunction());
+                    cFunc = makeCounterFunction(value.getFunction(), c, style);
                     if (cFunc != null) {
-                        // XXX Delete me!
+                        //TODO: counter functions may be called with non-ordered list-style-types, e.g. disc
+                        content = cFunc.evaluate();
+                        contentFunction = null;
+                        function = null;
                     } else {
                         contentFunction =
                                 c.getContentFunctionFactory().lookupFunction(c, value.getFunction());
@@ -578,6 +611,10 @@ public class BoxBuilder {
             CalculatedStyle calculatedStyle = null;
             if (contentDecl != null || counterResetDecl != null || counterIncrDecl != null) {
                 calculatedStyle = parentStyle.deriveStyle(peStyle);
+                if (calculatedStyle.isDisplayNone()) return;
+                if (calculatedStyle.isIdent(CSSName.CONTENT, IdentValue.NONE)) return;
+                if (calculatedStyle.isIdent(CSSName.CONTENT, IdentValue.NORMAL) && (peName.equals("before") || peName.equals("after")))
+                    return;
                 c.resolveCounters(calculatedStyle);
             }
 
@@ -597,7 +634,7 @@ public class BoxBuilder {
             return Collections.EMPTY_LIST;
         }
 
-        List inlineBoxes = createGeneratedInlineBoxes(c, element, property, peName);
+        List inlineBoxes = createGeneratedInlineBoxes(c, element, property, peName, style);
 
         if (style.isInline()) {
             for (Iterator i = inlineBoxes.iterator(); i.hasNext();) {
@@ -729,11 +766,12 @@ public class BoxBuilder {
                 if (working.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) working;
                     CalculatedStyle style = sharedContext.getStyle(element);
-                    c.resolveCounters(style);
 
                     if (style.isDisplayNone()) {
                         continue;
                     }
+
+                    c.resolveCounters(style);
 
                     if (style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN)
                             || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN_GROUP)) {
@@ -766,6 +804,10 @@ public class BoxBuilder {
                         child = createBlockBox(style, info, false);
                         child.setStyle(style);
                         child.setElement(element);
+                        if (style.isListItem()) {
+                            BlockBox block = (BlockBox) child;
+                            block.setListCounter(c.getCounterContext(style).getCurrentCounterValue("list-item"));
+                        }
 
                         if (style.isTable() || style.isInlineTable()) {
                             TableBox table = (TableBox) child;

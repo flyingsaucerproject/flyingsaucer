@@ -21,26 +21,81 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 
+import java.util.Iterator;
+import java.util.List;
+
 public class CounterFunction {
-    private String _counterName;
     private IdentValue _listStyleType;
-    
-    public CounterFunction() {
-    }
-    
-    public String getCounterName() {
-        return _counterName;
-    }
-    
-    public void setCounterName(String counterName) {
-        _counterName = counterName;
-    }
-    
-    public IdentValue getListStyleType() {
-        return _listStyleType;
-    }
-    
-    public void setListStyleType(IdentValue listStyleType) {
+    private int _counterValue;
+    private List _counterValues;
+    private String _separator;
+
+    public CounterFunction(int counterValue, IdentValue listStyleType) {
+        _counterValue = counterValue;
         _listStyleType = listStyleType;
+    }
+
+    public CounterFunction(List counterValues, String separator, IdentValue listStyleType) {
+        _counterValues = counterValues;
+        _separator = separator;
+        _listStyleType = listStyleType;
+    }
+
+    public String evaluate() {
+        if (_counterValues == null) {
+            return createCounterText(_listStyleType, _counterValue);
+        }
+        StringBuffer sb = new StringBuffer();
+        for (Iterator i = _counterValues.iterator(); i.hasNext();) {
+            Integer value = (Integer) i.next();
+            sb.append(value);
+            if (i.hasNext()) sb.append(_separator);
+        }
+        return sb.toString();
+    }
+
+    public static String createCounterText(IdentValue listStyle, int listCounter) {
+        String text;
+        if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
+            text = toLatin(listCounter).toLowerCase();
+        } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
+            text = toLatin(listCounter).toUpperCase();
+        } else if (listStyle == IdentValue.LOWER_ROMAN) {
+            text = toRoman(listCounter).toLowerCase();
+        } else if (listStyle == IdentValue.UPPER_ROMAN) {
+            text = toRoman(listCounter).toUpperCase();
+        } else if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
+            text = (listCounter >= 10 ? "" : "0") + listCounter;
+        } else if (listStyle == IdentValue.DECIMAL) {
+            text = Integer.toString(listCounter);
+        } else {
+            text = Integer.toString(listCounter);
+        }
+        return text;
+    }
+
+
+    private static String toLatin(int val) {
+        String result = "";
+        while (val > 0) {
+            int letter = val % 26;
+            val = val / 26;
+            result = ((char) (letter + 64)) + result;
+        }
+        return result;
+    }
+
+    private static String toRoman(int val) {
+        int[] ints = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < ints.length; i++) {
+            int count = (int) (val / ints[i]);
+            for (int j = 0; j < count; j++) {
+                sb.append(nums[i]);
+            }
+            val -= ints[i] * count;
+        }
+        return sb.toString();
     }
 }

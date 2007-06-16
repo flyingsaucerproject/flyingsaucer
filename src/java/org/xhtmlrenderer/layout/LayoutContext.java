@@ -310,8 +310,6 @@ public class LayoutContext implements CssContext {
          * This is different because it needs to work even when the counter- properties cascade
          * and it should also logically be redefined on each level (think list-items within list-items)
          */
-        private int _listItemCounter = 0;
-
         private CounterContext _parent;
 
         /**
@@ -370,23 +368,20 @@ public class LayoutContext implements CssContext {
         }
 
         private void incrementListItemCounter(int increment) {
-            _listItemCounter += increment;
+            Integer currentValue = (Integer) _counters.get("list-item");
+            if (currentValue == null) {
+                currentValue = new Integer(0);
+            }
+            _counters.put("list-item", new Integer(currentValue.intValue() + increment));
         }
 
         private void resetCounter(CounterData cd) {
-            if ("list-item".equals(cd.getName())) {//reserved name for list-item counter in CSS3
-                _listItemCounter = cd.getValue();
-            } else {
-                _counters.put(cd.getName(), new Integer(cd.getValue()));
-            }
+            _counters.put(cd.getName(), new Integer(cd.getValue()));
         }
 
         public int getCurrentCounterValue(String name) {
             //only the counters of the parent are in scope
             //_parent is never null for a publicly accessible CounterContext
-            if ("list-item".equals(name)) {//reserved name for list-item counter in CSS3
-                return _parent.getListItemCounter();
-            }
             Integer value = _parent.getCounter(name);
             if (value == null) {
                 _parent.resetCounter(new CounterData(name, 0));
@@ -396,15 +391,29 @@ public class LayoutContext implements CssContext {
             }
         }
 
-        private int getListItemCounter() {
-            return _listItemCounter;
-        }
-
         private Integer getCounter(String name) {
             Integer value = (Integer) _counters.get(name);
             if (value != null) return value;
             if (_parent == null) return null;
             return _parent.getCounter(name);
+        }
+
+        public List getCurrentCounterValues(String name) {
+            //only the counters of the parent are in scope
+            //_parent is never null for a publicly accessible CounterContext
+            List values = new ArrayList();
+            _parent.getCounterValues(name, values);
+            if (values.size() == 0) {
+                _parent.resetCounter(new CounterData(name, 0));
+                values.add(new Integer(0));
+            }
+            return values;
+        }
+
+        private void getCounterValues(String name, List values) {
+            if (_parent != null) _parent.getCounterValues(name, values);
+            Integer value = (Integer) _counters.get(name);
+            if (value != null) values.add(value);
         }
     }
 }
