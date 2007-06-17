@@ -57,7 +57,9 @@ public class BoxBuilder {
 
         BlockBox result = new BlockBox();
         result.setElement(root);
-        result.setStyle(c.getSharedContext().getStyle(root));
+        CalculatedStyle style = c.getSharedContext().getStyle(root);
+        result.setStyle(style);
+        c.resolveCounters(style);
 
         return result;
     }
