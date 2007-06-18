@@ -46,14 +46,16 @@ public class ImageReplacedElement implements ReplacedElement {
      * @param targetHeight The height we'd like the image to have, in pixels.
      */
     public ImageReplacedElement(Image image, int targetWidth, int targetHeight) {
-        if (targetWidth != -1 || targetHeight != -1) {
+		if (targetWidth > 0 || targetHeight > 0) {
             int w = image.getWidth(null);
             int h = image.getHeight(null);
-            if (w != targetWidth || h != targetHeight) {
+			int newW = targetWidth > 0 ? targetWidth : w;
+			int newH = targetHeight > 0 ? targetHeight : h;
+			if (w != newW || h != newH) {
                 if (image instanceof BufferedImage) {
-                    image = ImageUtil.getScaledInstance((BufferedImage) image, targetWidth, targetHeight);
+                    image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
                 } else {
-                    image = image.getScaledInstance(targetWidth, targetHeight, Image.SCALE_FAST);
+                    image = image.getScaledInstance(newW, newH, Image.SCALE_FAST);
                 }
             }
         }
