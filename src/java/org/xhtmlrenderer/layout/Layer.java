@@ -196,11 +196,12 @@ public class Layer {
             }
 
             if (target.isStackingContext()) {
-                if (which == NEGATIVE && target.getZIndex() < 0) {
+                int zIndex = target.getZIndex();
+                if (which == NEGATIVE && zIndex < 0) {
                     result.add(target);
-                } else if (which == POSITIVE && target.getZIndex() > 0) {
+                } else if (which == POSITIVE && zIndex > 0) {
                     result.add(target);
-                } else if (which == ZERO) {
+                } else if (which == ZERO && zIndex == 0) {
                     result.add(target);
                 }
             }
