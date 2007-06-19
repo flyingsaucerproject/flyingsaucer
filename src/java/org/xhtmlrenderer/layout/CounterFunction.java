@@ -48,7 +48,7 @@ public class CounterFunction {
         StringBuffer sb = new StringBuffer();
         for (Iterator i = _counterValues.iterator(); i.hasNext();) {
             Integer value = (Integer) i.next();
-            sb.append(value);
+            sb.append(createCounterText(_listStyleType, value.intValue()));
             if (i.hasNext()) sb.append(_separator);
         }
         return sb.toString();

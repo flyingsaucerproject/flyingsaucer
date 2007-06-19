@@ -483,7 +483,11 @@ public class BoxBuilder {
                     return null;
                 }
 
-                listStyleType = value.getIdentValue();
+                IdentValue identValue = IdentValue.valueOf(value.getStringValue());
+                if (identValue != null) {
+                    value.setIdentValue(identValue);
+                    listStyleType = identValue;
+                }
             }
 
             int counterValue = c.getCounterContext(style).getCurrentCounterValue(counter);
@@ -516,7 +520,11 @@ public class BoxBuilder {
                     return null;
                 }
 
-                listStyleType = value.getIdentValue();
+                IdentValue identValue = IdentValue.valueOf(value.getStringValue());
+                if (identValue != null) {
+                    value.setIdentValue(identValue);
+                    listStyleType = identValue;
+                }
             }
 
             List counterValues = c.getCounterContext(style).getCurrentCounterValues(counter);
