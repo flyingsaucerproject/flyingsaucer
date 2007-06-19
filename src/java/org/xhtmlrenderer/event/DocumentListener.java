@@ -24,11 +24,18 @@ package org.xhtmlrenderer.event;
  * document and layout events.
  */
 public interface DocumentListener {
+	/**
+	 * Indicates document has been requested (e.g. a new document is going to be loaded).  This will be called
+	 * before any activity takes place for the document.
+	 */
+	void documentStarted();
+
     /**
-     * Indicates document layout has completed.  This will be called on every layout
+     * Indicates document layout has complete, e.g. document is fully "loaded" for display; this is not a
+	 * callback for the document source (e.g. XML) being loaded.  This method will be called on every layout
      * run (including, for example, after panel resizes).
      */
-    public void documentLoaded();
+    void documentLoaded();
     
     /**
      * Called when document layout failed with an exception.  All <code>Throwable</code>
@@ -37,7 +44,7 @@ public interface DocumentListener {
      * has been defined an XHTML panel, the listener is entirely responsibile for
      * handling the exception.  No other action will be taken.
      */
-    public void onLayoutException(Throwable t);
+    void onLayoutException(Throwable t);
     
     /**
      * Called when document render failed with an exception.  All <code>Throwable</code>
@@ -46,13 +53,17 @@ public interface DocumentListener {
      * has been defined an XHTML panel, the listener is entirely responsibile for
      * handling the exception.  No other action will be taken.
      */
-    public void onRenderException(Throwable t);
+    void onRenderException(Throwable t);
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2007/06/19 21:25:58  pdoubleya
+ * Add document start event
+ *
  * Revision 1.5  2007/04/03 13:38:13  peterbrant
  * Javadoc clarification
  *

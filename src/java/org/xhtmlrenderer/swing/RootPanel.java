@@ -63,7 +63,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     private boolean pendingResize = false;
 
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
-        resetScrollPosition();
+		fireDocumentStarted();
+		resetScrollPosition();
         setRootBox(null);
         this.doc = doc;
 
@@ -331,6 +332,14 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             }
         }
     }
+
+	protected void fireDocumentStarted() {
+		Iterator it = this.documentListeners.keySet().iterator();
+		while (it.hasNext()) {
+			DocumentListener list = (DocumentListener) it.next();
+			list.documentStarted();
+		}
+	}
 
     protected void fireDocumentLoaded() {
         Iterator it = this.documentListeners.keySet().iterator();
