@@ -39,8 +39,6 @@ public class BorderPropertySet extends RectPropertySet {
         this._rightColor = border.rightColor();
         this._bottomColor = border.bottomColor();
         this._leftColor = border.leftColor();
-
-        this._key = border._key;
     }
 
     public BorderPropertySet(
@@ -53,8 +51,6 @@ public class BorderPropertySet extends RectPropertySet {
         this._right = right;
         this._bottom = bottom;
         this._left = left;
-
-        this.buildKey(CSSName.BORDER_SHORTHAND);
     }
     
     public BorderPropertySet(
@@ -109,8 +105,6 @@ public class BorderPropertySet extends RectPropertySet {
         _rightStyle = style.getIdent(CSSName.BORDER_RIGHT_STYLE);
         _bottomStyle = style.getIdent(CSSName.BORDER_BOTTOM_STYLE);
         _leftStyle = style.getIdent(CSSName.BORDER_LEFT_STYLE);
-
-        this._key = deriveKey(style);
     }
 
     /**
@@ -125,7 +119,6 @@ public class BorderPropertySet extends RectPropertySet {
         bc._bottomColor = lightenColor(_bottomColor);
         bc._leftColor = lightenColor(_leftColor);
         bc._rightColor = lightenColor(_rightColor);
-        bc.buildKey(CSSName.BORDER_SHORTHAND);
 
         return bc;
     }
@@ -159,7 +152,6 @@ public class BorderPropertySet extends RectPropertySet {
         bc._bottomColor = darkenColor(_bottomColor);
         bc._leftColor = darkenColor(_leftColor);
         bc._rightColor = darkenColor(_rightColor);
-        bc.buildKey(CSSName.BORDER_SHORTHAND);
         return bc;
     }
     
@@ -187,30 +179,8 @@ public class BorderPropertySet extends RectPropertySet {
         return new BorderPropertySet(style, ctx);
     }
 
-    public static String deriveKey(CalculatedStyle style) {
-        String key = null;
-        CSSName[] sides = CSSName.BORDER_SIDE_PROPERTIES;
-        CSSName[] styles = CSSName.BORDER_STYLE_PROPERTIES;
-        CSSName[] colors = CSSName.BORDER_COLOR_PROPERTIES;
-        key = new StringBuffer()
-                .append(style.asString(sides[0]))
-                .append(style.getIdent(styles[0]))
-                .append(style.asColor(colors[0]))
-                .append(style.asString(sides[1]))
-                .append(style.getIdent(styles[1]))
-                .append(style.asColor(colors[1]))
-                .append(style.asString(sides[2]))
-                .append(style.getIdent(styles[2]))
-                .append(style.asColor(colors[2]))
-                .append(style.asString(sides[3]))
-                .append(style.getIdent(styles[3]))
-                .append(style.asColor(colors[3]))
-                .toString();
-        return key;
-    }
-
     public String toString() {
-        return getPropertyIdentifier();
+        return "BorderPropertySet[top=" + _top + ",right=" + _right + ",bottom=" + _bottom + ",left=" + _left + "]";
     }
 
     public boolean noTop() {
@@ -259,10 +229,6 @@ public class BorderPropertySet extends RectPropertySet {
 
     public Color leftColor() {
         return _leftColor;
-    }
-
-    protected void buildKey(CSSName name) {
-        this._key = new StringBuffer().toString();
     }
 }
 

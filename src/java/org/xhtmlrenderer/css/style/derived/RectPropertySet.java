@@ -3,8 +3,6 @@ package org.xhtmlrenderer.css.style.derived;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.css.style.FSDerivedValue;
-
 
 /**
  * Represents a set of CSS properties that together define
@@ -14,7 +12,6 @@ public class RectPropertySet {
     //                                                                  HACK
     public static final RectPropertySet ALL_ZEROS = new RectPropertySet(CSSName.MARGIN_SHORTHAND, 0, 0, 0, 0);
     
-    protected String _key;
     protected float _top;
     protected float _right;
     protected float _bottom;
@@ -36,7 +33,6 @@ public class RectPropertySet {
         this._right = right;
         this._bottom = bottom;
         this._left = left;
-        this.buildKey(cssName);
     }
 
     public static RectPropertySet newInstance(
@@ -59,7 +55,7 @@ public class RectPropertySet {
     }
 
     public String toString() {
-        return getPropertyIdentifier();
+        return "RectPropertySet[top=" + _top + ",right=" + _right + ",bottom=" + _bottom + ",left=" + _left + "]";
     }
 
     public float top() {
@@ -90,10 +86,6 @@ public class RectPropertySet {
         return _left + _right;
     }
 
-    public String getPropertyIdentifier() {
-        return _key;
-    }
-
     public void setTop(float _top) {
         this._top = _top;
     }
@@ -110,31 +102,6 @@ public class RectPropertySet {
         this._left = _left;
     }
 
-    public static String deriveKey(
-            CalculatedStyle style,
-            CSSName[] sideProperties
-    ) {
-        String key = null;
-        boolean isAbs = true;
-        for (int i = 0; i < sideProperties.length && isAbs; i++) {
-            FSDerivedValue value = style.valueByName(sideProperties[i]);
-            isAbs = 
-                (value instanceof LengthValue || value instanceof NumberValue) &&
-                value.hasAbsoluteUnit() && 
-                ! value.isDependentOnFontSize();
-        }
-        
-        if (isAbs) {
-            key = new StringBuffer()
-                    .append(style.asString(sideProperties[0]))
-                    .append(style.asString(sideProperties[1]))
-                    .append(style.asString(sideProperties[2]))
-                    .append(style.asString(sideProperties[3]))
-                    .toString();
-        }
-        return key;
-    }
-
     public RectPropertySet copyOf() {
         RectPropertySet newRect = new RectPropertySet();
         newRect._top = _top;
@@ -143,15 +110,27 @@ public class RectPropertySet {
         newRect._left = _left;
         return newRect;
     }
-
-    protected void buildKey(CSSName name) {
-        this._key = new StringBuffer()
-                .append(name.toString() + ": ")
-                .append(_top + "px ")
-                .append(_right + "px ")
-                .append(_bottom + "px ")
-                .append(_left + "px ")
-                .append(";")
-                .toString();
+    
+    public boolean isAllZeros() {
+        return _top == 0.0f && _right == 0.0f && _bottom == 0.0f && _left == 0.0f;
+    }
+    
+    public boolean hasNegativeValues() {
+        return _top < 0 || _right < 0 || _bottom < 0 || _left < 0;
+    }
+    
+    public void resetNegativeValues() {
+        if (top() < 0) {
+            setTop(0);
+        }
+        if (right() < 0) {
+            setRight(0);
+        }
+        if (bottom() < 0) {
+            setBottom(0);
+        }
+        if (left() < 0) {
+            setLeft(0);
+        }
     }
 }
