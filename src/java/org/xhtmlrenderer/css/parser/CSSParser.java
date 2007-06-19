@@ -1488,6 +1488,7 @@ public class CSSParser {
     public void reset(Reader r) {
         _saved = null;
         _lexer.yyreset(r);
+        _lexer.setyyline(0);
     }
 
     public CSSErrorHandler getErrorHandler() {

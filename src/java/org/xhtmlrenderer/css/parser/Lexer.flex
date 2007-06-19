@@ -30,8 +30,12 @@ package org.xhtmlrenderer.css.parser;
 
 %{
     public int yyline() {
-      return this.yyline;
+    	return this.yyline;
     }
+    
+    public void setyyline(int i) {
+    	this.yyline = i;
+	}
 %}
 
 h		      = [0-9a-fA-F]

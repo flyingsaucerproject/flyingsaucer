@@ -1451,7 +1451,10 @@ class Lexer {
     public int yyline() {
       return this.yyline;
     }
-
+    
+    public void setyyline(int i) {
+        this.yyline = i;
+    }
 
   /**
    * Creates a new scanner
