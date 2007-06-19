@@ -19,19 +19,24 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.simple.FSScrollPane;
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.*;
+
+import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.simple.FSScrollPane;
+import org.xhtmlrenderer.swing.ScalableXHTMLPanel;
+import org.xhtmlrenderer.swing.ScaleChangeEvent;
+import org.xhtmlrenderer.swing.ScaleChangeListener;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 
 
 /**
@@ -39,374 +44,475 @@ import java.util.logging.Logger;
  *
  * @author empty
  */
-public class BrowserPanel extends JPanel implements DocumentListener {
-    private static final long serialVersionUID = 1L;
-    
-    /**
-     * Description of the Field
-     */
-    JButton forward;
-    /**
-     * Description of the Field
-     */
-    JButton backward;
-    /**
-     * Description of the Field
-     */
-    JButton stop;
-    /**
-     * Description of the Field
-     */
-    JButton reload;
-    /**
-     * Description of the Field
-     */
-    JButton goHome;
-    /**
-     * Description of the Field
-     */
-    JButton font_inc;
-    /**
-     * Description of the Field
-     */
-    JButton font_rst;
-    /**
-     * Description of the Field
-     */
-    JButton font_dec;
-    JButton print;
-    /**
-     * Description of the Field
-     */
-    JTextField url;
-    /**
-     * Description of the Field
-     */
-    BrowserStatus status;
-    /**
-     * Description of the Field
-     */
-    public XHTMLPanel view;
-    /**
-     * Description of the Field
-     */
-    JScrollPane scroll;
-    /**
-     * Description of the Field
-     */
-    BrowserStartup root;
-    /**
-     * Description of the Field
-     */
-    BrowserPanelListener listener;
+public class BrowserPanel extends JPanel implements DocumentListener, ScaleChangeListener {
+	private static final long serialVersionUID = 1L;
 
-    JButton print_preview;
+	/**
+	 * Description of the Field
+	 */
+	JButton forward;
+	/**
+	 * Description of the Field
+	 */
+	JButton backward;
+	/**
+	 * Description of the Field
+	 */
+	JButton stop;
+	/**
+	 * Description of the Field
+	 */
+	JButton reload;
+	/**
+	 * Description of the Field
+	 */
+	JButton goHome;
+	/**
+	 * Description of the Field
+	 */
+	JButton font_inc;
+	/**
+	 * Description of the Field
+	 */
+	JButton font_rst;
+	/**
+	 * Description of the Field
+	 */
+	JButton font_dec;
+	JButton print;
+	/**
+	 * Description of the Field
+	 */
+	JTextField url;
+	/**
+	 * Description of the Field
+	 */
+	BrowserStatus status;
+	/**
+	 * Description of the Field
+	 */
+	public ScalableXHTMLPanel view;
+	/**
+	 * Description of the Field
+	 */
+	JScrollPane scroll;
+	/**
+	 * Description of the Field
+	 */
+	BrowserStartup root;
+	/**
+	 * Description of the Field
+	 */
+	BrowserPanelListener listener;
 
-    /**
-     * Description of the Field
-     */
-    public static Logger logger = Logger.getLogger("app.browser");
+	JButton print_preview;
+	JComboBox cbxZoom;
+	private ScaleFactor[] availableScales;
 
-    private PanelManager manager;
-    private JButton goToPage;
-    public JToolBar toolbar;
+	/**
+	 * Description of the Field
+	 */
+	public static Logger logger = Logger.getLogger("app.browser");
 
-    /**
-     * Constructor for the BrowserPanel object
-     *
-     * @param root     PARAM
-     * @param listener PARAM
-     */
-    public BrowserPanel(BrowserStartup root, BrowserPanelListener listener) {
-        super();
-        this.root = root;
-        this.listener = listener;
-    }
+	private PanelManager manager;
+	private JButton goToPage;
+	public JToolBar toolbar;
 
-
-    /**
-     * Description of the Method
-     * @param startPage
-     */
-    public void init(String startPage) {
-        forward = new JButton();
-        backward = new JButton();
-        stop = new JButton();
-        reload = new JButton();
-        goToPage = new JButton();
-        goHome = new JButton();
-
-        url = new JTextField();
-        url.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent e) {
-                super.focusGained(e);
-                url.selectAll();
-            }
-
-            public void focusLost(FocusEvent e) {
-                super.focusLost(e);
-                url.select(0, 0);
-            }
-        });
+	/**
+	 * Constructor for the BrowserPanel object
+	 *
+	 * @param root	 PARAM
+	 * @param listener PARAM
+	 */
+	public BrowserPanel(BrowserStartup root, BrowserPanelListener listener) {
+		super();
+		this.root = root;
+		this.listener = listener;
+	}
 
 
-        manager = new PanelManager();
-        view = new XHTMLPanel(manager);
-        scroll = new FSScrollPane(view);
-        print_preview = new JButton();
-        print = new JButton();
+	/**
+	 * Description of the Method
+	 *
+	 * @param startPage
+	 */
+	public void init(String startPage) {
+		availableScales = initializeScales();
+		forward = new JButton();
+		backward = new JButton();
+		stop = new JButton();
+		reload = new JButton();
+		goToPage = new JButton();
+		goHome = new JButton();
+		cbxZoom = new JComboBox(availableScales);
+		// awfull hack to select the 100%
+		cbxZoom.setSelectedIndex(2);
+		cbxZoom.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					ScaleFactor factor = (ScaleFactor) e.getItem();
+					if (factor.getFactor() == ScaleFactor.PAGE_WIDTH) {
+						view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_WIDTH);
+						view.doLayout();
+					} else if (factor.getFactor() == ScaleFactor.PAGE_HEIGHT) {
+						view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_HEIGHT);
+						view.doLayout();
+					} else if (factor.getFactor() == ScaleFactor.PAGE_WHOLE) {
+						view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_WHOLE);
+						view.doLayout();
+					} else {
+						view.setScale(factor.getFactor());
+					}
+				}
+			}
+		});
 
-        loadCustomFonts();
+		url = new JTextField();
+		url.addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				super.focusGained(e);
+				url.selectAll();
+			}
 
-        /* view.setErrorHandler(root.error_handler); */
-        status = new BrowserStatus();
-        status.init();
-
-        initToolbar();
-
-        int text_width = 200;
-        view.setPreferredSize(new Dimension(text_width, text_width));
-
-        setLayout(new BorderLayout());
-        this.add(scroll, BorderLayout.CENTER);
-    }
-
-    private void initToolbar() {
-        toolbar = new JToolBar();
-        toolbar.setRollover(true);
-        toolbar.add(backward);
-        toolbar.add(forward);
-        toolbar.add(reload);
-        toolbar.add(goHome);
-        toolbar.add(url);
-        toolbar.add(goToPage);
-        toolbar.add(print_preview);
-        // disabled for R6
-        // toolbar.add(print);
-    }
-
-    private void loadCustomFonts() {
-        SharedContext rc = view.getSharedContext();
-        try {
-            rc.setFontMapping("Fuzz", Font.createFont(Font.TRUETYPE_FONT,
-                    new DemoMarker().getClass().getResourceAsStream("/demos/fonts/fuzz.ttf")));
-        } catch (Exception ex) {
-            Uu.p(ex);
-        }
-    }
-
-    /**
-     * Description of the Method
-     */
-    public void createLayout() {
-        GridBagLayout gbl = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        setLayout(gbl);
-
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = c.weighty = 0.0;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        gbl.setConstraints(toolbar, c);
-        add(toolbar);
-
-        //c.gridx = 0;
-        c.gridx++;
-        c.gridy++;
-        c.weightx = c.weighty = 0.0;
-        c.insets = new Insets(5, 0, 5, 5);
-        gbl.setConstraints(backward, c);
-        add(backward);
-
-        c.gridx++;
-        gbl.setConstraints(forward, c);
-        add(forward);
-
-        /* c.gridx++;
-       gbl.setConstraints(stop, c);
-       add(stop); */
-
-        c.gridx++;
-        gbl.setConstraints(reload, c);
-        add(reload);
-
-        c.gridx++;
-        c.fill = GridBagConstraints.NONE;
-        c.weightx = c.weighty = 0.0;
-        gbl.setConstraints(print_preview, c);
-        add(print_preview);
-
-        c.gridx++;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.ipadx = 5;
-        c.ipady = 5;
-        c.weightx = 10.0;
-        c.insets = new Insets(5, 0, 5, 0);
-        gbl.setConstraints(url, c);
-        url.setBorder(BorderFactory.createLoweredBevelBorder());
-        add(url);
-
-        c.gridx++;
-        c.fill = GridBagConstraints.NONE;
-        c.weightx = c.weighty = 0.0;
-        c.insets = new Insets(0, 5, 0, 0);
-        gbl.setConstraints(goToPage, c);
-        add(goToPage);
-
-        c.gridx = 0;
-        c.gridy++;
-        c.ipadx = 0;
-        c.ipady = 0;
-        c.fill = GridBagConstraints.BOTH;
-        c.gridwidth = 7;
-        c.weightx = c.weighty = 10.0;
-        gbl.setConstraints(scroll, c);
-        add(scroll);
-
-        c.gridx = 0;
-        c.gridy++;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weighty = 0.1;
-        gbl.setConstraints(status, c);
-        add(status);
-
-    }
-
-    /**
-     * Description of the Method
-     */
-    public void createActions() {
-        // set text to "" to avoid showing action text in button--
-        // we only want it in menu items
-        backward.setAction(root.actions.backward);
-        backward.setText("");
-        forward.setAction(root.actions.forward);
-        forward.setText("");
-        reload.setAction(root.actions.reload);
-        reload.setText("");
-        goHome.setAction(root.actions.goHome);
-        goHome.setText("");
-        print_preview.setAction(root.actions.print_preview);
-        print_preview.setText("");
-
-        /*
-        print.setAction(root.actions.print);
-        print.setText("");
-        */
-        url.setAction(root.actions.load);
-        goToPage.setAction(root.actions.goToPage);
-        updateButtons();
-    }
+			public void focusLost(FocusEvent e) {
+				super.focusLost(e);
+				url.select(0, 0);
+			}
+		});
 
 
-    /**
-     * Description of the Method
-     */
-    public void goForward() {
-        String uri = manager.getForward();
-        view.setDocument(uri);
-        updateButtons();
-    }
+		manager = new PanelManager();
+		view = new ScalableXHTMLPanel(manager);
+		view.addDocumentListener(manager);
+		scroll = new FSScrollPane(view);
+		print_preview = new JButton();
+		print = new JButton();
 
-    /**
-     * Description of the Method
-     */
-    public void goBack() {
-        String uri = manager.getBack();
-        view.setDocument(uri);
-        updateButtons();
-    }
+		loadCustomFonts();
 
-    /**
-     * Description of the Method
-     */
-    public void reloadPage() {
-        logger.info("Reloading Page: ");
-        if (manager.getBaseURL() != null) {
-            loadPage(manager.getBaseURL());
-        }
-    }
+		/* view.setErrorHandler(root.error_handler); */
+		status = new BrowserStatus();
+		status.init();
 
-    /**
-     * Description of the Method
-     *
-     * @param url_text PARAM
-     */
-    //TODO: make this part of an implementation of UserAgentCallback instead
-    public void loadPage(final String url_text) {
-        try {
-            logger.info("Loading Page: " + url_text);
-            view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            view.setDocument(url_text);
-            view.addDocumentListener(BrowserPanel.this);
+		initToolbar();
 
-            updateButtons();
+		int text_width = 200;
+		view.setPreferredSize(new Dimension(text_width, text_width));
 
-            setStatus("Successfully loaded: " + url_text);
+		setLayout(new BorderLayout());
+		this.add(scroll, BorderLayout.CENTER);
+	}
 
-            if (listener != null) {
-                listener.pageLoadSuccess(url_text, view.getDocumentTitle());
-            }
-        } catch (Exception
-                ex) {
-            XRLog.general(Level.SEVERE, "Could not load page for display.", ex);
-            ex.printStackTrace();
-        }
-    }
+	private void initToolbar() {
+		toolbar = new JToolBar();
+		toolbar.setRollover(true);
+		toolbar.add(backward);
+		toolbar.add(forward);
+		toolbar.add(reload);
+		toolbar.add(goHome);
+		toolbar.add(url);
+		toolbar.add(goToPage);
+		toolbar.add(print_preview);
+		toolbar.add(new JLabel("Zoom"));
+		toolbar.add(cbxZoom);
+		// disabled for R6
+		// toolbar.add(print);
+	}
 
-    /**
-     * Description of the Method
-     */
-    public void documentLoaded
-            () {
-        view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-    }
+	private void loadCustomFonts() {
+		SharedContext rc = view.getSharedContext();
+		try {
+			rc.setFontMapping("Fuzz", Font.createFont(Font.TRUETYPE_FONT,
+					new DemoMarker().getClass().getResourceAsStream("/demos/fonts/fuzz.ttf")));
+		} catch (Exception ex) {
+			Uu.p(ex);
+		}
+	}
 
-    /**
-     * Sets the status attribute of the BrowserPanel object
-     *
-     * @param txt The new status value
-     */
-    public void setStatus
-            (String
-                    txt) {
-        status.text.setText(txt);
-    }
+	/**
+	 * Description of the Method
+	 */
+	public void createLayout() {
+		GridBagLayout gbl = new GridBagLayout();
+		GridBagConstraints c = new GridBagConstraints();
+		setLayout(gbl);
 
-    /**
-     * Description of the Method
-     */
-    protected void updateButtons() {
-        if (manager.hasBack()) {
-            root.actions.backward.setEnabled(true);
-        } else {
-            root.actions.backward.setEnabled(false);
-        }
-        if (manager.hasForward()) {
-            root.actions.forward.setEnabled(true);
-        } else {
-            root.actions.forward.setEnabled(false);
-        }
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		gbl.setConstraints(toolbar, c);
+		add(toolbar);
 
-        url.setText(manager.getBaseURL());
-    }
+		//c.gridx = 0;
+		c.gridx++;
+		c.gridy++;
+		c.weightx = c.weighty = 0.0;
+		c.insets = new Insets(5, 0, 5, 5);
+		gbl.setConstraints(backward, c);
+		add(backward);
+
+		c.gridx++;
+		gbl.setConstraints(forward, c);
+		add(forward);
+
+		/* c.gridx++;
+			   gbl.setConstraints(stop, c);
+			   add(stop); */
+
+		c.gridx++;
+		gbl.setConstraints(reload, c);
+		add(reload);
+
+		c.gridx++;
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		gbl.setConstraints(print_preview, c);
+		add(print_preview);
+
+		c.gridx++;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.ipadx = 5;
+		c.ipady = 5;
+		c.weightx = 10.0;
+		c.insets = new Insets(5, 0, 5, 0);
+		gbl.setConstraints(url, c);
+		url.setBorder(BorderFactory.createLoweredBevelBorder());
+		add(url);
+
+		c.gridx++;
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.insets = new Insets(0, 5, 0, 0);
+		gbl.setConstraints(goToPage, c);
+		add(goToPage);
+
+		c.gridx = 0;
+		c.gridy++;
+		c.ipadx = 0;
+		c.ipady = 0;
+		c.fill = GridBagConstraints.BOTH;
+		c.gridwidth = 7;
+		c.weightx = c.weighty = 10.0;
+		gbl.setConstraints(scroll, c);
+		add(scroll);
+
+		c.gridx = 0;
+		c.gridy++;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weighty = 0.1;
+		gbl.setConstraints(status, c);
+		add(status);
+
+	}
+
+	/**
+	 * Description of the Method
+	 */
+	public void createActions() {
+		// set text to "" to avoid showing action text in button--
+		// we only want it in menu items
+		backward.setAction(root.actions.backward);
+		backward.setText("");
+		forward.setAction(root.actions.forward);
+		forward.setText("");
+		reload.setAction(root.actions.reload);
+		reload.setText("");
+		goHome.setAction(root.actions.goHome);
+		goHome.setText("");
+		print_preview.setAction(root.actions.print_preview);
+		print_preview.setText("");
+
+		/*
+				print.setAction(root.actions.print);
+				print.setText("");
+				*/
+		url.setAction(root.actions.load);
+		goToPage.setAction(root.actions.goToPage);
+		updateButtons();
+	}
 
 
-    public void onLayoutException(Throwable t) {
-        t.printStackTrace();
-        
-    }
+	/**
+	 * Description of the Method
+	 */
+	public void goForward() {
+		String uri = manager.getForward();
+		view.setDocument(uri);
+		updateButtons();
+	}
+
+	/**
+	 * Description of the Method
+	 */
+	public void goBack() {
+		String uri = manager.getBack();
+		view.setDocument(uri);
+		updateButtons();
+	}
+
+	/**
+	 * Description of the Method
+	 */
+	public void reloadPage() {
+		logger.info("Reloading Page: ");
+		if (manager.getBaseURL() != null) {
+			loadPage(manager.getBaseURL());
+		}
+	}
+
+	/**
+	 * Description of the Method
+	 *
+	 * @param url_text PARAM
+	 */
+	//TODO: make this part of an implementation of UserAgentCallback instead
+	public void loadPage(final String url_text) {
+		try {
+			logger.info("Loading Page: " + url_text);
+			view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+			view.setDocument(url_text);
+			view.addDocumentListener(BrowserPanel.this);
+
+			updateButtons();
+
+			setStatus("Successfully loaded: " + url_text);
+
+			if (listener != null) {
+				listener.pageLoadSuccess(url_text, view.getDocumentTitle());
+			}
+		} catch (Exception
+				ex) {
+			XRLog.general(Level.SEVERE, "Could not load page for display.", ex);
+			ex.printStackTrace();
+		}
+	}
+
+	public void documentStarted() {
+		// TODO...
+	}
+
+	/**
+	 * Description of the Method
+	 */
+	public void documentLoaded() {
+		view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	}
+
+	public void scaleChanged(ScaleChangeEvent evt) {
+		if (evt.getComponent() == view) {
+			double scale = evt.getScale();
+			int ix = -1;
+			for (int i = 0; i < availableScales.length; i++) {
+				ScaleFactor sf = availableScales[i];
+				if (sf.getFactor() == scale) {
+					ix = i;
+					break;
+				}
+			}
+			ItemListener[] iListeners = cbxZoom.getItemListeners();
+			for (int i = 0; i < iListeners.length; i++) {
+				cbxZoom.removeItemListener(iListeners[i]);
+			}
+			if (ix != -1) {
+				cbxZoom.setSelectedIndex(ix);
+			}
+			for (int i = 0; i < iListeners.length; i++) {
+				cbxZoom.addItemListener(iListeners[i]);
+			}
+		}
+	}
 
 
-    public void onRenderException(Throwable t) {
-        t.printStackTrace();
-    }
+	/**
+	 * Sets the status attribute of the BrowserPanel object
+	 *
+	 * @param txt The new status value
+	 */
+	public void setStatus(String txt) {
+		status.text.setText(txt);
+	}
+
+	/**
+	 * Description of the Method
+	 */
+	protected void updateButtons() {
+		if (manager.hasBack()) {
+			root.actions.backward.setEnabled(true);
+		} else {
+			root.actions.backward.setEnabled(false);
+		}
+		if (manager.hasForward()) {
+			root.actions.forward.setEnabled(true);
+		} else {
+			root.actions.forward.setEnabled(false);
+		}
+
+		url.setText(manager.getBaseURL());
+	}
+
+
+	public void onLayoutException(Throwable t) {
+		t.printStackTrace();
+
+	}
+
+
+	public void onRenderException(Throwable t) {
+		t.printStackTrace();
+	}
+
+	private static ScaleFactor[] initializeScales() {
+		ScaleFactor[] scales = new ScaleFactor[11];
+		int i = 0;
+		scales[i++] = new ScaleFactor(2.0d, "200%");
+		scales[i++] = new ScaleFactor(1.5d, "150%");
+		scales[i++] = new ScaleFactor(1.0d, "100%");
+		scales[i++] = new ScaleFactor(0.85d, "85%");
+		scales[i++] = new ScaleFactor(0.75d, "75%");
+		scales[i++] = new ScaleFactor(0.5d, "50%");
+		scales[i++] = new ScaleFactor(0.33d, "33%");
+		scales[i++] = new ScaleFactor(0.25d, "25%");
+		scales[i++] = new ScaleFactor(ScaleFactor.PAGE_WIDTH, "Page width");
+		scales[i++] = new ScaleFactor(ScaleFactor.PAGE_HEIGHT, "Page height");
+		scales[i++] = new ScaleFactor(ScaleFactor.PAGE_WHOLE, "Whole page");
+		return scales;
+	}
+
+	private static class ScaleFactor {
+		public static final double PAGE_WIDTH = -2.0d;
+		public static final double PAGE_HEIGHT = -3.0d;
+		public static final double PAGE_WHOLE = -4.0d;
+		private Double factor;
+		private String libelle;
+
+		public ScaleFactor(double factor, String libelle) {
+			super();
+			this.factor = new Double(factor);
+			this.libelle = libelle;
+		}
+
+		public double getFactor() {
+			return factor.doubleValue();
+		}
+
+		public String getLibelle() {
+			return libelle;
+		}
+
+		public String toString() {
+			return getLibelle();
+		}
+	}
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2007/06/19 21:28:41  pdoubleya
+ * Support for document scaling, from Christophe Marchand via email. Browser demo panel is now scalable as well.
+ *
  * Revision 1.33  2007/04/03 13:18:15  peterbrant
  * Implement new DocumentListener API
  *
