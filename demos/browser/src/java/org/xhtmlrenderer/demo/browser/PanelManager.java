@@ -19,11 +19,10 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.AWTFSImage;
+import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.GeneralUtil;
@@ -38,94 +37,35 @@ import java.util.ArrayList;
 
 
 /**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2005-jun-15
- * Time: 07:38:59
- * To change this template use File | Settings | File Templates.
+ * PanelManager is a UserAgentCallback responsible for the Browser's resource (XML, image, CSS) lookup. Most of the
+ * power is in the NaiveUserAgent; the PanelManager adds support for the demo:, file: and demoNav: protocols,
+ * and keeps track of the history of visited links. There is always a "current" link, and one can use the
+ * {@link #getBack()}, {@link #getForward()} and {@link #hasForward()} methods to navigate within the history.
+ * As a NaiveUserAgent, the PanelManager is also a DocumentListener, but must be added to the source of document
+ * events (like a RootPanel subclass).
+ *  
  */
-public class PanelManager implements UserAgentCallback {
-    private String baseUrl;
+public class PanelManager extends NaiveUserAgent {
     private int index = -1;
     private ArrayList history = new ArrayList();
 
-    /**
-     * an LRU cache
-     */
-    private int imageCacheCapacity = 16;
-    private java.util.LinkedHashMap imageCache =
-            new java.util.LinkedHashMap(imageCacheCapacity, 0.75f, true) {
-                protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
-                    return size() > imageCacheCapacity;
-                }
-            };
 
-    public CSSResource getCSSResource(String uri) {
-        InputStream is = null;
-        uri = resolveURI(uri);
-        try {
-            URLConnection uc = new URL(uri).openConnection();
-            uc.connect();
-            is = uc.getInputStream();
-        } catch (MalformedURLException e) {
-            XRLog.exception("bad URL given: " + uri, e);
-        } catch (FileNotFoundException e11) {
-            XRLog.exception("Can't load CSS from URI (not found): " + uri);
-        } catch (IOException e) {
-            XRLog.exception("IO problem for " + uri, e);
-        }
-        return new CSSResource(is);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	protected ImageResource createImageResource(String uri, Image img) {
+		if (img == null) {
+			return new DummyImageResource(uri);
+		} else {
+			return super.createImageResource(uri, img);
+		}
 
-    public ImageResource getImageResource(String uri) {
-        ImageResource ir = null;
-        uri = resolveURI(uri);
-        ir = (ImageResource) imageCache.get(uri);
-        //TODO: check that cached image is still valid
-        if (ir == null) {
-            InputStream is = null;
-            try {
-                URLConnection uc = new URL(uri).openConnection();
-                uc.connect();
-                is = uc.getInputStream();
-            } catch (MalformedURLException e1) {
-                XRLog.exception("bad URL given: " + uri, e1);
-            } catch (FileNotFoundException e11) {
-                XRLog.exception("Can't load image from URI (not found): " + uri);
-            } catch (IOException e11) {
-                XRLog.exception("IO problem for " + uri, e11);
-            }
-            if (is != null) {
-                try {
-                    Image img = ImageIO.read(is);
-                    if (img == null) {
-                        XRLog.exception("ImageIO.read() returned null for uri " + uri);
-                    } else {
-                        ir = new ImageResource(AWTFSImage.createLegacyImage(img));
-                        imageCache.put(uri, ir);
-                    }
-                } catch (IOException e) {
-                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
-                }
-            }
-        }
-        if (ir == null) {
-            ir = new DummyImageResource(uri);
-            imageCache.put(uri, ir);
-        }
-        return ir;
-    }
+	}
 
-    class DummyImageResource extends ImageResource {
-        private final String uri;
-
-        public DummyImageResource(String uri) {
-            super(null);
-            this.uri = uri;
-        }
-    }
-
-    public XMLResource getXMLResource(String uri) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public XMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);
         if (uri != null && uri.startsWith("file:")) {
             File file = null;
@@ -153,7 +93,6 @@ public class PanelManager implements UserAgentCallback {
             String contentType = uc.getContentType();
             //Maybe should popup a choice when content/unknown!
             if (contentType.equals("text/plain") || contentType.equals("content/unknown")) {
-                //sorry, mucking about a bit here - tobe
                 inputStream = uc.getInputStream();
                 SAXSource source = new SAXSource(new PlainTextXMLReader(inputStream), new InputSource());
                 xr = XMLResource.load(source);
@@ -184,40 +123,66 @@ public class PanelManager implements UserAgentCallback {
         return xr;
     }
 
-    private XMLResource getNotFoundDocument(String uri) {
+	/**
+	 * Used internally when a document can't be loaded--returns XHTML as an XMLResource indicating that fact.
+	 *
+	 * @param uri The URI which could not be loaded.
+	 *
+	 * @return An XMLResource containing XML which about the failure.
+	 */
+	private XMLResource getNotFoundDocument(String uri) {
         XMLResource xr;
         String notFound = "<html><h1>Document not found</h1><p>Could not access URI <pre>" + uri + "</pre></p></html>";
-        System.out.println(notFound);
+
+		// TODO: remove printlns
+		System.out.println(notFound);
         xr = XMLResource.load(new StringReader(notFound));
         return xr;
     }
 
-    public boolean isVisited(String uri) {
+	/**
+	 * Returns true if the link has been visited by the user in this session. Visit tracking is not persisted.
+	 */
+	public boolean isVisited(String uri) {
         if (uri == null) return false;
         uri = resolveURI(uri);
         return history.contains(uri);
     }
 
-    public void setBaseURL (String url) {
-        if(baseUrl !=null &&  baseUrl.startsWith("error:")) baseUrl = null;
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setBaseURL (String url) {
+		String burl = super.getBaseURL();
+		if(burl !=null &&  burl.startsWith("error:")) burl = null;
         
-        baseUrl = resolveURI(url);
-        if (baseUrl == null) baseUrl = "error:FileNotFound";
-        //setBaseURL is called by view when document is loaded
+        burl = resolveURI(url);
+        if (burl == null) burl = "error:FileNotFound";
+
+		super.setBaseURL(burl);
+
+		// setBaseURL is called by view when document is loaded
         if (index >= 0) {
             String historic = (String) history.get(index);
-            if (historic.equals(baseUrl)) return;//moved in history
+            if (historic.equals(burl)) return; //moved in history
         }
         index++;
         for (int i = index; i < history.size(); history.remove(i)) ;
-        history.add(index, baseUrl);
+        history.add(index, burl);
     }
 
-    public String resolveURI(String uri) {
-        URL ref = null;
-        if (uri == null) return baseUrl;
-        if (uri.trim().equals("")) return baseUrl;//jar URLs don't resolve this right
-        if (uri.startsWith("demo:")) {
+	/**
+	 * {@inheritdoc}.
+	 */
+	public String resolveURI(String uri) {
+		final String burl = getBaseURL();
+
+		URL ref = null;
+
+		if (uri == null) return burl;
+        if (uri.trim().equals("")) return burl; //jar URLs don't resolve this right
+
+		if (uri.startsWith("demo:")) {
             DemoMarker marker = new DemoMarker();
             String short_url = uri.substring(5);
             if (!short_url.startsWith("/")) {
@@ -240,14 +205,14 @@ public class PanelManager implements UserAgentCallback {
         } else {
             try {
                 URL base;
-                if (baseUrl == null || baseUrl.length() == 0) {
+                if (burl == null || burl.length() == 0) {
                     base = new File(".").toURL();
                 } else {
-                    base = new URL(baseUrl);
+                    base = new URL(burl);
                 }
                 ref = new URL(base, uri);
             } catch (MalformedURLException e) {
-                Uu.p("URI/URL is malformed: " + baseUrl + " or " + uri);
+                Uu.p("URI/URL is malformed: " + burl + " or " + uri);
             }
         }
 
@@ -257,22 +222,29 @@ public class PanelManager implements UserAgentCallback {
             return ref.toExternalForm();
     }
 
-    public String getBaseURL() {
-        return baseUrl;
-    }
-
-
-    public String getForward() {
+	/**
+	 * Returns the "next" URI in the history of visiting URIs. Advances the URI tracking (as if browser "forward" was
+	 * used).
+	 */
+	public String getForward() {
         index++;
         return (String) history.get(index);
     }
 
-    public String getBack() {
+	/**
+	 * Returns the "previous" URI in the history of visiting URIs. Moves the URI tracking back (as if browser "back" was
+	 * used).
+	 */
+	public String getBack() {
         index--;
         return (String) history.get(index);
     }
 
-    public boolean hasForward() {
+	/**
+	 * Returns true if there are visited URIs in history "after" the pointer the the current URI. This would be the case
+	 * if multiple URIs were visited and the getBack() had been called at least once.
+	 */
+	public boolean hasForward() {
         if (index + 1 < history.size() && index >= 0) {
             return true;
         } else {
@@ -280,6 +252,10 @@ public class PanelManager implements UserAgentCallback {
         }
     }
 
+	/**
+	 * Returns true if there are visited URIs in history "before" the pointer the the current URI. This would be the case
+	 * if multiple URIs were visited and the current URI pointer was not at the begininnig of the visited URI list. 
+	 */
     public boolean hasBack() {
         if (index >= 0) {
             return true;
@@ -287,4 +263,17 @@ public class PanelManager implements UserAgentCallback {
             return false;
         }
     }
+
+	/**
+	 * Simple wrapper class for image URIs that can't be loaded.
+	 */
+	private class DummyImageResource extends ImageResource {
+        private final String uri;
+
+        public DummyImageResource(String uri) {
+            super(null);
+            this.uri = uri;
+        }
+    }
+
 }

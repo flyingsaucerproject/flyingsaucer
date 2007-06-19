@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,6 @@ package org.xhtmlrenderer.pdf;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.LinkedHashMap;
 
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.resource.ImageResource;
@@ -43,23 +42,16 @@ public class ITextUserAgent extends NaiveUserAgent {
     private ITextOutputDevice _outputDevice;
     
     public ITextUserAgent(ITextOutputDevice outputDevice) {
-        _outputDevice = outputDevice;
+		super(IMAGE_CACHE_CAPACITY);
+		_outputDevice = outputDevice;
     }
     
-    private LinkedHashMap _imageCache =
-            new LinkedHashMap(IMAGE_CACHE_CAPACITY, 0.75f, true) {
-                static final long serialVersionUID = 1L;
-                protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
-                    return size() > IMAGE_CACHE_CAPACITY;
-                }
-            };
-            
     public ImageResource getImageResource(String uri) {
         ImageResource resource = null;
         uri = resolveURI(uri);
         resource = (ImageResource) _imageCache.get(uri);
         if (resource == null) {
-            InputStream is = getInputStream(uri);
+            InputStream is = resolveAndOpenStream(uri);
             if (is != null) {
                 try {
                     URL url = new URL(uri);
