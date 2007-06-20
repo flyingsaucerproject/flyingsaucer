@@ -36,6 +36,7 @@ import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.Iterator;
 
 
 /**
@@ -92,8 +93,10 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 	 */
 	public void shrinkImageCache() {
 		int ovr = _imageCache.size() - _imageCacheCapacity;
-		while (ovr-- > 0) {
-			_imageCache.keySet().iterator().remove();
+		Iterator it = _imageCache.keySet().iterator();
+		while (it.hasNext() && ovr-- > 0) {
+			it.next();
+			it.remove();
 		}
 	}
 
@@ -284,6 +287,9 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2007/06/20 12:24:31  pdoubleya
+ * Fix bug in shrink cache, trying to modify iterator without using safe remove().
+ *
  * Revision 1.34  2007/06/19 21:25:41  pdoubleya
  * Cleanup for caching in NUA, making it more suitable to use as a reusable UAC. NUA is also now a document listener and uses this to try and trim its cache down. PanelManager and iTextUA are now NUA subclasses.
  *
