@@ -63,9 +63,18 @@ public class TrueTypeUtil {
     private static Map extractTables(BaseFont font) 
             throws SecurityException, NoSuchFieldException, IllegalArgumentException, 
                     IllegalAccessException {
-        Field f = font.getClass().getDeclaredField("tables");
-        f.setAccessible(true);
-        return (Map)f.get(font);
+        Class current = font.getClass();
+        while (current != null) {
+            if (current.getName().endsWith(".TrueTypeFont")) {
+                Field f = current.getDeclaredField("tables");
+                f.setAccessible(true);
+                return (Map)f.get(font);
+            }
+            
+            current = current.getSuperclass();
+        }
+        
+        throw new NoSuchFieldException("Could not find tables field");
     }
     
     public static void populateDescription(String path, BaseFont font, FontDescription descr) 
