@@ -64,10 +64,6 @@ a:link, a:visited { text-decoration: underline }
 
 /* Flying Saucer overrides, usually compensate for unimplemented stuff */
 
-body {
-    font-family: serif;
-}
-
 /* don't handle all replaced things yet, besides xml should do this via entities!*/
 img {
     display: inline-block;

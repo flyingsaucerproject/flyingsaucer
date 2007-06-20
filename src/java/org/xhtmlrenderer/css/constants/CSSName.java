@@ -555,7 +555,7 @@ public final class CSSName implements Comparable {
             addProperty(
                     "font-family",
                     PRIMITIVE,
-                    "\"Times New Roman\"",
+                    "serif",
                     INHERITS,
                     new PrimitivePropertyBuilders.FontFamily()
             );
@@ -1676,6 +1676,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2007/06/20 19:06:48  peterbrant
+ * Default font-family should come from CSSName and not the UA stylesheet
+ *
  * Revision 1.31  2007/05/26 22:08:16  peterbrant
  * Begin work on counter support
  *
