@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Flying Saucer: Tables Support</title>
+	<link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen"/>
+	<link rel="stylesheet" type="text/css" href="print.css" title="Style" media="print"/>
+	<style type="text/css">
+		div {
+			border: 1px solid black;
+			width: 85px;
+			float: left;
+			margin: 2px;
+			padding: 5px;
+		}
+
+		div:hover {
+			text-decoration: underline;
+			border-color: green;
+			background-color: lightgray;
+		}
+
+		div.curDefault:hover {
+			cursor: default;
+		}
+
+		div.curPointer:hover {
+			cursor: pointer;
+		}
+
+		div.curCrosshair:hover {
+			cursor: crosshair;
+		}
+
+		div.curAuto:hover {
+			cursor: auto;
+		}
+
+		div.curEresize:hover {
+			cursor: e-resize;
+		}
+
+		div.curHelp:hover {
+			cursor: help;
+		}
+
+		div.curMove:hover {
+			cursor: move;
+		}
+
+		div.curNresize:hover {
+			cursor: n-resize;
+		}
+
+		div.curNEresize:hover {
+			cursor: ne-resize;
+		}
+
+		div.curNWresize:hover {
+			cursor: nw-resize;
+		}
+
+		div.curProgress:hover {
+			cursor: progress;
+		}
+
+		div.curSresize:hover {
+			cursor: s-resize;
+		}
+
+		div.curSEresize:hover {
+			cursor: se-resize;
+		}
+
+		div.curSWresize:hover {
+			cursor: sw-resize;
+		}
+
+		div.curText:hover {
+			cursor: text;
+		}
+
+		div.curWresize:hover {
+			cursor: w-resize;
+		}
+
+		div.curWait:hover {
+			cursor: wait;
+		}
+	</style>
+
+</head>
+<body>
+<p class="link left-link"><a href="demoNav:back">Previous Page</a></p>
+
+<p class="link right-link"><a href="demoNav:forward">Next Page</a></p>
+
+<p id="fslogo">Flying Saucer XML/CSS2 Renderer</p>
+<span id="pagebyline">
+  CSS cursor Property Support
+</span>
+<br/>
+
+<p><b>cursor property support includes</b>: Assigning the cursor to any element; can be assigned, for example,
+	using the :hover attribute, as on this page. Most of the default CSS 2.1 cursor styles are accepted, including
+	pointer, crosshair, auto, and wait. Some, for which there isn't an easy mapping in the Java cursor set,
+	just go to default. Cursors by URL are not yet supported. In this page, hovering over the divs changes
+	the cursor to the type shown in the box text.</p>
+
+<div class="curDefault">Default</div>
+<div class="curPointer">Pointer</div>
+<div class="curCrosshair">Crosshair</div>
+<div class="curAuto">Auto</div>
+<div class="curEresize">E-resize</div>
+<div class="curHelp">Help</div>
+<div class="curMove">Move</div>
+<div class="curNresize">N-resize</div>
+<div class="curNEresize">NE-resize</div>
+<div class="curNWresize">NW-resize</div>
+<div class="curProgress">Progress</div>
+<div class="curSresize">S-resize</div>
+<div class="curSEresize">SE-resize</div>
+<div class="curSWresize">SW-resize</div>
+<div class="curText">Text</div>
+<div class="curWresize">W-resize</div>
+<div class="curWait">Wait</div>
+<br style="clear: both;"/>
+<br style="clear: both;"/>
+<p style="clear: both;">In this example, we use cursors triggered by a :hover, but the property isn't bound to the :hover pseudo-selector.</p>
+</body>
+</html>

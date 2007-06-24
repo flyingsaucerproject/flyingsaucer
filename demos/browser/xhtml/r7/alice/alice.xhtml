@@ -10,21 +10,27 @@
             margin: 50px 30px;
             padding: 20px 30px;
             background-color: white;
-            font-family: Garamond; /* font-size: 14pt; */
+            font-family: Garamond;
         }
 
-        .dropcap {
-            color: #88A; /* body = 12, line = 12*3, size = 12*4 */
-        /* body = 14, line = 14*3, size = 14*4 */
+		p {
+			font-size: 10pt;
+		}
+
+		/*.dropcap-holder:first-letter {
+            color: #88A;
             font-size: 36pt;
-            /*
-            line-height: 40pt;
-            font-family: Abbess;
-            */
             float: left;
-            width: 42px;
-            text-align: center;
-        }
+			line-height: .8em;
+			padding-top: 5px;
+		}*/
+		.dropcap {
+            color: #88A;
+			padding-top: 2px;
+            font-size: 100px;
+			line-height: 70px;
+            float: left;
+		}
 
         img {
             border: 0px;
@@ -91,11 +97,11 @@
 
 <body>
 
-<p class="link left-link">
+<p class="link left-link" style="font: 9pt normal sans-serif">
     <a href="demoNav:back">Previous Page</a>
 </p>
 
-<p class="link right-link">
+<p class="link right-link" style="font: 9pt normal sans-serif">
     <a href="demoNav:forward">Next Page</a>
 </p>
 
@@ -105,7 +111,7 @@
 <h2>Down the Rabbit-Hole</h2>
 
 <p class="dropcap-holder">
-    <div class="dropcap">A</div>
+    <span class="dropcap">A</span>
     lice was beginning to get very tired of sitting by her sister
     on the bank, and of having nothing to do: once or twice she had
     peeped into the book her sister was reading, but it had no pictures

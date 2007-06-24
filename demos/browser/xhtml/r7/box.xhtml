@@ -46,29 +46,41 @@
       <span style="border: 1px solid black; padding: 10px;">Paddings</span> and 
       <span style="background-color: silver">Backgrounds</span>
     </span><br />
-      <p><b>Margin, padding and background support includes</b>: CSS margin and padding, on any or all four sides of a box. You can apply both  shorthand "padding: 1px") or to individual sides ("margin-left: 10em"). Backgrounds can be colored and/or include images (as background attachments). Background images can be repeated horizontally, vertically, or both, and fixed in place.</p>
+      <p><b>XMargin, padding and background support includes</b>: CSS margin and padding, on any or all four sides of a
+		  box. You can apply both  shorthand ("padding: 1px") or to individual sides ("margin-left: 10em").
+		  Backgrounds can be colored and/or include images (as background attachments). Background images can be
+		  repeated horizontally, vertically, or both, and fixed in place.</p>
     <br />
 
     <div style="width: 100%; border: 0px; ">
-    <div style="float: right; height: 400px; background-attachment: fixed; background-image: url(images/flyingsaucer.png); background-repeat: no-repeat; width:25%">
-      Fixed, no-repeat background image</div>
     <h3>Margins</h3>
 
-    <div class="test10" style="margin: 0px;">margins = 0</div>
+    <div class="test10" style="margin: 0px;">margins: 0px</div>
 
-    <div class="test11" style="margin: 20px;">margins = 20px</div>
+    <div class="test11" style="margin: 20px;">margins: 20px</div>
 
-    <div class="test12" style="margin: 10px 20px 30px 40px;">margins = 10,20,30,40</div>
+    <div class="test12" style="margin: 10px 20px 30px 40px;">margins: 10px 20px 30px 40px</div>
 
     <h3>Padding</h3>
 
-    <div class="test20" style="padding: 0px;">padding = 0</div>
-    <div class="test21" style="padding: 20px;">padding = 20px</div>
-    <div class="test22" style="padding: 10px 20px 30px 40px;">padding = 10,20,30,40</div>
+    <div class="test20" style="padding: 0px;">padding: 0px</div>
+    <div class="test21" style="padding: 20px;">padding: 20px</div>
+    <div class="test22" style="padding: 10px 20px 30px 40px;">padding: 10px 20px 30px 40px</div>
 
     <h3>Backgrounds</h3>
-    <div class="test3" style="width: 75%">div with colored background and margin = 20
-      padding = 20 border = 20</div>
+    <div class="test3" style="width: 75%">
+<pre>
+{
+          background-color:#ccffcc;
+          border-width: 20px;
+          border-style: solid;
+          border-color: #000000;
+          padding: 20px;
+          margin: 20px;
+}	
+</pre>
+
+		</div>
     <div class="test4">div with image back and no repeat</div>
     <div class="test7">div with image back and repeat both</div>
     <div class="test8">div with fixed image background and repeat both</div>

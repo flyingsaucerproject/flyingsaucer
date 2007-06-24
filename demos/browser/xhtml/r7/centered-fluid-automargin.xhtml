@@ -2,23 +2,24 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Flying Saucer: Centered Fluid Content</title>
+    <title>Flying Saucer: Centered Fluid Content with Auto Margins</title>
     <link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen" />
     <style type="text/css" media="screen">
         body {
             font-size: 12px;
             font-family: Verdana, Arial, Tahoma, SunSans-Regular;
-            margin: 50px 140px 20px 140px;
+            margin: 50px 10px 50px 10px;
             text-align: center;
         }
 
         #content {
-            width: 100%;
+            width: 500px;
             padding: 0px;
             text-align: left;
             background-color: #fff;
             overflow: auto;
-        }
+			margin: 0px auto;
+		}
 
         p, pre {
             margin: 0px;
@@ -39,31 +40,34 @@
         <br />
         <br />
 
-        <p><b style="font-size: large">Centered Fluid Content:</b> This sample page, using ideas from
-			<b>Intensiv Station Templates</b> at http://www.intensivstation.ch, shows a simple, centered-content
-			fluid layout; there are fixed margins on either side, and the width of the center is set to 100%
-			of what remains.</p>
+        <p><b style="font-size: large">Centered Fluid Content with Auto Margins:</b> This sample page, using ideas from
+			http://bluerobot.com/web/css/center1.html, shows a simple, centered-content
+			fluid layout where the width of the content is fixed, and where the content is centered by setting
+			margins to "auto". Note in this case the body has no left/right margin set (as in the other
+			centered content example).</p>
 
         <p>Note in this example the layout will break because of the "pre" block below--but holds up
             pretty well till you reduce beyond the minimum necessary for the preserved formatting.</p>
 
         <pre>
-            body {
-            background-color: #e1ddd9;
+        body {
+            margin: 50px 0px;
             font-size: 12px;
-            font-family: Verdana;
-            color: #564b47;
-            margin: 20px 140px 20px 140px;
             text-align: center;
-            }
+        }
 
-            #content {
-            width: 100%;
+        #content {
+            width: 500px;
+            margin: 0px auto;
+            overflow: auto;
             padding: 0px;
             text-align: left;
-            background-color: #fff;
-            overflow: auto;
-            }
+        }
+
+        p, pre {
+            margin: 0px;
+            padding: 10px;
+        }
         </pre>
 
         <p>

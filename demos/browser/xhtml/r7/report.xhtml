@@ -69,20 +69,52 @@
     <table id="overview" cellspacing="0" cellpadding="0" style="border: 0px; width: 100%;" border="1">
         <tr>
             <td style="text-align: left; padding-bottom: 10px;"><span id="pagebyline">Tables Support</span></td>
-            <td/>
+            <td>
+				<table style="border-collapse: collapse;">
+					<tr>
+						<td style="font-size: x-small;">thead!</td>
+						<td style="font-size: x-small;">tfoot!</td>
+					</tr>
+					<tr>
+						<td>
+						<table style="border-collapse: collapse;">
+							<tr>
+								<td style="font-size: x-small;">tbody!</td>
+								<td>
+								<table style="border-collapse: collapse;">
+								<tr>
+									<td style="font-size: x-small;">th, tr, td!</td>
+									<td style="font-size: x-small;">alignment</td>
+									<td style="font-size: x-small;">collapse!</td>
+								</tr>
+									<tr>
+										<td colspan="3">colspan!</td>
+									</tr>
+								</table>
+								</td>
+							</tr>
+						</table>
+						</td>
+					</tr>
+					<tr>
+					<td colspan="3" style="font-size: x-small; font-weight: bold;">styles!</td>
+					</tr>
+
+				</table>
+			</td>
         </tr>
-        <tr>
-            <td style="text-align: left;"><b>Tables support includes</b>:</td>
-            <td style="text-align: left;">Tables support is pretty complete at this point. We support all the
-                table-related XHTML tags, including table, caption, tbody, th, tr and td tags. Table elements can
-                have styles attached to them--in this demo, to
-                show an alternating row highlight color. In-cell alignment works, as do borders. Colspan, rowspan,
-                cellpadding and cellspacing attributes are supported. Border collapse is implemented.Table and column
-                widths can be set to a specific
-                or proportional (em, %) value. Complex nested table layouts are supported as well.
-            </td>
-        </tr>
-    </table>
+		<tr>
+			<td style="text-align: right; vertical-align: top;"><b>Tables support includes</b>:</td>
+			<td style="text-align: left; vertical-align: top">Tables support is pretty complete at this point. We
+				support all the table-related XHTML tags, including table, caption, tbody, thead, tfoot, th, tr and td
+				tags. Table elements can have styles attached to them--in this demo, to show an alternating row
+				highlight color. In-cell alignment works, as do borders and border-collapse. Colspan, rowspan,
+				cellpadding and cellspacing attributes are supported. Table and column widths can be set to a
+				specific or proportional (em, %) value. Also included: complex nested table 
+				layouts, auto layout, floated tables, and vertical alignment within cells.
+			</td>
+		</tr>
+	</table>
 </div>
 <br/>
 

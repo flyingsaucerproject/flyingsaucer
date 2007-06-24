@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+		PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Flying Saucer: CSS List Support</title>
+	<link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen"/>
+	<link rel="stylesheet" type="text/css" href="print.css" title="Style" media="print"/>
+	<style type="text/css">
+		ol {
+			counter-reset: section;                /* Creates a new instance of the
+													  section counter with each ol
+													  element */
+			list-style-type: none;
+		  }
+		  li:before {
+			counter-increment: section;            /* Increments only this instance
+													  of the section counter */
+			content: counters(section, ".") " ";   /* Adds the value of all instances
+													  of the section counter separated
+													  by a ".". */
+		  }
+	</style>
+</head>
+<body>
+<p class="link left-link"><a href="demoNav:back">Previous Page</a></p>
+
+<p class="link right-link"><a href="demoNav:forward">Next Page</a></p>
+
+<p id="fslogo">Flying Saucer XML/CSS2 Renderer</p>
+<span id="pagebyline"> CSS Counter Support </span>
+
+<p><b>Counter support includes</b>: Counters, reset, increment, and styles.</p>
+
+<p><em>The following example is taken from the Mozilla project, at http://developer.mozilla.org/en/docs/CSS_Counters</em></p>
+<ol>
+	<li>item</li> <!-- 1     -->
+	<li>item			   <!-- 2     -->
+		<ol>
+			<li>item</li> <!-- 2.1   -->
+			<li>item</li> <!-- 2.2   -->
+			<li>item		   <!-- 2.3   -->
+				<ol>
+					<li>item</li> <!-- 2.3.1 -->
+					<li>item</li> <!-- 2.3.2 -->
+				</ol>
+				<ol>
+					<li>item</li> <!-- 2.3.1 -->
+					<li>item</li> <!-- 2.3.2 -->
+					<li>item</li> <!-- 2.3.3 -->
+				</ol>
+			</li>
+			<li>item</li> <!-- 2.4   -->
+		</ol>
+	</li>
+	<li>item</li> <!-- 3     -->
+	<li>item</li> <!-- 4     -->
+</ol>
+<ol>
+	<li>item</li> <!-- 1     -->
+	<li>item</li> <!-- 2     -->
+</ol>
+
+<p>where the CSS is</p>
+<pre>
+ol {
+    /* create a new 'section' counter */
+    counter-reset: section;
+
+    list-style-type: none;
+}
+	
+li:before {
+    /* increment this instance of the section counter */
+    counter-increment: section;
+
+    /* Adds the value of all instances of the section counter separated by a ".". */
+    content: counters(section, ".") " ";
+}
+</pre>
+<p>and the content is</p>
+<pre>
+&lt;ol&gt;
+	&lt;li&gt;item&lt;/li&gt; &lt;!-- 1     --&gt;
+	&lt;li&gt;item			   &lt;!-- 2     --&gt;
+		&lt;ol&gt;
+			&lt;li&gt;item&lt;/li&gt; &lt;!-- 2.1   --&gt;
+			&lt;li&gt;item&lt;/li&gt; &lt;!-- 2.2   --&gt;
+			&lt;li&gt;item		   &lt;!-- 2.3   --&gt;
+				&lt;ol&gt;
+					&lt;li&gt;item&lt;/li&gt; &lt;!-- 2.3.1 --&gt;
+					&lt;li&gt;item&lt;/li&gt; &lt;!-- 2.3.2 --&gt;
+				&lt;/ol&gt;
+				&lt;ol&gt;
+					&lt;li&gt;item&lt;/li&gt; &lt;!-- 2.3.1 --&gt;
+					&lt;li&gt;item&lt;/li&gt; &lt;!-- 2.3.2 --&gt;
+					&lt;li&gt;item&lt;/li&gt; &lt;!-- 2.3.3 --&gt;
+				&lt;/ol&gt;
+			&lt;/li&gt;
+			&lt;li&gt;item&lt;/li&gt; &lt;!-- 2.4   --&gt;
+		&lt;/ol&gt;
+	&lt;/li&gt;
+	&lt;li&gt;item&lt;/li&gt; &lt;!-- 3     --&gt;
+	&lt;li&gt;item&lt;/li&gt; &lt;!-- 4     --&gt;
+&lt;/ol&gt;
+&lt;ol&gt;
+	&lt;li&gt;item&lt;/li&gt; &lt;!-- 1     --&gt;
+	&lt;li&gt;item&lt;/li&gt; &lt;!-- 2     --&gt;
+&lt;/ol&gt;
+</pre>
+</body>
+</html>

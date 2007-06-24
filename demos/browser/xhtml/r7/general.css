@@ -49,8 +49,9 @@
     position: absolute;
     top: 0px;
     right: 0px; 
-    text-align: right; 
-    }
+    text-align: right;
+		cursor: wait;
+	}
 
     .left-link, .right-link {
     background-color: white;
