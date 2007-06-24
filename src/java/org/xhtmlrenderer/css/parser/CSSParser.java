@@ -71,7 +71,12 @@ public class CSSParser {
             skip_whitespace();
             
             Ruleset result = new Ruleset(origin);
-            declaration_list(result, true);
+            
+            try {
+                declaration_list(result, true);
+            } catch (CSSParseException e) {
+                // ignore, already handled
+            }
             
             return result;
         } catch (IOException e) {
