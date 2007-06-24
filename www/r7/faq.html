@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link href="../base.css" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+#logo { float: left;
+  }
+.clearit { clear: both;
+  }
+h2 { width: 500px;
+  }
+ul#m2 { border: 1px solid black;
+  float: right;
+  }
+block { border: 0px solid black;
+  display: block;
+  padding-left: 4em;
+  }
+.axial { border: 1px solid black; display: none;}
+p.screenshot { text-align: center; }
+p.screenshot img { border-width: 0px; }
+  </style>
+</head>
+<body>
+
+<div id="fs">
+
+<ul id="menu">
+<li><b>About Flying Saucer</b>
+<ul>
+ <li><a href="https://xhtmlrenderer.dev.java.net/index.html">Home Page</a></li>
+ <li><a href="https://xhtmlrenderer.dev.java.net/r6/feature-list.html">Feature List</a></li>
+ <li><a href="https://xhtmlrenderer.dev.java.net/r6/faq.html">The FAQ</a></li>
+ <li><a href="http://www.gnu.org/copyleft/lesser.html">License (LGPL)</a></li>
+</ul>
+</li>
+<li><b>Download - Stable</b>
+<ul>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6.zip"><strong>Release 6</strong></a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-src.zip"><strong>Release 6-Source, Samples, Docs</strong></a></li>
+</ul>
+</li>
+<li><b>Download - Development</b>
+<ul>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer_R7pre1.zip"><strong>Release 7-pre1</strong></a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer_R7pre1-src.zip"><strong>Release 7-pre1-Source, Samples, Docs</strong></a></li>
+</ul>
+</li>
+<li><b>Documentation&nbsp;-&nbsp;R6 Release</b>
+<ul>
+<li><a href="https://xhtmlrenderer.dev.java.net/r6/users-guide-r6.html"><b>User's Guide (HTML)</b></a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/r6/users-guide-r6.pdf"><b>User's Guide (PDF)</b></a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/doc/user/api/">Simple JavaDocs (R6)</a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/doc/full/api/">Full JavaDocs (R6)</a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/r6/screenshots.html">Screenshots</a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/r6/demos.html">Demo apps</a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/r6/references.html">References</a></li>
+</ul>
+</li>
+<li><b>Contribute</b>
+<ul>
+<li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">Dev mailing list</a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">User mailing list</a></li>
+<li><a href="http://wiki.java.net/bin/view/Javadesktop/XHTMLRenderer">FS Wiki</a></li>
+<li><a href="http://wiki.java.net/bin/view/Javadesktop/WackyIdeasWiki">FS Wacky Wiki</a></li>
+</ul>
+</li>
+<li id="newsfeed"><b><a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS" border="0">News Feed<img src="https://java-net.dev.java.net/branding/images/xml.gif" border="0"></a></b>
+</li>
+</ul>
+
+<h1 id="id1">The Flying Saucer <span class="caps">FAQ</span></h1>
+
+<p>This is our list of frequently-asked questions. With release R6, we moved a bunch of the material from here into our <a href="users-guide-r6#.pdf">Flying Saucer User's Guide</a>. Please contact us on our <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">mailing list</a> if you have more questions.</p>
+
+<h2 class="fs_heading" id="id2" style="clear:none;">General Questions</h2>
+
+<ol class="toc">
+  <li><a href="#id3"> What is Flying Saucer? </a></li>
+  <li><a href="#id4"> Does Flying Saucer support legacy <span class="caps">HTML</span>? </a></li>
+  <li><a href="#id5"> Can I use Flying Saucer to browse websites? </a></li>
+  <li><a href="#id6"> Is Flying Saucer a web browser? </a></li>
+  <li><a href="#id7"> What kind of applications can I use Flying Saucer for? </a></li>
+  <li><a href="#id8"> What <span class="caps">XHTML</span>/CSS features does Flying Saucer currently support? </a></li>
+  <li><a href="#id9"> What <span class="caps">XHTML</span>/CSS features is Flying Saucer missing? </a></li>
+  <li><a href="#id10"> How do I make my program follow hyperlinks? </a></li>
+  <li><a href="#id11"> How do I get access to the Swing components that make up my form fields? </a></li>
+  <li><a href="#id12"> I have <span class="caps">XML</span> or <span class="caps">XHTML</span> stored in a Java String, not a file&#8212;how do I load this into an XHTMLPanel? </a></li>
+</ol>
+
+<h3 class="fs_heading" id="id3" style="clear:none;">What is Flying Saucer?</h3>
+
+<p>Flying Saucer is an <span class="caps">XHTML</span> renderer written in Java. It's 100% Java, not a native wrapper, and it only handles valid <span class="caps">XHTML</span> + <span class="caps">CSS</span>. It is intended for embedding web-based user interfaces into Java applications (ex. web photo album generator, help viewer, iTunes Music Store clone). It cannot be used as a general purpose webbrowser since it does not support the malformed legacy <span class="caps">HTML</span> found on the web, though recent work on compatibility libraries may be enough to do what you need. See JTidy integration</p>
+
+<h3 class="fs_heading" id="id4" style="clear:none;">Does Flying Saucer support legacy <span class="caps">HTML</span>?</h3>
+
+<h3 class="fs_heading" id="id5" style="clear:none;">Can I use Flying Saucer to browse websites?</h3>
+
+<p>Flying Saucer is not an <span class="caps">HTML</span> component. It is a rendering component for <span class="caps">XHTML</span> content, but it cannot handle the malformed <span class="caps">HTML</span> 4.0 of general webpages, and it has no support for purely stylistic markup like <span class="caps">FONT</span> and <span class="caps">CENTER</span>. You have to use valid <span class="caps">XHTML</span> and <span class="caps">CSS</span>. For most embedded uses this is fine since the application author usually has control over the documents to be loaded. If you really need full IE/Mozilla/Safari like fidelity for general purpose webpages you should look into a webbrowser wrapper like <span class="caps">JDIC</span>'s Browser component.</p>
+
+<h3 class="fs_heading" id="id6" style="clear:none;">Is Flying Saucer a web browser?</h3>
+
+<p>The core renderer just handles <span class="caps">XHTML</span> and <span class="caps">CSS</span>. It doesn't know anything about form submission, managing cookies, or tracking the browsing history. It just renders <span class="caps">XHTML</span>/CSS to the screen. However, Flying Saucer does include a Browser application which provides these features and more. You can use this as a good starting point for your own applications.</p>
+
+<h3 class="fs_heading" id="id7" style="clear:none;">What kind of applications can I use Flying Saucer for?</h3>
+
+<p>Flying Saucer can be used for any Java application that requires some sort of styled text. This can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. Flying Saucer is very forward thinking and is designed to be a part of the next generation of applications that combine rich desktop clients with web content. Some examples of application types are:</p>
+
+<ul>
+  <li>chat programs</li>
+  <li>online music stores</li>
+  <li>a Gutenberg eBook reader</li>
+  <li>a distributed dictionary application</li>
+  <li>Sherlock style map and movie search</li>
+  <li>Konfabulator and Dashboard components</li>
+  <li>an <span class="caps">RSS</span> reader</li>
+  <li>a Friendster client</li>
+  <li>an eBay client</li>
+  <li>a splash screen</li>
+  <li>an about box</li>
+  <li>a helpfile viewer</li>
+  <li>a javadoc viewer</li>
+  <li>report generation and viewing</li>
+  <li>a stock ticker / weather reporter</li>
+</ul>
+
+<h3 class="fs_heading" id="id8" style="clear:none;">What <span class="caps">XHTML</span>/CSS features does Flying Saucer currently support?</h3>
+
+<p>With our R6 release it supports most of the common <span class="caps">XHTML</span> and <span class="caps">CSS</span> features. This includes:</p>
+
+<ul>
+  <li>text and images (paragraphs, bold, italics, fonts, alignment, etc)</li>
+  <li>the box model (borders, backgrounds, padding, margins)</li>
+  <li>forms</li>
+  <li>tables</li>
+  <li>list items</li>
+  <li>most <span class="caps">CSS</span> properties and shorthands</li>
+  <li>float, absolute, relative, and fixed positioning support</li>
+</ul>
+
+<h3 class="fs_heading" id="id9" style="clear:none;">What <span class="caps">XHTML</span>/CSS features is Flying Saucer missing?</h3>
+
+<p>The only major feature missing as of R6 is the automatic table model (the old Netscape style of tables where the size of the content determined the size of the cells.) Fixed layout tables are supported. Other than that it's just a matter of squashing more bugs and getting more speed.</p>
+
+<p>There is also no support for things outside the scope of <span class="caps">XHTML</span>/CSS such as Javascript, printing, Flash, <span class="caps">SVG</span>, or legacy <span class="caps">HTML</span> (though there is interest in all of those).</p>
+
+<h3 class="fs_heading" id="id10" style="clear:none;">How do I make my program follow hyperlinks?</h3>
+
+<p>You need a mouse listener that detects link clicks and does the <span class="caps">HTTP</span> request. The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish. See the <code>org.xhtmlrenderer.swing.LinkListener</code> class for an example.</p>
+
+<h3 class="fs_heading" id="id11" style="clear:none;">How do I get access to the Swing components that make up my form fields?</h3>
+
+<p>Take a look at the <code>org.xhtmlrenderer.simple.extend.XhtmlForm</code> class. Form elements are "replaced" at runtime by the <code>org.xhtmlrenderer.swing.SwingReplacedElementFactory</code> if you're using the <code>XHTMLPanel</code> class for rendering. The factory actually creates a new XhtmlForm class which creates and tracks the components. There is a <code>submit()</code> method in there that you can follow as an starting point.</p>
+
+<h3 class="fs_heading" id="id12" style="clear:none;">I have <span class="caps">XML</span> or <span class="caps">XHTML</span> stored in a Java String, not a file&#8212;how do I load this into an XHTMLPanel?</h3>
+
+<p>It's been tricky for us to come up with a decent set of method calls to cover initilizing the panel without creating tons of little methods.</p>
+
+<p>In Java APIs, there is some confusion on usage between a String that represents an address (like a <span class="caps">URI</span> or a file path) and strings that represent content. Our <span class="caps">API</span> tends to expect that Strings will represent addresses.</p>
+
+<p>In the R6 codebase you can use <code>panel.setDocumentFromString()</code> to do this. The String will be passed to the standard <span class="caps">XML</span> parser and treated as a regular document.</p>
+
+<p>It's important to remember that FS expects well-formed <span class="caps">XML</span> documents, and we don't have an extremely friendly relationship with the <span class="caps">XML</span> parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java <span class="caps">XML</span> APIs, before loading them in FS.</p>
+
+<h2 class="fs_heading" id="id13" style="clear:none;">Developer's <span class="caps">FAQ</span></h2>
+
+<ol class="toc">
+  <li><a href="#id14"> How do I set up my <span class="caps">CLASSPATH</span>? </a></li>
+  <li><a href="#id15"> How do I build XR without Ant? </a></li>
+  <li><a href="#id16"> How do I build XR from within my <span class="caps">IDE</span>? </a></li>
+</ol>
+
+<h3 class="fs_heading" id="id14" style="clear:none;">How do I set up my <span class="caps">CLASSPATH</span>?</h3>
+
+<p>You only need the </p>
+
+<ul>
+  <li><code>core-renderer.jar</code> (required)</li>
+  <li><code>lib/cssparser-0-9-4-fs.jar</code> (required)</li>
+  <li><code>lib/itext-paulo-155.jar</code></li>
+  <li><code>lib/minium.jar</code>.</li>
+</ul>
+
+<p>The first two are required; iText is needed for <span class="caps">PDF</span> rendering, and Minium if you need Minium anti-aliasing.</p>
+
+<p>That is all you need for your own programs. You also need an <span class="caps">XML</span> parser to be in your classpath, but this already included in recent versions of the <span class="caps">JRE</span>. To run the browser or use any of it's support classes you will need the browser.jar file.</p>
+
+<h3 class="fs_heading" id="id15" style="clear:none;">How do I build XR without Ant?</h3>
+
+<h3 class="fs_heading" id="id16" style="clear:none;">How do I build XR from within my <span class="caps">IDE</span>?</h3>
+
+<p>Our Ant <code>build.xml</code> file includes all <span class="caps">JAR</span> files in the <code>/lib</code> directory, plus the <code>/resources</code> directory tree in the classpath. The compile target also copies <span class="caps">CSS</span> and properties resources from <code>/src/css</code> and <code>src/conf</code> to <code>/build/resources</code>. If running from an <span class="caps">IDE</span>, you will need to synchronize this yourself.</p>
+
+</div>
+
+</body>
+</html>
+

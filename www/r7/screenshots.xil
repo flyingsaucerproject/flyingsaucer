@@ -1,0 +1,22 @@
+include. ../include/common-includes.inc
+
+divStart(#fs).
+
+include. ../include/menu.xil
+
+h1. Have You Seen the Saucer? 
+
+Here are screenshots of ${fs} in action. Click on an image to see it full-size. These are all taken from our "demo apps":./demos.html.
+
+| !../screenshots/backgrounds-thumb.png!:../screenshots/backgrounds.png | Image, colored, opaque and transparent backgrounds
+| !../screenshots/formatted-thumb.png!:../screenshots/formatted.png | Formatted text using CSS
+| !../screenshots/font-size-thumb.png!:../screenshots/font-size.png | Font-size control using absolute font sizes, %, em and ex
+| !../screenshots/positioned-thumb.png!:../screenshots/positioned.png | Positioned text and floats
+| !../screenshots/z-index-thumb.png!:../screenshots/z-index.png | Z-index positioning
+| !../screenshots/tables-thumb.png!:../screenshots/tables.png | Tables
+| !../screenshots/alice-thumb.png!:../screenshots/alice.png | Embed floats in text blocks
+| !../screenshots/pure-xml-thumb.png!:../screenshots/pure-xml.png | Render pure XML embedded in XHTML using only CSS
+| !../screenshots/docbook-thumb.png!:../screenshots/docbook.png | Render DocBook XML using only CSS
+| !../screenshots/svg-thumb.png!:../screenshots/svg.png | Render embedded SVG using external libraries like SVGSalamander
+
+divEnd.

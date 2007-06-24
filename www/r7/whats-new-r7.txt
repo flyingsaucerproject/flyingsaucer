@@ -1,0 +1,37 @@
+https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?listName=dev&msgNo=3232
+ - Complete rewrite of table support.  Current table support includes:
+   - Floated tables
+   - display: inline-table
+   - display: table-caption (caption in (X)HTML)
+   - display: table-header-group, display: table-row-group, and
+table-footer-group (thead, tbody, and tfoot in (X)HTML)
+   - table-layout: fixed
+   - table-layout: auto (complete support, see below)
+   - Table box construction and layout follows the same code path as
+everything else
+   - display: table-column and display: table-column-group (col and
+colgroup in (X)HTML)
+   - vertical-align in table cells
+   - Full support for anonymous tables (with the exception that a
+table-column-group element won't force a table to be created.  This
+turned out to be awkward to implement [and marginally useful it would
+seem...])
+
+improvements to XHTML forms support (for Swing)
+- hidden fields
+- button reset
+
+font property accuracy
+
+css parser
+- new, part of FS library
+- faster
+- compliant
+- reports errors accurately
+
+counter support:
+- includes lower-latin, lower-alpha, upper-latin, upper-alpha,
+lower-roman, upper-roman, decimal-leading-zero, and decimal
+
+content support:
+- everything except quotes and external resources (content: url(...))
