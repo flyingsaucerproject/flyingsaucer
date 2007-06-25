@@ -191,6 +191,10 @@ public class VerticalAlignContext {
         }
     }
     
+    public void setInitialMeasurements(InlineBoxMeasurements measurements) {
+        _measurements.add(measurements);
+    }
+    
     private static final class ChildContextData {
         private Box _root;
         private VerticalAlignContext _verticalAlignContext;

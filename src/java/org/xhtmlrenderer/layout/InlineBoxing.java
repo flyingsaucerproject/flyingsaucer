@@ -449,7 +449,7 @@ public class InlineBoxing {
             FSFontMetrics strutM = container.getStyle().getFSFontMetrics(c);
             VerticalAlignContext vaContext = new VerticalAlignContext();
             InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutM);
-            vaContext.pushMeasurements(measurements);
+            vaContext.setInitialMeasurements(measurements);
             
             List lBDecorations = calculateTextDecorations(
                     container, measurements.getBaseline(), strutM);
@@ -664,7 +664,7 @@ public class InlineBoxing {
         float lineHeight = container.getStyle().getLineHeight(c);
 
         int halfLeading = Math.round((lineHeight - 
-                (strutM.getAscent() + strutM.getDescent())) / 2);
+                container.getStyle().getFont(c).size) / 2);
 
         InlineBoxMeasurements measurements = new InlineBoxMeasurements();
         measurements.setBaseline((int) (halfLeading + strutM.getAscent()));
