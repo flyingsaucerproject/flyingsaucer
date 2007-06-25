@@ -106,27 +106,6 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
 	}
 
 	/**
-	 * Overriden for FSScrollPane
-	 */
-	public Dimension getPreferredSize() {
-		return getSize();
-	}
-
-	/**
-	 * Overriden for FSScrollPane
-	 */
-	public Dimension getMinimumSize() {
-		return getSize();
-	}
-
-	/**
-	 * Overriden for FSScrollPane
-	 */
-	public Dimension getMaximumSize() {
-		return getSize();
-	}
-
-	/**
 	 * Search Box according to scale factor
 	 *
 	 * @param x The displayed x position
@@ -197,7 +176,8 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
 
 		if (lastLayoutSize == null) {
 			lastLayoutSize = layoutSize;
-			setSize((int) (lastLayoutSize.width * scale), (int) (lastLayoutSize.height * scale));
+			setPreferredSize(new Dimension((int) (lastLayoutSize.width * scale), (int) (lastLayoutSize.height * scale)));
+            revalidate();
 		}
 
 		g.transform(AffineTransform.getScaleInstance(scale, scale));
