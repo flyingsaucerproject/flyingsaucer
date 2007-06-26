@@ -548,7 +548,11 @@ public class InlineBoxing {
         float lineHeight = style.getLineHeight(c);
 
         int halfLeading = Math.round((lineHeight - iB.getStyle().getFont(c).size) / 2);
-
+        if (halfLeading > 0) {
+            halfLeading = Math.round((lineHeight - 
+                    (fm.getDescent() + fm.getAscent())) / 2);
+        }
+        
         iB.setBaseline(Math.round(fm.getAscent()));
 
         alignInlineContent(c, iB, fm.getAscent(), fm.getDescent(), vaContext);
@@ -665,6 +669,10 @@ public class InlineBoxing {
 
         int halfLeading = Math.round((lineHeight - 
                 container.getStyle().getFont(c).size) / 2);
+        if (halfLeading > 0) {
+            halfLeading = Math.round((lineHeight - 
+                    (strutM.getDescent() + strutM.getAscent())) / 2);
+        }
 
         InlineBoxMeasurements measurements = new InlineBoxMeasurements();
         measurements.setBaseline((int) (halfLeading + strutM.getAscent()));

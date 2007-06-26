@@ -234,5 +234,9 @@ public class RenderingContext implements CssContext {
     public StyleReference getCss() {
         return sharedContext.getCss();
     }
+    
+    public FSFontMetrics getFSFontMetrics(FSFont font) {
+        return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
+    }    
 }
 

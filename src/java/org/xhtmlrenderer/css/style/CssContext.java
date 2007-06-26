@@ -3,6 +3,7 @@ package org.xhtmlrenderer.css.style;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.render.FSFontMetrics;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,4 +27,6 @@ public interface CssContext {
     // the only common interface of LayoutContext
     // and RenderingContext
     StyleReference getCss();
+    
+    FSFontMetrics getFSFontMetrics(FSFont font);
 }

@@ -28,7 +28,6 @@ import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.derived.*;
 import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.util.XRLog;
@@ -399,7 +398,12 @@ public class CalculatedStyle {
     public float getLineHeight(CssContext ctx) {
         if (! _lineHeightResolved) {
             if (isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
-                _lineHeight = getFont(ctx).size * 1.1f;//css recommends something between 1.0 and 1.2
+                float lineHeight1 = getFont(ctx).size * 1.1f;
+                // Make sure rasterized characters will (probably) fit inside
+                // the line box
+                FSFontMetrics metrics = getFSFontMetrics(ctx);
+                float lineHeight2 = (float)Math.ceil(metrics.getDescent() + Math.round(metrics.getAscent()));
+                _lineHeight = Math.max(lineHeight1, lineHeight2);
             } else if (isLength(CSSName.LINE_HEIGHT)) {
                 //could be more elegant, I suppose
                 _lineHeight = getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, 0, ctx);
@@ -704,10 +708,9 @@ public class CalculatedStyle {
         return _FSFont;
     }
 
-    public FSFontMetrics getFSFontMetrics(LayoutContext c) {
+    public FSFontMetrics getFSFontMetrics(CssContext c) {
         if (_FSFontMetrics == null) {
-            _FSFontMetrics = c.getTextRenderer().getFSFontMetrics(
-                    c.getFontContext(), getFSFont(c), "");
+            _FSFontMetrics = c.getFSFontMetrics(getFSFont(c));
         }
         return _FSFontMetrics;
     }
@@ -1114,6 +1117,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.97  2007/06/26 18:24:52  peterbrant
+ * Improve calculation of line-height: normal / If leading is positive, recalculate to center glyph area in inline box
+ *
  * Revision 1.96  2007/06/19 22:31:46  peterbrant
  * Only cache all zeros margin, border, padding.  See discussion on bug #147 for more info.
  *

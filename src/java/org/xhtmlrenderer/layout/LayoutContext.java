@@ -30,6 +30,7 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.swing.RootPanel;
 
@@ -60,6 +61,8 @@ public class LayoutContext implements CssContext {
 
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
+    
+    private Map _counterContextMap = new HashMap();
 
     public TextRenderer getTextRenderer() {
         return _sharedContext.getTextRenderer();
@@ -295,14 +298,16 @@ public class LayoutContext implements CssContext {
     public void resolveCounters(CalculatedStyle style) {
         //new context for child elements
         CounterContext cc = new CounterContext(style);
-        counterContextMap.put(style, cc);
+        _counterContextMap.put(style, cc);
     }
 
     public CounterContext getCounterContext(CalculatedStyle style) {
-        return (CounterContext) counterContextMap.get(style);
+        return (CounterContext) _counterContextMap.get(style);
     }
 
-    private Map counterContextMap = new HashMap();
+    public FSFontMetrics getFSFontMetrics(FSFont font) {
+        return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
+    }
 
     public class CounterContext {
         private Map _counters = new HashMap();
@@ -319,7 +324,7 @@ public class LayoutContext implements CssContext {
          * @param style
          */
         CounterContext(CalculatedStyle style) {
-            _parent = (LayoutContext.CounterContext) counterContextMap.get(style.getParent());
+            _parent = (LayoutContext.CounterContext) _counterContextMap.get(style.getParent());
             if (_parent == null) _parent = new CounterContext();//top-level context, above root element
             //first the explicitly named counters
             List resets = style.getCounterReset();
