@@ -74,44 +74,44 @@ v</ul>
 </li>
 </ul>
 
-<h1 id="id2">The Flying Saucer <span class="caps">FAQ</span></h1>
+<h1 id="id9">The Flying Saucer <span class="caps">FAQ</span></h1>
 
 <p>This is our list of frequently-asked questions. With release R6, we moved a bunch of the material from here into our <a href="users-guide-r7rc1#.pdf">Flying Saucer User's Guide</a>. Please contact us on our <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">mailing list</a> if you have more questions.</p>
 
 <p>_Note: we are in the process of updating this <span class="caps">FAQ</span> for our R7 release. Please post questions to our <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList!_">mailing list</a></p>
 
-<h2 class="fs_heading" id="id3" style="clear:none;">General Questions</h2>
+<h2 class="fs_heading" id="id10" style="clear:none;">General Questions</h2>
 
 <ol class="toc">
-  <li><a href="#id4"> What is Flying Saucer? </a></li>
-  <li><a href="#id5"> Does Flying Saucer support legacy <span class="caps">HTML</span>? </a></li>
-  <li><a href="#id6"> Can I use Flying Saucer to browse websites? </a></li>
-  <li><a href="#id7"> Is Flying Saucer a web browser? </a></li>
-  <li><a href="#id8"> What kind of applications can I use Flying Saucer for? </a></li>
-  <li><a href="#id9"> What <span class="caps">XHTML</span>/CSS features does Flying Saucer currently support? </a></li>
-  <li><a href="#id10"> What <span class="caps">XHTML</span>/CSS features is Flying Saucer missing? </a></li>
-  <li><a href="#id11"> How do I make my program follow hyperlinks? </a></li>
-  <li><a href="#id12"> How do I get access to the Swing components that make up my form fields? </a></li>
-  <li><a href="#id13"> I have <span class="caps">XML</span> or <span class="caps">XHTML</span> stored in a Java String, not a file&#8212;how do I load this into an XHTMLPanel? </a></li>
+  <li><a href="#id11"> What is Flying Saucer? </a></li>
+  <li><a href="#id12"> Does Flying Saucer support legacy <span class="caps">HTML</span>? </a></li>
+  <li><a href="#id13"> Can I use Flying Saucer to browse websites? </a></li>
+  <li><a href="#id14"> Is Flying Saucer a web browser? </a></li>
+  <li><a href="#id15"> What kind of applications can I use Flying Saucer for? </a></li>
+  <li><a href="#id16"> What <span class="caps">XHTML</span>/CSS features does Flying Saucer currently support? </a></li>
+  <li><a href="#id17"> What <span class="caps">XHTML</span>/CSS features is Flying Saucer missing? </a></li>
+  <li><a href="#id18"> How do I make my program follow hyperlinks? </a></li>
+  <li><a href="#id19"> How do I get access to the Swing components that make up my form fields? </a></li>
+  <li><a href="#id20"> I have <span class="caps">XML</span> or <span class="caps">XHTML</span> stored in a Java String, not a file&#8212;how do I load this into an XHTMLPanel? </a></li>
 </ol>
 
-<h3 class="fs_heading" id="id4" style="clear:none;">What is Flying Saucer?</h3>
+<h3 class="fs_heading" id="id11" style="clear:none;">What is Flying Saucer?</h3>
 
 <p>Flying Saucer is an <span class="caps">XHTML</span> renderer written in Java. It's 100% Java, not a native wrapper, and it only handles valid <span class="caps">XHTML</span> + <span class="caps">CSS</span>. It is intended for embedding web-based user interfaces into Java applications (ex. web photo album generator, help viewer, iTunes Music Store clone). It cannot be used as a general purpose webbrowser since it does not support the malformed legacy <span class="caps">HTML</span> found on the web, though recent work on compatibility libraries may be enough to do what you need. You may be able to work with legacy <span class="caps">HTML</span> (e.g. <span class="caps">HTML</span> that is not valid <span class="caps">XML</span>)<br />
 by using a pre-processor that cleans it up; there are several of these, <br />
 including JTidy and TagSoup. See our <a href="users-guide-r7rc1#.pdf">User's Guide</a> for details.</p>
 
-<h3 class="fs_heading" id="id5" style="clear:none;">Does Flying Saucer support legacy <span class="caps">HTML</span>?</h3>
+<h3 class="fs_heading" id="id12" style="clear:none;">Does Flying Saucer support legacy <span class="caps">HTML</span>?</h3>
 
-<h3 class="fs_heading" id="id6" style="clear:none;">Can I use Flying Saucer to browse websites?</h3>
+<h3 class="fs_heading" id="id13" style="clear:none;">Can I use Flying Saucer to browse websites?</h3>
 
 <p>Flying Saucer is not an <span class="caps">HTML</span> component. It is a rendering component for <span class="caps">XHTML</span> content, but it cannot handle the malformed <span class="caps">HTML</span> 4.0 of general webpages, and it has no support for purely stylistic markup like <span class="caps">FONT</span> and <span class="caps">CENTER</span>. You have to use valid <span class="caps">XHTML</span> and <span class="caps">CSS</span>. For most embedded uses this is fine since the application author usually has control over the documents to be loaded. If you really need full IE/Mozilla/Safari like fidelity for general purpose webpages you should look into a webbrowser wrapper like <span class="caps">JDIC</span>'s Browser component.</p>
 
-<h3 class="fs_heading" id="id7" style="clear:none;">Is Flying Saucer a web browser?</h3>
+<h3 class="fs_heading" id="id14" style="clear:none;">Is Flying Saucer a web browser?</h3>
 
 <p>The core renderer just handles <span class="caps">XHTML</span> and <span class="caps">CSS</span>. It doesn't know anything about form submission, managing cookies, or tracking the browsing history. It just renders <span class="caps">XHTML</span>/CSS to the screen. However, Flying Saucer does include a Browser application which provides these features and more. You can use this as a good starting point for your own applications.</p>
 
-<h3 class="fs_heading" id="id8" style="clear:none;">What kind of applications can I use Flying Saucer for?</h3>
+<h3 class="fs_heading" id="id15" style="clear:none;">What kind of applications can I use Flying Saucer for?</h3>
 
 <p>Flying Saucer can be used for any Java application that requires some sort of styled text. This can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. Flying Saucer is very forward thinking and is designed to be a part of the next generation of applications that combine rich desktop clients with web content. Some examples of application types are:</p>
 
@@ -133,7 +133,7 @@ including JTidy and TagSoup. See our <a href="users-guide-r7rc1#.pdf">User's Gui
   <li>a stock ticker / weather reporter</li>
 </ul>
 
-<h3 class="fs_heading" id="id9" style="clear:none;">What <span class="caps">XHTML</span>/CSS features does Flying Saucer currently support?</h3>
+<h3 class="fs_heading" id="id16" style="clear:none;">What <span class="caps">XHTML</span>/CSS features does Flying Saucer currently support?</h3>
 
 <p>With our R6 release it supports most of the common <span class="caps">XHTML</span> and <span class="caps">CSS</span> features. This includes:</p>
 
@@ -147,21 +147,21 @@ including JTidy and TagSoup. See our <a href="users-guide-r7rc1#.pdf">User's Gui
   <li>float, absolute, relative, and fixed positioning support</li>
 </ul>
 
-<h3 class="fs_heading" id="id10" style="clear:none;">What <span class="caps">XHTML</span>/CSS features is Flying Saucer missing?</h3>
+<h3 class="fs_heading" id="id17" style="clear:none;">What <span class="caps">XHTML</span>/CSS features is Flying Saucer missing?</h3>
 
 <p>The only major feature missing as of R6 is the automatic table model (the old Netscape style of tables where the size of the content determined the size of the cells.) Fixed layout tables are supported. Other than that it's just a matter of squashing more bugs and getting more speed.</p>
 
 <p>There is also no support for things outside the scope of <span class="caps">XHTML</span>/CSS such as Javascript, printing, Flash, <span class="caps">SVG</span>, or legacy <span class="caps">HTML</span> (though there is interest in all of those).</p>
 
-<h3 class="fs_heading" id="id11" style="clear:none;">How do I make my program follow hyperlinks?</h3>
+<h3 class="fs_heading" id="id18" style="clear:none;">How do I make my program follow hyperlinks?</h3>
 
 <p>You need a mouse listener that detects link clicks and does the <span class="caps">HTTP</span> request. The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish. See the <code>org.xhtmlrenderer.swing.LinkListener</code> class for an example.</p>
 
-<h3 class="fs_heading" id="id12" style="clear:none;">How do I get access to the Swing components that make up my form fields?</h3>
+<h3 class="fs_heading" id="id19" style="clear:none;">How do I get access to the Swing components that make up my form fields?</h3>
 
 <p>Take a look at the <code>org.xhtmlrenderer.simple.extend.XhtmlForm</code> class. Form elements are "replaced" at runtime by the <code>org.xhtmlrenderer.swing.SwingReplacedElementFactory</code> if you're using the <code>XHTMLPanel</code> class for rendering. The factory actually creates a new XhtmlForm class which creates and tracks the components. There is a <code>submit()</code> method in there that you can follow as an starting point.</p>
 
-<h3 class="fs_heading" id="id13" style="clear:none;">I have <span class="caps">XML</span> or <span class="caps">XHTML</span> stored in a Java String, not a file&#8212;how do I load this into an XHTMLPanel?</h3>
+<h3 class="fs_heading" id="id20" style="clear:none;">I have <span class="caps">XML</span> or <span class="caps">XHTML</span> stored in a Java String, not a file&#8212;how do I load this into an XHTMLPanel?</h3>
 
 <p>It's been tricky for us to come up with a decent set of method calls to cover initilizing the panel without creating tons of little methods.</p>
 
@@ -171,15 +171,15 @@ including JTidy and TagSoup. See our <a href="users-guide-r7rc1#.pdf">User's Gui
 
 <p>It's important to remember that FS expects well-formed <span class="caps">XML</span> documents, and we don't have an extremely friendly relationship with the <span class="caps">XML</span> parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java <span class="caps">XML</span> APIs, before loading them in FS.</p>
 
-<h2 class="fs_heading" id="id14" style="clear:none;">Developer's <span class="caps">FAQ</span></h2>
+<h2 class="fs_heading" id="id21" style="clear:none;">Developer's <span class="caps">FAQ</span></h2>
 
 <ol class="toc">
-  <li><a href="#id15"> How do I set up my <span class="caps">CLASSPATH</span>? </a></li>
-  <li><a href="#id16"> How do I build XR without Ant? </a></li>
-  <li><a href="#id17"> How do I build XR from within my <span class="caps">IDE</span>? </a></li>
+  <li><a href="#id22"> How do I set up my <span class="caps">CLASSPATH</span>? </a></li>
+  <li><a href="#id23"> How do I build XR without Ant? </a></li>
+  <li><a href="#id24"> How do I build XR from within my <span class="caps">IDE</span>? </a></li>
 </ol>
 
-<h3 class="fs_heading" id="id15" style="clear:none;">How do I set up my <span class="caps">CLASSPATH</span>?</h3>
+<h3 class="fs_heading" id="id22" style="clear:none;">How do I set up my <span class="caps">CLASSPATH</span>?</h3>
 
 <p>You only need the </p>
 
@@ -194,9 +194,9 @@ including JTidy and TagSoup. See our <a href="users-guide-r7rc1#.pdf">User's Gui
 
 <p>That is all you need for your own programs. You also need an <span class="caps">XML</span> parser to be in your classpath, but this already included in recent versions of the <span class="caps">JRE</span>. To run the browser or use any of it's support classes you will need the browser.jar file.</p>
 
-<h3 class="fs_heading" id="id16" style="clear:none;">How do I build XR without Ant?</h3>
+<h3 class="fs_heading" id="id23" style="clear:none;">How do I build XR without Ant?</h3>
 
-<h3 class="fs_heading" id="id17" style="clear:none;">How do I build XR from within my <span class="caps">IDE</span>?</h3>
+<h3 class="fs_heading" id="id24" style="clear:none;">How do I build XR from within my <span class="caps">IDE</span>?</h3>
 
 <p>Our Ant <code>build.xml</code> file includes all <span class="caps">JAR</span> files in the <code>/lib</code> directory, plus the <code>/resources</code> directory tree in the classpath. The compile target also copies <span class="caps">CSS</span> and properties resources from <code>/src/css</code> and <code>src/conf</code> to <code>/build/resources</code>. If running from an <span class="caps">IDE</span>, you will need to synchronize this yourself.</p>
 
