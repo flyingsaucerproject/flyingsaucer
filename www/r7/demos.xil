@@ -13,7 +13,7 @@ for our R7 Release Candicat 1 release.
 
 *Note: Due to lack of time, only the "browser" demo is downloadable for the R7 Release Candidate 1 release. The other demos will be back shortly. You can always download the code and try them out locally.*
 
-!../images/demobutton.png!:http://www.pdoubleya.com/projects/flyingsaucer/demo/r7rc1/browser/browser_demo.jnlp *Browser*
+!../images/demobutton.png!:http://www.pdoubleya.com/projects/flyingsaucer/demo/r7/browser/browser_demo.jnlp *Browser*
 
 A simple XHTML browser with scrolling, back button, link support, etc. This is not a "real" browser--but you can get an idea of how Flying Saucer can be used in a Real Application.
 
