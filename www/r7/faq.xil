@@ -6,7 +6,9 @@ include. ../include/menu.xil
 
 h1. The ${fs} FAQ
 
-This is our list of frequently-asked questions. With release R6, we moved a bunch of the material from here into our "Flying Saucer User's Guide":users-guide-r7#.pdf. Please contact us on our ${mailing-list.user} if you have more questions.
+This is our list of frequently-asked questions. With release R6, we moved a bunch of the material from here into our "Flying Saucer User's Guide":users-guide-r7rc1#.pdf. Please contact us on our ${mailing-list.user} if you have more questions.
+
+_Note: we are in the process of updating this FAQ for our R7 release. Please post questions to our ${mailing-list.user}!_
 
 h2(fs_heading){clear:none}. General Questions
 
@@ -14,7 +16,9 @@ toc. 3 3 #
 
 h3(fs_heading){clear:none}. What is ${fs}?
 
-${fs} is an XHTML renderer written in Java. It's 100% Java, not a native wrapper, and it only handles valid XHTML + CSS. It is intended for embedding web-based user interfaces into Java applications (ex. web photo album generator, help viewer, iTunes Music Store clone). It cannot be used as a general purpose webbrowser since it does not support the malformed legacy HTML found on the web, though recent work on compatibility libraries may be enough to do what you need. See JTidy integration
+${fs} is an XHTML renderer written in Java. It's 100% Java, not a native wrapper, and it only handles valid XHTML + CSS. It is intended for embedding web-based user interfaces into Java applications (ex. web photo album generator, help viewer, iTunes Music Store clone). It cannot be used as a general purpose webbrowser since it does not support the malformed legacy HTML found on the web, though recent work on compatibility libraries may be enough to do what you need. You may be able to work with legacy HTML (e.g. HTML that is not valid XML)
+by using a pre-processor that cleans it up; there are several of these, 
+including JTidy and TagSoup. See our "User's Guide":users-guide-r7rc1#.pdf for details.
 
 h3(fs_heading){clear:none}. Does ${fs} support legacy HTML? 
 

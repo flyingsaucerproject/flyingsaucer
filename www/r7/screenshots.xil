@@ -6,7 +6,11 @@ include. ../include/menu.xil
 
 h1. Have You Seen the Saucer? 
 
-Here are screenshots of ${fs} in action. Click on an image to see it full-size. These are all taken from our "demo apps":./demos.html.
+h2. Demo Pages
+
+Here are screenshots of ${fs} in action. Click on an image to see it full-size. These are all taken from our "demo apps":./demos.html running in our "browser" demo application. These pages are simple XHTML we threw together to show (and test) our CSS coverage.
+
+We apologize for the thumbnails--this batch was done quickly using a desktop tool--we'll fix them shortly. 
 
 | !../screenshots/backgrounds-thumb.png!:../screenshots/backgrounds.png | Image, colored, opaque and transparent backgrounds
 | !../screenshots/formatted-thumb.png!:../screenshots/formatted.png | Formatted text using CSS
@@ -16,7 +20,26 @@ Here are screenshots of ${fs} in action. Click on an image to see it full-size. 
 | !../screenshots/tables-thumb.png!:../screenshots/tables.png | Tables
 | !../screenshots/alice-thumb.png!:../screenshots/alice.png | Embed floats in text blocks
 | !../screenshots/pure-xml-thumb.png!:../screenshots/pure-xml.png | Render pure XML embedded in XHTML using only CSS
-| !../screenshots/docbook-thumb.png!:../screenshots/docbook.png | Render DocBook XML using only CSS
-| !../screenshots/svg-thumb.png!:../screenshots/svg.png | Render embedded SVG using external libraries like SVGSalamander
+| !../screenshots/hover-thumb.png!:../screenshots/hover.png | The :hover selector
+
+h2. Websites 
+
+Disclaimer: The following screenshots are from publically-available websites and are shown here in order to demonstrate the rendering capabilities of the Flying Saucer rendering panel. Images, content, design etc. belong to the owners of the respective content on the respective websites. URLs to each site are listed by each screenshot.
+
+Many of these sites may be in "legacy" HTML. No tricks were used to load them--however they are all run through the TagSoup HTML parser to convert them to valid XML. You will note some minor problems in rendering some of these sites. 
+
+Taken using JDK 6 running Ubuntu Feisty Fawn with anti-aliasing turned on.
+
+| !../screenshots/w3c-org-thumb.png!:../screenshots/w3c-org.png | W3C Home Page: http://www.w3.org/
+| !../screenshots/css21-spec-thumb.png!:../screenshots/css21-spec.png | CSS 2.1 Specification at W3C: vhttp://www.w3.org/TR/CSS21/
+| !../screenshots/wikipedia-thumb.png!:../screenshots/wikipedia.png | Wikipedia - CSS: http://en.wikipedia.org/wiki/CSS
+| !../screenshots/alistapart-thumb.png!:../screenshots/alistapart.png | A List Apart: http://www.alistapart.com/
+| !../screenshots/java-net-thumb.png!:../screenshots/java-net.png | java.net: http://www.java.net
+| !../screenshots/csszengarden-icicle-thumb.png!:../screenshots/csszengarden-icicle.png | CSS Zen Garden - Icicle Outback, by Timo Virtanen
+
+
+
+
 
 divEnd.
+

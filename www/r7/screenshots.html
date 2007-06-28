@@ -30,8 +30,8 @@ p.screenshot img { border-width: 0px; }
 <li><b>About Flying Saucer</b>
 <ul>
  <li><a href="https://xhtmlrenderer.dev.java.net/index.html">Home Page</a></li>
- <li><a href="https://xhtmlrenderer.dev.java.net/r6/feature-list.html">Feature List</a></li>
- <li><a href="https://xhtmlrenderer.dev.java.net/r6/faq.html">The FAQ</a></li>
+ <li><a href="https://xhtmlrenderer.dev.java.net/r7/feature-list.html">Feature List</a></li>
+ <li><a href="https://xhtmlrenderer.dev.java.net/r7/faq.html">The FAQ</a></li>
  <li><a href="http://www.gnu.org/copyleft/lesser.html">License (LGPL)</a></li>
 </ul>
 </li>
@@ -41,13 +41,15 @@ p.screenshot img { border-width: 0px; }
 <li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-src.zip"><strong>Release 6-Source, Samples, Docs</strong></a></li>
 </ul>
 </li>
-<li><b>Download - Development</b>
+<li><b>Download - Release Candidate</b>
 <ul>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer_R7pre1.zip"><strong>Release 7-pre1</strong></a></li>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer_R7pre1-src.zip"><strong>Release 7-pre1-Source, Samples, Docs</strong></a></li>
-</ul>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc1.zip"><strong>Release 7 Release Candidate 1</strong></a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc1-src.zip"><strong>Release 7 Release Candidate 1 Source, Samples, Docs</strong></a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/r7/screenshots.html">Screenshots</a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/r7/demos.html">Demo apps</a></li>
+v</ul>
 </li>
-<li><b>Documentation&nbsp;-&nbsp;R6 Release</b>
+<li><b>R6 Release</b>
 <ul>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/users-guide-r6.html"><b>User's Guide (HTML)</b></a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/users-guide-r6.pdf"><b>User's Guide (PDF)</b></a></li>
@@ -56,6 +58,8 @@ p.screenshot img { border-width: 0px; }
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/screenshots.html">Screenshots</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/demos.html">Demo apps</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/references.html">References</a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6.zip"><strong>Download - Release 6</strong></a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-src.zip"><strong>Download - Release 6 - Source, Samples, Docs</strong></a></li>
 </ul>
 </li>
 <li><b>Contribute</b>
@@ -70,9 +74,13 @@ p.screenshot img { border-width: 0px; }
 </li>
 </ul>
 
-<h1 id="id33">Have You Seen the Saucer?</h1>
+<h1 id="id26">Have You Seen the Saucer?</h1>
 
-<p>Here are screenshots of Flying Saucer in action. Click on an image to see it full-size. These are all taken from our <a href="./demos.html">demo apps</a>.</p>
+<h2 id="id27">Demo Pages</h2>
+
+<p>Here are screenshots of Flying Saucer in action. Click on an image to see it full-size. These are all taken from our <a href="./demos.html">demo apps</a> running in our "browser" demo application. These pages are simple <span class="caps">XHTML</span> we threw together to show (and test) our <span class="caps">CSS</span> coverage.</p>
+
+<p>We apologize for the thumbnails&#8212;this batch was done quickly using a desktop tool&#8212;we'll fix them shortly. </p>
 
 <table>
 <tbody>
@@ -109,12 +117,45 @@ p.screenshot img { border-width: 0px; }
     <td>Render pure <span class="caps">XML</span> embedded in <span class="caps">XHTML</span> using only <span class="caps">CSS</span></td>
   </tr>
   <tr>
-    <td><a href="../screenshots/docbook.png"><img src="../screenshots/docbook-thumb.png" /></a></td>
-    <td>Render DocBook <span class="caps">XML</span> using only <span class="caps">CSS</span></td>
+    <td><a href="../screenshots/hover.png"><img src="../screenshots/hover-thumb.png" /></a></td>
+    <td>The :hover selector</td>
+  </tr>
+</tbody>
+</table>
+
+<h2 id="id28">Websites</h2>
+
+<p>Disclaimer: The following screenshots are from publically-available websites and are shown here in order to demonstrate the rendering capabilities of the Flying Saucer rendering panel. Images, content, design etc. belong to the owners of the respective content on the respective websites. URLs to each site are listed by each screenshot.</p>
+
+<p>Many of these sites may be in "legacy" <span class="caps">HTML</span>. No tricks were used to load them&#8212;however they are all run through the TagSoup <span class="caps">HTML</span> parser to convert them to valid <span class="caps">XML</span>. You will note some minor problems in rendering some of these sites. </p>
+
+<p>Taken using <span class="caps">JDK</span> 6 running Ubuntu Feisty Fawn with anti-aliasing turned on.</p>
+
+<table>
+<tbody>
+  <tr>
+    <td><a href="../screenshots/w3c-org.png"><img src="../screenshots/w3c-org-thumb.png" /></a></td>
+    <td>W3C Home Page: http://www.w3.org/</td>
   </tr>
   <tr>
-    <td><a href="../screenshots/svg.png"><img src="../screenshots/svg-thumb.png" /></a></td>
-    <td>Render embedded <span class="caps">SVG</span> using external libraries like SVGSalamander</td>
+    <td><a href="../screenshots/css21-spec.png"><img src="../screenshots/css21-spec-thumb.png" /></a></td>
+    <td>CSS 2.1 Specification at <span class="caps">W3C</span>: vhttp://www.w3.org/TR/CSS21/</td>
+  </tr>
+  <tr>
+    <td><a href="../screenshots/wikipedia.png"><img src="../screenshots/wikipedia-thumb.png" /></a></td>
+    <td>Wikipedia &#8211; <span class="caps">CSS</span>: http://en.wikipedia.org/wiki/CSS</td>
+  </tr>
+  <tr>
+    <td><a href="../screenshots/alistapart.png"><img src="../screenshots/alistapart-thumb.png" /></a></td>
+    <td>A List Apart: http://www.alistapart.com/</td>
+  </tr>
+  <tr>
+    <td><a href="../screenshots/java-net.png"><img src="../screenshots/java-net-thumb.png" /></a></td>
+    <td>java.net: http://www.java.net</td>
+  </tr>
+  <tr>
+    <td><a href="../screenshots/csszengarden-icicle.png"><img src="../screenshots/csszengarden-icicle-thumb.png" /></a></td>
+    <td>CSS Zen Garden &#8211; Icicle Outback, by Timo Virtanen</td>
   </tr>
 </tbody>
 </table>

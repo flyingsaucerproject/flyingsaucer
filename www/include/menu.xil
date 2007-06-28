@@ -3,8 +3,8 @@
 <li><b>About Flying Saucer</b>
 <ul>
 	<li><a href="https://xhtmlrenderer.dev.java.net/index.html">Home Page</a></li>
-	<li><a href="https://xhtmlrenderer.dev.java.net/r6/feature-list.html">Feature List</a></li>
-	<li><a href="https://xhtmlrenderer.dev.java.net/r6/faq.html">The FAQ</a></li>
+	<li><a href="https://xhtmlrenderer.dev.java.net/r7/feature-list.html">Feature List</a></li>
+	<li><a href="https://xhtmlrenderer.dev.java.net/r7/faq.html">The FAQ</a></li>
 	<li><a href="http://www.gnu.org/copyleft/lesser.html">License (LGPL)</a></li>
 </ul>
 </li>
@@ -14,13 +14,15 @@
 <li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-src.zip"><strong>Release 6-Source, Samples, Docs</strong></a></li>
 </ul>
 </li>
-<li><b>Download - Development</b>
+<li><b>Download - Release Candidate</b>
 <ul>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer_R7pre1.zip"><strong>Release 7-pre1</strong></a></li>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer_R7pre1-src.zip"><strong>Release 7-pre1-Source, Samples, Docs</strong></a></li>
-</ul>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc1.zip"><strong>Release 7 Release Candidate 1</strong></a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc1-src.zip"><strong>Release 7 Release Candidate 1 Source, Samples, Docs</strong></a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/r7/screenshots.html">Screenshots</a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/r7/demos.html">Demo apps</a></li>
+v</ul>
 </li>
-<li><b>Documentation&nbsp;-&nbsp;R6 Release</b>
+<li><b>R6 Release</b>
 <ul>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/users-guide-r6.html"><b>User's Guide (HTML)</b></a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/users-guide-r6.pdf"><b>User's Guide (PDF)</b></a></li>
@@ -29,6 +31,8 @@
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/screenshots.html">Screenshots</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/demos.html">Demo apps</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/references.html">References</a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6.zip"><strong>Download - Release 6</strong></a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-src.zip"><strong>Download - Release 6 - Source, Samples, Docs</strong></a></li>
 </ul>
 </li>
 <li><b>Contribute</b>

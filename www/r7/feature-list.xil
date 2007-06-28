@@ -15,7 +15,8 @@ h3(fs_heading){clear:none}. General XHTML / CSS features
 * Formatted text: basically everything: paragraphs and spans, bold, italic, font sizes, text alignment, horizontal alignment, different fonts
 * Box model: border, padding, margin, colors, background images, styled borders
 * Full positioning support: static, relative, absolute, and fixed, and floats. 
-* Tables: Table support is currently being rewritten so check on the mailing list to see what works.
+* Tables: All table tags including captions, headers and footers. Cell styling.
+Collapsable borders. Nested tables. Should be solid.
 * Forms: Every standard form control is represented. There are still some bugs with alignment.
 * Images: both as inline images with the <img> tag and with background images.
 * :hover styles for (dynamic) rollover effects
@@ -24,8 +25,8 @@ h3(fs_heading){clear:none}. General XHTML / CSS features
 * CSS selectors. All CSS selectors in the spec should be supported, even the sibling/child ones
 * Pagination
 * Margin Collapsing
-* R7pre1: Shrink-to-fit sizing. Turned on for auto-width floats, inline-blocks, and absolutely positioned content.
-* R7pre1: min-width, max-width, min-height, and max-height properties, for non-replaced content only.
+* Shrink-to-fit sizing. Turned on for auto-width floats, inline-blocks, and absolutely positioned content.
+* min-width, max-width, min-height, and max-height properties, for non-replaced content only.
 
 h3(fs_heading){clear:none}. Special Features
 

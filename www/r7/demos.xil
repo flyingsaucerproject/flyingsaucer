@@ -6,24 +6,16 @@ include. ../include/menu.xil
 
 h1. Demo Applications
 
-All of these demos are available if you download our binaries--we're linking them here in case you want to webstart them. 
+All of these demos are available if you download our binaries--we're linking them here in case you want to webstart them. The demos are the latest versions
+for our R7 Release Candicat 1 release.
 
-*Note. These demos all require you to have Java Web Start and Java 1.4 or higher installed*
+*Note: These demos all require you to have Java Web Start and Java 1.4 or higher installed*
 
-!../images/demobutton.png!:http://www.pdoubleya.com/projects/flyingsaucer/demo/r7/browser/browser_demo.jnlp *Browser*
+*Note: Due to lack of time, only the "browser" demo is downloadable for the R7 Release Candidate 1 release. The other demos will be back shortly. You can always download the code and try them out locally.*
+
+!../images/demobutton.png!:http://www.pdoubleya.com/projects/flyingsaucer/demo/r7rc1/browser/browser_demo.jnlp *Browser*
 
 A simple XHTML browser with scrolling, back button, link support, etc. This is not a "real" browser--but you can get an idea of how Flying Saucer can be used in a Real Application.
 
-!../images/demobutton.png!:http://www.pdoubleya.com/projects/flyingsaucer/demo/r7/svg/svg_demo.jnlp *SVG Demo* 
-
-Renders an XHTML page with embedded references to SVG icons--the references are resolved and passed to the SVGSalamander library for rendering--in-document SVG! This demo shows how Flying Saucer can include content that is replaced at runtime under your control.
-
-!../images/demobutton.png!:http://www.pdoubleya.com/projects/flyingsaucer/demo/r7/docbook/docbook_demo.jnlp *DocBook CSS Demo* 
-
-Renders a DocBook XML page using only CSS--the XML is not converted to XHTML, but rather, CSS is applied to the DocBook XML format. This shows you how pure XML/CSS rendering is possible by just providing the right stylesheet.
-
-!../images/demobutton.png!:http://www.pdoubleya.com/projects/flyingsaucer/demo/r7/aboutbox/aboutbox_demo.jnlp *AboutBox*
-
-A prefab scrolling about box that you can easily embed in your own programs.
 
 divEnd.

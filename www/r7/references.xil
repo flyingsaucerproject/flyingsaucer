@@ -8,7 +8,6 @@ h1. CSS and XHTML References
 
 h2(fs_heading){clear:none}. Library
 
-Flying Saucer makes use of the ${cssparser} project on Sourceforge, formerly the Steady State CSS parser. All of our modifications to it have been contributed back to this project per the LGPL license.
 The Specs:
 
 * "W3C XHTML specification":http://www.w3.org/TR/xhtml1/
