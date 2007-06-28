@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/browser/" href="browser_demo.jnlp">
+<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/r7/browser/" href="browser_demo.jnlp">
     <information>
         <title>XHTML Browser Demo</title>
         <vendor>Flying Saucer</vendor>
@@ -18,7 +18,6 @@
         <jar href="browser.jar"/>
         <jar href="../looks-2.0.4.jar"/>
         <jar href="../core-renderer.jar"/>
-      	<jar href="../cssparser-0-9-4-fs.jar"/>
         <jar href="../itext-paulo-155.jar"/>
         <jar href="../minium.jar"/>
     </resources>
