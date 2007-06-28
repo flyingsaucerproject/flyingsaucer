@@ -6,7 +6,7 @@ include. ../include/menu.xil
 
 h1. Have You Seen the Saucer? 
 
-h2. Demo Pages
+h2{clear:none}. Demo Pages
 
 Here are screenshots of ${fs} in action. Click on an image to see it full-size. These are all taken from our "demo apps":./demos.html running in our "browser" demo application. These pages are simple XHTML we threw together to show (and test) our CSS coverage.
 
