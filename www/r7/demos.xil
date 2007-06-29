@@ -7,7 +7,7 @@ include. ../include/menu.xil
 h1. Demo Applications
 
 All of these demos are available if you download our binaries--we're linking them here in case you want to webstart them. The demos are the latest versions
-for our R7 Release Candicat 1 release.
+for our R7 Release Candidate 1 release.
 
 *Note: These demos all require you to have Java Web Start and Java 1.4 or higher installed*
 
