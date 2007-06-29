@@ -277,8 +277,7 @@ public class XHTMLPanel extends BasicPanel {
         float fs = rc.getTextRenderer().getFontScale() * scaleBy;
         if (fs < minFontScale || fs > maxFontScale) return;
         rc.getTextRenderer().setFontScale(fs);
-        relayout();
-        repaint();
+        setDocument(getDocument());
     }
 
     /**
@@ -316,6 +315,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2007/06/29 06:05:48  pdoubleya
+ * As of R7, a change to layout (like changing font size) requires a call to setDocument().
+ *
  * Revision 1.41  2007/05/24 19:56:51  peterbrant
  * Add support for cursor property (predefined cursors only)
  *
