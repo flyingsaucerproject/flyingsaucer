@@ -16,7 +16,7 @@
     <resources>
         <j2se version="1.4+"/>
         <jar href="browser.jar"/>
-        <jar href="../looks-2.0.4.jar"/>
+        <jar href="../looks-2.1.4.jar"/>
         <jar href="../core-renderer.jar"/>
         <jar href="../itext-paulo-155.jar"/>
         <jar href="../minium.jar"/>
