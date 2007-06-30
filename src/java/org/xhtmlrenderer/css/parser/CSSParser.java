@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -1543,7 +1545,7 @@ public class CSSParser {
                 String uriResult = processEscapes(ch, start, end+1);
                 
                 // Relative URIs are resolved relative to CSS file, not XHTML file
-                if (uriResult.charAt(0) != '/') {
+                if (isRelativeURI(uriResult)) {
                     int lastSlash = _URI.lastIndexOf('/');
                     if (lastSlash != -1) {
                         uriResult = _URI.substring(0, lastSlash+1) + uriResult;
@@ -1561,6 +1563,14 @@ public class CSSParser {
                 return result;
             default:
                 return _lexer.yytext();
+        }
+    }
+    
+    private boolean isRelativeURI(String uri) {
+        try {
+            return ! new URI(uri).isAbsolute();
+        } catch (URISyntaxException e) {
+            return false;
         }
     }
     
