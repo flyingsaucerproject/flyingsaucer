@@ -474,6 +474,12 @@ public class BoxBuilder {
             if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                 return null;
             }
+            
+            String s = value.getStringValue();
+            // counter(page) and counter(pages) are handled separately
+            if (s.equals("page") || s.equals("pages")) {
+                return null;
+            }
 
             String counter = value.getStringValue();
             IdentValue listStyleType = IdentValue.DECIMAL;
