@@ -451,6 +451,14 @@ public class SharedContext {
     public UserAgentCallback getUac() {
         return uac;
     }
+    
+    public UserAgentCallback getUserAgentCallback() {
+        return uac;
+    }
+    
+    public void setUserAgentCallback(UserAgentCallback userAgentCallback) {
+        uac = userAgentCallback;
+    }
 
     /**
      * Gets the dPI attribute of the RenderingContext object
@@ -695,6 +703,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2007/07/04 14:13:18  peterbrant
+ * Permit a custom user agent with rendering to PDF
+ *
  * Revision 1.39  2007/05/26 19:04:13  peterbrant
  * Implement support for removing all references to a particular Element (in order to support limited dynamic DOM changes)
  *

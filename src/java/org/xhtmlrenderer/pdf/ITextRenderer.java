@@ -282,7 +282,15 @@ public class ITextRenderer {
         page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
 
         _outputDevice.setClip(working);
-    }    
+    }
+    
+    public ITextOutputDevice getOutputDevice() {
+        return _outputDevice;
+    }
+    
+    public SharedContext getSharedContext() {
+        return _sharedContext;
+    }
     
     private static final class NullUserInterface implements UserInterface {
         public boolean isHover(Element e) {
