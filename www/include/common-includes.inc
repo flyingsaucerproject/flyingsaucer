@@ -19,3 +19,14 @@ block { border: 0px solid black;
 .axial { border: 1px solid black; display: none;}
 p.screenshot { text-align: center; }
 p.screenshot img { border-width: 0px; }
+.thumbnail { 
+  float: left; 
+  width: 140px;
+  min-height: 120px;
+  border: 1px solid #999; 
+  margin: 0 15px 15px 0;  
+  padding: 10px 15px 10px 15px;
+}
+.clearboth { clear: both; }
+
+

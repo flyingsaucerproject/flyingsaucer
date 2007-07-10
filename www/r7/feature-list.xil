@@ -6,6 +6,35 @@ include. ../include/menu.xil
 
 h1. Flying Saucer Supported Features from CSS 2.1
 
+Flying Saucer supports all of CSS 2.1 with a few exceptions.  Consult the
+"issue tracker":https://xhtmlrenderer.dev.java.net/servlets/ProjectIssues for more information on what is not supported
+(in particular, the issues with a summary of "Support ...") or ask on the mailing list.  If you do encounter a
+compliance bug or other unexpected behavior, please open a bug or post to the mailing list.
+
+Features:
+ - 100% Java XML+CSS layout engine with Java2D (Swing) and native PDF
+output.  SWT coming soon.
+ - Strong support for the CSS 2.1 specification including extensions
+to better support paged media.
+ - Good performance.
+ - Support for XHTML including forms.
+ - Arbitrary elements may be replaced with custom content.
+ - Limited support for dynamic effects (for example, the :hover
+pseudo-class and links)
+ - Some support for PDF specific features (for example, bookmarks and
+internal links).  More coming soon.
+
+Limitations:
+ - Resource loading is single threaded and occurs inline with layout.
+ - Support for XHTML is weaker than XML+CSS (for example, not all
+XHTML presentational attributes are supported nor are X/HTML features
+like the <object> element).
+ - No support for legacy HTML (although there are several open source
+Java HTML cleaners of varying quality available).
+ - Swing printing is supported, but quality is lacking.  Ask on the
+mailing list for details.
+ - No support for incremental layout (applies to screen media only).
+
 _Note: this page is currently being re-worked with the advent of our R7 release, which covers most of the CSS 2.1 specification. If you have questions about our support for specific features, please contact us on our ${mailing-list.user}. Thanks!_
 
 Flying Saucer supports the bulk of the strict XHTML and CSS 2.1 standards. We are working towards complete (and correct) feature support of these standards, but not everything works yet. Most of it is there, though. If there's some aspect of the specification you think we don't handle correctly--let us know right away on our ${mailing-list.user}.

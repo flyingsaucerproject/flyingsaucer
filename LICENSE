@@ -7,11 +7,6 @@ Flying Saucer relies on several other free or open source projects in order to b
 
 Java projects that are used for building and running Flying Saucer are:
 
-CSSParser
-http://cssparser.sourceforge.net/
-License: LGPL
-Using version 0.9.4 with our own bug fixes
-Included as lib/cssparser-0-9-4-fs.jar
 
 Minium Anti-Aliasing
 Direct submission from Julian Scheid julian at sektor37 de
@@ -44,5 +39,19 @@ DocBook CSS (DocBook XML Rendering with CSS)
   MozBook CSS (public domain, released by David Horton)
   WSIWYGDocBook 1.01 -- see demos\docbook\wysiwygdocbook1.01, and COPYING therein
   docbook-css-0.4 -- see demos\docbook\docbook-css-0.4, and COPYING therein
+
+W3C CSS Test Suite
+  Distributed with our source bundle for the convenience of our developers.
+  License is W3C Document License, see LICENSE_W3C_TEST.
+  Source is http://www.w3.org/Style/CSS/Test/, for the most current version
+  please see that URL.
+
+Special thanks to Andy Streich, et. al. for Xilize
+Xilize Text to HTML library
+http://xilize.sourceforge.net/
+License: GPL
+Used version 3.x, only to produce documentation
+Shipped with our source bundle as a convenience for developers rebuilding 
+documentation; we do not use nor link to the Xilize libraries at runtime.
 
 

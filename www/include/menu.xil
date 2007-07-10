@@ -1,4 +1,5 @@
 ==
+
 <ul id="menu">
 <li><b>About Flying Saucer</b>
 <ul>
@@ -20,7 +21,7 @@
 <li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc1-src.zip"><strong>Release 7 Release Candidate 1 Source, Samples, Docs</strong></a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r7/screenshots.html">Screenshots</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r7/demos.html">Demo apps</a></li>
-v</ul>
+</ul>
 </li>
 <li><b>R6 Release</b>
 <ul>
@@ -46,4 +47,6 @@ v</ul>
 <li id="newsfeed"><b><a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS" border="0">News Feed<img src="https://java-net.dev.java.net/branding/images/xml.gif" border="0"></a></b>
 </li>
 </ul>
+
 ==
+

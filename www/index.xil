@@ -24,7 +24,17 @@ h2(fs_heading){ clear: none }. The 100% Java XHTML/CSS2 Renderer
 
 h2(fs_heading){ clear: none }. News
 
-p{font-size: 14pt}. *NEW* Release 7 Release Candidate 1!
+p{font-size: 14pt}. *NEW* Release 7 Release Candidate 2!
+
+*July 9, 2007*: The Flying Saucer team announces the Release 7 Release Candidate 2 of the Flying Saucer 100% Java XHTML+CSS renderer.We're close to 
+making a final release of R7--please help us and test this version out. There
+are only a few changes since R7rc1.
+
+   * Assign a custom UserAgentCallback for PDF rendering
+   * Documentation updated 
+
+
+p{font-size: 14pt}. Release 7 Release Candidate 1
 
 *June 24, 2007*: The Flying Saucer team announces the Release 7 Release Candidate 1 of the Flying Saucer 100% Java XHTML+CSS renderer. This has been a long time coming, but not without good reason--this is a feature-packed release candidate and a big improvement since our R7pre1 release. Since our last release, we've added solid support for tables--all the table tags are covered, we do nested tables, table styles, collapsing borders, floated tables--the whole bunch. There is a new, home-grown, super-fast CSS 2 parser. We have support for the cursor property, counters, and forms support is much improved. Overall there are many performance improvements and tons of bug fixes.
 
