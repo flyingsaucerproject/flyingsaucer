@@ -49,14 +49,12 @@ public class ShowSVGPage {
         // is created on each call to layout, so we override the RootPanel method
         // and return our own--the chained factory delegates first for Swing
         // replaced element, then for SVG elements.
-        final XHTMLPanel panel = new XHTMLPanel() {
-            public ReplacedElementFactory newReplacedElementFactory() {
-                ChainedReplacedElementFactory cef = new ChainedReplacedElementFactory();
-                cef.addFactory(new SwingReplacedElementFactory());
-                cef.addFactory(new SVGSalamanderReplacedElementFactory());
-                return cef;
-            }
-        };
+        ChainedReplacedElementFactory cef = new ChainedReplacedElementFactory();
+        cef.addFactory(new SwingReplacedElementFactory());
+        cef.addFactory(new SVGSalamanderReplacedElementFactory());
+
+        final XHTMLPanel panel = new XHTMLPanel();
+        panel.getSharedContext().setReplacedElementFactory(cef);
 
         FSScrollPane fsp = new FSScrollPane(panel);
         frame.getContentPane().add(fsp, BorderLayout.CENTER);
