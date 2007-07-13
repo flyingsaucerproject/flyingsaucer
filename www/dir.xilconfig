@@ -1,0 +1,41 @@
+>xil> dir.xilconfig: default directory configuration file
+>xil> 
+>xil> The key definitions, signature definitions, and abbrevations in a 
+>xil> dir.xilconfig file apply to all files residing in its directory and
+>xil> any of its in subdirectories.  Directives may also be used in this file.
+>xil> 
+>xil> Delete or change this file to suit your needs.  The contents below
+>xil> are only examples.
+>xil> 
+>xil> See http://xilize.sourceforge.net/ for a complete description of Xilize.
+
+
+xilcom. "_DirExclude_" may contain a comma-separated a list of subdirectories that Xilize will not process.  It is set by default to "pics, img, images, signatures,".  The following adds ".svn" and ".cvs" subdirectories to that list.
+
+defadd. _DirExclude_ .svn, .cvs, .screenshots, .releases, .r5, .images, .development
+
+
+xilcom.  "wrap" is an example of adding a custom signature.  In this case, "wrap" first wraps the lines of the block at column 80, then translates it with the built-in "p" signature.  Note, any modifiers placed on "wrap" will be applied.
+
+signature. wrap
+block.wrapLines(80);
+block.translateAs("p",sig.getMods().toString());
+
+
+xilcom. "listFile" is a custom signature that uses the function "exampleFile()" defined in the BeanShell file default.bsh.
+
+signature. listFile
+exampleFile("fileListing",100)
+
+
+xilcom. An example of a URL abbreviation, "xilhome" would be used in link markup like this:   "the Xilize home page":xilhome.  Given an appropriate URL, these abbreviations can used in image markup as well.
+
+[xilhome]http://xilize.sourceforge.net/
+[css21]http://www.w3.org/TR/CSS21/
+[itext]http://www.lowagie.com/iText/
+[jlogging]http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html
+[cssparser]http://cssparser.sourceforge.net/
+[mailing-list.user]https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList
+[mailing-list]https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList
+[issue-tracker]https://xhtmlrenderer.dev.java.net/servlets/ProjectIssues
+[guide]users-guide-r7final#.pdf

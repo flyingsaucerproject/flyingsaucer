@@ -1,10 +1,6 @@
-include. ../include/common-includes.inc
+CSS and XHTML References
 
-divStart(#fs).
-
-include. ../include/menu.xil
-
-h1. CSS and XHTML References
+Here are some interesting and useful references related to XHTML and CSS.
 
 h2(fs_heading){clear:none}. Library
 

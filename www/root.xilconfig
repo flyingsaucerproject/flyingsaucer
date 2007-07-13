@@ -1,0 +1,12 @@
+>xil> root.xilconfig:  default root directory config file for an Xilize project
+>xil> 
+>xil> The primary purpose of this file is to identify the root (top-level) 
+>xil> directory of an Xilize project to Xilize-aware tools like the jEdit 
+>xil> plugin.  For that purpose, it does not have to have any content.  It 
+>xil> may also serve as the dir.xilconfig file for the root directory, but 
+>xil> using a separate, explicit dir.xilconfig file is recommended for clarity
+>xil> and maintenance reasons.
+>xil> 
+>xil> See http://xilize.sourceforge.net/ for a complete description of Xilize.
+
+>xil> define. _Natural_ false

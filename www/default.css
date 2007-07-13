@@ -1,0 +1,78 @@
+/******
+	default Xilize CSS placeholder
+	
+	No particular styling is required.  Feel free to change or replace this to suit your needs.
+
+  See http://xilize.sourceforge.net/ for a complete description of Xilize.  
+******/
+
+body { 
+    font: 11.5pt/13pt verdana, helvetica, arial, sans-serif;
+		padding: 1em 5%;
+}
+
+p>strong { font-size: 0.97em; }
+
+img { border:none; }
+
+hr { height: 1px; background: #ccc; border: none; left:0; margin:0; padding:0; }
+
+a { color: #3672a4; }
+a:visited { color: #3672a4; } 
+a:hover { background: lightgray; }
+
+/* heading styles ---------------------------------*/
+
+h1 { font-size: 1.5em; margin: 0em 0 1.5em 0em; font-weight:normal; letter-spacing:0.07em;}
+h2 { font-size: 1.2em; margin: 2.5em 0 1em 0em; font-weight:normal; letter-spacing:0.1em;
+     padding-bottom: 0.2em; border-bottom: 1px solid gray;}
+h3 { font-size: 1em; margin: 1.5em 0 0.7em 0; font-weight:normal; letter-spacing:0.1em; 
+    font-weight:bold; color:#666; font-size: 110%; }
+h4 { font-size: 1em; margin: 1.5em 0 1em 0 }
+
+/* special colors ---------------------------------*/
+
+code { color: #731d76; background: #eee; } /* for @...@ markup */
+
+/* tables -----------------------------------------*/
+
+table { border-collapse: collapse; }
+thead, tfoot { background: #eee; }
+td { vertical-align: top; padding: 0.15em 0.5em; border: 1px solid #eee; }
+
+/* acronyms & acronym like words ------------------*/
+
+.caps { font-size: 90%; }
+
+/* table of contents ------------------------------*/
+
+ul.toc, ul.toc ul { list-style: none; } 
+ul.toc a, ul.toc a:visited, ul.toc a:hover { color: #3672a4; }
+
+/* footnotes --------------------------------------*/
+
+.fn_text {  font-size: 92%;  margin: 0.4em 0em;  }
+
+.fn_anchor, .fn_mark { 
+    text-decoration: none;
+    color: black;
+    background-color:  gainsboro;
+    margin: 0 0.1em;
+    padding: 0.02em 0.2em;
+    font-size:0.8em;
+} 
+
+.fn_mark { vertical-align:35%; }
+.fn_anchor { vertical-align:5%; }
+
+div.footnotes a:hover, a.fn_mark:hover {  background: lightblue; }
+div.footnotes a, a.fn_mark, div.footnotes a:visited, a.fn_mark:visited  { color: black; }
+div.footnotes {
+	font-size: 96%;
+	margin-left: 1em;
+}
+p.fn_note {
+	text-indent: -1em;
+}
+
+

@@ -1,21 +1,15 @@
-include. ../include/common-includes.inc
-
-divStart(#fs).
-
-include. ../include/menu.xil
-
-h1. Demo Applications
+Demo Applications
 
 All of these demos are available if you download our binaries--we're linking them here in case you want to webstart them. The demos are the latest versions
-for our R7 Release Candidate 1 release.
+for our R7 Release Candidate 2 release.
 
 *Note: These demos all require you to have Java Web Start and Java 1.4 or higher installed*
 
-*Note: Due to lack of time, only the "browser" demo is downloadable for the R7 Release Candidate 1 release. The other demos will be back shortly. You can always download the code and try them out locally.*
+*Note: Due to lack of time, only the "browser" demo is downloadable for the R7 Release Candidate 2 release. You can always download the source release and try them out locally.*
 
 !../images/demobutton.png!:http://www.pdoubleya.com/projects/flyingsaucer/demo/r7/browser/browser_demo.jnlp *Browser*
 
 A simple XHTML browser with scrolling, back button, link support, etc. This is not a "real" browser--but you can get an idea of how Flying Saucer can be used in a Real Application.
 
 
-divEnd.
+

@@ -1,0 +1,59 @@
+>xil> header.xilinc: default header include for Xilize
+>xil> 
+>xil> This file is automatically included just before the first content 
+>xil> line in each *.xil file in natural mode.  To prevent inclusion, use 
+>xil> "undef. headerinc" in your source file or in a dir.xilconfig file.
+>xil> 
+>xil> Each subfolder of an Xilize project may have a different 
+>xil> header.xilinc file.  Xilize looks first in the folder in which 
+>xil> the file being translated resides and if it finds a header.xilinc
+>xil> file uses it.  If a header.xilinc is not found, it searches up the
+>xil> directory tree until it finds one; if it reaches the project root 
+>xil> and a header.xilinc is not found, no header file is automatically 
+>xil> used.
+>xil> 
+>xil> You can prevent an exisiting header.xilinc from being included in a
+>xil> source file during translation by "undef"-ing the key "headerinc" 
+>xil> before the first content line in the file like this:
+>xil> 
+>xil> undef. headerinc
+>xil> 
+>xil> If you want to have a header.xilinc file used for most files
+>xil> in a folder but another header file "myOtherHeader.xilinc" 
+>xil> for some others, use the following before the first content line:
+>xil> 
+>xil> undef. headerinc
+>xil> 
+>xil> include. myOtherHeader.xilinc
+>xil> 
+>xil> All of the above applies to handling of footer.xilinc as well.
+>xil> 
+>xil> See http://xilize.sourceforge.net/ for a complete description of Xilize.
+include. include/common-defines.inc
+
+define. css /base.css
+
+divStart(#fs).
+
+divStart(#menu).
+
+* Downloads
+** "Release 7rc2 Bin":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc2.zip  
+** "Release 7rc2 All":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc2-src.zip  
+* About Flying Saucer
+** "Home Page":/index.html  
+** "Feature List":/r7/feature-list.html  
+** "The FAQ":/r7/faq.html  
+** "Screenshots":/r7/screenshots.html  
+** "Demos":/r7/demos.html  
+** "User's Guide - HTML":/r7/users-guide-r7.html  
+** "User's Guide - PDF":/r7/users-guide-r7.pdf  
+** "References":/r7/references.html  
+** "License (LGPL)":http://www.gnu.org/copyleft/lesser.html  
+* Contribute
+** "Mail: User's List":https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList  
+** "Mail: Dev List":https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList  
+
+divEnd.
+
+

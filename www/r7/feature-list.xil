@@ -1,77 +1,36 @@
-include. ../include/common-includes.inc
+Flying Saucer Features
 
-divStart(#fs).
-
-include. ../include/menu.xil
-
-h1. Flying Saucer Supported Features from CSS 2.1
+h3(fs_heading){ clear: none }. Supported Features in CSS 2.1
 
 Flying Saucer supports all of CSS 2.1 with a few exceptions.  Consult the
-"issue tracker":https://xhtmlrenderer.dev.java.net/servlets/ProjectIssues for more information on what is not supported
-(in particular, the issues with a summary of "Support ...") or ask on the mailing list.  If you do encounter a
-compliance bug or other unexpected behavior, please open a bug or post to the mailing list.
+${issue-tracker} for more information on what is not supported
+(in particular, the issues with a summary of "Support ...") or ask on the ${mailing-list}.  If you do encounter a
+compliance bug or other unexpected behavior, please open a bug or post to the ${mailing-list}.
 
 Features:
- - 100% Java XML+CSS layout engine with Java2D (Swing) and native PDF
+
+* 100% Java XML+CSS layout engine with Java2D (Swing) and native PDF
 output.  SWT coming soon.
- - Strong support for the CSS 2.1 specification including extensions
+* Strong support for the CSS 2.1 specification including extensions
 to better support paged media.
- - Good performance.
- - Support for XHTML including forms.
- - Arbitrary elements may be replaced with custom content.
- - Limited support for dynamic effects (for example, the :hover
+* Good performance.
+* Support for XHTML including forms.
+* Arbitrary elements may be replaced with custom content.
+* Limited support for dynamic effects (for example, the :hover
 pseudo-class and links)
- - Some support for PDF specific features (for example, bookmarks and
+* Some support for PDF specific features (for example, bookmarks and
 internal links).  More coming soon.
 
 Limitations:
- - Resource loading is single threaded and occurs inline with layout.
- - Support for XHTML is weaker than XML+CSS (for example, not all
+
+* Resource loading is single threaded and occurs inline with layout.
+* Support for XHTML is weaker than XML+CSS (for example, not all
 XHTML presentational attributes are supported nor are X/HTML features
-like the <object> element).
- - No support for legacy HTML (although there are several open source
+like the &lt;object&gt; element).
+* No support for legacy HTML (although there are several open source
 Java HTML cleaners of varying quality available).
- - Swing printing is supported, but quality is lacking.  Ask on the
-mailing list for details.
- - No support for incremental layout (applies to screen media only).
-
-_Note: this page is currently being re-worked with the advent of our R7 release, which covers most of the CSS 2.1 specification. If you have questions about our support for specific features, please contact us on our ${mailing-list.user}. Thanks!_
-
-Flying Saucer supports the bulk of the strict XHTML and CSS 2.1 standards. We are working towards complete (and correct) feature support of these standards, but not everything works yet. Most of it is there, though. If there's some aspect of the specification you think we don't handle correctly--let us know right away on our ${mailing-list.user}.
-
-h3(fs_heading){clear:none}. General XHTML / CSS features
-
-* Formatted text: basically everything: paragraphs and spans, bold, italic, font sizes, text alignment, horizontal alignment, font shorthand, custom fonts
-* Box model: border, padding, margin, colors, background images, styled borders
-* Full positioning support: static, relative, absolute, and fixed, and floats. 
-* Tables: All table tags including captions, headers and footers. Cell styling. Collapsable borders. Nested tables. Should be solid.
-* Forms: Every standard form control is represented. There are still some bugs with alignment.
-* Images: both as inline images with the <img> tag and with background images.
-* Anchors: both external and in-document
-* Lists: lists with proper positioning, list styles
-* CSS selectors. All CSS selectors in the spec should be supported, even the sibling/child ones
-* Pseudo-selectors: including :hover styles for (dynamic) rollover effects
-* Pagination
-* Margin Collapsing
-* Shrink-to-fit sizing. Turned on for auto-width floats, inline-blocks, and absolutely positioned content.
-* min-width, max-width, min-height, and max-height properties, for non-replaced content only.
-
-h3(fs_heading){clear:none}. Special Features
-
-* Speed. We are fast enough to render all of Hamlet (the play, not the dish) in under 4 seconds on a 1.5 GHZ Pentium. We are working to improve speed and memory usage all the time.
-* Embedded fonts. You can embed a truetype font in your application (in the jar file), and use it in pages rendered in your application.
-* Render direct to PDF. You can create PDF documents directly from XML/CSS or XHTML/CSS, and even use the print media type in CSS to control margins. Using a couple of custom properties described in our User's Guide, you can even create headers and footers.
-
-h3(fs_heading){clear:none}. What's not Supported (yet)
-
-* Parts of absolute, fixed, and float positioning. Things like setting a left and right with width = auto. 
-* Shrink-to-fit sizing. You need an explicit width on any positioned for floated box. (in R7pre1)
-* Auto-fit tables. You must use explicit table widths and sizes (%,px, em, etc).
-* Incremental rendering and dynamic layout
-
-There are undoubtedly many bugs as well. If you find one please report it to us.
-
-Thanks!
-   - _The Flying Saucer Team_
+* Swing printing is supported, but quality is lacking.  Ask on the
+${mailing-list} for details.
+* No support for incremental layout (applies to screen media only).
    
-divEnd.
+

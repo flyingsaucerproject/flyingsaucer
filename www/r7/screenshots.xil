@@ -1,20 +1,17 @@
-include. ../include/common-includes.inc
+Have You Seen the Saucer?
 
-divStart(#fs).
-
-include. ../include/menu.xil
-
-h1. Have You Seen the Saucer? 
 
 h2{clear:none}. Demo Pages
 
 Here are screenshots of ${fs} in action. Click on an image to see it full-size. These are all taken from our "demo apps":./demos.html running in our "browser" demo application. These pages are simple XHTML we threw together to show (and test) our CSS coverage.
 
-We apologize for the thumbnails--this batch was done quickly using a desktop tool--we'll fix them shortly. 
+We apologize for the quality of the thumbnails--this batch was done quickly using a desktop tool--we'll fix them shortly.
+
+If you have any good-looking screenshots of Flying Saucer rendering your own pages, please get in touch with us so we can post them, thanks! 
 
 divStart(thumbnail).
 
-<a href="../screenshots/backgrounds.png"><img src="../screenshots/backgrounds-thumb.png" alt="" width="140" height="115" /></a><br /> Backgrounds
+<a href="../screenshots/backgrounds.png"><img src="../screenshots/backgrounds-thumb.png" alt="" width="140" height="115" /></a><br />Backgrounds
 
 divEnd.
 
@@ -67,13 +64,13 @@ divStart(thumbnail).
 divEnd.
 
 
-h2. Websites 
+h2{clear:both}. Websites 
 
-Disclaimer: The following screenshots are from publically-available websites and are shown here in order to demonstrate the rendering capabilities of the Flying Saucer rendering panel. Images, content, design etc. belong to the owners of the respective content on the respective websites. URLs to each site are listed by each screenshot.
+Disclaimer: The following screenshots are from publically-available websites and are shown here in order to demonstrate the rendering capabilities of the Flying Saucer rendering panel. Images, content, design etc. belong to the owners of the respective content on the respective websites. URLs to each site are hyperlinked to the text shown.
 
 Many of these sites may be in "legacy" HTML. No tricks were used to load them--however they are all run through the TagSoup HTML parser to convert them to valid XML. You will note some minor problems in rendering some of these sites. 
 
-Taken using JDK 6 running Ubuntu Feisty Fawn with anti-aliasing turned on.
+Taken using JDK 6 running on Ubuntu Feisty Fawn with anti-aliasing turned on.
 
 divStart(thumbnail).
 

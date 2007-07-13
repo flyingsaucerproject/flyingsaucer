@@ -1,0 +1,63 @@
+/**************************************************************************************
+default.bsh:  an example of a BeanShell file for use with Xilize.
+
+Xilize processes any *.bsh files it comes across during translation.  
+The functions they define can be used in macros and custom signature definitions.
+
+Note:  before Xilize executes BeanShell scripts it makes certain variables available
+to them.  See the documentation at http://xilize.sourceforge.net/ for more information.
+***************************************************************************************/
+
+
+/*
+   "repeat()" returns a string consisting of "s" repeated "n" times.
+   Use it in Xilize source files like this:  &{repeat(30,"=");}
+*/
+
+repeat(int n, String s) {
+	StringBuilder sb = new StringBuilder(n*s.length());
+	for( int i = 0; i < n; i++ )
+		sb.append(s);
+	return sb.toString();
+}
+
+/*
+    exampleFile() is can be used in custom signatures.  See, for example,
+    "listFile" defined in the default dir.xilconfig.
+
+    Notice the text of the block being used essentially as a passed
+    parameter. The function expects the first line of text to contain a relative
+    path.  The text of the file it finds will be "included" in the *.xil source file
+    within the the html tags shown below.
+
+    Notes:
+
+	task.markupKM() translates keys and macros (${} and &{}) in its String argument.
+
+    sig.insertAttributes() adds tag attributes from any signature modifiers present
+        to the first tag in its argument, while preserving any existing attributes.
+
+    task.markupU() replaces &, <, and >  with their character entites rep
+        (&amp; &lt; and &gt;).  Required to generate propper HTML.
+
+    Files.read() reads a file, optionally wrapping its lines. The Files class in
+		com.centeredwork.xilize contains a set of static utility methods. Don't confuse
+		it with java.io.File.
+
+    Parameters:
+        "cls" is a css class name
+        if "wrap" > 0 lines are wrapped at column "wrap"
+*/
+
+exampleFile(cls, wrap) {
+
+    // by first translating any keys and macros on the text line we allow those to be used
+    // to specify the path.  Input error checking is left to the exception handler.
+
+    String path = task.markupKM(text);
+    File file = Files.localFile( path, task.parentDir().getPath() );
+    return  sig.insertAttributes("<pre class=\""+cls+"\">")
+        + task.markupU(Files.read(file, wrap))
+        + "</pre>";
+}
+

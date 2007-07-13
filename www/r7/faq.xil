@@ -1,14 +1,6 @@
-include. ../include/common-includes.inc
+Flying Saucer Project: FAQ
 
-divStart(#fs).
-
-include. ../include/menu.xil
-
-h1. The ${fs} FAQ
-
-This is our list of frequently-asked questions. With release R6, we moved a bunch of the material from here into our "Flying Saucer User's Guide":users-guide-r7rc1#.pdf. Please contact us on our ${mailing-list.user} if you have more questions.
-
-_Note: we are in the process of updating this FAQ for our R7 release. Please post questions to our ${mailing-list.user}!_
+This is our list of frequently-asked questions. For a more comprehensive guide, see our ${guide}. Please contact us on our ${mailing-list} if you have more questions.
 
 h2(fs_heading){clear:none}. General Questions
 
@@ -16,57 +8,90 @@ toc. 3 3 #
 
 h3(fs_heading){clear:none}. What is ${fs}?
 
-${fs} is an XHTML renderer written in Java. It's 100% Java, not a native wrapper, and it only handles valid XHTML + CSS. It is intended for embedding web-based user interfaces into Java applications (ex. web photo album generator, help viewer, iTunes Music Store clone). It cannot be used as a general purpose webbrowser since it does not support the malformed legacy HTML found on the web, though recent work on compatibility libraries may be enough to do what you need. You may be able to work with legacy HTML (e.g. HTML that is not valid XML)
-by using a pre-processor that cleans it up; there are several of these, 
-including JTidy and TagSoup. See our "User's Guide":users-guide-r7rc1#.pdf for details.
+p. ${fs} is an XHTML renderer written in Java. It's 100% Java, not a native wrapper, and it only handles well-formed XHTML + CSS. It is intended for embedding web-based user interfaces into Java applications (ex. web photo album generator, help viewer, iTunes Music Store clone). It cannot be used as a general purpose web browser since it does not support the malformed legacy HTML found on the web, though recent work on compatibility libraries may be enough to do what you need. You may be able to work with legacy HTML (e.g. HTML that is not well-formed XML) by using a pre-processor that cleans it up; there are several of these, including JTidy and TagSoup. See our ${guide} for details.
+
+h3(fs_heading){clear:none}. Wait a second! XML, XHTML, get your story straight!
+
+p. ${fs} takes well-formed XML (or a DOM Document) as input, matches it with CSS (linked, inline, attributed) and renders it. That XML could, for example, be XHTML (strict). We figure most of you are interested in rendering some form of XHTML, so in these docs we use "XHTML" as short for "well-formed XML, for example, XHTML (strict)". 
+
+You can render any XML, in fact, as long as you have CSS for it. For XHTML, we have out-of-the-box default CSS styling; for any other XML, you'll need to bring your own.
 
 h3(fs_heading){clear:none}. Does ${fs} support legacy HTML? 
 
 h3(fs_heading){clear:none}. Can I use ${fs} to browse websites?
 
-${fs} is not an HTML component. It is a rendering component for XHTML content, but it cannot handle the malformed HTML 4.0 of general webpages, and it has no support for purely stylistic markup like FONT and CENTER. You have to use valid XHTML and CSS. For most embedded uses this is fine since the application author usually has control over the documents to be loaded. If you really need full IE/Mozilla/Safari like fidelity for general purpose webpages you should look into a webbrowser wrapper like JDIC's Browser component.
+${fs} is not an HTML component. It is a rendering component for XHTML content, but it cannot handle the malformed HTML 4.0 of general webpages, and it has no support for purely stylistic markup like FONT and CENTER. You have to use valid XHTML and CSS. For most embedded uses this is fine since the application author usually has control over the documents to be loaded. If you really need full IE/Mozilla/Safari-like fidelity for general purpose webpages you should look into a webbrowser wrapper like "JDIC's Browser component":http://jdic.dev.java.net, or a commercial component like "WebRenderer":http://www.webrenderer.com.
 
 h3(fs_heading){clear:none}. Is ${fs} a web browser?
 
-The core renderer just handles XHTML and CSS. It doesn't know anything about form submission, managing cookies, or tracking the browsing history. It just renders XHTML/CSS to the screen. However, ${fs} does include a Browser application which provides these features and more. You can use this as a good starting point for your own applications.
+The core renderer just handles XHTML and CSS. It doesn't know anything about form submission, managing cookies, or tracki ng the browsing history. It just renders XHTML/CSS to the screen. However, ${fs} does include a (very simple) Browser application which shows how you might develop these features yourself. You can use this as a good starting point for your own applications.
 
 h3(fs_heading){clear:none}. What kind of applications can I use ${fs} for?
 
-${fs} can be used for any Java application that requires some sort of styled text. This can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. ${fs} is very forward thinking and is designed to be a part of the next generation of applications that combine rich desktop clients with web content. Some examples of application types are:
+${fs} can be used for any Java application that requires some sort of styled content, to generate high-quality PDF output based on XHTML and CSS documents, or to layout and render images based on XHTML and CSS. 
 
-* chat programs
-* online music stores
-* a Gutenberg eBook reader
-* a distributed dictionary application
-* Sherlock style map and movie search
-* Konfabulator and Dashboard components
-* an RSS reader
-* a Friendster client
-* an eBay client
-* a splash screen
-* an about box
-* a helpfile viewer
-* a javadoc viewer
-* report generation and viewing
-* a stock ticker / weather reporter
+An application using ${fs} can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. ${fs} is very forward- thinking and is designed to be a part of the next generation of applications that combine rich desktop clients with web content. Some examples of application types are:
+
+* chat programs * online music stores * a Gutenberg eBook reader * a distributed dictionary application * Sherlock style map and movie search * Konfabulator and Dashboard components * an RSS reader * a Friendster client * an eBay client * a splash screen * an about box * a helpfile viewer * a javadoc viewer * report generation and viewing * a stock ticker / weather reporter
 
 h3(fs_heading){clear:none}. What XHTML/CSS features does ${fs} currently support?
 
-With our R6 release it supports most of the common XHTML and CSS features. This includes:
+Flying Saucer supports all of CSS 2.1 with a few exceptions.  Consult the ${issue-tracker} for more information on what is not supported (in particular, the issues with a summary of "Support ...") or ask on the ${mailing-list}.  
 
-* text and images (paragraphs, bold, italics, fonts, alignment, etc)
-* the box model (borders, backgrounds, padding, margins)
-* forms
-* tables
-* list items
-* most CSS properties and shorthands
-* float, absolute, relative, and fixed positioning support
+If you do encounter a compliance bug or other unexpected behavior, please open a bug or post to the ${mailing-list}. Our goal is 100% compliance with the CSS 2.1 specification. 
 
 h3(fs_heading){clear:none}. What XHTML/CSS features is ${fs} missing?
 
-The only major feature missing as of R6 is the automatic table model (the old Netscape style of tables where the size of the content determined the size of the cells.) Fixed layout tables are supported. Other than that it's just a matter of squashing more bugs and getting more speed.
+Check the ${issue-tracker} for a list or ask on the ${mailing-list} if you aren't sure.   
 
-There is also no support for things outside the scope of XHTML/CSS such as Javascript, printing, Flash, SVG, or legacy HTML (though there is interest in all of those).
+Among other things there is  no support for things outside the scope of XHTML/CSS such as Javascript, printing, Flash, SVG, or legacy HTML (though there is interest in all of those).
+
+h3(fs_heading#acid2){clear:none}. So do you pass the Acid(2) test?
+
+Our core developer in the R7 development cycle, Pete Brant, reported that it was possible to render Acid2 pretty well, with some caveats. Quoting from him in the developer's email list:
+
+_begin quote_
+
+"Save for the changes below, test_as_xml.xml is an
+unmodified version of "http://hixie.ch/tests/evil/acid/002-no-data/":http://hixie.ch/tests/evil/acid/002-no-data/.
+All in all things are looking good!
+
+Changes to original test:
+
+# Replace DOCTYPE with one we recognize to pick up entity references
+(in particular &nbsp;)
+# Wrap @<style>@ tag in CDATA
+# Close open tags as appropriate (in particular, <p>s and table
+related tags in row 1 [as referenced from the test guide], <link> in
+header, and bottom @<img>@ (after row 14 in guide)
+# Replace @<object data="data007">ERROR</object>@ with @<img
+src="data007">ERROR</img>@ (since we don't support HTML's @<object>@)
+# Change CSS selector on line 55 from "#eyes-a object object object"
+to "#eyes-a object object img" to compensate for (4)
+# Bottom @<img>@ uses a data URL even in the non-data URL version (I
+assume it was just missed).  Save data URL contents to disk (as
+data008) and update src attribute
+
+Of course, these changes mean that we cannot claim Acid2 compliance,
+but nothing there changes the nature of the test (at least as far as a
+CSS torture test goes).
+
+Besides those changes above, there are still the following compliance problems:
+
+# The transparent pixels in the eyes row background(s) are painted
+as black.  Weird considering that the alpha channel in the eyes
+graphic itself is apparently picked up fine.
+# Hover doesn't work on generated content (hence no blue nose on mouseover)
+# There shouldn't be a scroll bar on the page by virtue of @html {
+overflow: hidden; }@"
+
+_end quote_
+
+The resulting image is available on our project home page, as an Easter egg. See if you can find the little bandit.
+
+h2(fs_heading){clear:none}. Usage Questions
+
+toc. 3 3 #
 
 h3(fs_heading){clear:none}. How do I make my program follow hyperlinks?
 
@@ -84,7 +109,106 @@ In Java APIs, there is some confusion on usage between a String that represents 
 
 In the R6 codebase you can use @panel.setDocumentFromString()@ to do this. The String will be passed to the standard XML parser and treated as a regular document.
 
-It's important to remember that FS expects well-formed XML documents, and we don't have an extremely friendly relationship with the XML parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java XML APIs, before loading them in FS.
+It's important to remember that FS expects well-formed XML documents, and we don't have an extremely friendly relationship with the XML parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java XML APIs, before loading them in FS. This is especially true if you are generating XHTML on-the-fly.
+
+h3(fs_heading){clear:none}. How do I force Anti-aliasing?
+
+Either 
+* Set the appropriate configuration properties: @xr.text.aa-fontsize-threshhold@ and @xr.text.aa-smoothing-level@
+* Get the @Java2DTextRenderer@ reference from the XHTMLPanel's @SharedContext@ property, then call @setSmoothingThreshold()@ and @setSmoothingLevel()@
+
+Smoothing level should be anything other than @TextRenderer.NONE@. The specific value is ignored for Java2D AA.
+
+The threshold is the font size at which AA should kick in, for text; font sizes below that size will *not* be drawn with AA.
+
+Note that on some platforms and JREs, AA can slow things down considerably. It appears to be much better with more recent JREs, such as Java 6.
+
+h3(fs_heading){clear:none}. When I use the @setDocument(dom, url)@ constructor, what should the url parameter point to?
+
+The url is the "base", which for a normal URL would be the parent location (parent directory). For Documents usually a null will suffice, unless your document contains relative references to some resource; if so, then provide the parent location (what they are relative to).
+
+h3(fs_heading){clear:none}. My PDF isn't picking up my CSS!
+
+Make sure you have specified the media type for your CSS when you link or embed it; use type "print" or "all".
+
+h3(fs_heading){clear:none}. How can I print multiple pages on to one PDF, if they come from multiple documents?
+
+bcx. {{
+String root = "J:/Temp/fs";
+
+String[] inputs = new String[] { "input1.html", "input2.html",
+"input3.html" };
+String output = "output.pdf";
+
+OutputStream os = null;
+try
+{
+   os = new FileOutputStream(new File(root, output));
+
+   ITextRenderer renderer = new ITextRenderer();
+
+   renderer.setDocument(new File(root, inputs[0]));
+   renderer.layout();
+
+   renderer.createPDF(os, false);
+
+   for (int i = 1; i < inputs.length; i++)
+   {
+       renderer.setDocument(new File(root, inputs[i]));
+       renderer.layout();
+       renderer.writeNextDocument();
+   }
+
+   renderer.finishPDF();
+
+   os.close();
+   os = null;
+}
+finally
+{
+   if (os != null)
+   {
+       try
+       {
+           os.close();
+       }
+       catch (IOException e)
+       {
+           // ignore
+       }
+   }
+}
+}}
+
+h3(fs_heading){clear:none}. Can I use Flying Saucer in an SWT application?
+
+If you're trying to output to an SWT canvas--there is an early mockup by Vianney le Clément which we plan to merge in the R8 release. See the mailing list thread starting with:
+https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?listName=dev&msgNo=3452
+
+There are patches attached to that mail thread which provide initial support for SWT; some things are still missing, but it's a good start.
+
+h3(fs_heading){clear:none}. My header is not showing up correctly in my PDF.
+
+The values of -fs-flow-top/right/bottom/left and -fs-move-to-flow must
+be strings and not keywords (e.g. -fs-flow-top: 'header' instead of
+-fs-flow-top: header).
+
+The new CSS parser validates this (and will give you a warning message
+if you have logging turned on).
+
+h3(fs_heading){clear: none}. How do I set a custom UserAgentCallback when generating PDF?
+
+bcx. {{
+ITextRenderer renderer = new ITextRenderer();
+
+ITextUserAgent callback = new ITextUserAgent(renderer.getOutputDevice());
+callback.setSharedContext(renderer.getSharedContext());
+renderer.getSharedContext().setUserAgentCallback(callback);
+
+renderer.setDocument(url);
+renderer.layout();
+renderer.createPDF(os);
+}}
 
 h2(fs_heading){clear:none}. Developer's FAQ
 
@@ -94,14 +218,17 @@ h3(fs_heading){clear:none}. How do I set up my CLASSPATH?
 
 You only need the 
 
-* @core-renderer.jar@ (required)
-* @lib/cssparser-0-9-4-fs.jar@ (required)
-* @lib/itext-paulo-155.jar@
-* @lib/minium.jar@. 
+* @core-renderer.jar@ (required) 
+* @lib/itext-paulo-155.jar@ 
+* @lib/minium.jar@ 
 
-The first two are required; iText is needed for PDF rendering, and Minium if you need Minium anti-aliasing.
+The first two are required; iText is needed for PDF rendering, and Minium if you need Minium anti-aliasing. 
 
-That is all you need for your own programs. You also need an XML parser to be in your classpath, but this already included in recent versions of the JRE. To run the browser or use any of it's support classes you will need the browser.jar file.
+Before release R7, you needed to include a CSS parser in the CLASSPATH. This is no longer necessary, as ${fs} now includes a fast, compliant CSS parser.
+
+That is all you need for your own programs. You also need an XML parser to be in your classpath, but this already included in recent versions of the JRE. 
+
+To run the browser or use any of it's support classes you will need the @browser.jar@ file.
 
 h3(fs_heading){clear:none}. How do I build XR without Ant? 
 
@@ -109,4 +236,4 @@ h3(fs_heading){clear:none}. How do I build XR from within my IDE?
 
 Our Ant @build.xml@ file includes all JAR files in the @/lib@ directory, plus the @/resources@ directory tree in the classpath. The compile target also copies CSS and properties resources from @/src/css@ and @src/conf@ to @/build/resources@. If running from an IDE, you will need to synchronize this yourself.
 
-divEnd.
+

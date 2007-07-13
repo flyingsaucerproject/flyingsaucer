@@ -1,144 +1,36 @@
-include. include/common-includes.inc
+The Flying Saucer Project
 
-define. css base.css
+<a href="r7/faq.html#acid2">
 
-define. style
-.downloadbox {
-  width: 150px; 
-  font-weight: bold; 
-  font-size: 8pt; 
-  border: 1px solid blue; 
-  margin: 0px 10px 15px 0px; 
-  float: left; 
-  padding: 10px 5px 10px 5px; 
-  text-align: center;
-}
+divStart(#fs_logo){float: left; width: 180px; height: 180px;}.
 
-divStart(#fs).
+divEnd.
 
-include. include/menu.xil
-
-h1(fs_heading){ clear: none }. !images/new_saucer.png! Flying Saucer
- 
-h2(fs_heading){ clear: none }. The 100% Java XHTML/CSS2 Renderer
-
-h2(fs_heading){ clear: none }. News
-
-p{font-size: 14pt}. *NEW* Release 7 Release Candidate 2!
-
-*July 9, 2007*: The Flying Saucer team announces the Release 7 Release Candidate 2 of the Flying Saucer 100% Java XHTML+CSS renderer.We're close to 
-making a final release of R7--please help us and test this version out. There
-are only a few changes since R7rc1.
-
-   * Assign a custom UserAgentCallback for PDF rendering
-   * Documentation updated 
-
-
-p{font-size: 14pt}. Release 7 Release Candidate 1
-
-*June 24, 2007*: The Flying Saucer team announces the Release 7 Release Candidate 1 of the Flying Saucer 100% Java XHTML+CSS renderer. This has been a long time coming, but not without good reason--this is a feature-packed release candidate and a big improvement since our R7pre1 release. Since our last release, we've added solid support for tables--all the table tags are covered, we do nested tables, table styles, collapsing borders, floated tables--the whole bunch. There is a new, home-grown, super-fast CSS 2 parser. We have support for the cursor property, counters, and forms support is much improved. Overall there are many performance improvements and tons of bug fixes.
-
-p.
-
-==
-<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc1.zip">  
-  <div class="downloadbox">
-  Binaries
-  </div>
 </a>
-<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc1-src.zip">  
-  <div class="downloadbox">
-  Source Bundle
-  </div>
-</a>
-==
 
-p{clear: left}.
+h3(fs_heading){ clear: none }. An XML/XHTML/CSS 2.1 Renderer
+
+_(in 100% Java)_
+
+h2(fs_heading){ clear: left }. News
+
+p{font-size: 14pt}. *NEW* Release 7 Release Candidate 2! 
+
+*July 13, 2007*: The Flying Saucer team announces the Release 7 Release Candidate 2 of the Flying Saucer 100% Java XHTML+CSS renderer.We're close to making a final release of R7--please help us and test this version out. 
+
+Download:
+
+table(properties){width: 100%}.
+| "Binary Zip 3M":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc2.zip | For using Flying Saucer in your own programs
+| "Source Bundle Zip 8M":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc2-src.zip | Includes source, demo programs, sample code, etc. 
 
 We feel this is pretty solid--please check it out! We need your feedback. We'd like R7 to be the best Flying Saucer release ever.
 
-p.
-
-p{font-size: 14pt}. *Flying Saucer: Release 7 pre 1 Now Available!*
-
-*September 11, 2006*: The Flying Saucer team announces the Release 7pre1 of the Flying Saucer 100% Java XHTML+CSS renderer. 
-
-This is the first of our new "early access" releases. The pre-n releases are snapshots taken from CVS HEAD on the way to the next stable version of the library. Each pre-release number is incremented sequentially until we decide we're ready for a beta. As a rule, we will fix bugs in pre-releases but fixes will be rolled into the next pre-n release, and we won't upload patches to the current pre-n bundles.   
-
-R7pre1 has some great improvements since our R6 release a few weeks ago, including: 
-
-# support for min & max width and height settings
-# shrink-to-fit
-# some great improvements in performance overall
-
-You can download either the binary or the source bundle by following the links on the navigation menu. Front-facing APIs haven't changed since R6, so documentation remains the same. Remember this is an unstable release, meaning it's been smoke-tested but has not been fully shaken out. Let us know if you have any problems. Take it for a spin!   
-
-p{font-size: 14pt}. *Flying Saucer: Release 6 Now Available!*
-
-*August 6, 2006*: The Flying Saucer team is happy to announce Release 6 of the Flying Saucer 100% Java XHTML+CSS renderer.  
-
-Release 6 includes major improvements in performance and stability--plus we've taken big strides in our CSS 2.1 support. Our package now includes:
-
-# Vertical margin collapsing; "CSS 2.1 specification":http://www.w3.org/TR/CSS21/box.html#collapsing-margins
-# Z-index property and stacking contexts; "CSS 2.1 specification":http://www.w3.org/TR/CSS21/visuren.html#z-index
-# Vertical-align: top/bottom; "CSS 2.1 specification":http://www.w3.org/TR/CSS21/visudet.html#line-height
-# PDF rendering via the iText library; support for PDF bookmarks, pagination and breaks, and more
-# Pagination support, automatic and explicit: "CSS 2.1 specification":http://www.w3.org/TR/CSS21/page.html#page-breaks
-# Rewritten "float" implementation
-# Improved list marker positioning 
-
-Plus there are lots of bug fixes and improvements all around; check out our complete "feature list":r6/feature-list.html. We have one user community using Flying Saucer to render PDF output from XML+CSS via over 30K lines of XSL. Things are looking good!
-
-p.
-
-h2(fs_heading). Stable Releases
-
-Download our latest stable release, R6:
-
-==
-<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6.zip">  
-  <div class="downloadbox">
-  Binaries
-  </div>
-</a>
-<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-src.zip">  
-  <div class="downloadbox">
-  Source Bundle
-  </div>
-</a>
-==
-
-p.
-
-h2(fs_heading). Development Snapshots
-
-Our latest development snapshot is R7rc1. This is a snapshot of the current 
-CVS HEAD. Careful, we've smoke-tested it but there may be problems. Please
-send in your feedback
-
-==
-<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer_R7rc1.zip">  
-  <div class="downloadbox">
-  Binaries
-  </div>
-</a>
-<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer_R7rc1-src.zip">  
-  <div class="downloadbox">
-  Source Bundle
-  </div>
-</a>
-==
-
-
-p.
 
 h2(fs_heading). Demos
 
-Check out our spiffy "demo apps":r6/demos.html.
-  
-As part of our R6 release, the older and pre-release binaries for the R5 release have been removed from our download servers. If you are still using the R6pre1 or R6pre2 releases, or R5, please upgrade to the final release, as we can no longer support changes to the pre-releases or to Release 5.
+Check out our spiffy "demo apps":r7/demos.html. 
 
-p.
 
 h2(fs_heading). Helping Out
 
@@ -148,4 +40,19 @@ If you want to contribute or just see what's going on then please join the dev $
 
 Keep up with new releases: !https://java-net.dev.java.net/branding/images/xml.gif!:http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS
 
-divEnd.
+h2(fs_heading). Special thanks to
+
+<img src="/images/xiLogo64.png" style="float: left; margin-right: 10px;" />
+
+This project website and our User's Guide are produced using the "Xilize":http://xilize.sourceforge.net/ (http://xilize.sourceforge.net/) syntax and rendering engine. The content is written in Xilize text markup, then converted to XHTML using the Xilize converter. We'd like to thank the Xilize team at CenteredWork for sharing this library. Try it out! It's a great way to write websites quickly, without losing control over formatting. Check it out!
+
+<img src="/images/made-with-jedit-9.png" style="float: left; margin-right: 10px;" />
+
+Editing took place using the legendary "jEdit editor":http://www.jedit.org/ (http://www.jedit.org/) editor. Xilize produces a plugin for jEdit, where you get syntax highlighting for the Xilize markup, quick markup controls, and a XIL converter all built-in to the editor.
+
+"JetBrains":http://www.jetbrains.com, the makers of "IntelliJ IDEA":http://www.jetbrains.com/idea, has generously sponsored a license letting us use IDEA on this project under their Open Source Program. We are grateful for their support!
+
+p{clear:both}. Links:
+
+* "Xilize":http://xilize.sourceforge.net/ http://xilize.sourceforge.net/
+* "jEdit":http://www.jedit.org http://www.jedit.org

@@ -1,0 +1,10 @@
+>xil> footer.xilinc: default footer include for Xilize
+>xil> 
+>xil> By default, this file is automatically included at the end of each *.xil
+>xil> file. Change it to suit your needs.  To prevent inclusion, use 
+>xil> "undef. footerinc" in your source file or in a dir.xilconfig file.
+>xil> 
+>xil> See the default header.xilinc for more information.
+>xil> 
+>xil> See http://xilize.sourceforge.net/ for a complete description of Xilize.
+divEnd.

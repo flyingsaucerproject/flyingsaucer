@@ -1,0 +1,44 @@
+#toc {
+	page-break-before: always; 
+}
+h2 {
+	page-break-before: always;
+}
+h3, h4 {
+	page-break-after: avoid;
+}
+.printOnly, #footer {
+	display: block;
+}
+body { 
+	margin: 0; 
+	padding: 0; 
+}
+a:link {
+	text-decoration: none;
+	color: black;
+}
+div #menu {
+	display: none;
+}
+#pagenumber:before {
+  content: counter(page); 
+}
+#pagecount:before {
+  content: counter(pages);
+}
+@page {
+  size: A4;
+  margin: 1in .75in 1in .75in;
+  padding: 0.25in;
+  -fs-flow-top: "header";
+  -fs-flow-bottom: "footer";
+  -fs-flow-left: "left";
+  -fs-flow-right: "right";
+}
+@page :first {
+  border: thin solid black;
+  -fs-flow-bottom: "none";
+}
+
+
