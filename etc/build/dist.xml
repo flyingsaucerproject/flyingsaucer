@@ -5,21 +5,24 @@
 	</target>
 
     <!-- Builds all jars and packages jar and 3rd party libraries into one jar -->
-	<target name="dist.binary" depends="jar" description="Play Binary Distro">
+	<target name="dist.binary-min" depends="jar" description="Play Binary Distro">
 		<copy todir="${dest.dir}">
 			<fileset dir=".">
 				<include name="demos/*.xhtml"/>
 				<include name="demos/splash/**"/>
 			</fileset>
 			<fileset dir="${libraries.dir}">
-				<include name="*.jar"/>
+				<include name="itext*.jar"/>
+				<include name="minium*.jar"/>
 			</fileset>
 			<fileset dir="${src.packaging.dir}">
 				<include name="readme.txt"/>
 			</fileset>
 		</copy>
 		<zip basedir="${dest.dir}" zipfile="build/${app.name}.zip">
-			<include name="*.jar"/>
+			<include name="core-renderer.jar"/>
+            <include name="itext*.jar"/>
+            <include name="minium*.jar"/>
 			<include name="demos/**"/>
 		</zip>
 	</target>
