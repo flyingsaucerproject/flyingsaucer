@@ -21,15 +21,19 @@ package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.swing.BasicPanel;
-import org.xhtmlrenderer.swing.DOMInspector;
-import org.xhtmlrenderer.swing.Java2DTextRenderer;
-import org.xhtmlrenderer.swing.LinkListener;
-import org.xhtmlrenderer.swing.MiniumTextRenderer;
+import org.xhtmlrenderer.swing.*;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.demo.browser.actions.ZoomAction;
+import org.w3c.dom.Element;
 
 import javax.swing.*;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -103,17 +107,14 @@ public class BrowserMenuBar extends JMenuBar {
      * Description of the Method
      */
     public void init() {
-        file = new JMenu("File");
-        file.setMnemonic('F');
+        file = new JMenu("Browser");
+        file.setMnemonic('B');
 
         debug = new JMenu("Debug");
-        debug.setMnemonic('B');
+        debug.setMnemonic('U');
 
         demos = new JMenu("Demos");
         demos.setMnemonic('D');
-
-        edit = new JMenu("Edit");
-        edit.setMnemonic('E');
 
         view = new JMenu("View");
         view.setMnemonic('V');
@@ -128,7 +129,7 @@ public class BrowserMenuBar extends JMenuBar {
         view.add(root.actions.reload);
         view.add(new JSeparator());
         JMenu text_size = new JMenu("Text Size");
-        text_size.setMnemonic('Z');
+        text_size.setMnemonic('T');
         text_size.add(root.actions.increase_font);
         text_size.add(root.actions.decrease_font);
         text_size.add(new JSeparator());
@@ -144,17 +145,37 @@ public class BrowserMenuBar extends JMenuBar {
      * Description of the Method
      */
     public void createLayout() {
+        final ScalableXHTMLPanel panel = root.panel.view;
+
         file.add(root.actions.open_file);
         file.add(new JSeparator());
         file.add(root.actions.quit);
         add(file);
 
-        edit.add(root.actions.cut);
-        edit.add(root.actions.copy);
-        edit.add(root.actions.paste);
-        add(edit);
-
+        /*
+        // TODO: we can get the document and format it, but need syntax highlighting
+        // and a tab or separate window, dialog, etc.
+        view_source.setAction(new ViewSourceAction(panel));
         view.add(view_source);
+        */
+
+        JMenu zoom = new JMenu("Zoom");
+        zoom.setMnemonic('Z');
+        ScaleFactor[] factors = this.initializeScales();
+        ButtonGroup zoomGroup = new ButtonGroup();
+        for (int i = 0; i < factors.length; i++) {
+            ScaleFactor factor = factors[i];
+            JRadioButtonMenuItem item = new JRadioButtonMenuItem(new ZoomAction(panel, factor));
+
+            if (factor.isNotZoomed()) item.setSelected(true);
+
+            zoomGroup.add(item);
+            zoom.add(item);
+        }
+        view.add(new JSeparator());
+        view.add(zoom);
+        view.add(new JSeparator());
+        view.add(new JCheckBoxMenuItem(root.actions.print_preview));
         add(view);
 
         go.add(root.actions.forward);
@@ -189,11 +210,11 @@ public class BrowserMenuBar extends JMenuBar {
         ButtonGroup implementation = new ButtonGroup();
         JRadioButtonMenuItem java2d = new JRadioButtonMenuItem(new AbstractAction("Java2D Implementation") {
             public void actionPerformed(ActionEvent evt) {
-                SharedContext rc = root.panel.view.getSharedContext();
+                SharedContext rc = panel.getSharedContext();
                 int level = rc.getTextRenderer().getSmoothingLevel();
                 rc.setTextRenderer(new Java2DTextRenderer());
                 rc.getTextRenderer().setSmoothingLevel(level);
-                root.panel.view.repaint();
+                panel.repaint();
             }
         });
         java2d.setSelected(true);
@@ -202,11 +223,11 @@ public class BrowserMenuBar extends JMenuBar {
 
         JRadioButtonMenuItem minium = new JRadioButtonMenuItem(new AbstractAction("Minium Implementation") {
             public void actionPerformed(ActionEvent evt) {
-                SharedContext rc = root.panel.view.getSharedContext();
+                SharedContext rc = panel.getSharedContext();
                 int level = rc.getTextRenderer().getSmoothingLevel();
                 rc.setTextRenderer(new MiniumTextRenderer());
                 rc.getTextRenderer().setSmoothingLevel(level);
-                root.panel.view.repaint();
+                panel.repaint();
             }
         });
         implementation.add(minium);
@@ -229,7 +250,12 @@ public class BrowserMenuBar extends JMenuBar {
                     root.validation_console = new JFrame("Validation Console");
                     JFrame frame = root.validation_console;
                     JTextArea jta = new JTextArea();
+
                     root.error_handler.setTextArea(jta);
+
+                    jta.setEditable(false);
+                    jta.setLineWrap(true);
+                    jta.setText("Validation Console: XML Parsing Error Messages");
 
                     frame.getContentPane().setLayout(new BorderLayout());
                     frame.getContentPane().add(new JScrollPane(jta), "Center");
@@ -242,7 +268,7 @@ public class BrowserMenuBar extends JMenuBar {
                     });
 
                     frame.pack();
-                    frame.setSize(200, 400);
+                    frame.setSize(400, 300);
                 }
                 root.validation_console.setVisible(true);
             }
@@ -304,12 +330,6 @@ public class BrowserMenuBar extends JMenuBar {
                 }
             }
 
-            /*                                                            
-            SelectionMouseListener ma = new SelectionMouseListener();
-            root.panel.view.addMouseListener(ma);
-            root.panel.view.addMouseMotionListener(ma);
-            */
-            
             root.panel.view.addMouseTrackingListener(new LinkListener() {
                public void linkClicked(BasicPanel panel, String uri) {
                    if (uri.startsWith("demoNav")) {
@@ -325,6 +345,23 @@ public class BrowserMenuBar extends JMenuBar {
                } 
             });
         }
+    }
+
+    private ScaleFactor[] initializeScales() {
+        ScaleFactor[] scales = new ScaleFactor[11];
+        int i = 0;
+        scales[i++] = new ScaleFactor(1.0d, "Normal (100%)");
+        scales[i++] = new ScaleFactor(2.0d, "200%");
+        scales[i++] = new ScaleFactor(1.5d, "150%");
+        scales[i++] = new ScaleFactor(0.85d, "85%");
+        scales[i++] = new ScaleFactor(0.75d, "75%");
+        scales[i++] = new ScaleFactor(0.5d, "50%");
+        scales[i++] = new ScaleFactor(0.33d, "33%");
+        scales[i++] = new ScaleFactor(0.25d, "25%");
+        scales[i++] = new ScaleFactor(ScaleFactor.PAGE_WIDTH, "Page width");
+        scales[i++] = new ScaleFactor(ScaleFactor.PAGE_HEIGHT, "Page height");
+        scales[i++] = new ScaleFactor(ScaleFactor.PAGE_WHOLE, "Whole page");
+        return scales;
     }
 
     /**
@@ -483,8 +520,6 @@ public class BrowserMenuBar extends JMenuBar {
         public void actionPerformed(ActionEvent e) {
             navigateToNextDemo();
         }
-
-
     }
 
     public void navigateToNextDemo() {
@@ -661,6 +696,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.44  2007/07/13 13:32:31  pdoubleya
+* Add webstart entry point for browser with no URL or File/open option. Move Zoom to menu entry, add warning on first zoom. Move preview to menu entry. Reorganize launch method a little to allow for multiple entry points.
+*
 * Revision 1.43  2007/05/24 13:22:39  peterbrant
 * Optimize and clean up hover and link listeners
 *

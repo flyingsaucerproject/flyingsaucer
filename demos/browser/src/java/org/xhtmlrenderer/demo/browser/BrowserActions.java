@@ -48,10 +48,6 @@ public class BrowserActions {
     /**
      * Description of the Field
      */
-    public Action cut, copy, paste;
-    /**
-     * Description of the Field
-     */
     public Action forward, backward, refresh, reload, load, stop, print_preview, goHome;
 
     public Action generate_diff, usersManual, aboutPage;
@@ -122,24 +118,7 @@ public class BrowserActions {
         setName(quit, "Quit");
         setAccel(quit, KeyEvent.VK_Q);
         setMnemonic(quit, new Integer(KeyEvent.VK_Q));
-
-        cut = new EmptyAction("Cut", KeyEvent.VK_X);
-        cut.setEnabled(false);
-        setMnemonic(cut, new Integer(KeyEvent.VK_T));
-
-        copy = new CopySelectionAction(root);
-        copy.setEnabled(true);
-        copy.putValue(Action.ACCELERATOR_KEY,
-                KeyStroke.getKeyStroke(KeyEvent.VK_C,
-                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        setMnemonic(copy, new Integer(KeyEvent.VK_C));
-        setName(copy, "Copy");
-
-        paste = new EmptyAction("Paste", KeyEvent.VK_V);
-        paste.setEnabled(false);
-        setMnemonic(paste, new Integer(KeyEvent.VK_P));
-
-
+        
         url = getImageUrl("images/go-previous.png");
         backward = new EmptyAction("Back", "Go back one page", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
@@ -204,8 +183,7 @@ public class BrowserActions {
                         InputEvent.SHIFT_MASK));
         reload.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_R));
 
-        url = getImageUrl("images/document-print-preview.png");
-        print_preview = new EmptyAction("Print Preview", "Print preview", new ImageIcon(url)) {
+        print_preview = new EmptyAction("Print Preview", "Print preview mode", null) {
             public void actionPerformed(ActionEvent evt) {
                 togglePrintPreview();
             }
@@ -411,6 +389,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2007/07/13 13:32:31  pdoubleya
+ * Add webstart entry point for browser with no URL or File/open option. Move Zoom to menu entry, add warning on first zoom. Move preview to menu entry. Reorganize launch method a little to allow for multiple entry points.
+ *
  * Revision 1.27  2007/04/11 21:06:23  pdoubleya
  * Prepare to point to R7 versions of files
  *

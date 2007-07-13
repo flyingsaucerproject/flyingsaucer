@@ -22,8 +22,7 @@ package org.xhtmlrenderer.demo.browser;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+/*import java.awt.event.ItemListener;*/
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,8 +32,8 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.swing.ScalableXHTMLPanel;
-import org.xhtmlrenderer.swing.ScaleChangeEvent;
-import org.xhtmlrenderer.swing.ScaleChangeListener;
+/*import org.xhtmlrenderer.swing.ScaleChangeEvent;
+import org.xhtmlrenderer.swing.ScaleChangeListener;*/
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -44,7 +43,7 @@ import org.xhtmlrenderer.util.XRLog;
  *
  * @author empty
  */
-public class BrowserPanel extends JPanel implements DocumentListener, ScaleChangeListener {
+public class BrowserPanel extends JPanel implements DocumentListener {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -106,8 +105,8 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 	BrowserPanelListener listener;
 
 	JButton print_preview;
-	JComboBox cbxZoom;
-	private ScaleFactor[] availableScales;
+	/*JComboBox cbxZoom;
+	//private ScaleFactor[] availableScales;*/
 
 	/**
 	 * Description of the Field
@@ -115,7 +114,7 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 	public static Logger logger = Logger.getLogger("app.browser");
 
 	private PanelManager manager;
-	private JButton goToPage;
+	JButton goToPage;
 	public JToolBar toolbar;
 
 	/**
@@ -133,20 +132,18 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 
 	/**
 	 * Description of the Method
-	 *
-	 * @param startPage
 	 */
-	public void init(String startPage) {
-		availableScales = initializeScales();
+	public void init() {
+		/*availableScales = initializeScales();*/
 		forward = new JButton();
 		backward = new JButton();
 		stop = new JButton();
 		reload = new JButton();
 		goToPage = new JButton();
 		goHome = new JButton();
-		cbxZoom = new JComboBox(availableScales);
+		/*cbxZoom = new JComboBox(availableScales);*/
 		// awfull hack to select the 100%
-		cbxZoom.setSelectedIndex(2);
+		/*cbxZoom.setSelectedIndex(2);
 		cbxZoom.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -165,7 +162,7 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 					}
 				}
 			}
-		});
+		});*/
 
 		url = new JTextField();
 		url.addFocusListener(new FocusAdapter() {
@@ -190,7 +187,6 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 
 		loadCustomFonts();
 
-		/* view.setErrorHandler(root.error_handler); */
 		status = new BrowserStatus();
 		status.init();
 
@@ -212,9 +208,6 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 		toolbar.add(goHome);
 		toolbar.add(url);
 		toolbar.add(goToPage);
-		toolbar.add(print_preview);
-		toolbar.add(new JLabel("Zoom"));
-		toolbar.add(cbxZoom);
 		// disabled for R6
 		// toolbar.add(print);
 	}
@@ -255,10 +248,6 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 		c.gridx++;
 		gbl.setConstraints(forward, c);
 		add(forward);
-
-		/* c.gridx++;
-			   gbl.setConstraints(stop, c);
-			   add(stop); */
 
 		c.gridx++;
 		gbl.setConstraints(reload, c);
@@ -323,10 +312,6 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 		print_preview.setAction(root.actions.print_preview);
 		print_preview.setText("");
 
-		/*
-				print.setAction(root.actions.print);
-				print.setText("");
-				*/
 		url.setAction(root.actions.load);
 		goToPage.setAction(root.actions.goToPage);
 		updateButtons();
@@ -399,6 +384,7 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 		view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 
+/*
 	public void scaleChanged(ScaleChangeEvent evt) {
 		if (evt.getComponent() == view) {
 			double scale = evt.getScale();
@@ -422,6 +408,7 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 			}
 		}
 	}
+*/
 
 
 	/**
@@ -462,54 +449,15 @@ public class BrowserPanel extends JPanel implements DocumentListener, ScaleChang
 		t.printStackTrace();
 	}
 
-	private static ScaleFactor[] initializeScales() {
-		ScaleFactor[] scales = new ScaleFactor[11];
-		int i = 0;
-		scales[i++] = new ScaleFactor(2.0d, "200%");
-		scales[i++] = new ScaleFactor(1.5d, "150%");
-		scales[i++] = new ScaleFactor(1.0d, "100%");
-		scales[i++] = new ScaleFactor(0.85d, "85%");
-		scales[i++] = new ScaleFactor(0.75d, "75%");
-		scales[i++] = new ScaleFactor(0.5d, "50%");
-		scales[i++] = new ScaleFactor(0.33d, "33%");
-		scales[i++] = new ScaleFactor(0.25d, "25%");
-		scales[i++] = new ScaleFactor(ScaleFactor.PAGE_WIDTH, "Page width");
-		scales[i++] = new ScaleFactor(ScaleFactor.PAGE_HEIGHT, "Page height");
-		scales[i++] = new ScaleFactor(ScaleFactor.PAGE_WHOLE, "Whole page");
-		return scales;
-	}
-
-	private static class ScaleFactor {
-		public static final double PAGE_WIDTH = -2.0d;
-		public static final double PAGE_HEIGHT = -3.0d;
-		public static final double PAGE_WHOLE = -4.0d;
-		private Double factor;
-		private String libelle;
-
-		public ScaleFactor(double factor, String libelle) {
-			super();
-			this.factor = new Double(factor);
-			this.libelle = libelle;
-		}
-
-		public double getFactor() {
-			return factor.doubleValue();
-		}
-
-		public String getLibelle() {
-			return libelle;
-		}
-
-		public String toString() {
-			return getLibelle();
-		}
-	}
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2007/07/13 13:32:31  pdoubleya
+ * Add webstart entry point for browser with no URL or File/open option. Move Zoom to menu entry, add warning on first zoom. Move preview to menu entry. Reorganize launch method a little to allow for multiple entry points.
+ *
  * Revision 1.34  2007/06/19 21:28:41  pdoubleya
  * Support for document scaling, from Christophe Marchand via email. Browser demo panel is now scalable as well.
  *
