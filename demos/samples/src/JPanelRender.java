@@ -16,11 +16,11 @@ import java.io.File;
  *
  * @author Patrick Wright
  */
-public class SinglePageFrame {
+public class JPanelRender {
     private String fileName;
 
     public static void main(String[] args) throws Exception {
-        new SinglePageFrame().run(args);
+        new JPanelRender().run(args);
     }
 
     private void run(String[] args) {
