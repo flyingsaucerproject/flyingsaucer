@@ -115,43 +115,44 @@
           <li><a href="#xil_27">Scaling Displayed Fonts</a></li>
           <li><a href="#xil_28">Rendering to an Image</a></li>
           <li><a href="#xil_29">Printing</a></li>
+          <li><a href="#xil_30">Putting It All Together</a></li>
         </ol>
       </li>
       <li><a href="#pdf">Creating <span class="caps">PDF</span> Files</a>
         <ol>
-          <li><a href="#xil_30">How do I add custom or specific fonts?</a></li>
-          <li><a href="#xil_31">How do I specify fonts for a specific encoding?</a></li>
-          <li><a href="#xil_32">How do you control page size?</a></li>
-          <li><a href="#xil_33">How do you control page size on <span class="caps">PDF</span> output?</a></li>
-          <li><a href="#xil_34">How do you control page margins on <span class="caps">PDF</span> output?</a></li>
-          <li><a href="#xil_35">What controls pagination?</a></li>
-          <li><a href="#xil_36">What about <span class="caps">PDF</span> bookmarks?</a></li>
-          <li><a href="#xil_37">What about embedded ../images? Are ../images downscaled?</a></li>
-          <li><a href="#xil_38">Does Flying Saucer support <span class="caps">PDF</span> form components?</a></li>
-          <li><a href="#xil_39">How do I control font smoothing (anti-aliasing?)</a></li>
+          <li><a href="#xil_31">How do I add custom or specific fonts?</a></li>
+          <li><a href="#xil_32">How do I specify fonts for a specific encoding?</a></li>
+          <li><a href="#xil_33">How do you control page size?</a></li>
+          <li><a href="#xil_34">How do you control page size on <span class="caps">PDF</span> output?</a></li>
+          <li><a href="#xil_35">How do you control page margins on <span class="caps">PDF</span> output?</a></li>
+          <li><a href="#xil_36">What controls pagination?</a></li>
+          <li><a href="#xil_37">What about <span class="caps">PDF</span> bookmarks?</a></li>
+          <li><a href="#xil_38">What about embedded ../images? Are ../images downscaled?</a></li>
+          <li><a href="#xil_39">Does Flying Saucer support <span class="caps">PDF</span> form components?</a></li>
+          <li><a href="#xil_40">How do I control font smoothing (anti-aliasing?)</a></li>
         </ol>
       </li>
     </ol>
   </li>
-  <li><a href="#xil_40">Flying Saucer Extensions to the <span class="caps">CSS</span> 2.1 Specification</a>
+  <li><a href="#xil_41">Flying Saucer Extensions to the <span class="caps">CSS</span> 2.1 Specification</a>
     <ol>
-      <li><a href="#xil_41">Table of Extensions</a></li>
-      <li><a href="#xil_42">Extensions: using the <code>-fs-flow-&lt;top|right|bottom|left&gt;</code> Properties</a></li>
+      <li><a href="#xil_42">Table of Extensions</a></li>
+      <li><a href="#xil_43">Extensions: using the <code>-fs-flow-&lt;top|right|bottom|left&gt;</code> Properties</a></li>
     </ol>
   </li>
   <li><a href="#configuration">Configuration</a>
     <ol>
-      <li><a href="#xil_43">The Flying Saucer Configuration File</a>
+      <li><a href="#xil_44">The Flying Saucer Configuration File</a>
         <ol>
-          <li><a href="#xil_44">Override with Second Configuration File</a></li>
-          <li><a href="#xil_45">Override with System Properties</a></li>
-          <li><a href="#xil_46">Looking up Configuration at Runtime</a></li>
+          <li><a href="#xil_45">Override with Second Configuration File</a></li>
+          <li><a href="#xil_46">Override with System Properties</a></li>
+          <li><a href="#xil_47">Looking up Configuration at Runtime</a></li>
         </ol>
       </li>
-      <li><a href="#xil_47">Logging</a></li>
+      <li><a href="#xil_48">Logging</a></li>
     </ol>
   </li>
-  <li><a href="#xil_48">About this Document</a></li>
+  <li><a href="#xil_49">About this Document</a></li>
 </ol>
 
 
@@ -436,6 +437,7 @@ panel.getSharedContext().setReplacedElementFactory(cef);
   <li><a href="#xil_27">Scaling Displayed Fonts</a></li>
   <li><a href="#xil_28">Rendering to an Image</a></li>
   <li><a href="#xil_29">Printing</a></li>
+  <li><a href="#xil_30">Putting It All Together</a></li>
 </ul>
 
 
@@ -712,6 +714,10 @@ List ../images = ImageUtil.scaleMultiple(scalingOptions, image, dimensions);
 
 <p>Unfortunately, in release R6 we had a regression in our printing routines, and printing documents directly (using <code>XHTMLPrintable</code> ) is not supported. What you can do is render your document to a <span class="caps">PDF</span> and print that&#8212;as described in our section on <a href="#pdf">creating <span class="caps">PDF</span> files</a>. We plan to have printing support available again in a future release&#8212;note that most of the capabilities are there, so if you are interested, contact us on our mailing list for how to implement this.</p>
 
+<h4 class="fs_heading" id="xil_30">Putting It All Together</h4>
+
+<p>Jacobus Steenkamp has written an article (October 2006) about using Flying Saucer to generate <span class="caps">PDF</span>, image and <span class="caps">SVG</span> (!) output, targeted for on-the-fly generation. The article is <a href="http://today.java.net/pub/a/today/2006/10/31/combine-facelets-and-flying-saucer-renderer.html">Combine <span class="caps">JSF</span> Facelets and the Flying Saucer <span class="caps">XHTML</span> Renderer</a> and is available on <a href="http://java.net">http://java.net</a>.</p>
+
 <h3 class="fs_heading" id="pdf">Creating <span class="caps">PDF</span> Files</h3>
 
 <p><img src="../images/screenshots/snap-pdf-sample-thumb.png" style="float: left; margin-right: 10px;" /></p>
@@ -722,25 +728,27 @@ List ../images = ImageUtil.scaleMultiple(scalingOptions, image, dimensions);
 
 <p>As paged media, the <span class="caps">CSS</span> which applies is that marked with the "media" attribute or "print" or "all"; this is described in the chapter on <a href="http://www.w3.org/TR/CSS21/media.html">Media types</a> in the <a href="http://www.w3.org/TR/CSS21/">CSS 2.1 Specification</a>.</p>
 
+<p>Josh Marinacci has also written an article (June 2007) about using Flying Saucer to generate <span class="caps">PDF</span> documents; the article is <a href="http://today.java.net/pub/a/today/2007/06/26/generating-pdfs-with-flying-saucer-and-itext.html">Generating PDFs for Fun and Profit with Flying Saucer and iText</a> and is available on <a href="http://java.net">http://java.net</a>.</p>
+
 <div style="clear:both" ></div>
 
 <p>Questions and answers about using Flying Saucer for <span class="caps">PDF</span> output:</p>
 
 <ul class="toc">
-  <li><a href="#xil_30">How do I add custom or specific fonts?</a></li>
-  <li><a href="#xil_31">How do I specify fonts for a specific encoding?</a></li>
-  <li><a href="#xil_32">How do you control page size?</a></li>
-  <li><a href="#xil_33">How do you control page size on <span class="caps">PDF</span> output?</a></li>
-  <li><a href="#xil_34">How do you control page margins on <span class="caps">PDF</span> output?</a></li>
-  <li><a href="#xil_35">What controls pagination?</a></li>
-  <li><a href="#xil_36">What about <span class="caps">PDF</span> bookmarks?</a></li>
-  <li><a href="#xil_37">What about embedded ../images? Are ../images downscaled?</a></li>
-  <li><a href="#xil_38">Does Flying Saucer support <span class="caps">PDF</span> form components?</a></li>
-  <li><a href="#xil_39">How do I control font smoothing (anti-aliasing?)</a></li>
+  <li><a href="#xil_31">How do I add custom or specific fonts?</a></li>
+  <li><a href="#xil_32">How do I specify fonts for a specific encoding?</a></li>
+  <li><a href="#xil_33">How do you control page size?</a></li>
+  <li><a href="#xil_34">How do you control page size on <span class="caps">PDF</span> output?</a></li>
+  <li><a href="#xil_35">How do you control page margins on <span class="caps">PDF</span> output?</a></li>
+  <li><a href="#xil_36">What controls pagination?</a></li>
+  <li><a href="#xil_37">What about <span class="caps">PDF</span> bookmarks?</a></li>
+  <li><a href="#xil_38">What about embedded ../images? Are ../images downscaled?</a></li>
+  <li><a href="#xil_39">Does Flying Saucer support <span class="caps">PDF</span> form components?</a></li>
+  <li><a href="#xil_40">How do I control font smoothing (anti-aliasing?)</a></li>
 </ul>
 
 
-<h4 class="fs_heading" id="xil_30">How do I add custom or specific fonts?</h4>
+<h4 class="fs_heading" id="xil_31">How do I add custom or specific fonts?</h4>
 
 <p>By default, the iText library only includes a subset of fonts, as do <span class="caps">PDF</span> reader applications. You may need to register additional fonts used in your document so they may be included with the <span class="caps">PDF</span>.</p>
 
@@ -755,7 +763,7 @@ renderer.getFontResolver().addFont("C:\\WINDOWS\\FONTS\\ARIAL.TTF", true);
 
 <p><em>Thanks to Sean Wesenberg for this tip.</em></p>
 
-<h4 class="fs_heading" id="xil_31">How do I specify fonts for a specific encoding?</h4>
+<h4 class="fs_heading" id="xil_32">How do I specify fonts for a specific encoding?</h4>
 
 <p>It's actually better, since the <a href="http://www.lowagie.com/iText/">iText</a> library provides code to parse font files and return font measurements.</p>
 
@@ -774,13 +782,13 @@ resolver.addFont (
 
 <p><em>Thanks for Manos Bastis for contributing this info and patches.</em></p>
 
-<h4 class="fs_heading" id="xil_32">How do you control page size?</h4>
+<h4 class="fs_heading" id="xil_33">How do you control page size?</h4>
 
 <p><em>What <span class="caps">CSS</span> attributes correspond to "page size" (e.g. letter, legal, A4) in <span class="caps">CSS</span> and <span class="caps">XHTML</span>?</em></p>
 
 <p>The <code>size</code> property as documented in the <a href="http://www.w3.org/TR/css3-page/">CSS3 Paged Media module</a>.  Everything in the spec is implemented except auto page handling (the default stylesheet currently sets letter-sized paper with a half-inch margin)</p>
 
-<h4 class="fs_heading" id="xil_33">How do you control page size on <span class="caps">PDF</span> output?</h4>
+<h4 class="fs_heading" id="xil_34">How do you control page size on <span class="caps">PDF</span> output?</h4>
 
 <p><em>What <span class="caps">CSS</span> attributes correspond to "page size" as we understand that in a word processor, e.g. US Letter, Legal, or A4?</em></p>
 
@@ -796,7 +804,7 @@ resolver.addFont (
 
 <p>It's described in more details in the <a href="http://www.w3.org/TR/css3-page/#page-size">CSS3 specification.</a></p>
 
-<h4 class="fs_heading" id="xil_34">How do you control page margins on <span class="caps">PDF</span> output?</h4>
+<h4 class="fs_heading" id="xil_35">How do you control page margins on <span class="caps">PDF</span> output?</h4>
 
 <p><em>What <span class="caps">CSS</span> attributes correspond to "margin" as we understand that in a word processor, e.g. left and right margin of 1inch? is this padding or margin on the <code>body</code> element?</em></p>
 
@@ -809,7 +817,7 @@ resolver.addFont (
 
 <p>For purposes of pagination, there's nothing special about <code>&lt;body&gt;</code> (e.g. if <code>&lt;body&gt;</code> spans 20 pages, your top and bottom margins will appear on pages 1 and 20 respectively).</p>
 
-<h4 class="fs_heading" id="xil_35">What controls pagination?</h4>
+<h4 class="fs_heading" id="xil_36">What controls pagination?</h4>
 
 <p><em>Is there a default pagination (whatever fits in the renderable page boundaries)&#8212;but then what is a "page" size? how can I (in the current code) implement a forced break? which page-break... does Flying Saucer support right now?</em></p>
 
@@ -821,13 +829,13 @@ resolver.addFont (
 
 <p>With the exception of relatively positioned inline content, positioned/floated content will paginate just like content in the normal flow.</p>
 
-<h4 class="fs_heading" id="xil_36">What about <span class="caps">PDF</span> bookmarks?</h4>
+<h4 class="fs_heading" id="xil_37">What about <span class="caps">PDF</span> bookmarks?</h4>
 
 <p><em>For <span class="caps">PDF</span>, what sorts of <span class="caps">PDF</span>-specific things does Flying Saucer support, e.g. do bookmarks work? is there support for TOCs, footnotes?</em></p>
 
 <p>Flying Saucer supports bookmarks.</p>
 
-<h4 class="fs_heading" id="xil_37">What about embedded ../images? Are ../images downscaled?</h4>
+<h4 class="fs_heading" id="xil_38">What about embedded ../images? Are ../images downscaled?</h4>
 
 <p><em>Are referenced ../images altered when embedded in the course of generating <span class="caps">PDF</span>?</em></p>
 
@@ -835,13 +843,13 @@ resolver.addFont (
 
 <p>For intrinsic width/height calculations we assume a resolution of 96 <span class="caps">DPI</span>, but setting an explicit width/height makes it possible to use an arbitrary <span class="caps">DPI</span>.</p>
 
-<h4 class="fs_heading" id="xil_38">Does Flying Saucer support <span class="caps">PDF</span> form components?</h4>
+<h4 class="fs_heading" id="xil_39">Does Flying Saucer support <span class="caps">PDF</span> form components?</h4>
 
 <p><em>What happens with form components when generating a <span class="caps">PDF</span>? Is this supported at all (if I can't a non-editable form in my <span class="caps">PDF</span> output, say, printable form for handwritten entry?</em></p>
 
 <p>Replaced elements are <code>OutputDevice</code> -specific.  The <span class="caps">PDF</span> renderer doesn't use Graphics2D.  At this point, an <code>&lt;input&gt;</code> element will be treated like regular content.  Adding AcroForm support is high on the list of priorities for the Flying Saucer team.</p>
 
-<h4 class="fs_heading" id="xil_39">How do I control font smoothing (anti-aliasing?)</h4>
+<h4 class="fs_heading" id="xil_40">How do I control font smoothing (anti-aliasing?)</h4>
 
 <p>From our <span class="caps">FAQ</span>:</p>
 
@@ -855,13 +863,13 @@ resolver.addFont (
 
 <p>Note that on some platforms and JREs, AA can slow things down considerably. It appears to be much better with more recent JREs, such as Java 6.</p>
 
-<h2 id="xil_40">Flying Saucer Extensions to the <span class="caps">CSS</span> 2.1 Specification</h2>
+<h2 id="xil_41">Flying Saucer Extensions to the <span class="caps">CSS</span> 2.1 Specification</h2>
 
 <p>As per section <a href="http://www.w3.org/TR/CSS21/syndata.html#q4">4.1.2.1</a> of the <a href="http://www.w3.org/TR/CSS21/">CSS 2.1 Specification</a>, <a href="http://www.w3.org/TR/CSS21/syndata.html#q4">Vendor-specific extensions</a>, Flying Saucer includes some extensions to work around limitations in our current implementation, or limitations in the 2.1 spec. All of these are properties you can use in your <span class="caps">CSS</span> when rendering with Flying Saucer, but which will not be recognized by other renderers. While we can't recommend that you deviate from the spec, you may find some cases where you need to add a property to get something special done.</p>
 
 <p>All of the properties in the following table are used just like regular properties, within a set of property declarations.</p>
 
-<h3 class="fs_heading" id="xil_41">Table of Extensions</h3>
+<h3 class="fs_heading" id="xil_42">Table of Extensions</h3>
 
 <p><code>-fs-flow-top</code><br />
 <code>-fs-flow-right</code><br />
@@ -876,7 +884,7 @@ resolver.addFont (
 
 <p><code>-fs-table-cell-rowspan</code> -Whole number. Replaces use of legacy rowspan attribute for table columns.</p>
 
-<h3 class="fs_heading" id="xil_42">Extensions: using the <code>-fs-flow-&lt;top|right|bottom|left&gt;</code> Properties</h3>
+<h3 class="fs_heading" id="xil_43">Extensions: using the <code>-fs-flow-&lt;top|right|bottom|left&gt;</code> Properties</h3>
 
 <p>The <code>-fs-flow-&lt;top|right|bottom|left&gt;</code> properties are used within an <code>@page</code> declaration to allow some content&#8212;say, a div&#8212;to appear outside the normal flow, but to control the position relative to the main body. This is essentially an absolute positioned box where you don't know the actual coordinates for the box, because they are relative to the rendered content.</p>
 
@@ -901,7 +909,7 @@ resolver.addFont (
 
 <h2 id="configuration">Configuration</h2>
 
-<h3 class="fs_heading" id="xil_43">The Flying Saucer Configuration File</h3>
+<h3 class="fs_heading" id="xil_44">The Flying Saucer Configuration File</h3>
 
 <p>The renderer works with a simple, <code>java.util.Properties</code> -based configuration system&#8212;no <span class="caps">XML</span>! Our <code>org.xhtmlrenderer.util.Confuration</code> class loads properties on first access and makes them available at runtime.</p>
 
@@ -909,7 +917,7 @@ resolver.addFont (
 
 <p>You can change the default properties for the application right in the <code>.conf</code> file. However, this is not a good idea, as you will have to merge your changes back on new releases. Plus, it will make reporting bugs more complicated. Instead, you can use one of two override mechanisms for changing the value of individual properties.</p>
 
-<h4 class="fs_heading" id="xil_44">Override with Second Configuration File</h4>
+<h4 class="fs_heading" id="xil_45">Override with Second Configuration File</h4>
 
 <p>Your override file should just re-assign values for properties originally given in xhtmlrenderer.conf. Please see the documentation in that file for a description of what each property affects.</p>
 
@@ -922,7 +930,7 @@ resolver.addFont (
 
 <p>The user.home variable is a system property. If you call the <code>System.getProperty("user.home")</code> from within any Java program on your machine, you will find out where this is. The location is usually <code>c:\Documents And Settings\{username}</code> and under the <code>/usr</code> directory on <span class="caps">UNIX</span> systems. Try that method call to see where it is on your machine.</p>
 
-<h4 class="fs_heading" id="xil_45">Override with System Properties</h4>
+<h4 class="fs_heading" id="xil_46">Override with System Properties</h4>
 
 <p>You can also override properties one-by-one on the command line, using System properties. To override a property using the System properties, just re-define the property on the command line. e.g.</p>
 
@@ -940,7 +948,7 @@ resolver.addFont (
 
 <p>We have just started using the Configuration system late in preparing release R4. Some runtime behavior that should be configurable (like <span class="caps">XHTML</span> parser) is not. If you would like to see some behavior made configurable, shoot us an email.</p>
 
-<h4 class="fs_heading" id="xil_46">Looking up Configuration at Runtime</h4>
+<h4 class="fs_heading" id="xil_47">Looking up Configuration at Runtime</h4>
 
 <p>To access a parameter from Configuration at runtime, just use on of the many static methods on the Configuration class. All of these just take the full name of the property:</p>
 
@@ -962,7 +970,7 @@ resolver.addFont (
 
 </div>
 
-<h3 class="fs_heading" id="xil_47">Logging</h3>
+<h3 class="fs_heading" id="xil_48">Logging</h3>
 
 <p>The renderer uses the <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html">java.util.logging</a> package for logging information and exceptions at runtime. Logging behavior (output) is controlled via the main configuration file. The defaults may be overridden just like any other configuration properties.</p>
 
@@ -1001,7 +1009,7 @@ resolver.addFont (
 
 <p></p>
 
-<h2 id="xil_48">About this Document</h2>
+<h2 id="xil_49">About this Document</h2>
 
 <p><img src="../images/xiLogo64.png" style="float: left; margin-right: 10px;" /></p>
 

@@ -533,6 +533,10 @@ h4(fs_heading). Printing
 
 Unfortunately, in release R6 we had a regression in our printing routines, and printing documents directly (using @XHTMLPrintable@ ) is not supported. What you can do is render your document to a PDF and print that--as described in our section on "creating PDF files":#pdf. We plan to have printing support available again in a future release--note that most of the capabilities are there, so if you are interested, contact us on our mailing list for how to implement this.
 
+
+h4(fs_heading). Putting It All Together
+
+Jacobus Steenkamp has written an article (October 2006) about using Flying Saucer to generate PDF, image and SVG (!) output, targeted for on-the-fly generation. The article is "Combine JSF Facelets and the Flying Saucer XHTML Renderer":http://today.java.net/pub/a/today/2006/10/31/combine-facelets-and-flying-saucer-renderer.html and is available on "http://java.net":http://java.net.
  
 
 h3(fs_heading#pdf). Creating PDF Files  
@@ -544,6 +548,8 @@ You can use Flying Saucer to generate PDF files directly from XML/CSS input. Thi
 PDF files are treated as _paged_ media, as defined by the ${css21}, in the section "Paged media":http://www.w3.org/TR/CSS21/page.html. This means that some CSS attributes that apply to paged media (as opposed to visual media, like a browser) are used to control PDF output. Flying Saucer supports the @@page@ rule, which means that page size, page margins and page break controls are all supported for PDF output.  
 
 As paged media, the CSS which applies is that marked with the "media" attribute or "print" or "all"; this is described in the chapter on "Media types":http://www.w3.org/TR/CSS21/media.html in the ${css21}.
+
+Josh Marinacci has also written an article (June 2007) about using Flying Saucer to generate PDF documents; the article is "Generating PDFs for Fun and Profit with Flying Saucer and iText":http://today.java.net/pub/a/today/2007/06/26/generating-pdfs-with-flying-saucer-and-itext.html and is available on "http://java.net":http://java.net.
 
 clear. 
 
