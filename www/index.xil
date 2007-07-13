@@ -26,6 +26,13 @@ table(properties){width: 100%}.
 
 We feel this is pretty solid--please check it out! We need your feedback. We'd like R7 to be the best Flying Saucer release ever.
 
+h2(fs_heading){ clear: left }. New Around Here?
+
+If you're new to the project, you may want to read two *great* articles about using Flying Saucer for practical purposes:
+
+* "Generating PDFs for Fun and Profit with Flying Saucer and iText":http://today.java.net/pub/a/today/2007/06/26/generating-pdfs-with-flying-saucer-and-itext.html, by Josh Marinacci from June 2007.  Josh covers using Flying Saucer to generate PDF documents; the article is available on "http://java.net":http://java.net.
+* "Combine JSF Facelets and the Flying Saucer XHTML Renderer":http://today.java.net/pub/a/today/2006/10/31/combine-facelets-and-flying-saucer-renderer.html by Jacobus Steenkamp from October 2006. Jacobus covers using Flying Saucer to generate PDF, image and SVG output, with a focus on on-the-fly generation. The article is on "http://java.net":http://java.net.
+
 
 h2(fs_heading). Demos
 
