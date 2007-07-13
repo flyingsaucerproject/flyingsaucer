@@ -34,8 +34,8 @@
               <include name="images/**" />
             </fileset>
             <fileset dir="${www.dir}">
-                <include name="r6/users-guide-r6.html"/>
-                <include name="r6/*.png"/>
+                <include name="r7/users-guide-r7.html"/>
+                <include name="images/**/*"/>
                 <include name="base.css"/>
             </fileset>
         </jar>
