@@ -16,7 +16,6 @@
         <j2se version="1.4+"/>
         <jar href="docbook.jar"/>
         <jar href="../core-renderer.jar"/>
-      	<jar href="../cssparser-0-9-4-fs.jar"/>
     </resources>
     <application-desc main-class="org.xhtmlrenderer.demo.docbook.ShowDocBookPage"/>
 </jnlp>
