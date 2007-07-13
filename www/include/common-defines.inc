@@ -12,3 +12,6 @@ define. mailing-list.user "mailing list":https://xhtmlrenderer.dev.java.net/serv
 
 define. mailing-list "mailing list":https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList
 
+define. issue-tracker "issue tracker":https://xhtmlrenderer.dev.java.net/servlets/ProjectIssues
+
+define. guide "User's Guide":users-guide-r7rc1#.pdf
