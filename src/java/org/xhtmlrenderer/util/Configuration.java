@@ -28,36 +28,41 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 
 /**
- * TODO: docs out of date; need to mention override file in user home dir
- * <p/>
- * <p/>
- * Stores runtime configuration information for application parameters that may
+ * <p>Stores runtime configuration information for application parameters that may
  * vary on restarting. This implements the Singleton pattern, but through static
  * methods. That is, the first time Configuration is used, the properties are
  * loaded into the Singleton instance. Subsequent calls to valueFor() retrieve
  * values from the Singleton. To look up a property, use
  * {@link Configuration#valueFor(String)}.
- * </p> <p>
- * <p/>
- * Properties may be overridden using a second properties file, or individually
+ * </p>
+ * <p> Properties may be overridden using a second properties file, or individually
  * using System properties specified on the command line. To override using a
- * second properties file, specify the System property xr-props. This should be
- * the location of the second file relative to the CLASSPATH, e.g. <code>java -Dxr-props=resources/conf/myprops.conf</code>
- * </p><p>
- * <p/>
- * To override a property using the System properties, just re-define the
- * property on the command line. e.g. <code>java -Dxr.property-name=new_value</code>
- * You can override as many properties as you like. </p> <p>
- * <p/>
- * Note that overrides are driven by the property names in the default
+ * second properties file, specify the System property xr-conf. This should be
+ * the location of the second file relative to the CLASSPATH, or else a file
+ * path, e.g.</p>
+ * <code>java -Dxr-conf=resources/conf/myprops.conf</code>
+ * <p>
+ * You can also place your override properties file in your user home directory,
+ * in </p>
+ * <code>${user.home}/.flyingsaucer/local.xhtmlrenderer.conf</code>
+ * <p> To override a property using the System properties, just re-define the
+ * property on the command line. e.g.</p>
+ * <code>java -Dxr.property-name=new_value</code>
+ * <p>The order in which these will be read is: default properties (bundled with
+ * the core, in the jar; override configuration properties; properties file in
+ * user.home; and system properties.</p>
+ * <p>You can override as many properties as you like. </p> 
+ * <p> Note that overrides are driven by the property names in the default
  * configuration file. Specifying a property name not in that file will have no
  * effect--the property will not be loaded or available for lookup.
  * Configuration is NOT used to control logging levels or output; see
- * LogStartupConfig.</p> <p>
- * <p/>
+ * LogStartupConfig.</p>
+ * <p>
  * There are convenience converstion method for all the primitive types, in
  * methods like {@link #valueAsInt()}. A default must always be provided for these
  * methods. The default is returned if the value is not found, or if the
@@ -88,6 +93,9 @@ public class Configuration {
      */
     private List startupLogRecords;
 
+    /**
+     * Logger we use internally related to configuration.
+     */
     private Logger configLogger;
 
     /**
@@ -103,6 +111,8 @@ public class Configuration {
 
         try {
             // read logging level from System properties
+            // here we are trying to see if user wants to see logging about
+            // what configuration was loaded, e.g. debugging for config itself
             String val = null;
             try {
                 val = System.getProperty("show-config");
@@ -158,6 +168,15 @@ public class Configuration {
         logAfterLoad();
     }
 
+    /**
+     * Sets the logger which we use for Configuration-related logging. Before this is
+     * called the first time, all internal log records are queued up; they are flushed to
+     * the logger when this method is first called. Afterwards, all log events are written
+     * to this logger. This queueing behavior helps avoid order-of-operations bugs
+     * related to loading configuration information related to logging.
+     *
+     * @param logger Logger used for Configuration-related messages
+     */
     public static void setConfigLogger(Logger logger) {
         Configuration config = instance();
         config.configLogger = logger;
@@ -267,14 +286,15 @@ public class Configuration {
     /**
      * Loads overriding property values from a second configuration file; this
      * is optional. See class documentation.
-     * @param overrideFileName
+     *
+     * @param uri Path to the file, or classpath URL, where properties are defined.
      */
-    private void loadOverrideProperties(String overrideFileName) {
+    private void loadOverrideProperties(String uri) {
         try {
-            File f = new File(overrideFileName);
+            File f = new File(uri);
+            Properties temp = new Properties();
             if (f.exists()) {
                 info("Found config override file " + f.getAbsolutePath());
-                Properties temp = new Properties();
                 try {
                     InputStream readStream = new BufferedInputStream(new FileInputStream(f));
                     temp.load(readStream);
@@ -282,26 +302,38 @@ public class Configuration {
                     warning("Error while loading override properties file; skipping.", iex);
                     return;
                 }
-
-                Enumeration elem = this.properties.keys();
-                List lp = Collections.list(elem);
-                Collections.sort(lp);
-                Iterator iter = lp.iterator();
-
-                int cnt = 0;
-                while (iter.hasNext()) {
-                    String key = (String) iter.next();
-                    String val = temp.getProperty(key);
-                    if (val != null) {
-                        this.properties.setProperty(key, val);
-                        finer("  " + key + " -> " + val);
-                        cnt++;
-                    }
-                }
-                finer("Configuration: " + cnt + " properties overridden from override properties file.");
             } else {
-                info("Could not find local override file " + f.getAbsolutePath());
+            	try {
+					URL url = new URL(uri);
+					InputStream in = new BufferedInputStream(url.openStream());
+					info("Found config override URI " + uri);
+					temp.load(in);
+					in.close();
+				} catch (MalformedURLException e) {
+                    warning("URI for override properties is malformed, skipping: " + uri, e);
+                    return;
+                } catch (IOException e) {
+                    warning("Overridden properties could not be loaded from URI: " + uri, e);
+                    return;
+                }
             }
+
+            Enumeration elem = this.properties.keys();
+            List lp = Collections.list(elem);
+            Collections.sort(lp);
+            Iterator iter = lp.iterator();
+
+            int cnt = 0;
+            while (iter.hasNext()) {
+                String key = (String) iter.next();
+                String val = temp.getProperty(key);
+                if (val != null) {
+                    this.properties.setProperty(key, val);
+                    finer("  " + key + " -> " + val);
+                    cnt++;
+                }
+            }
+            finer("Configuration: " + cnt + " properties overridden from override properties file.");
         } catch (SecurityException e) {
             System.err.println(e.getLocalizedMessage());
         }
@@ -726,6 +758,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2007/07/13 13:40:26  pdoubleya
+ * Fix for 183, configuration should allow specifying override files by URL
+ *
  * Revision 1.17  2007/05/20 23:25:31  peterbrant
  * Various code cleanups (e.g. remove unused imports)
  *
