@@ -1,0 +1,48 @@
+Flying Saucer
+Release R7
+July 14, 2007
+
+https://xhtmlrenderer.dev.java.net
+Please see project website for links to CVS, mailing lists, issue tracker, etc.
+
+
+OVERVIEW
+--------
+Flying Saucer is a pure-Java library for rendering arbitrary well-formed XML 
+(or XHTML) using CSS 2.1 for layout and formatting, output to Swing panels, 
+PDF, and images.
+
+Comprehensive documentation available in our user's guide,
+https://xhtmlrenderer.dev.java.net/r7/users-guide-r7.html online or
+located under www/r7/users-guide-r7.html in the source.
+
+If you end up using Flying Saucer for your own projects, please drop us an
+email and tell us about it; it helps inform where we go next, and is interesting
+and inspiring to other developers.
+
+
+LICENSE
+-------
+Flying Saucer is distributed under the LGPL.Flying Saucer itself is licensed 
+under the GNU Lesser General Public License, available at 
+http://www.gnu.org/copyleft/lesser.html. You can use Flying Saucer in any
+way and for any purpose you want as long as you respect the terms of the 
+license.A copy of the LGPL license is included as license-lgpl-2.1.txt
+in our distributions and in our source tree.
+
+Flying Saucer uses a couple of FOSS packages to get the job done. A list
+of these, along with the license they each have, is listed in the 
+LICENSE file in our distribution.   
+
+
+GETTING STARTED
+---------------
+Please see the user's guide (URLs listed above) for info on how to get started.
+At a minimum, you'll need core-renderer.jar in your classpath; itext*.jar 
+for PDF output and minium.jar for alternate anti-aliasing in the renderer.
+Some good entry points (classes) are:
+org.xhtmlrenderer.simple.XHTMLPanel
+org.xhtmlrenderer.simple.PDFRenderer
+org.xhtmlrenderer.simple.ImageRenderer
+
+

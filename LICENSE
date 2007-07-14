@@ -1,9 +1,17 @@
 FLYING SAUCER XML/CSS RENDERER LICENSE COMMENTS
 https://xhtmlrenderer.dev.java.net/
 
-All source code to Flying Saucer itself is licensed under the GNU Lesser General Public License (LGPL), version 2.1. A copy of the LGPL can be found on the website of the Free Software Foundation, at http://www.gnu.org/copyleft/lesser.html.
+All source code to Flying Saucer itself is licensed under the GNU Lesser General
+Public License (LGPL), version 2.1. A copy of the LGPL can be found 
+on the website of the Free Software Foundation, at 
+http://www.gnu.org/copyleft/lesser.html, and in our distributions under
+license-lgpl-2.1.txt.
 
-Flying Saucer relies on several other free or open source projects in order to build and run. Where binary Java JAR files are included, we include only the unmodified binary releases as provided by those other projects. Source code for the respective projects can be found on the project websites, listed below.
+Flying Saucer relies on several other free or open source projects in 
+order to build and run. Where binary Java JAR files are included, we include
+only the unmodified binary releases as provided by those other projects. 
+Source code for the respective projects can be found on the project 
+websites, listed below.
 
 Java projects that are used for building and running Flying Saucer are:
 
@@ -52,6 +60,12 @@ http://xilize.sourceforge.net/
 License: GPL
 Used version 3.x, only to produce documentation
 Shipped with our source bundle as a convenience for developers rebuilding 
-documentation; we do not use nor link to the Xilize libraries at runtime.
+documentation; we do not use nor link to the Xilize libraries at runtime
+
+BeanShell
+http://www.beanshell.org
+License: LGPL (dual-license with SPL)
+Use version 2.x as Xilize has a dependency on it; used only to produce 
+documentation.
 
 
