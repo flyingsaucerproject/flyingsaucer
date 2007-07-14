@@ -58,13 +58,11 @@ Changes to original test:
 
 
 # Replace DOCTYPE with one we recognize to pick up entity references (in particular &nbsp;) 
-# Wrap @&lt;style&gt;@ tag in CDATA 
-# Close open tags as appropriate (in particular, &lt;p&gt;s and table related tags in row 1 [as referenced from the test guide], &lt;link&gt; in header, and bottom @&lt;img&gt;@ (after row 14 in guide) 
-# Replace @&lt;object data="data007"&gt;ERROR&lt;/object&gt;@ with @&lt;img src="data007"&gt;ERROR&lt;/img&gt;@ (since we don't support HTML's @&lt;object&gt;@) 
-# Change CSS selector on line 55 from "
-#eyes-a object object object" to "
-#eyes-a object object img" to compensate for (4) 
-# Bottom @&lt;img&gt;@ uses a data URL even in the non-data URL version (I assume it was just missed).  Save data URL contents to disk (as data008) and update src attribute
+# Wrap @<style>@ tag in CDATA 
+# Close open tags as appropriate (in particular, @<p>@ and table related tags in row 1 [as referenced from the test guide], @<link>@ in header, and bottom @<img>@ (after row 14 in guide) 
+# Replace @<object data="data007">ERROR</object>@ with @<img src="data007">ERROR</img>@ (since we don't support HTML's @<object>@) 
+# Change CSS selector on line 55 from "#eyes-a object object object" to "#eyes-a object object img" to compensate for (4) 
+# Bottom @<img>@ uses a data URL even in the non-data URL version (I assume it was just missed).  Save data URL contents to disk (as data008) and update src attribute
 
 Of course, these changes mean that we cannot claim Acid2 compliance, but nothing there changes the nature of the test (at least as far as a CSS torture test goes).
 

@@ -116,13 +116,11 @@
 
 <ol>
   <li>Replace <span class="caps">DOCTYPE</span> with one we recognize to pick up entity references (in particular &nbsp;)</li>
-  <li>Wrap <code>&amp;lt;style&amp;gt;</code> tag in <span class="caps">CDATA</span></li>
-  <li>Close open tags as appropriate (in particular, &lt;p&gt;s and table related tags in row 1 [as referenced from the test guide], &lt;link&gt; in header, and bottom <code>&amp;lt;img&amp;gt;</code> (after row 14 in guide)</li>
-  <li>Replace <code>&amp;lt;object data="data007"&amp;gt;ERROR&amp;lt;/object&amp;gt;</code> with <code>&amp;lt;img src="data007"&amp;gt;ERROR&amp;lt;/img&amp;gt;</code> (since we don't support <span class="caps">HTML</span>'s @&lt;object&gt;@)</li>
-  <li>Change <span class="caps">CSS</span> selector on line 55 from "</li>
-  <li>eyes-a object object object" to "</li>
-  <li>eyes-a object object img" to compensate for (4)</li>
-  <li>Bottom <code>&amp;lt;img&amp;gt;</code> uses a data <span class="caps">URL</span> even in the non-data <span class="caps">URL</span> version (I assume it was just missed).  Save data <span class="caps">URL</span> contents to disk (as data008) and update src attribute</li>
+  <li>Wrap <code>&lt;style&gt;</code> tag in <span class="caps">CDATA</span></li>
+  <li>Close open tags as appropriate (in particular, <code>&lt;p&gt;</code> and table related tags in row 1 [as referenced from the test guide], <code>&lt;link&gt;</code> in header, and bottom <code>&lt;img&gt;</code> (after row 14 in guide)</li>
+  <li>Replace <code>&lt;object data="data007"&gt;ERROR&lt;/object&gt;</code> with <code>&lt;img src="data007"&gt;ERROR&lt;/img&gt;</code> (since we don't support <span class="caps">HTML</span>'s @<object>@)</li>
+  <li>Change <span class="caps">CSS</span> selector on line 55 from "#eyes-a object object object" to "#eyes-a object object img" to compensate for (4)</li>
+  <li>Bottom <code>&lt;img&gt;</code> uses a data <span class="caps">URL</span> even in the non-data <span class="caps">URL</span> version (I assume it was just missed).  Save data <span class="caps">URL</span> contents to disk (as data008) and update src attribute</li>
 </ol>
 
 
