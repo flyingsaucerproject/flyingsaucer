@@ -1,73 +1,73 @@
-
 <project name="build.dist">
-	<target name="zip" description="zip file" depends="jar">
-		<zip basedir="${basedir}" zipfile="../flyingsaucer.zip"/>
-	</target>
+    <import file="../../build.xml" />
+
+<!--
+    <target name="zip" description="zip file" depends="jar">
+        <zip basedir="${basedir}" zipfile="../flyingsaucer.zip"/>
+    </target>
+-->
 
     <!-- Builds all jars and packages jar and 3rd party libraries into one jar -->
-	<target name="dist.binary-min" depends="jar" description="Play Binary Distro">
-		<copy todir="${dest.dir}">
-			<fileset dir=".">
-				<include name="demos/*.xhtml"/>
-				<include name="demos/splash/**"/>
-			</fileset>
-			<fileset dir="${libraries.dir}">
-				<include name="itext*.jar"/>
-				<include name="minium*.jar"/>
-			</fileset>
-			<fileset dir="${src.packaging.dir}">
-				<include name="readme.txt"/>
-			</fileset>
-		</copy>
-		<zip basedir="${dest.dir}" zipfile="build/${app.name}.zip">
-			<include name="core-renderer.jar"/>
+    <target name="dist.binary" depends="jar" description="Play Binary Distro">
+        <copy todir="${dest.dir}">
+            <fileset dir=".">
+                <include name="LICENSE*"/>
+                <include name="README"/>
+            </fileset>
+            <fileset dir="${libraries.dir}">
+                <include name="itext*.jar"/>
+                <include name="minium*.jar"/>
+            </fileset>
+        </copy>
+        <zip basedir="${dest.dir}" zipfile="build/${app.name}-${app.version}.zip">
+            <include name="core-renderer.jar"/>
+            <include name="core-renderer-minimal.jar"/>
             <include name="itext*.jar"/>
             <include name="minium*.jar"/>
-			<include name="demos/**"/>
-		</zip>
-	</target>
+            <include name="demos/**"/>
+            <include name="LICENSE*"/>
+            <include name="README"/>
+        </zip>
+    </target>
 
     <!-- 
     Builds a ZIP file of all source for distribution, with 3rd party libraries
     and XHTML samples included
     -->
-	<target name="dist.src" depends="init" description="Play Src Distro">
-		<zip basedir="${basedir}" zipfile="${dest.dir}/${app.name}.src.zip">
-			<include name="build.xml"/>
-			<include name="lib/**"/>
-			<include name="etc/build/**"/>
-			<include name="src/**"/>
-			<include name="demos/**"/>
-      <include name="www/r7/users-guide-r7.html"/>
-      <include name="www/r7/*.png"/>
-      <include name="www/base.css"/>
-      <zipfileset dir="${src.packaging.dir}" includes="readme.txt" fullpath="readme.txt"/>
-		</zip>
-	</target>
+    <target name="dist.src" depends="init" description="Play Src Distro">
+        <zip basedir="${basedir}" zipfile="${dest.dir}/${app.name}-${app.version}-src.zip">
+            <include name="LICENSE*"/>
+            <include name="README"/>
+            <include name="build.xml"/>
+            <include name="lib/**"/>
+            <include name="etc/build/**"/>
+            <include name="src/**"/>
+
+            <!-- restricting to those demos we still maintain -->
+            <include name="demos/about/**"/>
+            <include name="demos/browser/**"/>
+            <include name="demos/docbook/**"/>
+            <include name="demos/samples/**"/>
+            <include name="demos/splash/**"/>
+            <include name="demos/svg/**"/>
+
+            <include name="www/r7/users-guide-r7.html"/>
+            <include name="www/r7/users-guide-r7.pdf"/>
+            <include name="www/r7/*.png"/>
+            <include name="www/base.css"/>
+        </zip>
+    </target>
 
     <!-- Build the JNLP distribution -->
-	<target name="dist.jnlp" depends="init, jar" description="Build JNLP Distro">
-		<copy todir="${dest.dir}">
-			<fileset dir="${libraries.dir}">
-				<include name="ss_css2.jar"/>
-				<include name="xalan.jar"/>
-			</fileset>
-			<fileset dir="${src.packaging.dir}">
-				<include name="fs.jnlp"/>
-			</fileset>
-			<fileset dir="${src.packaging.dir}">
-				<include name="flyingsaucer.png"/>
-			</fileset>
-			<fileset dir="${src.packaging.dir}">
-				<include name="aboutbox.jnlp"/>
-			</fileset>
-		</copy>
-		<!--
-		<signjar jar="${dest.dir}/core-renderer.jar" alias="joshy" storepass="password" keystore="teststore"/>
-		<signjar jar="${dest.dir}/browser.jar" alias="joshy" storepass="password" keystore="teststore"/>
-		<signjar jar="${dest.dir}/ss_css2.jar" alias="joshy" storepass="password" keystore="teststore"/>
-		<signjar jar="${dest.dir}/xalan.jar" alias="joshy" storepass="password" keystore="teststore"/>
-		<signjar jar="${dest.dir}/about.jar" alias="joshy" storepass="password" keystore="teststore"/>
-		-->
-	</target>
+    <target name="dist.jnlp" depends="init, jar" description="Build JNLP Distro">
+        <copy todir="${dest.dir}">
+            <fileset dir="${src.packaging.dir}">
+                <include name="browser_demo.jnlp"/>
+                <include name="aboutbox_demo.jnlp"/>
+                <include name="docbook_demo.jnlp"/>
+                <include name="svg_demo.jnlp"/>
+                <include name="flyingsaucer.png"/>
+            </fileset>
+        </copy>
+    </target>
 </project>

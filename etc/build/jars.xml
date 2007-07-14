@@ -17,7 +17,21 @@
 		
 		
 	</target>
-    
+
+
+    <!-- builds minmal version of core jar, excluding entity files -->
+    <target name="jar.core-minimal" depends="compile" description="build core jar">
+        <jar jarfile="${dest.dir}/core-renderer-minimal.jar" compress="true" index="true">
+            <fileset dir="${dest.java.dir}">
+                <include name="**/*.class"/>
+                <exclude name="org/joshy/html/app"/>
+                <exclude name="**/demo/**"/>
+            </fileset>
+        </jar>
+
+
+	</target>
+
     <!-- Compiles browser and main codebase, and builds jar for browser -->
     <target name="jar.browser" depends="compile.browser, jar.core" description="build browser jar">
         <jar jarfile="${dest.dir}/browser.jar" compress="true"

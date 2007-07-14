@@ -14,17 +14,42 @@ _(in 100% Java)_
 
 h2(fs_heading){ clear: left }. News
 
-p{font-size: 14pt}. *NEW* Release 7 Release Candidate 2! 
+p{font-size: 14pt}. Release 7 - Final! 
 
-*July 13, 2007*: The Flying Saucer team announces the Release 7 Release Candidate 2 of the Flying Saucer 100% Java XHTML+CSS renderer.We're close to making a final release of R7--please help us and test this version out. 
+*July 14, 2007*: The Flying Saucer team announces Release 7 of the Flying Saucer 100% Java XHTML+CSS renderer. 
 
 Download:
 
 table(properties){width: 100%}.
-| "Binary Zip 3M":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc2.zip | For using Flying Saucer in your own programs
-| "Source Bundle Zip 8M":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7rc2-src.zip | Includes source, demo programs, sample code, etc. 
+| Binary Zip (3M) | "flyingsaucer-R7final.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip | For using Flying Saucer in your own programs
+| Source Bundle Zip (8M) | "flyingsaucer-R7final-src.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip | Includes source, demo programs, sample code, etc. 
 
-We feel this is pretty solid--please check it out! We need your feedback. We'd like R7 to be the best Flying Saucer release ever.
+Release 7 features major improvements in rendering accuracy, speed, and overall feature set. This includes:
+
+* Completely new, fast, accurate CSS 2 parser; CSS 2 compliant, reports errors accurately
+* Complete rewrite of table support.  Current table support includes:
+**   Floated tables
+**   display: inline-table
+**   display: table-caption (caption in (X)HTML)
+**   display: table-header-group, display: table-row-group, and
+table-footer-group (thead, tbody, and tfoot in (X)HTML)
+**   table-layout: fixed
+**   table-layout: auto (complete support, see below)
+**   Table box construction and layout follows the same code path as
+everything else
+**   display: table-column and display: table-column-group (col and
+colgroup in (X)HTML)
+**   vertical-align in table cells
+**   Full support for anonymous tables (with the exception that a
+table-column-group element won't force a table to be created.  This
+turned out to be awkward to implement [and marginally useful it would
+seem...])
+* improvements to XHTML forms support (for Swing)
+* CSS font property resolution improvements
+* CSS counter property support
+* CSS content property support: everything except quotes and external resources (content: url(...))
+
+You can see many of these features in action in our "demo pages":r7/demos.html.
 
 h2(fs_heading){ clear: left }. New Around Here?
 
@@ -49,11 +74,11 @@ Keep up with new releases: !https://java-net.dev.java.net/branding/images/xml.gi
 
 h2(fs_heading). Special thanks to
 
-<img src="/images/xiLogo64.png" style="float: left; margin-right: 10px;" />
+<img src="./images/xiLogo64.png" style="float: left; margin-right: 10px;" />
 
 This project website and our User's Guide are produced using the "Xilize":http://xilize.sourceforge.net/ (http://xilize.sourceforge.net/) syntax and rendering engine. The content is written in Xilize text markup, then converted to XHTML using the Xilize converter. We'd like to thank the Xilize team at CenteredWork for sharing this library. Try it out! It's a great way to write websites quickly, without losing control over formatting. Check it out!
 
-<img src="/images/made-with-jedit-9.png" style="float: left; margin-right: 10px;" />
+<img src="./images/made-with-jedit-9.png" style="float: left; margin-right: 10px;" />
 
 Editing took place using the legendary "jEdit editor":http://www.jedit.org/ (http://www.jedit.org/) editor. Xilize produces a plugin for jEdit, where you get syntax highlighting for the Xilize markup, quick markup controls, and a XIL converter all built-in to the editor.
 

@@ -22,7 +22,7 @@
             verbose="${compiler.verbose}"
             encoding="iso-8859-1"
             >
-            <classpath refid="libraries.all"/>
+            <classpath refid="libraries.compile"/>
             <exclude name="**/net/**" />
             <exclude name="**/prototype/**" />
         </javac>

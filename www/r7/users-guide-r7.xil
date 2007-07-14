@@ -8,7 +8,7 @@ define. style
   font-size: 18pt; 
   text-align: center;
 }
-.printOnly, #footer {
+.printOnly, #footer, #header {
   display: none;
 }
 
@@ -24,12 +24,17 @@ h1{text-align: center;}. The Flying Saucer User's Guide
     
   divEnd.
 
-  divStart(#footer){position: absolute; top: 0; left: 0; -fs-move-to-flow: 'footer';}. 
+  divStart(#header){position: absolute; top: 0; left: 0; -fs-move-to-flow: 'header';}. 
   
-  <span style="font-size: 8pt;"><em>Page <span id="pagenumber"/> of <span id="pagecount"/></em></span>
+  <span style="font-size: 8pt;">Flying Saucer User's Guide</span>
     
   divEnd.
   
+  divStart(#footer){position: absolute; top: 0; left: 0; -fs-move-to-flow: 'footer';}. 
+  
+  <span style="font-size: 8pt;"><em>Page <span id="pagenumber"/> of <span id="pagecount"/></em></span>
+      
+  divEnd.
   
 p(#toc). Table of Contents
 

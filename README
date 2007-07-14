@@ -35,6 +35,48 @@ of these, along with the license they each have, is listed in the
 LICENSE file in our distribution.   
 
 
+WHAT'S IN THE DISTRIBUTION
+--------------------------
+
+    "BINARY" DISTRIBUTION
+    ---------------------
+    The binary distribution includes only those files you need to *use* Fying Saucer
+    in your own programs. The files are all Java JAR files and just need to be included
+    in the CLASSPATH as described in the User's Guide.
+
+    * core-renderer.jar: the main file, always in the classpath
+    * itext*.jar: support for generating PDF files as output
+    * minium*.jar: support for a custom anti-aliasing algorithm on output; may look better on some older JVMs
+
+    * core-renderer-minimal.jar: see note at end of this section
+
+    In principle, for an application using only Swing JPanels for output, you could
+    restrict yourself to using core-renderer.jar; however, we recommend you include
+    core*, itext* and minium* to avoid any linking errors/ClassNotFoundExceptions. When
+    in doubt, contact us via mail.
+
+        "Minimal" Core JAR File
+        -----------------------
+        We now include a "minimal" core JAR file which does not contain X/HTML entity
+        definitions and DTDs. If you have are not using entities, or have defined entities
+        inline in your documents, you might use this JAR file for a smaller total download
+        in your own applications--for example, for applets or webstartables. However, if you
+        can spare the extra size, we recommend you just use the core-renderer.jar, which,
+        while a little larger, will save you some time tracking down XHTML parsing-related
+        errors.
+
+    "SOURCE" DISTRIBUTION
+    ---------------------
+    The source distribution includes all the relevant source code, libraries and build
+    scripts to build and extend Flying Saucer. You'll need Ant if you want to use our
+    build scripts. There are some files under source control (notes, some docs) which
+    are not included in the source distribution. You can pull the whole lot from our source
+    tree by visiting our project website (URL at top of this doc) and extracting from
+    source control.
+
+
+
+
 GETTING STARTED
 ---------------
 Please see the user's guide (URLs listed above) for info on how to get started.

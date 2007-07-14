@@ -66,6 +66,7 @@
     <!-- Builds core, browser and about box jars. -->
   <target name="jar" description="Builds all jars">
     <antcall target="jar.core" />
+    <antcall target="jar.core-minimal" />
     <antcall target="jar.browser" />
     <antcall target="jar.about" />
     <antcall target="jar.svg" />
@@ -93,20 +94,6 @@
          Documentation
          ================================================= -->
   <target name="docs" description="Creates JavaDocs" depends="clean.java2html, clean.javadoc">
-        <!-- <taskdef name="java2html"
-            classname="de.java2html.anttasks.Java2HtmlTask"
-            classpath="lib/java2html.jar"
-            />
-
-        <java2html
-            srcdir="${src.java.dir}"
-            destdir="${dest.java2html.dir}"
-            includes="**/*.java"
-            style="eclipse"
-            showLineNumbers="true"
-            showFileName="true"
-            showTableBorder="true"
-            /> -->
     <antcall target="_javadoc">
       <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.full.dir}"/>
       <param name="antcall.javadoc.file" value=""/>
@@ -115,8 +102,7 @@
     <antcall target="_javadoc">
       <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.user.dir}"/>
 	  
-      <param name="antcall.javadoc.file" value=""/><!--src/java/org/xhtmlrenderer/simple/XHTMLPanel.java"/>
-	  -->
+      <param name="antcall.javadoc.file" value=""/>
       <reference refid="user-java-files" torefid="org-java-files"/>
     </antcall>
     <copy todir="${dest.dir}/docs" file="${dest.javadoc.full.dir}/index.html"/>
@@ -285,6 +271,9 @@
 $Id$
 
 $Log$
+Revision 1.97  2007/07/14 13:05:47  pdoubleya
+Updates for R7
+
 Revision 1.96  2007/04/12 13:20:31  pdoubleya
 Remove reference to source images directory
 

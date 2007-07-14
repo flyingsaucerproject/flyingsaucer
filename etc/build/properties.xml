@@ -1,6 +1,7 @@
 <!-- :mode=xml:folding=none: -->
 <project name="build.properties">
   <property name="app.name" value="flyingsaucer"/>
+  <property name="app.version" value="VERSION_MISSING"/>
   <property name="user.overrides"
       location="${user.home}/.${app.name}/${app.name}.build.properties"/>
   <property name="project.overrides" location="build.properties"/>
@@ -82,10 +83,6 @@
   <!-- path reference for all JAR files in /lib -->
   <path id="run.classpath">
     <pathelement path="${dest.java.dir}" />
-    <pathelement path="${libraries.dir}/ss_css2.jar" />
-    <!-- <fileset dir="${dest.java.dir}/">
-      <include name="**/*.class"/>
-    </fileset> -->
   </path>
 
   <path id="debug.sourcepath">
@@ -100,7 +97,14 @@
       <include name="*.jar"/>
     </fileset>
   </path>
-        
+    
+  <path id="libraries.compile">
+    <path refid="libraries.all" />
+    <fileset dir="${libraries.dev.dir}">
+      <include name="svgSalamander.jar"/>
+    </fileset>
+  </path>
+
   <!-- path reference for all JAR files in /lib, plus all our built jars -->
   <path id="libraries-and-dest.all">
     <path refid="libraries.all"/>
