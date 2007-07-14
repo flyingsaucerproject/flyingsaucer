@@ -728,7 +728,7 @@ h2. About this Document
 This User's Guide was produced using the "Xilize":http://www.centeredwork.com/xilize2 (http://www.centeredwork.com/xilize2) syntax and rendering engine. The document (and the rest of the website in R6) was written in Xilize text markup, then converted to XHTML using the Xilize converter. We'd like to thank the Xilize team at CenteredWork for sharing this library. Try it out! It's a great way to write websites quickly, without losing control over formatting. Go and download Xilize from "http://www.centeredwork.com/xilize2/download.html":http://www.centeredwork.com/xilize2/download.html and get started!
 
 ==
-<img src="made-with-jedit-9.png" style="float: left; margin-right: 10px;" />
+<img src="../images/made-with-jedit-9.png" style="float: left; margin-right: 10px;" />
 ==
 
 Editing took place using the legendary "jEdit editor":http://www.jedit.org/ (http://www.jedit.org/) editor. Xilize produces a plugin for jEdit, where you get syntax highlighting for the Xilize markup, quick markup controls, and a XIL converter all built-in to the editor.
