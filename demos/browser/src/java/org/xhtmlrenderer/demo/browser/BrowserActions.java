@@ -133,8 +133,8 @@ public class BrowserActions {
 
         backward.setEnabled(false);
         backward.putValue(Action.ACCELERATOR_KEY,
-                KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
-                        InputEvent.ALT_MASK));
+                KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
 
         url = getImageUrl("images/go-next.png");
@@ -151,7 +151,7 @@ public class BrowserActions {
         forward.setEnabled(false);
         forward.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
-                        InputEvent.ALT_MASK));
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
         url = getImageUrl("images/view-refresh.png");
         refresh = new EmptyAction("Refresh", "Refresh page", new ImageIcon(url)) {
@@ -389,6 +389,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2007/07/14 17:38:17  pdoubleya
+ * fix menu accelerator assignments to be cross-platform compatible (esp. with OS X)
+ *
  * Revision 1.28  2007/07/13 13:32:31  pdoubleya
  * Add webstart entry point for browser with no URL or File/open option. Move Zoom to menu entry, add warning on first zoom. Move preview to menu entry. Reorganize launch method a little to allow for multiple entry points.
  *

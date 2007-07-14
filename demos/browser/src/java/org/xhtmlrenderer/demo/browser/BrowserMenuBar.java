@@ -511,7 +511,7 @@ public class BrowserMenuBar extends JMenuBar {
         public NextDemoAction() {
             super("Next Demo Page");
             putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_N));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         }
 
         /**
@@ -552,7 +552,7 @@ public class BrowserMenuBar extends JMenuBar {
         public PriorDemoAction() {
             super("Prior Demo Page");
             putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_P));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         }
 
         /**
@@ -696,6 +696,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.45  2007/07/14 17:38:17  pdoubleya
+* fix menu accelerator assignments to be cross-platform compatible (esp. with OS X)
+*
 * Revision 1.44  2007/07/13 13:32:31  pdoubleya
 * Add webstart entry point for browser with no URL or File/open option. Move Zoom to menu entry, add warning on first zoom. Move preview to menu entry. Reorganize launch method a little to allow for multiple entry points.
 *
