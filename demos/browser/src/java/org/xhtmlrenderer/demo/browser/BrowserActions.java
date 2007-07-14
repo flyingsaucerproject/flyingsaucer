@@ -134,7 +134,7 @@ public class BrowserActions {
         backward.setEnabled(false);
         backward.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,
-                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+                        KeyEvent.ALT_MASK));
 
 
         url = getImageUrl("images/go-next.png");
@@ -151,7 +151,7 @@ public class BrowserActions {
         forward.setEnabled(false);
         forward.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
-                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+                        KeyEvent.ALT_MASK));
 
         url = getImageUrl("images/view-refresh.png");
         refresh = new EmptyAction("Refresh", "Refresh page", new ImageIcon(url)) {
@@ -389,6 +389,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2007/07/14 17:42:32  pdoubleya
+ * Leave nav back/forward bound to Alt, since this is FF standard
+ *
  * Revision 1.29  2007/07/14 17:38:17  pdoubleya
  * fix menu accelerator assignments to be cross-platform compatible (esp. with OS X)
  *
