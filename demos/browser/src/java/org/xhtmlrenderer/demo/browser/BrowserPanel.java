@@ -210,7 +210,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 		toolbar.add(goToPage);
 		// disabled for R6
 		// toolbar.add(print);
-	}
+        toolbar.setFloatable(false);
+    }
 
 	private void loadCustomFonts() {
 		SharedContext rc = view.getSharedContext();
@@ -455,6 +456,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2007/07/14 12:56:40  pdoubleya
+ * Browser toolbar should not be movable
+ *
  * Revision 1.35  2007/07/13 13:32:31  pdoubleya
  * Add webstart entry point for browser with no URL or File/open option. Move Zoom to menu entry, add warning on first zoom. Move preview to menu entry. Reorganize launch method a little to allow for multiple entry points.
  *
