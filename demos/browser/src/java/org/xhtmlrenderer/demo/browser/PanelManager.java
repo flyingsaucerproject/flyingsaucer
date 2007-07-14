@@ -257,7 +257,7 @@ public class PanelManager extends NaiveUserAgent {
 	 * if multiple URIs were visited and the current URI pointer was not at the begininnig of the visited URI list. 
 	 */
     public boolean hasBack() {
-        if (index >= 0) {
+        if (index > 0) {
             return true;
         } else {
             return false;
