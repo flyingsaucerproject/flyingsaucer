@@ -14,12 +14,18 @@
     letter-spacing: normal;
 }
 
+#fs h2, #fs h3 {
+    color: black;
+    background-color: white;
+}
+
 #fs h2 {
-    text-decoration: underline;	
+    text-decoration: underline;
 }
 
 .fs_heading {
     clear: both;
+    background-color: white;
 }
 
 body, #fs {
