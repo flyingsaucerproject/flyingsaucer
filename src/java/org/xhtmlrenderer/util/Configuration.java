@@ -310,7 +310,7 @@ public class Configuration {
 					temp.load(in);
 					in.close();
 				} catch (MalformedURLException e) {
-                    warning("URI for override properties is malformed, skipping: " + uri, e);
+                    warning("URI for override properties is malformed, skipping: " + uri);
                     return;
                 } catch (IOException e) {
                     warning("Overridden properties could not be loaded from URI: " + uri, e);
@@ -758,6 +758,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2007/07/14 13:06:21  pdoubleya
+ * Dont show stack trace if configuration file URL is malformed
+ *
  * Revision 1.18  2007/07/13 13:40:26  pdoubleya
  * Fix for 183, configuration should allow specifying override files by URL
  *
