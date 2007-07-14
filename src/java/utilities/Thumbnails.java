@@ -12,11 +12,6 @@ import org.xhtmlrenderer.util.FSImageWriter;
 import org.xhtmlrenderer.util.ImageUtil;
 
 /**
- * @author <a href="patrick.wright@gameduell.de">pwri</a>
- * @version $$Revision $$
- * @copyright (c) 2003-2007 GD GameDuell GmbH, All Rights Reserved
- * @contact <a href="dev-contact@gameduell.de">dev-contact@gameduell.de</a>
- * <a href="http://www.gameduell.de">http://www.gameduell.de</a>
  */
 public class Thumbnails {
 	public static void main(String[] args) {
