@@ -1,12 +1,8 @@
 The Flying Saucer Project
 
-<a href="r7/faq.html#acid2">
 
-divStart(#fs_logo){float: left; width: 180px; height: 180px;}.
+<a id="fs_logo" href="r7/faq.html#acid2">&nbsp;</a>
 
-divEnd.
-
-</a>
 
 h3(fs_heading){ clear: none }. An XML/XHTML/CSS 2.1 Renderer
 
