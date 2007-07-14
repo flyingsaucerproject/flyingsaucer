@@ -96,7 +96,7 @@ It's been tricky for us to come up with a decent set of method calls to cover in
 
 In Java APIs, there is some confusion on usage between a String that represents an address (like a URI or a file path) and strings that represent content. Our API tends to expect that Strings will represent addresses.
 
-In the R6 codebase you can use @panel.setDocumentFromString()@ to do this. The String will be passed to the standard XML parser and treated as a regular document.
+You can use @panel.setDocumentFromString()@ to do this. The String will be passed to the standard XML parser and treated as a regular document.
 
 It's important to remember that FS expects well-formed XML documents, and we don't have an extremely friendly relationship with the XML parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java XML APIs, before loading them in FS. This is especially true if you are generating XHTML on-the-fly.
 

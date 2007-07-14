@@ -48,6 +48,8 @@ divStart(#menu).
 ** "Demos":/r7/demos.html  
 ** "User's Guide - HTML":/r7/users-guide-r7.html  
 ** "User's Guide - PDF":/r7/users-guide-r7.pdf  
+** "Javadoc - Basic":http://pdoubleya.com/projects/flyingsaucer/doc/user/api/index.html
+** "Javadoc - Full":http://pdoubleya.com/projects/flyingsaucer/doc/full/api/index.html  
 ** "References":/r7/references.html  
 ** "License (LGPL)":http://www.gnu.org/copyleft/lesser.html  
 * Contribute

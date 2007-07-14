@@ -27,6 +27,8 @@
       <li><a href="/r7/demos.html">Demos</a></li>
       <li><a href="/r7/users-guide-r7.html">User's Guide &#8211; <span class="caps">HTML</span></a></li>
       <li><a href="/r7/users-guide-r7.pdf">User's Guide &#8211; <span class="caps">PDF</span></a></li>
+      <li><a href="http://pdoubleya.com/projects/flyingsaucer/doc/user/api/index.html">Javadoc &#8211; Basic</a></li>
+      <li><a href="http://pdoubleya.com/projects/flyingsaucer/doc/full/api/index.html">Javadoc &#8211; Full</a></li>
       <li><a href="/r7/references.html">References</a></li>
       <li><a href="http://www.gnu.org/copyleft/lesser.html" title="LGPL">License</a></li>
     </ul>
@@ -169,7 +171,7 @@
 
 <p>In Java APIs, there is some confusion on usage between a String that represents an address (like a <span class="caps">URI</span> or a file path) and strings that represent content. Our <span class="caps">API</span> tends to expect that Strings will represent addresses.</p>
 
-<p>In the R6 codebase you can use <code>panel.setDocumentFromString()</code> to do this. The String will be passed to the standard <span class="caps">XML</span> parser and treated as a regular document.</p>
+<p>You can use <code>panel.setDocumentFromString()</code> to do this. The String will be passed to the standard <span class="caps">XML</span> parser and treated as a regular document.</p>
 
 <p>It's important to remember that FS expects well-formed <span class="caps">XML</span> documents, and we don't have an extremely friendly relationship with the <span class="caps">XML</span> parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java <span class="caps">XML</span> APIs, before loading them in FS. This is especially true if you are generating <span class="caps">XHTML</span> on-the-fly.</p>
 
