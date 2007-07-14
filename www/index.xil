@@ -21,8 +21,8 @@ p{font-size: 14pt}. Release 7 - Final!
 Download:
 
 table(properties){width: 100%}.
-| Binary Zip (3M) | "flyingsaucer-R7final.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip | For using Flying Saucer in your own programs
-| Source Bundle Zip (8M) | "flyingsaucer-R7final-src.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip | Includes source, demo programs, sample code, etc. 
+| Binary Zip (2M) | "flyingsaucer-R7final.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip | For using Flying Saucer in your own programs
+| Source Bundle Zip (6M) | "flyingsaucer-R7final-src.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip | Includes source, demo programs, sample code, etc. 
 
 Release 7 features major improvements in rendering accuracy, speed, and overall feature set. This includes:
 
