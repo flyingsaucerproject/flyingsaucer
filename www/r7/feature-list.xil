@@ -2,35 +2,24 @@ Flying Saucer Features
 
 h3(fs_heading){ clear: none }. Supported Features in CSS 2.1
 
-Flying Saucer supports all of CSS 2.1 with a few exceptions.  Consult the
-${issue-tracker} for more information on what is not supported
-(in particular, the issues with a summary of "Support ...") or ask on the ${mailing-list}.  If you do encounter a
-compliance bug or other unexpected behavior, please open a bug or post to the ${mailing-list}.
+Flying Saucer supports all of CSS 2.1 with a few exceptions.  Consult the ${issue-tracker} for more information on what is not supported (in particular, the issues with a summary of "Support ...") or ask on the ${mailing-list}.  If you do encounter a compliance bug or other unexpected behavior, please open a bug or post to the ${mailing-list}.
 
 Features:
 
-* 100% Java XML+CSS layout engine with Java2D (Swing) and native PDF
-output.  SWT coming soon.
-* Strong support for the CSS 2.1 specification including extensions
-to better support paged media.
-* Good performance.
-* Support for XHTML including forms.
-* Arbitrary elements may be replaced with custom content.
-* Limited support for dynamic effects (for example, the :hover
-pseudo-class and links)
-* Some support for PDF specific features (for example, bookmarks and
-internal links).  More coming soon.
+
+* 100% Java XML+CSS layout engine with Java2D (Swing) and native PDF output.  SWT coming soon. 
+* Strong support for the CSS 2.1 specification including extensions to better support paged media. 
+* Good performance. 
+* Support for XHTML including forms. 
+* Arbitrary elements may be replaced with custom content. 
+* Limited support for dynamic effects (for example, the :hover pseudo-class and links) 
+* Some support for PDF specific features (for example, bookmarks and internal links).  More coming soon.
 
 Limitations:
 
-* Resource loading is single threaded and occurs inline with layout.
-* Support for XHTML is weaker than XML+CSS (for example, not all
-XHTML presentational attributes are supported nor are X/HTML features
-like the &lt;object&gt; element).
-* No support for legacy HTML (although there are several open source
-Java HTML cleaners of varying quality available).
-* Swing printing is supported, but quality is lacking.  Ask on the
-${mailing-list} for details.
-* No support for incremental layout (applies to screen media only).
-   
 
+* Resource loading is single threaded and occurs inline with layout. 
+* Support for XHTML is weaker than XML+CSS (for example, not all XHTML presentational attributes are supported nor are X/HTML features like the &lt;object&gt; element). 
+* No support for legacy HTML (although there are several open source Java HTML cleaners of varying quality available). 
+* Swing printing is supported, but quality is lacking.  Ask on the ${mailing-list} for details. 
+* No support for incremental layout (applies to screen media only).     

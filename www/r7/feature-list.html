@@ -46,21 +46,18 @@
 
 <h3 class="fs_heading" style=" clear: none ;">Supported Features in <span class="caps">CSS</span> 2.1</h3>
 
-<p>Flying Saucer supports all of <span class="caps">CSS</span> 2.1 with a few exceptions.  Consult the<br />
-<a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectIssues">issue tracker</a> for more information on what is not supported<br />
-(in particular, the issues with a summary of "Support ...") or ask on the <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">mailing list</a>.  If you do encounter a<br />
-compliance bug or other unexpected behavior, please open a bug or post to the <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">mailing list</a>.</p>
+<p>Flying Saucer supports all of <span class="caps">CSS</span> 2.1 with a few exceptions.  Consult the <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectIssues">issue tracker</a> for more information on what is not supported (in particular, the issues with a summary of "Support ...") or ask on the <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">mailing list</a>.  If you do encounter a compliance bug or other unexpected behavior, please open a bug or post to the <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">mailing list</a>.</p>
 
 <p>Features:</p>
 
 <ul>
-  <li>100% Java <span class="caps">XML</span>+CSS layout engine with Java2D (Swing) and native <span class="caps">PDF</span></li>
-  <li>Strong support for the <span class="caps">CSS</span> 2.1 specification including extensions</li>
+  <li>100% Java <span class="caps">XML</span>+CSS layout engine with Java2D (Swing) and native <span class="caps">PDF</span> output.  <span class="caps">SWT</span> coming soon.</li>
+  <li>Strong support for the <span class="caps">CSS</span> 2.1 specification including extensions to better support paged media.</li>
   <li>Good performance.</li>
   <li>Support for <span class="caps">XHTML</span> including forms.</li>
   <li>Arbitrary elements may be replaced with custom content.</li>
-  <li>Limited support for dynamic effects (for example, the :hover</li>
-  <li>Some support for <span class="caps">PDF</span> specific features (for example, bookmarks and</li>
+  <li>Limited support for dynamic effects (for example, the :hover pseudo-class and links)</li>
+  <li>Some support for <span class="caps">PDF</span> specific features (for example, bookmarks and internal links).  More coming soon.</li>
 </ul>
 
 
@@ -68,9 +65,9 @@ compliance bug or other unexpected behavior, please open a bug or post to the <a
 
 <ul>
   <li>Resource loading is single threaded and occurs inline with layout.</li>
-  <li>Support for <span class="caps">XHTML</span> is weaker than <span class="caps">XML</span>+CSS (for example, not all</li>
-  <li>No support for legacy <span class="caps">HTML</span> (although there are several open source</li>
-  <li>Swing printing is supported, but quality is lacking.  Ask on the</li>
+  <li>Support for <span class="caps">XHTML</span> is weaker than <span class="caps">XML</span>+CSS (for example, not all <span class="caps">XHTML</span> presentational attributes are supported nor are X/HTML features like the &lt;object&gt; element).</li>
+  <li>No support for legacy <span class="caps">HTML</span> (although there are several open source Java <span class="caps">HTML</span> cleaners of varying quality available).</li>
+  <li>Swing printing is supported, but quality is lacking.  Ask on the <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">mailing list</a> for details.</li>
   <li>No support for incremental layout (applies to screen media only).</li>
 </ul>
 
