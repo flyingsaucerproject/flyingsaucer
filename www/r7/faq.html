@@ -110,32 +110,30 @@
 
 <p><em>begin quote</em></p>
 
-<p>"Save for the changes below, test_as_xml.xml is an<br />
-unmodified version of <a href="http://hixie.ch/tests/evil/acid/002-no-data/">http://hixie.ch/tests/evil/acid/002-no-data/</a>.<br />
-All in all things are looking good!</p>
+<p>"Save for the changes below, test_as_xml.xml is an unmodified version of <a href="http://hixie.ch/tests/evil/acid/002-no-data/">http://hixie.ch/tests/evil/acid/002-no-data/</a>. All in all things are looking good!</p>
 
 <p>Changes to original test:</p>
 
 <ol>
-  <li>Replace <span class="caps">DOCTYPE</span> with one we recognize to pick up entity references</li>
-  <li>Wrap <code>&lt;style&gt;</code> tag in <span class="caps">CDATA</span></li>
-  <li>Close open tags as appropriate (in particular, <p>s and table</li>
-  <li>Replace <code>&lt;object data="data007"&gt;ERROR&lt;/object&gt;</code> with @&lt;img</li>
-  <li>Change <span class="caps">CSS</span> selector on line 55 from "#eyes-a object object object"</li>
-  <li>Bottom <code>&lt;img&gt;</code> uses a data <span class="caps">URL</span> even in the non-data <span class="caps">URL</span> version (I</li>
+  <li>Replace <span class="caps">DOCTYPE</span> with one we recognize to pick up entity references (in particular &nbsp;)</li>
+  <li>Wrap <code>&amp;lt;style&amp;gt;</code> tag in <span class="caps">CDATA</span></li>
+  <li>Close open tags as appropriate (in particular, &lt;p&gt;s and table related tags in row 1 [as referenced from the test guide], &lt;link&gt; in header, and bottom <code>&amp;lt;img&amp;gt;</code> (after row 14 in guide)</li>
+  <li>Replace <code>&amp;lt;object data="data007"&amp;gt;ERROR&amp;lt;/object&amp;gt;</code> with <code>&amp;lt;img src="data007"&amp;gt;ERROR&amp;lt;/img&amp;gt;</code> (since we don't support <span class="caps">HTML</span>'s @&lt;object&gt;@)</li>
+  <li>Change <span class="caps">CSS</span> selector on line 55 from "</li>
+  <li>eyes-a object object object" to "</li>
+  <li>eyes-a object object img" to compensate for (4)</li>
+  <li>Bottom <code>&amp;lt;img&amp;gt;</code> uses a data <span class="caps">URL</span> even in the non-data <span class="caps">URL</span> version (I assume it was just missed).  Save data <span class="caps">URL</span> contents to disk (as data008) and update src attribute</li>
 </ol>
 
 
-<p>Of course, these changes mean that we cannot claim Acid2 compliance,<br />
-but nothing there changes the nature of the test (at least as far as a<br />
-<span class="caps">CSS</span> torture test goes).</p>
+<p>Of course, these changes mean that we cannot claim Acid2 compliance, but nothing there changes the nature of the test (at least as far as a <span class="caps">CSS</span> torture test goes).</p>
 
 <p>Besides those changes above, there are still the following compliance problems:</p>
 
 <ol>
-  <li>The transparent pixels in the eyes row background(s) are painted</li>
+  <li>The transparent pixels in the eyes row background(s) are painted as black.  Weird considering that the alpha channel in the eyes graphic itself is apparently picked up fine.</li>
   <li>Hover doesn't work on generated content (hence no blue nose on mouseover)</li>
-  <li>There shouldn't be a scroll bar on the page by virtue of @html {</li>
+  <li>There shouldn't be a scroll bar on the page by virtue of @html { overflow: hidden; }@"</li>
 </ol>
 
 
