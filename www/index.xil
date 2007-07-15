@@ -54,6 +54,7 @@ If you're new to the project, you may want to read two *great* articles about us
 * "Generating PDFs for Fun and Profit with Flying Saucer and iText":http://today.java.net/pub/a/today/2007/06/26/generating-pdfs-with-flying-saucer-and-itext.html, by Josh Marinacci from June 2007.  Josh covers using Flying Saucer to generate PDF documents; the article is available on "http://java.net":http://java.net.
 * "Combine JSF Facelets and the Flying Saucer XHTML Renderer":http://today.java.net/pub/a/today/2006/10/31/combine-facelets-and-flying-saucer-renderer.html by Jacobus Steenkamp from October 2006. Jacobus covers using Flying Saucer to generate PDF, image and SVG output, with a focus on on-the-fly generation. The article is on "http://java.net":http://java.net.
 
+There's also a blog entry by Dieter Wimberger "Customizable IM frontend with XHTML+CSS rendering using Flying Saucer":http://wimpi.coalevo.net/2007/05/customizable-im-frontend-with-xhtmlcss.html
 
 h2(fs_heading). Demos
 
