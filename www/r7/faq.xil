@@ -60,7 +60,7 @@ Changes to original test:
 # Replace DOCTYPE with one we recognize to pick up entity references (in particular &nbsp;) 
 # Wrap @<style>@ tag in CDATA 
 # Close open tags as appropriate (in particular, @<p>@ and table related tags in row 1 [as referenced from the test guide], @<link>@ in header, and bottom @<img>@ (after row 14 in guide) 
-# Replace @<object data="data007">ERROR</object>@ with @<img src="data007">ERROR</img>@ (since we don't support HTML's @<object>@) 
+# Replace @<object data="data007">ERROR</object>@ with @<img src="data007">ERROR</img>@ (since we don't support HTML's @<object>@ ) 
 # Change CSS selector on line 55 from "#eyes-a object object object" to "#eyes-a object object img" to compensate for (4) 
 # Bottom @<img>@ uses a data URL even in the non-data URL version (I assume it was just missed).  Save data URL contents to disk (as data008) and update src attribute
 
