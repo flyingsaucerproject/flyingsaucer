@@ -43,11 +43,11 @@ public class ITextFSImage implements FSImage {
         int targetHeight = height;
         
         if (targetWidth == -1) {
-            targetWidth = getWidth() * (targetHeight / getHeight());
+            targetWidth = (int)(getWidth() * ((double)targetHeight / getHeight()));
         }
         
         if (targetHeight == -1) {
-            targetHeight = getHeight() * (targetWidth / getWidth());
+            targetHeight = (int)(getHeight() * ((double)targetWidth / getWidth()));
         }
         
         _image.scaleAbsolute(targetWidth, targetHeight);

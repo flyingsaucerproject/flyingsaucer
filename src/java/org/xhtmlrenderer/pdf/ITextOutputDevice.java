@@ -598,6 +598,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         } else {
             Image image = ((ITextFSImage)fsImage).getImage();
             
+            if (fsImage.getHeight() <= 0 || fsImage.getWidth() <= 0) {
+                return;
+            }
+            
             AffineTransform at = AffineTransform.getTranslateInstance(x,y);
             at.translate(0, fsImage.getHeight());
             at.scale(fsImage.getWidth(), fsImage.getHeight());
