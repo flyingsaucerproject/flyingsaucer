@@ -1,10 +1,12 @@
-import java.io.IOException;
-import java.io.File;
-import java.io.OutputStream;
-import java.io.FileOutputStream;
-
-import org.xhtmlrenderer.pdf.ITextRenderer;
 import com.lowagie.text.DocumentException;
+import org.xhtmlrenderer.pdf.ITextOutputDevice;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.xhtmlrenderer.pdf.ITextUserAgent;
+import org.xhtmlrenderer.resource.XMLResource;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+import java.io.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,9 +38,22 @@ public class PDFRender {
         try {
             os = new FileOutputStream(pdf);
 
+            /* standard approach
             ITextRenderer renderer = new ITextRenderer();
 
             renderer.setDocument(url);
+            renderer.layout();
+            renderer.createPDF(os);
+            */
+
+            ITextRenderer renderer = new ITextRenderer();
+            ResourceLoaderUserAgent callback = new ResourceLoaderUserAgent(renderer.getOutputDevice());
+            callback.setSharedContext(renderer.getSharedContext());
+            renderer.getSharedContext ().setUserAgentCallback(callback);
+
+            Document doc = XMLResource.load(new InputSource(url)).getDocument();
+
+            renderer.setDocument(doc, "file:/Users/patrick/Projects/Dev/Javanet/xhtmlrenderer/temp/.");
             renderer.layout();
             renderer.createPDF(os);
 
@@ -52,6 +67,19 @@ public class PDFRender {
                     // ignore
                 }
             }
+        }
+    }
+
+    private static class ResourceLoaderUserAgent extends ITextUserAgent
+    {
+        public ResourceLoaderUserAgent(ITextOutputDevice outputDevice) {
+            super(outputDevice);
+        }
+
+        protected InputStream resolveAndOpenStream(String uri) {
+            InputStream is = super.resolveAndOpenStream(uri);
+            System.out.println("IN resolveAndOpenStream() " + uri);
+            return is;
         }
     }
 }
