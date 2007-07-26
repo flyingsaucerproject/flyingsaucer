@@ -248,6 +248,7 @@ public abstract class BasicPanel extends RootPanel {
         RenderingContext c = newRenderingContext(g);
 
         PageBox page = (PageBox)root.getPages().get(pageNo);
+        c.setPage(pageNo, page);
         
         Shape working = g.getClip();
         
@@ -555,6 +556,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.113  2007/07/26 16:53:01  peterbrant
+ * Provide page box to RenderingContext when printing from Swing
+ *
  * Revision 1.112  2007/06/11 22:30:15  peterbrant
  * Minor cleanup to LayoutContext / Start adding infrastructure to support better table pagination
  *
