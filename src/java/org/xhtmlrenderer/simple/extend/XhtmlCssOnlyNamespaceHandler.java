@@ -280,7 +280,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
     
     protected StylesheetInfo readLinkElement(Element link) {
-        String rel = link.getAttribute("rel");
+        String rel = link.getAttribute("rel").toLowerCase();
         if (rel.indexOf("alternate") != -1) {
             return null;
         }//DON'T get alternate stylesheets
