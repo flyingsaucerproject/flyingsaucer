@@ -651,8 +651,8 @@ public class InlineBoxing {
             } else if (vAlign == IdentValue.TEXT_BOTTOM) {
                 box.setY(Math.round(measurements.getTextBottom() - descent - ascent));
             } else if (vAlign == IdentValue.MIDDLE) {
-                box.setY(Math.round((measurements.getTextTop() - measurements.getBaseline()) / 2
-                        - ascent / 2));
+                box.setY(Math.round((measurements.getBaseline() - measurements.getTextTop()) / 2
+                        - (ascent + descent) / 2));
             } else if (vAlign == IdentValue.SUPER) {
                 box.setY(Math.round(measurements.getBaseline() - (3*ascent/2)));
             } else if (vAlign == IdentValue.SUB) {
