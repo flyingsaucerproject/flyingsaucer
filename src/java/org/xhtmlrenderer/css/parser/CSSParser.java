@@ -1568,7 +1568,7 @@ public class CSSParser {
     
     private boolean isRelativeURI(String uri) {
         try {
-            return ! new URI(uri).isAbsolute();
+            return uri.charAt(0) != '/' && ! new URI(uri).isAbsolute();
         } catch (URISyntaxException e) {
             return false;
         }
