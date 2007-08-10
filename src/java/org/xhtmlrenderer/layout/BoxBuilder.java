@@ -732,6 +732,7 @@ public class BoxBuilder {
                     table.addStyleColumn(col);
                 }
             }
+            working = working.getNextSibling();
         }
         if (! found) {
             table.addStyleColumn(parent);
