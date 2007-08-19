@@ -26,11 +26,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
+import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 /**
@@ -48,6 +51,29 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
 
     public String getAttributeValue(org.w3c.dom.Element e, String attrName) {
         return e.getAttribute(attrName);
+    }
+    
+    public String getAttributeValue(Element e, String namespaceURI, String attrName) {
+        if (namespaceURI == TreeResolver.NO_NAMESPACE) {
+            return e.getAttribute(attrName);
+        } else if (namespaceURI == null) {
+            if (e.getLocalName() == null) { // No namespaces
+                return e.getAttribute(attrName);
+            } else {
+                NamedNodeMap attrs = e.getAttributes();
+                int l = attrs.getLength();
+                for (int i = 0; i < l; i++) {
+                    Attr attr = (Attr)attrs.item(i);
+                    if (attrName.equals(attr.getLocalName())) {
+                        return attr.getValue();
+                    }
+                }
+                
+                return "";
+            }
+        } else {
+            return e.getAttributeNS(namespaceURI, attrName);
+        }
     }
 
     public String getClass(org.w3c.dom.Element e) {

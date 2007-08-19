@@ -86,7 +86,7 @@ public class ContentFunctionFactory {
     
     private static class PageCounterFunction extends PageNumberFunction implements ContentFunction {
         public String calculate(RenderingContext c, FSFunction function, InlineText text) {
-            return Integer.toString(c.getPageNo() + 1);
+            return Integer.toString(c.getRootLayer().getRelativePageNo(c) + 1);
         }
         
         public boolean canHandle(LayoutContext c, FSFunction function) {
@@ -96,7 +96,7 @@ public class ContentFunctionFactory {
     
     private static class PagesCounterFunction extends PageNumberFunction implements ContentFunction {
         public String calculate(RenderingContext c, FSFunction function, InlineText text) {
-            return Integer.toString(c.getPageCount());
+            return Integer.toString(c.getRootLayer().getRelativePageCount(c));
         }
 
         public boolean canHandle(LayoutContext c, FSFunction function) {

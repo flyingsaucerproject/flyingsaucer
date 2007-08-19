@@ -3,6 +3,9 @@ CDO,<!--
 CDC,-->
 INCLUDES,an attribute word match
 DASHMATCH,an attribute hyphen match
+PREFIXMATCH,an attribute prefix match
+SUFFIXMATCH,an attribute suffix match
+SUBSTRINGMATCH,an attribute substring match
 LBRACE,a {
 PLUS,a +
 GREATER,a >
@@ -15,6 +18,8 @@ IMPORT_SYM,@import
 PAGE_SYM,@page
 MEDIA_SYM,@media
 CHARSET_SYM,@charset
+NAMESPACE_SYM,@namespace
+AT_RULE,at rule
 IMPORTANT_SYM,!important
 EMS,an em value
 EXS,an ex value
@@ -44,4 +49,5 @@ RBRACKET,]
 PERIOD,.
 EQUALS,=
 ASTERISK,*
+VERTICAL_BAR,|
 EOF,end of file

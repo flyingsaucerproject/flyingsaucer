@@ -23,6 +23,7 @@ package org.xhtmlrenderer.css.style;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
@@ -715,10 +716,6 @@ public class CalculatedStyle {
         return _FSFontMetrics;
     }
 
-    public boolean isAlternateFlow() {
-        return ! getStringProperty(CSSName.FS_MOVE_TO_FLOW).equals("none");
-    }
-
     public boolean isClearLeft() {
         IdentValue clear = getIdent(CSSName.CLEAR);
         return clear == IdentValue.LEFT || clear == IdentValue.BOTH;
@@ -814,7 +811,7 @@ public class CalculatedStyle {
     }
 
     public boolean isLayedOutInInlineContext() {
-        if (isFloated() || isAbsolute() || isFixed()) {
+        if (isFloated() || isAbsolute() || isFixed() || isRunning()) {
             return true;
         } else {
             IdentValue display = getIdent(CSSName.DISPLAY);
@@ -874,27 +871,56 @@ public class CalculatedStyle {
 
     public boolean establishesBFC() {
         IdentValue display = getIdent(CSSName.DISPLAY);
-        IdentValue position = getIdent(CSSName.POSITION);
-
-        return isFloated() ||
-                position == IdentValue.ABSOLUTE || position == IdentValue.FIXED ||
-                display == IdentValue.INLINE_BLOCK || display == IdentValue.TABLE_CELL ||
-                ! isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
+        
+        FSDerivedValue value = valueByName(CSSName.POSITION);
+        
+        if (value instanceof FunctionValue) {  // running(header)
+            return false;
+        } else {
+            IdentValue position = (IdentValue)value;
+    
+            return isFloated() ||
+                    position == IdentValue.ABSOLUTE || position == IdentValue.FIXED ||
+                    display == IdentValue.INLINE_BLOCK || display == IdentValue.TABLE_CELL ||
+                    ! isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
+        }
     }
 
     public boolean requiresLayer() {
-        IdentValue position = getIdent(CSSName.POSITION);
-
-        if (position == IdentValue.ABSOLUTE ||
-                position == IdentValue.RELATIVE || position == IdentValue.FIXED) {
-            return true;
+        FSDerivedValue value = valueByName(CSSName.POSITION);
+        
+        if (value instanceof FunctionValue) {  // running(header)
+            return false;
+        } else {
+            IdentValue position = getIdent(CSSName.POSITION);
+    
+            if (position == IdentValue.ABSOLUTE ||
+                    position == IdentValue.RELATIVE || position == IdentValue.FIXED) {
+                return true;
+            }
+    
+            IdentValue overflow = getIdent(CSSName.OVERFLOW);
+            if ((overflow == IdentValue.SCROLL || overflow == IdentValue.AUTO) && 
+                    isOverflowApplies()) {
+                return true;
+            }
+    
+            return false;
         }
-
-        if (! isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) && isOverflowApplies()) {
-            return true;
-        }
-
-        return false;
+    }
+    
+    public boolean isRunning() {
+        FSDerivedValue value = valueByName(CSSName.POSITION);
+        return value instanceof FunctionValue;
+    }
+    
+    public String getRunningName() {
+        FunctionValue value = (FunctionValue)valueByName(CSSName.POSITION);
+        FSFunction function = value.getFunction();
+        
+        PropertyValue param = (PropertyValue)function.getParameters().get(0);
+        
+        return param.getStringValue();
     }
 
     public boolean isOverflowApplies() {
@@ -972,7 +998,7 @@ public class CalculatedStyle {
     }
 
     public boolean isNonFlowContent() {
-        return isFloated() || isAbsolute() || isFixed();
+        return isFloated() || isAbsolute() || isFixed() || isRunning();
     }
 
     public boolean isMayCollapseMarginsWithChildren() {
@@ -1005,7 +1031,7 @@ public class CalculatedStyle {
     }
 
     public boolean isCollapseBorders() {
-        return isIdent(CSSName.BORDER_COLLAPSE, IdentValue.COLLAPSE);
+        return isIdent(CSSName.BORDER_COLLAPSE, IdentValue.COLLAPSE) && ! isPaginateTable();
     }
 
     public int getBorderHSpacing(CssContext c) {
@@ -1110,6 +1136,10 @@ public class CalculatedStyle {
 
         return null;
     }
+    
+    public boolean isPaginateTable() {
+        return isIdent(CSSName.FS_TABLE_PAGINATION, IdentValue.PAGINATE);
+    }
 
 }// end class
 
@@ -1117,6 +1147,21 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.98  2007/08/19 22:22:53  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.97.2.4  2007/08/17 23:53:32  peterbrant
+ * Get rid of layer hack for overflow: hidden
+ *
+ * Revision 1.97.2.3  2007/08/16 22:38:48  peterbrant
+ * Further progress on table pagination
+ *
+ * Revision 1.97.2.2  2007/07/11 22:48:29  peterbrant
+ * Further progress on running headers and footers
+ *
+ * Revision 1.97.2.1  2007/07/09 22:18:04  peterbrant
+ * Begin work on running headers and footers and named pages
+ *
  * Revision 1.97  2007/06/26 18:24:52  peterbrant
  * Improve calculation of line-height: normal / If leading is positive, recalculate to center glyph area in inline box
  *

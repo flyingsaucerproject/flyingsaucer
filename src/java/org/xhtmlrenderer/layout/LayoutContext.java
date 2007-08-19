@@ -19,6 +19,14 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.xhtmlrenderer.context.ContentFunctionFactory;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -27,15 +35,17 @@ import org.xhtmlrenderer.css.parser.CounterData;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.extend.*;
+import org.xhtmlrenderer.extend.FontContext;
+import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.ReplacedElementFactory;
+import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.MarkerData;
+import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.swing.RootPanel;
-
-import java.awt.Rectangle;
-import java.util.*;
 
 /**
  * This class tracks state which changes over the course of a layout run.
@@ -63,6 +73,14 @@ public class LayoutContext implements CssContext {
     private int _extraSpaceBottom;
     
     private Map _counterContextMap = new HashMap();
+    
+    private String _pendingPageName;
+    private String _pageName;
+    
+    private int _noPageBreak = 0;
+    
+    private Layer _rootDocumentLayer;
+    private PageBox _page;
 
     public TextRenderer getTextRenderer() {
         return _sharedContext.getTextRenderer();
@@ -94,12 +112,17 @@ public class LayoutContext implements CssContext {
         _firstLetters = new StyleTracker();
     }
 
-    public void reInit() {
+    public void reInit(boolean keepLayers) {
         _firstLines = new StyleTracker();
         _firstLetters = new StyleTracker();
         _currentMarkerData = null;
 
         _bfcs = new LinkedList();
+        
+        if (! keepLayers) {
+            _rootLayer = null;
+            _layers = new LinkedList();
+        }
 
         _extraSpaceTop = 0;
         _extraSpaceBottom = 0;
@@ -113,6 +136,13 @@ public class LayoutContext implements CssContext {
         result.setCurrentMarkerData(_currentMarkerData);
 
         result.setBFCs(_bfcs);
+        
+        if (isPrint()) {
+            result.setPageName(getPageName());
+            result.setExtraSpaceBottom(getExtraSpaceBottom());
+            result.setExtraSpaceTop(getExtraSpaceTop());
+            result.setNoPageBreak(getNoPageBreak());
+        }
 
         return result;
     }
@@ -124,6 +154,13 @@ public class LayoutContext implements CssContext {
         _currentMarkerData = layoutState.getCurrentMarkerData();
 
         _bfcs = layoutState.getBFCs();
+        
+        if (isPrint()) {
+            setPageName(layoutState.getPageName());
+            setExtraSpaceBottom(layoutState.getExtraSpaceBottom());
+            setExtraSpaceTop(layoutState.getExtraSpaceTop());
+            setNoPageBreak(layoutState.getNoPageBreak());
+        }
     }
 
     public LayoutState copyStateForRelayout() {
@@ -132,6 +169,10 @@ public class LayoutContext implements CssContext {
         result.setFirstLetters(_firstLetters.copyOf());
         result.setFirstLines(_firstLines.copyOf());
         result.setCurrentMarkerData(_currentMarkerData);
+        
+        if (isPrint()) {
+            result.setPageName(getPageName());
+        }
 
         return result;
     }
@@ -141,6 +182,10 @@ public class LayoutContext implements CssContext {
         _firstLetters = layoutState.getFirstLetters();
 
         _currentMarkerData = layoutState.getCurrentMarkerData();
+        
+        if (isPrint()) {
+            setPageName(layoutState.getPageName());
+        }
     }
 
     public BlockFormattingContext getBlockFormattingContext() {
@@ -163,12 +208,6 @@ public class LayoutContext implements CssContext {
             _rootLayer = layer;
         } else {
             Layer parent = getLayer();
-
-            if (master.getStyle().isAlternateFlow()) {
-                while (parent.getParent() != null) {
-                    parent = parent.getParent();
-                }
-            }
 
             layer = new Layer(parent, master);
 
@@ -420,5 +459,49 @@ public class LayoutContext implements CssContext {
             Integer value = (Integer) _counters.get(name);
             if (value != null) values.add(value);
         }
+    }
+
+    public String getPageName() {
+        return _pageName;
+    }
+
+    public void setPageName(String currentPageName) {
+        _pageName = currentPageName;
+    }
+    
+    public int getNoPageBreak() {
+        return _noPageBreak;
+    }
+
+    public void setNoPageBreak(int noPageBreak) {
+        _noPageBreak = noPageBreak;
+    }
+    
+    public boolean isPageBreaksAllowed() {
+        return _noPageBreak == 0;
+    }
+
+    public String getPendingPageName() {
+        return _pendingPageName;
+    }
+
+    public void setPendingPageName(String pendingPageName) {
+        _pendingPageName = pendingPageName;
+    }
+
+    public Layer getRootDocumentLayer() {
+        return _rootDocumentLayer;
+    }
+
+    public void setRootDocumentLayer(Layer rootDocumentLayer) {
+        _rootDocumentLayer = rootDocumentLayer;
+    }
+
+    public PageBox getPage() {
+        return _page;
+    }
+
+    public void setPage(PageBox page) {
+        _page = page;
     }
 }

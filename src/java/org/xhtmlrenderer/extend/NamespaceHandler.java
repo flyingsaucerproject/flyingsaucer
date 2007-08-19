@@ -64,6 +64,8 @@ public interface NamespaceHandler {
      * @return The attributeValue value
      */
     String getAttributeValue(org.w3c.dom.Element e, String attrName);
+    
+    String getAttributeValue(org.w3c.dom.Element e, String namespaceURI, String attrName);
 
     /**
      * may return null

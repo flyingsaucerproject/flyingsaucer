@@ -33,7 +33,21 @@ public class TableSectionBox extends BlockBox {
     private boolean _needCellWidthCalc;
     private boolean _needCellRecalc;
     
+    private boolean _footer;
+    private boolean _header;
+    
+    private boolean _capturedOriginalAbsY;
+    private int _originalAbsY;
+    
     public TableSectionBox() {
+    }
+    
+    public BlockBox copyOf() {
+        TableSectionBox result = new TableSectionBox();
+        result.setStyle(getStyle());
+        result.setElement(getElement());
+        
+        return result;
     }
     
     public List getGrid() {
@@ -173,6 +187,7 @@ public class TableSectionBox extends BlockBox {
         _grid.clear();
         setNeedCellWidthCalc(true);
         setNeedCellRecalc(true);
+        setCapturedOriginalAbsY(false);
     }
     
     void setCellWidths(LayoutContext c)
@@ -247,5 +262,58 @@ public class TableSectionBox extends BlockBox {
 
     private void setNeedCellRecalc(boolean needCellRecalc) {
         _needCellRecalc = needCellRecalc;
+    }
+    
+    public void layout(LayoutContext c, int contentStart) {
+        boolean running = c.isPrint() && (isHeader() || isFooter()) && getTable().getStyle().isPaginateTable();
+        
+        if (running) {
+            c.setNoPageBreak(c.getNoPageBreak()+1);
+        }
+        
+        super.layout(c, contentStart);
+        
+        if (running) {
+            if (isHeader()) {
+                c.setExtraSpaceTop(c.getExtraSpaceTop() + getHeight());
+            }
+            c.setNoPageBreak(c.getNoPageBreak()-1);
+            
+            if (isHeader() && crossesPageBreak(c)) {
+                getTable().setNeedPageClear(true);
+            }
+        }
+    }
+
+    public boolean isFooter() {
+        return _footer;
+    }
+
+    public void setFooter(boolean footer) {
+        _footer = footer;
+    }
+
+    public boolean isHeader() {
+        return _header;
+    }
+
+    public void setHeader(boolean header) {
+        _header = header;
+    }
+
+    public boolean isCapturedOriginalAbsY() {
+        return _capturedOriginalAbsY;
+    }
+
+    public void setCapturedOriginalAbsY(boolean capturedOriginalAbsY) {
+        _capturedOriginalAbsY = capturedOriginalAbsY;
+    }
+
+    public int getOriginalAbsY() {
+        return _originalAbsY;
+    }
+
+    public void setOriginalAbsY(int originalAbsY) {
+        _originalAbsY = originalAbsY;
     }
 }

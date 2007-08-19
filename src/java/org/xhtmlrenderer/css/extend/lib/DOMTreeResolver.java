@@ -63,4 +63,24 @@ public class DOMTreeResolver implements TreeResolver {
         }
         return (nl.item(i) == element);
     }
+
+    public boolean matchesElement(Object element, String namespaceURI, String name) {
+        Element e = (Element)element;
+        String localName = e.getLocalName();
+        String eName;
+        
+        if (localName == null) {
+            eName = e.getNodeName();
+        } else {
+            eName = localName;
+        }
+        
+        if (namespaceURI != null) {
+            return name.equals(localName) && namespaceURI.equals(e.getNamespaceURI());
+        } else if (namespaceURI == TreeResolver.NO_NAMESPACE) {
+            return name.equals(eName) && e.getNamespaceURI() == null;
+        } else /* if (namespaceURI == null) */ {
+            return name.equals(eName);
+        }
+    }
 }

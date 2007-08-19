@@ -37,6 +37,11 @@ public class LayoutState {
     
     private LinkedList _BFCs;
     
+    private String _pageName;
+    private int _extraSpaceTop;
+    private int _extraSpaceBottom;
+    private int _noPageBreak;
+    
     public LinkedList getBFCs() {
         return _BFCs;
     }
@@ -67,5 +72,37 @@ public class LayoutState {
 
     public void setFirstLines(StyleTracker firstLines) {
         _firstLines = firstLines;
+    }
+
+    public String getPageName() {
+        return _pageName;
+    }
+
+    public void setPageName(String pageName) {
+        _pageName = pageName;
+    }
+
+    public int getExtraSpaceTop() {
+        return _extraSpaceTop;
+    }
+
+    public void setExtraSpaceTop(int extraSpaceTop) {
+        _extraSpaceTop = extraSpaceTop;
+    }
+
+    public int getExtraSpaceBottom() {
+        return _extraSpaceBottom;
+    }
+
+    public void setExtraSpaceBottom(int extraSpaceBottom) {
+        _extraSpaceBottom = extraSpaceBottom;
+    }
+
+    public int getNoPageBreak() {
+        return _noPageBreak;
+    }
+
+    public void setNoPageBreak(int noPageBreak) {
+        _noPageBreak = noPageBreak;
     }
 }

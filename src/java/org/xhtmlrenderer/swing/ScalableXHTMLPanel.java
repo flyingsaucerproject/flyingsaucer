@@ -115,7 +115,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
 		Point p = convertFromScaled(x, y);
 		Layer l = getRootLayer();
 		if (l != null) {
-			return l.find(getLayoutContext(), p.x, p.y);
+			return l.find(getLayoutContext(), p.x, p.y, false);
 		}
 		return null;
 	}

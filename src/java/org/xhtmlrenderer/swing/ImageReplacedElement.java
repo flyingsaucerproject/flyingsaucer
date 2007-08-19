@@ -50,17 +50,17 @@ public class ImageReplacedElement implements ReplacedElement {
             int w = image.getWidth(null);
             int h = image.getHeight(null);
             
-            int newW = targetWidth;
-            int newH = targetHeight;
-            
-            if (newW == -1) {
-                newW = (int)(w * ((double)newH / h));
-            }
-            
-            if (newH == -1) {
-                newH = (int)(h * ((double)newW / w));
-            }
-            
+		    int newW = targetWidth;
+		    int newH = targetHeight;
+		    
+		    if (newW == -1) {
+		        newW = (int)(w * ((double)newH / h));
+		    }
+		    
+	        if (newH == -1) {
+	            newH = (int)(h * ((double)newW / w));
+	        }
+	        
 			if (w != newW || h != newH) {
                 if (image instanceof BufferedImage) {
                     image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);

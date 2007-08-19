@@ -29,6 +29,7 @@ import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.CSSParseException;
+import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.Token;
@@ -325,6 +326,7 @@ public class PrimitivePropertyBuilders {
     }
     */
     
+    /*
     private static abstract class SingleStringWithIdent extends AbstractPropertyBuilder {
         protected abstract BitSet getAllowed();
         
@@ -348,7 +350,9 @@ public class PrimitivePropertyBuilders {
 
         }  
     } 
+    */
     
+    /*
     private static class SingleStringWithNone extends SingleStringWithIdent {
         private static final BitSet ALLOWED = setFor(new IdentValue[] { IdentValue.NONE });
         
@@ -356,6 +360,7 @@ public class PrimitivePropertyBuilders {
             return ALLOWED;
         }
     }
+    */
     
     private static class LengthLikeWithAuto extends LengthLikeWithIdent {
         // <length> | <percentage> | auto | inherit
@@ -853,21 +858,6 @@ public class PrimitivePropertyBuilders {
     public static class FSBorderSpacingVertical extends Length {
     }
     
-    public static class FSFlowTop extends SingleStringWithNone {
-    }
-    
-    public static class FSFlowRight extends SingleStringWithNone {
-    }
-    
-    public static class FSFlowBottom extends SingleStringWithNone {
-    }
-    
-    public static class FSFlowLeft extends SingleStringWithNone {
-    }
-    
-    public static class FSMoveToFlow extends SingleStringWithNone {
-    }
-    
     public static class FSPageHeight extends LengthLikeWithAuto {
         protected boolean isNegativeValuesAllowed() {
             return false;
@@ -877,6 +867,16 @@ public class PrimitivePropertyBuilders {
     public static class FSPageWidth extends LengthLikeWithAuto {
         protected boolean isNegativeValuesAllowed() {
             return false;
+        }
+    }
+    
+    public static class FSPageSequence extends SingleIdent {
+        // start | auto 
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] { IdentValue.START, IdentValue.AUTO });
+        
+        protected BitSet getAllowed() {
+            return ALLOWED;
         }
     }
     
@@ -891,6 +891,15 @@ public class PrimitivePropertyBuilders {
     
     public static class FSTableCellRowspan extends ColOrRowSpan {
     }
+    
+    public static class FSTablePagination extends SingleIdent {
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] { IdentValue.PAGINATE, IdentValue.AUTO });
+        
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+     }
     
     public static class FSTextDecorationExtent extends SingleIdent {
        private static final BitSet ALLOWED = setFor(
@@ -1019,6 +1028,29 @@ public class PrimitivePropertyBuilders {
         }          
     }
     
+    public static class Page extends AbstractPropertyBuilder {
+        public List buildDeclarations(
+                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+            checkValueCount(cssName, 1, values.size());
+            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+            checkInheritAllowed(value, inheritAllowed);
+            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+                checkIdentType(cssName, value);
+                
+                if (! value.getStringValue().equals("auto")) {
+                    // Treat as string since it won't be a proper IdentValue
+                    value = new PropertyValue(
+                            CSSPrimitiveValue.CSS_STRING, value.getStringValue(), value.getCssText());
+                }
+            }
+            
+            return Collections.singletonList(
+                    new PropertyDeclaration(cssName, value, important, origin));
+            
+        
+        }
+    }
+    
     public static class PageBreakAfter extends SingleIdent {
         // auto | always | avoid | left | right | inherit 
         private static final BitSet ALLOWED = setFor(
@@ -1043,14 +1075,50 @@ public class PrimitivePropertyBuilders {
         }          
     }
     
-    public static class Position extends SingleIdent {
+    public static class Position extends AbstractPropertyBuilder {
         // static | relative | absolute | fixed | inherit   
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { 
                         IdentValue.STATIC, IdentValue.RELATIVE,
                         IdentValue.ABSOLUTE, IdentValue.FIXED });
         
-        protected BitSet getAllowed() {
+        public List buildDeclarations(
+                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+            checkValueCount(cssName, 1, values.size());
+            PropertyValue value = (PropertyValue)values.get(0);
+            checkInheritAllowed(value, inheritAllowed);
+            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+                if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+                    checkIdentType(cssName, value);
+                    IdentValue ident = checkIdent(cssName, value);
+                    
+                    checkValidity(cssName, getAllowed(), ident);
+                } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+                    FSFunction function = value.getFunction();
+                    if (function.getName().equals("running")) {
+                        List params = function.getParameters();
+                        if (params.size() == 1) {
+                            PropertyValue param = (PropertyValue)params.get(0);
+                            if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
+                                throw new CSSParseException("The running function takes an identifier as a parameter", -1);
+                            }
+                        } else {
+                            throw new CSSParseException("The running function takes one parameter", -1);
+                        }
+                    } else {
+                        throw new CSSParseException("Only the running function is supported here", -1);
+                    }
+                } else {
+                    throw new CSSParseException("Value for " + cssName + " must be an identifier or function", -1);
+                }
+            }
+            
+            return Collections.singletonList(
+                    new PropertyDeclaration(cssName, value, important, origin));
+            
+        }        
+        
+        private BitSet getAllowed() {
             return ALLOWED;
         }          
     }

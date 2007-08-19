@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
+import java.awt.event.MouseEvent;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.Box;
@@ -69,6 +71,12 @@ public class LinkListener implements FSMouseListener {
     }
 
     public void reset() {
+    }
+
+    public void onMouseDragged(BasicPanel panel, MouseEvent e) {
+    }
+
+    public void onMousePressed(BasicPanel panel, MouseEvent e) {
     }
 }
 

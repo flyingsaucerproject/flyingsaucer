@@ -305,8 +305,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         info.setUri(link.getAttribute("href"));
         String media = link.getAttribute("media");
         if ("".equals(media)) {
-            media = "screen";
-        }//the default in HTML
+            media = "all";
+        }
         info.setMedia(media);
         
         String title = link.getAttribute("title");

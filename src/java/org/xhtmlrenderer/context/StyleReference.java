@@ -33,6 +33,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.lib.DOMTreeResolver;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.newmatch.PageInfo;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
@@ -198,12 +199,8 @@ public class StyleReference {
         return _matcher.getCascadedStyle(e, restyle);
     }
     
-    public CascadedStyle getPageStyle() {
-        return _matcher.getPageCascadedStyle();
-    }
-    
-    public CascadedStyle getPageStyle(String pseudoPage) {
-        return _matcher.getPageCascadedStyle(pseudoPage);
+    public PageInfo getPageStyle(String pageName, String pseudoPage) {
+        return _matcher.getPageCascadedStyle(pageName, pseudoPage);
     }
 
     /**
@@ -283,6 +280,12 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2007/08/19 22:22:52  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.16.2.1  2007/07/09 22:18:04  peterbrant
+ * Begin work on running headers and footers and named pages
+ *
  * Revision 1.16  2007/05/26 19:04:13  peterbrant
  * Implement support for removing all references to a particular Element (in order to support limited dynamic DOM changes)
  *

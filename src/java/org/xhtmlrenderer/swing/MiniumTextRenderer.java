@@ -21,10 +21,12 @@ package org.xhtmlrenderer.swing;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.util.Map;
 
 import org.sektor37.minium.TextRendererFactory;
 import org.sektor37.minium.TextRenderingHints;
+import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.render.FSFont;
@@ -129,5 +131,20 @@ public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer
         return level;
     }
 
+    public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
+        throw new UnsupportedOperationException();
+    }
+
+    public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector) {
+        throw new UnsupportedOperationException();
+    }
+
+    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
+        throw new UnsupportedOperationException();
+    }
 }
 

@@ -141,12 +141,11 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue OUTSET = addValue("outset");
     public final static IdentValue OUTSIDE = addValue("outside");
     public final static IdentValue OVERLINE = addValue("overline");
+    public final static IdentValue PAGINATE = addValue("paginate");
     public final static IdentValue POINTER = addValue("pointer");
     public final static IdentValue PORTRAIT = addValue("portrait");
     public final static IdentValue PRE = addValue("pre");
-    // HACK: pre-line/pre-wrap are not valid CSS values, but being used in CSS/demos. should prob be pre (PWW 25-01-05)
     public final static IdentValue PRE_LINE = addValue("pre-line");
-    // HACK: pre-line/pre-wrap are not valid CSS values, but being used in CSS/demos. should prob be pre (PWW 25-01-05)
     public final static IdentValue PRE_WRAP = addValue("pre-wrap");
     public final static IdentValue RELATIVE = addValue("relative");
     public final static IdentValue REPEAT = addValue("repeat");
@@ -201,6 +200,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue SE_RESIZE = addValue("se-resize");
     public final static IdentValue SMALL = addValue("small");
     public final static IdentValue SMALLER = addValue("smaller");
+    public final static IdentValue START = addValue("start");
     public final static IdentValue SW_RESIZE = addValue("sw-resize");
     public final static IdentValue TEXT = addValue("text");
     public final static IdentValue W_RESIZE = addValue("w-resize");
@@ -340,6 +340,18 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2007/08/19 22:22:51  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.31.2.3  2007/08/15 21:29:31  peterbrant
+ * Initial draft of support for running headers and footers on tables
+ *
+ * Revision 1.31.2.2  2007/08/08 21:44:09  peterbrant
+ * Implement more flexible page numbering
+ *
+ * Revision 1.31.2.1  2007/06/30 00:25:29  peterbrant
+ * Remove obsolete comments (pre-line and pre-wrap are part of CSS21)
+ *
  * Revision 1.31  2007/05/20 23:25:32  peterbrant
  * Various code cleanups (e.g. remove unused imports)
  *

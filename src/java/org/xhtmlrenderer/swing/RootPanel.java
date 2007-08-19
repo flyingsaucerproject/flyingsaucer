@@ -178,6 +178,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         result.setOutputDevice(new Java2DOutputDevice(g));
         
         getSharedContext().getTextRenderer().setup(result.getFontContext());
+        
+        if (rootBox != null) {
+            result.setRootLayer(rootBox.getLayer());
+        }
 
         return result;
     }
@@ -229,7 +233,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return extents;
     }
 
-    public void doLayout(Graphics g) {
+    public void doDocumentLayout(Graphics g) {
         try {
             this.removeAll();
             if (g == null) {
@@ -262,7 +266,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
             
             /*
-            System.out.println(root.dump(c, "", BlockBox.DUMP_RENDER));
+            System.out.println(root.dump(c, "", BlockBox.DUMP_LAYOUT));
             */
             
     // if there is a fixed child then we need to set opaque to false
@@ -280,6 +284,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             
             if (c.isPrint()) {
                 root.getLayer().trimEmptyPages(c, intrinsic_size.height);
+                root.getLayer().layoutPages(c);
             }
             
             setPreferredSize(intrinsic_size);
@@ -451,7 +456,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     public Box find(int x, int y) {
         Layer l = getRootLayer();
         if (l != null) {
-            return l.find(layout_context, x, y);
+            return l.find(layout_context, x, y, false);
         }
         return null;
     }

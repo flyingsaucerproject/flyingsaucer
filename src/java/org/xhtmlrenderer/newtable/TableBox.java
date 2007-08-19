@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -35,7 +36,12 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.ContentLimit;
+import org.xhtmlrenderer.render.ContentLimitContainer;
 import org.xhtmlrenderer.render.PageBox;
+import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.XRLog;
 
 // Much of this code is directly inspired by (and even copied from) 
 // the equivalent code in KHTML (including the idea of "effective columns" to 
@@ -49,6 +55,29 @@ public class TableBox extends BlockBox {
     private List _styleColumns;
     
     private int _pageClearance;
+    
+    private boolean _marginAreaRoot;
+    
+    private ContentLimitContainer _contentLimitContainer;
+    
+    private int _extraSpaceTop;
+    private int _extraSpaceBottom;
+    
+    public boolean isMarginAreaRoot() {
+        return _marginAreaRoot;
+    }
+
+    public void setMarginAreaRoot(boolean marginAreaRoot) {
+        _marginAreaRoot = marginAreaRoot;
+    }
+
+    public BlockBox copyOf() {
+        TableBox result = new TableBox();
+        result.setStyle(getStyle());
+        result.setElement(getElement());
+        
+        return result;
+    }
     
     public void addStyleColumn(TableColumn col) {
         if (_styleColumns == null) {
@@ -110,7 +139,9 @@ public class TableBox extends BlockBox {
     public void setStyle(CalculatedStyle style) {
         super.setStyle(style);
         
-        if (getStyle().isIdent(CSSName.TABLE_LAYOUT, IdentValue.FIXED)) {
+        if (isMarginAreaRoot()) {
+            _tableLayout = new MarginTableLayout(this);
+        } else if (getStyle().isIdent(CSSName.TABLE_LAYOUT, IdentValue.FIXED)) {
             _tableLayout = new FixedTableLayout(this);
         } else {
             _tableLayout = new AutoTableLayout(this);
@@ -193,8 +224,253 @@ public class TableBox extends BlockBox {
         
         setCellWidths(c);
         
-        super.layout(c);
+        layoutTable(c);
     }
+
+    private void layoutTable(LayoutContext c) {
+        boolean running = c.isPrint() && getStyle().isPaginateTable();
+        int prevExtraTop = 0;
+        int prevExtraBottom = 0;
+        
+        if (running) {
+            prevExtraTop = c.getExtraSpaceTop();
+            prevExtraBottom = c.getExtraSpaceBottom();
+            
+            c.setExtraSpaceTop(c.getExtraSpaceTop() + 
+                    (int)getPadding(c).top() + 
+                    (int)getBorder(c).top() +
+                    getStyle().getBorderVSpacing(c));
+            c.setExtraSpaceBottom(c.getExtraSpaceBottom() + 
+                    (int)getPadding(c).bottom() + 
+                    (int)getBorder(c).bottom() +
+                    getStyle().getBorderVSpacing(c));
+        }
+        
+        super.layout(c);
+        
+        if (running) {
+            if (isNeedAnalyzePageBreaks()) {
+                analyzePageBreaks(c);
+                
+                setExtraSpaceTop(0);
+                setExtraSpaceBottom(0);
+            } else {
+                setExtraSpaceTop(c.getExtraSpaceTop() - prevExtraTop);
+                setExtraSpaceBottom(c.getExtraSpaceBottom() - prevExtraBottom);
+            }
+            c.setExtraSpaceTop(prevExtraTop);
+            c.setExtraSpaceBottom(prevExtraBottom);
+        }
+    }
+    
+    protected void layoutChildren(LayoutContext c, int contentStart) {
+        ensureChildren(c);
+        // If we have a running footer, we need its dimensions right away
+        layoutFooterIfNeeded(c);
+        super.layoutChildren(c, contentStart);
+    }
+
+    private void layoutFooterIfNeeded(LayoutContext c) {
+        if (getChildCount() > 0) {
+            TableSectionBox section = (TableSectionBox)getChild(getChildCount()-1);
+            if (section.isFooter()) {
+                boolean running = c.isPrint() && getStyle().isPaginateTable();
+                if (running) {
+                    c.setNoPageBreak(c.getNoPageBreak() + 1);
+                    
+                    section.initContainingLayer(c);
+                    section.layout(c);
+
+                    c.setExtraSpaceBottom(c.getExtraSpaceBottom() + 
+                            section.getHeight() + 
+                            getStyle().getBorderVSpacing(c));
+                    
+                    section.reset(c);
+
+                    c.setNoPageBreak(c.getNoPageBreak() - 1);
+                }
+            }
+        }
+    }
+    
+    private boolean isNeedAnalyzePageBreaks() {
+        Box b = getParent();
+        while (b != null) {
+            if (b.getStyle().isTable() && b.getStyle().isPaginateTable()) {
+                return false;
+            }
+            
+            b = b.getParent();
+        }
+        
+        return true;
+    }
+    
+    private void analyzePageBreaks(LayoutContext c) {
+        analyzePageBreaks(c, null);
+    }
+    
+    public void analyzePageBreaks(LayoutContext c, ContentLimitContainer container) {
+        _contentLimitContainer = new ContentLimitContainer(c, getAbsY());
+        _contentLimitContainer.setParent(container);
+        
+        if (container != null) {
+            container.updateTop(c, getAbsY());
+            container.updateBottom(c, getAbsY() + getHeight());
+        }
+        
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            Box b = (Box)i.next();
+            b.analyzePageBreaks(c, _contentLimitContainer);
+        }
+        
+        if (container != null && _contentLimitContainer.isContainsMultiplePages() &&
+                (getExtraSpaceTop() > 0 || getExtraSpaceBottom() > 0)) {
+            propagateExtraSpace(c, container, _contentLimitContainer, getExtraSpaceTop(), getExtraSpaceBottom());
+        }
+    }
+    
+    public void paintBackground(RenderingContext c) {
+        if (_contentLimitContainer == null) {
+            super.paintBackground(c);
+        } else if (getStyle().isVisible()) {
+            c.getOutputDevice().paintBackground(
+                    c, getStyle(), getContentLimitedBorderEdge(c), getPaintingBorderEdge(c));
+        }
+    }
+    
+    public void paintBorder(RenderingContext c) {
+        if (_contentLimitContainer == null) {
+            super.paintBorder(c);
+        } else if (getStyle().isVisible()) {
+            c.getOutputDevice().paintBorder(c, getStyle(), getContentLimitedBorderEdge(c), getBorderSides());
+        }
+    }
+    
+    private Rectangle getContentLimitedBorderEdge(RenderingContext c) {
+        Rectangle result = getPaintingBorderEdge(c);
+        
+        ContentLimit limit = _contentLimitContainer.getContentLimit(c.getPageNo());
+        
+        if (limit == null) {
+            XRLog.layout(Level.WARNING, "No content limit found");
+            return result;
+        } else {
+            if (limit.getTop() == ContentLimit.UNDEFINED || 
+                    limit.getBottom() == ContentLimit.UNDEFINED) {
+                return result;
+            }
+            
+            RectPropertySet padding = getPadding(c);
+            BorderPropertySet border = getBorder(c);
+            
+            int top;
+            if (c.getPageNo() == _contentLimitContainer.getInitialPageNo()) {
+                top = result.y;
+            } else {
+                top = limit.getTop() - (int)padding.top() - 
+                    (int)border.top() - getStyle().getBorderVSpacing(c);
+                if (getChildCount() > 0) {
+                    TableSectionBox section = (TableSectionBox)getChild(0);
+                    if (section.isHeader()) {
+                        top -= section.getHeight();
+                    }
+                }
+            }
+            
+            int bottom;
+            if (c.getPageNo() == _contentLimitContainer.getLastPageNo()) {
+                bottom = result.y + result.height;
+            } else {
+                bottom = limit.getBottom() + (int)padding.bottom() + 
+                            (int)border.bottom() + getStyle().getBorderVSpacing(c);
+                if (getChildCount() > 0) {
+                    TableSectionBox section = (TableSectionBox)getChild(getChildCount()-1);
+                    if (section.isFooter()) {
+                        bottom += section.getHeight();
+                    }
+                }
+            }
+            
+            result.y = top;
+            result.height = bottom - top;
+            
+            return result;
+        }
+    }    
+    
+    public void updateHeaderFooterPosition(RenderingContext c) {
+        ContentLimit limit = _contentLimitContainer.getContentLimit(c.getPageNo());
+        
+        if (limit != null) {
+            updateHeaderPosition(c, limit);
+            updateFooterPosition(c, limit);
+        }
+    }
+
+    private void updateHeaderPosition(RenderingContext c, ContentLimit limit) {
+        if (limit.getTop() != ContentLimit.UNDEFINED || 
+                c.getPageNo() == _contentLimitContainer.getInitialPageNo()) {
+            if (getChildCount() > 0) {
+                TableSectionBox section = (TableSectionBox)getChild(0);
+                if (section.isHeader()) {
+                    if (! section.isCapturedOriginalAbsY()) {
+                        section.setOriginalAbsY(section.getAbsY());
+                        section.setCapturedOriginalAbsY(true);
+                    }
+                    
+                    int newAbsY;
+                    if (c.getPageNo() == _contentLimitContainer.getInitialPageNo()) {
+                        newAbsY = section.getOriginalAbsY();
+                    } else {
+                        newAbsY = limit.getTop() - 
+                            getStyle().getBorderVSpacing(c) -
+                            section.getHeight();
+                    }
+                    
+                    int diff = newAbsY - section.getAbsY();
+                    
+                    if (diff != 0) {
+                        section.setY(section.getY() + diff);
+                        section.calcCanvasLocation();
+                        section.calcChildLocations();
+                        section.calcPaintingInfo(c, false);
+                    }
+                }
+            }
+        }
+    }
+    
+    private void updateFooterPosition(RenderingContext c, ContentLimit limit) {
+        if (limit.getBottom() != ContentLimit.UNDEFINED || 
+                c.getPageNo() == _contentLimitContainer.getLastPageNo()) {
+            if (getChildCount() > 0) {
+                TableSectionBox section = (TableSectionBox)getChild(getChildCount()-1);
+                if (section.isFooter()) {
+                    if (! section.isCapturedOriginalAbsY()) {
+                        section.setOriginalAbsY(section.getAbsY());
+                        section.setCapturedOriginalAbsY(true);
+                    }
+                    
+                    int newAbsY;
+                    if (c.getPageNo() == _contentLimitContainer.getLastPageNo()) {
+                        newAbsY = section.getOriginalAbsY();
+                    } else {
+                        newAbsY = limit.getBottom();
+                    }
+                    
+                    int diff = newAbsY - section.getAbsY();
+                    
+                    if (diff != 0) {
+                        section.setY(section.getY() + diff);
+                        section.calcCanvasLocation();
+                        section.calcChildLocations();
+                        section.calcPaintingInfo(c, false);
+                    }
+                }
+            }
+        }
+    }    
 
     private void calcPageClearance(LayoutContext c) {
         if (c.isPrint() && getStyle().isCollapseBorders()) {
@@ -263,6 +539,8 @@ public class TableBox extends BlockBox {
     
     public void reset(LayoutContext c) {
         super.reset(c);
+        
+        _contentLimitContainer = null;
         
         _tableLayout.reset();
     }
@@ -487,12 +765,74 @@ public class TableBox extends BlockBox {
 
     protected void setPageClearance(int pageClearance) {
         _pageClearance = pageClearance;
+    }  
+    
+    public boolean hasContentLimitContainer() {
+        return _contentLimitContainer != null;
+    }
+    
+    public int getExtraSpaceTop() {
+        return _extraSpaceTop;
+    }
+
+    public void setExtraSpaceTop(int extraSpaceTop) {
+        _extraSpaceTop = extraSpaceTop;
+    }
+
+    public int getExtraSpaceBottom() {
+        return _extraSpaceBottom;
+    }
+
+    public void setExtraSpaceBottom(int extraSpaceBottom) {
+        _extraSpaceBottom = extraSpaceBottom;
     }    
     
     private interface TableLayout {
         public void calcMinMaxWidth(LayoutContext c);
         public void layout(LayoutContext c);
         public void reset();
+    }
+    
+    /**
+     * A specialization of <code>AutoTableLayout</code> used for laying out the
+     * tables used to approximate the margin box layout algorithm from CSS3
+     * GCPM.
+     */
+    private static class MarginTableLayout extends AutoTableLayout {
+        public MarginTableLayout(TableBox table) {
+            super(table);
+        }
+        
+        protected int getMinColWidth() {
+            return 0;
+        }
+        
+        public void calcMinMaxWidth(LayoutContext c) {
+            super.calcMinMaxWidth(c);
+            
+            Layout[] layoutStruct = getLayoutStruct();
+            
+            if (layoutStruct.length == 3) {
+                Layout center = layoutStruct[1];
+                
+                if (! (center.width().isVariable() && center.maxWidth() == 0)) {
+                    if (layoutStruct[0].minWidth() > layoutStruct[2].minWidth()) {
+                        layoutStruct[2] = layoutStruct[0];
+                    } else if (layoutStruct[2].minWidth() > layoutStruct[0].minWidth()) {
+                        layoutStruct[0] = layoutStruct[2];
+                    } else {
+                        Layout l = new Layout();
+                        l.setMinWidth(Math.max(layoutStruct[0].minWidth(), layoutStruct[2].minWidth()));
+                        l.setEffMinWidth(l.minWidth());
+                        l.setMaxWidth(Math.max(layoutStruct[0].maxWidth(), layoutStruct[2].maxWidth()));
+                        l.setEffMaxWidth(l.maxWidth());
+                        
+                        layoutStruct[0] = l;
+                        layoutStruct[2] = l;
+                    }
+                }
+            }
+        }
     }
     
     private static class FixedTableLayout implements TableLayout {
@@ -727,10 +1067,16 @@ public class TableBox extends BlockBox {
             _spanCells = null;
         }
         
+        protected Layout[] getLayoutStruct() {
+            return _layoutStruct;
+        }
+        
         private void fullRecalc(LayoutContext c) {
             _layoutStruct = new Layout[_table.numEffCols()];
             for (int i = 0; i < _layoutStruct.length; i++) {
                 _layoutStruct[i] = new Layout();
+                _layoutStruct[i].setMinWidth(getMinColWidth());
+                _layoutStruct[i].setMaxWidth(getMinColWidth());
             }
 
             _spanCells = new ArrayList();
@@ -768,6 +1114,10 @@ public class TableBox extends BlockBox {
             }
         }
         
+        protected int getMinColWidth() {
+            return 1;
+        }
+        
         private void recalcColumn(LayoutContext c, int effCol) {
             Layout l = _layoutStruct[effCol];
 
@@ -783,8 +1133,8 @@ public class TableBox extends BlockBox {
                     if (cell.getStyle().getColSpan() == 1) {
                         // A cell originates in this column. Ensure we have
                         // a min/max width of at least 1px for this column now.
-                        l.setMinWidth(Math.max(l.minWidth(), 1));
-                        l.setMaxWidth(Math.max(l.maxWidth(), 1));
+                        l.setMinWidth(Math.max(l.minWidth(), getMinColWidth()));
+                        l.setMaxWidth(Math.max(l.maxWidth(), getMinColWidth()));
 
                         cell.calcMinMaxWidth(c);
                         if (cell.getMinWidth() > l.minWidth()) {
@@ -823,8 +1173,8 @@ public class TableBox extends BlockBox {
                         if (effCol == 0 || section.cellAt(i, effCol - 1) != cell) {
                             // This spanning cell originates in this column.
                             // Ensure we have a min/max width of at least 1px for this column now.
-                            l.setMinWidth(Math.max(l.minWidth(), 1));
-                            l.setMaxWidth(Math.max(l.maxWidth(), 1));
+                            l.setMinWidth(Math.max(l.minWidth(), getMinColWidth()));
+                            l.setMaxWidth(Math.max(l.maxWidth(), getMinColWidth()));
 
                             _spanCells.add(cell);
                         }
@@ -1342,7 +1692,7 @@ public class TableBox extends BlockBox {
             _table.setColumnPos(columnPos);
         }
         
-        private static class Layout {
+        protected static class Layout {
             private Length _width = new Length();
             private Length _effWidth = new Length();
             private int _minWidth = 1;

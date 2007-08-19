@@ -68,6 +68,10 @@ public class StandardAttributeResolver implements AttributeResolver {
     public String getAttributeValue(Object e, String attrName) {
         return nsh.getAttributeValue((Element) e, attrName);
     }
+    
+    public String getAttributeValue(Object e, String namespaceURI, String attrName) {
+        return nsh.getAttributeValue((Element)e, namespaceURI, attrName);
+    }
 
     /**
      * Gets the class attribute of the StandardAttributeResolver object

@@ -52,9 +52,9 @@ public class AnonymousBlockBox extends BlockBox {
         return getContainingBlock().getContentWidth();
     }
     
-    public Box find(CssContext cssCtx, int absX, int absY) {
-        Box result = super.find(cssCtx, absX, absY);
-        if (result == this) {
+    public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
+        Box result = super.find(cssCtx, absX, absY, findAnonymous);
+        if (! findAnonymous && result == this) {
             return getParent();
         } else {
             return result;
@@ -74,7 +74,7 @@ public class AnonymousBlockBox extends BlockBox {
         for (Iterator i = getInlineContent().iterator(); i.hasNext(); ) {
             Styleable styleable = (Styleable)i.next();
             CalculatedStyle style = styleable.getStyle();
-            if (! (style.isFloated() || style.isAbsolute() || style.isFixed())) {
+            if (! (style.isFloated() || style.isAbsolute() || style.isFixed() || style.isRunning())) {
                 return false;
             }
         }
@@ -99,13 +99,29 @@ public class AnonymousBlockBox extends BlockBox {
     
     public void styleText(LayoutContext c) {
         styleText(c, getParent().getStyle());
-    }    
+    } 
+    
+    public BlockBox copyOf() {
+        throw new IllegalArgumentException("cannot be copied");
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2007/08/19 22:22:50  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.24.2.3  2007/08/07 17:06:32  peterbrant
+ * Implement named pages / Implement page-break-before/after: left/right / Experiment with efficient selection
+ *
+ * Revision 1.24.2.2  2007/07/11 22:48:30  peterbrant
+ * Further progress on running headers and footers
+ *
+ * Revision 1.24.2.1  2007/07/09 22:18:03  peterbrant
+ * Begin work on running headers and footers and named pages
+ *
  * Revision 1.24  2007/06/07 16:56:29  peterbrant
  * When vertically aligning table cell content, call layout again on cells as necessary to make sure pagination properties are respected at the cell's final position (and to make sure line boxes can't straddle page breaks).
  *

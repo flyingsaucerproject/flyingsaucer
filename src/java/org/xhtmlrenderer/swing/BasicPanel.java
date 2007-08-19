@@ -113,7 +113,7 @@ public abstract class BasicPanel extends RootPanel {
         // if this is the first time painting this document, then calc layout
         Layer root = getRootLayer();
         if (root == null || isPendingResize()) {
-            doLayout(getGraphics());
+            doDocumentLayout(getGraphics());
             root = getRootLayer();
         }
         setPendingResize(false);
@@ -142,7 +142,7 @@ public abstract class BasicPanel extends RootPanel {
     
             long start = System.currentTimeMillis();
             if (!c.isPrint()) {
-                root.paint(c, 0, 0);
+                root.paint(c);
             } else {
                 paintPagedView(c, root);
             }
@@ -193,7 +193,7 @@ public abstract class BasicPanel extends RootPanel {
 
             g.setClip(working);
             
-            Rectangle overall = page.getOverallPaintingBounds(c, PAGE_PAINTING_CLEARANCE);
+            Rectangle overall = page.getScreenPaintingBounds(c, PAGE_PAINTING_CLEARANCE);
             overall.x -= 1;
             overall.y -= 1;
             overall.width += 1;
@@ -203,6 +203,10 @@ public abstract class BasicPanel extends RootPanel {
             bounds.width += 1;
             bounds.height += 1;
             if (working.intersects(bounds)) {
+                page.paintBackground(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
+                page.paintMarginAreas(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
+                page.paintBorder(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
+                
                 Color old = g.getColor();
                 
                 g.setColor(Color.BLACK);
@@ -219,14 +223,10 @@ public abstract class BasicPanel extends RootPanel {
                     - page.getTop();
                 
                 g.translate(left, top);
-                root.paint(c, 0, 0);
+                root.paint(c);
                 g.translate(-left, -top);
                 
                 g.setClip(working);
-                page.paintAlternateFlows(c, root, 
-                        Layer.PAGED_MODE_SCREEN, PAGE_PAINTING_CLEARANCE);
-                
-                page.paintBorder(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
             } 
         }
         
@@ -248,11 +248,14 @@ public abstract class BasicPanel extends RootPanel {
         RenderingContext c = newRenderingContext(g);
 
         PageBox page = (PageBox)root.getPages().get(pageNo);
-        c.setPage(pageNo, page);
+        
+        page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
+        page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
+        page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
         
         Shape working = g.getClip();
         
-        Rectangle content = page.getPrintingClippingBounds(c);
+        Rectangle content = page.getPrintClippingBounds(c);
         g.clip(content);
         
         int top = -page.getPaintingTop() + 
@@ -261,14 +264,9 @@ public abstract class BasicPanel extends RootPanel {
         int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
         
         g.translate(left, top);
-        root.paint(c, 0, 0);
+        root.paint(c);
         g.translate(-left, -top);
         
-        g.setClip(working);
-        page.paintAlternateFlows(c, root, Layer.PAGED_MODE_PRINT, 0);
-        
-        page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
-
         g.setClip(working);
     }
     
@@ -556,8 +554,23 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
- * Revision 1.113  2007/07/26 16:53:01  peterbrant
- * Provide page box to RenderingContext when printing from Swing
+ * Revision 1.114  2007/08/19 22:22:50  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.112.2.5  2007/08/13 22:32:10  peterbrant
+ * Rename doLayout() to doDocumentLayout() to avoid confusion with AWT's doLayout()
+ *
+ * Revision 1.112.2.4  2007/08/07 17:57:03  peterbrant
+ * Implement page level backgrounds
+ *
+ * Revision 1.112.2.3  2007/08/07 17:06:31  peterbrant
+ * Implement named pages / Implement page-break-before/after: left/right / Experiment with efficient selection
+ *
+ * Revision 1.112.2.2  2007/07/11 22:48:31  peterbrant
+ * Further progress on running headers and footers
+ *
+ * Revision 1.112.2.1  2007/07/09 22:18:04  peterbrant
+ * Begin work on running headers and footers and named pages
  *
  * Revision 1.112  2007/06/11 22:30:15  peterbrant
  * Minor cleanup to LayoutContext / Start adding infrastructure to support better table pagination

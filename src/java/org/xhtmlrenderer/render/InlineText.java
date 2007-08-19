@@ -20,6 +20,9 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.Rectangle;
+
+import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.layout.FunctionData;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
@@ -45,12 +48,21 @@ public class InlineText {
     
     private boolean _containedLF = false;
     
+    private short _selectionStart;
+    private short _selectionEnd;
+    
+    private float[] _glyphPositions;
+    
+    private boolean _trimmedLeadingSpace;
+    private boolean _trimmedTrailingSpace;
+    
     public void trimTrailingSpace(LayoutContext c) {
         if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
             setWidth(c.getTextRenderer().getWidth(c.getFontContext(), 
                     getParent().getStyle().getFSFont(c),
                     getSubstring()));
+            setTrimmedTrailingSpace(true);
         } 
     }
     
@@ -115,6 +127,10 @@ public class InlineText {
     public void paint(RenderingContext c) {
         c.getOutputDevice().drawText(c, this);
     }
+    
+    public void paintSelection(RenderingContext c) {
+        c.getOutputDevice().drawSelection(c, this);
+    }
 
     public InlineLayoutBox getParent() {
         return _parent;
@@ -166,4 +182,114 @@ public class InlineText {
         
         return result.toString();
     }
+    
+    public boolean updateSelection(RenderingContext c, Rectangle selection) {
+        ensureGlyphPositions(c);
+        float[] positions = _glyphPositions;
+        int y = getParent().getAbsY();
+        int offset = getParent().getAbsX() + getX();
+        
+        int prevSelectionStart = _selectionStart;
+        int prevSelectionEnd = _selectionEnd;
+        
+        boolean found = false;
+        _selectionStart = 0;
+        _selectionEnd = 0;
+        for (int i = 0; i < positions.length - 2; i += 2) {
+            Rectangle target = new Rectangle(
+                    (int)(offset + (positions[i] + positions[i+2]) / 2),
+                    y,
+                    1,
+                    getParent().getHeight());
+            if (selection.intersects(target)) {
+                if (! found) {
+                    found = true;
+                    _selectionStart = (short)(i / 2);
+                    _selectionEnd = (short)(i / 2 + 1);
+                } else {
+                    _selectionEnd++;
+                }
+            }
+        }
+        
+        return prevSelectionStart != _selectionStart || prevSelectionEnd != _selectionEnd;
+    }
+
+    private void ensureGlyphPositions(RenderingContext c) {
+        if (_glyphPositions == null) {
+            FSGlyphVector glyphVector = c.getTextRenderer().getGlyphVector(
+                    c.getOutputDevice(),
+                    getParent().getStyle().getFSFont(c),
+                    getSubstring());
+            _glyphPositions = c.getTextRenderer().getGlyphPositions(
+                    c.getOutputDevice(), 
+                    getParent().getStyle().getFSFont(c),
+                    glyphVector);
+        } 
+    }
+    
+    public boolean clearSelection() {
+        boolean result = _selectionStart != 0 || _selectionEnd != 0;
+        
+        _selectionStart = 0;
+        _selectionEnd = 0;
+        
+        return result;
+    }
+    
+    public boolean isSelected() {
+        return _selectionStart != _selectionEnd;
+    }
+
+    public short getSelectionEnd() {
+        return _selectionEnd;
+    }
+
+    public short getSelectionStart() {
+        return _selectionStart;
+    }
+    
+    public String getSelection() {
+        return getSubstring().substring(_selectionStart, _selectionEnd);
+    }
+    
+    public void selectAll() {
+        _selectionStart = 0;
+        _selectionEnd = (short)getSubstring().length();
+    }
+    
+    public String getTextExportText() {
+        char[] ch = getSubstring().toCharArray();
+        StringBuffer result = new StringBuffer();
+        if (isTrimmedLeadingSpace()) {
+            result.append(' ');
+        }
+        for (int i = 0; i < ch.length; i++) {
+            char c = ch[i];
+            if (c != '\n') {
+                result.append(c);
+            }
+        }
+        if (isTrimmedTrailingSpace()) {
+            result.append(' ');
+        }
+        return result.toString();
+    }
+
+    public boolean isTrimmedLeadingSpace() {
+        return _trimmedLeadingSpace;
+    }
+
+    public void setTrimmedLeadingSpace(boolean trimmedLeadingSpace) {
+        _trimmedLeadingSpace = trimmedLeadingSpace;
+    }
+
+    private void setTrimmedTrailingSpace(boolean trimmedTrailingSpace) {
+        _trimmedTrailingSpace = trimmedTrailingSpace;
+    }
+
+    private boolean isTrimmedTrailingSpace() {
+        return _trimmedTrailingSpace;
+    }
 }
+

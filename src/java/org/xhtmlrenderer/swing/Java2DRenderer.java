@@ -263,7 +263,7 @@ public class Java2DRenderer {
 			rc.setOutputDevice(outputDevice);
 			sharedContext.getTextRenderer().setup(rc.getFontContext());
 
-			root.getLayer().paint(rc, 0, 0);
+			root.getLayer().paint(rc);
 
 			newG.dispose();
 			rendered = true;

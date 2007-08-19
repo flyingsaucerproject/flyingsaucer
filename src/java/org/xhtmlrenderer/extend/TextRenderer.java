@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.extend;
 
+import java.awt.Rectangle;
+
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 
@@ -27,6 +29,12 @@ public interface TextRenderer {
     public void setup(FontContext context);
 
     public void drawString(OutputDevice outputDevice, String string, float x, float y);
+    public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y);
+    
+    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string);
+    
+    public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector);
+    public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y);
 
     public FSFontMetrics getFSFontMetrics(
             FontContext context, FSFont font, String string );

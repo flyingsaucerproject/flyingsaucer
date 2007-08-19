@@ -56,6 +56,7 @@ import org.xhtmlrenderer.render.BorderPainter;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineLayoutBox;
+import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -817,5 +818,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     public void setStartPageNo(int startPageNo) {
         _startPageNo = startPageNo;
+    }
+
+    public void drawSelection(RenderingContext c, InlineText inlineText) {
+        throw new UnsupportedOperationException();
+    }
+    
+    public boolean isSupportsSelection() {
+        return false;
     }
 }

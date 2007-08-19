@@ -96,6 +96,6 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
     private boolean isFunctionAllowed(FSFunction function) {
         String name = function.getName();
         return name.equals("attr") || name.equals("counter") || name.equals("counters") ||
-            name.startsWith("-fs");
+            name.equals("element") || name.startsWith("-fs");
     }
 }

@@ -34,13 +34,13 @@ import java.util.logging.Level;
  * @author Torbjörn Gannholm
  */
 public class Selector {
-
     private Ruleset _parent;
     private Selector chainedSelector = null;
     private Selector siblingSelector = null;
 
     private int _axis;
     private String _name;
+    private String _namespaceURI;
     private int _pc = 0;
     private String _pe;
 
@@ -86,7 +86,7 @@ public class Selector {
                 return false;
             }
         }
-        if (_name == null || _name.equals(treeRes.getElementName(e))) {
+        if (_name == null || treeRes.matchesElement(e, _namespaceURI, _name)) {
             if (conditions != null) {
                 // all conditions need to be true
                 for (java.util.Iterator i = conditions.iterator(); i.hasNext();) {
@@ -188,33 +188,57 @@ public class Selector {
     /**
      * the CSS condition [attribute]
      */
-    public void addAttributeExistsCondition(String name) {
+    public void addAttributeExistsCondition(String namespaceURI, String name) {
         _specificityC++;
-        addCondition(Condition.createAttributeExistsCondition(name));
+        addCondition(Condition.createAttributeExistsCondition(namespaceURI, name));
     }
 
     /**
      * the CSS condition [attribute=value]
      */
-    public void addAttributeEqualsCondition(String name, String value) {
+    public void addAttributeEqualsCondition(String namespaceURI, String name, String value) {
         _specificityC++;
-        addCondition(Condition.createAttributeEqualsCondition(name, value));
+        addCondition(Condition.createAttributeEqualsCondition(namespaceURI, name, value));
+    }
+    
+    /**
+     * the CSS condition [attribute^=value]
+     */
+    public void addAttributePrefixCondition(String namespaceURI, String name, String value) {
+        _specificityC++;
+        addCondition(Condition.createAttributePrefixCondition(namespaceURI, name, value));
+    }
+    
+    /**
+     * the CSS condition [attribute$=value]
+     */
+    public void addAttributeSuffixCondition(String namespaceURI, String name, String value) {
+        _specificityC++;
+        addCondition(Condition.createAttributeSuffixCondition(namespaceURI, name, value));
+    }
+    
+    /**
+     * the CSS condition [attribute*=value]
+     */
+    public void addAttributeSubstringCondition(String namespaceURI, String name, String value) {
+        _specificityC++;
+        addCondition(Condition.createAttributeSubstringCondition(namespaceURI, name, value));
     }
 
     /**
      * the CSS condition [attribute~=value]
      */
-    public void addAttributeMatchesListCondition(String name, String value) {
+    public void addAttributeMatchesListCondition(String namespaceURI, String name, String value) {
         _specificityC++;
-        addCondition(Condition.createAttributeMatchesListCondition(name, value));
+        addCondition(Condition.createAttributeMatchesListCondition(namespaceURI, name, value));
     }
 
     /**
      * the CSS condition [attribute|=value]
      */
-    public void addAttributeMatchesFirstPartCondition(String name, String value) {
+    public void addAttributeMatchesFirstPartCondition(String namespaceURI, String name, String value) {
         _specificityC++;
-        addCondition(Condition.createAttributeMatchesFirstPartCondition(name, value));
+        addCondition(Condition.createAttributeMatchesFirstPartCondition(namespaceURI, name, value));
     }
 
     /**
@@ -428,6 +452,10 @@ public class Selector {
     
     public void setSiblingSelector(Selector selector) {
         siblingSelector = selector;
+    }
+    
+    public void setNamespaceURI(String namespaceURI) {
+        _namespaceURI = namespaceURI;
     }
 }
 

@@ -82,7 +82,7 @@ public class WhitespaceStripper {
     
     private static boolean canCollapseThrough(Styleable styleable) {
         CalculatedStyle style = styleable.getStyle();
-        return style.isFloated() || style.isAbsolute() || style.isFixed();
+        return style.isFloated() || style.isAbsolute() || style.isFixed() || style.isRunning();
     }
 
     private static void stripTextContent(List stripped) {

@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout;
 
 import java.util.List;
 
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
@@ -33,10 +34,8 @@ import org.xhtmlrenderer.render.MarkerData;
  */
 public class LayoutUtil {
 
-    public static boolean layoutAbsolute(
+    public static void layoutAbsolute(
             LayoutContext c, LineBox currentLine, BlockBox box) {
-        boolean result = true;
-        
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
         
@@ -45,11 +44,7 @@ public class LayoutUtil {
         
         // If printing, don't layout until we know where its going
         if (! c.isPrint()) {
-            if (! box.getStyle().isAlternateFlow()) {
-                box.layout(c);
-            } else {
-                result = false;
-            }
+            box.layout(c);
         } else {
             c.pushLayer(box);
             c.getLayer().setRequiresLayout(true);
@@ -57,8 +52,6 @@ public class LayoutUtil {
         }
         
         c.setCurrentMarkerData(markerData);
-        
-        return result;
     }
     
     public static FloatLayoutResult layoutFloated(
@@ -71,6 +64,7 @@ public class LayoutUtil {
     
         block.setContainingBlock(currentLine.getParent());
         block.setContainingLayer(currentLine.getContainingLayer());
+        block.setStaticEquivalent(currentLine);
         
         if (pendingFloats != null) {
             block.setY(currentLine.getY() + block.getFloatedBoxData().getMarginFromSibling());
@@ -113,7 +107,7 @@ public class LayoutUtil {
         if (block.getStyle().isForcePageBreakBefore() || 
                 (block.getStyle().isAvoidPageBreakInside() && 
                         block.crossesPageBreak(c))) {
-            clearDelta = block.moveToNextPage(c);
+            clearDelta = block.forcePageBreakBefore(c, block.getStyle().getIdent(CSSName.PAGE_BREAK_BEFORE), false);
             clearedPage = true;
             block.calcCanvasLocation();
             block.reset(c);

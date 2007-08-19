@@ -60,4 +60,8 @@ public class MarginBox extends BlockBox {
     protected int getPaddingWidth(CssContext cssCtx) {
         return _bounds.width;
     }
+    
+    public BlockBox copyOf() {
+        throw new IllegalArgumentException("cannot be copied");
+    }    
 }

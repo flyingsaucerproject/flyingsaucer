@@ -89,6 +89,14 @@ class MouseTracker extends MouseInputAdapter {
         handleMouseUp(_panel.find(e));
     }
     
+    public void mousePressed(MouseEvent e) {
+        fireMousePressed(e);
+    }
+    
+    public void mouseDragged(MouseEvent e) {
+        fireMouseDragged(e);
+    }
+    
     public void reset() {
         _last = null;
         Iterator iterator = _handlers.keySet().iterator();
@@ -137,6 +145,20 @@ class MouseTracker extends MouseInputAdapter {
         Iterator iterator = _handlers.keySet().iterator();
         while (iterator.hasNext()) {
             ((FSMouseListener) iterator.next()).onMouseUp(_panel, box);
+        }
+    }
+    
+    private void fireMousePressed(MouseEvent e) {
+        Iterator iterator = _handlers.keySet().iterator();
+        while (iterator.hasNext()) {
+            ((FSMouseListener) iterator.next()).onMousePressed(_panel, e);
+        }
+    }
+    
+    private void fireMouseDragged(MouseEvent e) {
+        Iterator iterator = _handlers.keySet().iterator();
+        while (iterator.hasNext()) {
+            ((FSMouseListener) iterator.next()).onMouseDragged(_panel, e);
         }
     }
 }

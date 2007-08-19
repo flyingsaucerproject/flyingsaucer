@@ -37,14 +37,16 @@ package org.xhtmlrenderer.css.extend;
 public interface AttributeResolver {
 
     /**
-     * may return null. Required to return null if attribute does not exist and
+     * May return null. Required to return null if attribute does not exist and
      * not null if attribute exists.
-     *
-     * @param e        PARAM
-     * @param attrName PARAM
-     * @return The attributeValue value
      */
     public String getAttributeValue(Object e, String attrName);
+    
+    /**
+     * May return null. Required to return null if attribute does not exist and
+     * not null if attribute exists.
+     */
+    public String getAttributeValue(Object e, String namespaceURI, String attrName);
 
     /**
      * may return null

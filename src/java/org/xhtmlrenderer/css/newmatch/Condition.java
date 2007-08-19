@@ -41,19 +41,36 @@ abstract class Condition {
      * @param name PARAM
      * @return Returns
      */
-    static Condition createAttributeExistsCondition(String name) {
-        return new AttributeExistsCondition(name);
+    static Condition createAttributeExistsCondition(String namespaceURI, String name) {
+        return new AttributeExistsCondition(namespaceURI, name);
     }
 
     /**
-     * the CSS condition [attribute=value]
-     *
-     * @param name  PARAM
-     * @param value PARAM
-     * @return Returns
+     * the CSS condition [attribute^=value]
      */
-    static Condition createAttributeEqualsCondition(String name, String value) {
-        return new AttributeEqualsCondition(name, value);
+    static Condition createAttributePrefixCondition(String namespaceURI, String name, String value) {
+        return new AttributePrefixCondition(namespaceURI, name, value);
+    }
+    
+    /**
+     * the CSS condition [attribute$=value]
+     */
+    static Condition createAttributeSuffixCondition(String namespaceURI, String name, String value) {
+        return new AttributeSuffixCondition(namespaceURI, name, value);
+    }
+    
+    /**
+     * the CSS condition [attribute*=value]
+     */
+    static Condition createAttributeSubstringCondition(String namespaceURI, String name, String value) {
+        return new AttributeSubstringCondition(namespaceURI, name, value);
+    }
+    
+    /**
+     * the CSS condition [attribute=value]
+     */
+    static Condition createAttributeEqualsCondition(String namespaceURI, String name, String value) {
+        return new AttributeEqualsCondition(namespaceURI, name, value);
     }
 
     /**
@@ -63,8 +80,8 @@ abstract class Condition {
      * @param value PARAM
      * @return Returns
      */
-    static Condition createAttributeMatchesListCondition(String name, String value) {
-        return new AttributeMatchesListCondition(name, value);
+    static Condition createAttributeMatchesListCondition(String namespaceURI, String name, String value) {
+        return new AttributeMatchesListCondition(namespaceURI, name, value);
     }
 
     /**
@@ -74,8 +91,8 @@ abstract class Condition {
      * @param value PARAM
      * @return Returns
      */
-    static Condition createAttributeMatchesFirstPartCondition(String name, String value) {
-        return new AttributeMatchesFirstPartCondition(name, value);
+    static Condition createAttributeMatchesFirstPartCondition(String namespaceURI, String name, String value) {
+        return new AttributeMatchesFirstPartCondition(namespaceURI, name, value);
     }
 
     /**
@@ -134,33 +151,16 @@ abstract class Condition {
     static Condition createUnsupportedCondition() {
         return new UnsupportedCondition();
     }
-
-    private static class AttributeExistsCondition extends Condition {
-
-        private String _name;
-
-        AttributeExistsCondition(String name) {
-            _name = name;
-        }
-
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
-            if (attRes == null) {
-                return false;
-            }
-            if (! attRes.getAttributeValue(e, _name).equals("")) {
-                return true;
-            }
-            return false;
-        }
-
-    }
-
-    private static class AttributeEqualsCondition extends Condition {
-
+    
+    private static abstract class AttributeCompareCondition extends Condition {
+        private String _namespaceURI;
         private String _name;
         private String _value;
+        
+        protected abstract boolean compare(String attrValue, String conditionValue);
 
-        AttributeEqualsCondition(String name, String value) {
+        AttributeCompareCondition(String namespaceURI, String name, String value) {
+            _namespaceURI = namespaceURI;
             _name = name;
             _value = value;
         }
@@ -169,39 +169,75 @@ abstract class Condition {
             if (attRes == null) {
                 return false;
             }
-            String val = attRes.getAttributeValue(e, _name);
+            String val = attRes.getAttributeValue(e, _namespaceURI, _name);
             if (val == null) {
                 return false;
             }
-            if (val.equals(_value)) {
-                return true;
-            }
-            return false;
+            
+            return compare(val, _value);
         }
     }
 
-    private static class AttributeMatchesListCondition extends Condition {
-
-        private String _name;
-        private String _value;
-
-        AttributeMatchesListCondition(String name, String value) {
-            _name = name;
-            _value = value;
+    private static class AttributeExistsCondition extends AttributeCompareCondition {
+        AttributeExistsCondition(String namespaceURI, String name) {
+            super(namespaceURI, name, null);
+        }
+        
+        protected boolean compare(String attrValue, String conditionValue) {
+            return ! attrValue.equals("");
+        }
+    }
+    
+    private static class AttributeEqualsCondition extends AttributeCompareCondition {
+        AttributeEqualsCondition(String namespaceURI, String name, String value) {
+            super(namespaceURI, name, value);
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
-            if (attRes == null) {
-                return false;
-            }
-            String val = attRes.getAttributeValue(e, _name);
-            if (val == null) {
-                return false;
-            }
-            String[] ca = split(val, ' ');
+        protected boolean compare(String attrValue, String conditionValue) {
+            return attrValue.equals(conditionValue);
+        }
+    }
+    
+    private static class AttributePrefixCondition extends AttributeCompareCondition {
+        AttributePrefixCondition(String namespaceURI, String name, String value) {
+            super(namespaceURI, name, value);
+        }
+
+        protected boolean compare(String attrValue, String conditionValue) {
+            return attrValue.startsWith(conditionValue);
+        }
+    }
+    
+    private static class AttributeSuffixCondition extends AttributeCompareCondition {
+        AttributeSuffixCondition(String namespaceURI, String name, String value) {
+            super(namespaceURI, name, value);
+        }
+
+        protected boolean compare(String attrValue, String conditionValue) {
+            return attrValue.endsWith(conditionValue);
+        }
+    }
+    
+    private static class AttributeSubstringCondition extends AttributeCompareCondition {
+        AttributeSubstringCondition(String namespaceURI, String name, String value) {
+            super(namespaceURI, name, value);
+        }
+
+        protected boolean compare(String attrValue, String conditionValue) {
+            return attrValue.indexOf(conditionValue) > -1;
+        }
+    }
+    
+    private static class AttributeMatchesListCondition extends AttributeCompareCondition {
+        AttributeMatchesListCondition(String namespaceURI, String name, String value) {
+            super(namespaceURI, name, value);
+        }
+        
+        protected boolean compare(String attrValue, String conditionValue) {
+            String[] ca = split(attrValue, ' ');
             boolean matched = false;
             for (int j = 0; j < ca.length; j++) {
-                if (_value.equals(ca[j])) {
+                if (conditionValue.equals(ca[j])) {
                     matched = true;
                 }
             }
@@ -209,26 +245,14 @@ abstract class Condition {
         }
     }
 
-    private static class AttributeMatchesFirstPartCondition extends Condition {
-
-        private String _name;
-        private String _value;
-
-        AttributeMatchesFirstPartCondition(String name, String value) {
-            _name = name;
-            _value = value;
+    private static class AttributeMatchesFirstPartCondition extends AttributeCompareCondition {
+        AttributeMatchesFirstPartCondition(String namespaceURI, String name, String value) {
+            super(namespaceURI, name, value);
         }
-
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
-            if (attRes == null) {
-                return false;
-            }
-            String val = attRes.getAttributeValue(e, _name);
-            if (val == null) {
-                return false;
-            }
-            String[] ca = split(val, '-');
-            if (_value.equals(ca[0])) {
+        
+        protected boolean compare(String attrValue, String conditionValue) {
+            String[] ca = split(attrValue, '-');
+            if (conditionValue.equals(ca[0])) {
                 return true;
             }
             return false;

@@ -23,8 +23,11 @@ package org.xhtmlrenderer.render;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -66,7 +69,7 @@ public class LineBox extends Box implements InlinePaintable {
     private int _contentStart;
     
     private int _baseline;
-
+    
     public LineBox() {
     }
     
@@ -400,7 +403,7 @@ public class LineBox extends Box implements InlinePaintable {
         }
     }    
     
-    public Box find(CssContext cssCtx, int absX, int absY) {
+    public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         PaintingInfo pI = getPaintingInfo();
         if (pI !=null && ! pI.getAggregateBounds().contains(absX, absY)) {
             return null;
@@ -409,7 +412,7 @@ public class LineBox extends Box implements InlinePaintable {
         Box result = null;
         for (int i = 0; i < getChildCount(); i++) {
             Box child = getChild(i);
-            result = child.find(cssCtx, absX, absY);
+            result = child.find(cssCtx, absX, absY, findAnonymous);
             if (result != null) {
                 return result;
             }
@@ -473,12 +476,108 @@ public class LineBox extends Box implements InlinePaintable {
         
         return false;
     }
+    
+    public void clearSelection(List modified) {
+        for (Iterator i = getNonFlowContent().iterator(); i.hasNext(); ) {
+            Box b = (Box)i.next();
+            b.clearSelection(modified);
+        }
+        
+        super.clearSelection(modified);
+    }
+    
+    public void selectAll() {
+        for (Iterator i = getNonFlowContent().iterator(); i.hasNext(); ) {
+            BlockBox box = (BlockBox)i.next();
+            box.selectAll();
+        }
+        
+        super.selectAll();
+    }
+    
+    public void collectText(RenderingContext c, StringBuffer buffer) throws IOException {
+        for (Iterator i = getNonFlowContent().iterator(); i.hasNext(); ) {
+            Box b = (Box)i.next();
+            b.collectText(c, buffer);
+        }
+        if (isContainsDynamicFunction()) {
+            lookForDynamicFunctions(c);
+        }
+        super.collectText(c, buffer);
+    }
+    
+    public void exportText(RenderingContext c, Writer writer) throws IOException {
+        int baselinePos = getAbsY() + getBaseline();
+        if (baselinePos >= c.getPage().getBottom() && isInDocumentFlow()) {
+            exportPageBoxText(c, writer, baselinePos);
+        }
+        
+        for (Iterator i = getNonFlowContent().iterator(); i.hasNext(); ) {
+            Box b = (Box)i.next();
+            b.exportText(c, writer);
+        }
+        
+        if (isContainsContent()) {
+            StringBuffer result = new StringBuffer();
+            collectText(c, result);
+            writer.write(result.toString().trim());
+            writer.write(LINE_SEPARATOR);
+        }
+    }
+    
+    public void analyzePageBreaks(LayoutContext c, ContentLimitContainer container) {
+        container.updateTop(c, getAbsY());
+        container.updateBottom(c, getAbsY() + getHeight());
+    }
+    
+    public void checkPagePosition(LayoutContext c) {
+        if (! c.isPageBreaksAllowed()) {
+            return;
+        }
+        
+        PageBox pageBox = c.getRootLayer().getFirstPage(c, this);
+        if (pageBox != null) {
+            boolean needsPageBreak = 
+                getAbsY() + getHeight() >= pageBox.getBottom() - c.getExtraSpaceBottom();
+                
+           if (needsPageBreak) {
+               forcePageBreakBefore(c, IdentValue.ALWAYS, false);
+               calcCanvasLocation();
+           } else if (pageBox.getTop() + c.getExtraSpaceTop() > getAbsY()) {
+               int diff = pageBox.getTop() + c.getExtraSpaceTop() - getAbsY();
+               
+               setY(getY() + diff);
+               calcCanvasLocation();
+           }
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.66  2007/08/19 22:22:49  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.65.2.6  2007/08/16 22:38:47  peterbrant
+ * Further progress on table pagination
+ *
+ * Revision 1.65.2.5  2007/08/15 21:29:30  peterbrant
+ * Initial draft of support for running headers and footers on tables
+ *
+ * Revision 1.65.2.4  2007/08/14 16:10:30  peterbrant
+ * Remove obsolete code
+ *
+ * Revision 1.65.2.3  2007/08/13 22:41:13  peterbrant
+ * First pass at exporting the render tree as text
+ *
+ * Revision 1.65.2.2  2007/08/07 17:06:32  peterbrant
+ * Implement named pages / Implement page-break-before/after: left/right / Experiment with efficient selection
+ *
+ * Revision 1.65.2.1  2007/07/30 00:43:15  peterbrant
+ * Start implementing text selection and copying
+ *
  * Revision 1.65  2007/05/16 15:44:37  peterbrant
  * inline-block/inline-table elements that take up no space should not be considered visible content
  *

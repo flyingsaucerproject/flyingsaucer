@@ -35,8 +35,6 @@ public class Ruleset {
     private int _origin;
     private java.util.List _props;
 
-    private String _selectorText;
-    
     private List _fsSelectors = new ArrayList();
 
     public Ruleset(int orig) {
@@ -55,14 +53,6 @@ public class Ruleset {
         return Collections.unmodifiableList(_props);
     }
 
-    public String getSelectorText() {
-        return _selectorText;
-    }
-    
-    public void setSelectorText(String selectorText) {
-        _selectorText = selectorText;
-    }
-    
     public void addProperty(PropertyDeclaration decl) {
         _props.add(decl);
     }
@@ -89,6 +79,12 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2007/08/19 22:22:54  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.16.2.1  2007/07/09 22:18:02  peterbrant
+ * Begin work on running headers and footers and named pages
+ *
  * Revision 1.16  2007/02/20 01:17:11  peterbrant
  * Start CSS parser cleanup
  *

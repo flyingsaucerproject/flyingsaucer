@@ -19,9 +19,15 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.font.GlyphVector;
 import java.util.Map;
 
+import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
@@ -79,6 +85,21 @@ public class Java2DTextRenderer implements TextRenderer {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
         }
         graphics.drawString( string, (int)x, (int)y );
+        if ( graphics.getFont().getSize() > threshold && level > NONE ) {
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
+        }
+    }
+    
+    public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector fsGlyphVector, float x, float y ) {
+        Object prevHint = null;
+        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        
+        if ( graphics.getFont().getSize() > threshold && level > NONE ) {
+            prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
+        }
+        GlyphVector vector = ((AWTFSGlyphVector)fsGlyphVector).getGlyphVector();
+        graphics.drawGlyphVector(vector, (int)x, (int)y );
         if ( graphics.getFont().getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
         }
@@ -143,6 +164,91 @@ public class Java2DTextRenderer implements TextRenderer {
      */
     public void setRenderingHints(Object renderingHints) {
         this.antiAliasRenderingHint = renderingHints;
+    }
+
+    public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, String text) {
+        Object prevHint = null;
+        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Font awtFont = ((AWTFSFont)font).getAWTFont();
+        
+        if (awtFont.getSize() > threshold && level > NONE ) {
+            prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
+        }
+        
+        GlyphVector vector = awtFont.createGlyphVector(
+                graphics.getFontRenderContext(),
+                text);
+        float[] result = vector.getGlyphPositions(0, text.length() + 1, null);
+        
+        if (awtFont.getSize() > threshold && level > NONE ) {
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
+        }
+        
+        return result;
+    }
+
+    public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
+        Object prevHint = null;
+        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Font awtFont = ((AWTFSFont)font).getAWTFont();
+        
+        if (awtFont.getSize() > threshold && level > NONE ) {
+            prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
+        }
+        
+        GlyphVector vector = ((AWTFSGlyphVector)fsGlyphVector).getGlyphVector();
+        
+        Rectangle result = vector.getGlyphPixelBounds(index, graphics.getFontRenderContext(), x, y);
+        
+        if (awtFont.getSize() > threshold && level > NONE ) {
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
+        }
+        
+        return result;
+    }
+
+    public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector) {
+        Object prevHint = null;
+        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Font awtFont = ((AWTFSFont)font).getAWTFont();
+        
+        if (awtFont.getSize() > threshold && level > NONE ) {
+            prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
+        }
+        
+        GlyphVector vector = ((AWTFSGlyphVector)fsGlyphVector).getGlyphVector();
+        
+        float[] result = vector.getGlyphPositions(0, vector.getNumGlyphs() + 1, null);
+        
+        if (awtFont.getSize() > threshold && level > NONE ) {
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
+        }
+        
+        return result;
+    }
+
+    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String text) {
+        Object prevHint = null;
+        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Font awtFont = ((AWTFSFont)font).getAWTFont();
+        
+        if (awtFont.getSize() > threshold && level > NONE ) {
+            prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
+        }
+        
+        GlyphVector vector = awtFont.createGlyphVector(
+                graphics.getFontRenderContext(),
+                text);
+        
+        if (awtFont.getSize() > threshold && level > NONE ) {
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
+        }
+        
+        return new AWTFSGlyphVector(vector);
     }
 }
 

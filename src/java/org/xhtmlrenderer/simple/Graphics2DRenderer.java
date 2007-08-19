@@ -81,7 +81,7 @@ public class Graphics2DRenderer {
         if (dim != null) {
             panel.setSize(dim);
         }
-        panel.doLayout(g2);
+        panel.doDocumentLayout(g2);
     }
 
 
@@ -221,6 +221,12 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2007/08/19 22:22:54  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.20.2.1  2007/08/13 22:32:09  peterbrant
+ * Rename doLayout() to doDocumentLayout() to avoid confusion with AWT's doLayout()
+ *
  * Revision 1.20  2007/05/21 21:58:47  peterbrant
  * More cleanup (remove experimental threading code)
  *

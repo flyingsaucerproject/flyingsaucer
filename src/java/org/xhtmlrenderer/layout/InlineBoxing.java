@@ -168,8 +168,10 @@ public class InlineBoxing {
                         fit += pendingLeftMBP + pendingRightMBP;
                     }
 
+                    boolean trimmedLeadingSpace = false;
                     if (hasTrimmableLeadingSpace(
                             currentLine, style, lbContext, zeroWidthInlineBlock)) {
+                        trimmedLeadingSpace = true;
                         trimLeadingSpace(lbContext);
                     }
                     
@@ -203,6 +205,7 @@ public class InlineBoxing {
                                 inlineText.setFunctionData(new FunctionData(
                                         iB.getContentFunction(), iB.getFunction()));
                             }
+                            inlineText.setTrimmedLeadingSpace(trimmedLeadingSpace);
                             currentLine.setContainsDynamicFunction(inlineText.isDynamicFunction());
                             currentIB.addInlineChild(c, inlineText);
                             currentLine.setContainsContent(true);
@@ -733,9 +736,8 @@ public class InlineBoxing {
             current.setHeight(minHeight);
         }
         
-        if (c.isPrint() && current.crossesPageBreak(c)) {
-            current.moveToNextPage(c);
-            current.calcCanvasLocation();
+        if (c.isPrint()) {
+            current.checkPagePosition(c);
         }
         
         alignLine(c, current, maxAvailableWidth);
@@ -823,10 +825,8 @@ public class InlineBoxing {
         int result = 0;
         CalculatedStyle style = block.getStyle();
         if (style.isAbsolute() || style.isFixed()) {
-            boolean added = LayoutUtil.layoutAbsolute(c, current, block);
-            if (added) {
-                current.addNonFlowContent(block);
-            }
+            LayoutUtil.layoutAbsolute(c, current, block);
+            current.addNonFlowContent(block);
         } else if (style.isFloated()) {
             FloatLayoutResult layoutResult = LayoutUtil.layoutFloated(
                     c, current, block, available, pendingFloats);
@@ -836,6 +836,9 @@ public class InlineBoxing {
                 result = layoutResult.getBlock().getWidth();
                 current.addNonFlowContent(layoutResult.getBlock());
             }
+        } else if (style.isRunning()) {
+            block.setStaticEquivalent(current);
+            c.getRootLayer().addRunningBlock(block);
         }
 
         return result;

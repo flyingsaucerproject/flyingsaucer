@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.Rectangle;
+
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
@@ -27,10 +29,9 @@ import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.swing.RootPanel;
-
-import java.awt.Rectangle;
 
 /**
  * Supplies information about the context in which rendering will take place
@@ -39,7 +40,6 @@ import java.awt.Rectangle;
  *         November 16, 2004
  */
 public class RenderingContext implements CssContext {
-
     protected SharedContext sharedContext;
     private OutputDevice outputDevice;
     private FontContext fontContext;
@@ -48,7 +48,9 @@ public class RenderingContext implements CssContext {
     
     private int pageNo;
     private PageBox page;
-
+    
+    private Layer rootLayer;
+    
     /**
      * <p/>
      * needs a new instance every run
@@ -166,30 +168,6 @@ public class RenderingContext implements CssContext {
         return sharedContext.isInteractive();
     }
 
-    public boolean inSelection(Box box) {
-        return sharedContext.inSelection(box);
-    }
-
-    public Box getSelectionStart() {
-        return sharedContext.getSelectionStart();
-    }
-
-    public Box getSelectionEnd() {
-        return sharedContext.getSelectionEnd();
-    }
-
-    public int getSelectionStartX() {
-        return sharedContext.getSelectionStartX();
-    }
-
-    public int getSelectionEndX() {
-        return sharedContext.getSelectionEndX();
-    }
-
-    public void updateSelection(Box box) {
-        sharedContext.updateSelection(box);
-    }
-
     public boolean isPrint() {
         return sharedContext.isPrint();
     }
@@ -237,6 +215,14 @@ public class RenderingContext implements CssContext {
     
     public FSFontMetrics getFSFontMetrics(FSFont font) {
         return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
+    }
+    
+    public Layer getRootLayer() {
+        return rootLayer;
+    }
+
+    public void setRootLayer(Layer rootLayer) {
+        this.rootLayer = rootLayer;
     }    
 }
 

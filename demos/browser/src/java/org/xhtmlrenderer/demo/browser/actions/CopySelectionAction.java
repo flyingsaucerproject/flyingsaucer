@@ -24,51 +24,12 @@ public class CopySelectionAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent evt) {
         BasicPanel panel = root.panel.view;
-        Box start = panel.getSharedContext().getSelectionStart();
-        Box end = panel.getSharedContext().getSelectionEnd();
-        StringBuffer sb = new StringBuffer();
-        collectSelection(panel.getSharedContext(), panel.getRootBox(), start, end, sb, false);
+
+        // ... collection seleciton here
+        
         Toolkit tk = Toolkit.getDefaultToolkit();
         Clipboard clip = tk.getSystemClipboard();
-        clip.setContents(new StringSelection(sb.toString()), null);
-    }
-
-    public boolean collectSelection(SharedContext ctx, Box root, Box current, Box last, StringBuffer sb, boolean in_selection) {
-
-        if (root == current) {
-            in_selection = true;
-        }
-        if (in_selection) {
-            if (root instanceof LineBox) {
-                sb.append("\n");
-            }
-            /*
-            if (root instanceof InlineTextBox) {
-                InlineTextBox ib = (InlineTextBox) root;
-                int start = 0;
-                int end = ib.getSubstring().length();
-                if (ib == current) {
-                    //TODO: find a way to do this
-                    //start = ib.getTextIndex(ctx.getSelectionStartX(), ctx.getGraphics());
-                }
-                if (ib == last) {
-                    //TODO: find a way to do this
-                    //end = ib.getTextIndex(ctx.getSelectionEndX(), ctx.getGraphics());
-                }
-                String st = ib.getSubstring().substring(Math.max(0, start - 1), end);
-                sb.append(st);
-            }
-            */
-        }
-        if (root == last) {
-            in_selection = false;
-        }
-        for (int i = 0; i < root.getChildCount(); i++) {
-            Box child = root.getChild(i);
-            in_selection = collectSelection(ctx, child, current, last, sb, in_selection);
-        }
-
-        return in_selection;
+        clip.setContents(new StringSelection("..."), null);
     }
 }
 

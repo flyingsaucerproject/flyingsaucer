@@ -241,123 +241,10 @@ public class SharedContext {
         this.debug_draw_font_metrics = debug_draw_font_metrics;
     }
 
-
-    /**
-     * Description of the Method
-     */
-    public void clearSelection() {
-        selection_end = null;
-        selection_start = null;
-        int selection_start_x1 = -1;
-        selection_start_x = selection_start_x1;
-        int selection_end_x1 = -1;
-        selection_end_x = selection_end_x1;
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     */
-    public void updateSelection(Box box) {
-        if (box == selection_end) {
-            in_selection = false;
-        }
-        if (box == selection_start) {
-            in_selection = true;
-        }
-        if (box == selection_end && box == selection_start) {
-            in_selection = false;
-        }
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     * @return Returns
-     */
-    public boolean inSelection(Box box) {
-        if (box == selection_end ||
-                box == selection_start) {
-            return true;
-        }
-        return in_selection;
-    }
-
     
     /* =========== Selection Management ============== */
     
     
-    /**
-     * Gets the selectionStart attribute of the Context object
-     *
-     * @return The selectionStart value
-     */
-    public Box getSelectionStart() {
-        return selection_start;
-    }
-
-    /**
-     * Gets the selectionEnd attribute of the Context object
-     *
-     * @return The selectionEnd value
-     */
-    public Box getSelectionEnd() {
-        return selection_end;
-    }
-
-    /**
-     * Gets the selectionStartX attribute of the Context object
-     *
-     * @return The selectionStartX value
-     */
-    public int getSelectionStartX() {
-        return selection_start_x;
-    }
-
-    /**
-     * Gets the selectionEndX attribute of the Context object
-     *
-     * @return The selectionEndX value
-     */
-    public int getSelectionEndX() {
-        return selection_end_x;
-    }
-
-    /**
-     * Sets the selectionStart attribute of the Context object
-     *
-     * @param box The new selectionStart value
-     */
-    //TODO: is this the place for selections? A separate kind of context for that kind of stuff might be better?
-    public void setSelectionStart(Box box, int x) {
-        selection_start = box;
-        selection_start_x = x;
-    }
-
-    /**
-     * Sets the selectionEnd attribute of the Context object
-     *
-     * @param box The new selectionEnd value
-     */
-    public void setSelectionEnd(Box box, int x) {
-        selection_end = box;
-        selection_end_x = x;
-        //TODO: find a way to do this
-        /*if (box instanceof InlineBox) {
-            InlineBox ib = (InlineBox) box;
-            int i = ib.getTextIndex(x, getGraphics());
-            selection_end_x = ib.getAdvance(i, getGraphics());
-        }*/
-    }
-
-
-    
-    
-    /* =========== Form Stuff ============== */
-
-
     public StyleReference getCss() {
         return css;
     }
@@ -703,7 +590,13 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
- * Revision 1.40  2007/07/04 14:13:18  peterbrant
+ * Revision 1.41  2007/08/19 22:22:52  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.39.2.2  2007/08/07 17:06:30  peterbrant
+ * Implement named pages / Implement page-break-before/after: left/right / Experiment with efficient selection
+ *
+ * Revision 1.39.2.1  2007/07/04 14:12:33  peterbrant
  * Permit a custom user agent with rendering to PDF
  *
  * Revision 1.39  2007/05/26 19:04:13  peterbrant

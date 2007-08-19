@@ -40,6 +40,7 @@ public interface OutputDevice {
     public Color TRANSPARENT = new Color(0, 0, 0, 0);
     
     public void drawText(RenderingContext c, InlineText inlineText);
+    public void drawSelection(RenderingContext c, InlineText inlineText);
     
     public void drawTextDecoration(RenderingContext c, LineBox lineBox);
     public void drawTextDecoration(
@@ -86,4 +87,6 @@ public interface OutputDevice {
 
     public Object getRenderingHint(Key key);
     public void setRenderingHint(Key key, Object value);
+    
+    public boolean isSupportsSelection();
 }

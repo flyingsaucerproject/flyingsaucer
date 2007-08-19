@@ -36,6 +36,8 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.ContentLimit;
+import org.xhtmlrenderer.render.ContentLimitContainer;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
@@ -77,6 +79,14 @@ public class TableCellBox extends BlockBox {
     private static final int BTABLE = 6;
     
     public TableCellBox() {
+    }
+    
+    public BlockBox copyOf() {
+        TableCellBox result = new TableCellBox();
+        result.setStyle(getStyle());
+        result.setElement(getElement());
+        
+        return result;
     }
     
     public BorderPropertySet getBorder(CssContext cssCtx) {
@@ -214,6 +224,10 @@ public class TableCellBox extends BlockBox {
     }
     
     public boolean isPageBreaksChange(LayoutContext c, int posDeltaY) {
+        if (! c.isPageBreaksAllowed()) {
+            return false;
+        }
+        
         PageBox page = c.getRootLayer().getFirstPage(c, this);
         
         int bottomEdge = getAbsY() + getChildrenHeight();
@@ -243,54 +257,127 @@ public class TableCellBox extends BlockBox {
     
     public void paintBackground(RenderingContext c) {
         if (isPaintBackgroundsAndBorders() && getStyle().isVisible()) {
-            Rectangle bounds = getPaintingBorderEdge(c);
-            Rectangle imageContainer;
-            
-            TableColumn column = getTable().colElement(getCol());
-            if (column != null) {
-                c.getOutputDevice().paintBackground(
-                        c, column.getStyle(), 
-                        bounds, getTable().getColumnBounds(c, getCol()));
+            Rectangle bounds;
+            if (c.isPrint() && getTable().getStyle().isPaginateTable()) {
+                bounds = getContentLimitedBorderEdge(c);
+            } else {
+                bounds = getPaintingBorderEdge(c);    
             }
             
-            Box row = getParent();
-            Box section = row.getParent();
-            
-            CalculatedStyle tableStyle = getTable().getStyle();
-            
-            CalculatedStyle sectionStyle = section.getStyle();
-            
-            imageContainer = section.getPaintingBorderEdge(c);
-            imageContainer.y += tableStyle.getBorderVSpacing(c);
-            imageContainer.height -= tableStyle.getBorderVSpacing(c);
-            imageContainer.x += tableStyle.getBorderHSpacing(c);
-            imageContainer.width -= 2*tableStyle.getBorderHSpacing(c);
-            
-            c.getOutputDevice().paintBackground(c, sectionStyle, bounds, imageContainer);
-            
-            CalculatedStyle rowStyle = row.getStyle();
-            
-            imageContainer = row.getPaintingBorderEdge(c);
-            imageContainer.x += tableStyle.getBorderHSpacing(c);
-            imageContainer.width -= 2*tableStyle.getBorderHSpacing(c);
-            
-            c.getOutputDevice().paintBackground(c, rowStyle, bounds, imageContainer);
-            
-            
-            super.paintBackground(c);
+            if (bounds != null) {
+                paintBackgroundStack(c, bounds);
+            }
         }
+    }
+
+    private void paintBackgroundStack(RenderingContext c, Rectangle bounds) {
+        Rectangle imageContainer;
+        
+        TableColumn column = getTable().colElement(getCol());
+        if (column != null) {
+            c.getOutputDevice().paintBackground(
+                    c, column.getStyle(), 
+                    bounds, getTable().getColumnBounds(c, getCol()));
+        }
+        
+        Box row = getParent();
+        Box section = row.getParent();
+        
+        CalculatedStyle tableStyle = getTable().getStyle();
+        
+        CalculatedStyle sectionStyle = section.getStyle();
+        
+        imageContainer = section.getPaintingBorderEdge(c);
+        imageContainer.y += tableStyle.getBorderVSpacing(c);
+        imageContainer.height -= tableStyle.getBorderVSpacing(c);
+        imageContainer.x += tableStyle.getBorderHSpacing(c);
+        imageContainer.width -= 2*tableStyle.getBorderHSpacing(c);
+        
+        c.getOutputDevice().paintBackground(c, sectionStyle, bounds, imageContainer);
+        
+        CalculatedStyle rowStyle = row.getStyle();
+        
+        imageContainer = row.getPaintingBorderEdge(c);
+        imageContainer.x += tableStyle.getBorderHSpacing(c);
+        imageContainer.width -= 2*tableStyle.getBorderHSpacing(c);
+        
+        c.getOutputDevice().paintBackground(c, rowStyle, bounds, imageContainer);
+        
+        c.getOutputDevice().paintBackground(c, getStyle(), bounds, getPaintingBorderEdge(c));
     }
     
     public void paintBorder(RenderingContext c) {
         if (isPaintBackgroundsAndBorders() && ! hasCollapsedPaintingBorder()) {
             // Collapsed table borders are painted separately
-            super.paintBorder(c);
+            if (c.isPrint() && getTable().getStyle().isPaginateTable() && getStyle().isVisible()) {
+                Rectangle bounds = getContentLimitedBorderEdge(c);
+                if (bounds != null) {
+                    c.getOutputDevice().paintBorder(c, getStyle(), bounds, getBorderSides());
+                }
+            } else {
+                super.paintBorder(c);
+            }
         }
     }
     
     public void paintCollapsedBorder(RenderingContext c, int side) {
         c.getOutputDevice().paintCollapsedBorder(
                 c, getCollapsedPaintingBorder(), getCollapsedBorderBounds(c), side);
+    }
+    
+    private Rectangle getContentLimitedBorderEdge(RenderingContext c) {
+        Rectangle result = getPaintingBorderEdge(c);
+        
+        TableSectionBox section = getSection();
+        if (section.isHeader() || section.isFooter()) {
+            return result;
+        }
+        
+        ContentLimitContainer contentLimitContainer = ((TableRowBox)getParent()).getContentLimitContainer();
+        ContentLimit limit = contentLimitContainer.getContentLimit(c.getPageNo());
+        
+        if (limit == null) {
+            return null;
+        } else {
+            if (limit.getTop() == ContentLimit.UNDEFINED || 
+                    limit.getBottom() == ContentLimit.UNDEFINED) {
+                return result;
+            }
+
+            int top;
+            if (c.getPageNo() == contentLimitContainer.getInitialPageNo()) {
+                top = result.y;
+            } else {
+                top = limit.getTop() - ((TableRowBox)getParent()).getExtraSpaceTop();
+            }
+            
+            int bottom;
+            if (c.getPageNo() == contentLimitContainer.getLastPageNo()) {
+                bottom = result.y + result.height;
+            } else {
+                bottom = limit.getBottom() + ((TableRowBox)getParent()).getExtraSpaceBottom(); 
+            }
+            
+            result.y = top;
+            result.height = bottom - top;
+            
+            return result;
+        }
+    }  
+    
+    public Rectangle getChildrenClipEdge(RenderingContext c) {
+        if (c.isPrint() && getTable().getStyle().isPaginateTable()) {
+            Rectangle bounds = getContentLimitedBorderEdge(c);
+            if (bounds != null) {
+                BorderPropertySet border = getBorder(c);
+                RectPropertySet padding = getPadding(c);
+                bounds.y += (int)border.top() + (int)padding.top();
+                bounds.height -= (int)border.height() + (int)padding.height();
+                return bounds;
+            }
+        } 
+        
+        return super.getChildrenClipEdge(c);
     }
     
     protected boolean isFixedWidthAdvisoryOnly() {
@@ -758,5 +845,15 @@ public class TableCellBox extends BlockBox {
     
     protected boolean isAllowHeightToShrink() {
         return false;
-    }    
+    } 
+    
+    public boolean isNeedsClipOnPaint(RenderingContext c) {
+        boolean result = super.isNeedsClipOnPaint(c);
+        if (result) {
+            return result;
+        }
+        
+        return c.isPrint() && getTable().getStyle().isPaginateTable() &&
+                ((TableRowBox)getParent()).getContentLimitContainer().isContainsMultiplePages();
+    }
 }

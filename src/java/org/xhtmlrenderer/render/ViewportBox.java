@@ -56,4 +56,8 @@ public class ViewportBox extends BlockBox {
     protected int getPaddingWidth(CssContext cssCtx) {
         return _viewport.width;
     }
+    
+    public BlockBox copyOf() {
+        throw new IllegalArgumentException("cannot be copied");
+    }    
 }

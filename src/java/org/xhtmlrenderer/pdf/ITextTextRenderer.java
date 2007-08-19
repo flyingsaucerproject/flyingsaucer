@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import java.awt.Rectangle;
+
+import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
@@ -78,5 +81,21 @@ public class ITextTextRenderer implements TextRenderer {
     }
 
     public void setSmoothingLevel(int level) {
+    }
+
+    public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
+        throw new UnsupportedOperationException();
+    }
+
+    public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector) {
+        throw new UnsupportedOperationException();
+    }
+
+    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
+        throw new UnsupportedOperationException();
     }
 }

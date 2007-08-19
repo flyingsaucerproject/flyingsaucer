@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -233,6 +234,15 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
                     box.setContainingLayer(c.getLayer());
                     box.connectChildrenToCurrentLayer(c);
                 }
+            }
+        }
+    }
+    
+    public void paintSelection(RenderingContext c) {
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object child = getInlineChild(i);
+            if (child instanceof InlineText) {
+                ((InlineText)child).paintSelection(c);
             }
         }
     }
@@ -629,6 +639,33 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         }
     }
     
+    public void clearSelection(List modified) {
+        boolean changed = false;
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object obj = getInlineChild(i);
+            if (obj instanceof Box) {
+                ((Box)obj).clearSelection(modified);
+            } else {
+                changed |= ((InlineText)obj).clearSelection();
+            }
+        }
+        
+        if (changed) {
+            modified.add(this);
+        }
+    }
+    
+    public void selectAll() {
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object obj = getInlineChild(i);
+            if (obj instanceof Box) {
+                ((Box)obj).selectAll();
+            } else {
+                ((InlineText)obj).selectAll();
+            }
+        }
+    }
+    
     protected void calcChildPaintingInfo(
             CssContext c, PaintingInfo result, boolean useCache) {
         for (int i = 0; i < getInlineChildCount(); i++) {
@@ -691,7 +728,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         setTextDecorations(decorations);
     }
     
-    public Box find(CssContext cssCtx, int absX, int absY) {
+    public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         PaintingInfo pI = getPaintingInfo();
         if (pI != null && ! pI.getAggregateBounds().contains(absX, absY)) {
             return null;
@@ -701,7 +738,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object child = getInlineChild(i);
             if (child instanceof Box) {
-                    result = ((Box)child).find(cssCtx, absX, absY);
+                    result = ((Box)child).find(cssCtx, absX, absY, findAnonymous);
                     if (result != null) {
                         return result;
                     }
@@ -711,7 +748,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), cssCtx);
         result = edge.contains(absX, absY) ? this : null;
         
-        if (result != null && getElement() == null) {
+        if (! findAnonymous && result != null && getElement() == null) {
             return getParent().getParent();
         } else {
             return result;
@@ -804,5 +841,16 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             result = result.getParent();
         }
         return result.getParent();
+    }
+    
+    public void collectText(RenderingContext c, StringBuffer buffer) throws IOException {
+        for (Iterator i = getInlineChildren().iterator(); i.hasNext(); ) {
+            Object obj = (Object)i.next();
+            if (obj instanceof InlineText) {
+                buffer.append(((InlineText)obj).getTextExportText());
+            } else {
+                ((Box)obj).collectText(c, buffer);
+            }
+        }
     }
 }

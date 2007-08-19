@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.swing;
 
 import java.awt.Cursor;
+import java.awt.event.MouseEvent;
 
 import org.xhtmlrenderer.render.Box;
 
@@ -40,5 +41,11 @@ public class CursorListener implements FSMouseListener {
     }
 
     public void reset() {
+    }
+
+    public void onMouseDragged(BasicPanel panel, MouseEvent e) {
+    }
+
+    public void onMousePressed(BasicPanel panel, MouseEvent e) {
     }
 }

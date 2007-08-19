@@ -23,6 +23,8 @@ package org.xhtmlrenderer.render;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -44,6 +46,8 @@ import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.util.XRLog;
 
 public abstract class Box implements Styleable {
+    protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    
     private Element _element;
 
     private int _x;
@@ -196,6 +200,10 @@ public abstract class Box implements Styleable {
     public Box getParent() {
         return _parent;
     }
+    
+    public Box getDocumentParent() {
+        return getParent();
+    }
 
     public int getChildCount() {
         return _boxes == null ? 0 : _boxes.size();
@@ -289,6 +297,10 @@ public abstract class Box implements Styleable {
     
     public Rectangle getPaintingClipEdge(CssContext cssCtx) {
         return getPaintingBorderEdge(cssCtx);
+    }
+    
+    public Rectangle getChildrenClipEdge(RenderingContext c) {
+        return getPaintingPaddingEdge(c);
     }
     
     /**
@@ -555,36 +567,91 @@ public abstract class Box implements Styleable {
         }
     }
     
-    public int moveToNextPage(LayoutContext c) {
+    public int forcePageBreakBefore(LayoutContext c, IdentValue pageBreakValue, boolean pendingPageName) {
         PageBox page = c.getRootLayer().getFirstPage(c, this);
         if (page == null) {
             XRLog.layout(Level.WARNING, "Box has no page");
             return 0;
         } else {
+            int pageBreakCount = 1;
             if (page.getTop() == getAbsY()) {
-                return 0;
-            } else {
-                int delta = page.getBottom() + c.getExtraSpaceTop() - getAbsY();
-                setY(getY() + delta);
-                if (page == c.getRootLayer().getLastPage()) {
+                pageBreakCount--;
+                if (pendingPageName && page == c.getRootLayer().getLastPage()) {
+                    c.getRootLayer().removeLastPage();
+                    c.setPageName(c.getPendingPageName());
                     c.getRootLayer().addPage(c);
                 }
-                return delta;
             }
+            if ((page.isLeftPage() && pageBreakValue == IdentValue.LEFT) ||
+                    (page.isRightPage() && pageBreakValue == IdentValue.RIGHT)) {
+                pageBreakCount++;
+            }
+            
+            if (pageBreakCount == 0) {
+                return 0;
+            }
+            
+            if (pageBreakCount == 1 && pendingPageName) {
+                c.setPageName(c.getPendingPageName());
+            }
+            
+            int delta = page.getBottom() + c.getExtraSpaceTop() - getAbsY();
+            if (page == c.getRootLayer().getLastPage()) {
+                c.getRootLayer().addPage(c);
+            }
+            
+            if (pageBreakCount == 2) {
+                page = (PageBox)c.getRootLayer().getPages().get(page.getPageNo()+1);
+                delta += page.getContentHeight(c);
+                
+                if (pageBreakCount == 2 && pendingPageName) {
+                    c.setPageName(c.getPendingPageName());
+                }
+                
+                if (page == c.getRootLayer().getLastPage()) {   
+                    c.getRootLayer().addPage(c);
+                }
+            }
+            
+            setY(getY() + delta);
+
+            return delta;
         }
     }
 
-    public void expandToPageBottom(LayoutContext c) {
+    public void forcePageBreakAfter(LayoutContext c, IdentValue pageBreakValue) {
+        boolean needSecondPageBreak = false;
         PageBox page = c.getRootLayer().getLastPage(c, this);
+        
+        if ((page.isLeftPage() && pageBreakValue == IdentValue.LEFT) ||
+                (page.isRightPage() && pageBreakValue == IdentValue.RIGHT)) {
+            needSecondPageBreak = true;
+        }
+        
         int delta = page.getBottom() + c.getExtraSpaceTop() - (getAbsY() + 
                 getMarginBorderPadding(c, CalculatedStyle.TOP) + getHeight());
-        setHeight(getHeight() + delta);
+        
         if (page == c.getRootLayer().getLastPage()) {   
             c.getRootLayer().addPage(c);
         }
+        
+        if (needSecondPageBreak) {
+            page = (PageBox)c.getRootLayer().getPages().get(page.getPageNo()+1);
+            delta += page.getContentHeight(c);
+            
+            if (page == c.getRootLayer().getLastPage()) {   
+                c.getRootLayer().addPage(c);
+            }
+        }
+        
+        setHeight(getHeight() + delta);
     }
     
     public boolean crossesPageBreak(LayoutContext c) {
+        if (! c.isPageBreaksAllowed()) {
+            return false;
+        }
+        
         PageBox pageBox = c.getRootLayer().getFirstPage(c, this);
         if (pageBox == null) {
             return false;
@@ -601,7 +668,7 @@ public abstract class Box implements Styleable {
         _relativeOffset = relativeOffset;
     }
     
-    public Box find(CssContext cssCtx, int absX, int absY) {
+    public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         PaintingInfo pI = getPaintingInfo();
         if (pI != null && ! pI.getAggregateBounds().contains(absX, absY)) {
             return null;
@@ -610,7 +677,7 @@ public abstract class Box implements Styleable {
         Box result = null;
         for (int i = 0; i < getChildCount(); i++) {
             Box child = getChild(i);
-            result = child.find(cssCtx, absX, absY);
+            result = child.find(cssCtx, absX, absY, findAnonymous);
             if (result != null) {
                 return result;
             }
@@ -621,7 +688,7 @@ public abstract class Box implements Styleable {
     }
     
     public boolean isRoot() {
-        return getElement() != null && getElement().getParentNode().getNodeType() == Node.DOCUMENT_NODE;
+        return getElement() != null && ! isAnonymous() && getElement().getParentNode().getNodeType() == Node.DOCUMENT_NODE;
     }
     
     public boolean isBody() {
@@ -691,6 +758,20 @@ public abstract class Box implements Styleable {
             RectPropertySet styleMargin = getStyleMargin(cssContext);
             
             _workingMargin.setTop(styleMargin.top());
+        }
+    }
+    
+    public void clearSelection(List modified) {
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = (Box)getChild(i);
+            child.clearSelection(modified);
+        }
+    }
+    
+    public void selectAll() {
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = (Box) getChild(i);
+            child.selectAll();
         }
     }
     
@@ -917,13 +998,117 @@ public abstract class Box implements Styleable {
         setRightMBP(dimensions.getRightMBP());
         setContentWidth(dimensions.getContentWidth());
         setHeight(dimensions.getHeight());
-    }  
+    }
+    
+    public void collectText(RenderingContext c, StringBuffer buffer) throws IOException {
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            Box b = (Box)i.next();
+            b.collectText(c, buffer);
+        }
+    }
+    
+    public void exportText(RenderingContext c, Writer writer) throws IOException {
+        if (c.isPrint() && isRoot()) {
+            c.setPage(0, (PageBox)c.getRootLayer().getPages().get(0));
+            c.getPage().exportLeadingText(c, writer);
+        }
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            Box b = (Box)i.next();
+            b.exportText(c, writer);
+        }
+        if (c.isPrint() && isRoot()) {
+            exportPageBoxText(c, writer);
+        }
+    }
+
+    private void exportPageBoxText(RenderingContext c, Writer writer) throws IOException {
+        c.getPage().exportTrailingText(c, writer);
+        if (c.getPage() != c.getRootLayer().getLastPage()) {
+            List pages = c.getRootLayer().getPages();
+            do {
+                PageBox next = (PageBox)pages.get(c.getPageNo()+1);
+                c.setPage(next.getPageNo(), next);
+                next.exportLeadingText(c, writer);
+                next.exportTrailingText(c, writer);
+            } while (c.getPage() != c.getRootLayer().getLastPage());
+        }
+    }
+    
+    protected void exportPageBoxText(RenderingContext c, Writer writer, int yPos) throws IOException {
+        c.getPage().exportTrailingText(c, writer);
+        List pages = c.getRootLayer().getPages();
+        PageBox next = (PageBox)pages.get(c.getPageNo()+1);
+        c.setPage(next.getPageNo(), next);
+        while (next.getBottom() < yPos) {
+            next.exportLeadingText(c, writer);
+            next.exportTrailingText(c, writer);
+            next = (PageBox)pages.get(c.getPageNo()+1);
+            c.setPage(next.getPageNo(), next);
+        }
+        next.exportLeadingText(c, writer);
+    }    
+
+    public boolean isInDocumentFlow() {
+        Box flowRoot = this;
+        while (true) {
+            Box parent = flowRoot.getParent();
+            if (parent == null) {
+                break;
+            } else {
+                flowRoot = (BlockBox)parent;
+            }
+        }
+        
+        return flowRoot.isRoot();
+    }
+    
+    public void analyzePageBreaks(LayoutContext c, ContentLimitContainer container) {
+        container.updateTop(c, getAbsY());
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            Box b = (Box)i.next();
+            b.analyzePageBreaks(c, container);
+        }
+        container.updateBottom(c, getAbsY() + getHeight());
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.141  2007/08/19 22:22:50  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.140.2.10  2007/08/18 00:52:44  peterbrant
+ * When paginating a table, clip cells that span multiple pages to the effective content area visible on the current page
+ *
+ * Revision 1.140.2.9  2007/08/15 21:29:31  peterbrant
+ * Initial draft of support for running headers and footers on tables
+ *
+ * Revision 1.140.2.8  2007/08/14 16:10:30  peterbrant
+ * Remove obsolete code
+ *
+ * Revision 1.140.2.7  2007/08/13 22:57:03  peterbrant
+ * Make sure trailing pages with only a header and footer are exported when exporting to text
+ *
+ * Revision 1.140.2.6  2007/08/13 22:41:13  peterbrant
+ * First pass at exporting the render tree as text
+ *
+ * Revision 1.140.2.5  2007/08/09 20:18:16  peterbrant
+ * Bug fixes to improved pagination support
+ *
+ * Revision 1.140.2.4  2007/08/08 18:28:25  peterbrant
+ * Further progress on CSS3 paged media
+ *
+ * Revision 1.140.2.3  2007/08/07 17:06:32  peterbrant
+ * Implement named pages / Implement page-break-before/after: left/right / Experiment with efficient selection
+ *
+ * Revision 1.140.2.2  2007/07/30 00:43:15  peterbrant
+ * Start implementing text selection and copying
+ *
+ * Revision 1.140.2.1  2007/07/09 22:18:03  peterbrant
+ * Begin work on running headers and footers and named pages
+ *
  * Revision 1.140  2007/06/11 22:30:15  peterbrant
  * Minor cleanup to LayoutContext / Start adding infrastructure to support better table pagination
  *

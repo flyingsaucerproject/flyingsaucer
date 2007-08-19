@@ -21,8 +21,11 @@
 
 package org.xhtmlrenderer.css.extend.lib;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
+import org.xhtmlrenderer.css.extend.TreeResolver;
 
 /**
  * Works for Xhtml in a DOM tree
@@ -30,6 +33,30 @@ import org.xhtmlrenderer.css.extend.AttributeResolver;
 public class DOMStaticXhtmlAttributeResolver implements AttributeResolver {
     public String getAttributeValue(Object e, String attrName) {
         return ((Element) e).getAttribute(attrName);
+    }
+    
+    public String getAttributeValue(Object o, String namespaceURI, String attrName) {
+        Element e = (Element)o;
+        if (namespaceURI == TreeResolver.NO_NAMESPACE) {
+            return e.getAttribute(attrName);
+        } else if (namespaceURI == null) {
+            if (e.getLocalName() == null) { // No namespaces
+                return e.getAttribute(attrName);
+            } else {
+                NamedNodeMap attrs = e.getAttributes();
+                int l = attrs.getLength();
+                for (int i = 0; i < l; i++) {
+                    Attr attr = (Attr)attrs.item(i);
+                    if (attrName.equals(attr.getLocalName())) {
+                        return attr.getValue();
+                    }
+                }
+                
+                return "";
+            }
+        } else {
+            return e.getAttributeNS(namespaceURI, attrName);
+        }
     }
 
     public String getClass(Object e) {

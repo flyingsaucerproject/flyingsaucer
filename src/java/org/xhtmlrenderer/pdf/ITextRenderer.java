@@ -25,6 +25,7 @@ import java.awt.Shape;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -139,6 +140,7 @@ public class ITextRenderer {
         root.layout(c);
         Dimension dim = root.getLayer().getPaintingDimension(c);
         root.getLayer().trimEmptyPages(c, dim.height);
+        root.getLayer().layoutPages(c);
         _root = root;
     }
     
@@ -156,6 +158,8 @@ public class ITextRenderer {
         result.setOutputDevice(_outputDevice);
         
         _sharedContext.getTextRenderer().setup(result.getFontContext());
+        
+        result.setRootLayer(_root.getLayer());
 
         return result;
     }
@@ -262,9 +266,13 @@ public class ITextRenderer {
     }
     
     private void paintPage(RenderingContext c, PageBox page) {
+        page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
+        page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);        
+        page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
+        
         Shape working = _outputDevice.getClip();
         
-        Rectangle content = page.getPrintingClippingBounds(c);
+        Rectangle content = page.getPrintClippingBounds(c);
         _outputDevice.clip(content);
         
         int top = -page.getPaintingTop() + 
@@ -273,14 +281,9 @@ public class ITextRenderer {
         int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
         
         _outputDevice.translate(left, top);
-        _root.getLayer().paint(c, 0, 0);
+        _root.getLayer().paint(c);
         _outputDevice.translate(-left, -top);
         
-        _outputDevice.setClip(working);
-        page.paintAlternateFlows(c, _root.getLayer(), Layer.PAGED_MODE_PRINT, 0);
-        
-        page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
-
         _outputDevice.setClip(working);
     }
     
@@ -290,6 +293,12 @@ public class ITextRenderer {
     
     public SharedContext getSharedContext() {
         return _sharedContext;
+    }
+    
+    public void exportText(Writer writer) throws IOException {
+        RenderingContext c = newRenderingContext();
+        c.setPageCount(_root.getLayer().getPages().size());
+        _root.exportText(c, writer);
     }
     
     private static final class NullUserInterface implements UserInterface {

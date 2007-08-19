@@ -233,66 +233,6 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_FLOW_TOP =
-            addProperty(
-                    "-fs-flow-top",
-                    PRIMITIVE,
-                    "none",
-                    NOT_INHERITED,
-                    new PrimitivePropertyBuilders.FSFlowTop()
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     */
-    public final static CSSName FS_FLOW_RIGHT =
-            addProperty(
-                    "-fs-flow-right",
-                    PRIMITIVE,
-                    "none",
-                    NOT_INHERITED,
-                    new PrimitivePropertyBuilders.FSFlowRight()
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     */
-    public final static CSSName FS_FLOW_BOTTOM =
-            addProperty(
-                    "-fs-flow-bottom",
-                    PRIMITIVE,
-                    "none",
-                    NOT_INHERITED,
-                    new PrimitivePropertyBuilders.FSFlowBottom()
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     */
-    public final static CSSName FS_FLOW_LEFT =
-            addProperty(
-                    "-fs-flow-left",
-                    PRIMITIVE,
-                    "none",
-                    NOT_INHERITED,
-                    new PrimitivePropertyBuilders.FSFlowLeft()
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     */
-    public final static CSSName FS_MOVE_TO_FLOW =
-            addProperty(
-                    "-fs-move-to-flow",
-                    PRIMITIVE,
-                    "none",
-                    NOT_INHERITED,
-                    new PrimitivePropertyBuilders.FSMoveToFlow()
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     */
     public final static CSSName FS_PAGE_WIDTH =
             addProperty(
                     "-fs-page-width",
@@ -313,6 +253,18 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSPageHeight()
             );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_PAGE_SEQUENCE =
+            addProperty(
+                    "-fs-page-sequence",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSPageSequence()
+            );    
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -325,6 +277,18 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSPageOrientation()
             );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_TABLE_PAGINATION =
+            addProperty(
+                    "-fs-table-pagination",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSTablePagination()
+            );    
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -769,6 +733,18 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.Overflow()
             );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName PAGE =
+            addProperty(
+                    "page",
+                    PRIMITIVE,
+                    "auto",
+                    INHERITS,
+                    new PrimitivePropertyBuilders.Page()
+            );    
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1676,6 +1652,21 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2007/08/19 22:22:51  peterbrant
+ * Merge R8pbrant changes to HEAD
+ *
+ * Revision 1.32.2.4  2007/08/15 21:29:31  peterbrant
+ * Initial draft of support for running headers and footers on tables
+ *
+ * Revision 1.32.2.3  2007/08/08 21:44:09  peterbrant
+ * Implement more flexible page numbering
+ *
+ * Revision 1.32.2.2  2007/08/07 17:06:30  peterbrant
+ * Implement named pages / Implement page-break-before/after: left/right / Experiment with efficient selection
+ *
+ * Revision 1.32.2.1  2007/07/09 22:18:01  peterbrant
+ * Begin work on running headers and footers and named pages
+ *
  * Revision 1.32  2007/06/20 19:06:48  peterbrant
  * Default font-family should come from CSSName and not the UA stylesheet
  *

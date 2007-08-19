@@ -20,6 +20,8 @@
 package org.xhtmlrenderer.newtable;
 
 import java.awt.Rectangle;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,13 +32,28 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.ContentLimitContainer;
+import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
 public class TableRowBox extends BlockBox {
     private int _baseline;
     private boolean _haveBaseline = false;
+    private int _heightOverride;
+    private ContentLimitContainer _contentLimitContainer;
+    
+    private int _extraSpaceTop;
+    private int _extraSpaceBottom;
     
     public TableRowBox() {
+    }
+    
+    public BlockBox copyOf() {
+        TableRowBox result = new TableRowBox();
+        result.setStyle(getStyle());
+        result.setElement(getElement());
+        
+        return result;
     }
     
     public boolean isAutoHeight() {
@@ -52,6 +69,109 @@ public class TableRowBox extends BlockBox {
         return (TableSectionBox)getParent();
     }
     
+    public void layout(LayoutContext c, int contentStart) {
+        boolean running = c.isPrint() && getTable().getStyle().isPaginateTable();
+        int prevExtraTop = 0;
+        int prevExtraBottom = 0;
+        
+        if (running) {
+            prevExtraTop = c.getExtraSpaceTop();
+            prevExtraBottom = c.getExtraSpaceBottom();
+            
+            calcExtraSpaceTop(c);
+            calcExtraSpaceBottom(c);
+            
+            c.setExtraSpaceTop(c.getExtraSpaceTop() + getExtraSpaceTop());
+            c.setExtraSpaceBottom(c.getExtraSpaceBottom() + getExtraSpaceBottom());
+        }
+        
+        super.layout(c, contentStart);
+        
+        if (running) {
+            if (isShouldMoveToNextPage(c)) {
+                setNeedPageClear(true);
+            }
+            c.setExtraSpaceTop(prevExtraTop);
+            c.setExtraSpaceBottom(prevExtraBottom);
+        }
+    }
+    
+    private boolean isShouldMoveToNextPage(LayoutContext c) {
+        PageBox page = c.getRootLayer().getFirstPage(c, this);
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            TableCellBox cell = (TableCellBox)i.next();
+            int baseline = cell.calcBaseline(c);
+            if (baseline < page.getBottom()) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public void analyzePageBreaks(LayoutContext c, ContentLimitContainer container) {
+        if (getTable().getStyle().isPaginateTable()) {
+            _contentLimitContainer = new ContentLimitContainer(c, getAbsY());
+            _contentLimitContainer.setParent(container);
+            
+            if (container != null) {
+                container.updateTop(c, getAbsY());
+                container.updateBottom(c, getAbsY() + getHeight());
+            }
+            
+            for (Iterator i = getChildIterator(); i.hasNext(); ) {
+                Box b = (Box)i.next();
+                b.analyzePageBreaks(c, _contentLimitContainer);
+            }
+            
+            if (container != null && _contentLimitContainer.isContainsMultiplePages()) {
+                propagateExtraSpace(c, container, _contentLimitContainer, getExtraSpaceTop(), getExtraSpaceBottom());
+            }
+        } else {
+            super.analyzePageBreaks(c, container);
+        }
+    }   
+
+    private void calcExtraSpaceTop(LayoutContext c) {
+        int maxBorderAndPadding = 0;
+        
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            TableCellBox cell = (TableCellBox)i.next();
+            
+            int borderAndPadding = (int)cell.getPadding(c).top() + (int)cell.getBorder(c).top();
+            if (borderAndPadding > maxBorderAndPadding) {
+                maxBorderAndPadding = borderAndPadding;
+            }
+        }
+
+        _extraSpaceTop = maxBorderAndPadding;
+    }
+    
+    private void calcExtraSpaceBottom(LayoutContext c) {
+        int maxBorderAndPadding = 0;
+        
+        int cRow = getIndex();
+        int totalRows = getSection().getChildCount();
+        List row = ((RowData)getSection().getGrid().get(cRow)).getRow();
+        for (int cCol = 0; cCol < row.size(); cCol++) {
+            TableCellBox cell = (TableCellBox)row.get(cCol);
+            
+            if (cell == null || cell == TableCellBox.SPANNING_CELL) {
+                continue;
+            }
+            if (cRow < totalRows - 1 && getSection().cellAt(cRow+1, cCol) == cell) {
+                continue;
+            }
+            
+            int borderAndPadding = (int)cell.getPadding(c).bottom() + (int)cell.getBorder(c).bottom();
+            if (borderAndPadding > maxBorderAndPadding) {
+                maxBorderAndPadding = borderAndPadding;
+            }
+        }
+        
+        _extraSpaceBottom = maxBorderAndPadding;
+    }
+
     protected void layoutChildren(LayoutContext c, int contentStart) {
         setState(Box.CHILDREN_FLUX);
         ensureChildren(c);
@@ -171,6 +291,10 @@ public class TableRowBox extends BlockBox {
     protected void calcLayoutHeight(
             LayoutContext c, BorderPropertySet border, 
             RectPropertySet margin, RectPropertySet padding) {
+        if (getHeightOverride() > 0) {
+            setHeight(getHeightOverride());
+        }
+        
         alignBaselineAlignedCells(c);
         
         calcRowHeight();
@@ -314,6 +438,7 @@ public class TableRowBox extends BlockBox {
         super.reset(c);
         setHaveBaseline(false);
         getSection().setNeedCellWidthCalc(true);
+        setContentLimitContainer(null);
     }
 
     public boolean isHaveBaseline() {
@@ -330,5 +455,61 @@ public class TableRowBox extends BlockBox {
         } else {
             return "";
         }
+    }
+
+    public int getHeightOverride() {
+        return _heightOverride;
+    }
+
+    public void setHeightOverride(int heightOverride) {
+        _heightOverride = heightOverride;
+    }
+    
+    public void exportText(RenderingContext c, Writer writer) throws IOException {
+        if (getTable().isMarginAreaRoot()) {
+            super.exportText(c, writer);
+        } else {
+            int yPos = getAbsY();
+            if (yPos >= c.getPage().getBottom() && isInDocumentFlow()) {
+                exportPageBoxText(c, writer, yPos);
+            }
+            
+            for (Iterator i = getChildIterator(); i.hasNext(); ) {
+                TableCellBox cell = (TableCellBox)i.next();
+                StringBuffer buffer =  new StringBuffer();
+                cell.collectText(c, buffer);
+                writer.write(buffer.toString().trim());
+                int cSpan = cell.getStyle().getColSpan();
+                for (int j = 0; j < cSpan; j++) {
+                    writer.write('\t');    
+                }
+            }
+            
+            writer.write(LINE_SEPARATOR);
+        }
+    }
+
+    public ContentLimitContainer getContentLimitContainer() {
+        return _contentLimitContainer;
+    }
+
+    public void setContentLimitContainer(ContentLimitContainer contentLimitContainer) {
+        _contentLimitContainer = contentLimitContainer;
+    }
+
+    public int getExtraSpaceTop() {
+        return _extraSpaceTop;
+    }
+
+    public void setExtraSpaceTop(int extraSpaceTop) {
+        _extraSpaceTop = extraSpaceTop;
+    }
+
+    public int getExtraSpaceBottom() {
+        return _extraSpaceBottom;
+    }
+
+    public void setExtraSpaceBottom(int extraSpaceBottom) {
+        _extraSpaceBottom = extraSpaceBottom;
     }
 }

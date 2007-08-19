@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.swing;
 
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -131,5 +132,11 @@ public class HoverListener implements FSMouseListener {
 
     public void reset() {
         _previouslyHovered = null;
+    }
+
+    public void onMouseDragged(BasicPanel panel, MouseEvent e) {
+    }
+
+    public void onMousePressed(BasicPanel panel, MouseEvent e) {
     }
 }
