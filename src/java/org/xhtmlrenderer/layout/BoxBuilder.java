@@ -20,6 +20,14 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -27,16 +35,27 @@ import org.w3c.dom.Text;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.constants.MarginBoxName;
+import org.xhtmlrenderer.css.constants.PageElementPosition;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.newmatch.PageInfo;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.newtable.*;
-import org.xhtmlrenderer.render.*;
-
-import java.util.*;
+import org.xhtmlrenderer.css.style.EmptyStyle;
+import org.xhtmlrenderer.newtable.TableBox;
+import org.xhtmlrenderer.newtable.TableCellBox;
+import org.xhtmlrenderer.newtable.TableColumn;
+import org.xhtmlrenderer.newtable.TableRowBox;
+import org.xhtmlrenderer.newtable.TableSectionBox;
+import org.xhtmlrenderer.render.AnonymousBlockBox;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FloatedBoxData;
+import org.xhtmlrenderer.render.InlineBox;
 
 /**
  * This class is responsible for creating the box tree from the DOM.  This is
@@ -52,6 +71,12 @@ import java.util.*;
  * the kind of content contained in a given block box.
  */
 public class BoxBuilder {
+    public static final int MARGIN_BOX_VERTICAL = 1;
+    public static final int MARGIN_BOX_HORIZONTAL = 2;
+    
+    private static final int CONTENT_LIST_DOCUMENT = 1;
+    private static final int CONTENT_LIST_MARGIN_BOX = 2;
+    
     public static BlockBox createRootBox(LayoutContext c, Document document) {
         Element root = document.getDocumentElement();
 
@@ -60,6 +85,14 @@ public class BoxBuilder {
         CalculatedStyle style = c.getSharedContext().getStyle(root);
         result.setStyle(style);
         c.resolveCounters(style);
+        
+        c.pushLayer(result);
+        if (c.isPrint()) {
+            if (! style.isIdent(CSSName.PAGE, IdentValue.AUTO)) {
+                c.setPageName(style.getStringProperty(CSSName.PAGE));
+            }
+            c.getRootLayer().addPage(c);
+        }
 
         return result;
     }
@@ -84,12 +117,174 @@ public class BoxBuilder {
             }
         }
     }
+    
+    public static TableBox createMarginTable(
+            LayoutContext c,
+            PageInfo pageInfo,
+            MarginBoxName[] names,
+            int height,
+            int direction) 
+    {
+        if (! pageInfo.hasAny(names)) {
+            return null;
+        }
+        
+        Element source = c.getRootLayer().getMaster().getElement(); // HACK
+        
+        ChildBoxInfo info = new ChildBoxInfo();
+        CalculatedStyle pageStyle = new EmptyStyle().deriveStyle(pageInfo.getPageStyle());
+        
+        CalculatedStyle tableStyle = pageStyle.deriveStyle(
+                CascadedStyle.createLayoutStyle(new PropertyDeclaration[] {
+                        new PropertyDeclaration(
+                                CSSName.DISPLAY, 
+                                new PropertyValue(IdentValue.TABLE), 
+                                true, 
+                                StylesheetInfo.USER),
+                        new PropertyDeclaration(
+                                CSSName.WIDTH, 
+                                new PropertyValue(CSSPrimitiveValue.CSS_PERCENTAGE, 100.0f, "100%"), 
+                                true, 
+                                StylesheetInfo.USER),
+                }));
+        TableBox result = (TableBox)createBlockBox(tableStyle, info, false);
+        result.setMarginAreaRoot(true);
+        result.setStyle(tableStyle);
+        result.setElement(source);
+        result.setAnonymous(true);
+        result.setChildrenContentType(BlockBox.CONTENT_BLOCK);
+        
+        c.reInit(false);  // HACK, would rather not do this here
+        c.pushLayer(result);
+        c.getRootLayer().addPage(c);
+        
+        CalculatedStyle tableSectionStyle = pageStyle.createAnonymousStyle(IdentValue.TABLE_ROW_GROUP);
+        TableSectionBox section = (TableSectionBox)createBlockBox(tableSectionStyle, info, false);
+        section.setStyle(tableSectionStyle);
+        section.setElement(source);
+        section.setAnonymous(true);
+        section.setChildrenContentType(BlockBox.CONTENT_BLOCK);
+        
+        result.addChild(section);
+        
+        TableRowBox row = null;
+        if (direction == MARGIN_BOX_HORIZONTAL) {
+            CalculatedStyle tableRowStyle = pageStyle.createAnonymousStyle(IdentValue.TABLE_ROW);
+            row = (TableRowBox)createBlockBox(tableRowStyle, info, false);
+            row.setStyle(tableRowStyle);
+            row.setElement(source);
+            row.setAnonymous(true);
+            row.setChildrenContentType(BlockBox.CONTENT_BLOCK);
+            
+            row.setHeightOverride(height);
+            
+            section.addChild(row);
+        }
+        
+        int cellCount = 0;
+        boolean alwaysCreate = names.length > 1 && direction == MARGIN_BOX_HORIZONTAL;
+        
+        for (int i = 0; i < names.length; i++) {            
+            CascadedStyle cellStyle = pageInfo.createMarginBoxStyle(names[i], alwaysCreate);
+            if (cellStyle != null) {
+                TableCellBox cell = createMarginBox(c, cellStyle, alwaysCreate);
+                if (cell != null) {
+                    if (direction == MARGIN_BOX_VERTICAL) {
+                        CalculatedStyle tableRowStyle = pageStyle.createAnonymousStyle(IdentValue.TABLE_ROW);
+                        row = (TableRowBox)createBlockBox(tableRowStyle, info, false);
+                        row.setStyle(tableRowStyle);
+                        row.setElement(source);
+                        row.setAnonymous(true);
+                        row.setChildrenContentType(BlockBox.CONTENT_BLOCK);
+                        
+                        row.setHeightOverride(height);
+                        
+                        section.addChild(row);
+                    }                    
+                    row.addChild(cell);
+                    cellCount++;
+                }
+            }
+        }
+        
+        if (direction == MARGIN_BOX_VERTICAL && cellCount > 0) {
+            int rHeight = 0;
+            for (Iterator i = section.getChildIterator(); i.hasNext(); ) {
+                TableRowBox r = (TableRowBox)i.next();
+                r.setHeightOverride(height / cellCount);
+                rHeight += r.getHeightOverride();
+            }
+            
+            for (Iterator i = section.getChildIterator(); i.hasNext() && rHeight < height; ) {
+                TableRowBox r = (TableRowBox)i.next();
+                r.setHeightOverride(r.getHeightOverride()+1);
+                rHeight++;
+            }
+        }
+        
+        return cellCount > 0 ? result : null;
+    }
+    
+    private static TableCellBox createMarginBox(
+            LayoutContext c,
+            CascadedStyle cascadedStyle,
+            boolean alwaysCreate) {
+        boolean hasContent = true;
+        
+        PropertyDeclaration contentDecl = (PropertyDeclaration)cascadedStyle.propertyByName(CSSName.CONTENT);
+        
+        CalculatedStyle style = new EmptyStyle().deriveStyle(cascadedStyle);
+        
+        if (style.isDisplayNone() && ! alwaysCreate) {
+            return null;
+        }
+        
+        if (style.isIdent(CSSName.CONTENT, IdentValue.NONE) ||
+                style.isIdent(CSSName.CONTENT, IdentValue.NORMAL)) {
+            hasContent = false;
+        }
+        
+        if (style.isAutoWidth() && ! alwaysCreate && ! hasContent) {
+            return null;
+        }
+        
+        List children = new ArrayList();
+
+        ChildBoxInfo info = new ChildBoxInfo();
+        info.setContainsTableContent(true);
+        info.setLayoutRunningBlocks(true);
+        
+        TableCellBox result = new TableCellBox();
+        result.setAnonymous(true);
+        result.setStyle(style);
+        result.setElement(c.getRootLayer().getMaster().getElement()); // XXX Doesn't make sense, but we need something here
+        
+        if (hasContent && ! style.isDisplayNone()) {
+            children.addAll(createGeneratedMarginBoxContent(
+                    c,
+                    c.getRootLayer().getMaster().getElement(),
+                    (PropertyValue)contentDecl.getValue(),
+                    style,
+                    info));
+            
+            stripAllWhitespace(children);
+        }
+
+        if (children.size() == 0 && style.isAutoWidth() && ! alwaysCreate) {
+            return null;
+        }
+        
+        resolveChildTableContent(c, result, children, info, IdentValue.TABLE_CELL);
+        
+        return result;
+    }
 
     private static void resolveChildren(
             LayoutContext c, BlockBox owner, List children, ChildBoxInfo info) {
         if (children.size() > 0) {
             if (info.isContainsBlockLevelContent()) {
-                insertAnonymousBlocks(c.getSharedContext(), owner, children);
+                insertAnonymousBlocks(
+                        c.getSharedContext(), owner, children, info.isLayoutRunningBlocks());
                 owner.setChildrenContentType(BlockBox.CONTENT_BLOCK);
             } else {
                 WhitespaceStripper.stripInlineContent(children);
@@ -333,10 +528,12 @@ public class BoxBuilder {
 
         table.removeAllChildren();
         if (header != null) {
+            ((TableSectionBox)header).setHeader(true);
             table.addChild(header);
         }
         table.addAllChildren(bodies);
         if (footer != null) {
+            ((TableSectionBox)footer).setFooter(true);
             table.addChild(footer);
         }
 
@@ -462,6 +659,26 @@ public class BoxBuilder {
 
         return false;
     }
+    
+    private static boolean isElementFunction(FSFunction function) {
+        if (function.getName().equals("element")) {
+            List params = function.getParameters();
+            if (params.size() < 1 || params.size() > 2) {
+                return false;
+            }
+            boolean ok = true;
+            PropertyValue value1 = (PropertyValue) params.get(0);
+            ok = value1.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
+            if (ok && params.size() == 2) {
+                PropertyValue value2 = (PropertyValue) params.get(1);
+                ok = value2.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
+            }
+            
+            return ok;
+        }
+
+        return false;
+    }
 
     private static CounterFunction makeCounterFunction(FSFunction function, LayoutContext c, CalculatedStyle style) {
         if (function.getName().equals("counter")) {
@@ -546,9 +763,9 @@ public class BoxBuilder {
         return e.getAttribute(value.getStringValue());
     }
 
-    private static List createGeneratedInlineBoxes(
-            LayoutContext c, Element element,
-            PropertyValue propValue, String peName, CalculatedStyle style) {
+    private static List createGeneratedContentList(
+            LayoutContext c, Element element, PropertyValue propValue, 
+            String peName, CalculatedStyle style, int mode, ChildBoxInfo info) {
         List values = propValue.getValues();
 
         if (values == null) {
@@ -570,51 +787,70 @@ public class BoxBuilder {
             if (type == CSSPrimitiveValue.CSS_STRING) {
                 content = value.getStringValue();
             } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
-                if (isAttrFunction(value.getFunction())) {
+                if (mode == CONTENT_LIST_DOCUMENT && isAttrFunction(value.getFunction())) {
                     content = getAttributeValue(value.getFunction(), element);
                 } else {
-                    CounterFunction cFunc;
+                    CounterFunction cFunc = null;
 
-                    cFunc = makeCounterFunction(value.getFunction(), c, style);
+                    if (mode == CONTENT_LIST_DOCUMENT) {
+                        cFunc = makeCounterFunction(value.getFunction(), c, style);
+                    }
+                    
                     if (cFunc != null) {
                         //TODO: counter functions may be called with non-ordered list-style-types, e.g. disc
                         content = cFunc.evaluate();
                         contentFunction = null;
                         function = null;
+                    } else if (mode == CONTENT_LIST_MARGIN_BOX && isElementFunction(value.getFunction())) {
+                        List params = value.getFunction().getParameters();
+                        String ident = (String)((PropertyValue)params.get(0)).getStringValue();
+                        PageElementPosition position = null;
+                        if (params.size() == 2) {
+                            position = PageElementPosition.valueOf(
+                                    (String)((PropertyValue)params.get(1)).getStringValue());
+                        }
+                        if (position == null) {
+                            position = PageElementPosition.FIRST;
+                        }
+                        BlockBox target = c.getRootDocumentLayer().getRunningBlock(ident, c.getPage(), position);
+                        if (target != null) {
+                            result.add(target.copyOf());
+                            info.setContainsBlockLevelContent(true);
+                        }
                     } else {
                         contentFunction =
                                 c.getContentFunctionFactory().lookupFunction(c, value.getFunction());
-                        if (contentFunction == null) {
-                            continue;
-                        }
-
-                        function = value.getFunction();
-
-                        if (contentFunction.isStatic()) {
-                            content = contentFunction.calculate(c, function);
-                            contentFunction = null;
-                            function = null;
-                        } else {
-                            content = contentFunction.getLayoutReplacementText();
+                        if (contentFunction != null) {
+                            function = value.getFunction();
+    
+                            if (contentFunction.isStatic()) {
+                                content = contentFunction.calculate(c, function);
+                                contentFunction = null;
+                                function = null;
+                            } else {
+                                content = contentFunction.getLayoutReplacementText();
+                            }
                         }
                     }
                 }
             }
 
-            InlineBox iB = new InlineBox(content);
-            iB.setContentFunction(contentFunction);
-            iB.setFunction(function);
-            iB.setElement(element);
-            iB.setPseudoElementOrClass(peName);
-            iB.setStartsHere(true);
-            iB.setEndsHere(true);
-
-            result.add(iB);
+            if (content != null) {
+                InlineBox iB = new InlineBox(content);
+                iB.setContentFunction(contentFunction);
+                iB.setFunction(function);
+                iB.setElement(element);
+                iB.setPseudoElementOrClass(peName);
+                iB.setStartsHere(true);
+                iB.setEndsHere(true);
+    
+                result.add(iB);
+            }
         }
 
         return result;
     }
-
+    
     private static void insertGeneratedContent(
             LayoutContext c, Element element, CalculatedStyle parentStyle,
             String peName, List children, ChildBoxInfo info) {
@@ -650,7 +886,8 @@ public class BoxBuilder {
             return Collections.EMPTY_LIST;
         }
 
-        List inlineBoxes = createGeneratedInlineBoxes(c, element, property, peName, style);
+        List inlineBoxes = createGeneratedContentList(
+                c, element, property, peName, style, CONTENT_LIST_DOCUMENT, null);
 
         if (style.isInline()) {
             for (Iterator i = inlineBoxes.iterator(); i.hasNext();) {
@@ -681,6 +918,26 @@ public class BoxBuilder {
 
             return new ArrayList(Collections.singletonList(result));
         }
+    }
+    
+    private static List createGeneratedMarginBoxContent(
+            LayoutContext c, Element element, PropertyValue property, 
+            CalculatedStyle style, ChildBoxInfo info) {
+        List result = createGeneratedContentList(
+                c, element, property, null, style, CONTENT_LIST_MARGIN_BOX, info);
+        
+        CalculatedStyle anon = style.createAnonymousStyle(IdentValue.INLINE);
+        for (Iterator i = result.iterator(); i.hasNext();) {
+            Styleable s = (Styleable) i.next();
+            if (s instanceof InlineBox) {
+                InlineBox iB = (InlineBox)s;
+                iB.setElement(null);
+                iB.setStyle(anon);
+                iB.applyTextTransform();
+            }
+        }
+        
+        return result;
     }
 
     private static BlockBox createBlockBox(
@@ -896,7 +1153,8 @@ public class BoxBuilder {
         insertGeneratedContent(c, parent, parentStyle, "after", children, info);
     }
 
-    private static void insertAnonymousBlocks(SharedContext c, Box parent, List children) {
+    private static void insertAnonymousBlocks(
+            SharedContext c, Box parent, List children, boolean layoutRunningBlocks) {
         List inline = new ArrayList();
 
         LinkedList parents = new LinkedList();
@@ -904,7 +1162,8 @@ public class BoxBuilder {
 
         for (Iterator i = children.iterator(); i.hasNext();) {
             Styleable child = (Styleable) i.next();
-            if (child.getStyle().isLayedOutInInlineContext()) {
+            if (child.getStyle().isLayedOutInInlineContext() && 
+                    ! (layoutRunningBlocks && child.getStyle().isRunning())) {
                 inline.add(child);
 
                 if (child.getStyle().isInline()) {
@@ -934,7 +1193,7 @@ public class BoxBuilder {
         WhitespaceStripper.stripInlineContent(inline);
         if (inline.size() > 0) {
             AnonymousBlockBox anon = new AnonymousBlockBox(parent.getElement());
-            anon.setStyle(c.getStyle(parent.getElement()).createAnonymousStyle(IdentValue.BLOCK));
+            anon.setStyle(parent.getStyle().createAnonymousStyle(IdentValue.BLOCK));
             anon.setAnonymous(true);
             if (savedParents != null && savedParents.size() > 0) {
                 anon.setOpenInlineBoxes(savedParents);
@@ -948,6 +1207,7 @@ public class BoxBuilder {
     private static class ChildBoxInfo {
         private boolean _containsBlockLevelContent;
         private boolean _containsTableContent;
+        private boolean _layoutRunningBlocks;
 
         public ChildBoxInfo() {
         }
@@ -966,6 +1226,14 @@ public class BoxBuilder {
 
         public void setContainsTableContent(boolean containsTableContent) {
             _containsTableContent = containsTableContent;
+        }
+
+        public boolean isLayoutRunningBlocks() {
+            return _layoutRunningBlocks;
+        }
+
+        public void setLayoutRunningBlocks(boolean layoutRunningBlocks) {
+            _layoutRunningBlocks = layoutRunningBlocks;
         }
     }
 }

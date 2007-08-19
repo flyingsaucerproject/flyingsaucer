@@ -27,10 +27,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.MarginBoxName;
+import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.newmatch.Selector;
 import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
 import org.xhtmlrenderer.css.sheet.MediaRule;
@@ -42,11 +48,30 @@ import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 public class CSSParser {
+    private static final Set SUPPORTED_PSEUDO_ELEMENTS;
+    private static final Set CSS21_PSEUDO_ELEMENTS;
+    
+    static {
+        SUPPORTED_PSEUDO_ELEMENTS = new HashSet();
+        SUPPORTED_PSEUDO_ELEMENTS.add("first-line");
+        SUPPORTED_PSEUDO_ELEMENTS.add("first-letter");
+        SUPPORTED_PSEUDO_ELEMENTS.add("before");
+        SUPPORTED_PSEUDO_ELEMENTS.add("after");
+        
+        CSS21_PSEUDO_ELEMENTS = new HashSet();
+        CSS21_PSEUDO_ELEMENTS.add("first-line");
+        CSS21_PSEUDO_ELEMENTS.add("first-letter");
+        CSS21_PSEUDO_ELEMENTS.add("before");
+        CSS21_PSEUDO_ELEMENTS.add("after");
+    }
+    
     private Token _saved;
     private Lexer _lexer;
     
     private CSSErrorHandler _errorHandler;
     private String _URI;
+    
+    private Map _namespaces = new HashMap();
     
     public CSSParser(CSSErrorHandler errorHandler) {
         _lexer = new Lexer(new StringReader(""));
@@ -75,7 +100,7 @@ public class CSSParser {
             Ruleset result = new Ruleset(origin);
             
             try {
-                declaration_list(result, true);
+                declaration_list(result, true, false);
             } catch (CSSParseException e) {
                 // ignore, already handled
             }
@@ -119,11 +144,11 @@ public class CSSParser {
         }
     }
     
-//  stylesheet
-//  : [ CHARSET_SYM STRING ';' ]?
-//    [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
-//    [ [ ruleset | media | page ] [S|CDO|CDC]* ]*
-//  ;    
+//    stylesheet
+//    : [ CHARSET_SYM S* STRING S* ';' ]?
+//      [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
+//      [ namespace [S|CDO|CDC]* ]*
+//      [ [ ruleset | media | page | font_face ] [S|CDO|CDC]* ]*
     private void stylesheet(Stylesheet stylesheet) throws IOException {
         //System.out.println("stylesheet()");
         Token t = la();
@@ -131,9 +156,11 @@ public class CSSParser {
             if (t == Token.TK_CHARSET_SYM) {
                 try {
                     t = next();
+                    skip_whitespace();
                     if (t == Token.TK_STRING) {
                         /* String charset = getTokenValue(t); */
                         
+                        skip_whitespace();
                         t = next();
                         if (t != Token.TK_SEMICOLON) {
                             push(t);
@@ -149,48 +176,60 @@ public class CSSParser {
                     error(e, "@charset rule", true);
                     recover(false, false);
                 }
-            } else {
-                skip_whitespace_and_cdocdc();
-                while (true) {
-                    t = la();
-                    if (t == Token.TK_IMPORT_SYM) {
-                        import_rule(stylesheet);
-                        skip_whitespace_and_cdocdc();
-                    } else {
-                        break;
-                    }
-                }
-                while (true) {
-                    t = la();
-                    if (t == Token.TK_EOF) {
-                        break;
-                    }
-                    switch (t.getType()) {
-                        case Token.PAGE_SYM:
-                            page(stylesheet);
-                            break;
-                        case Token.MEDIA_SYM:
-                            media(stylesheet);
-                            break;
-                        case Token.IMPORT_SYM:
-                            next();
-                            error(new CSSParseException("@import not allowed", getCurrentLine()),
-                                    "@import rule", true);
-                            recover(false, false);
-                            break;
-                        case Token.OTHER:
-                            if (_lexer.yycharat(0) == '@') {
-                                next();
-                                error(new CSSParseException("Invalid at-rule", getCurrentLine()), "rule", true);
-                                recover(false, false);
-                                break;
-                            }
-                            // fall through
-                        default:
-                            ruleset(stylesheet);
-                    }
+            }
+            skip_whitespace_and_cdocdc();
+            while (true) {
+                t = la();
+                if (t == Token.TK_IMPORT_SYM) {
+                    import_rule(stylesheet);
                     skip_whitespace_and_cdocdc();
+                } else {
+                    break;
                 }
+            }
+            while (true) {
+                t = la();
+                if (t == Token.TK_NAMESPACE_SYM) {
+                    namespace();
+                    skip_whitespace_and_cdocdc();
+                } else {
+                    break;
+                }
+            }
+            while (true) {
+                t = la();
+                if (t == Token.TK_EOF) {
+                    break;
+                }
+                switch (t.getType()) {
+                    case Token.PAGE_SYM:
+                        page(stylesheet);
+                        break;
+                    case Token.MEDIA_SYM:
+                        media(stylesheet);
+                        break;
+                    case Token.IMPORT_SYM:
+                        next();
+                        error(new CSSParseException("@import not allowed", getCurrentLine()),
+                                "@import rule", true);
+                        recover(false, false);
+                        break;
+                    case Token.NAMESPACE_SYM:
+                        next();
+                        error(new CSSParseException("@namespace not allowed", getCurrentLine()),
+                                "@namespace rule", true);
+                        recover(false, false);
+                        break;   
+                    case Token.AT_RULE:
+                        next();
+                        error(new CSSParseException(
+                                "Invalid at-rule", getCurrentLine()), "at-rule", true);
+                        recover(false, false);
+                        // fall through
+                    default:
+                        ruleset(stylesheet);
+                }
+                skip_whitespace_and_cdocdc();
             }
         } catch (CSSParseException e) {
             // "shouldn't" happen
@@ -270,6 +309,55 @@ public class CSSParser {
             }
         } catch (CSSParseException e) {
             error(e, "@import rule", true);
+            recover(false, false);
+        }
+    }
+    
+//  namespace
+//  : NAMESPACE_SYM S* [namespace_prefix S*]? [STRING|URI] S* ';' S*
+//  ;
+//  namespace_prefix
+//  : IDENT
+//  ;
+    private void namespace() throws IOException {
+        try {
+            Token t = next();
+            if (t == Token.TK_NAMESPACE_SYM) {
+                String prefix = null;
+                String url = null;
+                
+                skip_whitespace();
+                t = next();
+                
+                if (t == Token.TK_IDENT) {
+                    prefix = getTokenValue(t);
+                    skip_whitespace();
+                    t = next();
+                }
+                
+                if (t == Token.TK_STRING || t == Token.TK_URI) {
+                    url = getTokenValue(t);
+                } else {
+                    throw new CSSParseException(
+                            t, new Token[] { Token.TK_STRING, Token.TK_URI }, getCurrentLine());
+                }
+                
+                skip_whitespace();
+                
+                t = next();
+                if (t == Token.TK_SEMICOLON) {
+                    skip_whitespace();
+                    
+                    _namespaces.put(prefix, url);
+                } else {
+                    throw new CSSParseException(
+                            t, Token.TK_SEMICOLON, getCurrentLine());
+                }
+            } else {
+                throw new CSSParseException(t, Token.TK_NAMESPACE_SYM, getCurrentLine());
+            }
+        } catch (CSSParseException e) {
+            error(e, "@namespace rule", true);
             recover(false, false);
         }
     }
@@ -356,10 +444,10 @@ public class CSSParser {
         return result;
     }
     
-//  page
-//    : PAGE_SYM S* pseudo_page? S*
-//      LBRACE S* declaration [ ';' S* declaration ]* '}' S*
-//    ;
+//  page :
+//    PAGE_SYM S* IDENT? pseudo_page? S* 
+//    '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
+//
     private void page(Stylesheet stylesheet) throws IOException {
         //System.out.println("page()");
         Token t = next();
@@ -368,24 +456,36 @@ public class CSSParser {
             if (t == Token.TK_PAGE_SYM) {
                 skip_whitespace();
                 t = la();
+                if (t == Token.TK_IDENT) {
+                    String pageName = getTokenValue(t);
+                    if (pageName.equals("auto")) {
+                        throw new CSSParseException("page name may not be auto", getCurrentLine());
+                    }
+                    next();
+                    pageRule.setName(pageName);
+                    t = la();
+                }
                 if (t == Token.TK_COLON) {
                     pageRule.setPseudoPage(pseudo_page());
                 }
                 Ruleset ruleset = new Ruleset(stylesheet.getOrigin());
-                // HACK temporary
-                ruleset.setSelectorText(pageRule.getPseudoPage());
                 
                 skip_whitespace();
                 t = next();
                 if (t == Token.TK_LBRACE) {
-                    skip_whitespace();
-                    declaration_list(ruleset, false);
-                    t = next();
-                    if (t == Token.TK_RBRACE) {
+                    LOOP:
+                    while (true) {
                         skip_whitespace();
-                    } else {
-                        push(t);
-                        throw new CSSParseException(t, Token.TK_RBRACE, getCurrentLine());
+                        t = la();
+                        if (t == Token.TK_RBRACE) {
+                            next();
+                            skip_whitespace();
+                            break LOOP;
+                        } else if (t == Token.TK_AT_RULE) {
+                            margin(stylesheet, pageRule);
+                        } else {
+                            declaration_list(ruleset, false, true);
+                        }
                     }
                 } else {
                     push(t);
@@ -404,6 +504,48 @@ public class CSSParser {
         }
     }
     
+//  margin :
+//    margin_sym S* '{' declaration [ ';' S* declaration? ]* '}' S*
+//    ;
+    private void margin(Stylesheet stylesheet, PageRule pageRule) throws IOException {
+        Token t = next();
+        if (t != Token.TK_AT_RULE) {
+            error(new CSSParseException(t, Token.TK_AT_RULE, getCurrentLine()), "at rule", true);
+            recover(true, false);
+            return;
+        }
+        String name = getTokenValue(t);
+        MarginBoxName marginBoxName = MarginBoxName.valueOf(name);
+        if (marginBoxName == null) {
+            error(new CSSParseException(name + " is not a valid margin box name", getCurrentLine()), "at rule", true);
+            recover(true, false);
+            return;
+        }
+        
+        skip_whitespace();
+        try {
+            t = next();
+            if (t == Token.TK_LBRACE) {
+                skip_whitespace();
+                Ruleset ruleset = new Ruleset(stylesheet.getOrigin());
+                declaration_list(ruleset, false, false);
+                t = next();
+                if (t != Token.TK_RBRACE) {
+                    push(t);
+                    throw new CSSParseException(t, Token.TK_RBRACE, getCurrentLine());
+                }
+                pageRule.addMarginBoxProperties(marginBoxName, ruleset.getPropertyDeclarations());
+            } else {
+                push(t);
+                throw new CSSParseException(t, Token.TK_LBRACE, getCurrentLine());
+            }
+        } catch (CSSParseException e) {
+            error(e, "margin box", true);
+            recover(false, false);
+        }
+    }
+    
+    
 //  pseudo_page
 //    : ':' IDENT
 //    ;
@@ -415,6 +557,9 @@ public class CSSParser {
             t = next();
             if (t == Token.TK_IDENT) {
                 result = getTokenValue(t);
+                if (! (result.equals("first") || result.equals("left") || result.equals("right"))) {
+                    throw new CSSParseException("Pseudo page must be one of first, left, or right", getCurrentLine());
+                }
             } else {
                 push(t);
                 throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
@@ -423,7 +568,7 @@ public class CSSParser {
             push(t);
             throw new CSSParseException(t, Token.TK_COLON, getCurrentLine());
         }
-        return ':' + result;
+        return result;
     }
 //  operator
 //    : '/' S* | COMMA S* | /* empty */
@@ -499,7 +644,7 @@ public class CSSParser {
     
 //  declaration_list
 //    : [ declaration ';' S* ]*
-    private void declaration_list(Ruleset ruleset, boolean expectEOF) throws IOException {
+    private void declaration_list(Ruleset ruleset, boolean expectEOF, boolean expectAtRule) throws IOException {
         //System.out.println("declaration_list()");
         Token t;
         LOOP:
@@ -512,6 +657,12 @@ public class CSSParser {
                     continue;
                 case Token.RBRACE:
                     break LOOP;
+                case Token.AT_RULE:
+                    if (expectAtRule) {
+                        break LOOP;
+                    } else {
+                        declaration(ruleset);
+                    }
                 case Token.EOF:
                     if (expectEOF) {
                         break LOOP;
@@ -547,7 +698,7 @@ public class CSSParser {
             t = next();
             if (t == Token.TK_LBRACE) {
                 skip_whitespace();
-                declaration_list(ruleset, false);
+                declaration_list(ruleset, false, false);
                 t = next();
                 if (t == Token.TK_RBRACE) {
                     skip_whitespace();
@@ -671,7 +822,7 @@ public class CSSParser {
     }
     
 //  simple_selector
-//    : element_name [ HASH | class | attrib | pseudo ]*
+//    : typed_value [ HASH | class | attrib | pseudo ]*
 //    | [ HASH | class | attrib | pseudo ]+
 //    ;
     private Selector simple_selector(Ruleset ruleset) throws IOException {
@@ -682,12 +833,11 @@ public class CSSParser {
         switch (t.getType()) {
             case Token.ASTERISK:
             case Token.IDENT:
-                if (t == Token.TK_IDENT) {
-                    selector.setName(element_name());
-                } else {
-                    // asterisk matches everything
-                    next();
-                }
+            case Token.VERTICAL_BAR:
+                NamespacePair pair = typed_value(false);
+                selector.setNamespaceURI(pair.getNamespaceURI());
+                selector.setName(pair.getName());
+                
                 LOOP: while (true) {
                     t = la();
                     switch (t.getType()) {
@@ -744,6 +894,65 @@ public class CSSParser {
         return selector;
     }
     
+//    type_selector
+//    : [ namespace_prefix ]? element_name | IDENT
+//    ;
+//    namespace_prefix
+//    : [ IDENT | '*' ]? '|'
+//    ;
+    private NamespacePair typed_value(boolean matchAttribute) throws IOException {
+        String prefix = null;
+        String name = null;
+
+        Token t = la();
+        if (t == Token.TK_ASTERISK || t == Token.TK_IDENT) {
+            next();
+            if (t == Token.TK_IDENT) {
+                name = getTokenValue(t, true);
+            }
+            t = la();
+        } else if (t == Token.TK_VERTICAL_BAR) {
+            prefix = TreeResolver.NO_NAMESPACE;
+        } else {
+            throw new CSSParseException(
+                    t, new Token[] { Token.TK_ASTERISK, Token.TK_IDENT, Token.TK_VERTICAL_BAR }, 
+                    getCurrentLine());
+        }
+        
+        if (t == Token.TK_VERTICAL_BAR) {
+            next();
+            t = next();
+            if (t == Token.TK_ASTERISK || t == Token.TK_IDENT) {
+                if (prefix == null) {
+                    prefix = name;
+                }
+                if (t == Token.TK_IDENT) {
+                    name = getTokenValue(t, true);
+                }
+            } else {
+                throw new CSSParseException(
+                        t, new Token[] { Token.TK_ASTERISK, Token.TK_IDENT }, getCurrentLine());                
+            }
+        }
+        
+        String namespaceURI = null;
+        if (prefix != null && prefix != TreeResolver.NO_NAMESPACE) {
+            namespaceURI = (String)_namespaces.get(prefix.toLowerCase());
+            if (namespaceURI == null) {
+                throw new CSSParseException("There is no namespace with prefix " + prefix + " defined", 
+                        getCurrentLine());
+            }
+        } else if (prefix == null && ! matchAttribute) {
+            namespaceURI = (String)_namespaces.get(null);
+        }
+        
+        if (matchAttribute && name == null) {
+            throw new CSSParseException("An attribute name is required", getCurrentLine());
+        }
+        
+        return new NamespacePair(namespaceURI, name);
+    }
+    
 //  class
 //    : '.' IDENT
 //    ;
@@ -767,6 +976,7 @@ public class CSSParser {
 //  element_name
 //    : IDENT | '*'
 //    ;
+    /*
     private String element_name() throws IOException {
         //System.out.println("element_name()");
         Token t = next();
@@ -778,26 +988,38 @@ public class CSSParser {
                     t, new Token[] { Token.TK_IDENT, Token.TK_ASTERISK }, getCurrentLine());
         }
     }
+    */
     
-//  attrib
-//    : '[' S* IDENT S* [ [ '=' | INCLUDES | DASHMATCH ] S*
-//      [ IDENT | STRING ] S* ]? ']'
+//    attrib
+//    : '[' S* [ namespace_prefix ]? IDENT S*
+//          [ [ PREFIXMATCH |
+//              SUFFIXMATCH |
+//              SUBSTRINGMATCH |
+//              '=' |
+//              INCLUDES |
+//              DASHMATCH ] S* [ IDENT | STRING ] S*
+//          ]? ']'
 //    ;
     private void attrib(Selector selector) throws IOException {
         //System.out.println("attrib()");
         Token t = next();
         if (t == Token.TK_LBRACKET) {
             skip_whitespace();
-            t = next();
-            if (t == Token.TK_IDENT) {
+            t = la();
+            if (t == Token.TK_IDENT || t == Token.TK_ASTERISK || t == Token.TK_VERTICAL_BAR) {
                 boolean existenceMatch = true;
-                String attrName = getTokenValue(t, true);
+                NamespacePair pair = typed_value(true);
+                String attrNamespaceURI = pair.getNamespaceURI();
+                String attrName = pair.getName();
                 skip_whitespace();
                 t = la();
                 switch (t.getType()) {
                     case Token.EQUALS:
                     case Token.INCLUDES:
                     case Token.DASHMATCH:
+                    case Token.PREFIXMATCH:
+                    case Token.SUFFIXMATCH:
+                    case Token.SUBSTRINGMATCH:
                         existenceMatch = false;
                         Token selectorType = next();
                         skip_whitespace();
@@ -806,13 +1028,22 @@ public class CSSParser {
                             String value = getTokenValue(t, true);
                             switch (selectorType.getType()) {
                                 case Token.EQUALS:
-                                    selector.addAttributeEqualsCondition(attrName, value);
+                                    selector.addAttributeEqualsCondition(attrNamespaceURI, attrName, value);
                                     break;
                                 case Token.DASHMATCH:
-                                    selector.addAttributeMatchesFirstPartCondition(attrName, value);
+                                    selector.addAttributeMatchesFirstPartCondition(attrNamespaceURI, attrName, value);
                                     break;
                                 case Token.INCLUDES:
-                                    selector.addAttributeMatchesListCondition(attrName, value);
+                                    selector.addAttributeMatchesListCondition(attrNamespaceURI, attrName, value);
+                                    break;
+                                case Token.PREFIXMATCH:
+                                    selector.addAttributePrefixCondition(attrNamespaceURI, attrName, value);
+                                    break;
+                                case Token.SUFFIXMATCH:
+                                    selector.addAttributeSuffixCondition(attrNamespaceURI, attrName, value);
+                                    break;
+                                case Token.SUBSTRINGMATCH:
+                                    selector.addAttributeSubstringCondition(attrNamespaceURI, attrName, value);
                                     break;
                             }
                             skip_whitespace();
@@ -827,18 +1058,19 @@ public class CSSParser {
                         break;
                 }
                 if (existenceMatch) {
-                    selector.addAttributeExistsCondition(attrName);
+                    selector.addAttributeExistsCondition(attrNamespaceURI, attrName);
                 }
                 if (t == Token.TK_RBRACKET) {
                     next();
                 } else {
                     throw new CSSParseException(t, new Token[] { Token.TK_EQUALS,
-                            Token.TK_INCLUDES, Token.TK_DASHMATCH, Token.TK_RBRACKET }, 
+                            Token.TK_INCLUDES, Token.TK_DASHMATCH, Token.TK_PREFIXMATCH,
+                            Token.TK_SUFFIXMATCH, Token.TK_SUBSTRINGMATCH, Token.TK_RBRACKET }, 
                             getCurrentLine());
                 }
             } else {
-                push(t);
-                throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
+                throw new CSSParseException(
+                        t, new Token[] { Token.TK_IDENT, Token.TK_ASTERISK }, getCurrentLine());
             }
         } else {
             push(t);
@@ -858,13 +1090,24 @@ public class CSSParser {
             selector.setPseudoClass(Selector.FOCUS_PSEUDOCLASS);
         } else if (value.equals("first-child")) {
             selector.addFirstChildCondition();
-        } else { // it must be a pseudo-element
+        } else if (CSS21_PSEUDO_ELEMENTS.contains(value)){ 
             selector.setPseudoElement(value);
+        } else {
+            throw new CSSParseException(value + " is not a recognized pseudo-class", getCurrentLine());
+        }
+    }
+    
+    private void addPseudoElement(Token t, Selector selector) {
+        String value = getTokenValue(t);
+        if (SUPPORTED_PSEUDO_ELEMENTS.contains(value)) {
+            selector.setPseudoElement(value);
+        } else {
+            throw new CSSParseException(value + " is not a recognized psuedo-element", getCurrentLine());
         }
     }
     
 //  pseudo
-//    : ':' [ IDENT | FUNCTION S* IDENT? S* ')' ]
+//    : ':' ':'? [ IDENT | FUNCTION S* IDENT? S* ')' ]
 //    ;
     private void pseudo(Selector selector) throws IOException {
         //System.out.println("pseudo()");
@@ -872,6 +1115,10 @@ public class CSSParser {
         if (t == Token.TK_COLON) {
             t = next();
             switch (t.getType()) {
+                case Token.COLON:
+                    t = next();
+                    addPseudoElement(t, selector);
+                    break;
                 case Token.IDENT:
                     addPseudoClassOrElement(t, selector);
                     break;
@@ -1494,6 +1741,7 @@ public class CSSParser {
     
     public void reset(Reader r) {
         _saved = null;
+        _namespaces.clear();
         _lexer.yyreset(r);
         _lexer.setyyline(0);
     }
@@ -1515,6 +1763,7 @@ public class CSSParser {
     }
     
     private String getTokenValue(Token t, boolean literal) {
+        int start;
         int count;
         switch (t.getType()) {
             case Token.STRING:
@@ -1525,7 +1774,7 @@ public class CSSParser {
                 return processEscapes(_lexer.yytext().toCharArray(), 1, count);
             case Token.URI:
                 char[] ch = _lexer.yytext().toCharArray();
-                int start = 4;
+                start = 4;
                 while (ch[start] == '\t' || ch[start] == '\r' || 
                         ch[start] == '\n' || ch[start] == '\f') {
                     start++;
@@ -1553,10 +1802,15 @@ public class CSSParser {
                 }
                 
                 return uriResult;
+            case Token.AT_RULE:
             case Token.IDENT:
             case Token.FUNCTION:
+                start = 0;
                 count = _lexer.yylength();
-                String result = processEscapes(_lexer.yytext().toCharArray(), 0, count);
+                if (t.getType() == Token.AT_RULE) {
+                    start++;
+                }
+                String result = processEscapes(_lexer.yytext().toCharArray(), start, count);
                 if (! literal) {
                     result = result.toLowerCase();
                 }
@@ -1629,5 +1883,23 @@ public class CSSParser {
         }
         
         return result.toString();
+    }
+    
+    private static class NamespacePair {
+        private final String _namespaceURI;
+        private final String _name;
+        
+        public NamespacePair(String namespaceURI, String name) {
+            _namespaceURI = namespaceURI;
+            _name = name;
+        }
+        
+        public String getNamespaceURI() {
+            return _namespaceURI;
+        }
+        
+        public String getName() {
+            return _name;
+        }
     }
 }
