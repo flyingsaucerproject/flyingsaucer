@@ -24,9 +24,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.PropertyValue;
+import org.xhtmlrenderer.layout.CounterFunction;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -66,17 +68,39 @@ public class ContentFunctionFactory {
             return "999";
         }
         
+        protected IdentValue getListStyleType(FSFunction function) {
+            IdentValue result = IdentValue.DECIMAL;
+            
+            List parameters = function.getParameters();
+            if (parameters.size() == 2) {
+                PropertyValue pValue = (PropertyValue)parameters.get(1);
+                IdentValue iValue = IdentValue.valueOf(pValue.getStringValue());
+                if (iValue != null) {
+                    result = iValue;
+                }
+            }
+            
+            return result;
+        }
+        
         protected boolean isCounter(FSFunction function, String counterName) {
             if (function.getName().equals("counter")) {
                 List parameters = function.getParameters();
-                // XXX Not correct, since a counter may have a style parameter too
-                // but we don't have generic counter support (yet)
-                if (parameters.size() == 1) {
+                if (parameters.size() == 1 || parameters.size() == 2) {
                     PropertyValue param = (PropertyValue)parameters.get(0);
-                    if (param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT &&
-                            param.getStringValue().equals(counterName)) {
-                        return true;
+                    if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
+                            ! param.getStringValue().equals(counterName)) {
+                        return false;
                     }
+                    
+                    if (parameters.size() == 2) {
+                        param = (PropertyValue)parameters.get(1);
+                        if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
+                            return false;
+                        }
+                    }
+                    
+                    return true;
                 }
             }
             
@@ -86,7 +110,8 @@ public class ContentFunctionFactory {
     
     private static class PageCounterFunction extends PageNumberFunction implements ContentFunction {
         public String calculate(RenderingContext c, FSFunction function, InlineText text) {
-            return Integer.toString(c.getRootLayer().getRelativePageNo(c) + 1);
+            int value = c.getRootLayer().getRelativePageNo(c) + 1;
+            return CounterFunction.createCounterText(getListStyleType(function), value);
         }
         
         public boolean canHandle(LayoutContext c, FSFunction function) {
@@ -96,7 +121,8 @@ public class ContentFunctionFactory {
     
     private static class PagesCounterFunction extends PageNumberFunction implements ContentFunction {
         public String calculate(RenderingContext c, FSFunction function, InlineText text) {
-            return Integer.toString(c.getRootLayer().getRelativePageCount(c));
+            int value = c.getRootLayer().getRelativePageCount(c);
+            return CounterFunction.createCounterText(getListStyleType(function), value);
         }
 
         public boolean canHandle(LayoutContext c, FSFunction function) {
