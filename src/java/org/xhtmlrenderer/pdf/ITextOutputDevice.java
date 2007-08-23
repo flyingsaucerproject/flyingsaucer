@@ -178,24 +178,37 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (elem != null) {
             NamespaceHandler handler = _sharedContext.getNamespaceHandler();
             String uri = handler.getLinkUri(elem);
-            if (uri != null && uri.length() > 1 && uri.charAt(0) == '#') {
-                String anchor = uri.substring(1);
-                Box target = _sharedContext.getBoxById(anchor);
-                if (target != null) {
-                    PdfDestination dest = createDestination(c, target);
-                    
-                    PdfAction action = new PdfAction();
-                    action.put(PdfName.S, PdfName.GOTO);
-                    action.put(PdfName.D, dest);
+            if (uri != null) {
+            	if (uri.length() > 1 && uri.charAt(0) == '#') {
+                    String anchor = uri.substring(1);
+                    Box target = _sharedContext.getBoxById(anchor);
+                    if (target != null) {
+                        PdfDestination dest = createDestination(c, target);
+                        
+                        PdfAction action = new PdfAction();
+                        action.put(PdfName.S, PdfName.GOTO);
+                        action.put(PdfName.D, dest);
 
-                    com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box);
+                        com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box);
+                        
+                        PdfAnnotation annot = PdfAnnotation.createLink(
+                                _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
+                        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+                        
+                        _writer.addAnnotation(annot);
+                    }
+            	} else if (uri.indexOf("://") != -1) {
+                    PdfAction action = new PdfAction(uri);
                     
-                    PdfAnnotation annot = PdfAnnotation.createLink(
-                            _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
+            		com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box);
+            		
+            		PdfAnnotation annot = PdfAnnotation.createLink(
+            				_writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
+            		
                     annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
                     
                     _writer.addAnnotation(annot);
-                }
+            	}
             }
         }
     }
