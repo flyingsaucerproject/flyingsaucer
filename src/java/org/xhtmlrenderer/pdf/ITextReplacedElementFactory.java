@@ -87,16 +87,16 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
     }
 
     private void saveResult(Element e, RadioButtonFormField result) {
-	_radioButtonsByElem.put(e, result);
-	
-	String fieldName = result.getFieldName(_outputDevice, e);
-	List fields = (List)_radioButtonsByName.get(fieldName);
-	if (fields == null) {
-	    fields = new ArrayList();
-	    _radioButtonsByName.put(fieldName, fields);
+		_radioButtonsByElem.put(e, result);
+
+		String fieldName = result.getFieldName(_outputDevice, e);
+		List fields = (List) _radioButtonsByName.get(fieldName);
+		if (fields == null) {
+			fields = new ArrayList();
+			_radioButtonsByName.put(fieldName, fields);
+		}
+		fields.add(result);
 	}
-	fields.add(result);
-    }
     
     public void reset() {
 		_radioButtonsByElem = new HashMap();
