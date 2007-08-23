@@ -21,10 +21,11 @@ package org.xhtmlrenderer.pdf;
 
 import java.awt.Point;
 
-import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.RenderingContext;
 
-public class BookmarkElement implements ReplacedElement {
+public class BookmarkElement implements ITextReplacedElement {
     private Point _location = new Point(0, 0);
     private String _anchorName;
     
@@ -59,5 +60,8 @@ public class BookmarkElement implements ReplacedElement {
     public boolean isRequiresInteractivePaint() {
         // N/A
         return false;
+    }
+
+    public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     }
 }

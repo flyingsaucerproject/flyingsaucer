@@ -19,6 +19,12 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -28,6 +34,15 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
+    private ITextOutputDevice _outputDevice;
+    
+    private Map _radioButtonsByElem = new HashMap();
+    private Map _radioButtonsByName = new HashMap();
+    
+    public ITextReplacedElementFactory(ITextOutputDevice outputDevice) {
+	_outputDevice = outputDevice;
+    }
+    
     public ReplacedElement createReplacedElement(
             LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight) {
@@ -36,7 +51,8 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
             return null;
         }
         
-        if (e.getNodeName().equals("img")) {
+        String nodeName = e.getNodeName();
+        if (nodeName.equals("img")) {
             FSImage fsImage = uac.getImageResource(e.getAttribute("src")).getImage();
             if (fsImage != null) {
                 if (cssWidth != -1 || cssHeight != -1) {
@@ -44,7 +60,19 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
                 }
                 return new ITextImageElement(fsImage);
             }
-        } else if (e.getNodeName().equals("bookmark")) {
+        } else if (nodeName.equals("input")) {
+            String type = e.getAttribute("type");
+            if (type.equals("checkbox")) {
+        	return new CheckboxFormField(c, box, cssWidth, cssHeight);
+            } else if (type.equals("radio")) {
+        	RadioButtonFormField result = new RadioButtonFormField(
+        		this, c, box, cssWidth, cssHeight);
+        	saveResult(e, result);
+        	return result;
+            } else {
+        	return null;
+            }
+        } else if (nodeName.equals("bookmark")) {
             // HACK Add box as named anchor and return placeholder
             BookmarkElement result = new BookmarkElement();
             if (e.hasAttribute("name")) {
@@ -57,10 +85,51 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         
         return null;
     }
+
+    private void saveResult(Element e, RadioButtonFormField result) {
+	_radioButtonsByElem.put(e, result);
+	
+	String fieldName = result.getFieldName(_outputDevice, e);
+	List fields = (List)_radioButtonsByName.get(fieldName);
+	if (fields == null) {
+	    fields = new ArrayList();
+	    _radioButtonsByName.put(fieldName, fields);
+	}
+	fields.add(result);
+    }
     
     public void reset() {
-    }
+		_radioButtonsByElem = new HashMap();
+		_radioButtonsByName = new HashMap();
+	}
     
     public void remove(Element e) {
-    }
+		RadioButtonFormField field = (RadioButtonFormField) _radioButtonsByElem.remove(e);
+		if (field != null) {
+			String fieldName = field.getFieldName(_outputDevice, e);
+			List values = (List) _radioButtonsByName.get(fieldName);
+			if (values != null) {
+				values.remove(field);
+				if (values.size() == 0) {
+					_radioButtonsByName.remove(fieldName);
+				}
+			}
+		}
+	}
+
+	public void remove(String fieldName) {
+		List values = (List) _radioButtonsByName.get(fieldName);
+		if (values != null) {
+			for (Iterator i = values.iterator(); i.hasNext();) {
+				RadioButtonFormField field = (RadioButtonFormField) i.next();
+				_radioButtonsByElem.remove(field.getBox().getElement());
+			}
+		}
+
+		_radioButtonsByName.remove(fieldName);
+	}
+
+	public List getRadioButtons(String name) {
+		return (List) _radioButtonsByName.get(name);
+	}
 }

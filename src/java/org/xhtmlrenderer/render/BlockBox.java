@@ -838,10 +838,6 @@ public class BlockBox extends Box implements InlinePaintable {
             c.popLayer();
         }
     }
-    
-    protected boolean isMarginAreaRoot() {
-        return false;
-    }
 
     protected boolean isAllowHeightToShrink() {
         return true;
@@ -1875,6 +1871,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.86  2007/08/23 20:52:31  peterbrant
+ * Begin work on AcroForm support
+ *
  * Revision 1.85  2007/08/19 22:22:49  peterbrant
  * Merge R8pbrant changes to HEAD
  *

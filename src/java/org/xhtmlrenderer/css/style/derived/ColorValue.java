@@ -45,4 +45,38 @@ public class ColorValue extends DerivedValue {
     public Color asColor() {
         return _derivedColor;
     }
+    
+    public static Color lightenColor(Color color) {
+        if (color == null) {
+            return null;
+        }
+        
+        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+        float hBase = hsb[0];
+        float sBase = hsb[1];
+        float bBase = hsb[2];
+        
+        float hLighter = hBase;
+        float sLighter = 0.35f*bBase*sBase;
+        float bLighter = 0.6999f + 0.3f*bBase;
+        
+        return Color.getHSBColor(hLighter, sLighter, bLighter);
+    }
+    
+    public static Color darkenColor(Color color) {
+        if (color == null) {
+            return null;
+        }
+        
+        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+        float hBase = hsb[0];
+        float sBase = hsb[1];
+        float bBase = hsb[2];
+        
+        float hDarker = hBase;
+        float sDarker = sBase;
+        float bDarker = 0.56f*bBase;
+        
+        return Color.getHSBColor(hDarker, sDarker, bDarker);
+    }    
 }

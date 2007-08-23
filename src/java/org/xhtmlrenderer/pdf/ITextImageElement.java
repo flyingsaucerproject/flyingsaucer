@@ -20,12 +20,15 @@
 package org.xhtmlrenderer.pdf;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.RenderingContext;
 
-public class ITextImageElement implements ReplacedElement {
+public class ITextImageElement implements ITextReplacedElement {
     private FSImage _image;
     
     private Point _location = new Point(0, 0);
@@ -60,5 +63,14 @@ public class ITextImageElement implements ReplacedElement {
     public boolean isRequiresInteractivePaint() {
         // N/A
         return false;
+    }
+    
+    public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box)
+    {
+        Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+        ReplacedElement element = box.getReplacedElement();
+        outputDevice.drawImage(
+            ((ITextImageElement)element).getImage(),
+            contentBounds.x, contentBounds.y);
     }
 }

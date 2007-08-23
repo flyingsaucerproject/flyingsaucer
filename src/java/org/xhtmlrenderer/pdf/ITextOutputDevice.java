@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -48,7 +48,6 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.OutputDevice;
-import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
@@ -120,6 +119,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     private int _startPageNo;
     
+    private int _nextFormFieldIndex;
+    
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
     }
@@ -128,8 +129,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _writer = writer;
     }
     
-    private PdfWriter getWriter() {
+    public PdfWriter getWriter() {
         return _writer;
+    }
+    
+    public int getNextFormFieldIndex() {
+        return ++_nextFormFieldIndex;
     }
 
     public void initializePage(PdfContentByte currentPage, float height) {
@@ -158,13 +163,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
     
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
-        Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
-        ReplacedElement element = box.getReplacedElement();
-        if (element instanceof ITextImageElement) {
-            drawImage(
-                    ((ITextImageElement)element).getImage(),
-                    contentBounds.x, contentBounds.y);
-        }
+        ITextReplacedElement element = (ITextReplacedElement)box.getReplacedElement();
+        element.paint(c, this, box);
     }
     
     public void paintBackground(RenderingContext c, Box box) {
@@ -188,19 +188,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     action.put(PdfName.S, PdfName.GOTO);
                     action.put(PdfName.D, dest);
 
-                    Rectangle bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
-                    
-                    Point2D docCorner = new Point2D.Double(bounds.x, bounds.y + bounds.height);
-                    Point2D pdfCorner = new Point.Double();
-                    _transform.transform(docCorner, pdfCorner);
-                    pdfCorner.setLocation(pdfCorner.getX(), normalizeY((float)pdfCorner.getY()));
-                    
-                    com.lowagie.text.Rectangle targetArea = 
-                        new com.lowagie.text.Rectangle(
-                                (float)pdfCorner.getX(),
-                                (float)pdfCorner.getY(),
-                                (float)pdfCorner.getX() + bounds.width / _dotsPerPoint,
-                                (float)pdfCorner.getY() + bounds.height / _dotsPerPoint);
+                    com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box);
                     
                     PdfAnnotation annot = PdfAnnotation.createLink(
                             _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
@@ -211,6 +199,49 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             }
         }
     }
+
+    public com.lowagie.text.Rectangle createLocalTargetArea(RenderingContext c, Box box) {
+        Rectangle bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+
+        Point2D docCorner = new Point2D.Double(bounds.x, bounds.y + bounds.height);
+        Point2D pdfCorner = new Point.Double();
+        _transform.transform(docCorner, pdfCorner);
+        pdfCorner.setLocation(pdfCorner.getX(), normalizeY((float) pdfCorner.getY()));
+
+        com.lowagie.text.Rectangle result = new com.lowagie.text.Rectangle(
+                (float) pdfCorner.getX(), (float) pdfCorner.getY(),
+                (float) pdfCorner.getX() + getDeviceLength(bounds.width),
+                (float) pdfCorner.getY() + getDeviceLength(bounds.height));
+        return result;
+    }
+    
+    public com.lowagie.text.Rectangle createTargetArea(RenderingContext c, Box box) {
+        PageBox current = c.getPage();
+        boolean inCurrentPage = box.getAbsY() > current.getTop() && box.getAbsY() < current.getBottom();
+        
+        if (inCurrentPage || box.isContainedInMarginBox()) {
+            return createLocalTargetArea(c, box);
+        } else {
+            Rectangle bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+            PageBox page = _root.getLayer().getPage(c, bounds.y);
+            
+            float bottom = getDeviceLength(page.getBottom() - (bounds.y + bounds.height) +
+                                page.getMarginBorderPadding(c, CalculatedStyle.BOTTOM));
+            float left = getDeviceLength(page.getMarginBorderPadding(c, CalculatedStyle.LEFT) + bounds.x);
+            
+            com.lowagie.text.Rectangle result = 
+                    new com.lowagie.text.Rectangle(
+                            left,
+                            bottom,
+                            left + getDeviceLength(bounds.width),
+                            bottom + getDeviceLength(bounds.height));
+            return result;          
+        }
+    }
+    
+    public float getDeviceLength(float length) {
+        return length / _dotsPerPoint;
+    }
     
     private PdfDestination createDestination(RenderingContext c, Box box) {
         PdfDestination result;
@@ -219,8 +250,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         int distanceFromTop =
             page.getMarginBorderPadding(c, CalculatedStyle.TOP);
         distanceFromTop += box.getAbsY() + box.getMargin(c).top() - page.getTop();
-        result = new PdfDestination(PdfDestination.FITH, 
-                normalizeY(distanceFromTop / _dotsPerPoint));
+        result = new PdfDestination(
+                        PdfDestination.FITH, 
+                        page.getHeight(c) / _dotsPerPoint - distanceFromTop / _dotsPerPoint);
         result.addPage(_writer.getPageReference(_startPageNo + page.getPageNo()+1));
         
         return result;

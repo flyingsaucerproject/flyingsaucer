@@ -115,29 +115,12 @@ public class BorderPropertySet extends RectPropertySet {
      */
     public BorderPropertySet lighten(IdentValue style) {
         BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = lightenColor(_topColor);
-        bc._bottomColor = lightenColor(_bottomColor);
-        bc._leftColor = lightenColor(_leftColor);
-        bc._rightColor = lightenColor(_rightColor);
+        bc._topColor = ColorValue.lightenColor(_topColor);
+        bc._bottomColor = ColorValue.lightenColor(_bottomColor);
+        bc._leftColor = ColorValue.lightenColor(_leftColor);
+        bc._rightColor = ColorValue.lightenColor(_rightColor);
 
         return bc;
-    }
-    
-    private Color lightenColor(Color color) {
-        if (color == null) {
-            return null;
-        }
-        
-        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-        float hBase = hsb[0];
-        float sBase = hsb[1];
-        float bBase = hsb[2];
-        
-        float hLighter = hBase;
-        float sLighter = 0.35f*bBase*sBase;
-        float bLighter = 0.6999f + 0.3f*bBase;
-        
-        return Color.getHSBColor(hLighter, sLighter, bLighter);
     }
 
     /**
@@ -148,28 +131,11 @@ public class BorderPropertySet extends RectPropertySet {
      */
     public BorderPropertySet darken(IdentValue style) {
         BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = darkenColor(_topColor);
-        bc._bottomColor = darkenColor(_bottomColor);
-        bc._leftColor = darkenColor(_leftColor);
-        bc._rightColor = darkenColor(_rightColor);
+        bc._topColor = ColorValue.darkenColor(_topColor);
+        bc._bottomColor = ColorValue.darkenColor(_bottomColor);
+        bc._leftColor = ColorValue.darkenColor(_leftColor);
+        bc._rightColor = ColorValue.darkenColor(_rightColor);
         return bc;
-    }
-    
-    private Color darkenColor(Color color) {
-        if (color == null) {
-            return null;
-        }
-        
-        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-        float hBase = hsb[0];
-        float sBase = hsb[1];
-        float bBase = hsb[2];
-        
-        float hDarker = hBase;
-        float sDarker = sBase;
-        float bDarker = 0.56f*bBase;
-        
-        return Color.getHSBColor(hDarker, sDarker, bDarker);
     }
 
     public static BorderPropertySet newInstance(

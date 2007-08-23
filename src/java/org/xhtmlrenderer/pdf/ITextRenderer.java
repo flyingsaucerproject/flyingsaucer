@@ -81,7 +81,8 @@ public class ITextRenderer {
         ITextFontResolver fontResolver = new ITextFontResolver();
         _sharedContext.setFontResolver(fontResolver);
         
-        ITextReplacedElementFactory replacedElementFactory = new ITextReplacedElementFactory();
+        ITextReplacedElementFactory replacedElementFactory = 
+            new ITextReplacedElementFactory(_outputDevice);
         _sharedContext.setReplacedElementFactory(replacedElementFactory);
         
         _sharedContext.setTextRenderer(new ITextTextRenderer());
