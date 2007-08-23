@@ -90,7 +90,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 		_radioButtonsByElem.put(e, result);
 
 		String fieldName = result.getFieldName(_outputDevice, e);
-		List fields = (List) _radioButtonsByName.get(fieldName);
+		List fields = (List)_radioButtonsByName.get(fieldName);
 		if (fields == null) {
 			fields = new ArrayList();
 			_radioButtonsByName.put(fieldName, fields);
@@ -104,10 +104,10 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 	}
     
     public void remove(Element e) {
-		RadioButtonFormField field = (RadioButtonFormField) _radioButtonsByElem.remove(e);
+		RadioButtonFormField field = (RadioButtonFormField)_radioButtonsByElem.remove(e);
 		if (field != null) {
 			String fieldName = field.getFieldName(_outputDevice, e);
-			List values = (List) _radioButtonsByName.get(fieldName);
+			List values = (List)_radioButtonsByName.get(fieldName);
 			if (values != null) {
 				values.remove(field);
 				if (values.size() == 0) {
@@ -118,10 +118,10 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 	}
 
 	public void remove(String fieldName) {
-		List values = (List) _radioButtonsByName.get(fieldName);
+		List values = (List)_radioButtonsByName.get(fieldName);
 		if (values != null) {
 			for (Iterator i = values.iterator(); i.hasNext();) {
-				RadioButtonFormField field = (RadioButtonFormField) i.next();
+				RadioButtonFormField field = (RadioButtonFormField)i.next();
 				_radioButtonsByElem.remove(field.getBox().getElement());
 			}
 		}
@@ -130,6 +130,6 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 	}
 
 	public List getRadioButtons(String name) {
-		return (List) _radioButtonsByName.get(name);
+		return (List)_radioButtonsByName.get(name);
 	}
 }
