@@ -109,4 +109,12 @@ public class ImageReplacedElement implements ReplacedElement {
     public Image getImage() {
         return _image;
     }
+
+	public int getBaseline() {
+		return 0;
+	}
+
+	public boolean hasBaseline() {
+		return false;
+	}
 }

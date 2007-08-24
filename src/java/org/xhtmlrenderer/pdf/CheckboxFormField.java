@@ -122,4 +122,12 @@ public class CheckboxFormField extends AbstractFormField {
 	private float reduce(float value) {
 		return Math.min(value, Math.max(2.0f, 0.08f * value));
 	}
+
+	public int getBaseline() {
+		return 0;
+	}
+
+	public boolean hasBaseline() {
+		return false;
+	}
 }

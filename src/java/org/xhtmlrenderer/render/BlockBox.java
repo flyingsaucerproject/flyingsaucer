@@ -1687,13 +1687,18 @@ public class BlockBox extends Box implements InlinePaintable {
         return NO_BASELINE;
     }
 
-    public int calcInlineBaseline() {
-        LineBox lastLine = findLastLineBox();
-        if (lastLine == null) {
-            return getHeight();
-        } else {
-            return lastLine.getAbsY() + lastLine.getBaseline() - getAbsY();
-        }
+    public int calcInlineBaseline(CssContext c) {
+    	if (isReplaced() && getReplacedElement().hasBaseline()) {
+    		Rectangle bounds = getContentAreaEdge(getAbsX(), getAbsY(), c);
+    		return bounds.y + getReplacedElement().getBaseline() - getAbsY();
+    	} else {
+            LineBox lastLine = findLastLineBox();
+            if (lastLine == null) {
+                return getHeight();
+            } else {
+                return lastLine.getAbsY() + lastLine.getBaseline() - getAbsY();
+            }
+    	}
     }
 
     private LineBox findLastLineBox() {
@@ -1871,6 +1876,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.87  2007/08/24 18:36:08  peterbrant
+ * Further progress on AcroForm support
+ *
  * Revision 1.86  2007/08/23 20:52:31  peterbrant
  * Begin work on AcroForm support
  *

@@ -508,7 +508,7 @@ public class InlineBoxing {
 
     private static void positionInlineBlockVertically(
             LayoutContext c, VerticalAlignContext vaContext, BlockBox inlineBlock) {
-        int baseline = inlineBlock.calcInlineBaseline();
+        int baseline = inlineBlock.calcInlineBaseline(c);
         int ascent = baseline;
         int descent = inlineBlock.getHeight() - baseline;
         alignInlineContent(c, inlineBlock, ascent, descent, vaContext);

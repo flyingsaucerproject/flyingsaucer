@@ -62,4 +62,8 @@ public interface ReplacedElement {
      *
      */
     boolean isRequiresInteractivePaint();
+    
+    boolean hasBaseline();
+    
+    int getBaseline();
 }

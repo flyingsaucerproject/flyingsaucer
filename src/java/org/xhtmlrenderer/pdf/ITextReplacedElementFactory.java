@@ -34,59 +34,59 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
-    private ITextOutputDevice _outputDevice;
-    
-    private Map _radioButtonsByElem = new HashMap();
-    private Map _radioButtonsByName = new HashMap();
-    
-    public ITextReplacedElementFactory(ITextOutputDevice outputDevice) {
-	_outputDevice = outputDevice;
-    }
-    
-    public ReplacedElement createReplacedElement(
-            LayoutContext c, BlockBox box,
-            UserAgentCallback uac, int cssWidth, int cssHeight) {
-        Element e = box.getElement();
-        if (e == null) {
-            return null;
-        }
-        
-        String nodeName = e.getNodeName();
-        if (nodeName.equals("img")) {
-            FSImage fsImage = uac.getImageResource(e.getAttribute("src")).getImage();
-            if (fsImage != null) {
-                if (cssWidth != -1 || cssHeight != -1) {
-                    fsImage.scale(cssWidth, cssHeight);
-                }
-                return new ITextImageElement(fsImage);
-            }
-        } else if (nodeName.equals("input")) {
-            String type = e.getAttribute("type");
-            if (type.equals("checkbox")) {
-        	return new CheckboxFormField(c, box, cssWidth, cssHeight);
-            } else if (type.equals("radio")) {
-        	RadioButtonFormField result = new RadioButtonFormField(
-        		this, c, box, cssWidth, cssHeight);
-        	saveResult(e, result);
-        	return result;
-            } else {
-        	return null;
-            }
-        } else if (nodeName.equals("bookmark")) {
-            // HACK Add box as named anchor and return placeholder
-            BookmarkElement result = new BookmarkElement();
-            if (e.hasAttribute("name")) {
-                String name = e.getAttribute("name");
-                c.addBoxId(name, box);
-                result.setAnchorName(name);
-            }
-            return result;
-        }
-        
-        return null;
-    }
+	private ITextOutputDevice _outputDevice;
 
-    private void saveResult(Element e, RadioButtonFormField result) {
+	private Map _radioButtonsByElem = new HashMap();
+	private Map _radioButtonsByName = new HashMap();
+
+	public ITextReplacedElementFactory(ITextOutputDevice outputDevice) {
+		_outputDevice = outputDevice;
+	}
+
+	public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
+			UserAgentCallback uac, int cssWidth, int cssHeight) {
+		Element e = box.getElement();
+		if (e == null) {
+			return null;
+		}
+
+		String nodeName = e.getNodeName();
+		if (nodeName.equals("img")) {
+			FSImage fsImage = uac.getImageResource(e.getAttribute("src"))
+					.getImage();
+			if (fsImage != null) {
+				if (cssWidth != -1 || cssHeight != -1) {
+					fsImage.scale(cssWidth, cssHeight);
+				}
+				return new ITextImageElement(fsImage);
+			}
+		} else if (nodeName.equals("input")) {
+			String type = e.getAttribute("type");
+			if (type.equals("checkbox")) {
+				return new CheckboxFormField(c, box, cssWidth, cssHeight);
+			} else if (type.equals("radio")) {
+				RadioButtonFormField result = new RadioButtonFormField(
+						this, c, box, cssWidth, cssHeight);
+				saveResult(e, result);
+				return result;
+			} else {
+				return new TextFormField(c, box, cssWidth, cssHeight);
+			}
+		} else if (nodeName.equals("bookmark")) {
+			// HACK Add box as named anchor and return placeholder
+			BookmarkElement result = new BookmarkElement();
+			if (e.hasAttribute("name")) {
+				String name = e.getAttribute("name");
+				c.addBoxId(name, box);
+				result.setAnchorName(name);
+			}
+			return result;
+		}
+
+		return null;
+	}
+
+	private void saveResult(Element e, RadioButtonFormField result) {
 		_radioButtonsByElem.put(e, result);
 
 		String fieldName = result.getFieldName(_outputDevice, e);
@@ -97,14 +97,15 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 		}
 		fields.add(result);
 	}
-    
-    public void reset() {
+
+	public void reset() {
 		_radioButtonsByElem = new HashMap();
 		_radioButtonsByName = new HashMap();
 	}
-    
-    public void remove(Element e) {
-		RadioButtonFormField field = (RadioButtonFormField)_radioButtonsByElem.remove(e);
+
+	public void remove(Element e) {
+		RadioButtonFormField field = (RadioButtonFormField)_radioButtonsByElem
+				.remove(e);
 		if (field != null) {
 			String fieldName = field.getFieldName(_outputDevice, e);
 			List values = (List)_radioButtonsByName.get(fieldName);

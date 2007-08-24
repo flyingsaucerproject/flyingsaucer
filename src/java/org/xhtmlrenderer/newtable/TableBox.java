@@ -738,7 +738,7 @@ public class TableBox extends BlockBox {
         return (result == TableCellBox.SPANNING_CELL) ? null : result;
     }
     
-    public int calcInlineBaseline() {
+    public int calcInlineBaseline(CssContext c) {
         int result = 0;
         boolean found = false;
         OUTER:

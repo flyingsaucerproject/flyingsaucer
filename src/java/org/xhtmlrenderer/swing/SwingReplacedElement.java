@@ -62,4 +62,12 @@ public class SwingReplacedElement implements ReplacedElement {
     public boolean isRequiresInteractivePaint() {
         return false;
     }
+
+	public int getBaseline() {
+		return 0;
+	}
+
+	public boolean hasBaseline() {
+		return false;
+	}
 }

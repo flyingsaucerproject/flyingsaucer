@@ -207,4 +207,12 @@ public class RadioButtonFormField extends AbstractFormField {
     public Box getBox() {
         return _box;
     }
+
+	public int getBaseline() {
+		return 0;
+	}
+
+	public boolean hasBaseline() {
+		return false;
+	}
 }

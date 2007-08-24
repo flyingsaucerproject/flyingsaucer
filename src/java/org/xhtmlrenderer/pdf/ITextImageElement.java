@@ -73,4 +73,12 @@ public class ITextImageElement implements ITextReplacedElement {
             ((ITextImageElement)element).getImage(),
             contentBounds.x, contentBounds.y);
     }
+
+	public int getBaseline() {
+		return 0;
+	}
+
+	public boolean hasBaseline() {
+		return false;
+	}
 }

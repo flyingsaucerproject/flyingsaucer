@@ -64,4 +64,12 @@ public class BookmarkElement implements ITextReplacedElement {
 
     public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     }
+
+	public int getBaseline() {
+		return 0;
+	}
+
+	public boolean hasBaseline() {
+		return false;
+	}
 }
