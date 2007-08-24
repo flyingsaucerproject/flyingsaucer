@@ -20,8 +20,10 @@
 package org.xhtmlrenderer.swing;
 
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.event.MouseInputAdapter;
@@ -71,6 +73,10 @@ class MouseTracker extends MouseInputAdapter {
             
             _enabled = false;
         }
+    }
+    
+    public List getListeners() {
+        return new ArrayList(_handlers.keySet());
     }
 
     public void mouseEntered(MouseEvent e) {

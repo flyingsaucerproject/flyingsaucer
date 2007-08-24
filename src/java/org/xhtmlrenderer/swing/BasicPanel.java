@@ -545,6 +545,10 @@ public abstract class BasicPanel extends RootPanel {
         mouseTracker.removeListener(l);
     }
     
+    public List getMouseTrackingListeners() {
+        return mouseTracker.getListeners();
+    }
+    
     protected void resetMouseTracker() {
         mouseTracker.reset();
     }
@@ -554,6 +558,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.115  2007/08/24 22:49:15  peterbrant
+ * Add method to retrieve all FSMouseListener objects attached to a panel
+ *
  * Revision 1.114  2007/08/19 22:22:50  peterbrant
  * Merge R8pbrant changes to HEAD
  *
