@@ -100,8 +100,8 @@ public class TableRowBox extends BlockBox {
         PageBox page = c.getRootLayer().getFirstPage(c, this);
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             TableCellBox cell = (TableCellBox)i.next();
-            int baseline = cell.calcBaseline(c);
-            if (baseline < page.getBottom()) {
+            int baseline = cell.calcBlockBaseline(c);
+            if (baseline != BlockBox.NO_BASELINE && baseline < page.getBottom()) {
                 return false;
             }
         }
