@@ -99,10 +99,6 @@ public class RenderingContext implements CssContext {
         return sharedContext.getTextRenderer();
     }
 
-    public String getMedia() {
-        return sharedContext.getMedia();
-    }
-
     /**
      * Returns true if the currently set media type is paged. Currently returns
      * true only for <i>print</i> , <i>projection</i> , and <i>embossed</i> ,
