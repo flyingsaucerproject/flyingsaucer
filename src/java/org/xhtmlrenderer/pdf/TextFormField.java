@@ -35,58 +35,57 @@ import com.lowagie.text.pdf.PdfFormField;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class TextFormField extends AbstractFormField {
-	private static final String FIELD_TYPE = "Text";
-	
-	private static final int DEFAULT_SIZE = 15;
-	
-	private int _baseline;
-	
-	public TextFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
-		initDimensions(c, box, cssWidth, cssHeight);
-		
-		float fontSize = box.getStyle().getFSFont(c).getSize2D();
-		_baseline = (int)(getHeight() / 2 - (fontSize * 0.3f) + 
-						box.getStyle().getFSFontMetrics(c).getAscent());
-	}	
+    private static final String FIELD_TYPE = "Text";
+    
+    private static final int DEFAULT_SIZE = 15;
+    
+    private int _baseline;
+    
+    public TextFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
+        initDimensions(c, box, cssWidth, cssHeight);
+        
+        float fontSize = box.getStyle().getFSFont(c).getSize2D();
+        _baseline = (int)(getHeight() / 2 + (fontSize * 0.3f));
+    }   
 
-	protected String getFieldType() {
-		return FIELD_TYPE;
-	}
+    protected String getFieldType() {
+        return FIELD_TYPE;
+    }
 
-	public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
-		PdfWriter writer = outputDevice.getWriter();
+    public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
+        PdfWriter writer = outputDevice.getWriter();
 
-		Element elem = box.getElement();
-		PdfFormField field = PdfFormField.createTextField(
-				writer, false, false, getMaxLength(elem));
-		Rectangle targetArea = outputDevice.createLocalTargetArea(c, box); 
-		field.setWidget(
-				targetArea,
-				PdfAnnotation.HIGHLIGHT_INVERT);		
-		field.setFieldName(getFieldName(outputDevice, elem));
-		field.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+        Element elem = box.getElement();
+        PdfFormField field = PdfFormField.createTextField(
+                writer, false, false, getMaxLength(elem));
+        Rectangle targetArea = outputDevice.createLocalTargetArea(c, box); 
+        field.setWidget(
+                targetArea,
+                PdfAnnotation.HIGHLIGHT_INVERT);        
+        field.setFieldName(getFieldName(outputDevice, elem));
+        field.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
 
-		String value = getValue(elem);
-		
-		field.setDefaultValueAsString(value);
-		field.setValueAsString(value);
-		
-		createAppearance(c, outputDevice, box, field, value);
+        String value = getValue(elem);
+        
+        field.setDefaultValueAsString(value);
+        field.setValueAsString(value);
+        
+        createAppearance(c, outputDevice, box, field, value);
 
-		if (isReadOnly(elem)) {
-			field.setFieldFlags(PdfFormField.FF_READ_ONLY);
-		}
+        if (isReadOnly(elem)) {
+            field.setFieldFlags(PdfFormField.FF_READ_ONLY);
+        }
 
-		writer.addAnnotation(field);
-	}
-	
-	private void createAppearance(
-			RenderingContext c, ITextOutputDevice outputDevice, 
-			BlockBox box, PdfFormField field,
-			String value) {
-		PdfWriter writer = outputDevice.getWriter();
-		ITextFSFont font = (ITextFSFont)box.getStyle().getFSFont(c);
-		
+        writer.addAnnotation(field);
+    }
+    
+    private void createAppearance(
+            RenderingContext c, ITextOutputDevice outputDevice, 
+            BlockBox box, PdfFormField field,
+            String value) {
+        PdfWriter writer = outputDevice.getWriter();
+        ITextFSFont font = (ITextFSFont)box.getStyle().getFSFont(c);
+        
         PdfContentByte cb = writer.getDirectContent();
         
         float width = outputDevice.getDeviceLength(getWidth());
@@ -112,16 +111,16 @@ public class TextFormField extends AbstractFormField {
         tp.restoreState();
         tp.endVariableText();
         field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, tp);
-	}
+    }
 
     protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
         if (cssWidth != -1) {
             setWidth(cssWidth);
         } else {
-        	setWidth(c.getTextRenderer().getWidth(
-        			c.getFontContext(),
-        			box.getStyle().getFSFont(c),
-        			spaces(getSize(box.getElement()))));
+            setWidth(c.getTextRenderer().getWidth(
+                    c.getFontContext(),
+                    box.getStyle().getFSFont(c),
+                    spaces(getSize(box.getElement()))));
         }
 
         if (cssHeight != -1) {
@@ -136,53 +135,53 @@ public class TextFormField extends AbstractFormField {
     }
     
     private String spaces(int count) {
-    	StringBuffer result = new StringBuffer(count);
-    	for (int i = 0; i < count; i++) {
-    		result.append(' ');
-    	}
-    	return result.toString();
+        StringBuffer result = new StringBuffer(count);
+        for (int i = 0; i < count; i++) {
+            result.append(' ');
+        }
+        return result.toString();
     }
     
     private int getSize(Element elem) {
-    	String sSize = elem.getAttribute("size");
-    	if (sSize.equals("")) {
-    		return DEFAULT_SIZE;
-    	} else {
-    		try {
-    			return Integer.parseInt(sSize.trim());
-    		} catch (NumberFormatException e) {
-    			return DEFAULT_SIZE;
-    		}
-    	}
+        String sSize = elem.getAttribute("size");
+        if (sSize.equals("")) {
+            return DEFAULT_SIZE;
+        } else {
+            try {
+                return Integer.parseInt(sSize.trim());
+            } catch (NumberFormatException e) {
+                return DEFAULT_SIZE;
+            }
+        }
     }
     
     private int getMaxLength(Element elem) {
-    	String sMaxLen = elem.getAttribute("maxlength");
-    	if (sMaxLen.equals("")) {
-    		return 0;
-    	} else {
-    		try {
-    			return Integer.parseInt(sMaxLen.trim());
-    		} catch (NumberFormatException e) {
-    			return 0;
-    		}
-    	}
+        String sMaxLen = elem.getAttribute("maxlength");
+        if (sMaxLen.equals("")) {
+            return 0;
+        } else {
+            try {
+                return Integer.parseInt(sMaxLen.trim());
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
     }
     
     protected String getValue(Element e) {
-    	String result = e.getAttribute("value");
-    	if (result.trim().equals("")) {
-    		return "";
-    	} else {
-    		return result;
-    	}
+        String result = e.getAttribute("value");
+        if (result.trim().equals("")) {
+            return "";
+        } else {
+            return result;
+        }
     }
 
-	public int getBaseline() {
-		return _baseline;
-	}
+    public int getBaseline() {
+        return _baseline;
+    }
 
-	public boolean hasBaseline() {
-		return true;
-	}
+    public boolean hasBaseline() {
+        return true;
+    }
 }
