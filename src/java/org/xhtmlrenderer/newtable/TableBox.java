@@ -266,31 +266,68 @@ public class TableBox extends BlockBox {
     protected void layoutChildren(LayoutContext c, int contentStart) {
         ensureChildren(c);
         // If we have a running footer, we need its dimensions right away
-        layoutFooterIfNeeded(c);
+        boolean running = c.isPrint() && getStyle().isPaginateTable();
+        if (running) {
+            int headerHeight = layoutRunningHeader(c);
+            int footerHeight = layoutRunningFooter(c);
+            int spacingHeight = footerHeight == 0 ? 0 : getStyle().getBorderVSpacing(c);
+            
+            PageBox first = c.getRootLayer().getFirstPage(c, this);
+            if (getAbsY() + getTy() + headerHeight + footerHeight + spacingHeight > first.getBottom()) {
+                // XXX Performance problem here.  This forces the table
+                // to move to the next page (which we want), but the initial
+                // table layout run still completes (which we don't)                   
+                setNeedPageClear(true);
+            }
+        }
         super.layoutChildren(c, contentStart);
     }
+    
+    private int layoutRunningHeader(LayoutContext c) {
+        int result = 0;
+        if (getChildCount() > 0) {
+            TableSectionBox section = (TableSectionBox)getChild(0);
+            if (section.isHeader()) {
+                c.setNoPageBreak(c.getNoPageBreak() + 1);
+                
+                section.initContainingLayer(c);
+                section.layout(c);
 
-    private void layoutFooterIfNeeded(LayoutContext c) {
+                c.setExtraSpaceTop(c.getExtraSpaceTop() + section.getHeight());
+                
+                result = section.getHeight();
+                
+                section.reset(c);
+
+                c.setNoPageBreak(c.getNoPageBreak() - 1);
+            }
+        }
+        
+        return result;
+    }    
+
+    private int layoutRunningFooter(LayoutContext c) {
+        int result = 0;
         if (getChildCount() > 0) {
             TableSectionBox section = (TableSectionBox)getChild(getChildCount()-1);
             if (section.isFooter()) {
-                boolean running = c.isPrint() && getStyle().isPaginateTable();
-                if (running) {
-                    c.setNoPageBreak(c.getNoPageBreak() + 1);
-                    
-                    section.initContainingLayer(c);
-                    section.layout(c);
+                c.setNoPageBreak(c.getNoPageBreak() + 1);
+                
+                section.initContainingLayer(c);
+                section.layout(c);
 
-                    c.setExtraSpaceBottom(c.getExtraSpaceBottom() + 
-                            section.getHeight() + 
-                            getStyle().getBorderVSpacing(c));
-                    
-                    section.reset(c);
+                c.setExtraSpaceBottom(c.getExtraSpaceBottom() + 
+                        section.getHeight() + 
+                        getStyle().getBorderVSpacing(c));
+                
+                result = section.getHeight();
+                
+                section.reset(c);
 
-                    c.setNoPageBreak(c.getNoPageBreak() - 1);
-                }
+                c.setNoPageBreak(c.getNoPageBreak() - 1);
             }
         }
+        return result;
     }
     
     private boolean isNeedAnalyzePageBreaks() {
@@ -511,6 +548,20 @@ public class TableBox extends BlockBox {
     public TableRowBox getFirstRow() {
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             TableSectionBox section = (TableSectionBox)i.next();
+            if (section.getChildCount() > 0) {
+                return (TableRowBox)section.getChild(0);
+            }
+        }
+        
+        return null;
+    }
+    
+    public TableRowBox getFirstBodyRow() {
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            TableSectionBox section = (TableSectionBox)i.next();
+            if (section.isHeader() || section.isFooter()) {
+                continue;
+            }
             if (section.getChildCount() > 0) {
                 return (TableRowBox)section.getChild(0);
             }

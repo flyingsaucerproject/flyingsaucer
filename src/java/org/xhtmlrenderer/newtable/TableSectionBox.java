@@ -274,14 +274,7 @@ public class TableSectionBox extends BlockBox {
         super.layout(c, contentStart);
         
         if (running) {
-            if (isHeader()) {
-                c.setExtraSpaceTop(c.getExtraSpaceTop() + getHeight());
-            }
             c.setNoPageBreak(c.getNoPageBreak()-1);
-            
-            if (isHeader() && crossesPageBreak(c)) {
-                getTable().setNeedPageClear(true);
-            }
         }
     }
 

@@ -89,7 +89,14 @@ public class TableRowBox extends BlockBox {
         
         if (running) {
             if (isShouldMoveToNextPage(c)) {
-                setNeedPageClear(true);
+                if (getTable().getFirstBodyRow() == this) {
+                    // XXX Performance problem here.  This forces the table
+                    // to move to the next page (which we want), but the initial
+                    // table layout run still completes (which we don't)
+                    getTable().setNeedPageClear(true);
+                } else {
+                    setNeedPageClear(true);
+                }
             }
             c.setExtraSpaceTop(prevExtraTop);
             c.setExtraSpaceBottom(prevExtraBottom);

@@ -352,7 +352,7 @@ public class TableCellBox extends BlockBox {
             if (c.getPageNo() == contentLimitContainer.getInitialPageNo()) {
                 top = result.y;
             } else {
-                top = limit.getTop() - ((TableRowBox)getParent()).getExtraSpaceTop();
+                top = limit.getTop() - ((TableRowBox)getParent()).getExtraSpaceTop() ;
             }
             
             int bottom;
