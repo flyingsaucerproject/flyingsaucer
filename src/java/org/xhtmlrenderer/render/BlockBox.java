@@ -694,7 +694,6 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
     
-    /*
     private void calcExtraPageClearance(LayoutContext c) {
         if (c.getExtraSpaceTop() > 0 && (getStyle().isSpecifiedAsBlock() || getStyle().isListItem())) {
             PageBox first = c.getRootLayer().getFirstPage(c, this);
@@ -706,7 +705,6 @@ public class BlockBox extends Box implements InlinePaintable {
             }
         }
     }
-    */
 
     private void addBoxID(LayoutContext c) {
         if (! isAnonymous()) {
@@ -758,7 +756,7 @@ public class BlockBox extends Box implements InlinePaintable {
         collapseMargins(c);
 
         calcClearance(c);
-        /* calcExtraPageClearance(c); */
+        calcExtraPageClearance(c);
 
         if (c.isPrint()) {
             PageBox firstPage = c.getRootLayer().getFirstPage(c, this);
@@ -1876,6 +1874,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.88  2007/08/27 19:28:50  peterbrant
+ * Enable extra page clearance calculation
+ *
  * Revision 1.87  2007/08/24 18:36:08  peterbrant
  * Further progress on AcroForm support
  *
