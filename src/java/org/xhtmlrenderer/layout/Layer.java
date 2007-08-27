@@ -77,6 +77,7 @@ public class Layer {
     private boolean _requiresLayout;
     
     private List _pages;
+    private PageBox _lastRequestedPage = null;
     
     private Set _pageSequences;
     private List _sortedPageSequences;
@@ -813,6 +814,12 @@ public class Layer {
         if (yOffset < 0) {
             return null;
         } else {
+            PageBox lastRequested = getLastRequestedPage();
+            if (lastRequested != null) {
+                if (yOffset >= lastRequested.getTop() && yOffset < lastRequested.getBottom()) {
+                    return lastRequested;
+                }
+            }
             PageBox last = (PageBox) pages.get(pages.size()-1);
             if (yOffset < last.getBottom()) {
                 // The page we're looking for is probably at the end of the
@@ -823,6 +830,7 @@ public class Layer {
                 for (int i = count-1; i >= 0 && i >= count-5; i--) {
                     PageBox pageBox = (PageBox)pages.get(i);
                     if (yOffset >= pageBox.getTop() && yOffset < pageBox.getBottom()) {
+                        setLastRequestedPage(pageBox);
                         return pageBox;
                     }
                 }
@@ -835,6 +843,7 @@ public class Layer {
                     PageBox pageBox = (PageBox)pages.get(mid);
                     
                     if (yOffset >= pageBox.getTop() && yOffset < pageBox.getBottom()) {
+                        setLastRequestedPage(pageBox);
                         return pageBox;
                     }
                     
@@ -846,7 +855,9 @@ public class Layer {
                 }
             } else {
                 addPagesUntilPosition(c, yOffset);
-                return (PageBox) pages.get(pages.size()-1);
+                PageBox result = (PageBox) pages.get(pages.size()-1);
+                setLastRequestedPage(result);
+                return result;
             }
         }
         
@@ -1176,5 +1187,13 @@ public class Layer {
 
     public void setSelectionStartY(int selectionStartY) {
         _selectionStartY = selectionStartY;
+    }
+
+    private PageBox getLastRequestedPage() {
+        return _lastRequestedPage;
+    }
+
+    private void setLastRequestedPage(PageBox lastRequestedPage) {
+        _lastRequestedPage = lastRequestedPage;
     }
 }
