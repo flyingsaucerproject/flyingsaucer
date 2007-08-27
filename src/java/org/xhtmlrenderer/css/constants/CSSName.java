@@ -281,13 +281,13 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_TABLE_PAGINATION =
+    public final static CSSName FS_TABLE_PAGINATE =
             addProperty(
-                    "-fs-table-pagination",
+                    "-fs-table-paginate",
                     PRIMITIVE,
                     "auto",
                     NOT_INHERITED,
-                    new PrimitivePropertyBuilders.FSTablePagination()
+                    new PrimitivePropertyBuilders.FSTablePaginate()
             );    
 
     /**
@@ -1652,6 +1652,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2007/08/27 19:44:06  peterbrant
+ * Rename -fs-table-pagination to -fs-table-paginate
+ *
  * Revision 1.33  2007/08/19 22:22:51  peterbrant
  * Merge R8pbrant changes to HEAD
  *

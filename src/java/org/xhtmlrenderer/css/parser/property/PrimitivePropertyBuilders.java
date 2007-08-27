@@ -892,7 +892,7 @@ public class PrimitivePropertyBuilders {
     public static class FSTableCellRowspan extends ColOrRowSpan {
     }
     
-    public static class FSTablePagination extends SingleIdent {
+    public static class FSTablePaginate extends SingleIdent {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.PAGINATE, IdentValue.AUTO });
         

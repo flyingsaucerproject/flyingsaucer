@@ -1138,7 +1138,7 @@ public class CalculatedStyle {
     }
     
     public boolean isPaginateTable() {
-        return isIdent(CSSName.FS_TABLE_PAGINATION, IdentValue.PAGINATE);
+        return isIdent(CSSName.FS_TABLE_PAGINATE, IdentValue.PAGINATE);
     }
 
 }// end class
@@ -1147,6 +1147,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.99  2007/08/27 19:44:06  peterbrant
+ * Rename -fs-table-pagination to -fs-table-paginate
+ *
  * Revision 1.98  2007/08/19 22:22:53  peterbrant
  * Merge R8pbrant changes to HEAD
  *
