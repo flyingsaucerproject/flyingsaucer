@@ -284,6 +284,30 @@ public class PrimitivePropertyBuilders {
         }
     }
     
+    private static class PlainInteger extends AbstractPropertyBuilder {
+        public List buildDeclarations(
+                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+            checkValueCount(cssName, 1, values.size());
+            PropertyValue value = (PropertyValue)values.get(0);
+            checkInheritAllowed(value, inheritAllowed);
+            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+                checkInteger(cssName, value);
+                
+                if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
+                    throw new CSSParseException(cssName + " may not be negative", -1);
+                }                
+            }
+            
+            return Collections.singletonList(
+                    new PropertyDeclaration(cssName, value, important, origin));
+
+        }
+        
+        protected boolean isNegativeValuesAllowed() {
+            return true;
+        }        
+    }    
+    
     private static class Length extends AbstractPropertyBuilder {
         public List buildDeclarations(
                 CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
@@ -989,6 +1013,12 @@ public class PrimitivePropertyBuilders {
     public static class MinWidth extends NonNegativeLengthLike {
     }
     
+    public static class Orphans extends PlainInteger {
+        protected boolean isNegativeValuesAllowed() {
+            return false;
+        }
+    }
+    
     public static class Overflow extends SingleIdent {
         // visible | hidden | scroll | auto | inherit  
         private static final BitSet ALLOWED = setFor(
@@ -1256,6 +1286,12 @@ public class PrimitivePropertyBuilders {
     }
     
     public static class Width extends LengthLikeWithAuto {
+        protected boolean isNegativeValuesAllowed() {
+            return false;
+        }
+    }
+    
+    public static class Widows extends PlainInteger {
         protected boolean isNegativeValuesAllowed() {
             return false;
         }

@@ -908,7 +908,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
         switch (getChildrenContentType()) {
             case CONTENT_INLINE:
-                InlineBoxing.layoutContent(c, this, contentStart);
+                layoutInlineChildren(c, contentStart, 0, true);
                 break;
             case CONTENT_BLOCK:
                 BlockBoxing.layoutContent(c, this, contentStart);
@@ -924,7 +924,77 @@ public class BlockBox extends Box implements InlinePaintable {
 
         setState(Box.DONE);
     }
+    
+    protected void layoutInlineChildren(
+            LayoutContext c, int contentStart, int breakAtLine, boolean tryAgain) {
+        InlineBoxing.layoutContent(c, this, contentStart, breakAtLine);
+        
+        if (c.isPrint() && getChildCount() > 1) {
+            satisfyWidowsAndOrphans(c, contentStart, tryAgain);
+        }
+    }
 
+    private void satisfyWidowsAndOrphans(LayoutContext c, int contentStart, boolean tryAgain) {
+        LineBox firstLineBox = (LineBox)getChild(0);
+        PageBox firstPage = c.getRootLayer().getFirstPage(c, firstLineBox);
+        
+        int noContentLBs = 0;
+        int i = 0;
+        int cCount = getChildCount();
+        while (i < cCount) {
+            LineBox lB = (LineBox)getChild(i);
+            if (lB.getAbsY() >= firstPage.getBottom()) {
+                break;
+            }
+            if (! lB.isContainsContent()) {
+                noContentLBs++;
+            }
+            i++;
+        }
+        
+        if (i != cCount) {
+            int orphans = (int)getStyle().asFloat(CSSName.ORPHANS);
+            if (i - noContentLBs < orphans) {
+                setNeedPageClear(true);
+            } else {
+                LineBox lastLineBox = (LineBox)getChild(cCount-1);
+                List pages = c.getRootLayer().getPages();
+                PageBox lastPage = (PageBox)pages.get(firstPage.getPageNo()+1);
+                while (lastPage.getPageNo() != pages.size() - 1 && 
+                        lastPage.getTop() < lastLineBox.getAbsY()) {
+                    lastPage = (PageBox)pages.get(lastPage.getPageNo()+1);
+                }
+                
+                noContentLBs = 0;
+                i = cCount-1;
+                while (i >= 0 && ((LineBox)getChild(i)).getAbsY() >= lastPage.getTop()) {
+                    LineBox lB = (LineBox)getChild(i);
+                    if (lB.getAbsY() < lastPage.getTop()) {
+                        break;
+                    }
+                    if (! lB.isContainsContent()) {
+                        noContentLBs++;
+                    }
+                    i--;
+                }
+                
+                int widows = (int)getStyle().asFloat(CSSName.WIDOWS);
+                if (cCount - 1 - i - noContentLBs < widows) {
+                    if (cCount - 1 - widows < orphans) {
+                        setNeedPageClear(true);
+                    } else if (tryAgain) {
+                        int breakAtLine = cCount - 1 - widows;
+                        
+                        resetChildren(c);
+                        removeAllChildren();
+                        
+                        layoutInlineChildren(c, contentStart, breakAtLine, false);
+                    }
+                }
+            }
+        }
+    }
+    
     public int getChildrenContentType() {
         return _childrenContentType;
     }
@@ -1874,6 +1944,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.89  2007/08/28 22:31:26  peterbrant
+ * Implement widows and orphans properties
+ *
  * Revision 1.88  2007/08/27 19:28:50  peterbrant
  * Enable extra page clearance calculation
  *

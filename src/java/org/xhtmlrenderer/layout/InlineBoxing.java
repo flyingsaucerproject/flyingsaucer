@@ -54,7 +54,7 @@ public class InlineBoxing {
     private InlineBoxing() {
     }
     
-    public static void layoutContent(LayoutContext c, BlockBox box, int initialY) {
+    public static void layoutContent(LayoutContext c, BlockBox box, int initialY, int breakAtLine) {
         int maxAvailableWidth = box.getContentWidth();
         int remainingWidth = maxAvailableWidth;
 
@@ -114,6 +114,8 @@ public class InlineBoxing {
 
         boolean needFirstLetter = c.getFirstLettersTracker().hasStyles();
         boolean zeroWidthInlineBlock = false;
+        
+        int lineOffset = 0;
         
         for (Iterator i = box.getInlineContent().iterator(); i.hasNext(); ) {
             Styleable node = (Styleable)i.next();
@@ -228,7 +230,8 @@ public class InlineBoxing {
                         saveLine(currentLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, pendingFloats, 
                                 hasFirstLinePEs, pendingInlineLayers, markerData,
-                                contentStart);
+                                contentStart, breakAtLine > 0 && lineOffset == breakAtLine);
+                        lineOffset++;
                         markerData = null;
                         contentStart = 0;
                         if (currentLine.isFirstLine() && hasFirstLinePEs) {
@@ -291,7 +294,9 @@ public class InlineBoxing {
                    if (child.getWidth() > remainingWidth && currentLine.isContainsContent()) {
                        saveLine(currentLine, c, box, minimumLineHeight,
                                maxAvailableWidth, pendingFloats,  hasFirstLinePEs, 
-                               pendingInlineLayers, markerData, contentStart);
+                               pendingInlineLayers, markerData, contentStart,
+                               breakAtLine > 0 && lineOffset == breakAtLine);
+                       lineOffset++;
                        markerData = null;
                        contentStart = 0;
                        previousLine = currentLine;
@@ -335,7 +340,8 @@ public class InlineBoxing {
         currentLine.trimTrailingSpace(c);
         saveLine(currentLine, c, box, minimumLineHeight,
                 maxAvailableWidth, pendingFloats, hasFirstLinePEs,
-                pendingInlineLayers, markerData, contentStart);
+                pendingInlineLayers, markerData, contentStart,
+                breakAtLine > 0 && lineOffset == breakAtLine);
         if (currentLine.isFirstLine() && currentLine.getHeight() == 0 && markerData != null) {
             c.setCurrentMarkerData(markerData);
         }
@@ -719,7 +725,7 @@ public class InlineBoxing {
                                  BlockBox block, int minHeight,
                                  int maxAvailableWidth, List pendingFloats, 
                                  boolean hasFirstLinePCs, List pendingInlineLayers, 
-                                 MarkerData markerData, int contentStart) {
+                                 MarkerData markerData, int contentStart, boolean alwaysBreak) {
         current.setContentStart(contentStart);
         current.prunePendingInlineBoxes();
 
@@ -737,7 +743,7 @@ public class InlineBoxing {
         }
         
         if (c.isPrint()) {
-            current.checkPagePosition(c);
+            current.checkPagePosition(c, alwaysBreak);
         }
         
         alignLine(c, current, maxAvailableWidth);

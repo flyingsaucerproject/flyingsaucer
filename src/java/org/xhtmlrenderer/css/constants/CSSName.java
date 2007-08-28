@@ -679,8 +679,8 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "2",
                     INHERITS,
-                    false,
-                    null
+                    true,
+                    new PrimitivePropertyBuilders.Orphans()
             );
 
     /**
@@ -951,8 +951,8 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "2",
                     INHERITS,
-                    false,
-                    null
+                    true,
+                    new PrimitivePropertyBuilders.Widows()
             );
 
     /**
@@ -1652,6 +1652,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2007/08/28 22:31:26  peterbrant
+ * Implement widows and orphans properties
+ *
  * Revision 1.34  2007/08/27 19:44:06  peterbrant
  * Rename -fs-table-pagination to -fs-table-paginate
  *

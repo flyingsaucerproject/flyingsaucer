@@ -26,7 +26,6 @@ import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
 
@@ -45,7 +44,7 @@ public class AnonymousBlockBox extends BlockBox {
     }
 
     public void layout(LayoutContext c) {
-        InlineBoxing.layoutContent(c, this, 0);
+        layoutInlineChildren(c, 0, 0, true);
     }
 
     public int getContentWidth() {
@@ -110,6 +109,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2007/08/28 22:31:26  peterbrant
+ * Implement widows and orphans properties
+ *
  * Revision 1.25  2007/08/19 22:22:50  peterbrant
  * Merge R8pbrant changes to HEAD
  *

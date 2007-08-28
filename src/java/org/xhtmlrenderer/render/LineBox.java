@@ -95,14 +95,6 @@ public class LineBox extends Box implements InlinePaintable {
         return "LineBox: (" + getAbsX() + "," + getAbsY() + ")->(" + getWidth() + "," + getHeight() + ")";
     }
 
-    public double getAbsTop() {
-        return getAbsY();
-    }
-
-    public double getAbsBottom() {
-        return getAbsY() + getHeight();
-    }
-
     public Rectangle getMarginEdge(CssContext cssCtx, int tx, int ty) {
         Rectangle result = new Rectangle(getX(), getY(), getContentWidth(), getHeight());
         result.translate(tx, ty);
@@ -530,7 +522,7 @@ public class LineBox extends Box implements InlinePaintable {
         container.updateBottom(c, getAbsY() + getHeight());
     }
     
-    public void checkPagePosition(LayoutContext c) {
+    public void checkPagePosition(LayoutContext c, boolean alwaysBreak) {
         if (! c.isPageBreaksAllowed()) {
             return;
         }
@@ -538,7 +530,7 @@ public class LineBox extends Box implements InlinePaintable {
         PageBox pageBox = c.getRootLayer().getFirstPage(c, this);
         if (pageBox != null) {
             boolean needsPageBreak = 
-                getAbsY() + getHeight() >= pageBox.getBottom() - c.getExtraSpaceBottom();
+                alwaysBreak || getAbsY() + getHeight() >= pageBox.getBottom() - c.getExtraSpaceBottom();
                 
            if (needsPageBreak) {
                forcePageBreakBefore(c, IdentValue.ALWAYS, false);
@@ -557,6 +549,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.67  2007/08/28 22:31:26  peterbrant
+ * Implement widows and orphans properties
+ *
  * Revision 1.66  2007/08/19 22:22:49  peterbrant
  * Merge R8pbrant changes to HEAD
  *
