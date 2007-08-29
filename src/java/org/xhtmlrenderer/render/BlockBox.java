@@ -932,6 +932,17 @@ public class BlockBox extends Box implements InlinePaintable {
         if (c.isPrint() && getChildCount() > 1) {
             satisfyWidowsAndOrphans(c, contentStart, tryAgain);
         }
+        
+        if (tryAgain && getStyle().isTextJustify()) {
+            justifyText();
+        }
+    }
+    
+    private void justifyText() {
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            LineBox line = (LineBox)i.next();
+            line.justify();
+        }
     }
 
     private void satisfyWidowsAndOrphans(LayoutContext c, int contentStart, boolean tryAgain) {
@@ -1944,6 +1955,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.90  2007/08/29 22:18:17  peterbrant
+ * Experiment with text justification
+ *
  * Revision 1.89  2007/08/28 22:31:26  peterbrant
  * Implement widows and orphans properties
  *

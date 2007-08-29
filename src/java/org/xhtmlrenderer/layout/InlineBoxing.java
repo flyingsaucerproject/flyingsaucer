@@ -773,7 +773,7 @@ public class InlineBoxing {
     }
 
     private static void alignLine(final LayoutContext c, final LineBox current, final int maxAvailableWidth) {
-        if (! current.isContainsDynamicFunction()) {
+        if (! current.isContainsDynamicFunction() && ! current.getParent().getStyle().isTextJustify()) {
             current.setFloatDistances(new FloatDistances() {
                 public int getLeftFloatDistance() {
                     return c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
@@ -793,8 +793,8 @@ public class InlineBoxing {
                             c, current, maxAvailableWidth));
             current.setFloatDistances(distances);
         }
-        current.align();
-        if (! current.isContainsDynamicFunction()) {
+        current.align(false);
+        if (! current.isContainsDynamicFunction() && ! current.getParent().getStyle().isTextJustify()) {
             current.setFloatDistances(null);
         }
     }

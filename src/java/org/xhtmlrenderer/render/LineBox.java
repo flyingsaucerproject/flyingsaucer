@@ -50,6 +50,9 @@ import org.xhtmlrenderer.util.XRLog;
  * added while laying out the line.
  */
 public class LineBox extends Box implements InlinePaintable {
+    private static final float JUSTIFY_NON_SPACE_SHARE = 0.20f;
+    private static final float JUSTIFY_SPACE_SHARE = 1 - JUSTIFY_NON_SPACE_SHARE;
+    
     private boolean _containsContent;
     private boolean _containsBlockLevelContent;
     
@@ -69,6 +72,8 @@ public class LineBox extends Box implements InlinePaintable {
     private int _contentStart;
     
     private int _baseline;
+    
+    private JustificationInfo _justificationInfo;
     
     public LineBox() {
     }
@@ -111,7 +116,7 @@ public class LineBox extends Box implements InlinePaintable {
             int totalLineWidth = InlineBoxing.positionHorizontally(c, this, 0);
             setContentWidth(totalLineWidth);
             calcChildLocations();
-            align();
+            align(true);
         }
         
         if (_textDecorations != null) {
@@ -163,16 +168,17 @@ public class LineBox extends Box implements InlinePaintable {
         _containsContent = containsContent;
     }
     
-    public void align() {
+    public void align(boolean dynamic) {
         IdentValue align = getParent().getStyle().getIdent(CSSName.TEXT_ALIGN);
-        
-        // TODO implement text-align: justify
         
         int calcX = 0;
         
         if (align == IdentValue.LEFT || align == IdentValue.JUSTIFY) {
             int floatDistance = getFloatDistances().getLeftFloatDistance();
             calcX = getContentStart() + floatDistance;
+            if (align == IdentValue.JUSTIFY && dynamic) {
+                justify();
+            }
         } else if (align == IdentValue.CENTER) {
             int leftFloatDistance = getFloatDistances().getLeftFloatDistance();
             int rightFloatDistance = getFloatDistances().getRightFloatDistance();
@@ -191,6 +197,59 @@ public class LineBox extends Box implements InlinePaintable {
             calcCanvasLocation();
             calcChildLocations();
         }
+    }
+    
+    public void justify() {
+        if (! isLastLineWithContent()) {
+            int leftFloatDistance = getFloatDistances().getLeftFloatDistance();
+            int rightFloatDistance = getFloatDistances().getRightFloatDistance();
+            
+            int available = getParent().getContentWidth() - 
+                leftFloatDistance - rightFloatDistance - getContentStart(); 
+            
+            if (available > getContentWidth()) {
+                int toAdd = getContentWidth() - available;
+                
+                CharCounts counts = countJustifiableChars();
+                
+                JustificationInfo info = new JustificationInfo();
+                if (! getParent().getStyle().isIdent(CSSName.LETTER_SPACING, IdentValue.NORMAL)) {
+                    info.setNonSpaceAdjust(0.0f);
+                    info.setSpaceAdjust((float)toAdd / counts.getSpaceCount());
+                } else {
+                    info.setNonSpaceAdjust((float)toAdd * JUSTIFY_NON_SPACE_SHARE / counts.getNonSpaceCount());
+                    info.setNonSpaceAdjust((float)toAdd * JUSTIFY_SPACE_SHARE / counts.getSpaceCount());
+                }
+                
+                setJustificationInfo(info);
+            }
+        }
+    }
+    
+    private boolean isLastLineWithContent() {
+        LineBox current = (LineBox)getNextSibling();
+        while (current != null) {
+            if (current.isContainsContent()) {
+                return false;
+            } else {
+                current = (LineBox)current.getNextSibling();
+            }
+        }
+        
+        return true;
+    }
+    
+    private CharCounts countJustifiableChars() {
+        CharCounts result = new CharCounts();
+        
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            Box b = (Box)i.next();
+            if (b instanceof InlineLayoutBox) {
+                ((InlineLayoutBox)b).countJustifiableChars(result);
+            }
+        }
+        
+        return result;
     }
     
 	public FloatDistances getFloatDistances() {
@@ -543,12 +602,23 @@ public class LineBox extends Box implements InlinePaintable {
            }
         }
     }
+
+    public JustificationInfo getJustificationInfo() {
+        return _justificationInfo;
+    }
+
+    private void setJustificationInfo(JustificationInfo justificationInfo) {
+        _justificationInfo = justificationInfo;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.68  2007/08/29 22:18:18  peterbrant
+ * Experiment with text justification
+ *
  * Revision 1.67  2007/08/28 22:31:26  peterbrant
  * Implement widows and orphans properties
  *

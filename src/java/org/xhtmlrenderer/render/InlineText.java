@@ -291,5 +291,24 @@ public class InlineText {
     private boolean isTrimmedTrailingSpace() {
         return _trimmedTrailingSpace;
     }
+    
+    public void countJustifiableChars(CharCounts counts) {
+        String s = getSubstring();
+        int len = s.length();
+        int spaces = 0;
+        int other = 0;
+        
+        for (int i = 0; i < len; i++) {
+            char c = s.charAt(i);
+            if (c == ' ' || c == '\u00a0' || c == '\u3000') {
+                spaces++;
+            } else {
+                other++;
+            }
+        }
+        
+        counts.setSpaceCount(counts.getSpaceCount() + spaces);
+        counts.setNonSpaceCount(counts.getNonSpaceCount() + other);
+    }
 }
 

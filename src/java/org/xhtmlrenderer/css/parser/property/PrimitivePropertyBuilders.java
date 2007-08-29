@@ -207,6 +207,35 @@ public class PrimitivePropertyBuilders {
         }        
     }
     
+    private static abstract class LengthWithIdent extends AbstractPropertyBuilder {
+        protected abstract BitSet getAllowed();
+        
+        public List buildDeclarations(
+                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+            checkValueCount(cssName, 1, values.size());
+            PropertyValue value = (PropertyValue)values.get(0);
+            checkInheritAllowed(value, inheritAllowed);
+            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+                checkIdentOrLengthType(cssName, value);
+                
+                if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+                    IdentValue ident = checkIdent(cssName, value);
+                    checkValidity(cssName, getAllowed(), ident);
+                } else if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
+                    throw new CSSParseException(cssName + " may not be negative", -1);
+                }
+            }
+            
+            return Collections.singletonList(
+                    new PropertyDeclaration(cssName, value, important, origin));
+
+        }
+        
+        protected boolean isNegativeValuesAllowed() {
+            return true;
+        }
+    }     
+    
     private static abstract class LengthLikeWithIdent extends AbstractPropertyBuilder {
         protected abstract BitSet getAllowed();
         
@@ -395,6 +424,16 @@ public class PrimitivePropertyBuilders {
             return ALLOWED;
         }
     }
+    
+    private static class LengthWithNormal extends LengthWithIdent {
+        // <length> | normal | inherit
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] { IdentValue.NORMAL });
+        
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+    }    
     
     private static class LengthLikeWithNone extends LengthLikeWithIdent {
         // <length> | <percentage> | none | inherit
@@ -943,6 +982,9 @@ public class PrimitivePropertyBuilders {
     public static class Left extends LengthLikeWithAuto {
     }
     
+    public static class LetterSpacing extends LengthWithNormal {
+    }
+    
     public static class LineHeight extends AbstractPropertyBuilder {
         // normal | <number> | <length> | <percentage> | inherit 
         private static final BitSet ALLOWED = setFor(
@@ -1285,17 +1327,20 @@ public class PrimitivePropertyBuilders {
         }         
     }
     
+    public static class Widows extends PlainInteger {
+        protected boolean isNegativeValuesAllowed() {
+            return false;
+        }
+    }    
+    
     public static class Width extends LengthLikeWithAuto {
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
     }
     
-    public static class Widows extends PlainInteger {
-        protected boolean isNegativeValuesAllowed() {
-            return false;
-        }
-    }
+    public static class WordSpacing extends LengthWithNormal {
+    }    
     
     public static class ZIndex extends AbstractPropertyBuilder {
         // auto | <integer> | inherit 

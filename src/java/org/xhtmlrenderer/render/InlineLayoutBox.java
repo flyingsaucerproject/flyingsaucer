@@ -853,4 +853,16 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             }
         }
     }
+    
+    public void countJustifiableChars(CharCounts counts) {
+        boolean justifyThis = getStyle().isTextJustify();
+        for (Iterator i = getInlineChildren().iterator(); i.hasNext(); ) {
+            Object o = i.next();
+            if (o instanceof InlineLayoutBox) {
+                ((InlineLayoutBox)o).countJustifiableChars(counts);
+            } else if (o instanceof InlineText && justifyThis) {
+                ((InlineText)o).countJustifiableChars(counts);
+            }
+        }
+    }
 }

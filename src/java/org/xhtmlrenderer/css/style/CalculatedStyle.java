@@ -1140,6 +1140,12 @@ public class CalculatedStyle {
     public boolean isPaginateTable() {
         return isIdent(CSSName.FS_TABLE_PAGINATE, IdentValue.PAGINATE);
     }
+    
+    public boolean isTextJustify() {
+        return isIdent(CSSName.TEXT_ALIGN, IdentValue.JUSTIFY) && 
+                ! (isIdent(CSSName.WHITE_SPACE, IdentValue.PRE) ||
+                        isIdent(CSSName.WHITE_SPACE, IdentValue.PRE_LINE));
+    }
 
 }// end class
 
@@ -1147,6 +1153,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.100  2007/08/29 22:18:19  peterbrant
+ * Experiment with text justification
+ *
  * Revision 1.99  2007/08/27 19:44:06  peterbrant
  * Rename -fs-table-pagination to -fs-table-paginate
  *

@@ -581,8 +581,8 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "normal",
                     INHERITS,
-                    false,
-                    null
+                    true,
+                    new PrimitivePropertyBuilders.LetterSpacing()
             );
 
     /**
@@ -976,8 +976,8 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "normal",
                     INHERITS,
-                    false,
-                    null
+                    true,
+                    new PrimitivePropertyBuilders.WordSpacing()
             );
 
     /**
@@ -1652,6 +1652,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2007/08/29 22:18:17  peterbrant
+ * Experiment with text justification
+ *
  * Revision 1.35  2007/08/28 22:31:26  peterbrant
  * Implement widows and orphans properties
  *
