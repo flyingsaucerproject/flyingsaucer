@@ -186,7 +186,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         StringBuffer result = new StringBuffer();
         Node current = element.getFirstChild();
         while (current != null) {
-            if (current.getNodeType() == Node.TEXT_NODE) {
+            short nodeType = current.getNodeType();
+            if (nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE) {
                 Text t = (Text)current;
                 result.append(t.getData());
             }

@@ -174,7 +174,8 @@ public class XhtmlForm {
         Node node = e.getFirstChild();
         if (node != null) {
             do {
-                if (node.getNodeType() == Node.TEXT_NODE) {
+                short nodeType = node.getNodeType();
+                if (nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE) {
                     Text text = (Text) node;
                     result.append(text.getData());
                 }

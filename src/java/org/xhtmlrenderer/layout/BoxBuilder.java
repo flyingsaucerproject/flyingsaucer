@@ -1037,7 +1037,8 @@ public class BoxBuilder {
             InlineBox previousIB = null;
             do {
                 Styleable child = null;
-                if (working.getNodeType() == Node.ELEMENT_NODE) {
+                short nodeType = working.getNodeType();
+                if (nodeType == Node.ELEMENT_NODE) {
                     Element element = (Element) working;
                     CalculatedStyle style = sharedContext.getStyle(element);
 
@@ -1107,19 +1108,25 @@ public class BoxBuilder {
                         //I think we need to do this to evaluate counters correctly
                         block.ensureChildren(c);
                     }
-                } else if (working.getNodeType() == Node.TEXT_NODE) {
+                } else if (nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE) {
                     needStartText = false;
                     needEndText = false;
 
-                    Text textNode = (Text) working;
+                    Text textNode = (Text)working;
                     StringBuffer text = new StringBuffer(textNode.getData());
 
                     Node maybeText = textNode;
                     while (true) {
                         maybeText = textNode.getNextSibling();
-                        if (maybeText != null && maybeText.getNodeType() == Node.TEXT_NODE) {
-                            textNode = (Text) maybeText;
-                            text.append(textNode.getData());
+                        if (maybeText != null) {
+                            short maybeNodeType = maybeText.getNodeType();
+                            if (maybeNodeType == Node.TEXT_NODE || 
+                                    maybeNodeType == Node.CDATA_SECTION_NODE) {
+                                textNode = (Text)maybeText;
+                                text.append(textNode.getData());
+                            } else {
+                                break;
+                            }
                         } else {
                             break;
                         }
