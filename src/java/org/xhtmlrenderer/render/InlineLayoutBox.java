@@ -865,4 +865,35 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             }
         }
     }
+    
+    public float adjustHorizontalPosition(JustificationInfo info, float adjust) {
+        float runningTotal = adjust;
+        
+        float result = 0.0f;
+        
+        for (Iterator i = getInlineChildren().iterator(); i.hasNext(); ) {
+            Object o = i.next();
+            
+            if (o instanceof InlineText) {
+                InlineText iT = (InlineText)o;
+                
+                iT.setX(iT.getX() + Math.round(result));
+                
+                float adj = iT.calcTotalAdjustment(info);
+                result += adj;
+                runningTotal += adj;
+            } else {
+                Box b = (Box)o;
+                b.setX(b.getX() + Math.round(runningTotal));
+                
+                if (b instanceof InlineLayoutBox) {
+                    float adj = ((InlineLayoutBox)b).adjustHorizontalPosition(info, runningTotal);
+                    result += adj;
+                    runningTotal += adj;
+                }
+            }
+        }
+        
+        return result;
+    }
 }

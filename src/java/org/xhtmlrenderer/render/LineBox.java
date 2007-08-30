@@ -208,7 +208,7 @@ public class LineBox extends Box implements InlinePaintable {
                 leftFloatDistance - rightFloatDistance - getContentStart(); 
             
             if (available > getContentWidth()) {
-                int toAdd = getContentWidth() - available;
+                int toAdd = available - getContentWidth();
                 
                 CharCounts counts = countJustifiableChars();
                 
@@ -217,13 +217,29 @@ public class LineBox extends Box implements InlinePaintable {
                     info.setNonSpaceAdjust(0.0f);
                     info.setSpaceAdjust((float)toAdd / counts.getSpaceCount());
                 } else {
-                    info.setNonSpaceAdjust((float)toAdd * JUSTIFY_NON_SPACE_SHARE / counts.getNonSpaceCount());
-                    info.setNonSpaceAdjust((float)toAdd * JUSTIFY_SPACE_SHARE / counts.getSpaceCount());
+                    info.setNonSpaceAdjust((float)toAdd * JUSTIFY_NON_SPACE_SHARE / (counts.getNonSpaceCount()-1));
+                    info.setSpaceAdjust((float)toAdd * JUSTIFY_SPACE_SHARE / counts.getSpaceCount());
                 }
+                
+                adjustChildren(info);
                 
                 setJustificationInfo(info);
             }
         }
+    }
+    
+    private void adjustChildren(JustificationInfo info) {
+        float adjust = 0.0f;
+        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            Box b = (Box)i.next();
+            b.setX(b.getX() + Math.round(adjust));
+            
+            if (b instanceof InlineLayoutBox) {
+                adjust += ((InlineLayoutBox)b).adjustHorizontalPosition(info, adjust);
+            }
+        }
+        
+        calcChildLocations();
     }
     
     private boolean isLastLineWithContent() {
@@ -282,7 +298,8 @@ public class LineBox extends Box implements InlinePaintable {
         Box parent = getParent();
         Rectangle result = null;
         if (parent.getStyle().isIdent(
-                CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
+                CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK) || 
+                    getJustificationInfo() != null) {
             result = new Rectangle(
                     getAbsX(), getAbsY() + _paintingTop, 
                     parent.getAbsX() + parent.getTx() + parent.getContentWidth() - getAbsX(), 
@@ -616,6 +633,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.69  2007/08/30 23:14:28  peterbrant
+ * Implement text-align: justify
+ *
  * Revision 1.68  2007/08/29 22:18:18  peterbrant
  * Experiment with text justification
  *

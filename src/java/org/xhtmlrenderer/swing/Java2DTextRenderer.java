@@ -25,6 +25,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
 import java.util.Map;
 
 import org.xhtmlrenderer.extend.FSGlyphVector;
@@ -33,6 +34,7 @@ import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.LineMetricsAdapter;
 import org.xhtmlrenderer.util.Configuration;
 
@@ -87,6 +89,45 @@ public class Java2DTextRenderer implements TextRenderer {
         graphics.drawString( string, (int)x, (int)y );
         if ( graphics.getFont().getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
+        }
+    }
+    
+    public void drawString(
+            OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
+        Object prevHint = null;
+        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        if ( graphics.getFont().getSize() > threshold && level > NONE ) {
+            prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
+        }
+        
+        GlyphVector vector = graphics.getFont().createGlyphVector(
+                graphics.getFontRenderContext(), string);
+        
+        adjustGlyphPositions(string, info, vector);
+        
+        graphics.drawGlyphVector(vector, x, y);
+        
+        if ( graphics.getFont().getSize() > threshold && level > NONE ) {
+            graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
+        }
+    }
+
+    private void adjustGlyphPositions(
+            String string, JustificationInfo info, GlyphVector vector) {
+        float adjust = 0.0f;
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            if (i != 0) {
+                Point2D point = vector.getGlyphPosition(i);
+                vector.setGlyphPosition(
+                        i, new Point2D.Double(point.getX() + adjust, point.getY()));
+            }
+            if (c == ' ' || c == '\u00a0' || c == '\u3000') {
+                adjust += info.getSpaceAdjust();
+            } else {
+                adjust += info.getNonSpaceAdjust();
+            }
         }
     }
     

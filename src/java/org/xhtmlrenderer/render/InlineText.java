@@ -310,5 +310,22 @@ public class InlineText {
         counts.setSpaceCount(counts.getSpaceCount() + spaces);
         counts.setNonSpaceCount(counts.getNonSpaceCount() + other);
     }
+    
+    public float calcTotalAdjustment(JustificationInfo info) {
+        String s = getSubstring();
+        int len = s.length();
+
+        float result = 0.0f;
+        for (int i = 0; i < len; i++) {
+            char c = s.charAt(i);
+            if (c == ' ' || c == '\u00a0' || c == '\u3000') {
+                result += info.getSpaceAdjust();
+            } else {
+                result += info.getNonSpaceAdjust();
+            }
+        }
+        
+        return result;
+    }
 }
 

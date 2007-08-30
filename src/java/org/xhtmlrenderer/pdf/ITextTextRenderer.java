@@ -28,6 +28,7 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.render.JustificationInfo;
 
 import com.lowagie.text.pdf.BaseFont;
 
@@ -37,7 +38,12 @@ public class ITextTextRenderer implements TextRenderer {
     }
 
     public void drawString(OutputDevice outputDevice, String string, float x, float y) {
-        ((ITextOutputDevice)outputDevice).drawString(string, x, y);
+        ((ITextOutputDevice)outputDevice).drawString(string, x, y, null);
+    }
+    
+    public void drawString(
+            OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
+        ((ITextOutputDevice)outputDevice).drawString(string, x, y, info);
     }
 
     public FSFontMetrics getFSFontMetrics(FontContext context, FSFont font, String string) {

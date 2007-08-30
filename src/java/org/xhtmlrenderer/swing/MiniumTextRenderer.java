@@ -31,6 +31,7 @@ import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.LineMetricsAdapter;
 import org.xhtmlrenderer.util.Configuration;
 
@@ -71,6 +72,11 @@ public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer
 
     public void drawString(OutputDevice outputDevice, String string, float x, float y ) {
         renderer.drawString(((Java2DOutputDevice)outputDevice).getGraphics(), string, x, y);
+    }
+    
+    public void drawString(
+            OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
+        renderer.drawString(((Java2DOutputDevice)outputDevice).getGraphics(), string, x, y);        
     }
 
     public void setup(FontContext context) {

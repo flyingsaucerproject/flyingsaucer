@@ -56,6 +56,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
+import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -71,6 +72,7 @@ import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfOutline;
 import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfTextArray;
 import com.lowagie.text.pdf.PdfWriter;
 
 /**
@@ -370,7 +372,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return result;
     }
     
-    public void drawString(String s, float x, float y) {
+    public void drawString(String s, float x, float y, JustificationInfo info) {
         if (s.length() == 0)
             return;
         PdfContentByte cb = _currentPage;
@@ -386,8 +388,33 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         cb.beginText();
         cb.setFontAndSize(_font.getFontDescription().getFont(), _font.getSize2D() / _dotsPerPoint);
         cb.setTextMatrix((float)mx[0], (float)mx[1], (float)mx[2], (float)mx[3], (float)mx[4], (float)mx[5]);
-        cb.showText(s);
+        if (info == null) {
+            cb.showText(s);
+        } else {
+            PdfTextArray array = makeJustificationArray(s, info);
+            cb.showText(array);
+        }
         cb.endText();
+    }
+
+    private PdfTextArray makeJustificationArray(String s, JustificationInfo info) {
+        PdfTextArray array = new PdfTextArray();
+        int len = s.length();
+        for (int i = 0; i < len; i++) {
+            char c = s.charAt(i);
+            array.add(Character.toString(c));
+            if (i != len - 1) {
+                float offset;
+                if (c == ' ' || c == '\u00a0' || c == '\u3000') {
+                    offset = info.getSpaceAdjust();
+                } else {
+                    offset = info.getNonSpaceAdjust();
+                }
+                array.add((-offset / _dotsPerPoint) * 1000 / 
+                            (_font.getSize2D() / _dotsPerPoint));
+            }
+        }
+        return array;
     }
 
     private AffineTransform getTransform() {

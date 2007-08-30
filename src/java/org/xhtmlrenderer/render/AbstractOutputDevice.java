@@ -53,10 +53,26 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         if (text != null && text.length() > 0) {
             setColor(iB.getStyle().getColor());
             setFont(iB.getStyle().getFSFont(c));
-            c.getTextRenderer().drawString(
-                    c.getOutputDevice(),
-                    text,
-                    iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());
+            if (inlineText.getParent().getStyle().isTextJustify()) {
+                JustificationInfo info = inlineText.getParent().getLineBox().getJustificationInfo();
+                if (info != null) {
+                    c.getTextRenderer().drawString(
+                            c.getOutputDevice(),
+                            text,
+                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline(),
+                            info);
+                } else {
+                    c.getTextRenderer().drawString(
+                            c.getOutputDevice(),
+                            text,
+                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());                    
+                }
+            } else {
+                c.getTextRenderer().drawString(
+                        c.getOutputDevice(),
+                        text,
+                        iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());
+            }
         }
 
         if (c.debugDrawFontMetrics()) {
