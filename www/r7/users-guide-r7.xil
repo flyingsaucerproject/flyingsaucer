@@ -40,6 +40,12 @@ p(#toc). Table of Contents
 
 toc. 2 4 #
 
+h2. Document History
+
+Updates to this document:
+
+* 19-08-2007: Corrected sample for how to use UTF-8 fonts when rendering to PDF (PW)
+
 h2. An Introduction to Flying Saucer
 
 h3(fs_heading). What it is  
@@ -585,16 +591,18 @@ It's actually better, since the ${itext} library provides code to parse font fil
 That said, the default encoding is Latin-1; if your content is encoded differently, you may have problems where certain characters are not recognized and don't appear correctly in the output. You will need to specify a different encoding for a specific font, by registering the font with the @ITextRenderer@ instance you're using before you call @setDocument()@. For example, to support Unicode/UTF-8, you'd need  
 
 bcx. {{
+import com.lowagie.text.pdf.BaseFont;
+
 ITextRenderer renderer = new ITextRenderer();
 FontResolver resolver = renderer.getFontResolver();
 resolver.addFont (
     "C:\\WINNT\\Fonts\\ARIALUNI.TTF", 
-    "UTF-8",
+    BaseFont.IDENTITY_H,
     BaseFont.NOT_EMBEDDED
 );
 }}
 
-Where the font supports Unicode characters (in this example).
+Where the font supports Unicode characters (in this example). The @BaseFont@ class in the example comes from the iText library, which you'll of course need in your classpath when compiling.
 
 _Thanks for Manos Bastis for contributing this info and patches._
 
