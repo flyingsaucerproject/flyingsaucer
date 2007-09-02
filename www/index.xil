@@ -10,6 +10,24 @@ _(in 100% Java)_
 
 h2(fs_heading){ clear: left }. News
 
+p{font-size: 14pt}. Release 8 - First Code Drop (R8pre1) 
+
+*Sepetember 2, 2007*: The Flying Saucer team announces Release 8pre1 of the Flying Saucer 100% Java XHTML+CSS renderer, including support for table pagination, margin boxes, running elements, named pages, and more:
+
+* Table pagination.  When turned on (by setting the @-fs-table-pagination@ property to @paginate@ vs. a default of @auto@ ), tables and table cells will be closed (with appropriate borders and padding) when a page ends and reopened when a page starts. Additionally, a table's @thead@ and @tfoot@ will be repeated on each page.
+* Proper support for CSS3 margin boxes - "CSS 3 spec":http://www.w3.org/TR/css3-page/#margin-boxes
+* A few items from the "CSS3 Selectors spec":http://www.w3.org/TR/css3-selectors/
+** Namespace aware CSS matching, for example, with attributes [although this also applies to elements] - "CSS 3 spec":http://www.w3.org/TR/css3-selectors/#attrnmsp
+** Pseudo-elements may now be specified with a double colon - "CSS 3 spec":http://www.w3.org/TR/css3-selectors/#pseudo-elements
+** The new substring selectors - "CSS 3 spec":http://www.w3.org/TR/css3-selectors/#attribute-substrings
+* Named pages - "CSS 3 spec":http://www.w3.org/TR/css3-page/#using-named-pages
+* The background property can now be used in a @page context - "CSS 3 spec":http://www.w3.org/TR/css3-page/#page-properties
+* Running elements "CSS 3 spec":http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#running1
+* A custom property named @-fs-page-sequence@ that takes a value of either @start@ or @auto@ (the default) and allows you to limit the scope of the page and pages counters to a portion of the document
+* A number of bug fixes
+
+We need your feedback. If you're willing to try out code still under active development, please check out R8pre1 and send in your comments. Note that this code may have bugs and is not recommended for production use. 
+
 p{font-size: 14pt}. Release 7 - Final! 
 
 *July 14, 2007*: The Flying Saucer team announces Release 7 of the Flying Saucer 100% Java XHTML+CSS renderer. 
@@ -17,8 +35,10 @@ p{font-size: 14pt}. Release 7 - Final!
 Download:
 
 table(properties){width: 100%}.
-| Binary Zip (2M) | "flyingsaucer-R7final.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip | For using Flying Saucer in your own programs
-| Source Bundle Zip (6M) | "flyingsaucer-R7final-src.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip | Includes source, demo programs, sample code, etc. 
+| *STABLE* | Binary Zip (2M) | "flyingsaucer-R7final.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip | For using Flying Saucer in your own programs
+| *STABLE* | Source Bundle Zip (6M) | "flyingsaucer-R7final-src.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip | Includes source, demo programs, sample code, etc. 
+| *DEVELOPMENT* | Binary Zip (2M) | "flyingsaucer-R8pre1.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre1.zip | For using Flying Saucer in your own programs
+| *DEVELOPMENT* | Source Bundle Zip (6M) | "flyingsaucer-R8pre1-src.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre1-src.zip | Includes source, demo programs, sample code, etc. 
 
 Release 7 features major improvements in rendering accuracy, speed, and overall feature set. This includes:
 
