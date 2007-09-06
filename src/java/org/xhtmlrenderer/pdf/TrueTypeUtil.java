@@ -77,11 +77,20 @@ public class TrueTypeUtil {
         throw new NoSuchFieldException("Could not find tables field");
     }
     
+    private static String getTTCName(String name) {
+        int idx = name.toLowerCase().indexOf(".ttc,");
+        if (idx < 0) {
+            return name;
+        } else {
+            return name.substring(0, idx + 4);
+        }
+    }    
+    
     public static void populateDescription(String path, BaseFont font, FontDescription descr) 
             throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
         RandomAccessFileOrArray rf = null;
         try {
-            rf = new RandomAccessFileOrArray(path);
+            rf = new RandomAccessFileOrArray(getTTCName(path));
             
             Map tables = extractTables(font);
             

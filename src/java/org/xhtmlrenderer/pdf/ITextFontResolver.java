@@ -78,7 +78,7 @@ public class ITextFontResolver implements FontResolver {
     public void addFont(String path, String encoding, boolean embedded) 
             throws DocumentException, IOException {
         String lower = path.toLowerCase();
-        if (lower.endsWith(".otf") || lower.endsWith(".ttf")) {
+        if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
             BaseFont font = BaseFont.createFont(path, encoding, embedded);
             
             String fontFamilyName = TrueTypeUtil.getFamilyName(font);
@@ -97,6 +97,11 @@ public class ITextFontResolver implements FontResolver {
             }
             
             fontFamily.addFontDescription(descr);
+        } else if (lower.endsWith(".ttc")) {
+            String[] names = BaseFont.enumerateTTCNames(path);
+            for (int i = 0; i < names.length; i++) {
+                addFont(path + "," + i, encoding, embedded);
+            }
         } else {
             throw new XRRuntimeException("Unsupported font type");
         }
