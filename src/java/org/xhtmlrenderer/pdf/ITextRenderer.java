@@ -64,6 +64,8 @@ public class ITextRenderer {
     private com.lowagie.text.Document _pdfDoc;
     private PdfWriter _writer;
     
+    private PDFEncryption _pdfEncryption;
+
     public ITextRenderer() {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
     }
@@ -133,7 +135,15 @@ public class ITextRenderer {
                 _sharedContext, _sharedContext.getNamespaceHandler(), 
                 doc, new NullUserInterface());
     }
-    
+
+    public PDFEncryption getPDFEncryption() {
+        return _pdfEncryption;
+    }
+
+    public void setPDFEncryption(PDFEncryption pdfEncryption) {
+        _pdfEncryption = pdfEncryption;
+    }
+
     public void layout() {
         LayoutContext c = newLayoutContext();
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
@@ -219,7 +229,9 @@ public class ITextRenderer {
         com.lowagie.text.Document doc = 
             new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
         PdfWriter writer = PdfWriter.getInstance(doc, os);
-        
+        if (_pdfEncryption != null) {
+            writer.setEncryption(true, _pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(), _pdfEncryption.getAllowedPrivileges());
+        }
         doc.open();
         
         if (! finish) {
