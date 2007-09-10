@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
@@ -71,6 +72,10 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 			} else {
 				return new TextFormField(c, box, cssWidth, cssHeight);
 			}
+		} else if (nodeName.equals("select")) {
+		    return new SelectFormField(c, box, cssWidth, cssHeight);
+		} else if (isTextarea(e)) {
+		    return new TextAreaFormField(c, box, cssWidth, cssHeight);
 		} else if (nodeName.equals("bookmark")) {
 			// HACK Add box as named anchor and return placeholder
 			BookmarkElement result = new BookmarkElement();
@@ -83,6 +88,22 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 		}
 
 		return null;
+	}
+	
+	private boolean isTextarea(Element e) {
+	    if (! e.getNodeName().equals("textarea")) {
+	        return false;
+	    }
+	    
+	    Node n = e.getFirstChild();
+	    while (n != null) {
+	        short nodeType = n.getNodeType();
+	        if (nodeType != Node.TEXT_NODE && nodeType != Node.CDATA_SECTION_NODE) {
+	            return false;
+	        }
+	    }
+	    
+	    return true;
 	}
 
 	private void saveResult(Element e, RadioButtonFormField result) {

@@ -48,6 +48,23 @@ public class TextFormField extends AbstractFormField {
         _baseline = (int)(getHeight() / 2 + (fontSize * 0.3f));
     }   
 
+    protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
+        if (cssWidth != -1) {
+            setWidth(cssWidth);
+        } else {
+            setWidth(c.getTextRenderer().getWidth(
+                    c.getFontContext(),
+                    box.getStyle().getFSFont(c),
+                    spaces(getSize(box.getElement()))));
+        }
+
+        if (cssHeight != -1) {
+            setHeight(cssHeight);
+        } else {
+            setHeight((int) (box.getStyle().getLineHeight(c)));
+        }
+    }    
+
     protected String getFieldType() {
         return FIELD_TYPE;
     }
@@ -111,35 +128,6 @@ public class TextFormField extends AbstractFormField {
         tp.restoreState();
         tp.endVariableText();
         field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, tp);
-    }
-
-    protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
-        if (cssWidth != -1) {
-            setWidth(cssWidth);
-        } else {
-            setWidth(c.getTextRenderer().getWidth(
-                    c.getFontContext(),
-                    box.getStyle().getFSFont(c),
-                    spaces(getSize(box.getElement()))));
-        }
-
-        if (cssHeight != -1) {
-            setHeight(cssHeight);
-        } else {
-            if (cssWidth != -1) {
-                setHeight(cssWidth);
-            } else {
-                setHeight((int) (box.getStyle().getLineHeight(c)));
-            }
-        }
-    }
-    
-    private String spaces(int count) {
-        StringBuffer result = new StringBuffer(count);
-        for (int i = 0; i < count; i++) {
-            result.append(' ');
-        }
-        return result.toString();
     }
     
     private int getSize(Element elem) {

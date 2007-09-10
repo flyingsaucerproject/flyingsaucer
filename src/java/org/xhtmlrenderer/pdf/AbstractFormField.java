@@ -105,6 +105,10 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     protected boolean isReadOnly(Element e) {
         return !e.getAttribute("readonly").equals("");
     }
+    
+    protected boolean isSelected(Element e) {
+        return !e.getAttribute("selected").equals("");
+    }
 
     public void detach(LayoutContext c) {
     }
@@ -152,6 +156,14 @@ public abstract class AbstractFormField implements ITextReplacedElement {
                 setHeight((int) (box.getStyle().getFont(c).size * FONT_SIZE_ADJUSTMENT));
             }
         }
+    }
+
+    protected String spaces(int count) {
+        StringBuffer result = new StringBuffer(count);
+        for (int i = 0; i < count; i++) {
+            result.append(' ');
+        }
+        return result.toString();
     }
 
 }
