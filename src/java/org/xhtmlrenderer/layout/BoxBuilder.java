@@ -430,7 +430,9 @@ public class BoxBuilder {
             LayoutContext c, BlockBox parent, List children, ChildBoxInfo info) {
         IdentValue parentDisplay = parent.getStyle().getIdent(CSSName.DISPLAY);
         IdentValue next = getNextTableNestingLevel(parentDisplay);
-        if (next == null || isAllProperTableNesting(parentDisplay, children)) {
+        if (next == null && parent.isAnonymous() && containsOrphanedTableContent(children)) {
+            resolveChildTableContent(c, parent, children, info, IdentValue.TABLE_CELL);
+        } else if (next == null || isAllProperTableNesting(parentDisplay, children)) {
             if (parent.isAnonymous()) {
                 rebalanceInlineContent(children);
             }
@@ -463,6 +465,21 @@ public class BoxBuilder {
             info.setContainsBlockLevelContent(true);
             resolveChildren(c, parent, childrenWithAnonymous, info);
         }
+    }
+    
+    private static boolean containsOrphanedTableContent(List children) {
+        for (Iterator i = children.iterator(); i.hasNext();) {
+            Styleable child = (Styleable) i.next();
+            IdentValue display = child.getStyle().getIdent(CSSName.DISPLAY);
+            if (display == IdentValue.TABLE_HEADER_GROUP || 
+                    display == IdentValue.TABLE_ROW_GROUP ||
+                    display == IdentValue.TABLE_FOOTER_GROUP ||
+                    display == IdentValue.TABLE_ROW) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static boolean isParentInline(BlockBox box) {
