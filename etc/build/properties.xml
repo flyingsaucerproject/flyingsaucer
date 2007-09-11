@@ -60,6 +60,9 @@
   <property name="src.about.xhtml.dir" location="demos/about/xhtml"/>
   <property name="www.dir" location="www"/>
 
+  <property name="src.log4j.dir" location="${src.dir}/log4j" />
+  <property name="lib.log4j" location="../StaticJars/log4j-1_2_8.jar" />
+
   <property name="nb_profile" location="nb_profile"/>
 	
 	<!-- Compiler flags -->
