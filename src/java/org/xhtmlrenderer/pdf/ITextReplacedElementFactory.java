@@ -33,6 +33,7 @@ import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.swing.EmptyReplacedElement;
 
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
 	private ITextOutputDevice _outputDevice;
@@ -62,7 +63,9 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 			}
 		} else if (nodeName.equals("input")) {
 			String type = e.getAttribute("type");
-			if (type.equals("checkbox")) {
+			if (type.equals("hidden")) {
+			    return new EmptyReplacedElement(0, 0);
+			} else if (type.equals("checkbox")) {
 				return new CheckboxFormField(c, box, cssWidth, cssHeight);
 			} else if (type.equals("radio")) {
 				RadioButtonFormField result = new RadioButtonFormField(
