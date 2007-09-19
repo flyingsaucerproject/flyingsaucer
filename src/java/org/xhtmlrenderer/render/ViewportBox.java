@@ -37,7 +37,7 @@ public class ViewportBox extends BlockBox {
         return _viewport.width;
     }
     
-    public int getHeightXXX() {
+    public int getHeight() {
         return _viewport.height;
     }
     
@@ -59,5 +59,17 @@ public class ViewportBox extends BlockBox {
     
     public BlockBox copyOf() {
         throw new IllegalArgumentException("cannot be copied");
-    }    
+    }
+    
+    public boolean isAutoHeight() {
+        return false;
+    }
+    
+    protected int getCSSHeight(CssContext c) {
+        return _viewport.height;
+    }
+    
+    protected boolean isInitialContainingBlock() {
+        return true;
+    }
 }

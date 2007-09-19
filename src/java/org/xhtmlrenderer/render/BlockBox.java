@@ -1266,13 +1266,13 @@ public class BlockBox extends Box implements InlinePaintable {
     protected int getCSSHeight(CssContext c) {
         if (! isAnonymous()) {
             if (! isAutoHeight()) {
-                if (! getContainingBlock().getStyle().isAutoHeight()) {
-                    return (int) getStyle().getFloatPropertyProportionalHeight(
-                            CSSName.HEIGHT,
-                            getContainingBlock().getStyle().getFloatPropertyProportionalHeight(CSSName.HEIGHT, 0, c),
-                            c);
+                if (getStyle().hasAbsoluteUnit(CSSName.HEIGHT)) {
+                    return (int)getStyle().getFloatPropertyProportionalHeight(CSSName.HEIGHT, 0, c);
                 } else {
-                    return (int) getStyle().getFloatPropertyProportionalHeight(CSSName.HEIGHT, 0, c);
+                    return (int)getStyle().getFloatPropertyProportionalHeight(
+                            CSSName.HEIGHT,
+                            ((BlockBox)getContainingBlock()).getCSSHeight(c),
+                            c);
                 }
             }
         }
@@ -1286,9 +1286,15 @@ public class BlockBox extends Box implements InlinePaintable {
         } else if (getStyle().hasAbsoluteUnit(CSSName.HEIGHT)) {
             return false;
         } else {
-            return ! (getContainingBlock().isStyled() &&
-                    ! getContainingBlock().getStyle().isAutoHeight() &&
-                    getContainingBlock().getStyle().hasAbsoluteUnit(CSSName.HEIGHT));
+            // We have a percentage height, defer to our block parent (if applicable)
+            Box cb = (Box)getContainingBlock();
+            if (cb.isStyled() && (cb instanceof BlockBox)) {
+                return ((BlockBox)cb).isAutoHeight();
+            } else if (cb instanceof BlockBox && ((BlockBox)cb).isInitialContainingBlock()) {
+                return false;
+            } else {
+                return true;
+            }
         }
     }
 
@@ -1925,7 +1931,11 @@ public class BlockBox extends Box implements InlinePaintable {
             
             current++;
         }
-    }     
+    }
+    
+    protected boolean isInitialContainingBlock() {
+        return false;
+    }    
 
     private static class MarginCollapseResult {
         private int maxPositive;
@@ -1955,6 +1965,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.91  2007/09/19 22:50:43  peterbrant
+ * Fix nested percentage height calculations (per report and test case from Simon Buettner)
+ *
  * Revision 1.90  2007/08/29 22:18:17  peterbrant
  * Experiment with text justification
  *
