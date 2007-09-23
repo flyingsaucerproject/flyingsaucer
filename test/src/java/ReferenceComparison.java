@@ -176,9 +176,6 @@ public class ReferenceComparison {
                 return false;
             }
             if (!lineRef.equals(lineOther)) {
-                for (int i = 0; i < lineRef.length(); i++) {
-                    System.out.println(((byte) lineRef.charAt(i)) + "=" + ((byte)lineOther.charAt(i)));
-                }
                 statistics.failedDontMatch(lineRef, lineOther);
                 return false;
             }
