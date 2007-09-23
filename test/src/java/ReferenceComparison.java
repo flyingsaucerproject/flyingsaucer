@@ -65,7 +65,7 @@ public class ReferenceComparison {
             throw new IllegalArgumentException("Source dir. doesn't exist, or not a directory: " + sourceDirectory);
         }
         if (!referenceDir.exists() || !referenceDir.isDirectory()) {
-            throw new IllegalArgumentException("Reference dir. doesn't exist, or not a directory: " + sourceDirectory);
+            throw new IllegalArgumentException("Reference dir. doesn't exist, or not a directory: " + referenceDir);
         }
         if (failedDirectory.exists() && !failedDirectory.isDirectory()) {
             throw new IllegalArgumentException("Need directory for failed matches, not a directory: " + failedDirectory);
