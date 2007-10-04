@@ -188,8 +188,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         PdfDestination dest = createDestination(c, target);
                         
                         PdfAction action = new PdfAction();
-                        action.put(PdfName.S, PdfName.GOTO);
-                        action.put(PdfName.D, dest);
+                        if (!"".equals(handler.getAttributeValue(elem, "onclick"))) {
+                            action = PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
+                        } else {
+                            action.put(PdfName.S, PdfName.GOTO);
+                            action.put(PdfName.D, dest);
+                        }
 
                         com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box);
                         
