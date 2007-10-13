@@ -248,6 +248,7 @@ public abstract class BasicPanel extends RootPanel {
         RenderingContext c = newRenderingContext(g);
 
         PageBox page = (PageBox)root.getPages().get(pageNo);
+        c.setPage(pageNo, page);
         
         page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
         page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
@@ -558,6 +559,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.116  2007/10/13 12:04:09  pdoubleya
+ * Applied patch to fix NPE reported by email https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?listName=users&msgNo=724 with patch proposed by Pete in that thread.
+ *
  * Revision 1.115  2007/08/24 22:49:15  peterbrant
  * Add method to retrieve all FSMouseListener objects attached to a panel
  *
