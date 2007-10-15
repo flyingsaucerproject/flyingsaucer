@@ -929,7 +929,7 @@ public class BlockBox extends Box implements InlinePaintable {
             LayoutContext c, int contentStart, int breakAtLine, boolean tryAgain) {
         InlineBoxing.layoutContent(c, this, contentStart, breakAtLine);
         
-        if (c.isPrint() && getChildCount() > 1) {
+        if (c.isPrint() && c.isPageBreaksAllowed() && getChildCount() > 1) {
             satisfyWidowsAndOrphans(c, contentStart, tryAgain);
         }
         
@@ -1965,6 +1965,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.92  2007/10/15 22:33:44  peterbrant
+ * Only try to satisfy widows and orphans if page breaking is allowed
+ *
  * Revision 1.91  2007/09/19 22:50:43  peterbrant
  * Fix nested percentage height calculations (per report and test case from Simon Buettner)
  *
