@@ -1094,7 +1094,7 @@ public class Layer {
         } else {
             int sequenceStartIndex = getPageSequenceStart(c, sequences, c.getPage());
             if (sequenceStartIndex == -1) {
-                return c.getPageNo();
+                return c.getInitialPageNo() + c.getPageNo();
             } else {
                 BlockBox block = (BlockBox)sequences.get(sequenceStartIndex);
                 return c.getPageNo() - getFirstPage(c, block).getPageNo();

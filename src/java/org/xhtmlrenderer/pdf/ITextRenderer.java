@@ -189,9 +189,13 @@ public class ITextRenderer {
     }
     
     public void writeNextDocument() throws DocumentException {
+        writeNextDocument(0);
+    }
+    public void writeNextDocument(int initialPageNo) throws DocumentException {
         List pages = _root.getLayer().getPages();
         
         RenderingContext c = newRenderingContext();
+        c.setInitialPageNo(initialPageNo);
         PageBox firstPage = (PageBox)pages.get(0);
         com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(
                 0, 0, 

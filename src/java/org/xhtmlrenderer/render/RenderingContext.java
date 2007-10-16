@@ -51,6 +51,8 @@ public class RenderingContext implements CssContext {
     
     private Layer rootLayer;
     
+    private int initialPageNo;
+    
     /**
      * <p/>
      * needs a new instance every run
@@ -219,6 +221,14 @@ public class RenderingContext implements CssContext {
 
     public void setRootLayer(Layer rootLayer) {
         this.rootLayer = rootLayer;
+    }
+
+    public int getInitialPageNo() {
+        return initialPageNo;
+    }
+
+    public void setInitialPageNo(int initialPageNo) {
+        this.initialPageNo = initialPageNo;
     }    
 }
 
