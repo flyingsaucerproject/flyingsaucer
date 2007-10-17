@@ -105,6 +105,11 @@ public class TableRowBox extends BlockBox {
     
     private boolean isShouldMoveToNextPage(LayoutContext c) {
         PageBox page = c.getRootLayer().getFirstPage(c, this);
+        
+        if (getAbsY() + getHeight() < page.getBottom()) {
+            return false;
+        }
+        
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             TableCellBox cell = (TableCellBox)i.next();
             int baseline = cell.calcBlockBaseline(c);
