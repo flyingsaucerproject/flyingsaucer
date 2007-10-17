@@ -374,8 +374,6 @@ public class PageBox {
                     c.setNoPageBreak(0);
                 }
                 _marginAreas[i] = new MarginAreaContainer(area, table);
-                
-                System.out.println(table.dump(c, "", BlockBox.DUMP_RENDER));
             }
         }
     }
