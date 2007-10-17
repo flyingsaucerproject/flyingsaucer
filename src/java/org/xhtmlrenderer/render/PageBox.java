@@ -362,11 +362,20 @@ public class PageBox {
                 table.setContainingBlock(new MarginBox(new Rectangle((int)dim.getWidth(), (int)dim.getHeight())));
                 try {
                     c.setNoPageBreak(1);
+                    
+                    c.reInit(false);
+                    c.pushLayer(table);
+                    c.getRootLayer().addPage(c);
+                    
                     table.layout(c);
+                    
+                    c.popLayer();
                 } finally {
                     c.setNoPageBreak(0);
                 }
                 _marginAreas[i] = new MarginAreaContainer(area, table);
+                
+                System.out.println(table.dump(c, "", BlockBox.DUMP_RENDER));
             }
         }
     }

@@ -154,10 +154,6 @@ public class BoxBuilder {
         result.setAnonymous(true);
         result.setChildrenContentType(BlockBox.CONTENT_BLOCK);
         
-        c.reInit(false);  // HACK, would rather not do this here
-        c.pushLayer(result);
-        c.getRootLayer().addPage(c);
-        
         CalculatedStyle tableSectionStyle = pageStyle.createAnonymousStyle(IdentValue.TABLE_ROW_GROUP);
         TableSectionBox section = (TableSectionBox)createBlockBox(tableSectionStyle, info, false);
         section.setStyle(tableSectionStyle);
