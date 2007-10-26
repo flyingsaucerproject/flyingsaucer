@@ -19,9 +19,12 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -76,18 +79,18 @@ public class ITextFontResolver implements FontResolver {
     }
     
     public void addFont(String path, String encoding, boolean embedded) 
+            throws DocumentException, IOException { 
+        addFont(path, encoding, embedded, null);
+    }
+    
+    public void addFont(String path, String encoding, boolean embedded, String pathToPFB) 
             throws DocumentException, IOException {
         String lower = path.toLowerCase();
         if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
             BaseFont font = BaseFont.createFont(path, encoding, embedded);
             
             String fontFamilyName = TrueTypeUtil.getFamilyName(font);
-            FontFamily fontFamily = (FontFamily)_fontFamilies.get(fontFamilyName);
-            if (fontFamily == null) {
-                fontFamily = new FontFamily();
-                fontFamily.setName(fontFamilyName);
-                _fontFamilies.put(fontFamilyName, fontFamily);
-            }
+            FontFamily fontFamily = getFontFamily(fontFamilyName);
             
             FontDescription descr = new FontDescription(font);
             try {
@@ -102,9 +105,65 @@ public class ITextFontResolver implements FontResolver {
             for (int i = 0; i < names.length; i++) {
                 addFont(path + "," + i, encoding, embedded);
             }
+        } else if (lower.endsWith(".afm") || lower.endsWith(".pfm")) {
+            if (embedded && pathToPFB == null) {
+                throw new IOException("When embedding a font, path to PFB/PFA file must be specified");
+            }
+            
+            BaseFont font = BaseFont.createFont(
+                    path, encoding, embedded, false, null, readFile(pathToPFB));
+            
+            String fontFamilyName = font.getFamilyFontName()[0][3];
+            FontFamily fontFamily = getFontFamily(fontFamilyName);
+            
+            FontDescription descr = new FontDescription(font);
+            // XXX Need to set weight, underline position, etc.  This information
+            // is contained in the AFM file (and even parsed by Type1Font), but
+            // unfortunately it isn't exposed to the caller.
+            fontFamily.addFontDescription(descr);            
         } else {
-            throw new XRRuntimeException("Unsupported font type");
+            throw new IOException("Unsupported font type");
         }
+    }
+    
+    private byte[] readFile(String path) throws IOException {
+        File f = new File(path);
+        if (f.exists()) {
+            ByteArrayOutputStream result = new ByteArrayOutputStream((int)f.length());
+            InputStream is = null;
+            try {
+                is = new FileInputStream(path);
+                byte[] buf = new byte[10240];
+                int i;
+                while ( (i = is.read(buf)) != -1) {
+                    result.write(buf, 0, i);
+                }
+                is.close();
+                is = null;
+                
+                return result.toByteArray();
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        // ignore
+                    }
+                }
+            }
+        } else {
+            throw new IOException("File " + path + " does not exist or is not accessible");
+        }
+    }
+
+    public FontFamily getFontFamily(String fontFamilyName) {
+        FontFamily fontFamily = (FontFamily)_fontFamilies.get(fontFamilyName);
+        if (fontFamily == null) {
+            fontFamily = new FontFamily();
+            fontFamily.setName(fontFamilyName);
+            _fontFamilies.put(fontFamilyName, fontFamily);
+        }
+        return fontFamily;
     }
     
     private FSFont resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
