@@ -29,6 +29,7 @@ import org.xhtmlrenderer.event.DocumentListener;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -211,6 +212,32 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         }
         return xmlResource;
     }
+    
+    public byte[] getBinaryResource(String uri) {
+        InputStream is = resolveAndOpenStream(uri);
+        try {
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buf = new byte[10240];
+            int i;
+            while ( (i = is.read(buf)) != -1) {
+                result.write(buf, 0, i);
+            }
+            is.close();
+            is = null;
+            
+            return result.toByteArray();
+        } catch (IOException e) {
+            return null;
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
+    }
 
 
     /**
@@ -287,6 +314,9 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2007/10/31 23:14:43  peterbrant
+ * Add rudimentary support for @font-face rules
+ *
  * Revision 1.35  2007/06/20 12:24:31  pdoubleya
  * Fix bug in shrink cache, trying to modify iterator without using safe remove().
  *

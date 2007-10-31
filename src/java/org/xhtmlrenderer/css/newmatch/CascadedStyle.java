@@ -88,6 +88,10 @@ public class CascadedStyle {
         return new CascadedStyle(Arrays.asList(decls).iterator());
     }
     
+    public static CascadedStyle createLayoutStyle(List decls) {
+        return new CascadedStyle(decls.iterator());
+    }    
+    
     /**
      * Creates a <code>CascadedStyle</code> using style information from
      * <code>startingPoint</code> and then adding the property declarations
@@ -250,6 +254,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2007/10/31 23:14:41  peterbrant
+ * Add rudimentary support for @font-face rules
+ *
  * Revision 1.18  2007/04/12 12:29:11  peterbrant
  * Properly handle floated tables with captions
  *

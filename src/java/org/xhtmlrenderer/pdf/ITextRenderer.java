@@ -80,7 +80,7 @@ public class ITextRenderer {
         userAgent.setSharedContext(_sharedContext);
         _outputDevice.setSharedContext(_sharedContext);
         
-        ITextFontResolver fontResolver = new ITextFontResolver();
+        ITextFontResolver fontResolver = new ITextFontResolver(_sharedContext);
         _sharedContext.setFontResolver(fontResolver);
         
         ITextReplacedElementFactory replacedElementFactory = 
@@ -123,6 +123,8 @@ public class ITextRenderer {
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
         _doc = doc;
         
+        getFontResolver().flushFontFaceFonts();
+        
         _sharedContext.reset();
         if (Configuration.isTrue("xr.cache.stylesheets", true)) {
             _sharedContext.getCss().flushStyleSheets();
@@ -134,6 +136,7 @@ public class ITextRenderer {
         _sharedContext.getCss().setDocumentContext(
                 _sharedContext, _sharedContext.getNamespaceHandler(), 
                 doc, new NullUserInterface());
+        getFontResolver().importFontFaces(_sharedContext.getCss().getFontFaceRules());
     }
 
     public PDFEncryption getPDFEncryption() {

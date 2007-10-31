@@ -186,6 +186,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue VISIBLE = addValue("visible");
     public final static IdentValue CROSSHAIR = addValue("crosshair");
     public final static IdentValue DEFAULT = addValue("default");
+    public final static IdentValue EMBED = addValue("embed");
     public final static IdentValue E_RESIZE = addValue("e-resize");
     public final static IdentValue HELP = addValue("help");
     public final static IdentValue LARGE = addValue("large");
@@ -340,6 +341,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2007/10/31 23:14:41  peterbrant
+ * Add rudimentary support for @font-face rules
+ *
  * Revision 1.32  2007/08/19 22:22:51  peterbrant
  * Merge R8pbrant changes to HEAD
  *

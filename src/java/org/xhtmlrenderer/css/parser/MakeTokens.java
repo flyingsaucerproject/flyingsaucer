@@ -29,7 +29,7 @@ import java.util.List;
 
 public class MakeTokens {
     private static final String EOL = System.getProperty("line.separator");
-    private static final String INPUT = "J:/eclipseWorkspaceQT/xhtmlrenderer/src/java/org/xhtmlrenderer/css/parser/tokens.txt";
+    private static final String INPUT = "C:/eclipseWorkspaceQT/xhtmlrenderer/src/java/org/xhtmlrenderer/css/parser/tokens.txt";
     
     public static final void main(String[] args) throws IOException {
         List tokens = new ArrayList();

@@ -109,6 +109,7 @@ Z             = z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 "@media"		{return Token.TK_MEDIA_SYM;}
 "@charset "		{return Token.TK_CHARSET_SYM;}
 "@namespace"	{return Token.TK_NAMESPACE_SYM;}
+"@font-face"    {return Token.TK_FONT_FACE_SYM;}
 "@"{ident}      {return Token.TK_AT_RULE;}
 
 "!"({w}|{comment})*"important"	{return Token.TK_IMPORTANT_SYM;}

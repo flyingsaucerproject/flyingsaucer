@@ -19,6 +19,7 @@ PAGE_SYM,@page
 MEDIA_SYM,@media
 CHARSET_SYM,@charset
 NAMESPACE_SYM,@namespace
+FONT_FACE_SYM,@font-face
 AT_RULE,at rule
 IMPORTANT_SYM,!important
 EMS,an em value

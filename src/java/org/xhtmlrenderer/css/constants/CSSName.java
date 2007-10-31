@@ -229,6 +229,18 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSBorderSpacingVertical()
             );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_FONT_METRIC_SRC =
+            addProperty(
+                    "-fs-font-metric-src",
+                    PRIMITIVE,
+                    "none",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSFontMetricSrc()
+            );    
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -269,6 +281,30 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
+    public final static CSSName FS_PDF_FONT_EMBED =
+            addProperty(
+                    "-fs-pdf-font-embed",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSPDFFontEmbed()
+            );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_PDF_FONT_ENCODING =
+            addProperty(
+                    "-fs-pdf-font-encoding",
+                    PRIMITIVE,
+                    "Cp1252",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSPDFFontEncoding()
+            );    
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
     public final static CSSName FS_PAGE_ORIENTATION =
             addProperty(
                     "-fs-page-orientation",
@@ -276,7 +312,7 @@ public final class CSSName implements Comparable {
                     "auto",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSPageOrientation()
-            );
+            );    
     
     /**
      * Unique CSSName instance for CSS2 property.
@@ -818,6 +854,18 @@ public final class CSSName implements Comparable {
                     "auto",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.Right()
+            );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName SRC =
+            addProperty(
+                    "src",
+                    PRIMITIVE,
+                    "none",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.Src()
             );
 
     /**
@@ -1652,6 +1700,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2007/10/31 23:14:40  peterbrant
+ * Add rudimentary support for @font-face rules
+ *
  * Revision 1.36  2007/08/29 22:18:17  peterbrant
  * Experiment with text justification
  *

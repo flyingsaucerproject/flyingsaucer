@@ -117,7 +117,7 @@ public class PrimitivePropertyBuilders {
             result.set(ident.FS_ID);
         }
         return result;
-    }      
+    }   
     
     private static abstract class SingleIdent extends AbstractPropertyBuilder {
         protected abstract BitSet getAllowed();
@@ -445,7 +445,7 @@ public class PrimitivePropertyBuilders {
         }
     }
     
-    private static class Image extends AbstractPropertyBuilder {
+    private static class GenericURIWithNone extends AbstractPropertyBuilder {
         // <uri> | none | inherit 
         private static final BitSet ALLOWED = setFor(new IdentValue[] { IdentValue.NONE });        
         
@@ -476,7 +476,7 @@ public class PrimitivePropertyBuilders {
     public static class BackgroundColor extends GenericColor {
     }
     
-    public static class BackgroundImage extends Image {
+    public static class BackgroundImage extends GenericURIWithNone {
     }
     
     public static class BackgroundPosition extends AbstractPropertyBuilder {        
@@ -921,6 +921,9 @@ public class PrimitivePropertyBuilders {
     public static class FSBorderSpacingVertical extends Length {
     }
     
+    public static class FSFontMetricSrc extends GenericURIWithNone {
+    }
+    
     public static class FSPageHeight extends LengthLikeWithAuto {
         protected boolean isNegativeValuesAllowed() {
             return false;
@@ -948,6 +951,44 @@ public class PrimitivePropertyBuilders {
             return PAGE_ORIENTATIONS;
         }
     }
+    
+    public static class FSPDFFontEmbed extends SingleIdent {
+        // auto | embed
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] { IdentValue.AUTO, IdentValue.EMBED });
+        
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+    }
+    
+    public static class FSPDFFontEncoding extends AbstractPropertyBuilder {
+        public List buildDeclarations(
+                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+            checkValueCount(cssName, 1, values.size());
+            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+            checkInheritAllowed(value, inheritAllowed);
+            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+                checkIdentOrString(cssName, value);
+                
+                if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+                    // Convert to string
+                    return Collections.singletonList(
+                            new PropertyDeclaration(
+                                    cssName, 
+                                    new PropertyValue(
+                                            CSSPrimitiveValue.CSS_STRING, 
+                                            value.getStringValue(), 
+                                            value.getCssText()),
+                                    important, 
+                                    origin));
+                }
+            }
+            
+            return Collections.singletonList(
+                    new PropertyDeclaration(cssName, value, important, origin));
+        }  
+    } 
     
     public static class FSTableCellColspan extends ColOrRowSpan {
     }
@@ -1010,7 +1051,7 @@ public class PrimitivePropertyBuilders {
         }        
     }
     
-    public static class ListStyleImage extends Image {
+    public static class ListStyleImage extends GenericURIWithNone {
     }
     
     public static class ListStylePosition extends SingleIdent {        
@@ -1196,6 +1237,9 @@ public class PrimitivePropertyBuilders {
     }
     
     public static class Right extends LengthLikeWithAuto {
+    }
+    
+    public static class Src extends GenericURIWithNone {
     }
     
     public static class Top extends LengthLikeWithAuto {

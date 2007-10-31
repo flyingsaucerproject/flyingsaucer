@@ -60,6 +60,7 @@ public class Matcher {
     private Set _visitElements;
     
     private List _pageRules;
+    private List _fontFaceRules;
     
     public Matcher(
             TreeResolver tr, AttributeResolver ar, StylesheetFactory factory, List stylesheets, String medium) {
@@ -69,6 +70,7 @@ public class Matcher {
         _styleFactory = factory;
         
         _pageRules = new ArrayList();
+        _fontFaceRules = new ArrayList();
         docMapper = createDocumentMapper(stylesheets, medium);
     }
     
@@ -120,6 +122,10 @@ public class Matcher {
         }
         
         return new PageInfo(props, style, marginBoxes);
+    }
+    
+    public List getFontFaceRules() {
+        return _fontFaceRules;
     }
     
     public boolean isVisitedStyled(Object e) {
@@ -189,6 +195,8 @@ public class Matcher {
                     }
                 }
             }
+            
+            _fontFaceRules.addAll(stylesheet.getFontFaceRules());
         }
         
         Collections.sort(_pageRules, new Comparator() {

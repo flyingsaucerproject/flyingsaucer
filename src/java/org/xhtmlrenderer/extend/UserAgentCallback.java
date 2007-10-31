@@ -71,6 +71,12 @@ public interface UserAgentCallback {
      * @return A XMLResource for the content at the URI.
      */
     XMLResource getXMLResource(String uri);
+    
+    /**
+     * Retrieves a binary resource located at a given URI and returns its contents
+     * as a byte array or <code>null</code> if the resource could not be loaded.
+     */
+    byte[] getBinaryResource(String uri);
 
     /**
      * Normally, returns true if the user agent has visited this URI. UserAgent should consider

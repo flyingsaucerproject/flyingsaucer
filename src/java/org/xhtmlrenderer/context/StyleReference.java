@@ -274,12 +274,19 @@ public class StyleReference {
             _matcher.removeStyle(e);
         }
     }
+    
+    public List getFontFaceRules() {
+        return _matcher.getFontFaceRules();
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2007/10/31 23:14:42  peterbrant
+ * Add rudimentary support for @font-face rules
+ *
  * Revision 1.17  2007/08/19 22:22:52  peterbrant
  * Merge R8pbrant changes to HEAD
  *

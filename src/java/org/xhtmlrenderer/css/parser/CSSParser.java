@@ -39,6 +39,7 @@ import org.xhtmlrenderer.css.constants.MarginBoxName;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.newmatch.Selector;
 import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
+import org.xhtmlrenderer.css.sheet.FontFaceRule;
 import org.xhtmlrenderer.css.sheet.MediaRule;
 import org.xhtmlrenderer.css.sheet.PageRule;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
@@ -100,7 +101,7 @@ public class CSSParser {
             Ruleset result = new Ruleset(origin);
             
             try {
-                declaration_list(result, true, false);
+                declaration_list(result, true, false, false);
             } catch (CSSParseException e) {
                 // ignore, already handled
             }
@@ -116,7 +117,10 @@ public class CSSParser {
         _URI = cssName + " property value";
         try {
             reset(new StringReader(expr));
-            List values = expr(cssName == CSSName.FONT_FAMILY || cssName == CSSName.FONT_SHORTHAND);
+            List values = expr(
+                    cssName == CSSName.FONT_FAMILY || 
+                    cssName == CSSName.FONT_SHORTHAND ||
+                    cssName == CSSName.FS_PDF_FONT_ENCODING);
             
             PropertyBuilder builder = CSSName.getPropertyBuilder(cssName);
             List props;
@@ -208,15 +212,18 @@ public class CSSParser {
                     case Token.MEDIA_SYM:
                         media(stylesheet);
                         break;
+                    case Token.FONT_FACE_SYM:
+                        font_face(stylesheet);
+                        break;
                     case Token.IMPORT_SYM:
                         next();
-                        error(new CSSParseException("@import not allowed", getCurrentLine()),
+                        error(new CSSParseException("@import not allowed here", getCurrentLine()),
                                 "@import rule", true);
                         recover(false, false);
                         break;
                     case Token.NAMESPACE_SYM:
                         next();
-                        error(new CSSParseException("@namespace not allowed", getCurrentLine()),
+                        error(new CSSParseException("@namespace not allowed here", getCurrentLine()),
                                 "@namespace rule", true);
                         recover(false, false);
                         break;   
@@ -427,9 +434,9 @@ public class CSSParser {
         }
     }
 
-// medium
-// : IDENT S*
-// ;
+//  medium
+//  : IDENT S*
+//  ;
     private String medium() throws IOException {
         //System.out.println("medium()");
         String result = null;
@@ -442,6 +449,52 @@ public class CSSParser {
             throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
         }
         return result;
+    }
+
+//  font_face
+//    : FONT_FACE_SYM S*
+//      '{' S* declaration [ ';' S* declaration ]* '}' S*
+//    ;
+    private void font_face(Stylesheet stylesheet) throws IOException {
+        //System.out.println("font_face()");
+        Token t = next();
+        try {
+            FontFaceRule fontFaceRule = new FontFaceRule(stylesheet.getOrigin());
+            if (t == Token.TK_FONT_FACE_SYM) {
+                skip_whitespace();
+                
+                Ruleset ruleset = new Ruleset(stylesheet.getOrigin());
+                
+                skip_whitespace();
+                t = next();
+                if (t == Token.TK_LBRACE) {
+                    LOOP:
+                    while (true) {
+                        skip_whitespace();
+                        t = la();
+                        if (t == Token.TK_RBRACE) {
+                            next();
+                            skip_whitespace();
+                            break LOOP;
+                        } else {
+                            declaration_list(ruleset, false, true, true);
+                        }
+                    }
+                } else {
+                    push(t);
+                    throw new CSSParseException(t, Token.TK_LBRACE, getCurrentLine());
+                }
+                
+                fontFaceRule.addContent(ruleset);
+                stylesheet.addFontFaceRule(fontFaceRule);
+            } else {
+                push(t);
+                throw new CSSParseException(t, Token.TK_FONT_FACE_SYM, getCurrentLine());
+            }
+        } catch (CSSParseException e) {
+            error(e, "@font-face rule", true);
+            recover(false, false);
+        }        
     }
     
 //  page :
@@ -484,7 +537,7 @@ public class CSSParser {
                         } else if (t == Token.TK_AT_RULE) {
                             margin(stylesheet, pageRule);
                         } else {
-                            declaration_list(ruleset, false, true);
+                            declaration_list(ruleset, false, true, false);
                         }
                     }
                 } else {
@@ -528,7 +581,7 @@ public class CSSParser {
             if (t == Token.TK_LBRACE) {
                 skip_whitespace();
                 Ruleset ruleset = new Ruleset(stylesheet.getOrigin());
-                declaration_list(ruleset, false, false);
+                declaration_list(ruleset, false, false, false);
                 t = next();
                 if (t != Token.TK_RBRACE) {
                     push(t);
@@ -644,7 +697,8 @@ public class CSSParser {
     
 //  declaration_list
 //    : [ declaration ';' S* ]*
-    private void declaration_list(Ruleset ruleset, boolean expectEOF, boolean expectAtRule) throws IOException {
+    private void declaration_list(
+            Ruleset ruleset, boolean expectEOF, boolean expectAtRule, boolean inFontFace) throws IOException {
         //System.out.println("declaration_list()");
         Token t;
         LOOP:
@@ -661,7 +715,7 @@ public class CSSParser {
                     if (expectAtRule) {
                         break LOOP;
                     } else {
-                        declaration(ruleset);
+                        declaration(ruleset, inFontFace);
                     }
                 case Token.EOF:
                     if (expectEOF) {
@@ -669,7 +723,7 @@ public class CSSParser {
                     }
                     // fall through
                 default:
-                    declaration(ruleset);
+                    declaration(ruleset, inFontFace);
             }
         }
     }
@@ -698,7 +752,7 @@ public class CSSParser {
             t = next();
             if (t == Token.TK_LBRACE) {
                 skip_whitespace();
-                declaration_list(ruleset, false, false);
+                declaration_list(ruleset, false, false, false);
                 t = next();
                 if (t == Token.TK_RBRACE) {
                     skip_whitespace();
@@ -1191,7 +1245,7 @@ public class CSSParser {
 //  declaration
 //    : property ':' S* expr prio?
 //    ;
-    private void declaration(Ruleset ruleset) throws IOException {
+    private void declaration(Ruleset ruleset, boolean inFontFace) throws IOException {
         //System.out.println("declaration()");
         try {
             Token t = la();
@@ -1205,7 +1259,10 @@ public class CSSParser {
                 if (t == Token.TK_COLON) {
                     skip_whitespace();
                     
-                    List values = expr(cssName == CSSName.FONT_FAMILY || cssName == CSSName.FONT_SHORTHAND);
+                    List values = expr(
+                            cssName == CSSName.FONT_FAMILY || 
+                            cssName == CSSName.FONT_SHORTHAND ||
+                            cssName == CSSName.FS_PDF_FONT_ENCODING);
                     boolean important = false;
                     
                     t = la();
@@ -1226,7 +1283,7 @@ public class CSSParser {
                         try {
                             PropertyBuilder builder = CSSName.getPropertyBuilder(cssName);
                             ruleset.addAllProperties(builder.buildDeclarations(
-                                    cssName, values, ruleset.getOrigin(), important));
+                                    cssName, values, ruleset.getOrigin(), important, !inFontFace));
                         } catch (CSSParseException e) {
                             e.setLine(getCurrentLine());
                             error(e, "declaration", true);

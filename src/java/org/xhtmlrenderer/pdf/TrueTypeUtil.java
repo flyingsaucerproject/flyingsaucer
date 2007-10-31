@@ -92,32 +92,7 @@ public class TrueTypeUtil {
         try {
             rf = new RandomAccessFileOrArray(getTTCName(path));
             
-            Map tables = extractTables(font);
-            
-            descr.setStyle(guessStyle(font));
-            
-            int[] location = (int[])tables.get("OS/2");
-            if (location == null) {
-                throw new DocumentException("Table 'OS/2' does not exist in " + path);
-            }
-            rf.seek(location[0]);
-            rf.skip(4);
-            descr.setWeight(rf.readUnsignedShort());
-            rf.skip(20);
-            descr.setYStrikeoutSize(rf.readShort());
-            descr.setYStrikeoutPosition(rf.readShort());
-            
-            location = (int[])tables.get("post");
-            
-            if (location != null) {
-                rf.seek(location[0]);
-                rf.skip(8);
-                descr.setUnderlinePosition(rf.readShort());
-                descr.setUnderlineThickness(rf.readShort());
-            }
-            
-            rf.close();
-            rf = null;
+            rf = populateDescription0(path, font, descr, rf);
         } finally {
             if (rf != null) {
                 try {
@@ -127,6 +102,55 @@ public class TrueTypeUtil {
                 }
             }
         }
+    }
+    
+    public static void populateDescription(String path, byte[] contents, BaseFont font, FontDescription descr) 
+            throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
+        RandomAccessFileOrArray rf = null;
+        try {
+            rf = new RandomAccessFileOrArray(contents);
+            
+            rf = populateDescription0(path, font, descr, rf);
+        } finally {
+            if (rf != null) {
+                try {
+                    rf.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
+    }    
+
+    private static RandomAccessFileOrArray populateDescription0(String path,
+            BaseFont font, FontDescription descr, RandomAccessFileOrArray rf)
+               throws NoSuchFieldException, IllegalAccessException, DocumentException, IOException {
+        Map tables = extractTables(font);
         
+        descr.setStyle(guessStyle(font));
+        
+        int[] location = (int[])tables.get("OS/2");
+        if (location == null) {
+            throw new DocumentException("Table 'OS/2' does not exist in " + path);
+        }
+        rf.seek(location[0]);
+        rf.skip(4);
+        descr.setWeight(rf.readUnsignedShort());
+        rf.skip(20);
+        descr.setYStrikeoutSize(rf.readShort());
+        descr.setYStrikeoutPosition(rf.readShort());
+        
+        location = (int[])tables.get("post");
+        
+        if (location != null) {
+            rf.seek(location[0]);
+            rf.skip(8);
+            descr.setUnderlinePosition(rf.readShort());
+            descr.setUnderlineThickness(rf.readShort());
+        }
+        
+        rf.close();
+        rf = null;
+        return rf;
     }
 }
