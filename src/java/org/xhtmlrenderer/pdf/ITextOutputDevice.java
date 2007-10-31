@@ -195,7 +195,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                             action.put(PdfName.D, dest);
                         }
 
-                        com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box);
+                        com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box, true);
                         
                         PdfAnnotation annot = PdfAnnotation.createLink(
                                 _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
@@ -206,7 +206,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             	} else if (uri.indexOf("://") != -1) {
                     PdfAction action = new PdfAction(uri);
                     
-            		com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box);
+            		com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box, true);
             		
             		PdfAnnotation annot = PdfAnnotation.createLink(
             				_writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
@@ -218,9 +218,18 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             }
         }
     }
-
+    
     public com.lowagie.text.Rectangle createLocalTargetArea(RenderingContext c, Box box) {
-        Rectangle bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+        return createLocalTargetArea(c, box, false);
+    }
+
+    private com.lowagie.text.Rectangle createLocalTargetArea(RenderingContext c, Box box, boolean useAggregateBounds) {
+        Rectangle bounds;
+        if (useAggregateBounds && box.getPaintingInfo() != null) {
+            bounds = box.getPaintingInfo().getAggregateBounds();
+        } else {
+            bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+        }
 
         Point2D docCorner = new Point2D.Double(bounds.x, bounds.y + bounds.height);
         Point2D pdfCorner = new Point.Double();
