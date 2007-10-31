@@ -33,7 +33,6 @@ import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.swing.EmptyReplacedElement;
 
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
 	private ITextOutputDevice _outputDevice;
@@ -61,6 +60,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 				}
 				return new ITextImageElement(fsImage);
 			}
+		/*
 		} else if (nodeName.equals("input")) {
 			String type = e.getAttribute("type");
 			if (type.equals("hidden")) {
@@ -79,6 +79,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 		    return new SelectFormField(c, box, cssWidth, cssHeight);
 		} else if (isTextarea(e)) {
 		    return new TextAreaFormField(c, box, cssWidth, cssHeight);
+		*/
 		} else if (nodeName.equals("bookmark")) {
 			// HACK Add box as named anchor and return placeholder
 			BookmarkElement result = new BookmarkElement();
