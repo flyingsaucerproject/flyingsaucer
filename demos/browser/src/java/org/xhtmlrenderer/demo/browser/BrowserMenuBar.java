@@ -322,11 +322,11 @@ public class BrowserMenuBar extends JMenuBar {
      */
     public void createActions() {
         if (Configuration.isTrue("xr.use.listeners", true)) {
-            MouseListener[] lls = root.panel.view.getMouseListeners();
-            for (int i = 0; i < lls.length; i++) {
-                MouseListener ll = lls[i];
-                if ( ll instanceof LinkListener ) {
-                    root.panel.view.removeMouseListener(ll);
+            List l = root.panel.view.getMouseTrackingListeners();
+            for (Iterator i = l.iterator(); i.hasNext(); ) {
+                FSMouseListener listener = (FSMouseListener)i.next();
+                if ( listener instanceof LinkListener ) {
+                    root.panel.view.removeMouseTrackingListener(listener);
                 }
             }
 
@@ -696,6 +696,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.46  2007/11/01 00:18:31  peterbrant
+* Adapt to R7 mouse tracking API
+*
 * Revision 1.45  2007/07/14 17:38:17  pdoubleya
 * fix menu accelerator assignments to be cross-platform compatible (esp. with OS X)
 *
