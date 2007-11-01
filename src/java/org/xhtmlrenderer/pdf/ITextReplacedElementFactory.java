@@ -128,8 +128,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 	}
 
 	public void remove(Element e) {
-		RadioButtonFormField field = (RadioButtonFormField)_radioButtonsByElem
-				.remove(e);
+		RadioButtonFormField field = (RadioButtonFormField)_radioButtonsByElem.remove(e);
 		if (field != null) {
 			String fieldName = field.getFieldName(_outputDevice, e);
 			List values = (List)_radioButtonsByName.get(fieldName);
