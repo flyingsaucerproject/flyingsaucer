@@ -849,7 +849,7 @@ public class BoxBuilder {
             }
 
             if (content != null) {
-                InlineBox iB = new InlineBox(content);
+                InlineBox iB = new InlineBox(content, null);
                 iB.setContentFunction(contentFunction);
                 iB.setFunction(function);
                 iB.setElement(element);
@@ -1019,8 +1019,8 @@ public class BoxBuilder {
     }
 
     private static InlineBox createInlineBox(
-            String text, Element parent, CalculatedStyle parentStyle) {
-        InlineBox result = new InlineBox(text.toString());
+            String text, Element parent, CalculatedStyle parentStyle, Text node) {
+        InlineBox result = new InlineBox(text.toString(), node);
 
         if (parentStyle.isInline()) {
             result.setStyle(parentStyle);
@@ -1075,7 +1075,7 @@ public class BoxBuilder {
                     if (style.isInline()) {
                         if (needStartText) {
                             needStartText = false;
-                            InlineBox iB = createInlineBox("", parent, parentStyle);
+                            InlineBox iB = createInlineBox("", parent, parentStyle, null);
                             iB.setStartsHere(true);
                             iB.setEndsHere(false);
                             children.add(iB);
@@ -1129,25 +1129,25 @@ public class BoxBuilder {
                     StringBuffer text = new StringBuffer(textNode.getData());
 
                     Node maybeText = textNode;
-                    while (true) {
-                        maybeText = textNode.getNextSibling();
-                        if (maybeText != null) {
-                            short maybeNodeType = maybeText.getNodeType();
-                            if (maybeNodeType == Node.TEXT_NODE || 
-                                    maybeNodeType == Node.CDATA_SECTION_NODE) {
-                                textNode = (Text)maybeText;
-                                text.append(textNode.getData());
-                            } else {
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
+//                    while (true) {
+//                        maybeText = textNode.getNextSibling();
+//                        if (maybeText != null) {
+//                            short maybeNodeType = maybeText.getNodeType();
+//                            if (maybeNodeType == Node.TEXT_NODE || 
+//                                    maybeNodeType == Node.CDATA_SECTION_NODE) {
+//                                textNode = (Text)maybeText;
+//                                text.append(textNode.getData());
+//                            } else {
+//                                break;
+//                            }
+//                        } else {
+//                            break;
+//                        }
+//                    }
 
                     working = textNode;
 
-                    child = createInlineBox(text.toString(), parent, parentStyle);
+                    child = createInlineBox(text.toString(), parent, parentStyle, textNode);
 
                     InlineBox iB = (InlineBox) child;
                     iB.setEndsHere(true);
@@ -1165,7 +1165,7 @@ public class BoxBuilder {
             } while ((working = working.getNextSibling()) != null);
         }
         if (needStartText || needEndText) {
-            InlineBox iB = createInlineBox("", parent, parentStyle);
+            InlineBox iB = createInlineBox("", parent, parentStyle, null);
             iB.setStartsHere(needStartText);
             iB.setEndsHere(needEndText);
             children.add(iB);

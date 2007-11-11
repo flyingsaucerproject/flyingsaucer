@@ -157,7 +157,7 @@ public class InlineBoxing {
                 
                 LineBreakContext lbContext = new LineBreakContext();
                 lbContext.setMaster(iB.getText());
-                
+                lbContext.setTextNode(iB.getTextNode());
                 if (iB.isDynamicFunction()) {
                     lbContext.setMaster(iB.getContentFunction().getLayoutReplacementText());
                 }
@@ -812,7 +812,7 @@ public class InlineBoxing {
 
         result = new InlineText();
         result.setMasterText(lbContext.getMaster());
-
+        result.setTextNode(lbContext.getTextNode());
         if (needFirstLetter) {
             Breaker.breakFirstLetter(c, lbContext, remainingWidth, style);
         } else {

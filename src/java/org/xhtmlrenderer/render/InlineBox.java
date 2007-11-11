@@ -19,6 +19,7 @@
 package org.xhtmlrenderer.render;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
@@ -64,10 +65,13 @@ public class InlineBox implements Styleable {
     private int _firstLineWidth;
     
     private String _pseudoElementOrClass;
+
+    private final Text _textNode;
     
-    public InlineBox(String text) {
+    public InlineBox(String text, Text textNode) {
         _text = text;
         _originalText = text;
+        _textNode = textNode;
     }
     
     public String getText() {
@@ -424,5 +428,9 @@ public class InlineBox implements Styleable {
     public void truncateText() {
         _text = "";
         _originalText = "";
+    }
+
+    public Text getTextNode() {
+        return this._textNode;
     }
 }

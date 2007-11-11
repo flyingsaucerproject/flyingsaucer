@@ -166,7 +166,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     boolean layoutInProgress = false;
 
-    protected RenderingContext newRenderingContext(Graphics2D g) {
+    public RenderingContext newRenderingContext(Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
 
         getSharedContext().setCanvas(this);

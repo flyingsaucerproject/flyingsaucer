@@ -22,6 +22,7 @@ package org.xhtmlrenderer.render;
 
 import java.awt.Rectangle;
 
+import org.w3c.dom.Text;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.layout.FunctionData;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -55,7 +56,7 @@ public class InlineText {
     
     private boolean _trimmedLeadingSpace;
     private boolean _trimmedTrailingSpace;
-    
+    private Text _textNode;
     public void trimTrailingSpace(LayoutContext c) {
         if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
@@ -326,6 +327,26 @@ public class InlineText {
         }
         
         return result;
+    }
+    public int getStart(){
+        return _start;
+    }
+    public int getEnd(){
+        return _end;
+    }
+    public void setSelectionStart(short s){
+        _selectionStart = s;
+    }
+    public void setSelectionEnd(short s){
+        _selectionEnd = s;
+    }
+
+    public Text getTextNode() {
+        return this._textNode;
+    }
+
+    public void setTextNode(Text node) {
+        this._textNode = node;
     }
 }
 

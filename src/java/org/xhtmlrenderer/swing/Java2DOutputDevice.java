@@ -56,7 +56,6 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         if (inlineText.isSelected()) {
             InlineLayoutBox iB = inlineText.getParent();
             String text = inlineText.getSubstring();
-            
             if (text != null && text.length() > 0) {
                 FSFont font = iB.getStyle().getFSFont(c);
                 FSGlyphVector glyphVector = c.getTextRenderer().getGlyphVector(
@@ -79,10 +78,9 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                         inlineText.getSelectionEnd() - 1,
                         iB.getAbsX() + inlineText.getX(),
                         iB.getAbsY() + iB.getBaseline());
-                
-                int startX = start.x;
-                int endX = end.x + end.width;
-                
+                boolean allSelected = (text.length() == inlineText.getSelectionEnd()-inlineText.getSelectionStart());
+                int startX = (inlineText.getSelectionStart() == inlineText.getStart())?iB.getAbsX() + inlineText.getX():start.x;
+                int endX = (allSelected)?startX+inlineText.getWidth():end.x + end.width;
                 setColor(UIManager.getColor("TextArea.selectionBackground"));  // FIXME
                 fillRect(
                         startX,
