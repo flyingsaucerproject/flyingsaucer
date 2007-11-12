@@ -65,6 +65,7 @@ public class XHTMLPrintable implements Printable {
                 g2r.getSharedContext().getTextRenderer().setSmoothingThreshold(0);
                 g2r.getSharedContext().getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
                 g2r.setDocument(panel.getSharedContext().getUac().getBaseURL());
+                g2r.getSharedContext().setReplacedElementFactory(panel.getSharedContext().getReplacedElementFactory());
                 g2r.layout(g2, null);
                 g2r.getPanel().assignPagePrintPositions(g2);
             }
