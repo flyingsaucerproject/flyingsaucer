@@ -107,6 +107,7 @@ public abstract class BasicPanel extends RootPanel {
 
     public void paintComponent(Graphics g) {
         if (doc == null) {
+            paintDefaultBackground(g);
             return;
         }
         
@@ -134,11 +135,8 @@ public abstract class BasicPanel extends RootPanel {
         try {
             // paint the normal swing background first
             // but only if we aren't printing.
-            Graphics g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();
-            if (!(g instanceof PrinterGraphics) && explicitlyOpaque) {
-                g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth(), getHeight());
-            }
+            Graphics g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();            
+            paintDefaultBackground(g);
     
             long start = System.currentTimeMillis();
             if (!c.isPrint()) {
@@ -166,6 +164,13 @@ public abstract class BasicPanel extends RootPanel {
                 // "Shouldn't" happen
                 XRLog.exception(t.getMessage(), t);
             }
+        }
+    }
+
+    private void paintDefaultBackground(Graphics g) {
+        if (!(g instanceof PrinterGraphics) && explicitlyOpaque) {
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth(), getHeight());
         }
     }
     
@@ -559,6 +564,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.117  2007/11/21 23:59:12  peterbrant
+ * Always paint default background even if there is no document (report from Richard Bair)
+ *
  * Revision 1.116  2007/10/13 12:04:09  pdoubleya
  * Applied patch to fix NPE reported by email https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?listName=users&msgNo=724 with patch proposed by Pete in that thread.
  *
