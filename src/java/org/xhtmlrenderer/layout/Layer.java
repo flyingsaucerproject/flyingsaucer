@@ -773,7 +773,10 @@ public class Layer {
     }
     
     public void removeLastPage() {
-        _pages.remove(_pages.size()-1);
+        PageBox pageBox = (PageBox)_pages.remove(_pages.size()-1);
+        if (pageBox == getLastRequestedPage()) {
+            setLastRequestedPage(null);
+        }
     }
     
     public static PageBox createPageBox(CssContext c, String pseudoPage) {
@@ -880,6 +883,9 @@ public class Layer {
         for (int i = pages.size() - 1; i >= 0; i--) {
             PageBox page = (PageBox)pages.get(i);
             if (page.getTop() > maxYHeight) {
+                if (page == getLastRequestedPage()) {
+                    setLastRequestedPage(null);
+                }
                 pages.remove(i);
             } else {
                 break;
@@ -889,7 +895,10 @@ public class Layer {
     
     public void trimPageCount(int newPageCount) {
         while (_pages.size() > newPageCount) {
-            _pages.remove(_pages.size()-1);
+            PageBox pageBox = (PageBox)_pages.remove(_pages.size()-1);
+            if (pageBox == getLastRequestedPage()) {
+                setLastRequestedPage(null);
+            }
         }
     }
     
