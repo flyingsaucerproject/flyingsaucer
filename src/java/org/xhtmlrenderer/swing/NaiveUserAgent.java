@@ -187,7 +187,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 	 * @return An ImageResource containing the image.
 	 */
 	protected ImageResource createImageResource(String uri, Image img) {
-		return new ImageResource(AWTFSImage.createLegacyImage(img));
+		return new ImageResource(AWTFSImage.createImage(img));
 	}
 
 	/**
@@ -314,6 +314,9 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2007/11/23 07:03:30  pdoubleya
+ * Applied patch from N. Barozzi to allow either toolkit or buffered images to be used, see https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?list=dev&msgNo=3847
+ *
  * Revision 1.36  2007/10/31 23:14:43  peterbrant
  * Add rudimentary support for @font-face rules
  *

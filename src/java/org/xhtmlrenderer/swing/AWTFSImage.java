@@ -23,12 +23,28 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.util.Configuration;
 
 public abstract class AWTFSImage implements FSImage {
+
+    /**
+     * @deprecated  replaced by {@link #createImage()}, that decides on 
+     *              which system to use to create the Image
+     */
     public static FSImage createLegacyImage(Image img) {
         return new OldAWTFSImage(img);
     }
 
+    public static FSImage createImage(Image img) {
+        boolean useBufferedImage =  Configuration.isTrue("xr.image.buffered", false);
+        
+        if(useBufferedImage){
+            return new NewAWTFSImage(img);
+        }else{
+            return new OldAWTFSImage(img);
+        }
+    }
+        
     protected AWTFSImage() { }
 
     public abstract Image getImage();
@@ -61,4 +77,29 @@ public abstract class AWTFSImage implements FSImage {
             img = img.getScaledInstance(width, height, Image.SCALE_FAST);
         }
     }
+    
+
+    static class NewAWTFSImage extends AWTFSImage {
+        private Image img;
+
+        public NewAWTFSImage(Image img) {
+            this.img = img;
+}
+
+        public int getWidth() {
+            return img.getWidth(null);
+        }
+
+        public int getHeight() {
+            return img.getHeight(null);
+        }
+
+        public Image getImage() {
+            return img;
+        }
+
+        public void scale(int width, int height) {
+            img = img.getScaledInstance(width, height, Image.SCALE_DEFAULT);
+        }
+    }    
 }

@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
 
 /**
@@ -65,9 +66,15 @@ public class ImageReplacedElement implements ReplacedElement {
                 if (image instanceof BufferedImage) {
                     image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
                 } else {
+                   String scalingType = Configuration.valueFor("xr.image.scale", "HIGH").trim() ;  
+                    
+                   if(scalingType.equalsIgnoreCase("HIGH") || scalingType.equalsIgnoreCase("MID") ){
+                       image = image.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+                   } else{
                     image = image.getScaledInstance(newW, newH, Image.SCALE_FAST);
                 }
             }
+        }
         }
         _image = image;
     }

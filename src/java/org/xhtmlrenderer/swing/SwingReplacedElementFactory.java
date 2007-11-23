@@ -119,7 +119,8 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
                 XRLog.layout(Level.WARNING, "No source provided for img element.");
                 re = newIrreplaceableImageElement(cssWidth, cssHeight);
             } else {
-                // TODO: can't remember why there is this convolution--is FSImage needed at all?
+                //FSImage is here since we need to capture a target H/W
+                //for the image (as opposed to what the actual image size is).
                 FSImage fsImage = uac.getImageResource(imageSrc).getImage();
                 if (fsImage != null) {
                     im = ((AWTFSImage) fsImage).getImage();
