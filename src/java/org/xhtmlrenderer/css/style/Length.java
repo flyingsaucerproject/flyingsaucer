@@ -33,21 +33,21 @@ public class Length {
     public static final int PERCENT = 3;
     
     private int _type = VARIABLE;
-    private int _value = 0;
+    private long _value = 0;
     
     public Length() {
     }
     
-    public Length(int value, int type) {
+    public Length(long value, int type) {
         _value = value;
         _type = type;
     }
     
-    public void setValue(int value) {
+    public void setValue(long value) {
         _value = value;
     }
     
-    public int value() {
+    public long value() {
         return _value;
     }
     
@@ -71,7 +71,7 @@ public class Length {
         return _type == PERCENT;
     }
     
-    public int width(int maxWidth) {
+    public long width(int maxWidth) {
         switch (_type) {
             case FIXED:
                 return _value;
@@ -84,7 +84,7 @@ public class Length {
         }
     }
     
-    public int minWidth(int maxWidth) {
+    public long minWidth(int maxWidth) {
         switch (_type) {
             case FIXED:
                 return _value;
