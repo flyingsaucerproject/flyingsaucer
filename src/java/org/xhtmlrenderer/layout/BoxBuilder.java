@@ -1126,28 +1126,32 @@ public class BoxBuilder {
                     needEndText = false;
 
                     Text textNode = (Text)working;
+                    
+                    /*
                     StringBuffer text = new StringBuffer(textNode.getData());
-
+                    
                     Node maybeText = textNode;
-//                    while (true) {
-//                        maybeText = textNode.getNextSibling();
-//                        if (maybeText != null) {
-//                            short maybeNodeType = maybeText.getNodeType();
-//                            if (maybeNodeType == Node.TEXT_NODE || 
-//                                    maybeNodeType == Node.CDATA_SECTION_NODE) {
-//                                textNode = (Text)maybeText;
-//                                text.append(textNode.getData());
-//                            } else {
-//                                break;
-//                            }
-//                        } else {
-//                            break;
-//                        }
-//                    }
+                    while (true) {
+                        maybeText = textNode.getNextSibling();
+                        if (maybeText != null) {
+                            short maybeNodeType = maybeText.getNodeType();
+                            if (maybeNodeType == Node.TEXT_NODE || 
+                                    maybeNodeType == Node.CDATA_SECTION_NODE) {
+                                textNode = (Text)maybeText;
+                                text.append(textNode.getData());
+                            } else {
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
+                    }
 
                     working = textNode;
-
                     child = createInlineBox(text.toString(), parent, parentStyle, textNode);
+                    */
+                    
+                    child = createInlineBox(textNode.getData(), parent, parentStyle, textNode);
 
                     InlineBox iB = (InlineBox) child;
                     iB.setEndsHere(true);
