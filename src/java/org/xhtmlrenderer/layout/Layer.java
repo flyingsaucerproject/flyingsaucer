@@ -1098,12 +1098,16 @@ public class Layer {
     
     public int getRelativePageNo(RenderingContext c) {
         List sequences = getSortedPageSequences();
+        int initial = 0;
+        if (c.getInitialPageNo() > 0) {
+            initial = c.getInitialPageNo() - 1;
+        }
         if (sequences == null) {
-            return c.getPageNo();
+            return initial + c.getPageNo();
         } else {
             int sequenceStartIndex = getPageSequenceStart(c, sequences, c.getPage());
             if (sequenceStartIndex == -1) {
-                return c.getInitialPageNo() + c.getPageNo();
+                return initial + c.getPageNo();
             } else {
                 BlockBox block = (BlockBox)sequences.get(sequenceStartIndex);
                 return c.getPageNo() - getFirstPage(c, block).getPageNo();
