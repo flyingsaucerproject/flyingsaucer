@@ -194,6 +194,7 @@ public class ITextRenderer {
     public void writeNextDocument() throws DocumentException {
         writeNextDocument(0);
     }
+    
     public void writeNextDocument(int initialPageNo) throws DocumentException {
         List pages = _root.getLayer().getPages();
         
