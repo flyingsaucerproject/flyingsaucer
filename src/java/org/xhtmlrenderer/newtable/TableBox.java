@@ -986,6 +986,12 @@ public class TableBox extends BlockBox {
             int bs = _table.marginsBordersPaddingAndSpacing(c);
             
             _table.calcDimensions(c);
+            
+            // Reset to allow layout to have another crack at this.  If we're
+            // participating in a nested max/min-width calculation, the values
+            // calculated above may be wrong and may need updating once our
+            // parent has a width.
+            _table.setDimensionsCalculated(false);
 
             int mw = calcWidthArray(c) + bs;
             _table.setMinWidth(Math.max(mw, _table.getWidth()));
