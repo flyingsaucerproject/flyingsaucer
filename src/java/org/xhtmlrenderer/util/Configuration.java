@@ -271,8 +271,12 @@ public class Configuration {
             if (readStream == null) {
                 throw new XRRuntimeException("No configuration files found in classpath using URL: " + SF_FILE_NAME);
             } else {
-                this.properties = new Properties();
-                this.properties.load(readStream);
+                try {
+                    this.properties = new Properties();
+                    this.properties.load(readStream);
+                } finally {
+                    readStream.close();
+                }
             }
         } catch (RuntimeException rex) {
             throw rex;
@@ -297,7 +301,11 @@ public class Configuration {
                 info("Found config override file " + f.getAbsolutePath());
                 try {
                     InputStream readStream = new BufferedInputStream(new FileInputStream(f));
-                    temp.load(readStream);
+                    try {
+                        temp.load(readStream);
+                    } finally {
+                        readStream.close();
+                    }
                 } catch (IOException iex) {
                     warning("Error while loading override properties file; skipping.", iex);
                     return;
@@ -758,6 +766,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2007/12/28 14:54:33  peterbrant
+ * Make sure resource streams are cleaned up (bug #201, patch by kaihei)
+ *
  * Revision 1.19  2007/07/14 13:06:21  pdoubleya
  * Dont show stack trace if configuration file URL is malformed
  *

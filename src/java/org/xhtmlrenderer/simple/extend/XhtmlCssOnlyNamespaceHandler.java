@@ -402,21 +402,14 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     private InputStream getDefaultStylesheetStream() {
         InputStream stream = null;
-        try {
-            String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
-            if (this.getClass().getResourceAsStream(defaultStyleSheet) != null) {
-                stream = this.getClass().getResource(defaultStyleSheet).openStream();
-            } else {
-                XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
-                        "This file must be on your CLASSPATH. Please check before continuing.");
-                _defaultStylesheetError = true;
-            }
-
-        } catch (java.io.IOException ex) {
-            XRLog.exception("Bad IO", ex);
+        String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
+        stream = this.getClass().getResourceAsStream(defaultStyleSheet);
+        if (stream == null) {
+            XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
+                    "This file must be on your CLASSPATH. Please check before continuing.");
             _defaultStylesheetError = true;
         }
-
+        
         return stream;
     }
 }
