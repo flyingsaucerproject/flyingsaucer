@@ -94,7 +94,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
 
         try {
             if (is != null) {
-                sheet = parse(new InputStreamReader(is), info);
+                sheet = parse(new InputStreamReader(is, "UTF-8"), info);
             }
         } catch (Exception e) {
             debugBadStyleSheet(info);
