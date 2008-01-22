@@ -278,12 +278,20 @@ public class StyleReference {
     public List getFontFaceRules() {
         return _matcher.getFontFaceRules();
     }
+    
+    public void setUserAgentCallback(UserAgentCallback userAgentCallback)
+    {
+        _uac = userAgentCallback;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2008/01/22 00:29:23  peterbrant
+ * Need to propagate changes to user agent in SharedContext to containing StyleReference
+ *
  * Revision 1.18  2007/10/31 23:14:42  peterbrant
  * Add rudimentary support for @font-face rules
  *

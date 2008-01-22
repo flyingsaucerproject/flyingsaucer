@@ -344,6 +344,10 @@ public class SharedContext {
     }
     
     public void setUserAgentCallback(UserAgentCallback userAgentCallback) {
+        StyleReference styleReference = getCss();
+        if (styleReference != null) {
+            styleReference.setUserAgentCallback(userAgentCallback);
+        }
         uac = userAgentCallback;
     }
 
@@ -590,6 +594,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2008/01/22 00:29:24  peterbrant
+ * Need to propagate changes to user agent in SharedContext to containing StyleReference
+ *
  * Revision 1.41  2007/08/19 22:22:52  peterbrant
  * Merge R8pbrant changes to HEAD
  *
