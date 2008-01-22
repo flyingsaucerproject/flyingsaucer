@@ -252,8 +252,7 @@ public class XHTMLPanel extends BasicPanel {
     public void resetFontSize() {
         SharedContext rc = getSharedContext();
         rc.getTextRenderer().setFontScale(1.0F);
-        relayout();
-        repaint();
+        setDocument(getDocument());
     }
 
     /**
@@ -315,6 +314,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2008/01/22 21:27:06  pdoubleya
+ * Fix on resetting font scaling factor--was using old relayout/repaint approach, which isn't consistent--easier to use setDocument(), which in any case uses the DOM already in memory.
+ *
  * Revision 1.42  2007/06/29 06:05:48  pdoubleya
  * As of R7, a change to layout (like changing font size) requires a call to setDocument().
  *
