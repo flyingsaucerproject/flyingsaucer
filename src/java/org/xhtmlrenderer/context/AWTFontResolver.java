@@ -112,7 +112,7 @@ public class AWTFontResolver implements FontResolver {
         }
 
         Font fnt = createFont(ctx, (Font) available_fonts_hash.get(family), size, weight, style, variant);
-        instance_hash.put(getFontInstanceHashName(family, size, weight, style, variant), fnt);
+        instance_hash.put(getFontInstanceHashName(ctx, family, size, weight, style, variant), fnt);
         //Uu.p("subbing in base sans : " + fnt);
         return new AWTFSFont(fnt);
     }
@@ -204,7 +204,7 @@ public class AWTFontResolver implements FontResolver {
         if (font.equals("SansSerif") && style == IdentValue.ITALIC) font = "Serif";
 
         // assemble a font instance hash name
-        String font_instance_name = getFontInstanceHashName(font, size, weight, style, variant);
+        String font_instance_name = getFontInstanceHashName(ctx, font, size, weight, style, variant);
         //Uu.p("looking for font: " + font_instance_name);
         // check if the font instance exists in the hash table
         if (instance_hash.containsKey(font_instance_name)) {
@@ -245,15 +245,15 @@ public class AWTFontResolver implements FontResolver {
     /**
      * Gets the fontInstanceHashName attribute of the FontResolverTest object
      *
-     * @param name    PARAM
+     * @param ctx
+     *@param name    PARAM
      * @param size    PARAM
      * @param weight  PARAM
      * @param style   PARAM
-     * @param variant PARAM
-     * @return The fontInstanceHashName value
+     * @param variant PARAM @return The fontInstanceHashName value
      */
-    protected static String getFontInstanceHashName(String name, float size, IdentValue weight, IdentValue style, IdentValue variant) {
-        return name + "-" + size + "-" + weight + "-" + style + "-" + variant;
+    protected static String getFontInstanceHashName(SharedContext ctx, String name, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+        return name + "-" + (size * ctx.getTextRenderer().getFontScale()) + "-" + weight + "-" + style + "-" + variant;
     }
 
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
@@ -265,6 +265,9 @@ public class AWTFontResolver implements FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2008/01/22 21:25:40  pdoubleya
+ * Fix: fonts not being keyed properly in font cache when a scaling factor was applied to the text renderer; scaled font size now used as part of the key.
+ *
  * Revision 1.2  2007/02/07 16:33:29  peterbrant
  * Initial commit of rewritten table support and associated refactorings
  *
