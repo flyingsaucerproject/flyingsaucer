@@ -143,6 +143,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _currentPage = currentPage;
         _pageHeight = height;
         
+        _currentPage.saveState();
+        
         _transform = new AffineTransform();
         _transform.scale(1.0d / _dotsPerPoint, 1.0d / _dotsPerPoint);
         
@@ -151,8 +153,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _oldStroke = _stroke;
         
         setStrokeDiff(_stroke, null);
-        
-        _currentPage.saveState();
         
         if (_defaultDestination == null) {
             _defaultDestination = new PdfDestination(PdfDestination.FITH, height);
@@ -671,7 +671,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
         _fillColor = null;
         _strokeColor = null;
-        _oldStroke = STROKE_ONE;
+        _oldStroke = null;
     }
 
     public Stroke getStroke() {
@@ -738,9 +738,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         mx[0] = image.scaleWidth();
         mx[3] = image.scaleHeight();
         
+        _currentPage.restoreState();
         _currentPage.addTemplate(page,
                 (float)mx[0], (float)mx[1], (float)mx[2],
                 (float)mx[3], (float)mx[4], (float)mx[5]);
+        _currentPage.saveState();
     }
     
     public PdfReader getReader(URL url) throws IOException {
