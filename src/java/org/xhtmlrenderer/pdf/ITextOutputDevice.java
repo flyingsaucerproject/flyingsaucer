@@ -38,9 +38,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -123,6 +125,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     private int _nextFormFieldIndex;
     
+    private Set _linkTargetAreas;
+    
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
     }
@@ -158,6 +162,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             _defaultDestination = new PdfDestination(PdfDestination.FITH, height);
             _defaultDestination.addPage(_writer.getPageReference(1));
         }
+        
+        _linkTargetAreas = new HashSet();
     }
     
     public void finishPage() {
@@ -173,6 +179,42 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         super.paintBackground(c, box);
         
         processLink(c, box);
+    }
+    
+    private com.lowagie.text.Rectangle calcTotalLinkArea(RenderingContext c, Box box) {
+        Box current = box;
+        while (true) {
+            Box prev = current.getPreviousSibling();
+            if (prev == null || prev.getElement() != box.getElement()) {
+                break;
+            }
+            
+            current = prev;
+        }
+
+        com.lowagie.text.Rectangle result = createLocalTargetArea(c, current, true);
+        
+        current = current.getNextSibling();
+        while (current != null && current.getElement() == box.getElement()) {
+            result = add(result, createLocalTargetArea(c, current, true));
+            
+            current = current.getNextSibling();
+        }
+        
+        return result;
+    }
+    
+    private com.lowagie.text.Rectangle add(com.lowagie.text.Rectangle r1, com.lowagie.text.Rectangle r2) {
+        float llx = Math.min(r1.left(), r2.left());
+        float urx = Math.max(r1.right(), r2.right());
+        float lly = Math.min(r1.bottom(), r2.bottom());
+        float ury = Math.max(r1.top(), r2.top());
+        
+        return new com.lowagie.text.Rectangle(llx, lly, urx, ury);
+    }
+    
+    private String createRectKey(com.lowagie.text.Rectangle rect) {
+        return rect.left() + ":" + rect.bottom() + ":" + rect.right() + ":" + rect.top();
     }
 
     private void processLink(RenderingContext c, Box box) {
@@ -195,8 +237,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                             action.put(PdfName.D, dest);
                         }
 
-                        com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box, true);
+                        com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
+                        String key = createRectKey(targetArea);
+                        if (_linkTargetAreas.contains(key)) {
+                            return;
+                        }
                         
+                        _linkTargetAreas.add(key);
                         PdfAnnotation annot = PdfAnnotation.createLink(
                                 _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
                         annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
@@ -206,8 +253,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             	} else if (uri.indexOf("://") != -1) {
                     PdfAction action = new PdfAction(uri);
                     
-            		com.lowagie.text.Rectangle targetArea = createLocalTargetArea(c, box, true);
+            		com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
+            		String key = createRectKey(targetArea);
+            		if (_linkTargetAreas.contains(key)) {
+            		    return;
+            		}
             		
+            		_linkTargetAreas.add(key);
             		PdfAnnotation annot = PdfAnnotation.createLink(
             				_writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
             		
@@ -279,8 +331,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             page.getMarginBorderPadding(c, CalculatedStyle.TOP);
         distanceFromTop += box.getAbsY() + box.getMargin(c).top() - page.getTop();
         result = new PdfDestination(
-                        PdfDestination.FITH, 
-                        page.getHeight(c) / _dotsPerPoint - distanceFromTop / _dotsPerPoint);
+                        PdfDestination.XYZ,
+                        0,
+                        page.getHeight(c) / _dotsPerPoint - distanceFromTop / _dotsPerPoint,
+                        0);
         result.addPage(_writer.getPageReference(_startPageNo + page.getPageNo()+1));
         
         return result;
@@ -800,8 +854,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 int distanceFromTop =
                     page.getMarginBorderPadding(c, CalculatedStyle.TOP);
                 distanceFromTop += box.getAbsY() - page.getTop();
-                target = new PdfDestination(PdfDestination.FITH, 
-                        normalizeY(distanceFromTop / _dotsPerPoint));
+                target = new PdfDestination(PdfDestination.XYZ, 
+                        0, normalizeY(distanceFromTop / _dotsPerPoint), 0);
                 target.addPage(_writer.getPageReference(_startPageNo + page.getPageNo()+1));
             }
         }

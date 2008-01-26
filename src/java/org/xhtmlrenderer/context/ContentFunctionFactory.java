@@ -29,8 +29,13 @@ import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.layout.CounterFunction;
+import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineText;
+import org.xhtmlrenderer.render.InlineLayoutBox;
+import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
 public class ContentFunctionFactory {
@@ -39,6 +44,8 @@ public class ContentFunctionFactory {
     {
         _functions.add(new PageCounterFunction());
         _functions.add(new PagesCounterFunction());
+        _functions.add(new TargetCounterFunction());
+        _functions.add(new LeaderFunction());
     }
     
     public ContentFunction lookupFunction(LayoutContext c, FSFunction function) {
@@ -127,6 +134,156 @@ public class ContentFunctionFactory {
 
         public boolean canHandle(LayoutContext c, FSFunction function) {
             return c.isPrint() && isCounter(function, "pages");
+        }
+    }
+    
+    /**
+     * Partially implements target counter as specified here:
+     * http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#cross-references
+     */
+    private static class TargetCounterFunction implements ContentFunction {
+        public boolean isStatic() {
+            return false;
+        }
+
+        public String calculate(RenderingContext c, FSFunction function, InlineText text) {
+            String uri = text.getParent().getElement().getAttribute("href");
+            if (uri != null && uri.startsWith("#")) {
+                String anchor = uri.substring(1);
+                Box target = c.getBoxById(anchor);
+                if (target != null) {
+                    PageBox targetPage = c.getRootLayer().getPage(c, target.getAbsY());
+                    return CounterFunction.createCounterText(IdentValue.DECIMAL, targetPage.getPageNo()+1);
+                }
+            }
+            return "";
+        }
+
+        public String calculate(LayoutContext c, FSFunction function) {
+            return null;
+        }
+        
+        public String getLayoutReplacementText() {
+            return "999";
+        }
+
+        public boolean canHandle(LayoutContext c, FSFunction function) {
+            if (c.isPrint() && function.getName().equals("target-counter")) {
+                List parameters = function.getParameters();
+                if (parameters.size() == 2 || parameters.size() == 3) {
+                    FSFunction f = ((PropertyValue)parameters.get(0)).getFunction();
+                    if (f == null ||
+                            f.getParameters().size() != 1 ||
+                            ((PropertyValue)f.getParameters().get(0)).getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
+                            ! ((PropertyValue)f.getParameters().get(0)).getStringValue().equals("href")) {
+                        return false;
+                    }
+
+                    PropertyValue param = (PropertyValue)parameters.get(1);
+                    if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
+                            ! param.getStringValue().equals("page")) {
+                        return false;
+                    }
+                    
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+    }
+
+    /**
+     * Partially implements leaders as specified here:
+     * http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#leaders
+     */
+    private static class LeaderFunction implements ContentFunction {
+        public boolean isStatic() {
+            return false;
+        }
+
+        public String calculate(RenderingContext c, FSFunction function, InlineText text) {
+            InlineLayoutBox iB = text.getParent();
+            LineBox lineBox = iB.getLineBox();
+
+            // There might be a target-counter function after this function.
+            // Because the leader should fill up the line, we need the correct
+            // width and must first compute the target-counter function.
+            boolean dynamic = false;
+            Iterator childIterator = lineBox.getChildIterator();
+            while (childIterator.hasNext()) {
+                Box child = (Box)childIterator.next();
+                if (child == iB) {
+                    dynamic = true;
+                } else if (dynamic && child instanceof InlineLayoutBox) {
+                    ((InlineLayoutBox)child).lookForDynamicFunctions(c);
+                }
+            }
+            if (dynamic) {
+                int totalLineWidth = InlineBoxing.positionHorizontally(c, lineBox, 0);
+                lineBox.setContentWidth(totalLineWidth);
+            }
+
+            // Get leader value and value width
+            PropertyValue param = (PropertyValue)function.getParameters().get(0);
+            String value = param.getStringValue();
+            if (param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+                if (value.equals("dotted")) {
+                    value = ". ";
+                } else if (value.equals("solid")) {
+                    value = "_";
+                } else if (value.equals("space")) {
+                    value = " ";
+                }
+            }
+            int valueWidth = c.getTextRenderer().getWidth(c.getFontContext(),
+                    iB.getStyle().getFSFont(c), value);
+            int spaceWidth = c.getTextRenderer().getWidth(c.getFontContext(),
+                    iB.getStyle().getFSFont(c), " ");
+
+            // compute leader width and necessary count of values
+            int leaderWidth = iB.getContainingBlockWidth() - iB.getLineBox().getWidth();
+            int count = (leaderWidth - (2 * spaceWidth)) / valueWidth;
+
+            // set left margin to ensure that the leader is right aligned (for TOC) 
+            iB.setMarginLeft(c, leaderWidth - ((count * valueWidth) + (2 * spaceWidth)));
+
+            // build leader string
+            StringBuffer buf = new StringBuffer(count * value.length() + 2);
+            buf.append(' ');
+            for (int i = 0; i < count; i++) {
+                buf.append(value);
+            }
+            buf.append(' ');
+            return buf.toString();
+        }
+
+        public String calculate(LayoutContext c, FSFunction function) {
+            return null;
+        }
+        
+        public String getLayoutReplacementText() {
+            return " . ";
+        }
+
+        public boolean canHandle(LayoutContext c, FSFunction function) {
+            if (c.isPrint() && function.getName().equals("leader")) {
+                List parameters = function.getParameters();
+                if (parameters.size() == 1) {
+                    PropertyValue param = (PropertyValue)parameters.get(0);
+                    if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_STRING &&
+                            (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
+                                (!param.getStringValue().equals("dotted") &&
+                                        !param.getStringValue().equals("solid") &&
+                                        !param.getStringValue().equals("space")))) {
+                        return false;
+                    }
+                    
+                    return true;
+                }
+            }
+            
+            return false;
         }
     }
 }

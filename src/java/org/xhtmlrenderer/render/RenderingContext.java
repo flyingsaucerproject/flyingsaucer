@@ -230,5 +230,9 @@ public class RenderingContext implements CssContext {
     public void setInitialPageNo(int initialPageNo) {
         this.initialPageNo = initialPageNo;
     }    
+
+    public Box getBoxById(String id) {
+        return sharedContext.getBoxById(id);
+    }
 }
 

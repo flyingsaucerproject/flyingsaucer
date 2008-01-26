@@ -117,6 +117,7 @@ public class LineBox extends Box implements InlinePaintable {
             setContentWidth(totalLineWidth);
             calcChildLocations();
             align(true);
+            calcPaintingInfo(c, false);
         }
         
         if (_textDecorations != null) {
@@ -633,6 +634,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.70  2008/01/26 01:53:44  peterbrant
+ * Implement partial support for leader and target-counter (patch from Karl Tauber)
+ *
  * Revision 1.69  2007/08/30 23:14:28  peterbrant
  * Implement text-align: justify
  *
