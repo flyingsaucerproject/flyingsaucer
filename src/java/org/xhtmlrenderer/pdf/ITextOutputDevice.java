@@ -216,6 +216,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private String createRectKey(com.lowagie.text.Rectangle rect) {
         return rect.left() + ":" + rect.bottom() + ":" + rect.right() + ":" + rect.top();
     }
+    
+    private com.lowagie.text.Rectangle checkLinkArea(RenderingContext c, Box box) {
+        com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
+        String key = createRectKey(targetArea);
+        if (_linkTargetAreas.contains(key)) {
+            return null;
+        }
+        _linkTargetAreas.add(key);
+        return targetArea;
+    }    
 
     private void processLink(RenderingContext c, Box box) {
         Element elem = box.getElement();
@@ -237,13 +247,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                             action.put(PdfName.D, dest);
                         }
 
-                        com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
-                        String key = createRectKey(targetArea);
-                        if (_linkTargetAreas.contains(key)) {
+                        com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
+                        if (targetArea == null) {
                             return;
                         }
-                        
-                        _linkTargetAreas.add(key);
                         PdfAnnotation annot = PdfAnnotation.createLink(
                                 _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
                         annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
@@ -253,13 +260,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             	} else if (uri.indexOf("://") != -1) {
                     PdfAction action = new PdfAction(uri);
                     
-            		com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
-            		String key = createRectKey(targetArea);
-            		if (_linkTargetAreas.contains(key)) {
-            		    return;
-            		}
-            		
-            		_linkTargetAreas.add(key);
+            		com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
+                    if (targetArea == null) {
+                        return;
+                    }
             		PdfAnnotation annot = PdfAnnotation.createLink(
             				_writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
             		
