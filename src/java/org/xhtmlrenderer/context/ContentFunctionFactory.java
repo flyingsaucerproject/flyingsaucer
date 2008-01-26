@@ -236,17 +236,22 @@ public class ContentFunctionFactory {
                     value = " ";
                 }
             }
-            int valueWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), value);
+
+            // Compute value width using 100x string to get more precise width.
+            // Otherwise there might be a small gap at the right side. This is
+            // necessary because a TextRenderer usually use double/float for width.
+            StringBuffer tmp = new StringBuffer(100 * value.length());
+            for (int i = 0; i < 100; i++) {
+                tmp.append(value);
+            }
+            float valueWidth = c.getTextRenderer().getWidth(c.getFontContext(),
+                    iB.getStyle().getFSFont(c), tmp.toString()) / 100f;
             int spaceWidth = c.getTextRenderer().getWidth(c.getFontContext(),
                     iB.getStyle().getFSFont(c), " ");
 
             // compute leader width and necessary count of values
-            int leaderWidth = iB.getContainingBlockWidth() - iB.getLineBox().getWidth();
-            int count = (leaderWidth - (2 * spaceWidth)) / valueWidth;
-
-            // set left margin to ensure that the leader is right aligned (for TOC) 
-            iB.setMarginLeft(c, leaderWidth - ((count * valueWidth) + (2 * spaceWidth)));
+            int leaderWidth = iB.getContainingBlockWidth() - iB.getLineBox().getWidth() + text.getWidth();
+            int count = (int) ((leaderWidth - (2 * spaceWidth)) / valueWidth);
 
             // build leader string
             StringBuffer buf = new StringBuffer(count * value.length() + 2);
@@ -255,7 +260,14 @@ public class ContentFunctionFactory {
                 buf.append(value);
             }
             buf.append(' ');
-            return buf.toString();
+            String leaderString = buf.toString();
+
+            // set left margin to ensure that the leader is right aligned (for TOC)
+            int leaderStringWidth = c.getTextRenderer().getWidth(c.getFontContext(),
+                    iB.getStyle().getFSFont(c), leaderString);
+            iB.setMarginLeft(c, leaderWidth - leaderStringWidth);
+
+            return leaderString;
         }
 
         public String calculate(LayoutContext c, FSFunction function) {
