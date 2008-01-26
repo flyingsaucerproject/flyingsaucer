@@ -622,6 +622,42 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         }
     }
     
+    protected Box getPrevious(Box child) {
+        if (_inlineChildren == null) {
+            return null;
+        }
+        
+        for (int i = 0; i < _inlineChildren.size() - 1; i++) {
+            Object obj = _inlineChildren.get(i);
+            if (obj == child) {
+                if (i == 0) {
+                    return null;
+                } else {
+                    Object previous = _inlineChildren.get(i-1);
+                    return previous instanceof Box ? (Box)previous : null;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    protected Box getNext(Box child) {
+        if (_inlineChildren == null) {
+            return null;
+        }
+        
+        for (int i = 0; i < _inlineChildren.size() - 1; i++) {
+            Object obj = _inlineChildren.get(i);
+            if (obj == child) {
+                Object next = _inlineChildren.get(i+1);
+                return next instanceof Box ? (Box)next : null;
+            }
+        }
+        
+        return null;
+    }
+    
     public void calcCanvasLocation() {
         LineBox lineBox = getLineBox();
         setAbsX(lineBox.getAbsX() + getX());

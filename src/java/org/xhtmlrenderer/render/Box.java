@@ -172,20 +172,21 @@ public abstract class Box implements Styleable {
     }
     
     public Box getPreviousSibling() {
-        if (getParent() == null) {
-            return null;
-        } else {
-            return getIndex() == 0 ? null : getParent().getChild(getIndex()-1);
-        }
+        Box parent = getParent();
+        return parent == null ? null : parent.getPrevious(this);
     }
     
     public Box getNextSibling() {
         Box parent = getParent();
-        if (parent == null) {
-            return null;
-        } else {
-            return getIndex() == parent.getChildCount() - 1 ? null : parent.getChild(getIndex()+1);
-        }
+        return parent == null ? null : parent.getNext(this);
+    }
+    
+    protected Box getPrevious(Box child) {
+        return child.getIndex() == 0 ? null : getChild(child.getIndex()-1);
+    }
+    
+    protected Box getNext(Box child) {
+        return child.getIndex() == getChildCount() - 1 ? null : getChild(child.getIndex()+1);
     }
     
     public void removeChild(int i) {
@@ -1116,6 +1117,9 @@ public abstract class Box implements Styleable {
  * $Id$
  * 
  * $Log$
+ * Revision 1.143  2008/01/26 15:34:52  peterbrant
+ * Make getNextSibling() and getPreviousSibling() work with InlineLayoutBox (or as well as it can in that context)
+ *
  * Revision 1.142  2007/08/23 20:52:31  peterbrant
  * Begin work on AcroForm support
  * Revision 1.141 2007/08/19 22:22:50 peterbrant Merge
