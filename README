@@ -1,6 +1,6 @@
 Flying Saucer
-Release R8pre1
-July 14, 2007
+Release R8pre2
+Jan 27, 2008
 
 https://xhtmlrenderer.dev.java.net
 Please see project website for links to CVS, mailing lists, issue tracker, etc.
@@ -26,10 +26,10 @@ and inspiring to other developers.
 LICENSE
 -------
 Flying Saucer is distributed under the LGPL.Flying Saucer itself is licensed 
-under the GNU Lesser General Public License, available at 
+under the GNU Lesser General Public License, version 2.1 or later, available at
 http://www.gnu.org/copyleft/lesser.html. You can use Flying Saucer in any
 way and for any purpose you want as long as you respect the terms of the 
-license.A copy of the LGPL license is included as license-lgpl-2.1.txt
+license. A copy of the LGPL license is included as license-lgpl-2.1.txt
 in our distributions and in our source tree.
 
 Flying Saucer uses a couple of FOSS packages to get the job done. A list
