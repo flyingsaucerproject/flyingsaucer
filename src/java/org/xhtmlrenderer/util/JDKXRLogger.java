@@ -193,7 +193,6 @@ public class JDKXRLogger implements XRLogger {
         Iterator it = loggerNames.iterator();
         while (it.hasNext()) {
             final String ln = (String) it.next();
-            System.out.println("LOGGER NAME " + ln);
             loggers.add(Logger.getLogger(ln));
         }
         return loggers;
