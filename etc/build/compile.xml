@@ -90,6 +90,6 @@
 	</target>
 
     <!-- Compiles main codebase, browser and about box -->
-	<target name="compile.all" depends="compile, compile.browser, compile.about, compile.photogallery"></target>
+	<target name="compile.all" depends="compile, compile.browser, compile.about, compile.photogallery, compile.samples"></target>
 
 </project>
