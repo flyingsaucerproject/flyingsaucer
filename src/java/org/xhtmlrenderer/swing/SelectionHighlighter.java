@@ -59,6 +59,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.Util;
 import org.xhtmlrenderer.util.XRLog;
 
 /**
@@ -390,7 +391,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
         String s = normalizeSpaces(hlText.toString());
         getComponent().repaint();
-        lastHighlightedString = s.replace(PARA_EQUIV, "\n\n");
+        lastHighlightedString = Util.replace(s, PARA_EQUIV, "\n\n");
         // lastModified = modified;
     }
 
