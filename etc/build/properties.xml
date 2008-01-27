@@ -59,6 +59,8 @@
   <property name="src.demo.splash.dir" location="demos/splash"/>
   <property name="src.about.xhtml.dir" location="demos/about/xhtml"/>
   <property name="www.dir" location="www"/>
+  <property name="regress.source.dir" location="tests/eeze"/>
+  <property name="regress.target.zip" location="tests/regress/regress-output.zip"/>
 
   <property name="src.log4j.dir" location="${src.dir}/log4j" />
   <property name="lib.log4j" location="../StaticJars/log4j-1_2_8.jar" />
@@ -167,7 +169,9 @@
         <exclude name="dtd/*"/>
         <include name="wysiwygdocbook1.01/**"/>
         <include name="docbook-css-0.4/**"/>
+        <include name="other-css/**"/>
         <include name="MozBook/**"/>
+        <include name="xmlmind/**"/>
     </zipfileset>
 
   <zipfileset id="xhtml.about.demos" dir="${src.about.xhtml.dir}" prefix="demos/">

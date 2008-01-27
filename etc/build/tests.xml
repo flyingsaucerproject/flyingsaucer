@@ -40,7 +40,7 @@
 			</classpath>
 		</java>
 	</target>
-	
+
 	<!-- Runs a custom block test after a compile -->
 	<target name="test.customblock" depends="compile">
 		<java classname="org.xhtmlrenderer.test.CustomBlockTest"
@@ -193,6 +193,20 @@
 			<arg value="${diff}"/>
 		</java>
 	</target>
+
+    <!-- Builds the core jar and runs diff tests -->
+    <target name="gen-regress" depends="jar.core">
+        <java classname="org.xhtmlrenderer.test.Regress"
+                fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all"/>
+            <sysproperty key="show-config" value="${show-config}"/>
+            <syspropertyset>
+                <propertyref prefix="xr."/>
+            </syspropertyset>
+            <arg value="${regress.source.dir}"/>
+            <arg value="${regress.target.zip}"/>
+        </java>
+    </target>
 
 			<!-- Builds and jars the browser demo, and runs it -->
 	<target name="test.simple-page" depends="compile, jar">
