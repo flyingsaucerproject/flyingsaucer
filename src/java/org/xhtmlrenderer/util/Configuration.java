@@ -117,39 +117,15 @@ public class Configuration {
             try {
                 val = System.getProperty("show-config");
             } catch (SecurityException ex) {
+                // this may happen if running in a sandbox; not a problem
                 val = null;
             }
             logLevel = Level.OFF;
             if (val != null) {
-                if ("ALL".equals(val)) {
-                    logLevel = Level.ALL;
-                }
-                if ("CONFIG".equals(val)) {
-                    logLevel = Level.CONFIG;
-                }
-                if ("FINE".equals(val)) {
-                    logLevel = Level.FINE;
-                }
-                if ("FINER".equals(val)) {
-                    logLevel = Level.FINER;
-                }
-                if ("FINEST".equals(val)) {
-                    logLevel = Level.FINEST;
-                }
-                if ("INFO".equals(val)) {
-                    logLevel = Level.INFO;
-                }
-                if ("OFF".equals(val)) {
-                    logLevel = Level.OFF;
-                }
-                if ("SEVERE".equals(val)) {
-                    logLevel = Level.SEVERE;
-                }
-                if ("WARNING".equals(val)) {
-                    logLevel = Level.WARNING;
-                }
+                logLevel = LoggerUtil.parseLogLevel(val, Level.OFF);
             }
         } catch (SecurityException e) {
+            // may be thrown in a sandbox; OK
             System.err.println(e.getLocalizedMessage());
         }
 
@@ -191,9 +167,10 @@ public class Configuration {
     }
 
     /**
-     * Description of the Method
+     * Used internally for logging status/info about the class.
      *
-     * @param msg PARAM
+     * @param level the logging level to record the message at
+     * @param msg the message to log
      */
     private void println(Level level, String msg) {
         if (logLevel != Level.OFF) {
@@ -206,9 +183,9 @@ public class Configuration {
     }
 
     /**
-     * Description of the Method
+     * Used internally to log a message about the class at level INFO
      *
-     * @param msg PARAM
+     * @param msg message to log
      */
     private void info(String msg) {
         if (logLevel.intValue() <= Level.INFO.intValue()) {
@@ -217,9 +194,9 @@ public class Configuration {
     }
 
     /**
-     * Description of the Method
+     * Used internally to log a message about the class at level WARNING
      *
-     * @param msg PARAM
+     * @param msg message to log
      */
     private void warning(String msg) {
         if (logLevel.intValue() <= Level.WARNING.intValue()) {
@@ -228,10 +205,10 @@ public class Configuration {
     }
 
     /**
-     * Description of the Method
+     * Used internally to log a message about the class at level WARNING, in case an exception was thrown
      *
-     * @param msg PARAM
-     * @param th  PARAM
+     * @param msg message to log
+     * @param th  the exception to report
      */
     private void warning(String msg, Throwable th) {
         warning(msg);
@@ -239,9 +216,9 @@ public class Configuration {
     }
 
     /**
-     * Description of the Method
+     * Used internally to log a message about the class at level FINE
      *
-     * @param msg PARAM
+     * @param msg message to log
      */
     private void fine(String msg) {
         if (logLevel.intValue() <= Level.FINE.intValue()) {
@@ -250,9 +227,9 @@ public class Configuration {
     }
 
     /**
-     * Description of the Method
+     * Used internally to log a message about the class at level FINER
      *
-     * @param msg PARAM
+     * @param msg message to log
      */
     private void finer(String msg) {
         if (logLevel.intValue() <= Level.FINER.intValue()) {
@@ -311,18 +288,24 @@ public class Configuration {
                     return;
                 }
             } else {
-            	try {
+                InputStream in = null;
+                try {
 					URL url = new URL(uri);
-					InputStream in = new BufferedInputStream(url.openStream());
+					in = new BufferedInputStream(url.openStream());
 					info("Found config override URI " + uri);
 					temp.load(in);
-					in.close();
 				} catch (MalformedURLException e) {
                     warning("URI for override properties is malformed, skipping: " + uri);
                     return;
                 } catch (IOException e) {
                     warning("Overridden properties could not be loaded from URI: " + uri, e);
                     return;
+                } finally {
+                    if (in != null ) try {
+                        in.close();
+                    } catch (IOException e) {
+                        // swallow
+                    }
                 }
             }
 
@@ -343,6 +326,7 @@ public class Configuration {
             }
             finer("Configuration: " + cnt + " properties overridden from override properties file.");
         } catch (SecurityException e) {
+            // can happen in a sandbox environment
             System.err.println(e.getLocalizedMessage());
         }
     }
@@ -351,6 +335,7 @@ public class Configuration {
         try {
             return System.getProperty("xr.conf");
         } catch (SecurityException e) {
+            // can happen in sandbox
             return null;
         }
     }
@@ -360,6 +345,7 @@ public class Configuration {
             String overrideName = System.getProperty("user.home") + File.separator + ".flyingsaucer" + File.separator + "local.xhtmlrenderer.conf";
             return overrideName;
         } catch (SecurityException e) {
+            // can happen in a sandbox
             return null;
         }
     }
@@ -766,6 +752,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2008/01/27 16:40:29  pdoubleya
+ * Issues 186 and 130: fix configuration so that logging setup does not override any current settings for JDK logging classes. Disable logging by default.
+ *
  * Revision 1.20  2007/12/28 14:54:33  peterbrant
  * Make sure resource streams are cleaned up (bug #201, patch by kaihei)
  *

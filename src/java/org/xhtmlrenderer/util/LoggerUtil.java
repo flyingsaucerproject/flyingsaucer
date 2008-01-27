@@ -41,12 +41,45 @@ public class LoggerUtil {
         return l;
     }
 
+    public static Level parseLogLevel(String val, Level defaultLogLevel) {
+        if ("ALL".equals(val)) {
+            return Level.ALL;
+        }
+        if ("CONFIG".equals(val)) {
+            return Level.CONFIG;
+        }
+        if ("FINE".equals(val)) {
+            return Level.FINE;
+        }
+        if ("FINER".equals(val)) {
+            return Level.FINER;
+        }
+        if ("FINEST".equals(val)) {
+            return Level.FINEST;
+        }
+        if ("INFO".equals(val)) {
+            return Level.INFO;
+        }
+        if ("OFF".equals(val)) {
+            return Level.OFF;
+        }
+        if ("SEVERE".equals(val)) {
+            return Level.SEVERE;
+        }
+        if ("WARNING".equals(val)) {
+            return Level.WARNING;
+        }
+        return defaultLogLevel;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2008/01/27 16:40:29  pdoubleya
+ * Issues 186 and 130: fix configuration so that logging setup does not override any current settings for JDK logging classes. Disable logging by default.
+ *
  * Revision 1.3  2005/01/29 20:19:27  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci
+ * Copyright (c) 2004, 2005, 2008 Joshua Marinacci, Patrick Wright
+ * Copyright (c) 2008 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -20,6 +21,8 @@
 package org.xhtmlrenderer.util;
 
 import java.util.logging.Level;
+import java.util.List;
+import java.util.ArrayList;
 
 
 /**
@@ -30,23 +33,42 @@ import java.util.logging.Level;
  * @author empty
  */
 public class XRLog {
-    public final static String CONFIG = "plumbing.config";
-    public final static String EXCEPTION = "plumbing.exception";
-    public final static String GENERAL = "plumbing.general";
-    public final static String INIT = "plumbing.init";
-    public final static String JUNIT = "plumbing.junit";
-    public final static String LOAD = "plumbing.load";
-    public final static String MATCH = "plumbing.match";
-    public final static String CASCADE = "plumbing.cascade";
-    public final static String XML_ENTITIES = "plumbing.load.xml-entities";
-    public final static String CSS_PARSE = "plumbing.css-parse";
-    public final static String LAYOUT = "plumbing.layout";
-    public final static String RENDER = "plumbing.render";
+    private static final List LOGGER_NAMES = new ArrayList(20);
+    public final static String CONFIG = registerLoggerByName("org.xhtmlrenderer.config");
+    public final static String EXCEPTION = registerLoggerByName("org.xhtmlrenderer.exception");
+    public final static String GENERAL = registerLoggerByName("org.xhtmlrenderer.general");
+    public final static String INIT = registerLoggerByName("org.xhtmlrenderer.init");
+    public final static String JUNIT = registerLoggerByName("org.xhtmlrenderer.junit");
+    public final static String LOAD = registerLoggerByName("org.xhtmlrenderer.load");
+    public final static String MATCH = registerLoggerByName("org.xhtmlrenderer.match");
+    public final static String CASCADE = registerLoggerByName("org.xhtmlrenderer.cascade");
+    public final static String XML_ENTITIES = registerLoggerByName("org.xhtmlrenderer.load.xml-entities");
+    public final static String CSS_PARSE = registerLoggerByName("org.xhtmlrenderer.css-parse");
+    public final static String LAYOUT = registerLoggerByName("org.xhtmlrenderer.layout");
+    public final static String RENDER = registerLoggerByName("org.xhtmlrenderer.render");
+
+    private static String registerLoggerByName(final String loggerName) {
+        LOGGER_NAMES.add(loggerName);
+        return loggerName;
+    }
 
     private static boolean initPending = true;
     private static XRLogger loggerImpl;
 
     private static boolean loggingEnabled = true;
+
+    /**
+     * Returns a list of all loggers that will be accessed by XRLog. Each entry is a String with a logger
+     * name, which can be used to retrieve the logger using the corresponding Logging API; example name might be
+     * "org.xhtmlrenderer.config"
+     *
+     * @return List of loggers, never null.
+     */
+    public static List listRegisteredLoggers() {
+        // defensive copy
+        return new ArrayList(LOGGER_NAMES);
+    }
+
 
     public static void cssParse(String msg) {
         cssParse(Level.INFO, msg);
@@ -274,6 +296,9 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2008/01/27 16:40:29  pdoubleya
+ * Issues 186 and 130: fix configuration so that logging setup does not override any current settings for JDK logging classes. Disable logging by default.
+ *
  * Revision 1.18  2007/09/10 20:28:26  peterbrant
  * Make underlying logging implementation pluggable / Add log4j logging implementation (not currently compiled with Ant to avoid additional compile time dependency)
  *
