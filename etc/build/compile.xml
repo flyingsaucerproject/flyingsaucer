@@ -31,22 +31,6 @@
 		<javac-full srcdir="${src.samples.java.dir}"/>
 	</target>
 
-	<!-- Compiles the compare tool -->
-	<target name="compile.fsc" depends="init">
-		<javac-full srcdir="${src.java.dir}/compare">
-            <classpath >
-              <fileset dir="${libraries.dir}">
-                <include name="*.jar"/>
-              </fileset>
-              <fileset dir="${libraries.dir}/dev/jdic_win_30092005">
-                <include name="*.jar"/>
-              </fileset>
-            </classpath>
-
-        </javac-full>
-        <copy todir="build/classes/compare" file="${src.java.dir}/compare/fsc_help.html" />
-	</target>
-
     <!-- Cleans all build files, then recompiles. -->
 	<target name="compile.demo" description="Rebuilds demo apps--browser, about, photogallery" depends="clean,compile,compile.browser,compile.about,compile.photogallery">
 		<antcall target="clean" />
