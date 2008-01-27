@@ -97,13 +97,9 @@ Being honorable people, we must admit what Flying Saucer cannot do for you. This
 Limitations:
 
 * Resource loading is single-threaded and occurs inline with layout.
-* Support for XHTML is weaker than XML+CSS (for example, not all
-XHTML presentational attributes are supported nor are X/HTML features
-like the &lt;object&gt; element).
-* No support for legacy HTML (although there are several open source
-Java HTML cleaners of varying quality available). We render well-formed XML; XHTML is a well-formed document standard. We can't render most HTML "in the wild". At best, you can "clean up" old HTML with "TagSoup":http://home.ccil.org/~cowan/XML/tagsoup/ or "JTidy":http://sourceforge.net/projects/jtidy and hope for the best. But without a bunch of work, you won't be able to use Flying Saucer for a real web browser component. However, note that's not a technical limitation, just a lack of time and resources.
-* Swing printing is supported, but quality is lacking.  Ask on the
-${mailing-list} for details.
+* Support for XHTML is weaker than XML+CSS (for example, not all XHTML presentational attributes are supported nor are X/HTML features like the &lt;object&gt; element).
+* No support for legacy HTML (although there are several open source Java HTML cleaners of varying quality available). We render well-formed XML; XHTML is a well-formed document standard. We can't render most HTML "in the wild". At best, you can "clean up" old HTML with "TagSoup":http://home.ccil.org/~cowan/XML/tagsoup/ or "JTidy":http://sourceforge.net/projects/jtidy and hope for the best. But without a bunch of work, you won't be able to use Flying Saucer for a real web browser component. However, note that's not a technical limitation, just a lack of time and resources.
+* Swing printing is supported, but quality is lacking.  Ask on the ${mailing-list} for details.
 * No support for incremental layout (applies to screen media only).
 * It cannot be used for user-editable content; output is read-only.
 * HTML plugins, like applets, Flash programs, etc. are not supported. However, these could potentially be addressed using replaced element content (such as we use for HTML forms), at least for Java applets. 
@@ -661,7 +657,7 @@ h4(fs_heading). What about embedded ../images? Are ../images downscaled?
 
 _Are referenced ../images altered when embedded in the course of generating PDF?_
 
-No.  PDF has its own way of representing image data, but no image fidelity is lost and the image isn't otherwise modified (e.g. GIFs are stored in a compressed, lossless format; the size of a JPEG on disk will be the same size as the embedded image in the PDF).
+No,  PDF has its own way of representing image data, but no image fidelity is lost and the image isn't otherwise modified (e.g. GIFs are stored in a compressed, lossless format; the size of a JPEG on disk will be the same size as the embedded image in the PDF).
 
 For intrinsic width/height calculations we assume a resolution of 96 DPI, but setting an explicit width/height makes it possible to use an arbitrary DPI.
 
@@ -806,29 +802,17 @@ We log to a set of hierarchies. The internal code--everything between a request 
 If you are modifying the renderer core code and want to add log messages, we recommend you always use the @org.xhtmlrenderer.XRLog@ class. Using this class ensures that our log configuration is read properly before we write anything out to the log system. The class is pretty self-explanatory, and all logging methods in it are static. If for some reason you need to use the @java.util.logging.Logger@ class directly, please use XRLog.getLogger() to retrieve the instance to use. 
 
 bcx{font-size: 8pt;}. {{
-[java] app.browser INFO:: Loading Page: demo:demos/splash/splash.html 
-[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/splash/splash.html 
-[java] plumbing.load INFO:: SAX XMLReader in use (parser): com.sun.org.apache.xerces.internal.parsers.SAXParser 
-[java] plumbing.load FINE:: SAX Parser: by request, not changing any parser features. 
-[java] plumbing.load INFO:: Loaded document in ~16ms 
-[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/splash/splash.html 
-[java] plumbing.load INFO:: TIME: parse stylesheets  15ms 
-[java] plumbing.match INFO:: media = screen 
-[java] plumbing.load INFO:: Requesting stylesheet: http://www.w3.org/1999/xhtml 
-[java] plumbing.match INFO:: Matcher created with 147 selectors 
-[java] plumbing.layout INFO:: Layout took 156ms 
-[java] app.browser INFO:: Loading Page: demo:demos/new/formattedtext.xhtml 
-[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/new/formattedtext.xhtml 
-[java] plumbing.load INFO:: SAX XMLReader in use (parser): com.sun.org.apache.xerces.internal.parsers.SAXParser 
-[java] plumbing.load FINE:: SAX Parser: by request, not changing any parser features. 
-[java] plumbing.load INFO:: Loaded document in ~16ms 
-[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/new/formattedtext.xhtml 
-[java] plumbing.load INFO:: TIME: parse stylesheets  0ms 
-[java] plumbing.match INFO:: media = screen 
-[java] plumbing.load INFO:: Requesting stylesheet: http://www.w3.org/1999/xhtml 
-[java] plumbing.load INFO:: Requesting stylesheet: jar:file:/X:/build/browser.jar!/demos/new/general.css 
-[java] plumbing.match INFO:: Matcher created with 156 selectors 
-[java] plumbing.layout INFO:: Layout took 63ms
+org.xhtmlrenderer.general INFO:: ref = jar:file:/home/patrick/dev/xhtmlrenderer/dist/browser.jar!/demos/r7/counters.xhtml
+org.xhtmlrenderer.load INFO:: SAX XMLReader in use (parser): com.sun.org.apache.xerces.internal.parsers.SAXParser
+org.xhtmlrenderer.load INFO:: Loaded document in ~82ms
+org.xhtmlrenderer.general INFO:: ref = jar:file:/home/patrick/dev/xhtmlrenderer/dist/browser.jar!/demos/r7/counters.xhtml
+org.xhtmlrenderer.load INFO:: TIME: parse stylesheets  25ms
+org.xhtmlrenderer.match INFO:: media = screen
+org.xhtmlrenderer.load INFO:: Requesting stylesheet: jar:file:/home/patrick/dev/xhtmlrenderer/dist/browser.jar!/demos/r7/general.css
+org.xhtmlrenderer.match INFO:: Matcher created with 137 selectors
+org.xhtmlrenderer.general INFO:: Demo navigation URI, ref = null
+org.xhtmlrenderer.general INFO:: Demo navigation URI, ref = null
+org.xhtmlrenderer.layout INFO:: Layout took 63ms
 }}
 
 p. 

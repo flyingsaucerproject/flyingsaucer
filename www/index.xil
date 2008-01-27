@@ -10,6 +10,20 @@ _(in 100% Java)_
 
 h2(fs_heading){ clear: left }. News
 
+p{font-size: 14pt}. Release 8 - Second Code Drop (R8pre2)
+
+*January 27, 2008*: We have released the second code drop leading to our R8 release. This includes a number of bugfixes since the R8pre1 release. The code is fairly stable and we recommend you try this release out and 
+send us your feedback or report bugs you find. See below for the download links.
+
+p{font-size: 14pt}. Release 8 - Pre 1 - Files No Longer Downloadable
+
+*January 27, 2008*: Unfortunately, during a server upgrade, the machine hosting our release files for R8pre1 lost those files. We have no backups (or at least none we can certify as being the same version). We apologize
+for the inconvenience. 
+
+We recommend you use the R8pre2 release, or alternately, CVS HEAD. You can also build a release of Flying Saucer using the CVS tag made at the time of the R8pre1 release, the tag being simple R8pre1
+
+*Sepetember 2, 2007*: The Flying Saucer team announces Release 8pre1 of the Flying Saucer 100% Java XHTML+CSS renderer, including support for table pagination, margin boxes, running elements, named pages, and more:
+
 p{font-size: 14pt}. Release 8 - First Code Drop (R8pre1) 
 
 *Sepetember 2, 2007*: The Flying Saucer team announces Release 8pre1 of the Flying Saucer 100% Java XHTML+CSS renderer, including support for table pagination, margin boxes, running elements, named pages, and more:
@@ -35,10 +49,12 @@ p{font-size: 14pt}. Release 7 - Final!
 Download:
 
 table(properties){width: 100%}.
-| *STABLE* | Binary Zip (2M) | "flyingsaucer-R7final.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip | For using Flying Saucer in your own programs
-| *STABLE* | Source Bundle Zip (6M) | "flyingsaucer-R7final-src.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip | Includes source, demo programs, sample code, etc. 
-| *DEVELOPMENT* | Binary Zip (2M) | "flyingsaucer-R8pre1.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre1.zip | For using Flying Saucer in your own programs
-| *DEVELOPMENT* | Source Bundle Zip (6M) | "flyingsaucer-R8pre1-src.zip":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre1-src.zip | Includes source, demo programs, sample code, etc. 
+| *STABLE* | Binary Zip (2M) | "flyingsaucer-R7final.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip | For using Flying Saucer in your own programs
+| *STABLE* | Source Bundle Zip (6M) | "flyingsaucer-R7final-src.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip | Includes source, demo programs, sample code, etc. 
+| *DEVELOPMENT* | Binary Zip (2M) | "flyingsaucer-R8pre2.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre2.zip | For using Flying Saucer in your own programs
+| *DEVELOPMENT* | Source Bundle Zip (6M) | "flyingsaucer-R8pre2-src.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre2-src.zip | Includes source, demo programs, sample code, etc. 
+
+Note that the R8pre1 files are no longer available for download (they were lost in a server upgrade). 
 
 Release 7 features major improvements in rendering accuracy, speed, and overall feature set. This includes:
 
@@ -47,19 +63,13 @@ Release 7 features major improvements in rendering accuracy, speed, and overall 
 **   Floated tables
 **   display: inline-table
 **   display: table-caption (caption in (X)HTML)
-**   display: table-header-group, display: table-row-group, and
-table-footer-group (thead, tbody, and tfoot in (X)HTML)
+**   display: table-header-group, display: table-row-group, and table-footer-group (thead, tbody, and tfoot in (X)HTML)
 **   table-layout: fixed
 **   table-layout: auto (complete support, see below)
-**   Table box construction and layout follows the same code path as
-everything else
-**   display: table-column and display: table-column-group (col and
-colgroup in (X)HTML)
+**   Table box construction and layout follows the same code path as everything else
+**   display: table-column and display: table-column-group (col and colgroup in (X)HTML)
 **   vertical-align in table cells
-**   Full support for anonymous tables (with the exception that a
-table-column-group element won't force a table to be created.  This
-turned out to be awkward to implement [and marginally useful it would
-seem...])
+**   Full support for anonymous tables (with the exception that a table-column-group element won't force a table to be created.  This turned out to be awkward to implement [and marginally useful it would seem...])
 * improvements to XHTML forms support (for Swing)
 * CSS font property resolution improvements
 * CSS counter property support
