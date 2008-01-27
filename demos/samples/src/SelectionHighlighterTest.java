@@ -35,6 +35,9 @@ import org.xhtmlrenderer.swing.SelectionHighlighter;
 import org.xhtmlrenderer.swing.SelectionHighlighter.CopyAction;
 
 /**
+ * Sample for text selection in a rendered document; allows you to select text in the document
+ * and copy to the clipboard.
+ *
  * @author Nick Reddel
  */
 public class SelectionHighlighterTest extends JFrame {
@@ -47,24 +50,32 @@ public class SelectionHighlighterTest extends JFrame {
     }
 
     public SelectionHighlighterTest() {
+        // create the panel--standard setup
         JPanel jp = new JPanel();
         jp.setLayout(new BorderLayout());
         jp.add(new JLabel("hi"), BorderLayout.NORTH);
         jp.setMinimumSize(new Dimension(300,300));
         jp.setPreferredSize(new Dimension(700,500));
-        XHTMLPanel p = new XHTMLPanel();
+        XHTMLPanel xhtmlPanel = new XHTMLPanel();
         try {
-           p.setDocument("http://www.w3.org/MarkUp/");
+           xhtmlPanel.setDocument("http://www.w3.org/MarkUp/");
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+
+        // install a selection highlighter no the panel
         SelectionHighlighter caret = new SelectionHighlighter();
-        caret.install(p);
-        FSScrollPane fs = new FSScrollPane(p);
+        caret.install(xhtmlPanel);
+
+        FSScrollPane fs = new FSScrollPane(xhtmlPanel);
+
         jp.add(fs,BorderLayout.CENTER);
+
+        // install an action to copy selected test; must be "installed" around
+        // the selection highlighter (caret) we just created
         CopyAction copyAction = new SelectionHighlighter.CopyAction();
         copyAction.install(caret);
+
         jp.add(new JButton(copyAction), BorderLayout.SOUTH);
         add(jp);
         
