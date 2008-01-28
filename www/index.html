@@ -58,6 +58,75 @@
 
 <p><strong>January 28, 2008</strong>: The second code drop for our R8 release is available; see below in the downloads section. This release includes a number of bug fixes since R8pre1. While not the final release, we think it's pretty stable and would love if you could take it for a drive and report any problems you find.</p>
 
+<p>We thank the many people who contributed to this release (named in the changes that follow).</p>
+
+<p>Changes since R8pre1 (mostly in order of checkin).</p>
+
+<ul>
+  <li>Features
+    <ul>
+      <li>Support True Type Collection (.ttc) files</li>
+      <li>Support encryption of <span class="caps">PDF</span> output via ITextRenderer.setPDFEncryption() (patch from Jason Blumenkrantz)</li>
+      <li>Addtional work on support for rendering via <span class="caps">SWT</span> (thanks to Vianney le Clément)</li>
+      <li>Support logging via Log4J as an alternative to <span class="caps">JDK</span> logging (requires recompile)</li>
+      <li>Handle hidden form elements</li>
+      <li>Rudimentary support for JavaScript links (from Dan Kaplan)</li>
+      <li>Provide property for setting initial page number of a document when rendering to <span class="caps">PDF</span> (patch from Christophe Marchand)</li>
+      <li>Add rudimentary support for Type 1 fonts</li>
+      <li>Add rudimentary support for @font-face rules</li>
+      <li>Preliminary support for selection, highlighting and copying (thanks to Nick Reddel)</li>
+      <li>Implement partial support for leader and target-counter (patch from Karl Tauber)</li>
+      <li>Provide ReplacedElementFactory to Graphics2DRenderer to allow printing of replaced elements (patch from Nicola Ken Barozzi)</li>
+      <li>Patch from N. Barozzi to allow either Toolkit or BufferedImages to be used</li>
+    </ul>
+  </li>
+</ul>
+
+
+<ul>
+  <li>Bug Fixes
+    <ul>
+      <li>Incorrectly nested table content could produce invalid layout tree.</li>
+      <li>Fix for nested percentage height calculations</li>
+      <li>When printing, Swing components should be print()ed instead of paint()ed</li>
+      <li>Only try to satisfy widows and orphans if page breaking is allowed</li>
+      <li>Fix bug that was preventing positioned content from working in running() elements</li>
+      <li>When paginating a table, rows that fit entirely on one page should never move to the next one (report from Jonathan Leech)</li>
+      <li>Include children in link activation area</li>
+      <li>Always paint default background even if there is no document (report from Richard Bair)</li>
+      <li>Need to discard last cached page if it's being removed (report from Christophe Marchand)</li>
+      <li>Fix incorrect layout of long runs of unbroken text in auto table layouts by using longs instead of ints everywhere lengths are involved.</li>
+      <li>Fix regression in initial page number calculation (report from Christophe Marchand)</li>
+      <li>Make sure resource streams are cleaned up (bug #201, patch by kaihei)</li>
+      <li>Always use <span class="caps">UTF</span>-8 when parsing stylesheets (instead of the platform default)</li>
+      <li>Need to propagate changes to user agent in SharedContext to containing StyleReference</li>
+      <li>Fix: fonts not being keyed properly in font cache when a scaling factor was applied to the text renderer</li>
+      <li>Form XObjects inherit the current graphics state from where they are called.  Make sure they get a clean slate (bug report from Evan Jones)</li>
+      <li>Issues 186 and 130: fix configuration so that logging setup does not override any current settings for <span class="caps">JDK</span> logging classes. Disable logging by default.</li>
+    </ul>
+  </li>
+</ul>
+
+
+<p>Download:</p>
+
+<table class="properties" style="width: 100%;">
+<tbody>
+  <tr>
+    <td><strong>DEVELOPMENT</strong></td>
+    <td>Binary Zip (2M)</td>
+    <td><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre2.zip">flyingsaucer-R8pre2.zip</a></td>
+    <td>For using Flying Saucer in your own programs</td>
+  </tr>
+  <tr>
+    <td><strong>DEVELOPMENT</strong></td>
+    <td>Source Bundle Zip (6M)</td>
+    <td><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre2-src.zip">flyingsaucer-R8pre2-src.zip</a></td>
+    <td>Includes source, demo programs, sample code, etc.</td>
+  </tr>
+</tbody>
+</table>
+
 <p style="font-size: 14pt;">Release 8 &#8211; Pre 1 &#8211; Files No Longer Downloadable</p>
 
 <p><strong>January 27, 2008</strong>: Unfortunately, during a server upgrade, the machine hosting our release files for R8pre1 lost those files. We have no backups (or at least none we can certify as being the same version). We apologize<br />
