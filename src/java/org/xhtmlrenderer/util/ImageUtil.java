@@ -93,7 +93,8 @@ public class ImageUtil {
 			GraphicsDevice gs = ge.getDefaultScreenDevice();
 			GraphicsConfiguration gc = gs.getDefaultConfiguration();
 
-			int type = (biType == BufferedImage.TYPE_INT_ARGB || biType == BufferedImage.TYPE_INT_ARGB_PRE ?
+            // TODO: check type using image type - can be sniffed; see Filthy Rich Clients
+            int type = (biType == BufferedImage.TYPE_INT_ARGB || biType == BufferedImage.TYPE_INT_ARGB_PRE ?
 					Transparency.TRANSLUCENT : Transparency.OPAQUE);
 
 			bimage = gc.createCompatibleImage(width, height, type);
