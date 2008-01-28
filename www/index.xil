@@ -10,10 +10,9 @@ _(in 100% Java)_
 
 h2(fs_heading){ clear: left }. News
 
-p{font-size: 14pt}. Release 8 - Second Code Drop (R8pre2)
+p{font-size: 14pt}. Release 8 - Second Code Drop (R8pre2) 
 
-*January 27, 2008*: We have released the second code drop leading to our R8 release. This includes a number of bugfixes since the R8pre1 release. The code is fairly stable and we recommend you try this release out and 
-send us your feedback or report bugs you find. See below for the download links.
+*January 28, 2008*: The second code drop for our R8 release is available; see below in the downloads section. This release includes a number of bug fixes since R8pre1. While not the final release, we think it's pretty stable and would love if you could take it for a drive and report any problems you find.
 
 p{font-size: 14pt}. Release 8 - Pre 1 - Files No Longer Downloadable
 
@@ -21,8 +20,6 @@ p{font-size: 14pt}. Release 8 - Pre 1 - Files No Longer Downloadable
 for the inconvenience. 
 
 We recommend you use the R8pre2 release, or alternately, CVS HEAD. You can also build a release of Flying Saucer using the CVS tag made at the time of the R8pre1 release, the tag being simple R8pre1
-
-*Sepetember 2, 2007*: The Flying Saucer team announces Release 8pre1 of the Flying Saucer 100% Java XHTML+CSS renderer, including support for table pagination, margin boxes, running elements, named pages, and more:
 
 p{font-size: 14pt}. Release 8 - First Code Drop (R8pre1) 
 
