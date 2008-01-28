@@ -14,8 +14,8 @@
 <ul>
   <li>Downloads
     <ul>
-      <li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip">Release 7 Binaries</a></li>
-      <li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip">Release 7 All Files</a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip">Release 7 Binaries</a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip">Release 7 All Files</a></li>
     </ul>
   </li>
   <li>About Flying Saucer
@@ -54,6 +54,17 @@
 
 <h2 class="fs_heading" style=" clear: left ;">News</h2>
 
+<p style="font-size: 14pt;">Release 8 &#8211; Second Code Drop (R8pre2)</p>
+
+<p><strong>January 28, 2008</strong>: The second code drop for our R8 release is available; see below in the downloads section. This release includes a number of bug fixes since R8pre1. While not the final release, we think it's pretty stable and would love if you could take it for a drive and report any problems you find.</p>
+
+<p style="font-size: 14pt;">Release 8 &#8211; Pre 1 &#8211; Files No Longer Downloadable</p>
+
+<p><strong>January 27, 2008</strong>: Unfortunately, during a server upgrade, the machine hosting our release files for R8pre1 lost those files. We have no backups (or at least none we can certify as being the same version). We apologize<br />
+for the inconvenience.</p>
+
+<p>We recommend you use the R8pre2 release, or alternately, <span class="caps">CVS</span> <span class="caps">HEAD</span>. You can also build a release of Flying Saucer using the <span class="caps">CVS</span> tag made at the time of the R8pre1 release, the tag being simple R8pre1</p>
+
 <p style="font-size: 14pt;">Release 8 &#8211; First Code Drop (R8pre1)</p>
 
 <p><strong>Sepetember 2, 2007</strong>: The Flying Saucer team announces Release 8pre1 of the Flying Saucer 100% Java <span class="caps">XHTML</span>+CSS renderer, including support for table pagination, margin boxes, running elements, named pages, and more:</p>
@@ -89,29 +100,31 @@
   <tr>
     <td><strong>STABLE</strong></td>
     <td>Binary Zip (2M)</td>
-    <td><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip">flyingsaucer-R7final.zip</a></td>
+    <td><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip">flyingsaucer-R7final.zip</a></td>
     <td>For using Flying Saucer in your own programs</td>
   </tr>
   <tr>
     <td><strong>STABLE</strong></td>
     <td>Source Bundle Zip (6M)</td>
-    <td><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip">flyingsaucer-R7final-src.zip</a></td>
+    <td><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip">flyingsaucer-R7final-src.zip</a></td>
     <td>Includes source, demo programs, sample code, etc.</td>
   </tr>
   <tr>
     <td><strong>DEVELOPMENT</strong></td>
     <td>Binary Zip (2M)</td>
-    <td><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre1.zip">flyingsaucer-R8pre1.zip</a></td>
+    <td><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre2.zip">flyingsaucer-R8pre2.zip</a></td>
     <td>For using Flying Saucer in your own programs</td>
   </tr>
   <tr>
     <td><strong>DEVELOPMENT</strong></td>
     <td>Source Bundle Zip (6M)</td>
-    <td><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre1-src.zip">flyingsaucer-R8pre1-src.zip</a></td>
+    <td><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre2-src.zip">flyingsaucer-R8pre2-src.zip</a></td>
     <td>Includes source, demo programs, sample code, etc.</td>
   </tr>
 </tbody>
 </table>
+
+<p>Note that the R8pre1 files are no longer available for download (they were lost in a server upgrade).</p>
 
 <p>Release 7 features major improvements in rendering accuracy, speed, and overall feature set. This includes:</p>
 
@@ -122,13 +135,13 @@
       <li>Floated tables</li>
       <li>display: inline-table</li>
       <li>display: table-caption (caption in (X)HTML)</li>
-      <li>display: table-header-group, display: table-row-group, and</li>
+      <li>display: table-header-group, display: table-row-group, and table-footer-group (thead, tbody, and tfoot in (X)HTML)</li>
       <li>table-layout: fixed</li>
       <li>table-layout: auto (complete support, see below)</li>
-      <li>Table box construction and layout follows the same code path as</li>
-      <li>display: table-column and display: table-column-group (col and</li>
+      <li>Table box construction and layout follows the same code path as everything else</li>
+      <li>display: table-column and display: table-column-group (col and colgroup in (X)HTML)</li>
       <li>vertical-align in table cells</li>
-      <li>Full support for anonymous tables (with the exception that a</li>
+      <li>Full support for anonymous tables (with the exception that a table-column-group element won't force a table to be created.  This turned out to be awkward to implement [and marginally useful it would seem...])</li>
     </ul>
   </li>
   <li>improvements to <span class="caps">XHTML</span> forms support (for Swing)</li>
