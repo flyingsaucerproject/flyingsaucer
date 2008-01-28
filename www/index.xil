@@ -61,10 +61,9 @@ table(properties){width: 100%}.
 
 p{font-size: 14pt}. Release 8 - Pre 1 - Files No Longer Downloadable
 
-*January 27, 2008*: Unfortunately, during a server upgrade, the machine hosting our release files for R8pre1 lost those files. We have no backups (or at least none we can certify as being the same version). We apologize
-for the inconvenience. 
+*January 27, 2008*: Unfortunately, during a server upgrade, the machine hosting our release files for R8pre1 lost those files. We have no backups (or at least none we can certify as being the same version). We apologize for the inconvenience. 
 
-We recommend you use the R8pre2 release, or alternately, CVS HEAD. You can also build a release of Flying Saucer using the CVS tag made at the time of the R8pre1 release, the tag being simple R8pre1
+We recommend you use the R8pre2 release, or alternately, CVS HEAD. You can also build a release of Flying Saucer using the CVS tag made at the time of the R8pre1 release, the tag being simple R8_pre1.
 
 p{font-size: 14pt}. Release 8 - First Code Drop (R8pre1) 
 
