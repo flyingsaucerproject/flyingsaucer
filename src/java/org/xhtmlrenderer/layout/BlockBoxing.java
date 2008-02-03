@@ -203,6 +203,7 @@ public class BlockBoxing {
             //TODO:handle run-ins. For now, treat them as blocks
 
             c.restoreStateForRelayout(relayoutData.getLayoutState());
+            relayoutData.setChildOffset(childOffset);
             layoutBlockChild(
                     c, block, child, false, childOffset, NO_PAGE_TRIM);
 
@@ -430,6 +431,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.65  2008/02/03 12:35:06  peterbrant
+ * Need to update child offset when laying out a block again.  We'll need it later if two "keep together" runs adjoin.
+ *
  * Revision 1.64  2007/08/19 22:22:52  peterbrant
  * Merge R8pbrant changes to HEAD
  *
