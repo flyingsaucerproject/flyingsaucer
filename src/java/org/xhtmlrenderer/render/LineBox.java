@@ -218,8 +218,17 @@ public class LineBox extends Box implements InlinePaintable {
                     info.setNonSpaceAdjust(0.0f);
                     info.setSpaceAdjust((float)toAdd / counts.getSpaceCount());
                 } else {
-                    info.setNonSpaceAdjust((float)toAdd * JUSTIFY_NON_SPACE_SHARE / (counts.getNonSpaceCount()-1));
-                    info.setSpaceAdjust((float)toAdd * JUSTIFY_SPACE_SHARE / counts.getSpaceCount());
+                    if (counts.getNonSpaceCount() > 1) {
+                        info.setNonSpaceAdjust((float)toAdd * JUSTIFY_NON_SPACE_SHARE / (counts.getNonSpaceCount()-1));
+                    } else {
+                        info.setNonSpaceAdjust(0.0f);
+                    }
+                    
+                    if (counts.getSpaceCount() > 0) {
+                        info.setSpaceAdjust((float)toAdd * JUSTIFY_SPACE_SHARE / counts.getSpaceCount());
+                    } else {
+                        info.setSpaceAdjust(0.0f);
+                    }
                 }
                 
                 adjustChildren(info);
@@ -634,6 +643,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.71  2008/02/11 17:52:25  peterbrant
+ * Fix divide by zero error in justification algorithm
+ *
  * Revision 1.70  2008/01/26 01:53:44  peterbrant
  * Implement partial support for leader and target-counter (patch from Karl Tauber)
  *
