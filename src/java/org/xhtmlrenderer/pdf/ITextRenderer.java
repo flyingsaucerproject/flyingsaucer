@@ -22,10 +22,7 @@ package org.xhtmlrenderer.pdf;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -44,6 +41,8 @@ import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.resource.XMLResource;
+import org.xml.sax.InputSource;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
@@ -119,7 +118,14 @@ public class ITextRenderer {
                 (parent == null ? "" : parent.toURI().toURL().toExternalForm())
         );
     }
-    
+
+    public void setDocumentFromString(String content) {
+        InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
+        Document dom = XMLResource.load(is).getDocument();
+
+        setDocument(dom, null);
+    }
+
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
         _doc = doc;
         
