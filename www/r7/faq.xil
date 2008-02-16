@@ -32,7 +32,21 @@ ${fs} can be used for any Java application that requires some sort of styled con
 
 An application using ${fs} can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. ${fs} is very forward- thinking and is designed to be a part of the next generation of applications that combine rich desktop clients with web content. Some examples of application types are:
 
-* chat programs * online music stores * a Gutenberg eBook reader * a distributed dictionary application * Sherlock style map and movie search * Konfabulator and Dashboard components * an RSS reader * a Friendster client * an eBay client * a splash screen * an about box * a helpfile viewer * a javadoc viewer * report generation and viewing * a stock ticker / weather reporter
+* chat programs 
+* online music stores 
+* a Gutenberg eBook reader 
+* a distributed dictionary application 
+* Sherlock style map and movie search 
+* Konfabulator and Dashboard components 
+* an RSS reader 
+* a Friendster client 
+* an eBay client 
+* a splash screen 
+* an about box 
+* a helpfile viewer 
+* a javadoc viewer 
+* report generation and viewing 
+* a stock ticker / weather reporter
 
 h3(fs_heading){clear:none}. What XHTML/CSS features does ${fs} currently support?
 
@@ -118,9 +132,11 @@ The url is the "base", which for a normal URL would be the parent location (pare
 
 h3(fs_heading){clear:none}. My PDF isn't picking up my CSS!
 
-Make sure you have specified the media type for your CSS when you link or embed it; use type "print" or "all".
+PDF is treated as "print" media; see the "CSS 2.1 specification section on media types":http://www.w3.org/TR/CSS21/media.html. Make sure you have specified the media type for your CSS when you link or embed it; use type "print" or "all".
 
 h3(fs_heading){clear:none}. How can I print multiple pages on to one PDF, if they come from multiple documents?
+
+For the first document in the set (e.g. starting with the first page in the PDF you want to render) take an ITextRenderer and call @setDocument()@, @layout()@ and @createPDF()@; for each subsequent document, use the same renderer and call @setDocument()@, @layout()@, and @writeNextDocument()@. Call @finishPDF()@ to complete the process. A sample follows below; a cleaned-up example, @PDFRenderToMultiplePages@, is in our demos/samples directory in our source distribution.
 
 bcx. {{
 String root = "J:/Temp/fs";
@@ -178,12 +194,11 @@ There are patches attached to that mail thread which provide initial support for
 
 h3(fs_heading){clear:none}. My header is not showing up correctly in my PDF.
 
-The values of -fs-flow-top/right/bottom/left and -fs-move-to-flow must
-be strings and not keywords (e.g. -fs-flow-top: 'header' instead of
--fs-flow-top: header).
+The values of @-fs-flow-top/right/bottom/left@ and @-fs-move-to-flow@ must
+be strings and not keywords (e.g. @-fs-flow-top: 'header'@ instead of
+@-fs-flow-top: header@).
 
-The new CSS parser validates this (and will give you a warning message
-if you have logging turned on).
+The new CSS parser validates this (and will give you a warning message if you have logging turned on).
 
 h3(fs_heading){clear: none}. How do I set a custom UserAgentCallback when generating PDF?
 
@@ -198,6 +213,19 @@ renderer.setDocument(url);
 renderer.layout();
 renderer.createPDF(os);
 }}
+
+h3(fs_heading){clear: none}. How do I figure out the size of a document I'm rendering? Can I get this from the renderer? How about preferred size of XHTMLPanel? Why isn't my panel properly sized on screen?
+
+The rules are that the document size is calculated after a layout takes place; for rendering to a Swing panel, this can only happen if the container for the panel (e.g. the window) is displayable. See "this email thread in our mailing list":https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?list=users&msgNo=777 for a discussion. In our demos/samples directory in the source distribution, the @PanelResizeToPreferredSize@ and @JPanelSizeToDocument@ show how this is done. Basically (quoting from the mail thread):
+
+"So basically you want to:
+
+# create the frame and add components to it
+# call @f.pack()@ to make them displayable
+# layout documents in @XHTMLPanel@ instances using @doDocumentLayout(graphics)@
+# call @f.pack()@ again now that the preferred size of the @XHTMLPanel@ instances has been calculated"
+
+If you are relying on a layout manager that itself relies on its components' preferred sizes (like FlowLayout) you need to make sure to follow the rules above in order for the layout manager to pick up the size of the panel *after* it has been layed out. The second call to @pack()@ after @doDocumentLayout()@ takes care of doing this. See @PanelResizeToPreferredSize@ for an example using @FlowLayout@.
 
 h2(fs_heading){clear:none}. Developer's FAQ
 

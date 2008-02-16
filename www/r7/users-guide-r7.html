@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <title>The Flying Saucer User's Guide</title>
-  <link href="../base.css" rel="stylesheet" type="text/css" />
+  <link href="/base.css" rel="stylesheet" type="text/css" />
   <style type="text/css">
 #toc {
   page-break-before: always;
@@ -25,8 +25,8 @@
 <ul>
   <li>Downloads
     <ul>
-      <li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip">Release 7 Binaries</a></li>
-      <li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip">Release 7 All Files</a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip">Release 7 Binaries</a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip">Release 7 All Files</a></li>
     </ul>
   </li>
   <li>About Flying Saucer
@@ -229,9 +229,9 @@
 
 <ul>
   <li>Resource loading is single-threaded and occurs inline with layout.</li>
-  <li>Support for <span class="caps">XHTML</span> is weaker than <span class="caps">XML</span>+CSS (for example, not all</li>
-  <li>No support for legacy <span class="caps">HTML</span> (although there are several open source</li>
-  <li>Swing printing is supported, but quality is lacking.  Ask on the</li>
+  <li>Support for <span class="caps">XHTML</span> is weaker than <span class="caps">XML</span>+CSS (for example, not all <span class="caps">XHTML</span> presentational attributes are supported nor are X/HTML features like the &lt;object&gt; element).</li>
+  <li>No support for legacy <span class="caps">HTML</span> (although there are several open source Java <span class="caps">HTML</span> cleaners of varying quality available). We render well-formed <span class="caps">XML</span>; <span class="caps">XHTML</span> is a well-formed document standard. We can't render most <span class="caps">HTML</span> "in the wild". At best, you can "clean up" old <span class="caps">HTML</span> with <a href="http://home.ccil.org/~cowan/XML/tagsoup/">TagSoup</a> or <a href="http://sourceforge.net/projects/jtidy">JTidy</a> and hope for the best. But without a bunch of work, you won't be able to use Flying Saucer for a real web browser component. However, note that's not a technical limitation, just a lack of time and resources.</li>
+  <li>Swing printing is supported, but quality is lacking.  Ask on the <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">mailing list</a> for details.</li>
   <li>No support for incremental layout (applies to screen media only).</li>
   <li>It cannot be used for user-editable content; output is read-only.</li>
   <li><span class="caps">HTML</span> plugins, like applets, Flash programs, etc. are not supported. However, these could potentially be addressed using replaced element content (such as we use for <span class="caps">HTML</span> forms), at least for Java applets.</li>
@@ -859,7 +859,7 @@ resolver.addFont (
 
 <p><em>Are referenced ../images altered when embedded in the course of generating <span class="caps">PDF</span>?</em></p>
 
-<p>No.  <span class="caps">PDF</span> has its own way of representing image data, but no image fidelity is lost and the image isn't otherwise modified (e.g. GIFs are stored in a compressed, lossless format; the size of a <span class="caps">JPEG</span> on disk will be the same size as the embedded image in the <span class="caps">PDF</span>).</p>
+<p>No,  <span class="caps">PDF</span> has its own way of representing image data, but no image fidelity is lost and the image isn't otherwise modified (e.g. GIFs are stored in a compressed, lossless format; the size of a <span class="caps">JPEG</span> on disk will be the same size as the embedded image in the <span class="caps">PDF</span>).</p>
 
 <p>For intrinsic width/height calculations we assume a resolution of 96 <span class="caps">DPI</span>, but setting an explicit width/height makes it possible to use an arbitrary <span class="caps">DPI</span>.</p>
 
@@ -1002,29 +1002,17 @@ resolver.addFont (
 
 <p>If you are modifying the renderer core code and want to add log messages, we recommend you always use the <code>org.xhtmlrenderer.XRLog</code> class. Using this class ensures that our log configuration is read properly before we write anything out to the log system. The class is pretty self-explanatory, and all logging methods in it are static. If for some reason you need to use the <code>java.util.logging.Logger</code> class directly, please use XRLog.getLogger() to retrieve the instance to use.</p>
 
-<pre style="font-size: 8pt;"><code>[java] app.browser INFO:: Loading Page: demo:demos/splash/splash.html
-[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/splash/splash.html
-[java] plumbing.load INFO:: SAX XMLReader in use (parser): com.sun.org.apache.xerces.internal.parsers.SAXParser
-[java] plumbing.load FINE:: SAX Parser: by request, not changing any parser features.
-[java] plumbing.load INFO:: Loaded document in ~16ms
-[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/splash/splash.html
-[java] plumbing.load INFO:: TIME: parse stylesheets  15ms
-[java] plumbing.match INFO:: media = screen
-[java] plumbing.load INFO:: Requesting stylesheet: http://www.w3.org/1999/xhtml
-[java] plumbing.match INFO:: Matcher created with 147 selectors
-[java] plumbing.layout INFO:: Layout took 156ms
-[java] app.browser INFO:: Loading Page: demo:demos/new/formattedtext.xhtml
-[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/new/formattedtext.xhtml
-[java] plumbing.load INFO:: SAX XMLReader in use (parser): com.sun.org.apache.xerces.internal.parsers.SAXParser
-[java] plumbing.load FINE:: SAX Parser: by request, not changing any parser features.
-[java] plumbing.load INFO:: Loaded document in ~16ms
-[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/new/formattedtext.xhtml
-[java] plumbing.load INFO:: TIME: parse stylesheets  0ms
-[java] plumbing.match INFO:: media = screen
-[java] plumbing.load INFO:: Requesting stylesheet: http://www.w3.org/1999/xhtml
-[java] plumbing.load INFO:: Requesting stylesheet: jar:file:/X:/build/browser.jar!/demos/new/general.css
-[java] plumbing.match INFO:: Matcher created with 156 selectors
-[java] plumbing.layout INFO:: Layout took 63ms
+<pre style="font-size: 8pt;"><code>org.xhtmlrenderer.general INFO:: ref = jar:file:/home/patrick/dev/xhtmlrenderer/dist/browser.jar!/demos/r7/counters.xhtml
+org.xhtmlrenderer.load INFO:: SAX XMLReader in use (parser): com.sun.org.apache.xerces.internal.parsers.SAXParser
+org.xhtmlrenderer.load INFO:: Loaded document in ~82ms
+org.xhtmlrenderer.general INFO:: ref = jar:file:/home/patrick/dev/xhtmlrenderer/dist/browser.jar!/demos/r7/counters.xhtml
+org.xhtmlrenderer.load INFO:: TIME: parse stylesheets  25ms
+org.xhtmlrenderer.match INFO:: media = screen
+org.xhtmlrenderer.load INFO:: Requesting stylesheet: jar:file:/home/patrick/dev/xhtmlrenderer/dist/browser.jar!/demos/r7/general.css
+org.xhtmlrenderer.match INFO:: Matcher created with 137 selectors
+org.xhtmlrenderer.general INFO:: Demo navigation URI, ref = null
+org.xhtmlrenderer.general INFO:: Demo navigation URI, ref = null
+org.xhtmlrenderer.layout INFO:: Layout took 63ms
 </code></pre>
 
 <p></p>

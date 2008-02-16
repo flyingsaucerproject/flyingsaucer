@@ -21,7 +21,7 @@ Changes since R8pre1 (mostly in order of checkin).
 * Features
 **  Support True Type Collection (.ttc) files
 **  Support encryption of PDF output via ITextRenderer.setPDFEncryption() (patch from Jason Blumenkrantz)
-**  Addtional work on support for rendering via SWT (thanks to Vianney le Clément)
+**  Addtional work on support for rendering via SWT (thanks to Vianney le Cl&eacute;ment)
 **  Support logging via Log4J as an alternative to JDK logging (requires recompile)
 **  Handle hidden form elements
 **  Rudimentary support for JavaScript links (from Dan Kaplan)

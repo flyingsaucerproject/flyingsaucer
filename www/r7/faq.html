@@ -14,8 +14,8 @@
 <ul>
   <li>Downloads
     <ul>
-      <li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip">Release 7 Binaries</a></li>
-      <li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip">Release 7 All Files</a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip">Release 7 Binaries</a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip">Release 7 All Files</a></li>
     </ul>
   </li>
   <li>About Flying Saucer
@@ -90,7 +90,21 @@
 <p>An application using Flying Saucer can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. Flying Saucer is very forward- thinking and is designed to be a part of the next generation of applications that combine rich desktop clients with web content. Some examples of application types are:</p>
 
 <ul>
-  <li>chat programs * online music stores * a Gutenberg eBook reader * a distributed dictionary application * Sherlock style map and movie search * Konfabulator and Dashboard components * an <span class="caps">RSS</span> reader * a Friendster client * an eBay client * a splash screen * an about box * a helpfile viewer * a javadoc viewer * report generation and viewing * a stock ticker / weather reporter</li>
+  <li>chat programs</li>
+  <li>online music stores</li>
+  <li>a Gutenberg eBook reader</li>
+  <li>a distributed dictionary application</li>
+  <li>Sherlock style map and movie search</li>
+  <li>Konfabulator and Dashboard components</li>
+  <li>an <span class="caps">RSS</span> reader</li>
+  <li>a Friendster client</li>
+  <li>an eBay client</li>
+  <li>a splash screen</li>
+  <li>an about box</li>
+  <li>a helpfile viewer</li>
+  <li>a javadoc viewer</li>
+  <li>report generation and viewing</li>
+  <li>a stock ticker / weather reporter</li>
 </ul>
 
 
@@ -154,6 +168,7 @@
   <li><a href="#xil_16">Can I use Flying Saucer in an <span class="caps">SWT</span> application?</a></li>
   <li><a href="#xil_17">My header is not showing up correctly in my <span class="caps">PDF</span>.</a></li>
   <li><a href="#xil_18">How do I set a custom UserAgentCallback when generating <span class="caps">PDF</span>?</a></li>
+  <li><a href="#xil_19">How do I figure out the size of a document I'm rendering? Can I get this from the renderer? How about preferred size of XHTMLPanel? Why isn't my panel properly sized on screen?</a></li>
 </ol>
 
 
@@ -193,9 +208,11 @@
 
 <h3 class="fs_heading" id="xil_14" style="clear:none;">My <span class="caps">PDF</span> isn't picking up my <span class="caps">CSS</span>!</h3>
 
-<p>Make sure you have specified the media type for your <span class="caps">CSS</span> when you link or embed it; use type "print" or "all".</p>
+<p><span class="caps">PDF</span> is treated as "print" media; see the <a href="http://www.w3.org/TR/CSS21/media.html">CSS 2.1 specification section on media types</a>. Make sure you have specified the media type for your <span class="caps">CSS</span> when you link or embed it; use type "print" or "all".</p>
 
 <h3 class="fs_heading" id="xil_15" style="clear:none;">How can I print multiple pages on to one <span class="caps">PDF</span>, if they come from multiple documents?</h3>
+
+<p>For the first document in the set (e.g. starting with the first page in the <span class="caps">PDF</span> you want to render) take an ITextRenderer and call <code>setDocument()</code>, <code>layout()</code> and <code>createPDF()</code>; for each subsequent document, use the same renderer and call <code>setDocument()</code>, <code>layout()</code>, and <code>writeNextDocument()</code>. Call <code>finishPDF()</code> to complete the process. A sample follows below; a cleaned-up example, <code>PDFRenderToMultiplePages</code>, is in our demos/samples directory in our source distribution.</p>
 
 <pre><code>String root = "J:/Temp/fs";
 
@@ -245,19 +262,18 @@ finally
 
 <h3 class="fs_heading" id="xil_16" style="clear:none;">Can I use Flying Saucer in an <span class="caps">SWT</span> application?</h3>
 
-<p>If you're trying to output to an <span class="caps">SWT</span> canvas&#8212;there is an early mockup by Vianney le Clément which we plan to merge in the R8 release. See the mailing list thread starting with:<br />
+<p>If you're trying to output to an <span class="caps">SWT</span> canvas&#8212;there is an early mockup by Vianney le Cl?ment which we plan to merge in the R8 release. See the mailing list thread starting with:<br />
 https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?listName=dev&msgNo=3452</p>
 
 <p>There are patches attached to that mail thread which provide initial support for <span class="caps">SWT</span>; some things are still missing, but it's a good start.</p>
 
 <h3 class="fs_heading" id="xil_17" style="clear:none;">My header is not showing up correctly in my <span class="caps">PDF</span>.</h3>
 
-<p>The values of -fs-flow-top/right/bottom/left and -fs-move-to-flow must<br />
-be strings and not keywords (e.g. -fs-flow-top: 'header' instead of<br />
--fs-flow-top: header).</p>
+<p>The values of <code>-fs-flow-top/right/bottom/left</code> and <code>-fs-move-to-flow</code> must<br />
+be strings and not keywords (e.g. <code>-fs-flow-top: 'header'</code> instead of<br />
+@-fs-flow-top: header@).</p>
 
-<p>The new <span class="caps">CSS</span> parser validates this (and will give you a warning message<br />
-if you have logging turned on).</p>
+<p>The new <span class="caps">CSS</span> parser validates this (and will give you a warning message if you have logging turned on).</p>
 
 <h3 class="fs_heading" id="xil_18" style="clear: none;">How do I set a custom UserAgentCallback when generating <span class="caps">PDF</span>?</h3>
 
@@ -272,16 +288,32 @@ renderer.layout();
 renderer.createPDF(os);
 </code></pre>
 
-<h2 class="fs_heading" style="clear:none;">Developer's <span class="caps">FAQ</span></h2>
+<h3 class="fs_heading" id="xil_19" style="clear: none;">How do I figure out the size of a document I'm rendering? Can I get this from the renderer? How about preferred size of XHTMLPanel? Why isn't my panel properly sized on screen?</h3>
 
-<ol class="toc">
-  <li><a href="#xil_19">How do I set up my <span class="caps">CLASSPATH</span>?</a></li>
-  <li><a href="#xil_20">How do I build XR without Ant?</a></li>
-  <li><a href="#xil_21">How do I build XR from within my <span class="caps">IDE</span>?</a></li>
+<p>The rules are that the document size is calculated after a layout takes place; for rendering to a Swing panel, this can only happen if the container for the panel (e.g. the window) is displayable. See <a href="https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?list=users&msgNo=777">this email thread in our mailing list</a> for a discussion. In our demos/samples directory in the source distribution, the <code>PanelResizeToPreferredSize</code> and <code>JPanelSizeToDocument</code> show how this is done. Basically (quoting from the mail thread):</p>
+
+<p>"So basically you want to:</p>
+
+<ol>
+  <li>create the frame and add components to it</li>
+  <li>call <code>f.pack()</code> to make them displayable</li>
+  <li>layout documents in <code>XHTMLPanel</code> instances using <code>doDocumentLayout(graphics)</code></li>
+  <li>call <code>f.pack()</code> again now that the preferred size of the <code>XHTMLPanel</code> instances has been calculated"</li>
 </ol>
 
 
-<h3 class="fs_heading" id="xil_19" style="clear:none;">How do I set up my <span class="caps">CLASSPATH</span>?</h3>
+<p>If you are relying on a layout manager that itself relies on its components' preferred sizes (like FlowLayout) you need to make sure to follow the rules above in order for the layout manager to pick up the size of the panel <strong>after</strong> it has been layed out. The second call to <code>pack()</code> after <code>doDocumentLayout()</code> takes care of doing this. See <code>PanelResizeToPreferredSize</code> for an example using <code>FlowLayout</code>.</p>
+
+<h2 class="fs_heading" style="clear:none;">Developer's <span class="caps">FAQ</span></h2>
+
+<ol class="toc">
+  <li><a href="#xil_20">How do I set up my <span class="caps">CLASSPATH</span>?</a></li>
+  <li><a href="#xil_21">How do I build XR without Ant?</a></li>
+  <li><a href="#xil_22">How do I build XR from within my <span class="caps">IDE</span>?</a></li>
+</ol>
+
+
+<h3 class="fs_heading" id="xil_20" style="clear:none;">How do I set up my <span class="caps">CLASSPATH</span>?</h3>
 
 <p>You only need the</p>
 
@@ -300,9 +332,9 @@ renderer.createPDF(os);
 
 <p>To run the browser or use any of it's support classes you will need the <code>browser.jar</code> file.</p>
 
-<h3 class="fs_heading" id="xil_20" style="clear:none;">How do I build XR without Ant?</h3>
+<h3 class="fs_heading" id="xil_21" style="clear:none;">How do I build XR without Ant?</h3>
 
-<h3 class="fs_heading" id="xil_21" style="clear:none;">How do I build XR from within my <span class="caps">IDE</span>?</h3>
+<h3 class="fs_heading" id="xil_22" style="clear:none;">How do I build XR from within my <span class="caps">IDE</span>?</h3>
 
 <p>Our Ant <code>build.xml</code> file includes all <span class="caps">JAR</span> files in the <code>/lib</code> directory, plus the <code>/resources</code> directory tree in the classpath. The compile target also copies <span class="caps">CSS</span> and properties resources from <code>/src/css</code> and <code>src/conf</code> to <code>/build/resources</code>. If running from an <span class="caps">IDE</span>, you will need to synchronize this yourself.</p>
 
