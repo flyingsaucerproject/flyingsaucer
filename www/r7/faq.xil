@@ -196,7 +196,7 @@ h3(fs_heading){clear:none}. My header is not showing up correctly in my PDF.
 
 The values of @-fs-flow-top/right/bottom/left@ and @-fs-move-to-flow@ must
 be strings and not keywords (e.g. @-fs-flow-top: 'header'@ instead of
-@-fs-flow-top: header@).
+@-fs-flow-top: header@ ).
 
 The new CSS parser validates this (and will give you a warning message if you have logging turned on).
 
