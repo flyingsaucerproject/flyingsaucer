@@ -342,15 +342,23 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 		Iterator it = this.documentListeners.keySet().iterator();
 		while (it.hasNext()) {
 			DocumentListener list = (DocumentListener) it.next();
-			list.documentStarted();
-		}
+            try {
+                list.documentStarted();
+            } catch (Exception e) {
+                XRLog.load(Level.WARNING, "Document listener threw an exception; continuing processing", e);
+            }
+        }
 	}
 
     protected void fireDocumentLoaded() {
         Iterator it = this.documentListeners.keySet().iterator();
         while (it.hasNext()) {
             DocumentListener list = (DocumentListener) it.next();
-            list.documentLoaded();
+            try {
+                list.documentLoaded();
+            } catch (Exception e) {
+                XRLog.load(Level.WARNING, "Document listener threw an exception; continuing processing", e);
+            }
         }
     }
     
@@ -358,7 +366,11 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         Iterator it = this.documentListeners.keySet().iterator();
         while (it.hasNext()) {
             DocumentListener list = (DocumentListener) it.next();
-            list.onLayoutException(t);
+            try {
+                list.onLayoutException(t);
+            } catch (Exception e) {
+                XRLog.load(Level.WARNING, "Document listener threw an exception; continuing processing", e);
+            }
         }
     }
     
@@ -366,7 +378,11 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         Iterator it = this.documentListeners.keySet().iterator();
         while (it.hasNext()) {
             DocumentListener list = (DocumentListener) it.next();
-            list.onRenderException(t);
+            try {
+                list.onRenderException(t);
+            } catch (Exception e) {
+                XRLog.load(Level.WARNING, "Document listener threw an exception; continuing processing", e);
+            }
         }
     }
 

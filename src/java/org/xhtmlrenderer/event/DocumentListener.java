@@ -21,7 +21,9 @@ package org.xhtmlrenderer.event;
 
 /**
  * Implementations of this listener interface receive notifications about
- * various document and layout events.
+ * various document and layout events. Events are called on the Event Dispatch Thread, and will block
+ * any EDT activity until the methods return; make sure you do as little as possible in each method, or where necessary,
+ * spin the task off to a separate thread.
  */
 public interface DocumentListener {
     /**
@@ -65,6 +67,9 @@ public interface DocumentListener {
  * $Id$
  * 
  * $Log$
+ * Revision 1.8  2008/02/16 12:27:55  pdoubleya
+ * On calling DocumentListener methods, make sure we catch exceptions from listener implementations which could otherwise kill our work on the EDT.
+ *
  * Revision 1.7  2007/08/23 20:52:31  peterbrant
  * Begin work on AcroForm support
  * Revision 1.6 2007/06/19 21:25:58 pdoubleya
