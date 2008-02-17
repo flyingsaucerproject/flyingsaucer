@@ -62,6 +62,12 @@ public class AddNodeToDocument {
                         // note that we just pass in the same DOM instance we already
                         // rendered; no need to pass through the XML parser again
                         panel.setDocument(domDocument);
+
+                        // alternately, this will work as well--doDocumentLayout() followed by repaint()
+                        // setDocument() is still the recommended approach in this case, as it's a top-level entry
+                        // point which ensures that proper setup takes place for the layout and render 
+                        // panel.doDocumentLayout(panel.getGraphics());
+                        // panel.repaint();
                     }
                 };
 
