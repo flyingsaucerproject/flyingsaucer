@@ -150,6 +150,15 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         panel.addMouseListener(this);
         panel.addMouseMotionListener(this);
     }
+    public void deinstall(XHTMLPanel panel) {
+
+        if(panel.getTransferHandler()==handler){
+            panel.setTransferHandler(null);
+        }
+        panel.removeMouseListener(this);
+        panel.removeMouseMotionListener(this);
+        
+    }
 
     private boolean checkDocument() {
         while (true) {
@@ -302,10 +311,10 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
         List modified = new ArrayList();
         StringBuffer hlText = new StringBuffer();
-        lastHighlightedString = "";
         if (this.dotInfo == null) {
             getComponent().getRootBox().clearSelection(modified);
             getComponent().repaint();
+            lastHighlightedString = "";
             return;
         }
         Range range = getSelectionRange();
@@ -315,8 +324,8 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                 && range.compareBoundaryPoints(Range.END_TO_END, lastSelectionRange) == 0) {
             return;
         }
+        lastHighlightedString = "";
         lastSelectionRange = range.cloneRange();
-        
 
         if (range.compareBoundaryPoints(Range.START_TO_END, range) == 0) {
             getComponent().getRootBox().clearSelection(modified);
@@ -582,16 +591,27 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             }
         }
         int x = ilb.getAbsX();
-
+        InlineText lastItxt = null;
         for (Iterator it = ilb.getInlineChildren().iterator(); it.hasNext();) {
             Object o = it.next();
             if (o instanceof InlineText) {
                 InlineText txt = (InlineText) o;
-                if (txt.getTextNode() != null && e.getX() >= x + txt.getX()
-                        && (e.getX() < x + txt.getX() + txt.getWidth() || containsWholeIlb)) {
-                    fndTxt = txt;
-                    break;
+                if (txt.getTextNode() != null) {
+                    if ((e.getX() >= x + txt.getX() && e.getX() < x + txt.getX() + txt.getWidth())
+                            || containsWholeIlb) {
+                        fndTxt = txt;
+                        break;
+                    }else{
+                        if (e.getX() < x + txt.getX()){
+                            //assume inline image or somesuch
+                            if (lastItxt != null){
+                            fndTxt = lastItxt;
+                            break;
+                            }
+                        }
+                    }
                 }
+                lastItxt = txt;
             }
         }
 
@@ -619,7 +639,12 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
 
         Node node = fndTxt.getTextNode();
-        r.setStart(node, offset);
+        try{
+            r.setStart(node, offset);
+        }catch (Exception ex){
+            //maybe differs for dom impl?  anyway, fix for issue 216
+            r.setStart(node,((Text)node).getLength()-1);
+        }
         return new ViewModelInfo(r, fndTxt);
 
     }
