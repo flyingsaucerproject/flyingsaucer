@@ -31,6 +31,7 @@ import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -150,14 +151,15 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         panel.addMouseListener(this);
         panel.addMouseMotionListener(this);
     }
+
     public void deinstall(XHTMLPanel panel) {
 
-        if(panel.getTransferHandler()==handler){
+        if (panel.getTransferHandler() == handler) {
             panel.setTransferHandler(null);
         }
         panel.removeMouseListener(this);
         panel.removeMouseMotionListener(this);
-        
+
     }
 
     private boolean checkDocument() {
@@ -189,7 +191,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
     }
 
-    private void setDot(ViewModelInfo pos) {
+    public void setDot(ViewModelInfo pos) {
         this.dotInfo = pos;
         this.markInfo = pos;
         fireStateChanged();
@@ -251,7 +253,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     private void positionCaret(MouseEvent e) {
         ViewModelInfo pos = infoFromPoint(e);
-        if (pos!=null){
+        if (pos != null) {
             setDot(pos);
         }
     }
@@ -293,7 +295,52 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
     }
 
-    private void moveDot(ViewModelInfo pos) {
+    public void selectAll() {
+        if (this.getComponent() == null || this.getComponent().getWidth() == 0
+                || this.getComponent().getHeight() == 0) {
+            return;
+        }
+        checkDocument();
+        NodeIterator nodeIterator = this.docTraversal.createNodeIterator(this.document
+                .getDocumentElement(), NodeFilter.SHOW_TEXT, null, false);
+        Text firstText = null;
+        Text lastText = null;
+        while (true) {
+            Node n = nodeIterator.nextNode();
+            if (n == null) {
+                break;
+            }
+            if (!textInlineMap.containsKey(n)) {
+                continue;
+            }
+            lastText = (Text) n;
+            if (firstText == null) {
+                firstText = lastText;
+            }
+        }
+        if (firstText == null) {
+            return;
+        }
+        Range r = docRange.createRange();
+        r.setStart(firstText, 0);
+        ViewModelInfo firstPoint = new ViewModelInfo(r, (InlineText) ((List) textInlineMap
+                .get(firstText)).get(0));
+        r = docRange.createRange();
+        try {
+            // possibly some dom impls don't handle this?
+            r.setStart(lastText, lastText.getLength());
+        } catch (Exception e) {
+            r.setStart(lastText, Math.max(0, lastText.getLength() - 1));
+        }
+        List l = (List) textInlineMap.get(firstText);
+
+        ViewModelInfo lastPoint = new ViewModelInfo(r, (InlineText) l.get(l.size() - 1));
+        setDot(firstPoint);
+        moveDot(lastPoint);
+
+    }
+
+    public void moveDot(ViewModelInfo pos) {
         this.dotInfo = pos;
         if (this.markInfo == null) {
             this.markInfo = pos;
@@ -437,7 +484,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         if (panel.getRootBox() == null) {
             return false;
         }
-        textInlineMap = new HashMap();
+        textInlineMap = new LinkedHashMap();
         elementBoxMap = new HashMap();
         Stack s = new Stack();
         s.push(panel.getRootBox());
@@ -601,12 +648,12 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                             || containsWholeIlb) {
                         fndTxt = txt;
                         break;
-                    }else{
-                        if (e.getX() < x + txt.getX()){
-                            //assume inline image or somesuch
-                            if (lastItxt != null){
-                            fndTxt = lastItxt;
-                            break;
+                    } else {
+                        if (e.getX() < x + txt.getX()) {
+                            // assume inline image or somesuch
+                            if (lastItxt != null) {
+                                fndTxt = lastItxt;
+                                break;
                             }
                         }
                     }
@@ -639,11 +686,11 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
 
         Node node = fndTxt.getTextNode();
-        try{
+        try {
             r.setStart(node, offset);
-        }catch (Exception ex){
-            //maybe differs for dom impl?  anyway, fix for issue 216
-            r.setStart(node,((Text)node).getLength()-1);
+        } catch (Exception ex) {
+            // maybe differs for dom impl? anyway, fix for issue 216
+            r.setStart(node, ((Text) node).getLength() - 1);
         }
         return new ViewModelInfo(r, fndTxt);
 
@@ -683,7 +730,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
     }
 
-    class ViewModelInfo {
+    public class ViewModelInfo {
         Range range;
 
         InlineText text;
