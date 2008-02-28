@@ -253,6 +253,7 @@ public abstract class BasicPanel extends RootPanel {
         RenderingContext c = newRenderingContext(g);
 
         PageBox page = (PageBox)root.getPages().get(pageNo);
+        c.setPageCount(root.getPages().size());
         c.setPage(pageNo, page);
         
         page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
@@ -564,6 +565,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.118  2008/02/28 19:35:30  pdoubleya
+ * On printing, not updating the total page count, required because this is not otherwise available in the rendering context we create for each page
+ *
  * Revision 1.117  2007/11/21 23:59:12  peterbrant
  * Always paint default background even if there is no document (report from Richard Bair)
  *
