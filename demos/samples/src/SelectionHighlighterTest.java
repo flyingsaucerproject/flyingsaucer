@@ -19,15 +19,12 @@
  */
 
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
@@ -51,11 +48,11 @@ public class SelectionHighlighterTest extends JFrame {
 
     public SelectionHighlighterTest() {
         // create the panel--standard setup
-        JPanel jp = new JPanel();
-        jp.setLayout(new BorderLayout());
-        jp.add(new JLabel("hi"), BorderLayout.NORTH);
-        jp.setMinimumSize(new Dimension(300,300));
-        jp.setPreferredSize(new Dimension(700,500));
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(new JLabel("Use mouse to select/highlight text"), BorderLayout.NORTH);
+        mainPanel.setMinimumSize(new Dimension(300,300));
+        mainPanel.setPreferredSize(new Dimension(700,500));
         XHTMLPanel xhtmlPanel = new XHTMLPanel();
         try {
            xhtmlPanel.setDocument("http://www.w3.org/MarkUp/");
@@ -64,20 +61,38 @@ public class SelectionHighlighterTest extends JFrame {
         }
 
         // install a selection highlighter no the panel
-        SelectionHighlighter caret = new SelectionHighlighter();
+        final SelectionHighlighter caret = new SelectionHighlighter();
         caret.install(xhtmlPanel);
+        caret.selectAll();
 
         FSScrollPane fs = new FSScrollPane(xhtmlPanel);
 
-        jp.add(fs,BorderLayout.CENTER);
+        mainPanel.add(fs,BorderLayout.CENTER);
 
+        //
+        // actions
+        //
+        JPanel actionPanel = new JPanel(new FlowLayout());
+        mainPanel.add(actionPanel, BorderLayout.SOUTH);
+
+        // Select all text
+        Action selectAll = new AbstractAction("Select All") {
+            public void actionPerformed(ActionEvent event) {
+                caret.selectAll();
+            }
+        };
+        actionPanel.add(new JButton(selectAll));
+
+
+
+        // Copy selection
         // install an action to copy selected test; must be "installed" around
         // the selection highlighter (caret) we just created
         CopyAction copyAction = new SelectionHighlighter.CopyAction();
         copyAction.install(caret);
 
-        jp.add(new JButton(copyAction), BorderLayout.SOUTH);
-        add(jp);
+        actionPanel.add(new JButton(copyAction), BorderLayout.SOUTH);
+        add(mainPanel);
         
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
