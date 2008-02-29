@@ -26,6 +26,8 @@ import org.xhtmlrenderer.render.BlockBox;
 public interface ReplacedElementFactory {
     
     /**
+     * <b>NOTE:</b> Only block equivalent elements can be replaced.
+     * 
      * @param cssWidth The CSS width of the element in dots (or <code>-1</code> if
      * width is <code>auto</code>)
      * @param cssHeight The CSS height of the element in dots (or <code>-1</code>
