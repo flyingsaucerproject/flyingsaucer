@@ -312,12 +312,83 @@ public class GeneralUtil {
             return Integer.MAX_VALUE;
         }
     }
+
+    /**
+     * Converts any special characters into their corresponding HTML entities , for example < to &lt;. This is done using a character
+     * by character test, so you may consider other approaches for large documents. Make sure you declare the
+     * entities that might appear in this replacement, e.g. the latin-1 entities
+     * This method was taken from a code-samples website, written and hosted by Real Gagnon, at
+     * http://www.rgagnon.com/javadetails/java-0306.html.
+     *
+     * @param s The String which may contain characters to escape.
+     * @return The string with the characters as HTML entities.
+     */
+    public static final String escapeHTML(String s){
+       StringBuffer sb = new StringBuffer();
+       int n = s.length();
+       for (int i = 0; i < n; i++) {
+          char c = s.charAt(i);
+          switch (c) {
+             case '<': sb.append("&lt;"); break;
+             case '>': sb.append("&gt;"); break;
+             case '&': sb.append("&amp;"); break;
+             case '"': sb.append("&quot;"); break;
+             case 'à': sb.append("&agrave;");break;
+             case 'À': sb.append("&Agrave;");break;
+             case 'â': sb.append("&acirc;");break;
+             case 'Â': sb.append("&Acirc;");break;
+             case 'ä': sb.append("&auml;");break;
+             case 'Ä': sb.append("&Auml;");break;
+             case 'å': sb.append("&aring;");break;
+             case 'Å': sb.append("&Aring;");break;
+             case 'æ': sb.append("&aelig;");break;
+             case 'Æ': sb.append("&AElig;");break;
+             case 'ç': sb.append("&ccedil;");break;
+             case 'Ç': sb.append("&Ccedil;");break;
+             case 'é': sb.append("&eacute;");break;
+             case 'É': sb.append("&Eacute;");break;
+             case 'è': sb.append("&egrave;");break;
+             case 'È': sb.append("&Egrave;");break;
+             case 'ê': sb.append("&ecirc;");break;
+             case 'Ê': sb.append("&Ecirc;");break;
+             case 'ë': sb.append("&euml;");break;
+             case 'Ë': sb.append("&Euml;");break;
+             case 'ï': sb.append("&iuml;");break;
+             case 'Ï': sb.append("&Iuml;");break;
+             case 'ô': sb.append("&ocirc;");break;
+             case 'Ô': sb.append("&Ocirc;");break;
+             case 'ö': sb.append("&ouml;");break;
+             case 'Ö': sb.append("&Ouml;");break;
+             case 'ø': sb.append("&oslash;");break;
+             case 'Ø': sb.append("&Oslash;");break;
+             case 'ß': sb.append("&szlig;");break;
+             case 'ù': sb.append("&ugrave;");break;
+             case 'Ù': sb.append("&Ugrave;");break;
+             case 'û': sb.append("&ucirc;");break;
+             case 'Û': sb.append("&Ucirc;");break;
+             case 'ü': sb.append("&uuml;");break;
+             case 'Ü': sb.append("&Uuml;");break;
+             case '®': sb.append("&reg;");break;
+             case '©': sb.append("&copy;");break;
+             case '€': sb.append("&euro;"); break;
+             // be carefull with this one (non-breaking whitee space)
+             case ' ': sb.append("&nbsp;");break;
+
+             default:  sb.append(c); break;
+          }
+       }
+       return sb.toString();
+    }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2008/03/01 19:27:28  pdoubleya
+ * Utility method to convert certain character to HTML entity equivalents.
+ *
  * Revision 1.15  2007/05/11 22:51:35  peterbrant
  * Patch from Sean Bright
  *
