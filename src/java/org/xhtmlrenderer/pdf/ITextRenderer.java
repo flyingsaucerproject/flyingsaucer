@@ -22,11 +22,27 @@ package org.xhtmlrenderer.pdf;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.List;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -39,13 +55,14 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
+import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.resource.XMLResource;
 import org.xml.sax.InputSource;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
+
 
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to the inch
@@ -244,7 +261,9 @@ public class ITextRenderer {
             new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
         PdfWriter writer = PdfWriter.getInstance(doc, os);
         if (_pdfEncryption != null) {
-            writer.setEncryption(true, _pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(), _pdfEncryption.getAllowedPrivileges());
+            writer.setEncryption(
+                    _pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(), 
+                    _pdfEncryption.getAllowedPrivileges(), PdfWriter.STANDARD_ENCRYPTION_128);
         }
         doc.open();
         
@@ -265,7 +284,7 @@ public class ITextRenderer {
         
         _outputDevice.start(_doc);
         _outputDevice.setWriter(writer);
-        _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.height());
+        _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.getHeight());
         
         _root.getLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
         
@@ -274,7 +293,7 @@ public class ITextRenderer {
         for (int i = 0; i < pageCount; i++) {
             PageBox currentPage = (PageBox)pages.get(i);
             c.setPage(i, currentPage);
-            paintPage(c, currentPage);
+            paintPage(c, writer, currentPage);
             _outputDevice.finishPage();
             if (i != pageCount - 1) {
                 PageBox nextPage = (PageBox)pages.get(i+1);
@@ -285,14 +304,16 @@ public class ITextRenderer {
                 doc.setPageSize(nextPageSize);
                 doc.newPage();
                 _outputDevice.initializePage(
-                        writer.getDirectContent(), nextPageSize.height());
+                        writer.getDirectContent(), nextPageSize.getHeight());
             }
         }
         
         _outputDevice.finish(c, _root);
     }
     
-    private void paintPage(RenderingContext c, PageBox page) {
+    private void paintPage(RenderingContext c, PdfWriter writer, PageBox page) {
+        provideMetadataToPage(writer, page);
+        
         page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
         page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);        
         page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
@@ -312,6 +333,66 @@ public class ITextRenderer {
         _outputDevice.translate(-left, -top);
         
         _outputDevice.setClip(working);
+    }
+    
+    private void provideMetadataToPage(PdfWriter writer, PageBox page) {
+        byte[] metadata = null;
+        if (page.getMetadata() != null) {
+            try {
+                String metadataBody = stringfyMetadata(page.getMetadata());
+                if (metadataBody != null) {
+                    metadata = createXPacket(stringfyMetadata(page.getMetadata())).getBytes("UTF-8");
+                }
+            } catch (UnsupportedEncodingException e) {
+                // Can't happen
+                throw new RuntimeException(e);
+            }
+        }
+        
+        writer.setPageXmpMetadata(metadata);
+    }
+
+    private String stringfyMetadata(Element element) {
+        Element target = getFirstChildElement(element);
+        if (target == null) {
+            return null;
+        }
+        
+        try {
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            StringWriter output = new StringWriter();
+            transformer.transform(new DOMSource(target), new StreamResult(output));
+            
+            return output.toString();
+        } catch (TransformerConfigurationException e) {
+            // Things must be in pretty bad shape to get here so
+            // rethrow as runtime exception
+            throw new RuntimeException(e);
+        } catch (TransformerException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private static Element getFirstChildElement(Element element) {
+        Node n = element.getFirstChild();
+        while (n != null) {
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                return (Element)n;
+            }
+            n = n.getNextSibling();
+        }
+        return null;
+    }
+    
+    private String createXPacket(String metadata) {
+        StringBuffer result = new StringBuffer(metadata.length() + 50);
+        result.append("<?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?>\n");
+        result.append(metadata);
+        result.append("\n<?xpacket end='r'?>");
+        
+        return result.toString();
     }
     
     public ITextOutputDevice getOutputDevice() {

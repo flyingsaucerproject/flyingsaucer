@@ -49,6 +49,11 @@ public class MarginBoxName {
     public static final MarginBoxName RIGHT_MIDDLE = addValue("right-middle", IdentValue.CENTER, IdentValue.MIDDLE);
     public static final MarginBoxName RIGHT_BOTTOM = addValue("right-bottom", IdentValue.CENTER, IdentValue.BOTTOM);
 
+    // HACK to support page level XMP metadata.  For ease of implementation, it reuses
+    // the margin box infrastructure, but is instead embedded in the PDF vs. being displayed
+    // on the screen.
+    public static final MarginBoxName FS_PDF_XMP_METADATA = addValue("-fs-pdf-xmp-metadata", IdentValue.TOP, IdentValue.LEFT);
+    
     private MarginBoxName(String ident, IdentValue textAlign, IdentValue verticalAlign) {
         _ident = ident;
         _textAlign = textAlign;

@@ -60,8 +60,8 @@ public class ITextUserAgent extends NaiveUserAgent {
                         PdfReader reader = _outputDevice.getReader(url);
                         PDFAsImage image = new PDFAsImage(url);
                         Rectangle rect = reader.getPageSizeWithRotation(1);
-                        image.setInitialWidth(rect.width()*_outputDevice.getDotsPerPoint());
-                        image.setInitialHeight(rect.height()*_outputDevice.getDotsPerPoint());
+                        image.setInitialWidth(rect.getWidth()*_outputDevice.getDotsPerPoint());
+                        image.setInitialHeight(rect.getHeight()*_outputDevice.getDotsPerPoint());
                         resource = new ImageResource(image);
                     } else {
 	                    Image image = Image.getInstance(url);
@@ -84,7 +84,7 @@ public class ITextUserAgent extends NaiveUserAgent {
     
     private void scaleToOutputResolution(Image image) {
         float factor = _sharedContext.getDotsPerPixel();
-        image.scaleAbsolute(image.plainWidth() * factor, image.plainHeight() * factor);
+        image.scaleAbsolute(image.getPlainWidth() * factor, image.getPlainHeight() * factor);
     }
 
     public SharedContext getSharedContext() {

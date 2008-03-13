@@ -22,37 +22,37 @@ package org.xhtmlrenderer.pdf;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class PDFEncryption {
-    private String _userPassword;
-    private String _ownerPassword;
-    private int _allowedPrivileges = PdfWriter.AllowPrinting | PdfWriter.AllowCopy | PdfWriter.AllowFillIn;
+    private byte[] _userPassword;
+    private byte[] _ownerPassword;
+    private int _allowedPrivileges = PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_COPY | PdfWriter.ALLOW_FILL_IN;
     
     public PDFEncryption() {
     }
 
-    public PDFEncryption(String userPassword, String ownerPassword) {
+    public PDFEncryption(byte[] userPassword, byte[] ownerPassword) {
         _userPassword = userPassword;
         _ownerPassword = ownerPassword;
     }
 
-    public PDFEncryption(String userPassword, String ownerPassword, int allowedPrivileges) {
+    public PDFEncryption(byte[] userPassword, byte[] ownerPassword, int allowedPrivileges) {
         _userPassword = userPassword;
         _ownerPassword = ownerPassword;
         _allowedPrivileges = allowedPrivileges;
     }
 
-    public String getUserPassword() {
+    public byte[] getUserPassword() {
         return _userPassword;
     }
 
-    public void setUserPassword(String userPassword) {
+    public void setUserPassword(byte[] userPassword) {
         _userPassword = userPassword;
     }
 
-    public String getOwnerPassword() {
+    public byte[] getOwnerPassword() {
         return _ownerPassword;
     }
 
-    public void setOwnerPassword(String ownerPassword) {
+    public void setOwnerPassword(byte[] ownerPassword) {
         _ownerPassword = ownerPassword;
     }
 

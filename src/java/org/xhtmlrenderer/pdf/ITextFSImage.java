@@ -31,11 +31,11 @@ public class ITextFSImage implements FSImage {
     }
 
     public int getWidth() {
-        return (int)_image.plainWidth();
+        return (int)_image.getPlainWidth();
     }
 
     public int getHeight() {
-        return (int)_image.plainHeight();
+        return (int)_image.getPlainHeight();
     }
 
     public void scale(int width, int height) {

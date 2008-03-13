@@ -24,13 +24,19 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
+import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.MarginBoxName;
 import org.xhtmlrenderer.css.newmatch.PageInfo;
+import org.xhtmlrenderer.css.parser.FSFunction;
+import org.xhtmlrenderer.css.parser.PropertyValue;
+import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
@@ -72,7 +78,9 @@ public class PageBox {
     
     private PageInfo _pageInfo;
     
-    private MarginAreaContainer[] _marginAreas = new MarginAreaContainer[MARGIN_AREA_DEFS.length]; 
+    private MarginAreaContainer[] _marginAreas = new MarginAreaContainer[MARGIN_AREA_DEFS.length];
+    
+    private Element _metadata;
     
     public int getWidth(CssContext cssCtx) {
         resolvePageDimensions(cssCtx);
@@ -342,9 +350,43 @@ public class PageBox {
         _pageInfo = pageInfo;
     }
     
+    public Element getMetadata() {
+        return _metadata;
+    }
+    
     public void layout(LayoutContext c) {
         c.setPage(this);
+        retrievePageMetadata(c);
         layoutMarginAreas(c);
+    }
+    
+    // HACK Would much prefer to do this in ITextRenderer or ITextOutputDevice
+    // but given the existing API, this is about the only place it can be done
+    private void retrievePageMetadata(LayoutContext c) {
+        List props = getPageInfo().getXMPPropertyList();
+        if (props != null && props.size() > 0)
+        {
+            for (Iterator i = props.iterator(); i.hasNext(); ) {
+                PropertyDeclaration decl = (PropertyDeclaration)i.next();
+                if (decl.getCSSName() == CSSName.CONTENT) {
+                    PropertyValue value = (PropertyValue)decl.getValue();
+                    List values = value.getValues();
+                    if (values.size() == 1) {
+                        PropertyValue funcVal = (PropertyValue)values.get(0);
+                        if (funcVal.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+                            FSFunction func = funcVal.getFunction();
+                            if (BoxBuilder.isElementFunction(func)) {
+                                BlockBox metadata = BoxBuilder.getRunningBlock(c, funcVal);
+                                if (metadata != null) {
+                                    _metadata = metadata.getElement();
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
     }
 
     private void layoutMarginAreas(LayoutContext c) {

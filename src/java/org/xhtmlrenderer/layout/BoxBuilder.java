@@ -673,7 +673,7 @@ public class BoxBuilder {
         return false;
     }
     
-    private static boolean isElementFunction(FSFunction function) {
+    public static boolean isElementFunction(FSFunction function) {
         if (function.getName().equals("element")) {
             List params = function.getParameters();
             if (params.size() < 1 || params.size() > 2) {
@@ -815,17 +815,7 @@ public class BoxBuilder {
                         contentFunction = null;
                         function = null;
                     } else if (mode == CONTENT_LIST_MARGIN_BOX && isElementFunction(value.getFunction())) {
-                        List params = value.getFunction().getParameters();
-                        String ident = (String)((PropertyValue)params.get(0)).getStringValue();
-                        PageElementPosition position = null;
-                        if (params.size() == 2) {
-                            position = PageElementPosition.valueOf(
-                                    (String)((PropertyValue)params.get(1)).getStringValue());
-                        }
-                        if (position == null) {
-                            position = PageElementPosition.FIRST;
-                        }
-                        BlockBox target = c.getRootDocumentLayer().getRunningBlock(ident, c.getPage(), position);
+                        BlockBox target = getRunningBlock(c, value);
                         if (target != null) {
                             result.add(target.copyOf());
                             info.setContainsBlockLevelContent(true);
@@ -862,6 +852,21 @@ public class BoxBuilder {
         }
 
         return result;
+    }
+
+    public static BlockBox getRunningBlock(LayoutContext c, PropertyValue value) {
+        List params = value.getFunction().getParameters();
+        String ident = (String)((PropertyValue)params.get(0)).getStringValue();
+        PageElementPosition position = null;
+        if (params.size() == 2) {
+            position = PageElementPosition.valueOf(
+                    (String)((PropertyValue)params.get(1)).getStringValue());
+        }
+        if (position == null) {
+            position = PageElementPosition.FIRST;
+        }
+        BlockBox target = c.getRootDocumentLayer().getRunningBlock(ident, c.getPage(), position);
+        return target;
     }
     
     private static void insertGeneratedContent(

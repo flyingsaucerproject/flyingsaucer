@@ -35,10 +35,14 @@ public class PageInfo {
     private final CascadedStyle _pageStyle;
     private final Map _marginBoxes;
     
+    private final List _xmpPropertyList;
+    
     public PageInfo(List properties, CascadedStyle pageStyle, Map marginBoxes) {
         _properties = properties;
         _pageStyle = pageStyle;
         _marginBoxes = marginBoxes;
+        
+        _xmpPropertyList = (List)marginBoxes.remove(MarginBoxName.FS_PDF_XMP_METADATA);
     }
 
     public Map getMarginBoxes() {
@@ -92,5 +96,10 @@ public class PageInfo {
         }
         
         return false;
+    }
+    
+    public List getXMPPropertyList()
+    {
+        return _xmpPropertyList;
     }
 }

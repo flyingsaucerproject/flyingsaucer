@@ -205,16 +205,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
     
     private com.lowagie.text.Rectangle add(com.lowagie.text.Rectangle r1, com.lowagie.text.Rectangle r2) {
-        float llx = Math.min(r1.left(), r2.left());
-        float urx = Math.max(r1.right(), r2.right());
-        float lly = Math.min(r1.bottom(), r2.bottom());
-        float ury = Math.max(r1.top(), r2.top());
+        float llx = Math.min(r1.getLeft(), r2.getLeft());
+        float urx = Math.max(r1.getRight(), r2.getRight());
+        float lly = Math.min(r1.getBottom(), r2.getBottom());
+        float ury = Math.max(r1.getTop(), r2.getTop());
         
         return new com.lowagie.text.Rectangle(llx, lly, urx, ury);
     }
     
     private String createRectKey(com.lowagie.text.Rectangle rect) {
-        return rect.left() + ":" + rect.bottom() + ":" + rect.right() + ":" + rect.top();
+        return rect.getLeft() + ":" + rect.getBottom() + ":" + rect.getRight() + ":" + rect.getTop();
     }
     
     private com.lowagie.text.Rectangle checkLinkArea(RenderingContext c, Box box) {
