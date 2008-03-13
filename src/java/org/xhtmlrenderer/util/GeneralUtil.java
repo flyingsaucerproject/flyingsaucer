@@ -333,44 +333,46 @@ public class GeneralUtil {
              case '>': sb.append("&gt;"); break;
              case '&': sb.append("&amp;"); break;
              case '"': sb.append("&quot;"); break;
-             case 'ˆ': sb.append("&agrave;");break;
-             case 'Ë': sb.append("&Agrave;");break;
-             case '‰': sb.append("&acirc;");break;
-             case 'å': sb.append("&Acirc;");break;
-             case 'Š': sb.append("&auml;");break;
-             case '€': sb.append("&Auml;");break;
-             case 'Œ': sb.append("&aring;");break;
-             case '': sb.append("&Aring;");break;
-             case '¾': sb.append("&aelig;");break;
-             case '®': sb.append("&AElig;");break;
-             case '': sb.append("&ccedil;");break;
-             case '‚': sb.append("&Ccedil;");break;
-             case '': sb.append("&eacute;");break;
-             case 'ƒ': sb.append("&Eacute;");break;
-             case '': sb.append("&egrave;");break;
-             case 'é': sb.append("&Egrave;");break;
-             case '': sb.append("&ecirc;");break;
-             case 'æ': sb.append("&Ecirc;");break;
-             case '‘': sb.append("&euml;");break;
-             case 'è': sb.append("&Euml;");break;
-             case '•': sb.append("&iuml;");break;
-             case 'ì': sb.append("&Iuml;");break;
-             case '™': sb.append("&ocirc;");break;
-             case 'ï': sb.append("&Ocirc;");break;
-             case 'š': sb.append("&ouml;");break;
-             case '…': sb.append("&Ouml;");break;
-             case '¿': sb.append("&oslash;");break;
-             case '¯': sb.append("&Oslash;");break;
-             case '§': sb.append("&szlig;");break;
-             case '': sb.append("&ugrave;");break;
-             case 'ô': sb.append("&Ugrave;");break;
-             case '': sb.append("&ucirc;");break;
-             case 'ó': sb.append("&Ucirc;");break;
-             case 'Ÿ': sb.append("&uuml;");break;
-             case '†': sb.append("&Uuml;");break;
-             case '¨': sb.append("&reg;");break;
-             case '©': sb.append("&copy;");break;
-             case 'Û': sb.append("&euro;"); break;
+             /*
+             case 'ï¿½': sb.append("&agrave;");break;
+             case 'ï¿½': sb.append("&Agrave;");break;
+             case 'ï¿½': sb.append("&acirc;");break;
+             case 'ï¿½': sb.append("&Acirc;");break;
+             case 'ï¿½': sb.append("&auml;");break;
+             case 'ï¿½': sb.append("&Auml;");break;
+             case 'ï¿½': sb.append("&aring;");break;
+             case 'ï¿½': sb.append("&Aring;");break;
+             case 'ï¿½': sb.append("&aelig;");break;
+             case 'ï¿½': sb.append("&AElig;");break;
+             case 'ï¿½': sb.append("&ccedil;");break;
+             case 'ï¿½': sb.append("&Ccedil;");break;
+             case 'ï¿½': sb.append("&eacute;");break;
+             case 'ï¿½': sb.append("&Eacute;");break;
+             case 'ï¿½': sb.append("&egrave;");break;
+             case 'ï¿½': sb.append("&Egrave;");break;
+             case 'ï¿½': sb.append("&ecirc;");break;
+             case 'ï¿½': sb.append("&Ecirc;");break;
+             case 'ï¿½': sb.append("&euml;");break;
+             case 'ï¿½': sb.append("&Euml;");break;
+             case 'ï¿½': sb.append("&iuml;");break;
+             case 'ï¿½': sb.append("&Iuml;");break;
+             case 'ï¿½': sb.append("&ocirc;");break;
+             case 'ï¿½': sb.append("&Ocirc;");break;
+             case 'ï¿½': sb.append("&ouml;");break;
+             case 'ï¿½': sb.append("&Ouml;");break;
+             case 'ï¿½': sb.append("&oslash;");break;
+             case 'ï¿½': sb.append("&Oslash;");break;
+             case 'ï¿½': sb.append("&szlig;");break;
+             case 'ï¿½': sb.append("&ugrave;");break;
+             case 'ï¿½': sb.append("&Ugrave;");break;
+             case 'ï¿½': sb.append("&ucirc;");break;
+             case 'ï¿½': sb.append("&Ucirc;");break;
+             case 'ï¿½': sb.append("&uuml;");break;
+             case 'ï¿½': sb.append("&Uuml;");break;
+             case 'ï¿½': sb.append("&reg;");break;
+             case 'ï¿½': sb.append("&copy;");break;
+             case 'ï¿½': sb.append("&euro;"); break;
+             */
              // be carefull with this one (non-breaking whitee space)
              case ' ': sb.append("&nbsp;");break;
 
@@ -386,6 +388,9 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2008/03/13 16:46:47  peterbrant
+ * Comment out non-ASCII characters in escapeHTML() for now.  Will only work if the compiler assumes the source file encoding is ISO-8859-1 (or maybe Cp1252).  Does not work on Linux (with a default encoding of UTF-8).  Should be replaced with equivalent Unicode escapes.
+ *
  * Revision 1.16  2008/03/01 19:27:28  pdoubleya
  * Utility method to convert certain character to HTML entity equivalents.
  *
