@@ -22,9 +22,7 @@ package org.xhtmlrenderer.simple;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.layout.SharedContext;
 
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 
@@ -37,7 +35,7 @@ import java.awt.image.BufferedImage;
  * {@link XHTMLPanel#layout()}, and {@link XHTMLPanel#render()} methods from
  * {@link XHTMLPanel}, as well as easy-to-use static utility methods.
  * For example, to render a document in an image that is 600 pixels wide use the
- * {@link #renderToImage(String, int)} method like this:</p>
+ * {@link #renderToImageAutoSize(String,int,int)} method like this:</p>
  * <pre>
  * BufferedImage img = Graphics2DRenderer.renderToImage( "test.xhtml", width);
  * </pre>
@@ -162,7 +160,8 @@ public class Graphics2DRenderer {
 
     /**
      * A static utility method to automatically create an image from a
-     * document.
+     * document; the image supports transparency. To render an image that does not support transparency,
+     * use the overloaded version of this method {@link #renderToImage(String, int, int, int)}.
      *
      * @param url    URL for the document to render.
      * @param width  Width in pixels of the layout container
@@ -170,16 +169,45 @@ public class Graphics2DRenderer {
      * @return Returns an Image containing the rendered document.
      */
     public static BufferedImage renderToImage(String url, int width, int height) {
+        return renderToImage(url, width, height, BufferedImage.TYPE_INT_ARGB);
+    }
+
+    /**
+     * A static utility method to automatically create an image from a
+     * document. The buffered image type must be specified.
+     *
+     * @param url    URL for the document to render.
+     * @param width  Width in pixels of the layout container
+     * @param height Height in pixels of the layout container
+     * @param bufferedImageType On of the pre-defined image types for a java.awt.image.BufferedImage, such
+     * as TYPE_INT_ARGB or TYPE_INT_RGB.
+     * @return Returns an Image containing the rendered document.
+     */
+    public static BufferedImage renderToImage(String url, int width, int height, int bufferedImageType) {
         Graphics2DRenderer g2r = new Graphics2DRenderer();
         g2r.setDocument(url);
         Dimension dim = new Dimension(width, height);
-        BufferedImage buff = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+        BufferedImage buff = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), bufferedImageType);
         Graphics2D g = (Graphics2D) buff.getGraphics();
         g2r.layout(g, dim);
         g2r.render(g);
         g.dispose();
         return buff;
     }
+
+        /**
+     * A static utility method to automatically create an image from a
+     * document, where height is determined based on document content.
+     * To estimate a size before rendering, use {@link #setDocument(String)}
+     * and then {@link #getMinimumSize()}. The rendered image supports transparency.
+     *
+     * @param url    java.net.URL for the document to render.
+     * @param width  Width in pixels of the layout container
+     * @return Returns an java.awt.Image containing the rendered document.
+     */
+    public static BufferedImage renderToImageAutoSize(String url, int width){
+            return renderToImageAutoSize(url, width, BufferedImage.TYPE_INT_ARGB);
+        }
 
     /**
      * A static utility method to automatically create an image from a
@@ -189,15 +217,17 @@ public class Graphics2DRenderer {
      *
      * @param url    java.net.URL for the document to render.
      * @param width  Width in pixels of the layout container
+     * @param bufferedImageType On of the pre-defined image types for a java.awt.image.BufferedImage, such
+     * as TYPE_INT_ARGB or TYPE_INT_RGB.
      * @return Returns an java.awt.Image containing the rendered document.
      */
-    public static BufferedImage renderToImage(String url, int width) {
+    public static BufferedImage renderToImageAutoSize(String url, int width, int bufferedImageType) {
         Graphics2DRenderer g2r = new Graphics2DRenderer();
         g2r.setDocument(url);
         Dimension dim = new Dimension(width, 1000);
 
         // do layout with temp buffer
-        BufferedImage buff = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+        BufferedImage buff = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), bufferedImageType);
         Graphics2D g = (Graphics2D) buff.getGraphics();
         g2r.layout(g, new Dimension(width, 1000));
         g.dispose();
@@ -206,7 +236,7 @@ public class Graphics2DRenderer {
         Rectangle rect = g2r.getMinimumSize();
 
         // render into real buffer
-        buff = new BufferedImage((int) rect.getWidth(), (int) rect.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+        buff = new BufferedImage((int) rect.getWidth(), (int) rect.getHeight(), bufferedImageType);
         g = (Graphics2D) buff.getGraphics();
         g2r.render(g);
         g.dispose();
@@ -214,13 +244,15 @@ public class Graphics2DRenderer {
         // return real buffer
         return buff;
     }
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2008/03/17 22:26:15  pdoubleya
+ * Issue 225: allow user to specify type for buffered image, instead of just defaulting to transparent image support.
+ *
  * Revision 1.21  2007/08/19 22:22:54  peterbrant
  * Merge R8pbrant changes to HEAD
  *
