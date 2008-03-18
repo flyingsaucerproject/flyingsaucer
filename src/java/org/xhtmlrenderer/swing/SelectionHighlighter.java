@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -202,7 +202,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     public void mouseDragged(MouseEvent e) {
         if ((!e.isConsumed()) && SwingUtilities.isLeftMouseButton(e)) {
-            moveCaret(e);
+            moveCaret(convertMouseEventToScale(e));
         }
 
     }
@@ -227,8 +227,10 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             if (e.isConsumed()) {
             } else {
                 adjustCaretAndFocus(e);
+                MouseEvent newE = convertMouseEventToScale(e);
+                adjustCaretAndFocus(newE);
                 if (nclicks == 2) {
-                    selectWord(e);
+                    selectWord(newE);
                 }
             }
         }
@@ -728,6 +730,25 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         } else {
             SwingUtilities.invokeLater(new SafeScroller(nloc));
         }
+    }
+
+    protected MouseEvent convertMouseEventToScale(MouseEvent e) {
+        if (!e.isConsumed() && panel instanceof ScalableXHTMLPanel) {
+            Point newP = ((ScalableXHTMLPanel) panel).convertFromScaled(e.getX(), e.getY());
+            MouseEvent newE = new MouseEvent(
+                    e.getComponent(),
+                    e.getID(),
+                    e.getWhen(),
+                    e.getModifiersEx(),
+                    (int) newP.getX(),
+                    (int) newP.getY(),
+                    e.getClickCount(),
+                    e.isPopupTrigger(),
+                    e.getButton()
+            );
+            return newE;
+        }
+        return e;
     }
 
     public class ViewModelInfo {
