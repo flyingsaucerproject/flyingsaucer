@@ -9,8 +9,8 @@ import java.io.File;
 public class Graphics2DRendererTest {
 
     public static void main(String[] args) throws Exception {
-        BufferedImage img = Graphics2DRenderer.renderToImage(new File("demos/splash/splash.html").toURL().toExternalForm(),
-                700);
+        BufferedImage img = Graphics2DRenderer.renderToImageAutoSize(new File("demos/splash/splash.html").toURL().toExternalForm(),
+                700, BufferedImage.TYPE_INT_ARGB);
         ImageIO.write(img, "png", new File("test.png"));
     }
 }
