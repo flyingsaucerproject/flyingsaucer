@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import org.xhtmlrenderer.swing.Java2DRenderer;
-import org.xhtmlrenderer.simple.ImageRenderer;
 import org.xhtmlrenderer.simple.Graphics2DRenderer;
 import org.xhtmlrenderer.util.FSImageWriter;
 
@@ -38,7 +37,7 @@ public class ImageRender {
 				imageWriter.write(image, path + ".png");
 
 				// compare to old
-				BufferedImage img = Graphics2DRenderer.renderToImage(f.toURI().toURL().toExternalForm(), 1024);
+				BufferedImage img = Graphics2DRenderer.renderToImageAutoSize(f.toURI().toURL().toExternalForm(), 1024, BufferedImage.TYPE_INT_ARGB);
 				ImageIO.write(img, "png", new File(path + "-G2DR.png"));
 
 			} else {
