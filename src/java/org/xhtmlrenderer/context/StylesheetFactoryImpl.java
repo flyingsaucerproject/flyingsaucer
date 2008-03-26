@@ -79,8 +79,8 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         try {
             return _cssParser.parseStylesheet(info.getUri(), info.getOrigin(), reader);
         } catch (IOException e) {
-            // XXX Should we really just give up?  or skip and continue?
-            throw new XRRuntimeException("IOException on parsing style seet from a Reader; don't know the URI.", e);
+            XRLog.cssParse(Level.WARNING, "Couldn't parse stylesheet at URI " + info.getUri() + ": " + e.getMessage(), e);
+            return new Stylesheet(info.getUri(), info.getOrigin());
         }
     }
 
