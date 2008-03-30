@@ -33,13 +33,13 @@ public class ZoomAction extends AbstractAction {
 
         if (scalingFactor.getFactor() == ScaleFactor.PAGE_WIDTH) {
             view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_WIDTH);
-            view.doLayout();
+            view.setDocument(view.getDocument());
         } else if (scalingFactor.getFactor() == ScaleFactor.PAGE_HEIGHT) {
             view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_HEIGHT);
-            view.doLayout();
+            view.setDocument(view.getDocument());
         } else if (scalingFactor.getFactor() == ScaleFactor.PAGE_WHOLE) {
             view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_WHOLE);
-            view.doLayout();
+            view.setDocument(view.getDocument());
         } else {
             view.setScale(scalingFactor.getFactor());
         }
