@@ -336,9 +336,9 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 if (current.getNodeType() == Node.ELEMENT_NODE) {
                     Element elem = (Element)current;
                     StylesheetInfo info = null;
-                    if (elem.getTagName().equals("link")) {
+                    if (elem.getLocalName().equals("link")) {
                         info = readLinkElement(elem);
-                    } else if (elem.getTagName().equals("style")) {
+                    } else if (elem.getLocalName().equals("style")) {
                         info = readStyleElement(elem);
                     }
                     if (info != null) {
