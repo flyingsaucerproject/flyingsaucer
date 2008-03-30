@@ -63,7 +63,8 @@ import org.xml.sax.InputSource;
  * @author Joshua Marinacci
  */
 public abstract class BasicPanel extends RootPanel {
-    private static final int PAGE_PAINTING_CLEARANCE = 10;
+    private static final int PAGE_PAINTING_CLEARANCE_WIDTH = 10;
+    private static final int PAGE_PAINTING_CLEARANCE_HEIGHT = 10;
 
     private boolean explicitlyOpaque;
 
@@ -71,6 +72,7 @@ public abstract class BasicPanel extends RootPanel {
     private XMLResource xmlResource;
     
     private MouseTracker mouseTracker;
+    private boolean centeredPagedView;
 
     public BasicPanel() {
         this(new NaiveUserAgent());
@@ -178,13 +180,16 @@ public abstract class BasicPanel extends RootPanel {
         if (root.getLastPage() == null) {
             return;
         }
-        
+
+        final int pagePaintingClearanceWidth = isCenteredPagedView() ?
+                calcCenteredPageLeftOffset(root.getMaxPageWidth(c, 0)) :
+                PAGE_PAINTING_CLEARANCE_WIDTH;
         root.assignPagePaintingPositions(
-                c, Layer.PAGED_MODE_SCREEN, PAGE_PAINTING_CLEARANCE);
+                c, Layer.PAGED_MODE_SCREEN, PAGE_PAINTING_CLEARANCE_HEIGHT);
 
         setPreferredSize(new Dimension(
-                root.getMaxPageWidth(c, PAGE_PAINTING_CLEARANCE),
-                root.getLastPage().getPaintingBottom() + PAGE_PAINTING_CLEARANCE));
+                root.getMaxPageWidth(c, pagePaintingClearanceWidth),
+                root.getLastPage().getPaintingBottom() + PAGE_PAINTING_CLEARANCE_HEIGHT));
         revalidate();
 
         Graphics2D g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();
@@ -198,7 +203,7 @@ public abstract class BasicPanel extends RootPanel {
 
             g.setClip(working);
             
-            Rectangle overall = page.getScreenPaintingBounds(c, PAGE_PAINTING_CLEARANCE);
+            Rectangle overall = page.getScreenPaintingBounds(c, pagePaintingClearanceWidth);
             overall.x -= 1;
             overall.y -= 1;
             overall.width += 1;
@@ -208,9 +213,9 @@ public abstract class BasicPanel extends RootPanel {
             bounds.width += 1;
             bounds.height += 1;
             if (working.intersects(bounds)) {
-                page.paintBackground(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
-                page.paintMarginAreas(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
-                page.paintBorder(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
+                page.paintBackground(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
+                page.paintMarginAreas(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
+                page.paintBorder(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
                 
                 Color old = g.getColor();
                 
@@ -218,10 +223,10 @@ public abstract class BasicPanel extends RootPanel {
                 g.drawRect(overall.x, overall.y, overall.width, overall.height);
                 g.setColor(old);
                 
-                Rectangle content = page.getPagedViewClippingBounds(c, PAGE_PAINTING_CLEARANCE);
+                Rectangle content = page.getPagedViewClippingBounds(c, pagePaintingClearanceWidth);
                 g.clip(content);
                 
-                int left = PAGE_PAINTING_CLEARANCE +
+                int left = pagePaintingClearanceWidth +
                     page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
                 int top = page.getPaintingTop() 
                     + page.getMarginBorderPadding(c, CalculatedStyle.TOP)
@@ -236,6 +241,10 @@ public abstract class BasicPanel extends RootPanel {
         }
         
         g.setClip(working);
+    }
+
+    private int calcCenteredPageLeftOffset(int maxPageWidth) {
+        return (getWidth() - maxPageWidth) / 2;
     }
 
     public void paintPage(Graphics2D g, int pageNo) {
@@ -559,12 +568,23 @@ public abstract class BasicPanel extends RootPanel {
     protected void resetMouseTracker() {
         mouseTracker.reset();
     }
+
+    public boolean isCenteredPagedView() {
+        return centeredPagedView;
+    }
+
+    public void setCenteredPagedView(boolean centeredPagedView) {
+        this.centeredPagedView = centeredPagedView;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.119  2008/03/30 16:35:20  pdoubleya
+ * Issue #231: allow for centered page box in preview mode.
+ *
  * Revision 1.118  2008/02/28 19:35:30  pdoubleya
  * On printing, not updating the total page count, required because this is not otherwise available in the rendering context we create for each page
  *
