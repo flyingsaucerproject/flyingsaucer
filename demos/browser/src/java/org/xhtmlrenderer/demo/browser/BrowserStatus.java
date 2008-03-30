@@ -46,7 +46,7 @@ public class BrowserStatus extends JPanel {
                         used = used / (1024 * 1024);
                         total = total / (1024 * 1024);
 
-                        final String text = used + "MB / " + total + "MB";
+                        final String text = used + "M / " + total + "M";
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 memory.setText(text);
