@@ -38,6 +38,7 @@ import org.xhtmlrenderer.render.BorderPainter;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
+import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.RenderingContext;
 
 public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDevice {
@@ -112,7 +113,27 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         for (int i = inlineText.getSelectionEnd(); i < inlineText.getSubstring().length(); i++) {
             vector.setGlyphPosition(i, new Point2D.Float(-100000, -100000));
         }
+        if(inlineText.getParent().getStyle().isTextJustify()) {
+            JustificationInfo info = inlineText.getParent().getLineBox().getJustificationInfo();
+            if(info!=null) {
+                String string = inlineText.getSubstring();
+                float adjust = 0.0f;
+                for (int i = inlineText.getSelectionStart(); i < inlineText.getSelectionEnd(); i++) {
+                    char ch = string.charAt(i);
+                    if (i != 0) {
+                        Point2D point = vector.getGlyphPosition(i);
+                        vector.setGlyphPosition(
+                                i, new Point2D.Double(point.getX() + adjust, point.getY()));
+                    }
+                    if (ch == ' ' || ch == '\u00a0' || ch == '\u3000') {
+                        adjust += info.getSpaceAdjust();
+                    } else {
+                        adjust += info.getNonSpaceAdjust();
+                    }
+                }
 
+            }
+        }
         c.getTextRenderer().drawGlyphVector(
                 c.getOutputDevice(),
                 glyphVector,
