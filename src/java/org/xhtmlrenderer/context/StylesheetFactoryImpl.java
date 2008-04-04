@@ -169,10 +169,6 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         return s;
     }
 
-    public UserAgentCallback getUserAgentCallback() {
-        return _userAgentCallback;
-    }
-
     public void setUserAgentCallback(UserAgentCallback userAgent) {
         _userAgentCallback = userAgent;
     }
