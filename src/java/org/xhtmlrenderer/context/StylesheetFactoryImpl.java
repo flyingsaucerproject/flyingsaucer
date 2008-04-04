@@ -47,7 +47,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     /**
      * the UserAgentCallback to resolve uris
      */
-    private UserAgentCallback _userAgent;
+    private UserAgentCallback _userAgentCallback;
 
     private int _cacheCapacity = 16;
 
@@ -64,8 +64,8 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
             };
     private CSSParser _cssParser;
 
-    public StylesheetFactoryImpl(UserAgentCallback userAgent) {
-        _userAgent = userAgent;
+    public StylesheetFactoryImpl(UserAgentCallback userAgentCallback) {
+        _userAgentCallback = userAgentCallback;
         _cssParser = new CSSParser(new CSSErrorHandler() {
             public void error(String uri, String message) {
                 XRLog.cssParse(Level.WARNING, "(" + uri + ") " + message);
@@ -87,7 +87,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      * @return Returns null if uri could not be loaded
      */
     private Stylesheet parse(StylesheetInfo info) {
-        CSSResource cr = _userAgent.getCSSResource(info.getUri());
+        CSSResource cr = _userAgentCallback.getCSSResource(info.getUri());
         // Whether by accident or design, InputStream will never be null
         // since the null resource stream is wrapped in a BufferedInputStream
         InputStream is = cr.getResourceInputSource().getByteStream();
@@ -169,11 +169,11 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         return s;
     }
 
-    public UserAgentCallback getUserAgent() {
-        return _userAgent;
+    public UserAgentCallback getUserAgentCallback() {
+        return _userAgentCallback;
     }
 
-    public void setUserAgent(UserAgentCallback userAgent) {
-        _userAgent = userAgent;
+    public void setUserAgentCallback(UserAgentCallback userAgent) {
+        _userAgentCallback = userAgent;
     }
 }

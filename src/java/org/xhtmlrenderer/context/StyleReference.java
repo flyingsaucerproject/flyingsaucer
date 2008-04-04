@@ -282,7 +282,7 @@ public class StyleReference {
     public void setUserAgentCallback(UserAgentCallback userAgentCallback)
     {
         _uac = userAgentCallback;
-        _stylesheetFactory.setUserAgent(userAgentCallback);
+        _stylesheetFactory.setUserAgentCallback(userAgentCallback);
     }
 }
 
@@ -290,6 +290,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2008/04/04 13:32:38  peterbrant
+ * Fix method name
+ *
  * Revision 1.20  2008/04/04 13:28:38  peterbrant
  * Make sure user agent is provided to StyleReference when it's modified / Light cleanup
  *
