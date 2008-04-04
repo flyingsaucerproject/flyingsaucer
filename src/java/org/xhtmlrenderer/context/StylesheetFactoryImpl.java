@@ -19,12 +19,11 @@
  */
 package org.xhtmlrenderer.context;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.LineNumberReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
@@ -36,7 +35,6 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 /**
  * A Factory class for Cascading Style Sheets. Sheets are parsed using a single
@@ -80,6 +78,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
             return _cssParser.parseStylesheet(info.getUri(), info.getOrigin(), reader);
         } catch (IOException e) {
             XRLog.cssParse(Level.WARNING, "Couldn't parse stylesheet at URI " + info.getUri() + ": " + e.getMessage(), e);
+            e.printStackTrace();
             return new Stylesheet(info.getUri(), info.getOrigin());
         }
     }
@@ -89,41 +88,14 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      */
     private Stylesheet parse(StylesheetInfo info) {
         CSSResource cr = _userAgent.getCSSResource(info.getUri());
+        // Whether by accident or design, InputStream will never be null
+        // since the null resource stream is wrapped in a BufferedInputStream
         InputStream is = cr.getResourceInputSource().getByteStream();
-        Stylesheet sheet = null;
-
         try {
-            if (is != null) {
-                sheet = parse(new InputStreamReader(is, "UTF-8"), info);
-            }
-        } catch (Exception e) {
-            debugBadStyleSheet(info);
-            if (e instanceof XRRuntimeException) {
-                throw (XRRuntimeException) e;
-            } else {
-                throw new XRRuntimeException("Failed on parsing CSS sheet at " + info.getUri(), e);
-            }
-
-        }
-        return sheet;
-    }
-
-    private void debugBadStyleSheet(StylesheetInfo info) {
-        InputStream is = _userAgent.getCSSResource(info.getUri()).getResourceInputSource().getByteStream();
-        if (is != null) {
-            try {
-                Reader r = new InputStreamReader(is);
-                LineNumberReader lnr = new LineNumberReader(new BufferedReader(r));
-                StringBuffer sb = new StringBuffer();
-                String line = null;
-                while ((line = lnr.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-                XRLog.cssParse(sb.toString());
-            } catch (Exception ex) {
-                XRLog.cssParse("Failed to read CSS sheet at " + info.getUri() + " for debugging.");
-            }
-
+            return parse(new InputStreamReader(is, "UTF-8"), info);
+        } catch (UnsupportedEncodingException e) {
+            // Shouldn't happen
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -195,5 +167,13 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
             putStylesheet(info.getUri(), s);
         }
         return s;
+    }
+
+    public UserAgentCallback getUserAgent() {
+        return _userAgent;
+    }
+
+    public void setUserAgent(UserAgentCallback userAgent) {
+        _userAgent = userAgent;
     }
 }

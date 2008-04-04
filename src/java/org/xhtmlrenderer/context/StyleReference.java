@@ -282,6 +282,7 @@ public class StyleReference {
     public void setUserAgentCallback(UserAgentCallback userAgentCallback)
     {
         _uac = userAgentCallback;
+        _stylesheetFactory.setUserAgent(userAgentCallback);
     }
 }
 
@@ -289,6 +290,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2008/04/04 13:28:38  peterbrant
+ * Make sure user agent is provided to StyleReference when it's modified / Light cleanup
+ *
  * Revision 1.19  2008/01/22 00:29:23  peterbrant
  * Need to propagate changes to user agent in SharedContext to containing StyleReference
  *
