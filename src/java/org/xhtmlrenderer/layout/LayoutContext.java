@@ -81,7 +81,9 @@ public class LayoutContext implements CssContext {
     
     private Layer _rootDocumentLayer;
     private PageBox _page;
-
+    
+    private boolean _mayCheckKeepTogether = true;
+    
     public TextRenderer getTextRenderer() {
         return _sharedContext.getTextRenderer();
     }
@@ -503,5 +505,13 @@ public class LayoutContext implements CssContext {
 
     public void setPage(PageBox page) {
         _page = page;
+    }
+
+    public boolean isMayCheckKeepTogether() {
+        return _mayCheckKeepTogether;
+    }
+
+    public void setMayCheckKeepTogether(boolean mayKeepTogether) {
+        _mayCheckKeepTogether = mayKeepTogether;
     }
 }

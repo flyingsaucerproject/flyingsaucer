@@ -70,6 +70,7 @@ public class BlockBoxing {
 
             RelayoutData relayoutData = null;
 
+            boolean mayCheckKeepTogether = false;
             if (c.isPrint()) {
                 relayoutData = relayoutDataList.get(offset);
                 relayoutData.setLayoutState(c.copyStateForRelayout());
@@ -77,26 +78,34 @@ public class BlockBoxing {
                 pageCount = c.getRootLayer().getPages().size();
                 
                 child.setNeedPageClear(false);
+                
+                if (child.getStyle().isAvoidPageBreakInside() && c.isMayCheckKeepTogether()) {
+                    mayCheckKeepTogether = true;
+                    c.setMayCheckKeepTogether(false);
+                }
             }
 
             layoutBlockChild(
                     c, block, child, false, childOffset, NO_PAGE_TRIM);
 
             if (c.isPrint()) {
-                boolean tryToAvoidPageBreak = 
-                    child.getStyle().isAvoidPageBreakInside() && child.crossesPageBreak(c);
-                if (tryToAvoidPageBreak || child.isNeedPageClear()) {
-                    c.restoreStateForRelayout(relayoutData.getLayoutState());
-                    child.reset(c);
-                    layoutBlockChild(
-                            c, block, child, true, childOffset, pageCount);
-
-                    if (tryToAvoidPageBreak && child.crossesPageBreak(c)) {
+                if (mayCheckKeepTogether) {
+                    c.setMayCheckKeepTogether(true);
+                    boolean tryToAvoidPageBreak = 
+                        child.getStyle().isAvoidPageBreakInside() && child.crossesPageBreak(c);
+                    if (tryToAvoidPageBreak || child.isNeedPageClear()) {
                         c.restoreStateForRelayout(relayoutData.getLayoutState());
                         child.reset(c);
                         layoutBlockChild(
-                                c, block, child, false, childOffset, pageCount);
-                    }  
+                                c, block, child, true, childOffset, pageCount);
+    
+                        if (tryToAvoidPageBreak && child.crossesPageBreak(c)) {
+                            c.restoreStateForRelayout(relayoutData.getLayoutState());
+                            child.reset(c);
+                            layoutBlockChild(
+                                    c, block, child, false, childOffset, pageCount);
+                        }  
+                    }
                 }
                 c.getRootLayer().ensureHasPage(c, child);
             }
@@ -204,22 +213,30 @@ public class BlockBoxing {
 
             c.restoreStateForRelayout(relayoutData.getLayoutState());
             relayoutData.setChildOffset(childOffset);
+            boolean mayCheckKeepTogether = false;
+            if (child.getStyle().isAvoidPageBreakInside() && c.isMayCheckKeepTogether()) {
+                mayCheckKeepTogether = true;
+                c.setMayCheckKeepTogether(false);
+            }            
             layoutBlockChild(
                     c, block, child, false, childOffset, NO_PAGE_TRIM);
 
-            boolean tryToAvoidPageBreak = 
-                child.getStyle().isAvoidPageBreakInside() && child.crossesPageBreak(c);
-            if (tryToAvoidPageBreak || child.isNeedPageClear()) {
-                c.restoreStateForRelayout(relayoutData.getLayoutState());
-                child.reset(c);
-                layoutBlockChild(
-                        c, block, child, true, childOffset, pageCount);
-
-                if (tryToAvoidPageBreak && child.crossesPageBreak(c)) {
+            if (mayCheckKeepTogether) {
+                c.setMayCheckKeepTogether(true);
+                boolean tryToAvoidPageBreak = 
+                    child.getStyle().isAvoidPageBreakInside() && child.crossesPageBreak(c);
+                if (tryToAvoidPageBreak || child.isNeedPageClear()) {
                     c.restoreStateForRelayout(relayoutData.getLayoutState());
                     child.reset(c);
                     layoutBlockChild(
-                            c, block, child, false, childOffset, pageCount);
+                            c, block, child, true, childOffset, pageCount);
+    
+                    if (tryToAvoidPageBreak && child.crossesPageBreak(c)) {
+                        c.restoreStateForRelayout(relayoutData.getLayoutState());
+                        child.reset(c);
+                        layoutBlockChild(
+                                c, block, child, false, childOffset, pageCount);
+                    }
                 }
             }
 
@@ -431,6 +448,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.66  2008/04/12 01:04:13  peterbrant
+ * Optimize implementation of page-break-inside: avoid
+ *
  * Revision 1.65  2008/02/03 12:35:06  peterbrant
  * Need to update child offset when laying out a block again.  We'll need it later if two "keep together" runs adjoin.
  *
