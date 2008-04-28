@@ -21,7 +21,7 @@ public class CenteredPreviewRender {
     private String fileName;
 
     public static void main(String[] args) throws Exception {
-        new JPanelRender().run(args);
+        new CenteredPreviewRender().run(args);
     }
 
     private void run(String[] args) {
