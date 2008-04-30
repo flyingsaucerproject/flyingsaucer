@@ -96,7 +96,7 @@ public class HoverListener implements FSMouseListener {
                 }
             }
 
-            _previouslyHovered = box;
+            _previouslyHovered = target;
         }
 
         if (needRepaint) {
