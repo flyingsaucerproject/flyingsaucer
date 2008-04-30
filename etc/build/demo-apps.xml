@@ -10,6 +10,7 @@
 				<propertyref prefix="xr."/>
 			</syspropertyset>
 			<sysproperty key="sun.java2D.opengl" value="true"/>
+			<sysproperty key="java.protocol.handler.pkgs" value="org.xhtmlrenderer.protocols"/>
 		</java>
 	</target>
 
@@ -22,6 +23,7 @@
 				<propertyref prefix="xr."/>
 			</syspropertyset>
 			<sysproperty key="sun.java2D.opengl" value="true"/>
+			<sysproperty key="java.protocol.handler.pkgs" value="org.xhtmlrenderer.protocols"/>
 		</java>
 	</target>
 
