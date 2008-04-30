@@ -73,6 +73,12 @@ public class ITextUserAgent extends NaiveUserAgent {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
                 } catch (BadElementException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
+                } finally {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        // ignore
+                    }
                 }
             }
         }

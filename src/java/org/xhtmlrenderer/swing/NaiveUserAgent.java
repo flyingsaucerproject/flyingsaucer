@@ -169,6 +169,12 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
                     XRLog.exception("Can't read image file; image at URI '" + uri + "' not found");
                 } catch (IOException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
+                } finally {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        // ignore
+                    }
                 }
             }
         }
@@ -314,6 +320,9 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2008/04/30 23:14:18  peterbrant
+ * Do a better job of cleaning up open file streams (patch by Christophe Marchand)
+ *
  * Revision 1.37  2007/11/23 07:03:30  pdoubleya
  * Applied patch from N. Barozzi to allow either toolkit or buffered images to be used, see https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?list=dev&msgNo=3847
  *

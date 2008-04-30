@@ -96,6 +96,14 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         } catch (UnsupportedEncodingException e) {
             // Shouldn't happen
             throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
         }
     }
 
