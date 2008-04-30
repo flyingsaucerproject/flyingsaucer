@@ -686,7 +686,7 @@ public abstract class Box implements Styleable {
         }
         
         Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), cssCtx);
-        return edge.contains(absX, absY) ? this : null;
+        return edge.contains(absX, absY) && getStyle().isVisible() ? this : null;
     }
     
     public boolean isRoot() {
@@ -1117,6 +1117,9 @@ public abstract class Box implements Styleable {
  * $Id$
  * 
  * $Log$
+ * Revision 1.144  2008/04/30 23:02:42  peterbrant
+ * Fix for bug #239 (detective work by Ludovic Durand-Texte)
+ *
  * Revision 1.143  2008/01/26 15:34:52  peterbrant
  * Make getNextSibling() and getPreviousSibling() work with InlineLayoutBox (or as well as it can in that context)
  *
