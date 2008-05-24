@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.simple;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
@@ -67,11 +68,8 @@ import javax.swing.KeyStroke;
  * @author Patrick Wright
  */
 public class FSScrollPane extends JScrollPane {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    /** The panel we are hosting; expect it to be XHTMLPanel or BasicPanel */
-    private JPanel view;
-    
     /** Constant used for mapping a key binding to "scroll down 1 page" */
     public static final String PAGE_DOWN = "page-down";
 
@@ -90,28 +88,34 @@ public class FSScrollPane extends JScrollPane {
     /** Constant used for mapping a key binding to "scroll to top of document" */
     public static final String PAGE_START = "page-start";
     
-    
+
+    public FSScrollPane() {
+        this(null);
+    }
+        
+
     /** Instantiates a new FSScrollPane around the given Panel; see class documentation. */
     public FSScrollPane(JPanel aview) {
-        super(aview);
-        view = aview;
+        super(aview, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_ALWAYS);
 
-        setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        
-        setPreferredSize(new Dimension((int)view.getSize().getWidth(), (int)view.getSize().getHeight()));
-        
         // TODO: need to get line-height, I think; this should not be fixed (PWW 28-01-05)
         getVerticalScrollBar().setUnitIncrement(15);
-        
-
-        setDefaultInputMap();
-        setDefaultActionMap();
-        addResizeListener();
+    }
+    
+    /* @Override */
+    public void setViewportView(Component view)
+    {
+        setPreferredSize(new Dimension((int)view.getSize().getWidth(), (int)view.getSize().getHeight()));
+        if (view instanceof JComponent) {
+            setDefaultInputMap((JComponent) view);
+            setDefaultActionMap((JComponent) view);
+        }
+        addResizeListener(view);
+        super.setViewportView(view);
     }
     
     /** Assigns the default keyboard bindings on the view for document navigation. */
-    private void setDefaultInputMap() {
+    private void setDefaultInputMap(JComponent view) {
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), PAGE_DOWN);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
@@ -132,7 +136,7 @@ public class FSScrollPane extends JScrollPane {
     }
     
     /** Assigns the default Actions for document navigation on the view. */
-    private void setDefaultActionMap() {
+    private void setDefaultActionMap(JComponent view) {
         view.getActionMap().put(PAGE_DOWN,
                 new AbstractAction() {
                     private static final long serialVersionUID = 1L;
@@ -190,7 +194,7 @@ public class FSScrollPane extends JScrollPane {
     }
     
     /** Adds a component listener on the view for resize events, to adjust the scroll increment. */
-    private void addResizeListener() {
+    private void addResizeListener(Component view) {
         view.addComponentListener( new ComponentAdapter() {
             /** Invoked when the component's size changes. Reset scrollable increment, because
              * page-down/up is relative to current view size.
