@@ -592,7 +592,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return -1;
     }
 
-    private void resolveAutoMargins(
+    protected void resolveAutoMargins(
             LayoutContext c, int cssWidth,
             RectPropertySet padding, BorderPropertySet border) {
         int withoutMargins =
@@ -1965,6 +1965,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.93  2008/05/24 16:36:22  peterbrant
+ * If our minimum width is greater than the calculated CSS width, don't try to allocate any margin space to auto margins.
+ *
  * Revision 1.92  2007/10/15 22:33:44  peterbrant
  * Only try to satisfy widows and orphans if page breaking is allowed
  *

@@ -226,6 +226,31 @@ public class TableBox extends BlockBox {
         
         layoutTable(c);
     }
+    
+    protected void resolveAutoMargins(LayoutContext c, int cssWidth, RectPropertySet padding, 
+            BorderPropertySet border) {
+        // If our minimum width is greater than the calculated CSS width,
+        // don't try to allocate any margin space to auto margins.  It
+        // will just confuse the issue later when we expand the effective
+        // table width to its minimum width.
+        if (getMinWidth() < cssWidth)
+        {
+            super.resolveAutoMargins(c, cssWidth, padding, border);
+        }
+        else
+        {
+            boolean autoLeft = getStyle().isIdent(CSSName.MARGIN_LEFT, IdentValue.AUTO);
+            if (autoLeft)
+            {
+                setMarginLeft(c, 0);
+            }
+            boolean autoRight = getStyle().isIdent(CSSName.MARGIN_RIGHT, IdentValue.AUTO);
+            if (autoRight)
+            {
+                setMarginRight(c, 0);
+            }
+        }
+    }
 
     private void layoutTable(LayoutContext c) {
         boolean running = c.isPrint() && getStyle().isPaginateTable();
