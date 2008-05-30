@@ -132,10 +132,11 @@ public class PanelManager extends NaiveUserAgent {
 	 */
 	private XMLResource getNotFoundDocument(String uri) {
         XMLResource xr;
-        String notFound = "<html><h1>Document not found</h1><p>Could not access URI <pre>" + uri + "</pre></p></html>";
 
-		// TODO: remove printlns
-		System.out.println(notFound);
+        // URI may contain & symbols which can "break" the XHTML we're creating
+        String cleanUri = GeneralUtil.escapeHTML(uri);
+        String notFound = "<html><h1>Document not found</h1><p>Could not access URI <pre>" + cleanUri + "</pre></p></html>";
+
         xr = XMLResource.load(new StringReader(notFound));
         return xr;
     }
