@@ -101,8 +101,9 @@ public class Regress {
         }
         String path = args[1];
         File file = new File(path);
-        if (!file.getParentFile().exists()) {
-            usageAndExit("Directory not found: " + file.getParentFile().getPath());
+        final File parentFile = file.getAbsoluteFile().getParentFile();
+        if (!parentFile.exists()) {
+            usageAndExit("Directory not found: " + parentFile.getPath());
         }
         file.delete();
         file.createNewFile();

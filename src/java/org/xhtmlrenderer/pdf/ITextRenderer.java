@@ -129,7 +129,7 @@ public class ITextRenderer {
     public void setDocument(File file)
             throws IOException {
         
-        File parent = file.getParentFile();
+        File parent = file.getAbsoluteFile().getParentFile();
         setDocument(
                 loadDocument(file.toURI().toURL().toExternalForm()),
                 (parent == null ? "" : parent.toURI().toURL().toExternalForm())

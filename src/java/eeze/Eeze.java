@@ -420,7 +420,7 @@ public class Eeze {
             Image img = null;
             try {
                 File file = currentDisplayed;
-                File parent = file.getParentFile();
+                File parent = file.getAbsoluteFile().getParentFile();
                 if (parent == null) parent = file;
                 File imgDir = new File(parent.getAbsolutePath() + File.separator + "ref-img");
                 String name = file.getName().substring(0, file.getName().lastIndexOf(".")) + ".png";
@@ -825,7 +825,7 @@ public class Eeze {
         public void actionPerformed(ActionEvent e) {
             try {
                 File file = currentDisplayed;
-                File parent = file.getParentFile();
+                File parent = file.getAbsoluteFile().getParentFile();
                 if (parent == null) parent = file;
                 File imgDir = new File(parent.getAbsolutePath() + File.separator + "ref-img");
                 if (!imgDir.exists()) {

@@ -156,7 +156,7 @@ public class ReferenceComparison {
     private void copyToFailed(File failedDirectory, File refFile, String suffix) {
         File source = new File(failedDirectory, refFile.getName() + suffix);
         if (!source.exists()) {
-            source = new File(refFile.getParentFile(), refFile.getName() + suffix);
+            source = new File(refFile.getAbsoluteFile().getParentFile(), refFile.getName() + suffix);
             try {
                 IOUtil.copyFile(source, failedDirectory);
             } catch (IOException e) {

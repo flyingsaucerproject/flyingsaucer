@@ -200,7 +200,7 @@ public class XHTMLPanel extends BasicPanel {
     public void setDocument(File file)
             throws Exception {
         resetListeners();
-        File parent = file.getParentFile();
+        File parent = file.getAbsoluteFile().getParentFile();
         String parentURL = ( parent == null ? "" : parent.toURI().toURL().toExternalForm());
         setDocument(
                 loadDocument(file.toURI().toURL().toExternalForm()),
@@ -314,6 +314,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2008/05/30 16:07:06  pdoubleya
+ * Issue 228: when setting document from a file, use file.getAbsoluteFile().getParentFile() to find the parent, in case the file provided has no directory or path; otherwise, file.getParentFile() returns null, and we have no way of determining a base URI. Covers at least the (reproducible) part of the issue.
+ *
  * Revision 1.43  2008/01/22 21:27:06  pdoubleya
  * Fix on resetting font scaling factor--was using old relayout/repaint approach, which isn't consistent--easier to use setDocument(), which in any case uses the DOM already in memory.
  *
