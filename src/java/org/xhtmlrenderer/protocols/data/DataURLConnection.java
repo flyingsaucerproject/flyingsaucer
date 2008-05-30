@@ -99,7 +99,7 @@ public class DataURLConnection extends URLConnection {
                 }
                 
                 for (; index < parts.length; index++) {
-                    if (parts[index].contains("=")) {
+                    if (parts[index].indexOf("=") >= 0) {
                         String [] nameValuePair = parts[index].split("=");
                         
                         if (nameValuePair.length > 1) {
