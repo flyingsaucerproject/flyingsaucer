@@ -24,8 +24,10 @@ import java.awt.image.BufferedImage;
 
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.ImageUtil;
 
 public abstract class AWTFSImage implements FSImage {
+    private static final FSImage NULL_FS_IMAGE = new NullImage();
 
     /**
      * @deprecated  replaced by {@link #createImage()}, that decides on 
@@ -37,11 +39,15 @@ public abstract class AWTFSImage implements FSImage {
 
     public static FSImage createImage(Image img) {
         boolean useBufferedImage =  Configuration.isTrue("xr.image.buffered", false);
-        
-        if(useBufferedImage){
-            return new NewAWTFSImage(img);
-        }else{
-            return new OldAWTFSImage(img);
+
+        if (img == null) {
+            return NULL_FS_IMAGE;
+        } else {
+            if (useBufferedImage) {
+                return new NewAWTFSImage(img);
+            } else {
+                return new OldAWTFSImage(img);
+            }
         }
     }
         
@@ -101,5 +107,23 @@ public abstract class AWTFSImage implements FSImage {
         public void scale(int width, int height) {
             img = img.getScaledInstance(width, height, Image.SCALE_DEFAULT);
         }
-    }    
+    }
+
+    private static class NullImage extends AWTFSImage {
+        private static final Image EMPTY_IMAGE = ImageUtil.createTransparentImage(1, 1);
+        
+        public int getWidth() {
+            return 0;
+        }
+
+        public int getHeight() {
+            return 0;
+        }
+
+        public void scale(int width, int height) {}
+
+        public Image getImage() {
+            return EMPTY_IMAGE;
+        }
+    }
 }

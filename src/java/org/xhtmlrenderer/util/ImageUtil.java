@@ -226,7 +226,20 @@ public class ImageUtil {
 		return bimg;
 	}
 
-	interface Scaler {
+    public static Image createTransparentImage(int width, int height) {
+        BufferedImage bi = createCompatibleBufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = bi.createGraphics();
+
+        // Make all filled pixels transparent
+        Color transparent = new Color(0, 0, 0, 0);
+        g2d.setColor(transparent);
+        g2d.setComposite(AlphaComposite.Src);
+        g2d.fillRect(0, 0, width, height);
+        g2d.dispose();
+        return bi;
+    }
+
+    interface Scaler {
 		/**
 		 * Convenience method that returns a scaled instance of the
 		 * provided {@code BufferedImage}, taken from article on java.net by Chris Campbell
