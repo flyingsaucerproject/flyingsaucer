@@ -57,7 +57,6 @@ public class LinkListener implements FSMouseListener {
 
     public void linkClicked(BasicPanel panel, String uri) {
         panel.setDocumentRelative(uri);
-        panel.repaint();
     }
 
     public void onMouseOut(BasicPanel panel, Box box) {
