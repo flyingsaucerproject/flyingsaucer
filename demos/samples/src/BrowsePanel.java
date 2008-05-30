@@ -74,10 +74,20 @@ public class BrowsePanel {
                 try {
                     final URLConnection uc = new URL(uri).openConnection();
 
-                    // FIXME
-                    uc.setConnectTimeout(10 * 1000);
-                    uc.setReadTimeout(30 * 1000);
-			        uc.connect();
+                    // If using Java 5+ you can set timeouts for the URL connection--useful if the remote
+                    // server is down etc.; the default timeout is pretty long
+                    //
+                    //uc.setConnectTimeout(10 * 1000);
+                    //uc.setReadTimeout(30 * 1000);
+                    //
+                    // TODO:CLEAN-JDK1.4
+                    // Since we target 1.4, we use a couple of system properties--note these are only supported
+                    // in the Sun JDK implementation--see the Net properties guide in the JDK
+                    // e.g. file:///usr/java/j2sdk1.4.2_17/docs/guide/net/properties.html
+                    System.setProperty("sun.net.client.defaultConnectTimeout", String.valueOf(10 * 1000));
+                    System.setProperty("sun.net.client.defaultReadTimeout", String.valueOf(30 * 1000));
+
+                    uc.connect();
 
                     is = uc.getInputStream();
                 } catch (java.net.MalformedURLException e) {
