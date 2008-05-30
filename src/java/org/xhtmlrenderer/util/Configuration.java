@@ -104,44 +104,60 @@ public class Configuration {
     private final static String SF_FILE_NAME = "resources/conf/xhtmlrenderer.conf";
 
     /**
-     * Default constructor.
+     * Default constructor. Will parse default configuration file, system properties, override properties, etc. and
+     * result in a usable Configuration instance.
+     *
+     * @throws RuntimeException if any stage of loading configuration results in an Exception. This could happen,
+     * for example, if the default configuration file was not readable.
      */
     private Configuration() {
         startupLogRecords = new ArrayList();
 
         try {
-            // read logging level from System properties
-            // here we are trying to see if user wants to see logging about
-            // what configuration was loaded, e.g. debugging for config itself
-            String val = null;
             try {
-                val = System.getProperty("show-config");
-            } catch (SecurityException ex) {
-                // this may happen if running in a sandbox; not a problem
-                val = null;
+                // read logging level from System properties
+                // here we are trying to see if user wants to see logging about
+                // what configuration was loaded, e.g. debugging for config itself
+                String val = null;
+                try {
+                    val = System.getProperty("show-config");
+                } catch (SecurityException ex) {
+                    // this may happen if running in a sandbox; not a problem
+                    val = null;
+                }
+                logLevel = Level.OFF;
+                if (val != null) {
+                    logLevel = LoggerUtil.parseLogLevel(val, Level.OFF);
+                }
+            } catch (SecurityException e) {
+                // may be thrown in a sandbox; OK
+                System.err.println(e.getLocalizedMessage());
             }
-            logLevel = Level.OFF;
-            if (val != null) {
-                logLevel = LoggerUtil.parseLogLevel(val, Level.OFF);
-            }
-        } catch (SecurityException e) {
-            // may be thrown in a sandbox; OK
-            System.err.println(e.getLocalizedMessage());
-        }
+            loadDefaultProperties();
 
-        loadDefaultProperties();
-
-        String sysOverrideFile = getSystemPropertyOverrideFileName();
-        if ( sysOverrideFile != null ) {
-            loadOverrideProperties(sysOverrideFile);
-        } else {
-            String userHomeOverrideFileName = getUserHomeOverrideFileName();
-            if ( userHomeOverrideFileName != null ) {
-                loadOverrideProperties(userHomeOverrideFileName);
+            String sysOverrideFile = getSystemPropertyOverrideFileName();
+            if (sysOverrideFile != null) {
+                loadOverrideProperties(sysOverrideFile);
+            } else {
+                String userHomeOverrideFileName = getUserHomeOverrideFileName();
+                if (userHomeOverrideFileName != null) {
+                    loadOverrideProperties(userHomeOverrideFileName);
+                }
             }
+            loadSystemProperties();
+            logAfterLoad();
+        } catch (RuntimeException e) {
+            handleUnexpectedExceptionOnInit(e);
+            throw e;
+        } catch (Exception e) {
+            handleUnexpectedExceptionOnInit(e);
+            throw new RuntimeException(e);
         }
-        loadSystemProperties();
-        logAfterLoad();
+    }
+
+    private void handleUnexpectedExceptionOnInit(Exception e) {
+        System.err.println("Could not initialize configuration for Flying Saucer library. Message is: " + e.getMessage());
+        e.printStackTrace();
     }
 
     /**
@@ -246,7 +262,8 @@ public class Configuration {
             InputStream readStream = GeneralUtil.openStreamFromClasspath(new DefaultCSSMarker(), SF_FILE_NAME);
 
             if (readStream == null) {
-                throw new XRRuntimeException("No configuration files found in classpath using URL: " + SF_FILE_NAME);
+                System.err.println("WARNING: Flying Saucer: No configuration files found in classpath using URL: " + SF_FILE_NAME + ", resorting to hard-coded fallback properties.");
+                this.properties = newFallbackProperties();
             } else {
                 try {
                     this.properties = new Properties();
@@ -258,7 +275,7 @@ public class Configuration {
         } catch (RuntimeException rex) {
             throw rex;
         } catch (Exception ex) {
-            throw new XRRuntimeException("Could not load properties file for configuration.",
+            throw new RuntimeException("Could not load properties file for configuration.",
                     ex);
         }
         info("Configuration loaded from " + SF_FILE_NAME);
@@ -746,12 +763,79 @@ public class Configuration {
         }
         return cnstVal;
     }
+
+    /**
+     * Returns a Properties instance filled with values of last resort--in case we can't read default properties
+     * file for some reason; this is to prevent Configuration init from throwing any exceptions, or ending up
+     * with a completely empty configuration instance.
+     */
+    private Properties newFallbackProperties() {
+        Properties props = new Properties();
+        props.setProperty("xr.css.user-agent-default-css", "/resources/css/");
+        props.setProperty("xr.test.files.hamlet", "/demos/browser/xhtml/hamlet.xhtml");
+        props.setProperty("xr.simple-log-format", "{1} {2}:: {5}");
+        props.setProperty("xr.simple-log-format-throwable", "{1} {2}:: {5}");
+        props.setProperty("xr.test-config-byte", "8");
+        props.setProperty("xr.test-config-short", "16");
+        props.setProperty("xr.test-config-int", "100");
+        props.setProperty("xr.test-config-long", "2000");
+        props.setProperty("xr.test-config-float", "3000.25F");
+        props.setProperty("xr.test-config-double", "4000.50D");
+        props.setProperty("xr.test-config-boolean", "true");
+        props.setProperty("xr.util-logging.loggingEnabled", "false");
+        props.setProperty("xr.util-logging.handlers", "java.util.logging.ConsoleHandler");
+        props.setProperty("xr.util-logging.use-parent-handler", "false");
+        props.setProperty("xr.util-logging.java.util.logging.ConsoleHandler.level", "INFO");
+        props.setProperty("xr.util-logging.java.util.logging.ConsoleHandler.formatter", "org.xhtmlrenderer.util.XRSimpleLogFormatter");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.config.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.exception.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.general.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.init.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.load.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.load.xml-entities.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.match.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.cascade.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.css-parse.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.layout.level", "ALL");
+        props.setProperty("xr.util-logging.org.xhtmlrenderer.render.level", "ALL");
+        props.setProperty("xr.load.xml-reader", "default");
+        props.setProperty("xr.load.configure-features", "false");
+        props.setProperty("xr.load.validation", "false");
+        props.setProperty("xr.load.string-interning", "false");
+        props.setProperty("xr.load.namespaces", "false");
+        props.setProperty("xr.load.namespace-prefixes", "false");
+        props.setProperty("xr.layout.whitespace.experimental", "true");
+        props.setProperty("xr.layout.bad-sizing-hack", "false");
+        props.setProperty("xr.renderer.viewport-repaint", "true");
+        props.setProperty("xr.renderer.draw.backgrounds", "true");
+        props.setProperty("xr.renderer.draw.borders", "true");
+        props.setProperty("xr.renderer.debug.box-outlines", "false");
+        props.setProperty("xr.text.scale", "1.0");
+        props.setProperty("xr.text.aa-smoothing-level", "1");
+        props.setProperty("xr.text.aa-fontsize-threshhold", "25");
+        props.setProperty("xr.text.aa-rendering-hint", "RenderingHints.VALUE_TEXT_ANTIALIAS_HGRB");
+        props.setProperty("xr.cache.stylesheets", "false");
+        props.setProperty("xr.incremental.enabled", "false");
+        props.setProperty("xr.incremental.lazyimage", "false");
+        props.setProperty("xr.incremental.debug.layoutdelay", "0");
+        props.setProperty("xr.incremental.repaint.print-timing", "false");
+        props.setProperty("xr.use.threads", "false");
+        props.setProperty("xr.use.listeners", "true");
+        props.setProperty("xr.image.buffered", "false");
+        props.setProperty("xr.image.scale", "LOW");
+        props.setProperty("xr.image.render-quality", "java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR");
+        return props;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2008/05/30 14:48:04  pdoubleya
+ * Issue 243: handle case where for some reason, a JNLP launched app could not read the default configuration file. This was throwing an RE which then cause FS logging to fail. Now load hard-coded properties (ick!) if we can't read the file itself.
+ *
  * Revision 1.21  2008/01/27 16:40:29  pdoubleya
  * Issues 186 and 130: fix configuration so that logging setup does not override any current settings for JDK logging classes. Disable logging by default.
  *
