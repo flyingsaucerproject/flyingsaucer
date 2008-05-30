@@ -22,9 +22,9 @@ package org.xhtmlrenderer.demo.browser;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-/*import java.awt.event.ItemListener;*/
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.StringReader;
 
 import javax.swing.*;
 
@@ -32,10 +32,11 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.swing.ScalableXHTMLPanel;
-/*import org.xhtmlrenderer.swing.ScaleChangeEvent;
-import org.xhtmlrenderer.swing.ScaleChangeListener;*/
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xhtmlrenderer.util.GeneralUtil;
+import org.xhtmlrenderer.resource.XMLResource;
 
 
 /**
@@ -105,8 +106,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 	BrowserPanelListener listener;
 
 	JButton print_preview;
-	/*JComboBox cbxZoom;
-	//private ScaleFactor[] availableScales;*/
 
 	/**
 	 * Description of the Field
@@ -129,40 +128,16 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 		this.listener = listener;
 	}
 
-
 	/**
 	 * Description of the Method
 	 */
 	public void init() {
-		/*availableScales = initializeScales();*/
 		forward = new JButton();
 		backward = new JButton();
 		stop = new JButton();
 		reload = new JButton();
 		goToPage = new JButton();
 		goHome = new JButton();
-		/*cbxZoom = new JComboBox(availableScales);*/
-		// awfull hack to select the 100%
-		/*cbxZoom.setSelectedIndex(2);
-		cbxZoom.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					ScaleFactor factor = (ScaleFactor) e.getItem();
-					if (factor.getFactor() == ScaleFactor.PAGE_WIDTH) {
-						view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_WIDTH);
-						view.doLayout();
-					} else if (factor.getFactor() == ScaleFactor.PAGE_HEIGHT) {
-						view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_HEIGHT);
-						view.doLayout();
-					} else if (factor.getFactor() == ScaleFactor.PAGE_WHOLE) {
-						view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_WHOLE);
-						view.doLayout();
-					} else {
-						view.setScale(factor.getFactor());
-					}
-				}
-			}
-		});*/
 
 		url = new JTextField();
 		url.addFocusListener(new FocusAdapter() {
@@ -179,9 +154,11 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
 
 		manager = new PanelManager();
-		view = new ScalableXHTMLPanel(manager);
-		view.addDocumentListener(manager);
-		scroll = new FSScrollPane(view);
+        view = new ScalableXHTMLPanel(manager);
+        view.addDocumentListener(manager);
+        view.setCenteredPagedView(true);
+        view.setBackground(Color.LIGHT_GRAY);
+        scroll = new FSScrollPane(view);
 		print_preview = new JButton();
 		print = new JButton();
 
@@ -367,14 +344,71 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 			if (listener != null) {
 				listener.pageLoadSuccess(url_text, view.getDocumentTitle());
 			}
-		} catch (Exception
-				ex) {
+		} catch (XRRuntimeException ex) {
+			XRLog.general(Level.SEVERE, "Runtime exception", ex);
+            setStatus("Can't load document");
+            handlePageLoadFailed(url_text, ex);
+        } catch (Exception ex) {
 			XRLog.general(Level.SEVERE, "Could not load page for display.", ex);
 			ex.printStackTrace();
 		}
 	}
 
-	public void documentStarted() {
+    private void handlePageLoadFailed(String url_text, XRRuntimeException ex) {
+        final XMLResource xr;
+        final String rootCause = getRootCause(ex);
+        final String msg = GeneralUtil.escapeHTML(addLineBreaks(rootCause, 80));
+        String notFound =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        "<!DOCTYPE html PUBLIC \" -//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n" +
+                "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n" +
+                        "<body>\n" +
+                        "<h1>Document can't be loaded</h1>\n" +
+                        "<p>Could not load the page at \n" +
+                        "<pre>" + GeneralUtil.escapeHTML(url_text) + "</pre>\n" +
+                        "</p>\n" +
+                        "<p>The page failed to load; the error was </p>\n" +
+                        "<pre>" + msg + "</pre>\n" +
+                        "</body>\n" +
+                        "</html>";
+
+        xr = XMLResource.load(new StringReader(notFound));
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                root.panel.view.setDocument(xr.getDocument(), null);
+            }
+        });
+   }
+
+    private String addLineBreaks(String _text, int maxLineLength) {
+        StringBuffer broken = new StringBuffer(_text.length() + 10);
+        boolean needBreak = false;
+        for (int i = 0; i < _text.length(); i++) {
+            if (i > 0 && i % maxLineLength == 0) needBreak = true;
+
+            final char c = _text.charAt(i);
+            if (needBreak && Character.isWhitespace(c)) {
+                System.out.println("Breaking: " + broken.toString());
+                needBreak = false;
+                broken.append('\n');
+            } else {
+                broken.append(c);
+            }
+        }
+        System.out.println("Broken! " + broken.toString());
+        return broken.toString();  
+    }
+
+    private String getRootCause(Exception ex) {
+        Throwable cause = ex;
+        while (cause != null) {
+            cause = cause.getCause();
+        }
+
+        return cause == null ? ex.getMessage() : cause.getMessage();
+    }
+
+    public void documentStarted() {
 		// TODO...
 	}
 
@@ -384,33 +418,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 	public void documentLoaded() {
 		view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
-
-/*
-	public void scaleChanged(ScaleChangeEvent evt) {
-		if (evt.getComponent() == view) {
-			double scale = evt.getScale();
-			int ix = -1;
-			for (int i = 0; i < availableScales.length; i++) {
-				ScaleFactor sf = availableScales[i];
-				if (sf.getFactor() == scale) {
-					ix = i;
-					break;
-				}
-			}
-			ItemListener[] iListeners = cbxZoom.getItemListeners();
-			for (int i = 0; i < iListeners.length; i++) {
-				cbxZoom.removeItemListener(iListeners[i]);
-			}
-			if (ix != -1) {
-				cbxZoom.setSelectedIndex(ix);
-			}
-			for (int i = 0; i < iListeners.length; i++) {
-				cbxZoom.addItemListener(iListeners[i]);
-			}
-		}
-	}
-*/
-
 
 	/**
 	 * Sets the status attribute of the BrowserPanel object
@@ -441,21 +448,23 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
 
 	public void onLayoutException(Throwable t) {
-		t.printStackTrace();
-
+        // TODO: clean
+        t.printStackTrace();
 	}
-
 
 	public void onRenderException(Throwable t) {
+        // TODO: clean
 		t.printStackTrace();
 	}
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2008/05/30 13:25:00  pdoubleya
+ * Remove commented code blocks, add error handling if can't load page.
+ *
  * Revision 1.36  2007/07/14 12:56:40  pdoubleya
  * Browser toolbar should not be movable
  *
