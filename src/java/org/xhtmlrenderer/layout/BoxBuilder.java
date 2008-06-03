@@ -80,10 +80,18 @@ public class BoxBuilder {
     public static BlockBox createRootBox(LayoutContext c, Document document) {
         Element root = document.getDocumentElement();
 
-        BlockBox result = new BlockBox();
-        result.setElement(root);
         CalculatedStyle style = c.getSharedContext().getStyle(root);
+
+        BlockBox result;
+        if (style.isTable() || style.isInlineTable()) {
+            result = new TableBox();
+        } else {
+            result = new BlockBox();
+        }
+        
         result.setStyle(style);
+        result.setElement(root);
+
         c.resolveCounters(style);
         
         c.pushLayer(result);
