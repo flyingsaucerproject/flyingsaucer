@@ -218,10 +218,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
 
     /**
-     * Gets the documentTitle attribute of the XhtmlNamespaceHandler object
+     * Returns the title of the document as located in the contents of /html/head/title, or "" if none could be found.
      *
-     * @param doc PARAM
-     * @return The documentTitle value
+     * @param doc the document to search for a title
+     * @return The document's title, or "" if none found
      */
     public String getDocumentTitle(org.w3c.dom.Document doc) {
         String title = "";

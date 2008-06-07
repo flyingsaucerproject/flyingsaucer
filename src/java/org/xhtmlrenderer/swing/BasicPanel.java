@@ -435,6 +435,13 @@ public abstract class BasicPanel extends RootPanel {
         return doc;
     }
 
+    /**
+     * Returns the title as reported by the NamespaceHandler assigned to the SharedContext in this panel. For an HTML
+     * document, this will be the contents of /html/head/title.
+     *
+     * @return the document title, or "" if the namespace handler cannot find a title, or if there is no current document
+     * in the panel.
+     */
     public String getDocumentTitle() {
         return doc == null ? "" : getSharedContext().getNamespaceHandler().getDocumentTitle(doc);
     }
@@ -582,6 +589,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.121  2008/06/07 20:39:55  pdoubleya
+ * JavaDoc for last commit.
+ *
  * Revision 1.120  2008/06/07 20:19:28  pdoubleya
  * If no Document instance is available, getDocumentTitle() should return ""; suggestion from Nicholas Sushkin on mailing list.
  *
