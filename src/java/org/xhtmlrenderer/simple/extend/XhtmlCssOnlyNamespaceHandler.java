@@ -224,7 +224,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @return The documentTitle value
      */
     public String getDocumentTitle(org.w3c.dom.Document doc) {
-        String title = "TITLE UNKNOWN";
+        String title = "";
         
         Element html = doc.getDocumentElement();
         Element head = findFirstChild(html, "head");

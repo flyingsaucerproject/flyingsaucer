@@ -436,7 +436,7 @@ public abstract class BasicPanel extends RootPanel {
     }
 
     public String getDocumentTitle() {
-        return getSharedContext().getNamespaceHandler().getDocumentTitle(doc);
+        return doc == null ? "" : getSharedContext().getNamespaceHandler().getDocumentTitle(doc);
     }
 
     protected Document loadDocument(final String uri) {
@@ -582,6 +582,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.120  2008/06/07 20:19:28  pdoubleya
+ * If no Document instance is available, getDocumentTitle() should return ""; suggestion from Nicholas Sushkin on mailing list.
+ *
  * Revision 1.119  2008/03/30 16:35:20  pdoubleya
  * Issue #231: allow for centered page box in preview mode.
  *
