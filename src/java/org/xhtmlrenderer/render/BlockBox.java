@@ -760,7 +760,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
         if (c.isPrint()) {
             PageBox firstPage = c.getRootLayer().getFirstPage(c, this);
-            if (firstPage.getTop() == getAbsY() - getPageClearance()) {
+            if (firstPage != null && firstPage.getTop() == getAbsY() - getPageClearance()) {
                 resetTopMargin(c);
             }
         }
@@ -948,6 +948,11 @@ public class BlockBox extends Box implements InlinePaintable {
     private void satisfyWidowsAndOrphans(LayoutContext c, int contentStart, boolean tryAgain) {
         LineBox firstLineBox = (LineBox)getChild(0);
         PageBox firstPage = c.getRootLayer().getFirstPage(c, firstLineBox);
+        
+        if (firstPage == null)
+        {
+            return;
+        }
         
         int noContentLBs = 0;
         int i = 0;
@@ -1965,6 +1970,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.94  2008/06/18 17:44:48  peterbrant
+ * Fix a pair of NPEs when absolutely positioned content is positioned off the page
+ *
  * Revision 1.93  2008/05/24 16:36:22  peterbrant
  * If our minimum width is greater than the calculated CSS width, don't try to allocate any margin space to auto margins.
  *
