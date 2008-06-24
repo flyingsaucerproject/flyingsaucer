@@ -22,10 +22,8 @@ package org.xhtmlrenderer.css.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -265,8 +263,9 @@ public class CSSParser {
                     case Token.STRING:
                     case Token.URI:
                         try {
-                            info.setUri(new URL(new URL(stylesheet.getURI()), getTokenValue(t)).toString());
-                        } catch (MalformedURLException e) {
+                            URI parent = new URI(stylesheet.getURI());
+                            info.setUri(parent.resolve(getTokenValue(t)).toString());
+                        } catch (URISyntaxException e) {
                             throw new CSSParseException("Invalid URL, " + e.getMessage(), getCurrentLine());
                         }
                         skip_whitespace();
