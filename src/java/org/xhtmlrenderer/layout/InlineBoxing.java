@@ -289,7 +289,7 @@ public class InlineBoxing {
                    remainingWidth -= processOutOfFlowContent(
                            c, currentLine, child, remainingWidth, pendingFloats);
                } else if (child.getStyle().isInlineBlock() || child.getStyle().isInlineTable()) {
-                   layoutInlineBlockContent(c, box, child);
+                   layoutInlineBlockContent(c, box, child, initialY);
 
                    if (child.getWidth() > remainingWidth && currentLine.isContainsContent()) {
                        saveLine(currentLine, c, box, minimumLineHeight,
@@ -309,7 +309,7 @@ public class InlineBoxing {
                        remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
                        
                        child.reset(c);
-                       layoutInlineBlockContent(c, box, child);                     
+                       layoutInlineBlockContent(c, box, child, initialY);                     
                    }
 
                    if (currentIB == null) {
@@ -377,9 +377,12 @@ public class InlineBoxing {
         return iB;
     }
 
-    private static void layoutInlineBlockContent(LayoutContext c, BlockBox containingBlock, BlockBox inlineBlock) {
+    private static void layoutInlineBlockContent(
+            LayoutContext c, BlockBox containingBlock, BlockBox inlineBlock, int initialY) {
         inlineBlock.setContainingBlock(containingBlock);
         inlineBlock.setContainingLayer(c.getLayer());
+        inlineBlock.initStaticPos(c, containingBlock, initialY);
+        inlineBlock.calcCanvasLocation();
         inlineBlock.layout(c);
     }
 

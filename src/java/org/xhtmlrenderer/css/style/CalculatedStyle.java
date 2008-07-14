@@ -1005,6 +1005,10 @@ public class CalculatedStyle {
         return isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) &&
                 ! (isFloated() || isAbsolute() || isFixed() || isInlineBlock());
     }
+    
+    public boolean isAbsFixedOrInlineBlockEquiv() {
+        return isAbsolute() || isFixed() || isInlineBlock() || isInlineTable();
+    }
 
     public boolean isMaxWidthNone() {
         return isIdent(CSSName.MAX_WIDTH, IdentValue.NONE);
@@ -1153,6 +1157,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.101  2008/07/14 11:12:37  peterbrant
+ * Fix two bugs when -fs-table-paginate is paginate.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
+ *
  * Revision 1.100  2007/08/29 22:18:19  peterbrant
  * Experiment with text justification
  *

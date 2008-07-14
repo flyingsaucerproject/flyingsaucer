@@ -412,7 +412,7 @@ public class BlockBox extends Box implements InlinePaintable {
             if (parent != null) {
                 setAbsX(parent.getAbsX() + parent.getTx() + getX());
                 setAbsY(parent.getAbsY() + parent.getTy() + getY());
-            } else if (isStyled() && (getStyle().isAbsolute() || getStyle().isFixed())) {
+            } else if (isStyled() && getStyle().isAbsFixedOrInlineBlockEquiv()) {
                 Box cb = getContainingBlock();
                 if (cb != null) {
                     setAbsX(cb.getAbsX() + getX());
@@ -695,9 +695,10 @@ public class BlockBox extends Box implements InlinePaintable {
     }
     
     private void calcExtraPageClearance(LayoutContext c) {
-        if (c.getExtraSpaceTop() > 0 && (getStyle().isSpecifiedAsBlock() || getStyle().isListItem())) {
+        if (c.isPageBreaksAllowed() && 
+                c.getExtraSpaceTop() > 0 && (getStyle().isSpecifiedAsBlock() || getStyle().isListItem())) {
             PageBox first = c.getRootLayer().getFirstPage(c, this);
-            if (first.getTop() + c.getExtraSpaceTop() > getAbsY()) {
+            if (first != null && first.getTop() + c.getExtraSpaceTop() > getAbsY()) {
                 int diff = first.getTop() + c.getExtraSpaceTop() - getAbsY();
                 setY(getY() + diff);
                 c.translate(0, diff);
@@ -1970,6 +1971,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.95  2008/07/14 11:12:35  peterbrant
+ * Fix two bugs when -fs-table-paginate is paginate.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
+ *
  * Revision 1.94  2008/06/18 17:44:48  peterbrant
  * Fix a pair of NPEs when absolutely positioned content is positioned off the page
  *
