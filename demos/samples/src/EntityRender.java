@@ -52,6 +52,8 @@ public class EntityRender {
     private static final int ENT_PER_ROW = 2;
     private static final int COLS_PER_ENT = 3;
     private String currentDoc;
+    private JFileChooser fontFileChooser;
+    private String fontSize = "10pt";
 
     public static void main(String[] args) throws Exception {
         String families;
@@ -74,6 +76,8 @@ public class EntityRender {
             public void run() {
                 final JFrame frame = new JFrame("Flying Saucer: Entity Rendering Tables");
                 final XHTMLPanel panel = new XHTMLPanel();
+                fontFileChooser = new JFileChooser();
+                fontFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
                 JLabel lFon = new JLabel("CSS font property: ");
                 final JTextField tFon = new JTextField(defaultFontProp, 40);
@@ -81,9 +85,37 @@ public class EntityRender {
 
                 JLabel lFFile = new JLabel("Font File: ");
                 final JTextField tFFile = new JTextField("", 40);
+                tFFile.setEditable(false);
 
-                //TODO: allow user to select a font file
-                // JButton bFFile = new JButton("...");
+                JButton bFFile = new JButton("...");
+                bFFile.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                int rc = fontFileChooser.showOpenDialog(frame);
+                                if (rc == JFileChooser.APPROVE_OPTION) {
+                                    File file = fontFileChooser.getSelectedFile();
+                                    boolean succeed = true;
+                                    String err = "";
+                                    try {
+                                        Font font = Font.createFont(Font.TRUETYPE_FONT, file);
+                                        tFFile.setText(file.getAbsolutePath());
+                                        tFon.setText("\"" + font.getFontName() + "\"");
+                                    } catch (Exception e1) {
+                                        succeed = false;
+                                        err = e1.getMessage();
+                                    }
+                                    if (!succeed) {
+                                        JOptionPane.showMessageDialog(
+                                                frame,
+                                                "Could not load Font file--is it a TTF font? Err: " + err,
+                                                "Can't load Font",
+                                                JOptionPane.ERROR_MESSAGE
+                                        );
+                                        return;
+                                    }
+                                }
+                            }
+                        });
 
                 bFon.addActionListener(
                         new ActionListener() {
@@ -138,7 +170,7 @@ public class EntityRender {
                 control1.add(bPdf);
                 control2.add(lFFile);
                 control2.add(tFFile);
-                //control2.add(bFFile);
+                control2.add(bFFile);
                 JPanel control = new JPanel(new GridLayout(2, 1));
                 control.add(control1);
                 control.add(control2);
@@ -231,11 +263,11 @@ public class EntityRender {
         sb.append("<style type=\"text/css\">\n");
         sb.append("@page { ");
         sb.append("  @top-left { content: \"Flying Saucer: Entities Tables\"} ");
-        sb.append("  @top-right { content: 'Using font: " + fontSpec + "'; text-align: right; }");
+        sb.append("  @top-right { content: 'Using font: " + fontSize + " " + fontSpec + "'; text-align: right; }");
         sb.append("}\n");
         sb.append("* { font: " + fontSpec + "; }\n");
         sb.append("table { width: 100%; border: 1px dotted black; border-collapse: collapse; -fs-table-paginate: paginate; }\n");
-        sb.append("td { border: 1px solid black; border-collapse: collapse; padding: 5px; font: " + fontSpec + "; }\n");
+        sb.append("td { border: 1px solid black; border-collapse: collapse; padding: 5px; font: " + fontSize + " " + fontSpec + "; }\n");
         if (fontFileName != null && fontFileName.length() > 0) {
             sb.append("@font-face { src: url(" + fontFileName + "); -fs-pdf-font-embed: embed; }\n");
         }
@@ -243,7 +275,7 @@ public class EntityRender {
         sb.append("</head>\n");
         sb.append("<body>\n");
         // DEBUG
-        // System.out.println(sb.toString());
+        //System.out.println(sb.toString());
     }
 
     private void endPage(StringBuffer sb) {
