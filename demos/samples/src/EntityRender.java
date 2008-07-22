@@ -57,7 +57,7 @@ public class EntityRender {
         String families;
         if (args.length == 0) {
             System.out.println("No font family specified.");
-            families = "Times New Roman";
+            families = "10pt serif";
         } else {
             families = args[0];
         }
@@ -78,15 +78,23 @@ public class EntityRender {
                 JLabel lFon = new JLabel("CSS font property: ");
                 final JTextField tFon = new JTextField(defaultFontProp, 40);
                 JButton bFon = new JButton("Render");
+
+                JLabel lFFile = new JLabel("Font File: ");
+                final JTextField tFFile = new JTextField("", 40);
+
+                //TODO: allow user to select a font file
+                // JButton bFFile = new JButton("...");
+
                 bFon.addActionListener(
                         new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
-                                String f = tFon.getText();
-                                if (f.length() == 0) {
+                                String fontSpec = tFon.getText();
+                                String fontFileName = tFFile.getText();
+                                if (fontSpec.length() == 0) {
                                     tFon.setText(defaultFontProp);
                                     tFon.requestFocus();
                                 } else {
-                                    currentDoc = buildDocument(f);
+                                    currentDoc = buildDocument(fontSpec, fontFileName);
                                     SwingUtilities.invokeLater(
                                             new Runnable() {
                                                 public void run() {
@@ -121,11 +129,19 @@ public class EntityRender {
                         }
                     }
                 });
-                JPanel control = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                control.add(lFon);
-                control.add(tFon);
-                control.add(bFon);
-                control.add(bPdf);
+
+                JPanel control1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                JPanel control2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                control1.add(lFon);
+                control1.add(tFon);
+                control1.add(bFon);
+                control1.add(bPdf);
+                control2.add(lFFile);
+                control2.add(tFFile);
+                //control2.add(bFFile);
+                JPanel control = new JPanel(new GridLayout(2, 1));
+                control.add(control1);
+                control.add(control2);
 
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.getContentPane().add(BorderLayout.NORTH, control);
@@ -169,10 +185,10 @@ public class EntityRender {
         }
     }
 
-    private String buildDocument(String fontFamily) {
+    private String buildDocument(String fontFamily, String fontFileName) {
         List esets = prepareEntitySets();
         StringBuffer sbPage = new StringBuffer();
-        startPage(sbPage, fontFamily);
+        startPage(sbPage, fontFamily, fontFileName);
 
         Iterator eit = esets.iterator();
         while (eit.hasNext()) {
@@ -209,7 +225,7 @@ public class EntityRender {
         sbPage.append("    <br /><br />\n");
     }
 
-    private void startPage(StringBuffer sb, String fontSpec) {
+    private void startPage(StringBuffer sb, String fontSpec, String fontFileName) {
         sb.append("<html>\n");
         sb.append("<head>\n");
         sb.append("<style type=\"text/css\">\n");
@@ -220,10 +236,14 @@ public class EntityRender {
         sb.append("* { font: " + fontSpec + "; }\n");
         sb.append("table { width: 100%; border: 1px dotted black; border-collapse: collapse; -fs-table-paginate: paginate; }\n");
         sb.append("td { border: 1px solid black; border-collapse: collapse; padding: 5px; font: " + fontSpec + "; }\n");
+        if (fontFileName != null && fontFileName.length() > 0) {
+            sb.append("@font-face { src: url(" + fontFileName + "); -fs-pdf-font-embed: embed; }\n");
+        }
         sb.append("</style>\n");
         sb.append("</head>\n");
         sb.append("<body>\n");
-        System.out.println(sb.toString());
+        // DEBUG
+        // System.out.println(sb.toString());
     }
 
     private void endPage(StringBuffer sb) {
