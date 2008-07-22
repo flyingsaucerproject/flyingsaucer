@@ -59,7 +59,7 @@ public class EntityRender {
         String families;
         if (args.length == 0) {
             System.out.println("No font family specified.");
-            families = "10pt serif";
+            families = "serif";
         } else {
             families = args[0];
         }
@@ -83,7 +83,7 @@ public class EntityRender {
                 final JTextField tFon = new JTextField(defaultFontProp, 40);
                 JButton bFon = new JButton("Render");
 
-                JLabel lFFile = new JLabel("Font File: ");
+                JLabel lFFile = new JLabel("TrueType (.ttf) Font File: ");
                 final JTextField tFFile = new JTextField("", 40);
                 tFFile.setEditable(false);
 
