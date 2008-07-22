@@ -46,6 +46,9 @@ import java.util.List;
  * <code>EntityRender "<family>[,<family>,...]"</code>. The value you specify will be used as the default
  * font property for the rendered test. Use this sample to verify that a given font has a given glyph.
  *
+ * <p>This program requires you have the DTDParser library in your classpath, as well as the core-renderer JAR file,
+ * and the iText library.
+ *
  * @author Patrick Wright
  */
 public class EntityRender {
