@@ -68,4 +68,7 @@ License: LGPL (dual-license with SPL)
 Use version 2.x as Xilize has a dependency on it; used only to produce 
 documentation.
 
-
+DTD Parser
+http://www.wutka.com/dtdparser.html
+License: LGPL or "Apache-style"; see http://www.wutka.com/dtdparserlicense.html
+Used 1.21 for parsing DTDs to render HTML entities in sample program
