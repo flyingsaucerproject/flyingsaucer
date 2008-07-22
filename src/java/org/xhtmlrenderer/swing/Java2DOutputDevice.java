@@ -84,14 +84,14 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                 boolean allSelected = (text.length() == inlineText.getSelectionEnd()-inlineText.getSelectionStart());
                 int startX = (inlineText.getSelectionStart() == inlineText.getStart())?iB.getAbsX() + inlineText.getX():(int)Math.round(start.x/scaleX);
                 int endX = (allSelected)?startX+inlineText.getWidth():(int)Math.round((end.x + end.width)/scaleX);
-                setColor(UIManager.getColor("TextArea.selectionBackground"));  // FIXME
+                setColor(UIManager.getColor("TextArea.selectionBackground"));
                 fillRect(
                         startX,
                         iB.getAbsY(),
                         endX - startX,
                         iB.getHeight());
                 
-                setColor(Color.WHITE); // FIXME
+                setColor(UIManager.getColor("TextArea.selectionForeground")); 
                 setFont(iB.getStyle().getFSFont(c));                
                 
                 drawSelectedText(c, inlineText, iB, glyphVector);

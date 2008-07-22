@@ -76,7 +76,7 @@ import org.xhtmlrenderer.util.XRLog;
  * should be installed on the SelectionHighlighter
  * </p>
  * <p>
- * Usage: create the XHTMLPanel, creSelectionHighlighterTest.javaate an instance
+ * Usage: create the XHTMLPanel, create an instance
  * of this class then call <a
  * href="#install(org.xhtmlrenderer.simple.XHTMLPanel)">install</a>. See also:
  * /demos/samples/src/SelectionHighlighterTest.java
@@ -386,7 +386,9 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             InlineText t1 = (endBeforeStart) ? this.dotInfo.text : this.markInfo.text;
             InlineText t2 = (!endBeforeStart) ? this.dotInfo.text : this.markInfo.text;
             if (t1 == null || t2 == null) {
-                System.err.println("null text node");
+                // TODO: need general debug here (never print to system.err; use XRLog instead)
+                // TODO: is this just a warning, or should we bail out
+                XRLog.general(Level.FINE, "null text node");
             }
 
             final Range acceptRange = docRange.createRange();
@@ -666,9 +668,12 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
         LayoutContext lc = panel.getLayoutContext();
         if (fndTxt == null) {
-            System.err.println(ilb.dump(lc, "", Box.DUMP_RENDER));
-            System.err.println(ilb.getParent().dump(lc, "", Box.DUMP_RENDER));
-            System.err.println(ilb.getParent().getParent().dump(lc, "", Box.DUMP_RENDER));
+            // TODO: need general debug flag here; not sure if this is an error condition and if the logging is necessary
+            if (false) {
+                XRLog.general(Level.FINE, ilb.dump(lc, "", Box.DUMP_RENDER));
+                XRLog.general(Level.FINE, ilb.getParent().dump(lc, "", Box.DUMP_RENDER));
+                XRLog.general(Level.FINE, ilb.getParent().getParent().dump(lc, "", Box.DUMP_RENDER));
+            }
             return null;
         }
 

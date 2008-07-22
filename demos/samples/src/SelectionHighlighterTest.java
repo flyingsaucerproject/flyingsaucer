@@ -54,6 +54,11 @@ public class SelectionHighlighterTest extends JFrame {
         mainPanel.setMinimumSize(new Dimension(300,300));
         mainPanel.setPreferredSize(new Dimension(700,500));
         XHTMLPanel xhtmlPanel = new XHTMLPanel();
+
+        // selection highlight in FS uses the textArea.selectionForeground and textArea.selectionBackground properties in
+        // the UIManager
+        //UIManager.put("TextArea.selectionBackground", Color.BLACK);
+        //UIManager.put("TextArea.selectionForeground", Color.GREEN);
         try {
            xhtmlPanel.setDocument("http://www.w3.org/MarkUp/");
         } catch (Exception e) {
