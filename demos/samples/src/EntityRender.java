@@ -101,8 +101,8 @@ public class EntityRender {
                                     String err = "";
                                     try {
                                         Font font = Font.createFont(Font.TRUETYPE_FONT, file);
-                                        tFFile.setText(file.getAbsolutePath());
-                                        tFon.setText("\"" + font.getFontName() + "\"");
+                                        tFFile.setText(file.getAbsoluteFile().toURI().toString());
+                                        tFon.setText("\"" + font.getFamily() + "\"");
                                     } catch (Exception e1) {
                                         succeed = false;
                                         err = e1.getMessage();
@@ -266,11 +266,11 @@ public class EntityRender {
         sb.append("<style type=\"text/css\">\n");
         sb.append("@page { ");
         sb.append("  @top-left { content: \"Flying Saucer: Entities Tables\"} ");
-        sb.append("  @top-right { content: 'Using font: " + fontSize + " " + fontSpec + "'; text-align: right; }");
+        sb.append("  @top-right { content: 'Using: " + fontSize + " " + fontSpec + "'; text-align: right; }");
         sb.append("}\n");
-        sb.append("* { font: " + fontSpec + "; }\n");
+        sb.append("* { font: " + fontSize + " " + fontSpec + "; }\n");
         sb.append("table { width: 100%; border: 1px dotted black; border-collapse: collapse; -fs-table-paginate: paginate; }\n");
-        sb.append("td { border: 1px solid black; border-collapse: collapse; padding: 5px; font: " + fontSize + " " + fontSpec + "; }\n");
+        sb.append("td { border: 1px solid black; border-collapse: collapse; padding: 5px; }\n");
         if (fontFileName != null && fontFileName.length() > 0) {
             sb.append("@font-face { src: url(" + fontFileName + "); -fs-pdf-font-embed: embed; }\n");
         }
