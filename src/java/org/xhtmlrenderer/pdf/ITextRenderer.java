@@ -51,7 +51,6 @@ import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
@@ -73,7 +72,7 @@ public class ITextRenderer {
     private ITextOutputDevice _outputDevice;
     
     private Document _doc;
-    private Box _root;
+    private BlockBox _root;
     
     private float _dotsPerPoint;
     
@@ -407,6 +406,14 @@ public class ITextRenderer {
         RenderingContext c = newRenderingContext();
         c.setPageCount(_root.getLayer().getPages().size());
         _root.exportText(c, writer);
+    }
+    
+    public BlockBox getRootBox() {
+        return _root;
+    }
+    
+    public float getDotsPerPoint() {
+        return _dotsPerPoint;
     }
     
     private static final class NullUserInterface implements UserInterface {
