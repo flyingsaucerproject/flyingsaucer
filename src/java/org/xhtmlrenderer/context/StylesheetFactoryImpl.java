@@ -180,4 +180,8 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     public void setUserAgentCallback(UserAgentCallback userAgent) {
         _userAgentCallback = userAgent;
     }
+    
+    public void setSupportCMYKColors(boolean b) {
+        _cssParser.setSupportCMYKColors(b);
+    }
 }

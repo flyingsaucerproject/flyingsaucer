@@ -19,15 +19,23 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.RenderingHints.Key;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.awt.RenderingHints.Key;
 
 import javax.swing.JComponent;
 import javax.swing.UIManager;
 
+import org.xhtmlrenderer.css.parser.FSColor;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -84,14 +92,14 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                 boolean allSelected = (text.length() == inlineText.getSelectionEnd()-inlineText.getSelectionStart());
                 int startX = (inlineText.getSelectionStart() == inlineText.getStart())?iB.getAbsX() + inlineText.getX():(int)Math.round(start.x/scaleX);
                 int endX = (allSelected)?startX+inlineText.getWidth():(int)Math.round((end.x + end.width)/scaleX);
-                setColor(UIManager.getColor("TextArea.selectionBackground"));
+                _graphics.setColor(UIManager.getColor("TextArea.selectionBackground"));  // FIXME
                 fillRect(
                         startX,
                         iB.getAbsY(),
                         endX - startX,
                         iB.getHeight());
                 
-                setColor(UIManager.getColor("TextArea.selectionForeground")); 
+                _graphics.setColor(Color.WHITE); // FIXME
                 setFont(iB.getStyle().getFSFont(c));                
                 
                 drawSelectedText(c, inlineText, iB, glyphVector);
@@ -186,8 +194,13 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         }
     }
     
-    public void setColor(Color color) {
-        _graphics.setColor(color);
+    public void setColor(FSColor color) {
+        if (color instanceof FSRGBColor) {
+            FSRGBColor rgb = (FSRGBColor)color;
+            _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
+        } else {
+            throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
+        }
     }
     
     protected void drawLine(int x1, int y1, int x2, int y2) {
@@ -259,6 +272,10 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     }
     
     public boolean isSupportsSelection() {
+        return true;
+    }
+    
+    public boolean isSupportsCMYKColors() {
         return true;
     }
 }

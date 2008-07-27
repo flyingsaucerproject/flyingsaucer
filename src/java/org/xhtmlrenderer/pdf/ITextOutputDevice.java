@@ -46,6 +46,9 @@ import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.parser.FSCMYKColor;
+import org.xhtmlrenderer.css.parser.FSColor;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -65,6 +68,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
+import com.lowagie.text.pdf.CMYKColor;
 import com.lowagie.text.pdf.PdfAction;
 import com.lowagie.text.pdf.PdfAnnotation;
 import com.lowagie.text.pdf.PdfBorderDictionary;
@@ -382,8 +386,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         draw(line);
     }
     
-    public void setColor(Color color) {
-        _color = color;
+    public void setColor(FSColor color) {
+        if (color instanceof FSRGBColor) {
+            FSRGBColor rgb = (FSRGBColor)color;
+            _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+        } else if (color instanceof FSCMYKColor) {
+            FSCMYKColor cmyk = (FSCMYKColor)color;
+            _color = new CMYKColor(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getBlack());
+        } else {
+            throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
+        }
     }
     
     private void draw(Shape s) {
@@ -951,6 +963,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     public void setSharedContext(SharedContext sharedContext) {
         _sharedContext = sharedContext;
+        sharedContext.getCss().setSupportCMYKColors(true);
     }
     
     public void setRoot(Box root) {
@@ -971,5 +984,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     public boolean isSupportsSelection() {
         return false;
+    }
+    
+    public boolean isSupportsCMYKColors() {
+        return true;
     }
 }

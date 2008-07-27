@@ -71,6 +71,7 @@ public class CSSParser {
     private String _URI;
     
     private Map _namespaces = new HashMap();
+    private boolean _supportCMYKColors;
     
     public CSSParser(CSSErrorHandler errorHandler) {
         _lexer = new Lexer(new StringReader(""));
@@ -1578,10 +1579,16 @@ public class CSSParser {
             }
             
             if (f.equals("rgb(")) {
-                result = new PropertyValue(createColorFromFunction(params));
+                result = new PropertyValue(createRGBColorFromFunction(params));
+            } else if (f.equals("cmyk(")) {
+                if (! isSupportCMYKColors()) {
+                    throw new CSSParseException(
+                            "The current output device does not support CMYK colors", getCurrentLine());
+                }
+                //in accordance to http://www.w3.org/TR/css3-gcpm/#cmyk-colors
+                result = new PropertyValue(createCMYKColorFromFunction(params));
             } else {
-                result = new PropertyValue(new FSFunction(
-                        f.substring(0, f.length()-1), params));
+                result = new PropertyValue(new FSFunction(f.substring(0, f.length()-1), params));
             }
             
             skip_whitespace();
@@ -1593,7 +1600,41 @@ public class CSSParser {
         return result;
     }
     
-    private FSRGBColor createColorFromFunction(List params) {
+    private FSCMYKColor createCMYKColorFromFunction(List params) {
+        if (params.size() != 4) {
+            throw new CSSParseException(
+                    "The cmyk() function must have exactly four parameters",
+                    getCurrentLine());
+        }
+        
+        float[] colorComponents = new float[4];
+        
+        for (int i = 0; i < params.size(); i++) {
+            colorComponents[i] = parseCMYKColorComponent((PropertyValue)params.get(i), (i+1)); //Warning on the truncation? 
+        }
+        
+        return new FSCMYKColor(colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3]);
+
+    }
+
+    private float parseCMYKColorComponent(PropertyValue value, int paramNo) {
+        short type = value.getPrimitiveType();
+        if ( type != CSSPrimitiveValue.CSS_NUMBER) { //TODO: consider percentages processing
+            throw new CSSParseException(
+                    "Parameter " + paramNo + " to the cmyk() function is " +
+                    "not a number", getCurrentLine());
+        }
+        
+        float f = value.getFloatValue();
+        if (f < 0) { //TODO: consider warning on 'truncation'
+            f = 0;
+        } else if (f > 1) {
+            f = 1;
+        }
+        return f;
+    }
+
+    private FSRGBColor createRGBColorFromFunction(List params) {
         if (params.size() != 3) {
             throw new CSSParseException(
                     "The rgb() function must have exactly three parameters",
@@ -1939,6 +1980,14 @@ public class CSSParser {
         }
         
         return result.toString();
+    }
+    
+    public boolean isSupportCMYKColors() {
+        return _supportCMYKColors;
+    }
+    
+    public void setSupportCMYKColors(boolean b) {
+        _supportCMYKColors = b;
     }
     
     private static class NamespacePair {

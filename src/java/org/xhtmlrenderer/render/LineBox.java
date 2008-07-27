@@ -20,7 +20,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.io.IOException;
@@ -34,6 +33,7 @@ import java.util.logging.Level;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.BoxCollector;
@@ -125,7 +125,7 @@ public class LineBox extends Box implements InlinePaintable {
         }
         
         if (c.debugDrawLineBoxes()) {
-            c.getOutputDevice().drawDebugOutline(c, this, Color.GREEN);
+            c.getOutputDevice().drawDebugOutline(c, this, FSRGBColor.GREEN);
         }
     }
     
@@ -643,6 +643,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.72  2008/07/27 00:21:47  peterbrant
+ * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
+ *
  * Revision 1.71  2008/02/11 17:52:25  peterbrant
  * Fix divide by zero error in justification algorithm
  *

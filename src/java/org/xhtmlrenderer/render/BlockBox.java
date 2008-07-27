@@ -20,7 +20,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Iterator;
@@ -30,6 +29,7 @@ import java.util.List;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
@@ -282,7 +282,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     public void paintDebugOutline(RenderingContext c) {
-        c.getOutputDevice().drawDebugOutline(c, this, Color.RED);
+        c.getOutputDevice().drawDebugOutline(c, this, FSRGBColor.RED);
     }
 
     public MarkerData getMarkerData() {
@@ -1971,6 +1971,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.96  2008/07/27 00:21:47  peterbrant
+ * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
+ *
  * Revision 1.95  2008/07/14 11:12:35  peterbrant
  * Fix two bugs when -fs-table-paginate is paginate.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
  *

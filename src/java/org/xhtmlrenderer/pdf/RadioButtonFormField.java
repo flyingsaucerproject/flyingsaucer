@@ -19,13 +19,12 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.derived.ColorValue;
+import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -116,8 +115,8 @@ public class RadioButtonFormField extends AbstractFormField {
 
         PdfFormField field = PdfFormField.createEmpty(writer);
 
-        Color color = box.getStyle().getColor();
-        Color darker = ColorValue.darkenColor(box.getEffBackgroundColor(c));
+        FSColor color = box.getStyle().getColor();
+        FSColor darker = box.getEffBackgroundColor(c).darkenColor();
         createAppearances(cb, field, onValue, width, height, true, color, darker);
         createAppearances(cb, field, onValue, width, height, false, color, darker);
 
@@ -145,7 +144,7 @@ public class RadioButtonFormField extends AbstractFormField {
     private void createAppearances(
             PdfContentByte cb, PdfFormField field,
             String onValue, float width, float height, 
-            boolean normal, Color color, Color darker) {
+            boolean normal, FSColor color, FSColor darker) {
         // XXX Should cache this by width and height, but they're small so
         // don't bother for now...      
         PdfAppearance tpOff = cb.createAppearance(width, height);
@@ -153,12 +152,12 @@ public class RadioButtonFormField extends AbstractFormField {
         
         float diameter = Math.min(width, height);
         
-        tpOff.setRGBColorStroke(color.getRed(), color.getGreen(), color.getBlue());
-        tpOn.setRGBColorStroke(color.getRed(), color.getGreen(), color.getBlue());
+        setStrokeColor(tpOff, color);
+        setStrokeColor(tpOn, color);
         
         if (! normal) {
-            tpOff.setRGBColorFill(darker.getRed(), darker.getGreen(), darker.getBlue());
-            tpOn.setRGBColorFill(darker.getRed(), darker.getGreen(), darker.getBlue());
+            setStrokeColor(tpOff, darker);
+            setStrokeColor(tpOn, darker);
         }
         
         float strokeWidth = Math.max(1.0f, reduce(diameter));
@@ -177,7 +176,7 @@ public class RadioButtonFormField extends AbstractFormField {
             tpOn.stroke();
         }
         
-        tpOn.setRGBColorFill(color.getRed(), color.getGreen(), color.getBlue());
+        setFillColor(tpOn, color);
         if (! normal) {
             tpOn.circle(width / 2, height / 2, diameter * 0.23f);
         } else {

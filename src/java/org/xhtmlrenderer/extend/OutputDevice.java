@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.extend;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.RenderingHints.Key;
 
+import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.render.BlockBox;
@@ -37,8 +37,6 @@ import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.TextDecoration;
 
 public interface OutputDevice {
-    public Color TRANSPARENT = new Color(0, 0, 0, 0);
-    
     public void drawText(RenderingContext c, InlineText inlineText);
     public void drawSelection(RenderingContext c, InlineText inlineText);
     
@@ -59,11 +57,11 @@ public interface OutputDevice {
     
     public void paintReplacedElement(RenderingContext c, BlockBox box);
     
-    public void drawDebugOutline(RenderingContext c, Box box, Color color);
+    public void drawDebugOutline(RenderingContext c, Box box, FSColor color);
     
     public void setFont(FSFont font);
     
-    public void setColor(Color color);
+    public void setColor(FSColor color);
     
     public void drawRect(int x, int y, int width, int height);
     public void drawOval(int x, int y, int width, int height);
@@ -89,4 +87,6 @@ public interface OutputDevice {
     public void setRenderingHint(Key key, Object value);
     
     public boolean isSupportsSelection();
+    
+    public boolean isSupportsCMYKColors();
 }

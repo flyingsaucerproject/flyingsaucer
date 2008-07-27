@@ -47,7 +47,7 @@ public class PropertyValue implements CSSPrimitiveValue {
     
     private String _cssText;
     
-    private FSRGBColor _FSRGBColor;
+    private FSColor _FSColor;
     
     private IdentValue _identValue;
     
@@ -71,11 +71,11 @@ public class PropertyValue implements CSSPrimitiveValue {
         }
     }
     
-    public PropertyValue(FSRGBColor color) {
+    public PropertyValue(FSColor color) {
         _type = CSSPrimitiveValue.CSS_RGBCOLOR;
         _cssValueType = CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = color.toString();
-        _FSRGBColor = color;
+        _FSColor = color;
         
         _propertyValueType = VALUE_TYPE_COLOR;
     }
@@ -171,8 +171,8 @@ public class PropertyValue implements CSSPrimitiveValue {
         throw new UnsupportedOperationException();
     }
     
-    public FSRGBColor getFSRGBColor() {
-        return _FSRGBColor;
+    public FSColor getFSColor() {
+        return _FSColor;
     }
 
     public IdentValue getIdentValue() {

@@ -20,7 +20,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -32,6 +31,7 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
@@ -598,7 +598,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
     
     public void paintDebugOutline(RenderingContext c) {
-        c.getOutputDevice().drawDebugOutline(c, this, Color.BLUE);
+        c.getOutputDevice().drawDebugOutline(c, this, FSRGBColor.BLUE);
     }
     
     protected void resetChildren(LayoutContext c) {

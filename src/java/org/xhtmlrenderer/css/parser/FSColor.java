@@ -1,6 +1,5 @@
 /*
  * {{{ header & license
- * Copyright (c) 2005 Patrick Wright
  * Copyright (c) 2007 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -18,28 +17,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.css.style.derived;
+package org.xhtmlrenderer.css.parser;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.parser.FSColor;
-import org.xhtmlrenderer.css.parser.PropertyValue;
-import org.xhtmlrenderer.css.style.DerivedValue;
-
-public class ColorValue extends DerivedValue {
-    private FSColor _color;
-
-    public ColorValue(CSSName name, PropertyValue value) {
-        super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
-        
-        _color = value.getFSColor();
-    }
-
-    /**
-     * Returns the value as a Color, if it is a color.
-     *
-     * @return The rGBColorValue value
-     */
-    public FSColor asColor() {
-        return _color;
-    }   
+public interface FSColor {
+    public FSColor lightenColor();
+    public FSColor darkenColor();
 }

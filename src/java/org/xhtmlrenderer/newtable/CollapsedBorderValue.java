@@ -19,9 +19,8 @@
  */
 package org.xhtmlrenderer.newtable;
 
-import java.awt.Color;
-
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 
 /**
@@ -35,10 +34,10 @@ public class CollapsedBorderValue {
     
     private IdentValue _style;
     private int _width;
-    private Color _color;
+    private FSColor _color;
     private int _precedence;
     
-    public CollapsedBorderValue(IdentValue style, int width, Color color, int precedence) {
+    public CollapsedBorderValue(IdentValue style, int width, FSColor color, int precedence) {
         _style = style;
         _width = width;
         _color = color;
@@ -49,11 +48,11 @@ public class CollapsedBorderValue {
         _style = IdentValue.NONE;
     }
 
-    public Color color() {
+    public FSColor color() {
         return _color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(FSColor color) {
         _color = color;
     }
 

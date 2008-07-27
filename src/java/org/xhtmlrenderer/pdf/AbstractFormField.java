@@ -22,8 +22,13 @@ package org.xhtmlrenderer.pdf;
 import java.awt.Point;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.parser.FSCMYKColor;
+import org.xhtmlrenderer.css.parser.FSColor;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+
+import com.lowagie.text.pdf.PdfTemplate;
 
 public abstract class AbstractFormField implements ITextReplacedElement {
     protected static final String DEFAULT_CHECKED_STATE = "Yes";
@@ -165,5 +170,36 @@ public abstract class AbstractFormField implements ITextReplacedElement {
         }
         return result.toString();
     }
-
+    
+    protected void setStrokeColor(PdfTemplate template, FSColor color)
+    {
+        if (color instanceof FSRGBColor)
+        {
+            FSRGBColor rgb = (FSRGBColor)color;
+            template.setRGBColorStroke(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+        }
+        else if (color instanceof FSCMYKColor)
+        {
+            FSCMYKColor cmyk = (FSCMYKColor)color;
+            template.setCMYKColorStroke(
+                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255), 
+                    (int)(cmyk.getYellow()*255), (int)(cmyk.getBlack()*255));
+        }
+    }
+    
+    protected void setFillColor(PdfTemplate template, FSColor color)
+    {
+        if (color instanceof FSRGBColor)
+        {
+            FSRGBColor rgb = (FSRGBColor)color;
+            template.setRGBColorFill(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+        }
+        else if (color instanceof FSCMYKColor)
+        {
+            FSCMYKColor cmyk = (FSCMYKColor)color;
+            template.setCMYKColorFill(
+                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255), 
+                    (int)(cmyk.getYellow()*255), (int)(cmyk.getBlack()*255));
+        }
+    }
 }

@@ -2,11 +2,10 @@ package org.xhtmlrenderer.css.style.derived;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.newtable.CollapsedBorderValue;
-
-import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,10 +22,10 @@ public class BorderPropertySet extends RectPropertySet {
     private IdentValue _bottomStyle;
     private IdentValue _leftStyle;
 
-    private Color _topColor;
-    private Color _rightColor;
-    private Color _bottomColor;
-    private Color _leftColor;
+    private FSColor _topColor;
+    private FSColor _rightColor;
+    private FSColor _bottomColor;
+    private FSColor _leftColor;
 
     public BorderPropertySet(BorderPropertySet border) {
         this(border.top(), border.right(), border.bottom(), border.left());
@@ -115,10 +114,10 @@ public class BorderPropertySet extends RectPropertySet {
      */
     public BorderPropertySet lighten(IdentValue style) {
         BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = ColorValue.lightenColor(_topColor);
-        bc._bottomColor = ColorValue.lightenColor(_bottomColor);
-        bc._leftColor = ColorValue.lightenColor(_leftColor);
-        bc._rightColor = ColorValue.lightenColor(_rightColor);
+        bc._topColor = _topColor.lightenColor();
+        bc._bottomColor = _bottomColor.lightenColor();
+        bc._leftColor = _leftColor.lightenColor();
+        bc._rightColor = _rightColor.lightenColor();
 
         return bc;
     }
@@ -131,10 +130,10 @@ public class BorderPropertySet extends RectPropertySet {
      */
     public BorderPropertySet darken(IdentValue style) {
         BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = ColorValue.darkenColor(_topColor);
-        bc._bottomColor = ColorValue.darkenColor(_bottomColor);
-        bc._leftColor = ColorValue.darkenColor(_leftColor);
-        bc._rightColor = ColorValue.darkenColor(_rightColor);
+        bc._topColor = _topColor.darkenColor();
+        bc._bottomColor = _bottomColor.darkenColor();
+        bc._leftColor = _leftColor.darkenColor();
+        bc._rightColor = _rightColor.darkenColor();
         return bc;
     }
 
@@ -181,19 +180,19 @@ public class BorderPropertySet extends RectPropertySet {
         return _leftStyle;
     }
 
-    public Color topColor() {
+    public FSColor topColor() {
         return _topColor;
     }
 
-    public Color rightColor() {
+    public FSColor rightColor() {
         return _rightColor;
     }
 
-    public Color bottomColor() {
+    public FSColor bottomColor() {
         return _bottomColor;
     }
 
-    public Color leftColor() {
+    public FSColor leftColor() {
         return _leftColor;
     }
 }

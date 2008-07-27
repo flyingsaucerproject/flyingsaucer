@@ -19,10 +19,10 @@
  */
 package org.xhtmlrenderer.css.constants;
 
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -300,7 +300,7 @@ public class IdentValue implements FSDerivedValue {
         throw new XRRuntimeException("Ident value is never a float; wrong class used for derived value.");
     }
 
-    public Color asColor() {
+    public FSColor asColor() {
         throw new XRRuntimeException("Ident value is never a color; wrong class used for derived value.");
     }
 
@@ -341,6 +341,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2008/07/27 00:21:46  peterbrant
+ * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
+ *
  * Revision 1.33  2007/10/31 23:14:41  peterbrant
  * Add rudimentary support for @font-face rules
  *

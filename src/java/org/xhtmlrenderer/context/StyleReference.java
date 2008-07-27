@@ -279,10 +279,13 @@ public class StyleReference {
         return _matcher.getFontFaceRules();
     }
     
-    public void setUserAgentCallback(UserAgentCallback userAgentCallback)
-    {
+    public void setUserAgentCallback(UserAgentCallback userAgentCallback) {
         _uac = userAgentCallback;
         _stylesheetFactory.setUserAgentCallback(userAgentCallback);
+    }
+    
+    public void setSupportCMYKColors(boolean b) {
+        _stylesheetFactory.setSupportCMYKColors(b);
     }
 }
 
@@ -290,6 +293,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2008/07/27 00:21:46  peterbrant
+ * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
+ *
  * Revision 1.21  2008/04/04 13:32:38  peterbrant
  * Fix method name
  *

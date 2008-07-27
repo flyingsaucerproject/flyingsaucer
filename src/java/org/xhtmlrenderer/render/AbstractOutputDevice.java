@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.Iterator;
@@ -28,6 +27,8 @@ import java.util.List;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.FSColor;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.BackgroundPosition;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -84,7 +85,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         InlineLayoutBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
         
-        setColor(new Color(0xFF, 0x33, 0xFF));
+        setColor(new FSRGBColor(0xFF, 0x33, 0xFF));
         
         FSFontMetrics fm = iB.getStyle().getFSFontMetrics(null);
         int width = c.getTextRenderer().getWidth(
@@ -135,7 +136,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
     }
     
-    public void drawDebugOutline(RenderingContext c, Box box, Color color) {
+    public void drawDebugOutline(RenderingContext c, Box box, FSColor color) {
         setColor(color);
         Rectangle rect = box.getMarginEdge(box.getAbsX(), box.getAbsY(), c, 0, 0);
         rect.height -= 1;
@@ -197,15 +198,15 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             return;
         }
         
-        Color backgroundColor = style.getBackgroundColor();
+        FSColor backgroundColor = style.getBackgroundColor();
         FSImage backgroundImage = getBackgroundImage(c, style);
         
-        if ( (backgroundColor == null || backgroundColor.equals(TRANSPARENT)) &&
+        if ( (backgroundColor == null || backgroundColor == FSRGBColor.TRANSPARENT) &&
                 backgroundImage == null) {
             return;
         }
         
-        if (backgroundColor != null && ! backgroundColor.equals(TRANSPARENT)) {
+        if (backgroundColor != null && backgroundColor != FSRGBColor.TRANSPARENT) {
             setColor(backgroundColor);
             fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
         }

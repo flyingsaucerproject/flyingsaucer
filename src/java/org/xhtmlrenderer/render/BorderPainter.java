@@ -26,6 +26,7 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.extend.OutputDevice;
 
@@ -56,19 +57,19 @@ public class BorderPainter {
         }
 
         //Now paint!
-        if ((sides & BorderPainter.TOP) == BorderPainter.TOP && ! border.topColor().equals(OutputDevice.TRANSPARENT)) {
+        if ((sides & BorderPainter.TOP) == BorderPainter.TOP && border.topColor() != FSRGBColor.TRANSPARENT) {
             paintBorderSide(ctx.getOutputDevice(), 
                     border, bounds, sides, BorderPainter.TOP, border.topStyle(), xOffset, bevel);
         }
-        if ((sides & BorderPainter.LEFT) == BorderPainter.LEFT && ! border.leftColor().equals(OutputDevice.TRANSPARENT)) {
+        if ((sides & BorderPainter.LEFT) == BorderPainter.LEFT && border.leftColor() != FSRGBColor.TRANSPARENT) {
             paintBorderSide(ctx.getOutputDevice(), 
                     border, bounds, sides, BorderPainter.LEFT, border.leftStyle(), xOffset, bevel);
         }
-        if ((sides & BorderPainter.BOTTOM) == BorderPainter.BOTTOM && ! border.bottomColor().equals(OutputDevice.TRANSPARENT)) {
+        if ((sides & BorderPainter.BOTTOM) == BorderPainter.BOTTOM && border.bottomColor() != FSRGBColor.TRANSPARENT) {
             paintBorderSide(ctx.getOutputDevice(), 
                     border, bounds, sides, BorderPainter.BOTTOM, border.bottomStyle(), xOffset, bevel);
         }
-        if ((sides & BorderPainter.RIGHT) == BorderPainter.RIGHT && ! border.rightColor().equals(OutputDevice.TRANSPARENT)) {
+        if ((sides & BorderPainter.RIGHT) == BorderPainter.RIGHT && border.rightColor() != FSRGBColor.TRANSPARENT) {
             paintBorderSide(ctx.getOutputDevice(), 
                     border, bounds, sides, BorderPainter.RIGHT, border.rightStyle(), xOffset, bevel);
         }
@@ -382,6 +383,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2008/07/27 00:21:47  peterbrant
+ * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
+ *
  * Revision 1.47  2007/04/24 17:04:31  peterbrant
  * Method name improvements
  *

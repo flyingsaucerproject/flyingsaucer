@@ -19,9 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Color;
-
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -113,15 +112,15 @@ public class TextFormField extends AbstractFormField {
         PdfAppearance tp2 = (PdfAppearance)tp.getDuplicate();
         tp2.setFontAndSize(font.getFontDescription().getFont(), fontSize);
         
-        Color color = box.getStyle().getColor();
-        tp2.setRGBColorFill(color.getRed(), color.getGreen(), color.getBlue());
+        FSColor color = box.getStyle().getColor();
+        setFillColor(tp2, color);
         
         field.setDefaultAppearanceString(tp2);
         tp.beginVariableText();
         tp.saveState();
         tp.beginText();
         tp.setFontAndSize(font.getFontDescription().getFont(), fontSize);
-        tp.setRGBColorFill(color.getRed(), color.getGreen(), color.getBlue());
+        setFillColor(tp, color);
         tp.setTextMatrix(0, height / 2 - (fontSize * 0.3f));
         tp.showText(value);
         tp.endText();

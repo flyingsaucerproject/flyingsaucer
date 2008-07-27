@@ -1,12 +1,11 @@
 package org.xhtmlrenderer.css.style;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.ValueConstants;
-import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.util.XRRuntimeException;
 import org.w3c.dom.css.CSSPrimitiveValue;
-
-import java.awt.*;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.constants.ValueConstants;
+import org.xhtmlrenderer.css.parser.FSColor;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -75,7 +74,7 @@ public abstract class DerivedValue implements FSDerivedValue {
         throw new XRRuntimeException("asFloat() needs to be overridden in subclass.");
     }
 
-    public Color asColor() {
+    public FSColor asColor() {
         throw new XRRuntimeException("asColor() needs to be overridden in subclass.");
     }
 

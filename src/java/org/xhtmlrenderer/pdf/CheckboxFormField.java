@@ -22,7 +22,7 @@ package org.xhtmlrenderer.pdf;
 import java.awt.Color;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.derived.ColorValue;
+import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -60,8 +60,8 @@ public class CheckboxFormField extends AbstractFormField {
 		float width = outputDevice.getDeviceLength(getWidth());
 		float height = outputDevice.getDeviceLength(getHeight());
 
-		Color color = box.getStyle().getColor();
-		Color darker = ColorValue.darkenColor(box.getEffBackgroundColor(c));
+		FSColor color = box.getStyle().getColor();
+		FSColor darker = box.getEffBackgroundColor(c).darkenColor();
 		createAppearances(cb, field, onValue, width, height, true, color, darker);
 		createAppearances(cb, field, onValue, width, height, false, color, darker);
 
@@ -83,23 +83,23 @@ public class CheckboxFormField extends AbstractFormField {
 
 	private void createAppearances(PdfContentByte cb, PdfFormField field,
 			String onValue, float width, float height, boolean normal,
-			Color color, Color darker) {
+			FSColor color, FSColor darker) {
 		// XXX Should cache this by width and height, but they're small so
 		// don't bother for now...
 		PdfAppearance tpOff = cb.createAppearance(width, height);
 		PdfAppearance tpOn = cb.createAppearance(width, height);
 
-		tpOn.setRGBColorStroke(color.getRed(), color.getGreen(), color.getBlue());
-		tpOff.setRGBColorStroke(color.getRed(), color.getGreen(), color.getBlue());
+		setStrokeColor(tpOn, color);
+		setStrokeColor(tpOff, color);
 
 		float sLen = Math.min(width - reduce(width), height - reduce(height));
 
 		if (!normal) {
-			tpOff.setRGBColorFill(darker.getRed(), darker.getGreen(), darker.getBlue());
+		    setFillColor(tpOff, darker);
 			tpOff.rectangle(0, 0, width, height);
 			tpOff.fill();
 
-			tpOn.setRGBColorFill(darker.getRed(), darker.getGreen(), darker.getBlue());
+			setFillColor(tpOn, darker);
 			tpOn.rectangle(0, 0, width, height);
 			tpOn.fill();
 		}

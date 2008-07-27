@@ -20,24 +20,33 @@
  */
 package org.xhtmlrenderer.css.style;
 
+import java.awt.Cursor;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSFunction;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.style.derived.*;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
+import org.xhtmlrenderer.css.style.derived.FunctionValue;
+import org.xhtmlrenderer.css.style.derived.LengthValue;
+import org.xhtmlrenderer.css.style.derived.ListValue;
+import org.xhtmlrenderer.css.style.derived.NumberValue;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
-
-import java.awt.Color;
-import java.awt.Cursor;
-import java.util.*;
-import java.util.logging.Level;
 
 
 /**
@@ -200,10 +209,10 @@ public class CalculatedStyle {
         return genStyleKey();
     }
 
-    public Color asColor(CSSName cssName) {
+    public FSColor asColor(CSSName cssName) {
         FSDerivedValue prop = valueByName(cssName);
         if (prop == IdentValue.TRANSPARENT) {
-            return ColorValue.COLOR_TRANSPARENT;
+            return FSRGBColor.TRANSPARENT;
         } else {
             return prop.asColor();
         }
@@ -263,8 +272,8 @@ public class CalculatedStyle {
      *
      * @return The color value
      */
-    public Color getColor() {
-        return valueByName(CSSName.COLOR).asColor();
+    public FSColor getColor() {
+        return asColor(CSSName.COLOR);
     }
 
     /**
@@ -274,7 +283,7 @@ public class CalculatedStyle {
      *
      * @return The backgroundColor value
      */
-    public Color getBackgroundColor() {
+    public FSColor getBackgroundColor() {
         FSDerivedValue prop = valueByName(CSSName.BACKGROUND_COLOR);
         if (prop == IdentValue.TRANSPARENT) {
             return null;
@@ -1157,6 +1166,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.102  2008/07/27 00:21:48  peterbrant
+ * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
+ *
  * Revision 1.101  2008/07/14 11:12:37  peterbrant
  * Fix two bugs when -fs-table-paginate is paginate.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
  *

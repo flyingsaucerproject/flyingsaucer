@@ -20,7 +20,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -36,6 +35,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.FSColor;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
@@ -1073,8 +1074,8 @@ public abstract class Box implements Styleable {
         container.updateBottom(c, getAbsY() + getHeight());
     }
     
-    public Color getEffBackgroundColor(RenderingContext c) {
-		Color result = null;
+    public FSColor getEffBackgroundColor(RenderingContext c) {
+		FSColor result = null;
 		Box current = this;
 		while (current != null) {
 			result = current.getStyle().getBackgroundColor();
@@ -1088,7 +1089,7 @@ public abstract class Box implements Styleable {
 		PageBox page = c.getPage();
 		result = page.getStyle().getBackgroundColor();
 		if (result == null) {
-			return Color.WHITE;
+			return new FSRGBColor(255, 255, 255);
 		} else {
 			return result;
 		}
@@ -1117,6 +1118,9 @@ public abstract class Box implements Styleable {
  * $Id$
  * 
  * $Log$
+ * Revision 1.145  2008/07/27 00:21:47  peterbrant
+ * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
+ *
  * Revision 1.144  2008/04/30 23:02:42  peterbrant
  * Fix for bug #239 (detective work by Ludovic Durand-Texte)
  *

@@ -1,9 +1,8 @@
 package org.xhtmlrenderer.css.style;
 
-import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.CSSName;
-
-import java.awt.*;
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.FSColor;
 
 
 /**
@@ -25,7 +24,7 @@ public interface FSDerivedValue {
     boolean isDeclaredInherit();
 
     float asFloat();
-    Color asColor();
+    FSColor asColor();
 
     float getFloatProportionalTo(
             CSSName cssName,
