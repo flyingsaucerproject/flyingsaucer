@@ -1619,19 +1619,23 @@ public class CSSParser {
 
     private float parseCMYKColorComponent(PropertyValue value, int paramNo) {
         short type = value.getPrimitiveType();
-        if ( type != CSSPrimitiveValue.CSS_NUMBER) { //TODO: consider percentages processing
+        float result;
+        if (type == CSSPrimitiveValue.CSS_NUMBER) {
+            result = value.getFloatValue();
+        } else if (type == CSSPrimitiveValue.CSS_PERCENTAGE) {
+            result = value.getFloatValue() / 100.0f;
+        } else {
             throw new CSSParseException(
                     "Parameter " + paramNo + " to the cmyk() function is " +
-                    "not a number", getCurrentLine());
+                    "not a number or a percentage", getCurrentLine());
         }
         
-        float f = value.getFloatValue();
-        if (f < 0) { //TODO: consider warning on 'truncation'
-            f = 0;
-        } else if (f > 1) {
-            f = 1;
+        if (result < 0.0f || result > 1.0f) {
+            throw new CSSParseException(
+                    "Parameter " + paramNo + " to the cmyk() function must be between zero and one", getCurrentLine());
         }
-        return f;
+        
+        return result;
     }
 
     private FSRGBColor createRGBColorFromFunction(List params) {
