@@ -677,7 +677,7 @@ public class TableBox extends BlockBox {
     
     public BorderPropertySet getBorder(CssContext cssCtx) {
         if (getStyle().isCollapseBorders()) {
-            return BorderPropertySet.ALL_ZEROS;
+            return BorderPropertySet.EMPTY_BORDER;
         } else {
             return super.getBorder(cssCtx);
         }

@@ -15,7 +15,7 @@ import org.xhtmlrenderer.newtable.CollapsedBorderValue;
  * To change this template use File | Settings | File Templates.
  */
 public class BorderPropertySet extends RectPropertySet {
-    public static final BorderPropertySet ALL_ZEROS = new BorderPropertySet(0.0f, 0.0f, 0.0f, 0.0f);
+    public static final BorderPropertySet EMPTY_BORDER = new BorderPropertySet(0.0f, 0.0f, 0.0f, 0.0f);
     
     private IdentValue _topStyle;
     private IdentValue _rightStyle;
@@ -195,5 +195,10 @@ public class BorderPropertySet extends RectPropertySet {
     public FSColor leftColor() {
         return _leftColor;
     }
+    
+    public boolean hasHidden() {
+        return _topStyle == IdentValue.HIDDEN || _rightStyle == IdentValue.HIDDEN ||
+                    _bottomStyle == IdentValue.HIDDEN || _leftStyle == IdentValue.HIDDEN;
+    }    
 }
 

@@ -30,8 +30,6 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
  * collapsed borders.
  */
 public class CollapsedBorderValue {  
-    public static final CollapsedBorderValue NO_BORDER = new CollapsedBorderValue();
-    
     private IdentValue _style;
     private int _width;
     private FSColor _color;
@@ -42,10 +40,6 @@ public class CollapsedBorderValue {
         _width = width;
         _color = color;
         _precedence = precedence;
-    }
-
-    private CollapsedBorderValue() {
-        _style = IdentValue.NONE;
     }
 
     public FSColor color() {
@@ -80,8 +74,16 @@ public class CollapsedBorderValue {
         _precedence = precedence;
     }
     
+    public boolean defined() {
+        return _style != null;
+    }
+    
     public boolean exists() {
-        return _style != null && _style != IdentValue.NONE;
+        return _style != null && _style != IdentValue.NONE && _style != IdentValue.HIDDEN;
+    }
+    
+    public boolean hidden() {
+        return _style == IdentValue.HIDDEN;
     }
     
     public static CollapsedBorderValue borderLeft(BorderPropertySet border, int precedence) {

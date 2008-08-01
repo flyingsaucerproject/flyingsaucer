@@ -322,7 +322,7 @@ public class CalculatedStyle {
 
     public BorderPropertySet getBorder(CssContext ctx) {
         if (! _bordersAllowed) {
-            return BorderPropertySet.ALL_ZEROS;
+            return BorderPropertySet.EMPTY_BORDER;
         } else {
             BorderPropertySet b = getBorderProperty(this, ctx);
             return b;
@@ -668,8 +668,8 @@ public class CalculatedStyle {
             BorderPropertySet result = BorderPropertySet.newInstance(style, ctx);
             
             boolean allZeros = result.isAllZeros();
-            if (allZeros) {
-                result = BorderPropertySet.ALL_ZEROS;
+            if (allZeros && ! result.hasHidden()) {
+                result = BorderPropertySet.EMPTY_BORDER;
             }
             
             style._border = result;
@@ -1166,6 +1166,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.103  2008/08/01 22:23:54  peterbrant
+ * Fix various bugs related to collapsed table borders (one manifestation found by Olly Headey)
+ *
  * Revision 1.102  2008/07/27 00:21:48  peterbrant
  * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
  *
