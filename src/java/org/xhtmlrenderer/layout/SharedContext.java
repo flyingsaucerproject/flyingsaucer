@@ -326,7 +326,7 @@ public class SharedContext {
      *
      * @param media The new media value
      */
-    private void setMedia(String media) {
+    public void setMedia(String media) {
         this.media = media;
     }
 
@@ -594,6 +594,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2008/09/06 18:47:16  peterbrant
+ * Make setMedia() public
+ *
  * Revision 1.42  2008/01/22 00:29:24  peterbrant
  * Need to propagate changes to user agent in SharedContext to containing StyleReference
  *
