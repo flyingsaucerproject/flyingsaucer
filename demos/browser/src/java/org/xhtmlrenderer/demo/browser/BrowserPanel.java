@@ -24,6 +24,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 
 import javax.swing.*;
@@ -36,7 +38,10 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xhtmlrenderer.util.GeneralUtil;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.resource.XMLResource;
+
+import com.lowagie.text.DocumentException;
 
 
 /**
@@ -353,6 +358,28 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 			ex.printStackTrace();
 		}
 	}
+	
+	public void exportToPdf( String path )
+	{
+       if (manager.getBaseURL() != null) {
+           setStatus( "Exporting to " + path + "..." );
+           try {
+               OutputStream os = new FileOutputStream(path);
+               ITextRenderer renderer = new ITextRenderer();
+ 
+               renderer.setDocument(manager.getBaseURL());
+               renderer.layout();
+
+               renderer.createPDF(os);
+               os.close();
+               setStatus( "Done export." );
+            } catch (Exception e) {
+                XRLog.general(Level.SEVERE, "Could not export PDF.", e);
+                e.printStackTrace();
+                setStatus( "Error exporting to PDF." );
+            }
+        }
+	}
 
     private void handlePageLoadFailed(String url_text, XRRuntimeException ex) {
         final XMLResource xr;
@@ -462,6 +489,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2008/09/06 18:44:29  peterbrant
+ * Add PDF export to browser (patch from Mykola Gurov)
+ *
  * Revision 1.37  2008/05/30 13:25:00  pdoubleya
  * Remove commented code blocks, add error handling if can't load page.
  *

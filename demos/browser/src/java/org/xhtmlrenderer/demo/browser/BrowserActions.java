@@ -32,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
 
@@ -44,7 +45,7 @@ public class BrowserActions {
     /**
      * Description of the Field
      */
-    public Action open_file, quit, print;
+    public Action open_file, export_pdf , quit, print;
     /**
      * Description of the Field
      */
@@ -100,6 +101,25 @@ public class BrowserActions {
         open_file.putValue(Action.NAME, "Open File...");
         setAccel(open_file, KeyEvent.VK_O);
         setMnemonic(open_file, new Integer(KeyEvent.VK_O));
+
+        
+        export_pdf =
+            new AbstractAction() {
+                public void actionPerformed(ActionEvent evt) {
+                    exportToPdf();
+                }
+            };
+        export_pdf.putValue(Action.NAME, "Export PDF...");
+        //is iText in classpath? 
+        try{
+            Class.forName("com.lowagie.text.DocumentException");
+        } catch( ClassNotFoundException e )
+        {
+            export_pdf.setEnabled(false);
+        }
+        
+        /*setAccel(export_pdf, KeyEvent.VK_E);
+        setMnemonic(export_pdf, new Integer(KeyEvent.VK_E));*/
 
         /* printing disabled for R6
         url = getImageUrl("images/document-print.png");
@@ -347,6 +367,19 @@ public class BrowserActions {
         }
     }
 
+    private void exportToPdf() {
+        try {
+            FileDialog fd = new FileDialog(root.frame, "Save as PDF", FileDialog.SAVE);
+            fd.setVisible( true );
+            if (fd.getFile() != null) {
+                File outTarget = new File(fd.getDirectory(), fd.getFile());
+                root.panel.exportToPdf(outTarget.getAbsolutePath());
+            }
+        } catch (Exception ex) {
+            logger.info("error:" + ex);
+        }
+    }
+
 
     /**
      * Sets the name attribute of the BrowserActions object
@@ -389,6 +422,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2008/09/06 18:44:29  peterbrant
+ * Add PDF export to browser (patch from Mykola Gurov)
+ *
  * Revision 1.30  2007/07/14 17:42:32  pdoubleya
  * Leave nav back/forward bound to Alt, since this is FF standard
  *

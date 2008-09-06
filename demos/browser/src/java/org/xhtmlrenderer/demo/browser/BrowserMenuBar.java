@@ -149,6 +149,8 @@ public class BrowserMenuBar extends JMenuBar {
 
         file.add(root.actions.open_file);
         file.add(new JSeparator());
+        file.add(root.actions.export_pdf);
+        file.add(new JSeparator());
         file.add(root.actions.quit);
         add(file);
 
@@ -696,6 +698,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.47  2008/09/06 18:44:29  peterbrant
+* Add PDF export to browser (patch from Mykola Gurov)
+*
 * Revision 1.46  2007/11/01 00:18:31  peterbrant
 * Adapt to R7 mouse tracking API
 *
