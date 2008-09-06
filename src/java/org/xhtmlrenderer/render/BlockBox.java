@@ -293,7 +293,14 @@ public class BlockBox extends Box implements InlinePaintable {
         _markerData = markerData;
     }
 
-    public void createMarkerData(LayoutContext c, StrutMetrics strutMetrics) {
+    public void createMarkerData(LayoutContext c) {
+        if (getMarkerData() != null)
+        {
+            return;
+        }
+        
+        StrutMetrics strutMetrics = InlineBoxing.createDefaultStrutMetrics(c, this);
+        
         boolean imageMarker = false;
 
         MarkerData result = new MarkerData();
@@ -779,8 +786,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
         boolean didSetMarkerData = false;
         if (getStyle().isListItem()) {
-            StrutMetrics strutMetrics = InlineBoxing.createDefaultStrutMetrics(c, this);
-            createMarkerData(c, strutMetrics);
+            createMarkerData(c);
             c.setCurrentMarkerData(getMarkerData());
             didSetMarkerData = true;
         }
@@ -1531,6 +1537,11 @@ public class BlockBox extends Box implements InlinePaintable {
     private void calcMinMaxWidthInlineChildren(LayoutContext c) {
         int textIndent = (int) getStyle().getFloatPropertyProportionalWidth(
                 CSSName.TEXT_INDENT, getContentWidth(), c);
+        
+        if (getStyle().isListItem() && getStyle().isListMarkerInside()) {
+            createMarkerData(c);
+            textIndent += getMarkerData().getLayoutWidth();
+        }
 
         int childMinWidth = 0;
         int childMaxWidth = 0;
@@ -1971,6 +1982,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.97  2008/09/06 18:21:50  peterbrant
+ * Need to account for list-marker-position: inside when calculating inline min/max widths
+ *
  * Revision 1.96  2008/07/27 00:21:47  peterbrant
  * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
  *

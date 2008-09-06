@@ -1159,6 +1159,10 @@ public class CalculatedStyle {
                 ! (isIdent(CSSName.WHITE_SPACE, IdentValue.PRE) ||
                         isIdent(CSSName.WHITE_SPACE, IdentValue.PRE_LINE));
     }
+    
+    public boolean isListMarkerInside() {
+        return isIdent(CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE);
+    }
 
 }// end class
 
@@ -1166,6 +1170,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.104  2008/09/06 18:21:50  peterbrant
+ * Need to account for list-marker-position: inside when calculating inline min/max widths
+ *
  * Revision 1.103  2008/08/01 22:23:54  peterbrant
  * Fix various bugs related to collapsed table borders (one manifestation found by Olly Headey)
  *

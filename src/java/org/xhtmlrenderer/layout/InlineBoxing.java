@@ -92,9 +92,7 @@ public class InlineBoxing {
         contentStart += indent;
         
         MarkerData markerData = c.getCurrentMarkerData();
-        if (markerData != null && 
-                box.getStyle().isIdent(
-                        CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
+        if (markerData != null && box.getStyle().isListMarkerInside()) {
             remainingWidth -= markerData.getLayoutWidth();
             contentStart += markerData.getLayoutWidth();
         }
