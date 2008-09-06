@@ -148,6 +148,22 @@ public class Java2DRenderer {
 	public Java2DRenderer(File file, int width, int height) throws IOException {
 		this(file.toURI().toURL().toExternalForm(), width, height);
 	}
+   
+   
+    /**
+     * Creates a new instance pointing to the given Document. Does not render until {@link #getImage(int)} is called for
+     * the first time.
+     *
+     * @param doc The document to be rendered.
+     * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+     * @param height Target height, in pixels, for the image.
+     */
+    public Java2DRenderer(Document doc, int width, int height) {
+        this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
+        this.doc = doc;
+        this.width = width;
+        this.height = height;
+    }
 
 	/**
 	 * Creates a new instance for a given File. Does not render until {@link #getImage(int)} is called for
@@ -246,7 +262,7 @@ public class Java2DRenderer {
 	 */
 	public BufferedImage getImage() {
 		if (!rendered) {
-			setDocument(loadDocument(sourceDocument), sourceDocumentBase, new XhtmlNamespaceHandler());
+            setDocument((doc == null ? loadDocument(sourceDocument) : doc), sourceDocumentBase, new XhtmlNamespaceHandler());
 
 			layout(this.width);
 
