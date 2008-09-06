@@ -35,7 +35,8 @@ big             { font-size: 1.17em }
 small           { font-size: .83em }
 s, strike, del  { text-decoration: line-through }
 ol, ul, dir,
-menu, dd        { margin-left: 40px }
+menu            { padding-left: 40px }
+dd              { margin-left: 40px }
 ol              { list-style-type: decimal }
 ol ul, ul ol,
 ul ul, ol ol    { margin-top: 0; margin-bottom: 0 }
