@@ -103,8 +103,7 @@ public class ListItemPainter {
         StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
         MarkerData.GlyphMarker marker = box.getMarkerData().getGlyphMarker();
         int x = getReferenceX(c, box);
-        x += -marker.getLayoutWidth() + 
-                (marker.getLayoutWidth() / 2 - marker.getDiameter() / 2);
+        x += -marker.getLayoutWidth();
         int y = getReferenceBaseline(c, box) 
             - (int)strutMetrics.getAscent() / 2 - marker.getDiameter() / 2;
         if (listStyle == IdentValue.DISC) {
@@ -138,6 +137,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2008/09/06 18:33:53  peterbrant
+ * Make list marker display more like Safari and FF (patch from Mykola Gurov)
+ *
  * Revision 1.37  2007/03/12 21:11:19  peterbrant
  * Documentation update
  *
