@@ -1035,7 +1035,7 @@ public class BoxBuilder {
             String text, Element parent, CalculatedStyle parentStyle, Text node) {
         InlineBox result = new InlineBox(text.toString(), node);
 
-        if (parentStyle.isInline()) {
+        if (parentStyle.isInline() && ! (parent.getParentNode() instanceof Document)) {
             result.setStyle(parentStyle);
             result.setElement(parent);
         } else {
