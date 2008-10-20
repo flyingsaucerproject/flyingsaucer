@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -315,12 +316,12 @@ public class TableRowBox extends BlockBox {
         
         alignBaselineAlignedCells(c);
         
-        calcRowHeight();
+        calcRowHeight(c);
         
         boolean recalcRowHeight = alignMiddleAndBottomAlignedCells(c);
         
         if (recalcRowHeight) {
-            calcRowHeight();
+            calcRowHeight(c);
         }
         
         if (! isHaveBaseline()) {
@@ -330,7 +331,7 @@ public class TableRowBox extends BlockBox {
         setCellHeights(c);
     }
 
-    private void calcRowHeight() {
+    private void calcRowHeight(CssContext c) {
         int y1 = getAbsY();
         int y2;
         
@@ -338,6 +339,13 @@ public class TableRowBox extends BlockBox {
             y2 = y1 + getHeight();
         } else {
             y2 = y1;
+        }
+        
+        if (isLastRow()) {
+            int bottom = getTable().calcFixedHeightRowBottom(c);
+            if (bottom > 0 && bottom > y2) {
+                y2 = bottom;
+            }
         }
         
         int cRow = getIndex();
@@ -363,6 +371,16 @@ public class TableRowBox extends BlockBox {
         }
         
         setHeight(y2 - y1);
+    }
+    
+    private boolean isLastRow() {
+        TableBox table = getTable();
+        TableSectionBox section = getSection();
+        if (table.sectionBelow(section, true) == null) {
+            return section.getChild(section.getChildCount()-1) == this;
+        } else {
+            return false;
+        }
     }
     
     private void calcDefaultBaseline(LayoutContext c) {

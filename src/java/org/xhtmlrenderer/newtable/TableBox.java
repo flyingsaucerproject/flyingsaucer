@@ -207,6 +207,10 @@ public class TableBox extends BlockBox {
         }
     }
     
+    protected boolean isAllowHeightToShrink() {
+        return false;
+    }
+    
     public void layout(LayoutContext c) {
         calcMinMaxWidth(c);
         calcDimensions(c);
@@ -681,6 +685,19 @@ public class TableBox extends BlockBox {
         } else {
             return super.getBorder(cssCtx);
         }
+    }
+    
+    public int calcFixedHeightRowBottom(CssContext c) {
+        if (! isAnonymous()) {
+            int cssHeight = getCSSHeight(c);
+            if (cssHeight != -1) {
+                return getAbsY() + cssHeight 
+                    - (int)getBorder(c).bottom() - (int)getPadding(c).bottom() 
+                    - getStyle().getBorderVSpacing(c);
+            }
+        }
+        
+        return -1;
     }
     
     protected boolean isMayCollapseMarginsWithChildren() {
