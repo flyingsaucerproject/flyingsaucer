@@ -262,7 +262,7 @@ public class ITextRenderer {
         if (_pdfEncryption != null) {
             writer.setEncryption(
                     _pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(), 
-                    _pdfEncryption.getAllowedPrivileges(), PdfWriter.STANDARD_ENCRYPTION_128);
+                    _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
         }
         doc.open();
         
