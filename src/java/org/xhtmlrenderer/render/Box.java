@@ -1112,12 +1112,19 @@ public abstract class Box implements Styleable {
 
 		return current.isMarginAreaRoot();
 	}
+	
+	public int getEffectiveWidth() {
+	    return getWidth();
+	}
 }
 
 /*
  * $Id$
  * 
  * $Log$
+ * Revision 1.146  2008/11/07 18:34:33  peterbrant
+ * Add API to retrieve PDF page and coordinates for boxes with an ID attribute
+ *
  * Revision 1.145  2008/07/27 00:21:47  peterbrant
  * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
  *

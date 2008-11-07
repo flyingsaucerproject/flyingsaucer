@@ -37,12 +37,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,6 +53,7 @@ import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -988,5 +992,59 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     public boolean isSupportsCMYKColors() {
         return true;
+    }
+    
+    public List findPagePositionsByID(CssContext c, Pattern pattern)
+    {
+        Map idMap = _sharedContext.getIdMap();
+        if (idMap == null) {
+            return Collections.EMPTY_LIST;
+        }
+        
+        List result = new ArrayList();
+        for (Iterator i = idMap.entrySet().iterator(); i.hasNext(); )
+        {
+            Map.Entry entry = (Entry)i.next();
+            String id = (String)entry.getKey();
+            if (pattern.matcher(id).find()) {
+                Box box = (Box)entry.getValue();
+                PagePosition pos = calcPDFPagePosition(c, id, box);
+                if (pos != null) {
+                    result.add(pos);    
+                }
+            }
+        }
+        
+        Collections.sort(result, new Comparator() {
+            public int compare(Object arg0, Object arg1) {
+                PagePosition p1 = (PagePosition)arg0;
+                PagePosition p2 = (PagePosition)arg1;
+                return p1.getPageNo() - p2.getPageNo();
+            }
+        });
+        
+        return result;
+    }
+    
+    private PagePosition calcPDFPagePosition(CssContext c, String id, Box box) {
+        PageBox page = _root.getLayer().getLastPage(c, box);
+        if (page == null) {
+            return null;
+        }
+        
+        float x = box.getAbsX() + page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+        float y = (page.getBottom() - (box.getAbsY() + box.getHeight())) + page.getMarginBorderPadding(c, CalculatedStyle.BOTTOM);
+        x /= _dotsPerPoint;
+        y /= _dotsPerPoint;
+        
+        PagePosition result = new PagePosition();
+        result.setId(id);
+        result.setPageNo(page.getPageNo());
+        result.setX(x);
+        result.setY(y);
+        result.setWidth(box.getEffectiveWidth() / _dotsPerPoint);
+        result.setHeight(box.getHeight() / _dotsPerPoint);
+        
+        return result;
     }
 }

@@ -932,4 +932,8 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         
         return result;
     }
+    
+    public int getEffectiveWidth() {
+        return getInlineWidth();
+    }
 }

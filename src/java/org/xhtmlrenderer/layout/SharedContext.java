@@ -307,6 +307,11 @@ public class SharedContext {
         }
     }
     
+    public Map getIdMap()
+    {
+        return idMap;
+    }
+    
     /**
      * Sets the textRenderer attribute of the RenderingContext object
      *
@@ -594,6 +599,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2008/11/07 18:34:34  peterbrant
+ * Add API to retrieve PDF page and coordinates for boxes with an ID attribute
+ *
  * Revision 1.43  2008/09/06 18:47:16  peterbrant
  * Make setMedia() public
  *

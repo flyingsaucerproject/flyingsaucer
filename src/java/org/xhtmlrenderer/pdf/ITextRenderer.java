@@ -31,6 +31,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -414,6 +415,10 @@ public class ITextRenderer {
     
     public float getDotsPerPoint() {
         return _dotsPerPoint;
+    }
+    
+    public List findPagePositionsByID(Pattern pattern) {
+        return _outputDevice.findPagePositionsByID(newLayoutContext(), pattern);
     }
     
     private static final class NullUserInterface implements UserInterface {
