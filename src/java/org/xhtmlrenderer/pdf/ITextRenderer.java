@@ -211,7 +211,7 @@ public class ITextRenderer {
     }
     
     public void createPDF(OutputStream os) throws DocumentException {
-        createPDF(os, true);
+        createPDF(os, true, 0);
     }
     
     public void writeNextDocument() throws DocumentException {
@@ -243,14 +243,19 @@ public class ITextRenderer {
         }
     }
     
+    public void createPDF(OutputStream os, boolean finish) throws DocumentException {
+        createPDF(os, finish, 0);
+    }
+    
     /**
      * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream if something
      * goes wrong.
      */
-    public void createPDF(OutputStream os, boolean finish) throws DocumentException {
+    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException {
         List pages = _root.getLayer().getPages();
         
         RenderingContext c = newRenderingContext();
+        c.setInitialPageNo(initialPageNo);
         PageBox firstPage = (PageBox)pages.get(0);
         com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(
                 0, 0, 

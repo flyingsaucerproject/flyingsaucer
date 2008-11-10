@@ -1117,8 +1117,12 @@ public class Layer {
     
     public int getRelativePageCount(RenderingContext c) {
         List sequences = getSortedPageSequences();
+        int initial = 0;
+        if (c.getInitialPageNo() > 0) {
+            initial = c.getInitialPageNo() - 1;
+        }
         if (sequences == null) {
-            return c.getPageCount();
+            return initial + c.getPageCount();
         } else {
             int firstPage;
             int lastPage;
@@ -1139,7 +1143,12 @@ public class Layer {
                 lastPage = c.getPageCount();
             }
             
-            return lastPage - firstPage;
+            int sequenceLength = lastPage - firstPage;
+            if (sequenceStartIndex == -1) {
+                sequenceLength += initial;
+            }
+            
+            return sequenceLength;
         }
     }    
     
