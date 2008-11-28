@@ -25,9 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * This example shows the most basic use of Flying Saucer, to
- * display a single page, scrollable, within a JFrame. The input
- * is a file name.
+ * Opens a frame and displays, for a selected font, the glyphs for a range of Unicode code points. Can be used to
+ * identify which glyphs are supported by a font. Can export to PDF.
  *
  * @author Patrick Wright
  */
