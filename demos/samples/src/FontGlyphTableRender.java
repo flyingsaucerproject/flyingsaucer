@@ -13,6 +13,7 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.FSMouseListener;
 import org.xhtmlrenderer.swing.LinkListener;
+import org.xhtmlrenderer.event.DefaultDocumentListener;
 import org.xml.sax.InputSource;
 
 import javax.swing.*;
@@ -155,6 +156,11 @@ public class FontGlyphTableRender {
 
         // Create a JPanel subclass to render the page
         xpanel = new XHTMLPanel();
+        xpanel.addDocumentListener(new DefaultDocumentListener(){
+            public void documentLoaded() {
+                frame.setCursor(Cursor.getDefaultCursor());
+            }
+        });
 
         resetMouseListeners();
 
@@ -187,8 +193,6 @@ public class FontGlyphTableRender {
                 System.err.println(fontPath + " INVALID FONT FORMAT " + e.getMessage());
                 return null;
             }
-        } catch (IOException e) {
-            throw e;
         }
         return font.deriveFont(Font.PLAIN, 12);
     }
@@ -216,11 +220,10 @@ public class FontGlyphTableRender {
         frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         new Thread(new Runnable() {
             public void run() {
-                final Document doc = loadDocument(startAt, renderTo);
+                final Document doc = loadDocument(startAt);
                 deferredRender(doc, startAt, renderTo);
             }
         }).start();
-        frame.setCursor(Cursor.getDefaultCursor());
     }
 
     private void deferredRender(final Document doc, final int startAt, final int renderTo) {
@@ -280,10 +283,11 @@ public class FontGlyphTableRender {
         });
     }
 
-    private Document loadDocument(int startAt, int renderTo) {
+    private Document loadDocument(int startAt) {
         curFrom = startAt;
-        String table = buildTable(startAt, startAt + ENT_PER_PAGE, renderTo);
-        System.out.println(table);
+        String table = buildTable(startAt, startAt + ENT_PER_PAGE);
+        // DEBUG
+        // System.out.println(table);
         InputSource is = new InputSource(new BufferedReader(new StringReader(table)));
         return XMLResource.load(is).getDocument();
     }
@@ -297,8 +301,10 @@ public class FontGlyphTableRender {
             currentFont = loadFont(path);
             if (currentFont != null) {
                 familyNameField.setText(currentFont.getFamily());
+                return currentFont.getFamily();
+            } else {
+                return "";
             }
-            return currentFont.getFamily();
         } catch (IOException e) {
             e.printStackTrace();
             return "";
@@ -310,8 +316,8 @@ public class FontGlyphTableRender {
         nextBtn.setEnabled(Math.pow(2, 16) - curFrom != 0);
     }
 
-    private String buildTable(int from, int to, int renderTo) {
-        Table table = new Table.Builder().withColumnCount(16).create();
+    private String buildTable(int from, int to) {
+        Table table = new Table(16);
         for (int j = from; j <= to; j++) {
             if (isLegalInXml(j)) {
                 if (currentFont.canDisplay(j)) {
@@ -326,7 +332,7 @@ public class FontGlyphTableRender {
                 table.addColumn("(ill)");
             }
         }
-        return table.toHtml(renderTo, getFontFamily(), curFrom);
+        return table.toHtml(getFontFamily(), curFrom);
     }
 
     private boolean isLegalInXml(int uccp) {
@@ -355,30 +361,20 @@ public class FontGlyphTableRender {
             this.colCnt = colCnt;
         }
 
-        public String toHtml(int renderTo, String fontFamily, int curFrom) {
+        public String toHtml(String fontFamily, int curFrom) {
             StringBuilder sb = new StringBuilder();
-            String css = "* {font-size: 8pt; font-family: \"" + fontFamily + "\" } " +
-                            "table {width: 100%; border: 1px solid black; border-collapse: collapse;} " +
-                            "td {border: 1px solid black; min-width: 10pt; text-align: center;} ";
-            String style = "<style type=\"text/css\">\n" + css + "\n</style>\n";
-            sb.append(
-                    "<?xml version='1.0' encoding='utf-8'?>\n" +
-                            "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n" +
-                            "<html xmlns='http://www.w3.org/1999/xhtml'>\n" +
-                            "<head>" +
-                            "<title>Full Entity Chart</title>\n" +
-                            style +
-                            "</head>\n");
+            sb.append(getHeadDecl(getStyleDecl(fontFamily)));
             sb.append("<body>\n");
             sb.append("Table of Unicode Characters<br />\n");
-            sb.append("Using font: " + fontFamily + ", Unicode code points starting with " + curFrom + "<br />\n");
+            sb.append("Using font: ").append(fontFamily).append(", Unicode code points starting with ").append(curFrom).append("<br />\n");
             sb.append("Empty cell means no glyph available; ill means codepoint not allowed in XML, per spec.<br />\n");
+
             sb.append("<table>\n");
             int cnt = 0;
             sb.append("<tr>\n");
             for (Iterator it = cols.iterator(); it.hasNext();) {
                 String content = (String) it.next();
-                sb.append("<td>" + content + "</td>");
+                sb.append("<td>").append(content).append("</td>");
                 if (++cnt % colCnt == 0 && it.hasNext()) {
                     sb.append("\n</tr>\n");
                     sb.append("<tr>\n");
@@ -391,22 +387,26 @@ public class FontGlyphTableRender {
             return sb.toString();
         }
 
+        private String getHeadDecl(String style) {
+            return "<?xml version='1.0' encoding='utf-8'?>\n" +
+                    "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n" +
+                    "<html xmlns='http://www.w3.org/1999/xhtml'>\n" +
+                    "<head>" +
+                    "<title>Full Entity Chart</title>\n" +
+                    style +
+                    "</head>\n";
+        }
+
+        private String getStyleDecl(String fontFamily) {
+            String css = "* {font-size: 8pt; font-family: \"" + fontFamily + "\" } " +
+                            "table {width: 100%; border: 1px solid black; border-collapse: collapse;} " +
+                            "td {border: 1px solid black; min-width: 10pt; text-align: center;} ";
+
+            return "<style type=\"text/css\">\n" + css + "\n</style>\n";
+        }
+
         public void addColumn(String content) {
             cols.add(content);
         }
-
-        private static class Builder {
-            private int cnt;
-
-            public Builder withColumnCount(int cnt) {
-                this.cnt = cnt;
-                return this;
-            }
-
-            public Table create() {
-                return new Table(cnt);
-            }
-        }
     }
-
 }
