@@ -53,12 +53,12 @@ import java.util.logging.Level;
  * @author Patrick Wright
  */
 public class FSEntityResolver implements EntityResolver {
-    private Map entities = new HashMap();
-
     /**
      * Singleton instance, use {@link #instance()} to retrieve.
      */
     private static FSEntityResolver instance;
+
+    private final Map entities = new HashMap();
 
     // fill the list of URLs
     /**
@@ -98,7 +98,7 @@ public class FSEntityResolver implements EntityResolver {
             throws SAXException {
 
         InputSource local = null;
-        String url = (String) entities.get(publicID);
+        String url = (String) getEntities().get(publicID);
         if (url != null) {
             URL realUrl = GeneralUtil.getURLFromClasspath(this, url);
             InputStream is = null;
@@ -138,12 +138,23 @@ public class FSEntityResolver implements EntityResolver {
         }
         return instance;
     }
+
+    /**
+     * Returns a map of entities parsed by this resolver.
+     * @return a map of entities parsed by this resolver. 
+     */
+    public Map getEntities() {
+        return new HashMap(entities);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2008/12/01 20:37:24  pdoubleya
+ * Expose copy of parsed entities from catalog.
+ *
  * Revision 1.7  2007/05/21 22:13:02  peterbrant
  * Code cleanup (patch from Sean Bright)
  *
