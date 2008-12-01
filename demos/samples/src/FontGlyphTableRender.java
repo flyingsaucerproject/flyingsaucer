@@ -124,11 +124,11 @@ public class FontGlyphTableRender {
                 }
             }
         };
-        JRadioButton jrbCodePoint = new JRadioButton("Table of codepoints");
+        JRadioButton jrbCodePoint = new JRadioButton("Codepoints");
         jrbCodePoint.setActionCommand(OUTPUT_CODEPOINTS);
         jrbCodePoint.addActionListener(outputSelection);
         jrbCodePoint.setSelected(true);
-        JRadioButton jrbEntities = new JRadioButton("Table of HTML " + OUTPUT_ENTITIES);
+        JRadioButton jrbEntities = new JRadioButton("Entities");
         jrbEntities.setActionCommand(OUTPUT_ENTITIES);
         jrbEntities.addActionListener(outputSelection);
         ButtonGroup bg = new ButtonGroup();
