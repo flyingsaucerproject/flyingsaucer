@@ -5,16 +5,21 @@
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
 import org.w3c.dom.Document;
+import org.xhtmlrenderer.event.DefaultDocumentListener;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.xhtmlrenderer.resource.FSEntityResolver;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.FSMouseListener;
 import org.xhtmlrenderer.swing.LinkListener;
-import org.xhtmlrenderer.event.DefaultDocumentListener;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.ext.DefaultHandler2;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,21 +32,24 @@ import java.util.List;
 
 /**
  * Opens a frame and displays, for a selected font, the glyphs for a range of Unicode code points. Can be used to
- * identify which glyphs are supported by a font. Can export to PDF.
+ * identify which glyphs are supported by a font. Can export to PDF. Requires core-renderer and iText on classpath.
  *
  * @author Patrick Wright
  */
 public class FontGlyphTableRender {
     private static final int TO_SWING = 1;
     private static final int TO_PDF = 2;
-    private static final int ENT_PER_PAGE = 199;
+    private static final String OUTPUT_ENTITIES = "entities";
+    private static final String OUTPUT_CODEPOINTS = "codepoints";
+    private static final int ENT_PER_PAGE = 399;  // based on number we can fit on one printed (PDF) part
 
     private int curFrom;
-    private Font currentFont;
 
+    private String outputType = OUTPUT_CODEPOINTS;
+    private Font currentFont;
     private JFrame frame;
     private XHTMLPanel xpanel;
-    private JTextField fontFamilyPathField;
+    private JTextField fontPathTF;
     private JTextField familyNameField;
     private JButton prevBtn;
     private JButton nextBtn;
@@ -66,8 +74,10 @@ public class FontGlyphTableRender {
 
         JPanel optionsPanel = new JPanel(new BorderLayout());
 
-        fontFamilyPathField = new JTextField("");
-        fontFamilyPathField.setColumns(40);
+        // TODO: don't know a good way to determine path where fonts are stored, per-os
+        // "/usr/share/fonts/truetype/freefont/FreeMono.ttf"
+        fontPathTF = new JTextField();
+        fontPathTF.setColumns(40);
 
         familyNameField = new JTextField();
         familyNameField.setEnabled(true);
@@ -75,12 +85,12 @@ public class FontGlyphTableRender {
         familyNameField.setColumns(40);
         JPanel top1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         top1.add(new JLabel("Enter font path: "));
-        top1.add(fontFamilyPathField);
+        top1.add(fontPathTF);
         JButton chooseFontFileBtn = new JButton("...");
         chooseFontFileBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String filename = File.separator + "tmp";
-                String famPath = fontFamilyPathField.getText();
+                String famPath = fontPathTF.getText();
                 if (currentFont != null && famPath.length() > 0) {
                     filename = new File(famPath).getParent();
                 }
@@ -98,16 +108,40 @@ public class FontGlyphTableRender {
                 if (font == null) {
                     JOptionPane.showMessageDialog(frame, "Can't load file--is it a valid Font file? " + msg);
                 } else {
-                    fontFamilyPathField.setText(selFile.getPath());
+                    fontPathTF.setText(selFile.getPath());
                     familyNameField.setText(font.getFamily());
                 }
 
             }
         });
         top1.add(chooseFontFileBtn);
+        ActionListener outputSelection = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                outputType = e.getActionCommand();
+                enableButtons();
+                if (currentFont != null) {
+                    deferredChangePage(curFrom);
+                }
+            }
+        };
+        JRadioButton jrbCodePoint = new JRadioButton("Table of codepoints");
+        jrbCodePoint.setActionCommand(OUTPUT_CODEPOINTS);
+        jrbCodePoint.addActionListener(outputSelection);
+        jrbCodePoint.setSelected(true);
+        JRadioButton jrbEntities = new JRadioButton("Table of HTML " + OUTPUT_ENTITIES);
+        jrbEntities.setActionCommand(OUTPUT_ENTITIES);
+        jrbEntities.addActionListener(outputSelection);
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(jrbCodePoint);
+        bg.add(jrbEntities);
+        top1.add(jrbCodePoint);
+        top1.add(jrbEntities);
+
         JPanel top2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         top2.add(new JLabel("Family: "));
         top2.add(familyNameField);
+
+
         JPanel top = new JPanel(new BorderLayout());
         top.add(top1, BorderLayout.NORTH);
         top.add(top2, BorderLayout.CENTER);
@@ -134,9 +168,10 @@ public class FontGlyphTableRender {
         });
         pdfBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                if (resolveFamilyName().length() == 0) {
+                resolveCurrentFont();
+                if (currentFont == null) {
                     JOptionPane.showMessageDialog(frame, "Need a valid font file path");
-                    fontFamilyPathField.requestFocus();
+                    fontPathTF.requestFocus();
                     return;
                 }
                 deferredLoadAndRender(curFrom, TO_PDF);
@@ -148,7 +183,7 @@ public class FontGlyphTableRender {
         mid.add(pdfBtn);
         optionsPanel.add(top, BorderLayout.NORTH);
         optionsPanel.add(mid, BorderLayout.CENTER);
-        fontFamilyPathField.addActionListener(new AbstractAction() {
+        fontPathTF.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent actionEvent) {
                 deferredChangePage(curFrom);
             }
@@ -156,7 +191,7 @@ public class FontGlyphTableRender {
 
         // Create a JPanel subclass to render the page
         xpanel = new XHTMLPanel();
-        xpanel.addDocumentListener(new DefaultDocumentListener(){
+        xpanel.addDocumentListener(new DefaultDocumentListener() {
             public void documentLoaded() {
                 frame.setCursor(Cursor.getDefaultCursor());
             }
@@ -182,6 +217,21 @@ public class FontGlyphTableRender {
         frame.setVisible(true);
     }
 
+    private void resetMouseListeners() {
+        List l = xpanel.getMouseTrackingListeners();
+        for (Iterator i = l.iterator(); i.hasNext();) {
+            FSMouseListener listener = (FSMouseListener) i.next();
+            if (listener instanceof LinkListener) {
+                xpanel.removeMouseTrackingListener(listener);
+            }
+        }
+    }
+
+    private void enableButtons() {
+        prevBtn.setEnabled(outputType.equals(OUTPUT_CODEPOINTS) && curFrom > 0);
+        nextBtn.setEnabled(outputType.equals(OUTPUT_CODEPOINTS) && Math.pow(2, 16) - curFrom != 0);
+    }
+
     private Font loadFont(String fontPath) throws IOException {
         Font font;
         try {
@@ -197,142 +247,192 @@ public class FontGlyphTableRender {
         return font.deriveFont(Font.PLAIN, 12);
     }
 
-    private void resetMouseListeners() {
-        List l = xpanel.getMouseTrackingListeners();
-        for (Iterator i = l.iterator(); i.hasNext();) {
-            FSMouseListener listener = (FSMouseListener) i.next();
-            if (listener instanceof LinkListener) {
-                xpanel.removeMouseTrackingListener(listener);
-            }
-        }
-    }
-
     private void deferredChangePage(final int startAt) {
         deferredLoadAndRender(startAt, TO_SWING);
     }
 
     private void deferredLoadAndRender(final int startAt, final int renderTo) {
-        if (resolveFamilyName().length() == 0) {
+        resolveCurrentFont();
+        if (currentFont == null) {
             JOptionPane.showMessageDialog(frame, "Can't load font--check font file path.");
-            fontFamilyPathField.requestFocus();
+            fontPathTF.requestFocus();
             return;
         }
         frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         new Thread(new Runnable() {
             public void run() {
                 final Document doc = loadDocument(startAt);
-                deferredRender(doc, startAt, renderTo);
+                if (renderTo == TO_SWING) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            try {
+                                curFrom = startAt;
+                                xpanel.setDocument(doc, null, new XhtmlNamespaceHandler());
+                                xpanel.getSharedContext().getCss().getCascadedStyle(null, false);
+                            } catch (Throwable e) {
+                                JOptionPane.showMessageDialog(frame, "Can't load document (table of glyphs). Err: " + e.getMessage());
+                            }
+                            enableButtons();
+                        }
+                    });
+                } else {
+                    frame.setCursor(Cursor.getDefaultCursor());
+                    renderPDF(doc);
+                }
             }
         }).start();
     }
 
-    private void deferredRender(final Document doc, final int startAt, final int renderTo) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                if (renderTo == TO_SWING) {
-                    try {
-                        curFrom = startAt;
-                        xpanel.setDocument(doc, null, new XhtmlNamespaceHandler());
-                        xpanel.getSharedContext().getCss().getCascadedStyle(null, false);
-                    } catch (Throwable e) {
-                        JOptionPane.showMessageDialog(frame, "Can't load document (table of glyphs). Err: " + e.getMessage());
-                    }
-                    enableButtons();
-                } else {
-                    File f;
-                    try {
-                        f = File.createTempFile("flying-saucer-glyph-test", ".pdf");
-                    } catch (IOException e) {
-                        //
-                        JOptionPane.showMessageDialog(frame, "Can't create temp file for PDF output, err: " + e.getMessage());
-                        return;
-                    }
-                    final ITextRenderer renderer = new ITextRenderer();
-                    FileOutputStream fos = null;
-                    try {
-                        fos = new FileOutputStream(f);
-                        BufferedOutputStream bos = new BufferedOutputStream(fos);
-                        renderer.setDocument(doc, null, new XhtmlNamespaceHandler());
-                        ITextFontResolver resolver = renderer.getFontResolver();
-                        // TODO: encoding is hard-coded as IDENTITY_H; maybe give user option to override
-                        resolver.addFont(
-                                fontFamilyPathField.getText(),
-                                BaseFont.IDENTITY_H,
-                                BaseFont.EMBEDDED
-                        );
-                        renderer.layout();
-                        renderer.createPDF(bos);
-                        JOptionPane.showMessageDialog(frame, "Rendered PDF: " + f.getCanonicalPath());
-                    } catch (FileNotFoundException e) {
-                        JOptionPane.showMessageDialog(frame, "Can't create PDF, err: " + e.getMessage());
-                    } catch (DocumentException e) {
-                        JOptionPane.showMessageDialog(frame, "Can't create PDF, err: " + e.getMessage());
-                    } catch (IOException e) {
-                        JOptionPane.showMessageDialog(frame, "Can't create PDF, err: " + e.getMessage());
-                    } finally {
-                        if (fos != null) {
-                            try {
-                                fos.close();
-                            } catch (IOException e) {
-                                // swallow
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-
     private Document loadDocument(int startAt) {
         curFrom = startAt;
-        String table = buildTable(startAt, startAt + ENT_PER_PAGE);
+        String page;
+        if (outputType.equals(OUTPUT_CODEPOINTS)) {
+            Table table = buildGlyphTable(startAt, startAt + ENT_PER_PAGE);
+            page = new Page().toHtml(table.toHtml(getFontFamily(), curFrom), getFontFamily());
+        } else {
+            page = parseEnt(new Page().toHtml("", getFontFamily()));
+        }
         // DEBUG
-        // System.out.println(table);
-        InputSource is = new InputSource(new BufferedReader(new StringReader(table)));
+        //System.out.println(page);
+        InputSource is = new InputSource(new BufferedReader(new StringReader(page)));
         return XMLResource.load(is).getDocument();
     }
 
-    private String resolveFamilyName() {
-        String path = fontFamilyPathField.getText();
-        if (path.length() == 0) {
-            return "";
-        }
-        try {
-            currentFont = loadFont(path);
-            if (currentFont != null) {
-                familyNameField.setText(currentFont.getFamily());
-                return currentFont.getFamily();
-            } else {
-                return "";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    private void enableButtons() {
-        prevBtn.setEnabled(curFrom > 0);
-        nextBtn.setEnabled(Math.pow(2, 16) - curFrom != 0);
-    }
-
-    private String buildTable(int from, int to) {
+    private Table buildGlyphTable(int from, int to) {
         Table table = new Table(16);
         for (int j = from; j <= to; j++) {
             if (isLegalInXml(j)) {
                 if (currentFont.canDisplay(j)) {
                     table.addColumn("&amp;#" + j + ";");
-                    table.addColumn("&#" + j + ";");
+                    table.addGlyph("&#" + j + ";");
                 } else {
                     table.addColumn("&amp;#" + j + ";");
-                    table.addColumn("&nbsp;");
+                    table.addGlyph("&nbsp;");
                 }
             } else {
                 table.addColumn("&amp;#" + j + ";");
-                table.addColumn("(ill)");
+                table.addGlyph("!");
             }
         }
-        return table.toHtml(getFontFamily(), curFrom);
+        return table;
+    }
+
+    private void renderPDF(Document doc) {
+        String msgToUser = "";
+        File f;
+        try {
+            f = File.createTempFile("flying-saucer-glyph-test", ".pdf");
+        } catch (IOException e) {
+            //
+            JOptionPane.showMessageDialog(frame, "Can't create temp file for PDF output, err: " + e.getMessage());
+            return;
+        }
+        final ITextRenderer renderer = new ITextRenderer();
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(f);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            renderer.setDocument(doc, null, new XhtmlNamespaceHandler());
+            ITextFontResolver resolver = renderer.getFontResolver();
+            // TODO: encoding is hard-coded as IDENTITY_H; maybe give user option to override
+            resolver.addFont(
+                    fontPathTF.getText(),
+                    BaseFont.IDENTITY_H,
+                    BaseFont.EMBEDDED
+            );
+            renderer.layout();
+            renderer.createPDF(bos);
+
+            msgToUser = "Rendered PDF: " + f.getCanonicalPath();
+        } catch (FileNotFoundException e) {
+            msgToUser = "Can't create PDF, err: " + e.getMessage();
+        } catch (DocumentException e) {
+            msgToUser = "Can't create PDF, err: " + e.getMessage();
+        } catch (IOException e) {
+            msgToUser = "Can't create PDF, err: " + e.getMessage();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    // swallow
+                }
+            }
+        }
+        if (msgToUser.length() != 0) {
+            final String finalMsg = msgToUser;
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    JOptionPane.showMessageDialog(frame, finalMsg);
+                }
+            });
+        }
+    }
+
+    // attempts to load Font given font path; if succeeds, currentFont will have the reference, otherwise it will
+    // be set to null
+    private void resolveCurrentFont() {
+        String path = fontPathTF.getText();
+        if (path.length() == 0) {
+            currentFont = null;
+            return;
+        }
+        try {
+            currentFont = loadFont(path);
+            if (currentFont != null) {
+                familyNameField.setText(currentFont.getFamily());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            currentFont = null;
+        }
+    }
+
+    private String parseEnt(String html) {
+        try {
+            final Table table = new Table(15);
+            XMLReader parser = XMLReaderFactory.createXMLReader();
+            InputSource is = new InputSource(new BufferedReader(new StringReader(html)));
+            try {
+                parser.setFeature("http://xml.org/sax/features/validation", true);
+            } catch (SAXException e) {
+                System.err.println("Cannot activate validation.");
+            }
+            parser.setEntityResolver(FSEntityResolver.instance());
+            DefaultHandler2 dh2 = new DefaultHandler2() {
+                boolean isEnt;
+
+                // we'll get a callback for each DTD loaded; we're interested in the entity includes
+                public void externalEntityDecl(String name, String publicId, String systemId) throws SAXException {
+                    super.externalEntityDecl(name, publicId, systemId);
+                    isEnt = systemId.endsWith(".ent");
+                }
+
+                // we'll get a callback for each entity; those starting with % are elements, can skip
+                public void internalEntityDecl(String name, String value) throws SAXException {
+                    super.internalEntityDecl(name, value);
+                    if (isEnt) {
+                        if (name.startsWith("%")) return;
+                        int codePoint = Character.codePointAt(value.toCharArray(), 0);
+                        table.addColumn("&amp;" + name + ";");
+                        table.addColumn("&amp;#" + codePoint + ";");
+                        table.addGlyph("&#" + codePoint + ";");
+                    }
+                }
+            };
+            parser.setProperty("http://xml.org/sax/properties/declaration-handler", dh2);
+            parser.parse(is);
+            return new Page().toHtml(table.toHtml(getFontFamily(), 0), getFontFamily());
+        }
+        catch (SAXException e) {
+            e.printStackTrace();
+            return "";
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+
     }
 
     private boolean isLegalInXml(int uccp) {
@@ -352,36 +452,12 @@ public class FontGlyphTableRender {
         return currentFont.getFamily();
     }
 
-    private static class Table {
-        private int colCnt;
-
-        private List cols = new ArrayList();
-
-        public Table(int colCnt) {
-            this.colCnt = colCnt;
-        }
-
-        public String toHtml(String fontFamily, int curFrom) {
+    private static class Page {
+        public String toHtml(String bodyContent, String fontFamily) {
             StringBuilder sb = new StringBuilder();
             sb.append(getHeadDecl(getStyleDecl(fontFamily)));
             sb.append("<body>\n");
-            sb.append("Table of Unicode Characters<br />\n");
-            sb.append("Using font: ").append(fontFamily).append(", Unicode code points starting with ").append(curFrom).append("<br />\n");
-            sb.append("Empty cell means no glyph available; ill means codepoint not allowed in XML, per spec.<br />\n");
-
-            sb.append("<table>\n");
-            int cnt = 0;
-            sb.append("<tr>\n");
-            for (Iterator it = cols.iterator(); it.hasNext();) {
-                String content = (String) it.next();
-                sb.append("<td>").append(content).append("</td>");
-                if (++cnt % colCnt == 0 && it.hasNext()) {
-                    sb.append("\n</tr>\n");
-                    sb.append("<tr>\n");
-                }
-            }
-            sb.append("\n</tr>\n");
-            sb.append("</table>\n");
+            sb.append(bodyContent);
             sb.append("</body>\n");
             sb.append("</html>\n");
             return sb.toString();
@@ -399,14 +475,78 @@ public class FontGlyphTableRender {
 
         private String getStyleDecl(String fontFamily) {
             String css = "* {font-size: 8pt; font-family: \"" + fontFamily + "\" } " +
-                            "table {width: 100%; border: 1px solid black; border-collapse: collapse;} " +
-                            "td {border: 1px solid black; min-width: 10pt; text-align: center;} ";
+                    "table {table-layout: fixed; width: 100%; border-collapse: collapse; border: 1px solid black;} " +
+                    "col {} " +
+                    ".glyph {width: 1.35em; border-right-width: 2px;} " +
+                    "td {border: 1px solid black; }" +
+                    "td .glyph {}";
 
             return "<style type=\"text/css\">\n" + css + "\n</style>\n";
         }
+    }
+
+
+    private static class Table {
+        private int colCnt;
+
+        private List cols = new ArrayList();
+        private List headerLines = new ArrayList();
+
+        public Table(int colCnt) {
+            this.colCnt = colCnt;
+        }
+
+        public String toHtml(String fontFamily, int curFrom) {
+            StringBuilder sb = new StringBuilder();
+            for (Iterator it = headerLines.iterator(); it.hasNext();) {
+                String line = (String) it.next();
+                sb.append("<p>").append(line).append("</p>\n");
+
+            }
+            sb.append("<p>Table of Unicode Characters</p>\n");
+            sb.append("<p>Using font: ").append(fontFamily).append(", Unicode code points starting with ").append(curFrom).append("</p>\n");
+            sb.append("<p>Empty cell means no glyph available; ! means codepoint not allowed in XML, per spec.</p>\n");
+
+            sb.append("<table>\n");
+            for (int i = 0; i < colCnt; i++) {
+                sb.append("<col class=\"").append(((Col) cols.get(i)).cssClass).append("\"/>\n");
+            }
+            int cnt = 0;
+            sb.append("<tr>\n");
+            for (Iterator it = cols.iterator(); it.hasNext();) {
+                Col col = (Col) it.next();
+                sb.append("<td class=\"").append(((Col) cols.get(cnt)).cssClass).append("\">").append(col.content).append("</td>");
+                if (++cnt % colCnt == 0 && it.hasNext()) {
+                    sb.append("\n</tr>\n");
+                    sb.append("<tr>\n");
+                }
+            }
+            sb.append("\n</tr>\n");
+            sb.append("</table>\n");
+            return sb.toString();
+        }
 
         public void addColumn(String content) {
-            cols.add(content);
+            cols.add(new Col("", content));
+
         }
+        public void addGlyph(String content) {
+            cols.add(new Col("glyph", content));
+        }
+
+        public void addHeaderLine(String text) {
+            headerLines.add(text);
+        }
+
+        static class Col {
+            private final String cssClass;
+            private final String content;
+
+            public Col(String cssClass, String content) {
+                this.cssClass = cssClass;
+                this.content = content;
+            }
+        }
+
     }
 }
