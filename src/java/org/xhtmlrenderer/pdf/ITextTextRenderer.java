@@ -33,7 +33,8 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import com.lowagie.text.pdf.BaseFont;
 
 public class ITextTextRenderer implements TextRenderer {
-
+    private static float TEXT_MEASURING_DELTA = 0.01f;
+    
     public void setup(FontContext context) {
     }
 
@@ -69,7 +70,12 @@ public class ITextTextRenderer implements TextRenderer {
 
     public int getWidth(FontContext context, FSFont font, String string) {
         BaseFont bf = ((ITextFSFont)font).getFontDescription().getFont();
-        return (int)Math.ceil(bf.getWidthPoint(string, font.getSize2D()));
+        float result = bf.getWidthPoint(string, font.getSize2D());
+        if (result - Math.floor(result) < TEXT_MEASURING_DELTA) {
+            return (int)result;
+        } else {
+            return (int)Math.ceil(result); 
+        }
     }
 
     public void setFontScale(float scale) {
