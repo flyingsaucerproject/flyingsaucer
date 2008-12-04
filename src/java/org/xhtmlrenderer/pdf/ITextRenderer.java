@@ -81,6 +81,8 @@ public class ITextRenderer {
     private PdfWriter _writer;
     
     private PDFEncryption _pdfEncryption;
+    
+    private PDFCreationListener _listener;
 
     public ITextRenderer() {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
@@ -239,6 +241,7 @@ public class ITextRenderer {
     
     public void finishPDF() {
         if (_pdfDoc != null) {
+            fireOnClose();
             _pdfDoc.close();
         }
     }
@@ -272,15 +275,20 @@ public class ITextRenderer {
         }
         doc.open();
         
-        if (! finish) {
-            _pdfDoc = doc;
-            _writer = writer;
-        }
+        _pdfDoc = doc;
+        _writer = writer;
         
         writePDF(pages, c, firstPageSize, doc, writer);
         
         if (finish) {
+            fireOnClose();
             doc.close();
+        }
+    }
+    
+    private void fireOnClose() {
+        if (_listener != null) {
+            _listener.onClose(this);
         }
     }
 
@@ -438,5 +446,17 @@ public class ITextRenderer {
         public boolean isFocus(Element e) {
             return false;
         }
+    }
+
+    public PDFCreationListener getListener() {
+        return _listener;
+    }
+
+    public void setListener(PDFCreationListener listener) {
+        _listener = listener;
+    }
+    
+    public PdfWriter getWriter() {
+        return _writer;
     }
 }
