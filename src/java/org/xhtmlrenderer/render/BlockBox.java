@@ -1553,7 +1553,7 @@ public class BlockBox extends Box implements InlinePaintable {
         for (Iterator i = _inlineContent.iterator(); i.hasNext();) {
             Styleable child = (Styleable) i.next();
 
-            if (child.getStyle().isAbsolute() || child.getStyle().isFixed()) {
+            if (child.getStyle().isAbsolute() || child.getStyle().isFixed() || child.getStyle().isRunning()) {
                 continue;
             }
 
@@ -2101,6 +2101,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.99  2008/12/14 19:20:05  peterbrant
+ * Skip running blocks when calculating min/max widths
+ *
  * Revision 1.98  2008/12/14 13:53:31  peterbrant
  * Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
  *
