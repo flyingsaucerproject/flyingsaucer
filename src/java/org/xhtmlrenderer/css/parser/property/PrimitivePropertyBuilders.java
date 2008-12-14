@@ -1020,6 +1020,16 @@ public class PrimitivePropertyBuilders {
         }
     }
     
+    public static class FSKeepWithInline extends SingleIdent {
+        // auto | keep 
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] { IdentValue.AUTO, IdentValue.KEEP });
+        
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }          
+    }
+    
     public static class Left extends LengthLikeWithAuto {
     }
     

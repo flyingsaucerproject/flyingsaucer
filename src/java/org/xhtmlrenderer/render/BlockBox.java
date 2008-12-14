@@ -41,6 +41,7 @@ import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.BlockBoxing;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.BoxBuilder;
+import org.xhtmlrenderer.layout.BreakAtLineContext;
 import org.xhtmlrenderer.layout.CounterFunction;
 import org.xhtmlrenderer.layout.FloatManager;
 import org.xhtmlrenderer.layout.InlineBoxing;
@@ -915,7 +916,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
         switch (getChildrenContentType()) {
             case CONTENT_INLINE:
-                layoutInlineChildren(c, contentStart, 0, true);
+                layoutInlineChildren(c, contentStart, calcInitialBreakAtLine(c), true);
                 break;
             case CONTENT_BLOCK:
                 BlockBoxing.layoutContent(c, this, contentStart);
@@ -1788,6 +1789,37 @@ public class BlockBox extends Box implements InlinePaintable {
 
         return NO_BASELINE;
     }
+    
+    protected int calcInitialBreakAtLine(LayoutContext c) {
+        BreakAtLineContext bContext = c.getBreakAtLineContext();
+        if (bContext != null && bContext.getBlock() == this) {
+            return bContext.getLine();
+        }
+        return 0;
+    }
+    
+    public boolean isCurrentBreakAtLineContext(LayoutContext c) {
+        BreakAtLineContext bContext = c.getBreakAtLineContext();
+        return bContext != null && bContext.getBlock() == this;
+    }
+    
+    public BreakAtLineContext calcBreakAtLineContext(LayoutContext c) {
+        if (! c.isPrint() || ! getStyle().isKeepWithInline()) {
+            return null;
+        }
+        
+        LineBox breakLine = findLastNthLineBox((int)getStyle().asFloat(CSSName.WIDOWS));
+        if (breakLine != null) {
+            PageBox linePage = c.getRootLayer().getLastPage(c, breakLine);
+            PageBox ourPage = c.getRootLayer().getLastPage(c, this);
+            if (linePage != null && ourPage != null && linePage.getPageNo() + 1 == ourPage.getPageNo()) {
+                BlockBox breakBox = (BlockBox)breakLine.getParent();
+                return new BreakAtLineContext(breakBox, breakBox.findOffset(breakLine));
+            }
+        }
+        
+        return null;
+    }
 
     public int calcInlineBaseline(CssContext c) {
     	if (isReplaced() && getReplacedElement().hasBaseline()) {
@@ -1801,6 +1833,56 @@ public class BlockBox extends Box implements InlinePaintable {
                 return lastLine.getAbsY() + lastLine.getBaseline() - getAbsY();
             }
     	}
+    }
+    
+    public int findOffset(Box box) {
+        int ccount = getChildCount();
+        for (int i = 0; i < ccount; i++) {
+            if (getChild(i) == box) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    public LineBox findLastNthLineBox(int count) {
+        LastLineBoxContext context = new LastLineBoxContext(count);
+        findLastLineBox(context);
+        return context.line;
+    }
+    
+    private static class LastLineBoxContext {
+        public int current;
+        public LineBox line;
+        
+        public LastLineBoxContext(int i) {
+            this.current = i;
+        }
+    }
+    
+    private void findLastLineBox(LastLineBoxContext context) {
+        int type = getChildrenContentType();
+        int ccount = getChildCount();
+        if (ccount > 0) {
+            if (type == CONTENT_INLINE) {
+                for (int i = ccount - 1; i >= 0; i--) {
+                    LineBox child = (LineBox) getChild(i);
+                    if (child.getHeight() > 0) {
+                        context.line = child;
+                        if (--context.current == 0) {
+                            return;
+                        }
+                    }
+                }
+            } else if (type == CONTENT_BLOCK) {
+                for (int i = ccount - 1; i >= 0; i--) {
+                    ((BlockBox) getChild(i)).findLastLineBox(context);
+                    if (context.current == 0) {
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private LineBox findLastLineBox() {
@@ -1825,6 +1907,43 @@ public class BlockBox extends Box implements InlinePaintable {
         }
 
         return null;
+    }
+    
+    private LineBox findFirstLineBox() {
+        int type = getChildrenContentType();
+        int ccount = getChildCount();
+        if (ccount > 0) {
+            if (type == CONTENT_INLINE) {
+                for (int i = 0; i < ccount; i++) {
+                    LineBox result = (LineBox) getChild(i);
+                    if (result.getHeight() > 0) {
+                        return result;
+                    }
+                }
+            } else if (type == CONTENT_BLOCK) {
+                for (int i = 0; i < ccount; i++) {
+                    LineBox result = ((BlockBox) getChild(i)).findFirstLineBox();
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+    
+    public boolean isNeedsKeepWithInline(LayoutContext c) {
+        if (c.isPrint() && getStyle().isKeepWithInline()) {
+            LineBox line = findFirstLineBox();
+            if (line != null) {
+                PageBox linePage = c.getRootLayer().getFirstPage(c, line);
+                PageBox ourPage = c.getRootLayer().getFirstPage(c, this);
+                return linePage != null && ourPage != null && linePage.getPageNo() == ourPage.getPageNo()+1;
+            }
+        } 
+        
+        return false;
     }
 
     public boolean isFloated() {
@@ -1982,6 +2101,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.98  2008/12/14 13:53:31  peterbrant
+ * Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
+ *
  * Revision 1.97  2008/09/06 18:21:50  peterbrant
  * Need to account for list-marker-position: inside when calculating inline min/max widths
  *

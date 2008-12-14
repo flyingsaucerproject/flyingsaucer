@@ -1163,6 +1163,10 @@ public class CalculatedStyle {
     public boolean isListMarkerInside() {
         return isIdent(CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE);
     }
+    
+    public boolean isKeepWithInline() {
+        return isIdent(CSSName.FS_KEEP_WITH_INLINE, IdentValue.KEEP);
+    }
 
 }// end class
 
@@ -1170,6 +1174,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.105  2008/12/14 13:53:32  peterbrant
+ * Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
+ *
  * Revision 1.104  2008/09/06 18:21:50  peterbrant
  * Need to account for list-marker-position: inside when calculating inline min/max widths
  *

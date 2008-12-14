@@ -240,7 +240,19 @@ public final class CSSName implements Comparable {
                     "none",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSFontMetricSrc()
-            );    
+            );  
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_KEEP_WITH_INLINE =
+            addProperty(
+                    "-fs-keep-with-inline",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSKeepWithInline()
+            );      
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1700,6 +1712,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2008/12/14 13:53:30  peterbrant
+ * Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
+ *
  * Revision 1.37  2007/10/31 23:14:40  peterbrant
  * Add rudimentary support for @font-face rules
  *

@@ -228,7 +228,7 @@ public class InlineBoxing {
                         saveLine(currentLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, pendingFloats, 
                                 hasFirstLinePEs, pendingInlineLayers, markerData,
-                                contentStart, breakAtLine > 0 && lineOffset == breakAtLine);
+                                contentStart, isAlwaysBreak(c, box, breakAtLine, lineOffset));
                         lineOffset++;
                         markerData = null;
                         contentStart = 0;
@@ -293,7 +293,7 @@ public class InlineBoxing {
                        saveLine(currentLine, c, box, minimumLineHeight,
                                maxAvailableWidth, pendingFloats,  hasFirstLinePEs, 
                                pendingInlineLayers, markerData, contentStart,
-                               breakAtLine > 0 && lineOffset == breakAtLine);
+                               isAlwaysBreak(c, box, breakAtLine, lineOffset));
                        lineOffset++;
                        markerData = null;
                        contentStart = 0;
@@ -339,7 +339,7 @@ public class InlineBoxing {
         saveLine(currentLine, c, box, minimumLineHeight,
                 maxAvailableWidth, pendingFloats, hasFirstLinePEs,
                 pendingInlineLayers, markerData, contentStart,
-                breakAtLine > 0 && lineOffset == breakAtLine);
+                isAlwaysBreak(c, box, breakAtLine, lineOffset));
         if (currentLine.isFirstLine() && currentLine.getHeight() == 0 && markerData != null) {
             c.setCurrentMarkerData(markerData);
         }
@@ -348,6 +348,15 @@ public class InlineBoxing {
         box.setContentWidth(maxAvailableWidth);
         box.setHeight(currentLine.getY() + currentLine.getHeight());
     }
+    
+    private static boolean isAlwaysBreak(LayoutContext c, BlockBox parent, int breakAtLine, int lineOffset) {
+        if (parent.isCurrentBreakAtLineContext(c)) {
+            return lineOffset == breakAtLine;
+        } else {
+            return breakAtLine > 0 && lineOffset == breakAtLine;
+        }
+    }
+    
     
     private static InlineLayoutBox addFirstLetterBox(LayoutContext c, LineBox current, 
             InlineLayoutBox currentIB, LineBreakContext lbContext, int maxAvailableWidth, 
@@ -390,7 +399,7 @@ public class InlineBoxing {
         InlineLayoutBox currentIB = null;
 
         if (current instanceof InlineLayoutBox) {
-            currentIB = (InlineLayoutBox) currentIB;
+            currentIB = (InlineLayoutBox)current;
             x += currentIB.getLeftMarginBorderPadding(c);
         }
 

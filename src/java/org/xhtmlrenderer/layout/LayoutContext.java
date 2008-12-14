@@ -84,6 +84,8 @@ public class LayoutContext implements CssContext {
     
     private boolean _mayCheckKeepTogether = true;
     
+    private BreakAtLineContext _breakAtLineContext;
+    
     public TextRenderer getTextRenderer() {
         return _sharedContext.getTextRenderer();
     }
@@ -513,5 +515,13 @@ public class LayoutContext implements CssContext {
 
     public void setMayCheckKeepTogether(boolean mayKeepTogether) {
         _mayCheckKeepTogether = mayKeepTogether;
+    }
+
+    public BreakAtLineContext getBreakAtLineContext() {
+        return _breakAtLineContext;
+    }
+
+    public void setBreakAtLineContext(BreakAtLineContext breakAtLineContext) {
+        _breakAtLineContext = breakAtLineContext;
     }
 }

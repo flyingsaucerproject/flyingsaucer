@@ -116,6 +116,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue JUSTIFY = addValue("justify");
     public final static IdentValue KATAKANA = addValue("katakana");
     public final static IdentValue KATAKANA_IROHA = addValue("katakana-iroha");
+    public final static IdentValue KEEP = addValue("keep");
     public final static IdentValue LANDSCAPE = addValue("landscape");
     public final static IdentValue LEFT = addValue("left");
     public final static IdentValue LIGHTER = addValue("lighter");
@@ -341,6 +342,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2008/12/14 13:53:31  peterbrant
+ * Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
+ *
  * Revision 1.34  2008/07/27 00:21:46  peterbrant
  * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
  *

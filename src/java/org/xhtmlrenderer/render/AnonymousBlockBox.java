@@ -44,7 +44,7 @@ public class AnonymousBlockBox extends BlockBox {
     }
 
     public void layout(LayoutContext c) {
-        layoutInlineChildren(c, 0, 0, true);
+        layoutInlineChildren(c, 0, calcInitialBreakAtLine(c), true);
     }
 
     public int getContentWidth() {
@@ -109,6 +109,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2008/12/14 13:53:32  peterbrant
+ * Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
+ *
  * Revision 1.26  2007/08/28 22:31:26  peterbrant
  * Implement widows and orphans properties
  *
