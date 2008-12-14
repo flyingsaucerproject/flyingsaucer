@@ -753,7 +753,7 @@ public class CalculatedStyle {
 
     public boolean isInline() {
         return isIdent(CSSName.DISPLAY, IdentValue.INLINE) &&
-                ! (isFloated() || isAbsolute() || isFixed());
+                ! (isFloated() || isAbsolute() || isFixed() || isRunning());
     }
 
     public boolean isInlineBlock() {
@@ -1174,6 +1174,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.106  2008/12/14 19:27:16  peterbrant
+ * Always treat running elements as blocks
+ *
  * Revision 1.105  2008/12/14 13:53:32  peterbrant
  * Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
  *
