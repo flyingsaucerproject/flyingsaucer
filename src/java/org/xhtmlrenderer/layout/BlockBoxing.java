@@ -87,7 +87,8 @@ public class BlockBoxing {
             }
 
             layoutBlockChild(
-                    c, block, child, false, childOffset, NO_PAGE_TRIM, relayoutData.getLayoutState());
+                    c, block, child, false, childOffset, NO_PAGE_TRIM, 
+                    relayoutData == null ? null : relayoutData.getLayoutState());
 
             if (c.isPrint()) {
                 if (mayCheckKeepTogether) {
@@ -467,6 +468,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.68  2009/01/23 22:32:07  peterbrant
+ * Fix NPE reported by Christophe M (thanks Patrick)
+ *
  * Revision 1.67  2008/12/14 13:53:30  peterbrant
  * Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
  *
