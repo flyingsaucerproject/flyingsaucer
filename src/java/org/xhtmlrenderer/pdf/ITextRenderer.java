@@ -62,6 +62,7 @@ import org.xml.sax.InputSource;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.PdfName;
 
 
 public class ITextRenderer {
@@ -81,7 +82,11 @@ public class ITextRenderer {
     private PdfWriter _writer;
     
     private PDFEncryption _pdfEncryption;
-    
+
+    // note: not hard-coding a default version in the _pdfVersion field as this may change between iText releases
+    // check for null before calling writer.setPdfVersion()
+    private PdfName _pdfVersion;
+
     private PDFCreationListener _listener;
 
     public ITextRenderer() {
@@ -171,6 +176,15 @@ public class ITextRenderer {
     public void setPDFEncryption(PDFEncryption pdfEncryption) {
         _pdfEncryption = pdfEncryption;
     }
+
+    public void setPDFVersion(PdfName _pdfVersion) {
+        this._pdfVersion = _pdfVersion;
+    }
+
+    public PdfName getPDFVersion() {
+        return _pdfVersion;
+    }
+
 
     public void layout() {
         LayoutContext c = newLayoutContext();
@@ -272,6 +286,9 @@ public class ITextRenderer {
             writer.setEncryption(
                     _pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(), 
                     _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
+        }
+        if (_pdfVersion != null) {
+            writer.setPdfVersion(_pdfVersion);
         }
         doc.open();
         
@@ -433,7 +450,7 @@ public class ITextRenderer {
     public List findPagePositionsByID(Pattern pattern) {
         return _outputDevice.findPagePositionsByID(newLayoutContext(), pattern);
     }
-    
+
     private static final class NullUserInterface implements UserInterface {
         public boolean isHover(Element e) {
             return false;

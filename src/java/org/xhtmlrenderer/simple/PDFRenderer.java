@@ -1,12 +1,16 @@
 package org.xhtmlrenderer.simple;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfName;
+import com.lowagie.text.pdf.PdfWriter;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * <p/>
@@ -25,18 +29,29 @@ import java.io.OutputStream;
  * @author Patrick Wright
  */
 public class PDFRenderer {
+    private static final Map versionMap = new HashMap();
+
+    static {
+        versionMap.put("1.2", PdfWriter.PDF_VERSION_1_2);
+        versionMap.put("1.3", PdfWriter.PDF_VERSION_1_3);
+        versionMap.put("1.4", PdfWriter.PDF_VERSION_1_4);
+        versionMap.put("1.5", PdfWriter.PDF_VERSION_1_5);
+        versionMap.put("1.6", PdfWriter.PDF_VERSION_1_6);
+        versionMap.put("1.7", PdfWriter.PDF_VERSION_1_7);
+    }
     /**
      * Renders the XML file at the given URL as a PDF file
      * at the target location.
      *
      * @param url url for the XML file to render
      * @param pdf path to the PDF file to create
+     * @param pdfVersion
      * @throws IOException       if the URL or PDF location is
      *                           invalid
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(String url, String pdf)
+    public static void renderToPDF(String url, String pdf, PdfName pdfVersion)
             throws IOException, DocumentException {
 
         ITextRenderer renderer = new ITextRenderer();
@@ -49,16 +64,18 @@ public class PDFRenderer {
      *
      * @param file XML file to render
      * @param pdf  path to the PDF file to create
+     * @param pdfVersion
      * @throws IOException       if the file or PDF location is
      *                           invalid
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(File file, String pdf)
+    public static void renderToPDF(File file, String pdf, PdfName pdfVersion)
             throws IOException, DocumentException {
 
         ITextRenderer renderer = new ITextRenderer();
         renderer.setDocument(file);
+        renderer.setPDFVersion(pdfVersion);
         doRenderToPDF(renderer, pdf);
     }
 
@@ -98,21 +115,33 @@ public class PDFRenderer {
      * the document
      */
     public static void main(String[] args) throws IOException, DocumentException {
-        if (args.length != 2) {
+        if (args.length < 2) {
             usage("Incorrect argument list.");
+        }
+        PdfName pdfVersion = null;
+        if (args.length == 3) {
+            pdfVersion = checkVersion(args[2]);
         }
         String url = args[0];
         if (url.indexOf("://") == -1) {
             // maybe it's a file
             File f = new File(url);
             if (f.exists()) {
-                PDFRenderer.renderToPDF(f, args[1]);
+                PDFRenderer.renderToPDF(f, args[1], pdfVersion);
             } else {
                 usage("File to render is not found: " + url);
             }
         } else {
-            PDFRenderer.renderToPDF(url, args[1]);
+            PDFRenderer.renderToPDF(url, args[1], pdfVersion);
         }
+    }
+
+    private static PdfName checkVersion(String version) {
+        PdfName pdfVersion = (PdfName) versionMap.get(version.trim());
+        if (pdfVersion == null) {
+            usage("Invalid PDF version number; use 1.2 through 1.7");
+        }
+        return pdfVersion;
     }
 
     /** prints out usage information, with optional error message */
@@ -120,7 +149,8 @@ public class PDFRenderer {
         if (err != null && err.length() > 0) {
             System.err.println("==>" + err);
         }
-        System.err.println("Usage: ... [url] [pdf]");
+        System.err.println("Usage: ... url pdf [version]");
+        System.err.println("   where version (optional) is between 1.2 and 1.7");
         System.exit(1);
     }
 }
