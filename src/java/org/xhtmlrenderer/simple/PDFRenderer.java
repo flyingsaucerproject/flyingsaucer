@@ -45,7 +45,23 @@ public class PDFRenderer {
      *
      * @param url url for the XML file to render
      * @param pdf path to the PDF file to create
-     * @param pdfVersion
+     * @throws IOException       if the URL or PDF location is
+     *                           invalid
+     * @throws DocumentException if an error occurred
+     *                           while building the Document.
+     */
+    public static void renderToPDF(String url, String pdf)
+            throws IOException, DocumentException {
+
+        renderToPDF(url, pdf,  null);
+    }
+    /**
+     * Renders the XML file at the given URL as a PDF file
+     * at the target location.
+     *
+     * @param url url for the XML file to render
+     * @param pdf path to the PDF file to create
+     * @param pdfVersion version of PDF to output; null uses default version
      * @throws IOException       if the URL or PDF location is
      *                           invalid
      * @throws DocumentException if an error occurred
@@ -56,6 +72,7 @@ public class PDFRenderer {
 
         ITextRenderer renderer = new ITextRenderer();
         renderer.setDocument(url);
+        renderer.setPDFVersion(pdfVersion);
         doRenderToPDF(renderer, pdf);
     }
 
@@ -64,7 +81,23 @@ public class PDFRenderer {
      *
      * @param file XML file to render
      * @param pdf  path to the PDF file to create
-     * @param pdfVersion
+     * @throws IOException       if the file or PDF location is
+     *                           invalid
+     * @throws DocumentException if an error occurred
+     *                           while building the Document.
+     */
+    public static void renderToPDF(File file, String pdf)
+            throws IOException, DocumentException {
+
+        renderToPDF(file, pdf, null);
+    }
+
+    /**
+     * Renders the XML file as a PDF file at the target location.
+     *
+     * @param file XML file to render
+     * @param pdf  path to the PDF file to create
+     * @param pdfVersion version of PDF to output; null uses default version
      * @throws IOException       if the file or PDF location is
      *                           invalid
      * @throws DocumentException if an error occurred
