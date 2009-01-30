@@ -32,12 +32,12 @@ public class PDFRenderer {
     private static final Map versionMap = new HashMap();
 
     static {
-        versionMap.put("1.2", PdfWriter.PDF_VERSION_1_2);
-        versionMap.put("1.3", PdfWriter.PDF_VERSION_1_3);
-        versionMap.put("1.4", PdfWriter.PDF_VERSION_1_4);
-        versionMap.put("1.5", PdfWriter.PDF_VERSION_1_5);
-        versionMap.put("1.6", PdfWriter.PDF_VERSION_1_6);
-        versionMap.put("1.7", PdfWriter.PDF_VERSION_1_7);
+        versionMap.put("1.2", Character.valueOf(PdfWriter.VERSION_1_2));
+        versionMap.put("1.3", Character.valueOf(PdfWriter.VERSION_1_3));
+        versionMap.put("1.4", Character.valueOf(PdfWriter.VERSION_1_4));
+        versionMap.put("1.5", Character.valueOf(PdfWriter.VERSION_1_5));
+        versionMap.put("1.6", Character.valueOf(PdfWriter.VERSION_1_6));
+        versionMap.put("1.7", Character.valueOf(PdfWriter.VERSION_1_7));
     }
     /**
      * Renders the XML file at the given URL as a PDF file
@@ -53,7 +53,7 @@ public class PDFRenderer {
     public static void renderToPDF(String url, String pdf)
             throws IOException, DocumentException {
 
-        renderToPDF(url, pdf,  null);
+        renderToPDF(url, pdf, null);
     }
     /**
      * Renders the XML file at the given URL as a PDF file
@@ -67,12 +67,12 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(String url, String pdf, PdfName pdfVersion)
+    public static void renderToPDF(String url, String pdf, Character pdfVersion)
             throws IOException, DocumentException {
 
         ITextRenderer renderer = new ITextRenderer();
         renderer.setDocument(url);
-        renderer.setPDFVersion(pdfVersion);
+        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion.charValue());
         doRenderToPDF(renderer, pdf);
     }
 
@@ -103,12 +103,12 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(File file, String pdf, PdfName pdfVersion)
+    public static void renderToPDF(File file, String pdf, Character pdfVersion)
             throws IOException, DocumentException {
 
         ITextRenderer renderer = new ITextRenderer();
         renderer.setDocument(file);
-        renderer.setPDFVersion(pdfVersion);
+        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion.charValue());
         doRenderToPDF(renderer, pdf);
     }
 
@@ -151,7 +151,7 @@ public class PDFRenderer {
         if (args.length < 2) {
             usage("Incorrect argument list.");
         }
-        PdfName pdfVersion = null;
+        Character pdfVersion = null;
         if (args.length == 3) {
             pdfVersion = checkVersion(args[2]);
         }
@@ -169,12 +169,12 @@ public class PDFRenderer {
         }
     }
 
-    private static PdfName checkVersion(String version) {
-        PdfName pdfVersion = (PdfName) versionMap.get(version.trim());
-        if (pdfVersion == null) {
+    private static Character checkVersion(String version) {
+        final Character val = (Character) versionMap.get(version.trim());
+        if (val == null) {
             usage("Invalid PDF version number; use 1.2 through 1.7");
         }
-        return pdfVersion;
+        return val;
     }
 
     /** prints out usage information, with optional error message */

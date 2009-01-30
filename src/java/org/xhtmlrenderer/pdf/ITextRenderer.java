@@ -62,7 +62,6 @@ import org.xml.sax.InputSource;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.PdfName;
 
 
 public class ITextRenderer {
@@ -85,7 +84,17 @@ public class ITextRenderer {
 
     // note: not hard-coding a default version in the _pdfVersion field as this may change between iText releases
     // check for null before calling writer.setPdfVersion()
-    private PdfName _pdfVersion;
+    // use one of the values in PDFWriter.VERSION...
+    private Character _pdfVersion;
+
+    private char[] validPdfVersions = new char[]{
+            PdfWriter.VERSION_1_2,
+            PdfWriter.VERSION_1_3,
+            PdfWriter.VERSION_1_4,
+            PdfWriter.VERSION_1_5,
+            PdfWriter.VERSION_1_6,
+            PdfWriter.VERSION_1_7
+    };
 
     private PDFCreationListener _listener;
 
@@ -177,12 +186,19 @@ public class ITextRenderer {
         _pdfEncryption = pdfEncryption;
     }
 
-    public void setPDFVersion(PdfName _pdfVersion) {
-        this._pdfVersion = _pdfVersion;
+    public void setPDFVersion(char _v) {
+        for (int i = 0; i < validPdfVersions.length; i++) {
+            if (_v == validPdfVersions[i]) {
+                _pdfVersion = Character.valueOf(_v);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Invalid PDF version character; use " +
+                "valid constants from PdfWriter (e.g. PdfWriter.VERSION_1_2)");
     }
 
-    public PdfName getPDFVersion() {
-        return _pdfVersion;
+    public char getPDFVersion() {
+        return _pdfVersion == null ? '0' : _pdfVersion.charValue();
     }
 
 
@@ -282,13 +298,13 @@ public class ITextRenderer {
         com.lowagie.text.Document doc = 
             new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
         PdfWriter writer = PdfWriter.getInstance(doc, os);
+        if (_pdfVersion != null) {
+            writer.setPdfVersion(_pdfVersion.charValue());
+        }
         if (_pdfEncryption != null) {
             writer.setEncryption(
-                    _pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(), 
+                    _pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
                     _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
-        }
-        if (_pdfVersion != null) {
-            writer.setPdfVersion(_pdfVersion);
         }
         doc.open();
         
