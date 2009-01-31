@@ -53,7 +53,7 @@ public class PDFRender {
 
             Document doc = XMLResource.load(new InputSource(url)).getDocument();
 
-            renderer.setDocument(doc, "file:/Users/patrick/Projects/Dev/Javanet/xhtmlrenderer/temp/.");
+            renderer.setDocument(doc, url);
             renderer.layout();
             renderer.createPDF(os);
 
