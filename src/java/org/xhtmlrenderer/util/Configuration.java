@@ -331,6 +331,7 @@ public class Configuration {
             Collections.sort(lp);
             Iterator iter = lp.iterator();
 
+            // override existing properties
             int cnt = 0;
             while (iter.hasNext()) {
                 String key = (String) iter.next();
@@ -341,7 +342,24 @@ public class Configuration {
                     cnt++;
                 }
             }
-            finer("Configuration: " + cnt + " properties overridden from override properties file.");
+            finer("Configuration: " + cnt + " properties overridden from secondary properties file.");
+            // and add any new properties we don't already know about (needed for custom logging
+            // configuration)
+            Enumeration allRead = temp.keys();
+            List ap = Collections.list(allRead);
+            Collections.sort(ap);
+            iter = ap.iterator();
+            cnt = 0;
+            while (iter.hasNext()) {
+                String key = (String) iter.next();
+                String val = temp.getProperty(key);
+                if (val != null) {
+                    this.properties.setProperty(key, val);
+                    finer("  (+)" + key + " -> " + val);
+                    cnt++;
+                }
+            }
+            finer("Configuration: " + cnt + " properties added from secondary properties file.");
         } catch (SecurityException e) {
             // can happen in a sandbox environment
             System.err.println(e.getLocalizedMessage());
@@ -396,6 +414,21 @@ public class Configuration {
             }
         }
         fine("Configuration: " + cnt + " properties overridden from System properties.");
+
+        // add any additional properties we don't already know about (e.g. used for extended logging properties)
+        final Properties sysProps = System.getProperties();
+        final Enumeration keys = sysProps.keys();
+        cnt = 0;
+        while (keys.hasMoreElements()) {
+            String key = (String) keys.nextElement();
+            if (key.startsWith("xr.") && !this.properties.containsKey(key)) {
+                final Object val = sysProps.get(key);
+                this.properties.put(key, val);
+                finer("  (+) " + key);
+                cnt++;
+            }
+        }
+        fine("Configuration: " + cnt + " FS properties added from System properties.");
     }
 
     /**
@@ -833,6 +866,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2009/02/08 15:18:46  pdoubleya
+ * Support reading properties which are not in our standard config file, passed in via an override config file or via System properties. This is to support extended configuration parameters for JDK logging, e.g. appenders, formatters, etc.
+ *
  * Revision 1.22  2008/05/30 14:48:04  pdoubleya
  * Issue 243: handle case where for some reason, a JNLP launched app could not read the default configuration file. This was throwing an RE which then cause FS logging to fail. Now load hard-coded properties (ick!) if we can't read the file itself.
  *
