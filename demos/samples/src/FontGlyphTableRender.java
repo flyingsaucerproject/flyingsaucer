@@ -235,16 +235,12 @@ public class FontGlyphTableRender {
     private Font loadFont(String fontPath) throws IOException {
         Font font;
         try {
-            font = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath));
+            font = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath).toURL().openStream());
+            return font.deriveFont(Font.PLAIN, 12);
         } catch (FontFormatException e) {
-            try {
-                font = Font.createFont(Font.TYPE1_FONT, new File(fontPath));
-            } catch (FontFormatException e1) {
-                System.err.println(fontPath + " INVALID FONT FORMAT " + e.getMessage());
-                return null;
-            }
+            System.err.println(fontPath + " INVALID FONT FORMAT " + e.getMessage());
+            return null;
         }
-        return font.deriveFont(Font.PLAIN, 12);
     }
 
     private void deferredChangePage(final int startAt) {
@@ -302,7 +298,7 @@ public class FontGlyphTableRender {
         Table table = new Table(16);
         for (int j = from; j <= to; j++) {
             if (isLegalInXml(j)) {
-                if (currentFont.canDisplay(j)) {
+                if (currentFont.canDisplay((char)j)) {
                     table.addColumn("&amp;#" + j + ";");
                     table.addGlyph("&#" + j + ";");
                 } else {
@@ -413,7 +409,9 @@ public class FontGlyphTableRender {
                     super.internalEntityDecl(name, value);
                     if (isEnt) {
                         if (name.startsWith("%")) return;
-                        int codePoint = Character.codePointAt(value.toCharArray(), 0);
+                        int codePoint = (int)value.charAt(0);
+                        // FIXME: codePointAt not available in 1.4
+                        //  Character.codePointAt(value.toCharArray(), 0);
                         table.addColumn("&amp;" + name + ";");
                         table.addColumn("&amp;#" + codePoint + ";");
                         table.addGlyph("&#" + codePoint + ";");
@@ -454,7 +452,7 @@ public class FontGlyphTableRender {
 
     private static class Page {
         public String toHtml(String bodyContent, String fontFamily) {
-            StringBuilder sb = new StringBuilder();
+            StringBuffer sb = new StringBuffer();
             sb.append(getHeadDecl(getStyleDecl(fontFamily)));
             sb.append("<body>\n");
             sb.append(bodyContent);
@@ -497,7 +495,7 @@ public class FontGlyphTableRender {
         }
 
         public String toHtml(String fontFamily, int curFrom) {
-            StringBuilder sb = new StringBuilder();
+            StringBuffer sb = new StringBuffer();
             for (Iterator it = headerLines.iterator(); it.hasNext();) {
                 String line = (String) it.next();
                 sb.append("<p>").append(line).append("</p>\n");

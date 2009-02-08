@@ -1,7 +1,6 @@
 package org.xhtmlrenderer.simple;
 
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfWriter;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
@@ -32,12 +31,12 @@ public class PDFRenderer {
     private static final Map versionMap = new HashMap();
 
     static {
-        versionMap.put("1.2", Character.valueOf(PdfWriter.VERSION_1_2));
-        versionMap.put("1.3", Character.valueOf(PdfWriter.VERSION_1_3));
-        versionMap.put("1.4", Character.valueOf(PdfWriter.VERSION_1_4));
-        versionMap.put("1.5", Character.valueOf(PdfWriter.VERSION_1_5));
-        versionMap.put("1.6", Character.valueOf(PdfWriter.VERSION_1_6));
-        versionMap.put("1.7", Character.valueOf(PdfWriter.VERSION_1_7));
+        versionMap.put("1.2", new Character(PdfWriter.VERSION_1_2));
+        versionMap.put("1.3", new Character(PdfWriter.VERSION_1_3));
+        versionMap.put("1.4", new Character(PdfWriter.VERSION_1_4));
+        versionMap.put("1.5", new Character(PdfWriter.VERSION_1_5));
+        versionMap.put("1.6", new Character(PdfWriter.VERSION_1_6));
+        versionMap.put("1.7", new Character(PdfWriter.VERSION_1_7));
     }
     /**
      * Renders the XML file at the given URL as a PDF file
@@ -114,6 +113,10 @@ public class PDFRenderer {
 
     /**
      * Internal use, runs the render process
+     * @param renderer
+     * @param pdf
+     * @throws com.lowagie.text.DocumentException
+     * @throws java.io.IOException
      */
     private static void doRenderToPDF(ITextRenderer renderer, String pdf)
             throws IOException, DocumentException {
@@ -177,7 +180,9 @@ public class PDFRenderer {
         return val;
     }
 
-    /** prints out usage information, with optional error message */
+    /** prints out usage information, with optional error message
+     * @param err
+     */
     private static void usage(String err) {
         if (err != null && err.length() > 0) {
             System.err.println("==>" + err);

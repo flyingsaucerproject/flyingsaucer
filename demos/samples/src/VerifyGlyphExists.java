@@ -64,7 +64,6 @@ public class VerifyGlyphExists {
             } else {
                 testForGlyph(codePoint, file);
             }
-            return;
         } else {
             error("Second argument must be a font file path, or a path to a text file listing font file paths");
         }
@@ -75,7 +74,7 @@ public class VerifyGlyphExists {
         LineNumberReader r = null;
         try {
             r = new LineNumberReader(new BufferedReader(new FileReader(file)));
-            String path = null;
+            String path;
             while ((path = r.readLine()) != null) {
                 l.add(path);
             }
@@ -97,11 +96,12 @@ public class VerifyGlyphExists {
             font = loadFont(file.getCanonicalPath());
             if (font == null) {
                 error("Could not load font at path: " + file.getPath());
-            }
-            if (font.canDisplay(codePoint)) {
-                System.out.println("FOUND    &#" + codePoint + "; for " + font + " from " + file.getPath());
             } else {
-                System.out.println("NO GLYPH &#" + codePoint + "; for " + font + " from " + file.getPath());
+                if (font.canDisplay((char) 0)) {  // FIXME: Character.codePoint(codePoint) not in 1.4
+                    System.out.println("FOUND    &#" + codePoint + "; for " + font + " from " + file.getPath());
+                } else {
+                    System.out.println("NO GLYPH &#" + codePoint + "; for " + font + " from " + file.getPath());
+                }
             }
         } catch (IOException e) {
             error("Can't load font at path " + file.getPath() + ", err: " + e.getMessage());
@@ -110,14 +110,14 @@ public class VerifyGlyphExists {
 
     private static Font loadFont(String fontPath) throws IOException {
         try {
-            int format = fontPath.endsWith(".ttf") ? Font.TRUETYPE_FONT : Font.TYPE1_FONT;
-            Font font = Font.createFont(format, new File(fontPath));
+            // FIXME: only TTF supported in 1.4
+            // int format = fontPath.endsWith(".ttf") ? Font.TRUETYPE_FONT : Font.TYPE1_FONT;
+            int format = Font.TRUETYPE_FONT;
+            Font font = Font.createFont(format, new File(fontPath).toURL().openStream());
             return font.deriveFont(Font.PLAIN, 12);
         } catch (FontFormatException e) {
             System.err.println(fontPath + " INVALID FONT FORMAT " + e.getMessage());
             return null;
-        } catch (IOException e) {
-            throw e;
         }
     }
 
