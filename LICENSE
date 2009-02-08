@@ -2,10 +2,13 @@ FLYING SAUCER XML/CSS RENDERER LICENSE COMMENTS
 https://xhtmlrenderer.dev.java.net/
 
 All source code to Flying Saucer itself is licensed under the GNU Lesser General
-Public License (LGPL), version 2.1. A copy of the LGPL can be found 
+Public License (LGPL); you can redistribute it and/or modify it under the terms
+of the GNU Lesser General Public License as published by the Free Software
+Foundation, either version 2.1 of the License, or (at your option) any later version.
+A copy of the LGPL can be found
 on the website of the Free Software Foundation, at 
 http://www.gnu.org/copyleft/lesser.html, and in our distributions under
-license-lgpl-2.1.txt.
+LICENSE-LGPL-2.1.txt.
 
 Flying Saucer relies on several other free or open source projects in 
 order to build and run. Where binary Java JAR files are included, we include
@@ -35,8 +38,8 @@ Not packaged with release; development using version 1.6.x
 iText (PDF generation)
 http://www.lowagie.com/iText/ and http://itextpdf.sourceforge.net/
 License: Mozilla Public License Version 1.1
-Using version itext-paulo 155
-Included as lib/itext-paulo-155.jar
+Using version 2.0.8.
+Included as lib/iText-2.0.8.jar
 
 SVGSalamander (SVG rendering in demo)
 https://svgsalamander.dev.java.net/
@@ -68,7 +71,12 @@ License: LGPL (dual-license with SPL)
 Use version 2.x as Xilize has a dependency on it; used only to produce 
 documentation.
 
-DTD Parser
-http://www.wutka.com/dtdparser.html
-License: LGPL or "Apache-style"; see http://www.wutka.com/dtdparserlicense.html
-Used 1.21 for parsing DTDs to render HTML entities in sample program
+XML-APIs (extracted from Apache Xerces-2)
+http://xerces.apache.org/xerces2-j/
+License: Apache v2
+We include the xml-apis.jar from the Xerces binary distribution in order to allow
+our code to compile on JDK 1.4, which does not include newer XML APIs, even though
+these API implementations will run on version 1.4 of the JRE. The JAR is unmodified
+from the Xerces release, but is renamed as xml-apis-xerces-2.9.1.jar to
+make the version clear.
+Included as lib/xml-apis-xerces-2.9.1.jar
