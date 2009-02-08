@@ -9,7 +9,7 @@
 			<syspropertyset>
 				<propertyref prefix="xr."/>
 			</syspropertyset>
-			<sysproperty key="sun.java2D.opengl" value="true"/>
+			<sysproperty key="sun.java2D.opengl" value="True"/>
 			<sysproperty key="java.protocol.handler.pkgs" value="org.xhtmlrenderer.protocols"/>
 		</java>
 	</target>
@@ -94,28 +94,4 @@
 			</syspropertyset>
 		</java>
 	</target>
-
-    <!-- Builds and jars the about box demo, and runs it -->
-	<target name="photogallery" depends="jar">
-		<java classname="org.xhtmlrenderer.demo.photogallery.PhotoGallery"
-				fork="${java-exec.fork.tests}">
-			<classpath refid="libraries-and-dest.all"/>
-			<sysproperty key="show-config" value="${show-config}"/>
-			<syspropertyset>
-				<propertyref prefix="xr."/>
-			</syspropertyset>
-		</java>
-	</target>
-
-	<target name="filebrowser" depends="jar.core, jar.filebrowser">
-		<java classname="org.xhtmlrenderer.demo.filebrowser.FileBrowser"
-				fork="${java-exec.fork.tests}">
-			<classpath refid="libraries-and-dest.all"/>
-			<sysproperty key="show-config" value="${show-config}"/>
-			<syspropertyset>
-				<propertyref prefix="xr."/>
-			</syspropertyset>
-		</java>
-	</target>
-
 </project>

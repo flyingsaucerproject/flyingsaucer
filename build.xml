@@ -71,8 +71,6 @@
     <antcall target="jar.about" />
     <antcall target="jar.svg" />
     <antcall target="jar.docbook" />
-    <antcall target="jar.photogallery" />
-    <antcall target="jar.filebrowser" />
   </target>
 
     <!-- =====================================================
@@ -271,6 +269,9 @@
 $Id$
 
 $Log$
+Revision 1.98  2009/02/08 15:25:23  pdoubleya
+Remove references to photogallery and filebrowser demo apps, as these are no longer maintained
+
 Revision 1.97  2007/07/14 13:05:47  pdoubleya
 Updates for R7
 

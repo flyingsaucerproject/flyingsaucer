@@ -98,30 +98,4 @@
             <zipfileset refid="xhtml.splash"/>
         </jar>
     </target>
-
-    <!-- Compiles photogallery and main codebase, and builds jar for photogallery -->
-    <target name="jar.photogallery" depends="compile.photogallery" description="build photogallery jar">
-        <jar jarfile="${dest.dir}/photogallery.jar" compress="true"
-            manifest="${src.packaging.dir}/manifest"
-            duplicate="preserve"
-            index="true"
-            >
-            <fileset dir="${dest.java.dir}">
-                <include name="org/xhtmlrenderer/demo/photogallery/**"/>
-            </fileset>
-        </jar>
-    </target>
-
-    <!-- Compiles photogallery and main codebase, and builds jar for photogallery -->
-    <target name="jar.filebrowser" depends="compile.filebrowser" description="build filebrowser jar">
-        <jar jarfile="${dest.dir}/filebrowser.jar" compress="true"
-            manifest="${src.packaging.dir}/manifest"
-            duplicate="preserve"
-            index="true"
-            >
-            <fileset dir="${dest.java.dir}">
-                <include name="org/xhtmlrenderer/demo/filebrowser/**"/>
-            </fileset>
-        </jar>
-    </target>
 </project>
