@@ -8,13 +8,6 @@ import org.xml.sax.InputSource;
 
 import java.io.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: patrick
- * Date: Apr 6, 2006
- * Time: 11:13:46 AM
- * To change this template use File | Settings | File Templates.
- */
 public class PDFRender {
     public static void main(String[] args) throws IOException, DocumentException {
         if (args.length != 2) {
