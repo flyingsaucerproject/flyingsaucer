@@ -189,7 +189,7 @@ public class ITextRenderer {
     public void setPDFVersion(char _v) {
         for (int i = 0; i < validPdfVersions.length; i++) {
             if (_v == validPdfVersions[i]) {
-                _pdfVersion = Character.valueOf(_v);
+                _pdfVersion = new Character(_v);
                 return;
             }
         }
@@ -306,6 +306,7 @@ public class ITextRenderer {
                     _pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
                     _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
         }
+        firePreOpen();
         doc.open();
         
         _pdfDoc = doc;
@@ -319,6 +320,11 @@ public class ITextRenderer {
         }
     }
     
+    private void firePreOpen() {
+        if (_listener != null) {
+            _listener.preOpen(this);
+        }
+    }
     private void fireOnClose() {
         if (_listener != null) {
             _listener.onClose(this);
