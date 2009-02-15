@@ -1,5 +1,5 @@
 /*
- * {{{ header & license
+ * Copyright (c) 2007 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- * }}}
  */
+
+
 import java.awt.*;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
