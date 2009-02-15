@@ -45,6 +45,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
@@ -91,7 +92,7 @@ public class SharedContext {
     
     private Map styleMap;
     
-    private ReplacedElementFactory _replacedElementFactory;
+    private ReplacedElementFactory replacedElementFactory;
     private Rectangle temp_canvas;
 
     /**
@@ -99,7 +100,7 @@ public class SharedContext {
      */
     public SharedContext(UserAgentCallback uac) {
         font_resolver = new AWTFontResolver();
-        _replacedElementFactory = new SwingReplacedElementFactory();
+        replacedElementFactory = new SwingReplacedElementFactory();
         setMedia("screen");
         this.uac = uac;
         setCss(new StyleReference(uac));
@@ -110,6 +111,9 @@ public class SharedContext {
         } catch (HeadlessException e) {
             setDPI(DEFAULT_DPI);
         }
+    }
+    public void setFormSubmissionListener(FormSubmissionListener fsl) {
+        replacedElementFactory.setFormSubmissionListener(fsl);
     }
 
     public LayoutContext newLayoutContextInstance() {
@@ -552,22 +556,22 @@ public class SharedContext {
     public void reset() {
        styleMap = null;
        idMap = null;
-       _replacedElementFactory.reset();
+       replacedElementFactory.reset();
     }
 
     public ReplacedElementFactory getReplacedElementFactory() {
-        return _replacedElementFactory;
+        return replacedElementFactory;
     }
 
-    public void setReplacedElementFactory(ReplacedElementFactory replacedElementFactory) {
-        if (replacedElementFactory == null) {
+    public void setReplacedElementFactory(ReplacedElementFactory ref) {
+        if (ref == null) {
             throw new NullPointerException("replacedElementFactory may not be null");
         }
         
-        if (_replacedElementFactory != null) {
-            _replacedElementFactory.reset();
+        if (this.replacedElementFactory != null) {
+            this.replacedElementFactory.reset();
         }
-        _replacedElementFactory = replacedElementFactory;
+        this.replacedElementFactory = ref;
     }
     
     public void removeElementReferences(Element e) {
@@ -599,6 +603,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2009/02/15 17:17:23  pdoubleya
+ * Support for callback on form submission using new FormSubmissionListener interface; patch from Christophe Marchand (thanks, Christophe!).
+ *
  * Revision 1.44  2008/11/07 18:34:34  peterbrant
  * Add API to retrieve PDF page and coordinates for boxes with an ID attribute
  *

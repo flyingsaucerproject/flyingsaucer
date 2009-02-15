@@ -33,6 +33,7 @@ import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
 	private ITextOutputDevice _outputDevice;
@@ -156,4 +157,8 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 	public List getRadioButtons(String name) {
 		return (List)_radioButtonsByName.get(name);
 	}
+
+    public void setFormSubmissionListener(FormSubmissionListener listener) {
+        // nothing to do, form submission is handled by pdf readers
+    }
 }

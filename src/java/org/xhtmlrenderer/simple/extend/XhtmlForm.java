@@ -28,7 +28,6 @@ import java.util.Map;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 
 import org.w3c.dom.Element;
@@ -57,12 +56,18 @@ public class XhtmlForm {
     private Map _componentCache;
     private Map _buttonGroups;
     private Element _parentFormElement;
+    private FormSubmissionListener _formSubmissionListener;
 
-    public XhtmlForm(UserAgentCallback uac, Element e) {
+    public XhtmlForm(UserAgentCallback uac, Element e, FormSubmissionListener fsListener) {
         _userAgentCallback = uac;
         _buttonGroups = new HashMap();
         _componentCache = new LinkedHashMap();
         _parentFormElement = e;
+        _formSubmissionListener = fsListener;
+    }
+
+    public XhtmlForm(UserAgentCallback uac, Element e) {
+        this(uac, e, new DefaultFormSubmissionListener());
     }
 
     public UserAgentCallback getUserAgentCallback() {
@@ -143,8 +148,10 @@ public class XhtmlForm {
         }
 
         StringBuffer data = new StringBuffer();
+        String action = _parentFormElement.getAttribute("action");
+        data.append(action).append("?");
         Iterator fields = _componentCache.entrySet().iterator();
-
+        boolean first=true;
         while (fields.hasNext()) {
             Map.Entry entry = (Map.Entry) fields.next();
 
@@ -154,19 +161,17 @@ public class XhtmlForm {
                 String [] dataStrings = field.getFormDataStrings();
                 
                 for (int i = 0; i < dataStrings.length; i++) {
-                    if (data.length() > 0) {
+                    if (!first) {
                         data.append('&');
                     }
     
                     data.append(dataStrings[i]);
+                    first=false;
                 }
             }
         }
         
-        System.out.println("Form Submitted!");
-        System.out.println("Data: " + data.toString());
-
-        JOptionPane.showMessageDialog(null, "Check System.out for the submitted content.", "Form Submission", JOptionPane.INFORMATION_MESSAGE);
+        if(_formSubmissionListener !=null) _formSubmissionListener.submit(data.toString());
     }
 
     public static String collectText(Element e) {

@@ -27,6 +27,7 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.CursorListener;
@@ -126,6 +127,11 @@ public class XHTMLPanel extends BasicPanel {
             addMouseTrackingListener(new HoverListener());
             addMouseTrackingListener(new LinkListener());
             addMouseTrackingListener(new CursorListener());
+            setFormSubmissionListener(new FormSubmissionListener() {
+                public void submit(String query) {
+                    XHTMLPanel.this.setDocumentRelative(query);
+                }
+            });
         }
     }
 
@@ -314,6 +320,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2009/02/15 17:17:24  pdoubleya
+ * Support for callback on form submission using new FormSubmissionListener interface; patch from Christophe Marchand (thanks, Christophe!).
+ *
  * Revision 1.44  2008/05/30 16:07:06  pdoubleya
  * Issue 228: when setting document from a file, use file.getAbsoluteFile().getParentFile() to find the parent, in case the file provided has no directory or path; otherwise, file.getParentFile() returns null, and we have no way of determining a base URI. Covers at least the (reproducible) part of the issue.
  *

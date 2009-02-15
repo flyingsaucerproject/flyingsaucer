@@ -22,6 +22,7 @@ package org.xhtmlrenderer.extend;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
 public interface ReplacedElementFactory {
     
@@ -50,4 +51,12 @@ public interface ReplacedElementFactory {
      * @param e
      */
     public void remove(Element e);
+
+    /**
+     * Identifies the FSL which will be used for callbacks when a form submit action is executed; you can use a
+     * {@link org.xhtmlrenderer.simple.extend.DefaultFormSubmissionListener} if you don't want any action to be taken.
+     *
+     * @param listener the listener instance to receive callbacks on form submission.
+     */
+    public void setFormSubmissionListener(FormSubmissionListener listener);
 }

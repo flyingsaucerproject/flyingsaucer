@@ -35,7 +35,9 @@ import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
+import org.xhtmlrenderer.simple.extend.DefaultFormSubmissionListener;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.ImageUtil;
 
@@ -51,6 +53,12 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * Cache of XhtmlForms keyed by Element.
      */
     protected LinkedHashMap forms;
+
+    private FormSubmissionListener formSubmissionListener;
+
+    public SwingReplacedElementFactory() {
+        formSubmissionListener = new DefaultFormSubmissionListener();
+    }
 
     /**
      * {@inheritDoc}
@@ -78,7 +86,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
             //parentForm may be null! No problem! Assume action is this document and method is get.
             XhtmlForm form = getForm(parentForm);
             if (form == null) {
-                form = new XhtmlForm(uac, parentForm);
+                form = new XhtmlForm(uac, parentForm, formSubmissionListener);
                 addForm(parentForm, form);
             }
             cc = form.addComponent(e);
@@ -255,5 +263,8 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         if (imageComponents != null) {
             imageComponents.remove(e);
         }
+    }
+    public void setFormSubmissionListener(FormSubmissionListener fsl) {
+        this.formSubmissionListener =fsl;
     }
 }

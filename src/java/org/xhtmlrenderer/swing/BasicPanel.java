@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.swing.JOptionPane;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -49,12 +50,13 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
-//hmm, IntelliJ sees references to Xx below as being Xx in Component!
+
 
 /**
  * A Swing {@link javax.swing.JPanel} that encloses the Flying Saucer renderer
@@ -62,7 +64,7 @@ import org.xml.sax.InputSource;
  *
  * @author Joshua Marinacci
  */
-public abstract class BasicPanel extends RootPanel {
+public abstract class BasicPanel extends RootPanel implements FormSubmissionListener {
     private static final int PAGE_PAINTING_CLEARANCE_WIDTH = 10;
     private static final int PAGE_PAINTING_CLEARANCE_HEIGHT = 10;
 
@@ -73,6 +75,7 @@ public abstract class BasicPanel extends RootPanel {
     
     private MouseTracker mouseTracker;
     private boolean centeredPagedView;
+    protected FormSubmissionListener formSubmissionListener;
 
     public BasicPanel() {
         this(new NaiveUserAgent());
@@ -81,7 +84,22 @@ public abstract class BasicPanel extends RootPanel {
     public BasicPanel(UserAgentCallback uac) {
         sharedContext = new SharedContext(uac);
         mouseTracker = new MouseTracker(this);
+        formSubmissionListener = new FormSubmissionListener() {
+            public void submit(String query) {
+                System.out.println("Form Submitted!");
+                System.out.println("Data: " + query);
 
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Form submit called; check console to see the query string" +
+                        " that would have been submitted.",
+                        "Form Submission",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+
+        };
+        sharedContext.setFormSubmissionListener(formSubmissionListener);
         init();
     }
 
@@ -583,12 +601,22 @@ public abstract class BasicPanel extends RootPanel {
     public void setCenteredPagedView(boolean centeredPagedView) {
         this.centeredPagedView = centeredPagedView;
     }
+    public void submit(String url) {
+        formSubmissionListener.submit(url);
+    }
+    public void setFormSubmissionListener(FormSubmissionListener fsl) {
+        this.formSubmissionListener =fsl;
+        sharedContext.setFormSubmissionListener(formSubmissionListener);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.122  2009/02/15 17:17:23  pdoubleya
+ * Support for callback on form submission using new FormSubmissionListener interface; patch from Christophe Marchand (thanks, Christophe!).
+ *
  * Revision 1.121  2008/06/07 20:39:55  pdoubleya
  * JavaDoc for last commit.
  *
