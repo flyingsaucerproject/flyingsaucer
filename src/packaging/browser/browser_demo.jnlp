@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://pigeonholdings.com/projects/flyingsaucer/demo/r7/browser/" href="browser_demo.jnlp">
+<jnlp codebase="http://pigeonholdings.com/projects/flyingsaucer/demo/browser/" href="browser_demo.jnlp">
     <information>
         <title>XHTML Browser Demo</title>
         <vendor>Flying Saucer</vendor>

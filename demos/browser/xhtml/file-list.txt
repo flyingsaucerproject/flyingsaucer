@@ -1,0 +1,21 @@
+Formatted Text,demo:demos/formatted-text.xhtml
+Counters,demo:demos/counters.xhtml
+Lists,demo:demos/list.xhtml
+Font Sizing,demo:demos/font-sizing.xhtml
+Borders,demo:demos/borders.xhtml
+Margins and Paddings and Backgrounds,demo:demos/box.xhtml
+CSS Positioning,demo:demos/position.xhtml
+Z-index,demo:demos/zindex.xhtml
+:hover,demo:demos/hover.xhtml
+Cursors,demo:demos/cursors.xhtml
+Report,demo:demos/report.xhtml
+Forms,demo:demos/forms.xhtml
+Recipe in XML,demo:demos/cream-chicken-rice.xml
+Centered Fluid,demo:demos/centered-fluid.xhtml
+Centered Fluid Auto Margin,demo:demos/centered-fluid-automargin.xhtml
+Twocol Floating Menu,demo:demos/2col-float-menu.xhtml
+Threecol Fluid,demo:demos/3col-fluid.xhtml
+Alice in Wonderland,demo:demos/alice/alice.xhtml
+Hamlet,demo:demos/hamlet.xhtml
+Game Screen,demo:demos/game/game-screen.xhtml
+Unsupported,demo:demos/unsupported.xhtml

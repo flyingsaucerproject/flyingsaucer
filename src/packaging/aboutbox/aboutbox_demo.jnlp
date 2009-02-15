@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/r7/aboutbox/" href="aboutbox_demo.jnlp">
+<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/aboutbox/" href="aboutbox_demo.jnlp">
 
     <information>
         <title>XHTML About Box Demo</title>

@@ -300,7 +300,7 @@ public class BrowserActions {
         XHTMLPanel panel = new XHTMLPanel(new PanelManager());
         panel.setOpaque(false);
 
-        panel.setDocument("demo:/demos/r7/about.xhtml");
+        panel.setDocument("demo:/demos/about.xhtml");
 
         JPanel outer = new JPanel(new BorderLayout());
         outer.add(panel, BorderLayout.CENTER);
@@ -422,6 +422,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2009/02/15 19:57:48  pdoubleya
+ * Remove references to "r7", and move browser demos to top-level xhtml directory.
+ *
  * Revision 1.31  2008/09/06 18:44:29  peterbrant
  * Add PDF export to browser (patch from Mykola Gurov)
  *

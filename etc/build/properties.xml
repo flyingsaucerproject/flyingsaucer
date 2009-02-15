@@ -136,7 +136,7 @@
   </patternset>
 
   <patternset id="xhtml-files">
-    <include name="r7/**"/>
+    <include name="**"/>
     <include name="fonts/**"/>
   </patternset>
 

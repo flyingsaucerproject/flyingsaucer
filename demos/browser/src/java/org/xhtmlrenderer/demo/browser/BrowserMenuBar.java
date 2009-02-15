@@ -287,7 +287,7 @@ public class BrowserMenuBar extends JMenuBar {
 
     private void populateDemoList() {
         List demoList = new ArrayList();
-        URL url = BrowserMenuBar.class.getResource("/demos/r7/file-list.txt");
+        URL url = BrowserMenuBar.class.getResource("/demos/file-list.txt");
         if (url != null) {
             try {
                 InputStream is = url.openStream();
@@ -298,9 +298,9 @@ public class BrowserMenuBar extends JMenuBar {
                     demoList.add(line);
                 }
             } catch (FileNotFoundException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
     
             for (Iterator itr = demoList.iterator(); itr.hasNext();) {
@@ -698,6 +698,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.48  2009/02/15 19:57:49  pdoubleya
+* Remove references to "r7", and move browser demos to top-level xhtml directory.
+*
 * Revision 1.47  2008/09/06 18:44:29  peterbrant
 * Add PDF export to browser (patch from Mykola Gurov)
 *
