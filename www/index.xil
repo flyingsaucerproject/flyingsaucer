@@ -1,62 +1,40 @@
 The Flying Saucer Project
 
 
-<a id="fs_logo" href="r7/faq.html#acid2">&nbsp;</a>
+<a id="fs_logo" href="faq.html#acid2">&nbsp;</a>
 
 
 h3(fs_heading){ clear: none }. An XML/XHTML/CSS 2.1 Renderer
 
 _(in 100% Java)_
 
-h2(fs_heading){ clear: left }. News
+h2(fs_heading){ clear: left }. Download Now!
+
+table(properties){width: 100% }.
+| *Status* | *Type* | *URL* | *Description* | *MD5 Sum* 
+| *STABLE* | Binary Zip | "flyingsaucer-R7final.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip | For using Flying Saucer in your own programs (2M) | 3e1af1cec00ff00896eb319a2abdeb2d
+| *STABLE* | Source Bundle Zip |  "flyingsaucer-R7final-src.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip | Includes source, demo programs, sample code, etc. (6M) | 1adf2df8a462402bc4d4c52ab37dafe5
+| *RELEASE CANDIDATE* | Binary Zip | "flyingsaucer-R8rc1.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8rc1.zip | For using Flying Saucer in your own programs (3.1M) | 098e59dfb89dc3dc17f98e36610b533d
+| *RELEASE CANDIDATE* | Source Bundle Zip | "flyingsaucer-R8rc1-src.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8rc1-src.zip | Includes source, demo programs, sample code, etc.  (7.6M) | bf4628ee17ebcf5b72d0995365d6458b  
+
+If you'd like to access _everything_, please use our source code repository (CVS); see the link to CVS on the left side of this page.
+
+h2(fs_heading){ clear: left }. Quick News
+
+p{font-size: 14pt}. Release 8 - Release Candidate 1 (R8rc1)
+
+*March 8, 2009*: After a long hiatus from releases, we are proud to present release candidate 1 of our R8 release; see
+below, under downloads. This release includes a large number of bug fixes since R8 pre 2. Given the stability of
+our current source trunk, this release will most likely be the same as the R8 final. We encourage you to test this
+release out and give us feedback so that R8 will be our best release ever.
+
+We once again thank the many people who contributed to this release; see the list of changes on our News page.
 
 p{font-size: 14pt}. Release 8 - Second Code Drop (R8pre2) 
 
 *January 28, 2008*: The second code drop for our R8 release is available; see below in the downloads section. This release includes a number of bug fixes since R8pre1. While not the final release, we think it's pretty stable and would love if you could take it for a drive and report any problems you find.
 
-We thank the many people who contributed to this release (named in the changes that follow).
-
-Changes since R8pre1 (mostly in order of checkin).
-
-* Features
-**  Support True Type Collection (.ttc) files
-**  Support encryption of PDF output via ITextRenderer.setPDFEncryption() (patch from Jason Blumenkrantz)
-**  Addtional work on support for rendering via SWT (thanks to Vianney le Cl&eacute;ment)
-**  Support logging via Log4J as an alternative to JDK logging (requires recompile)
-**  Handle hidden form elements
-**  Rudimentary support for JavaScript links (from Dan Kaplan)
-**  Provide property for setting initial page number of a document when rendering to PDF (patch from Christophe Marchand)
-**  Add rudimentary support for Type 1 fonts
-**  Add rudimentary support for @font-face rules
-**  Preliminary support for selection, highlighting and copying (thanks to Nick Reddel)
-**  Implement partial support for leader and target-counter (patch from Karl Tauber)
-**  Provide ReplacedElementFactory to Graphics2DRenderer to allow printing of replaced elements (patch from Nicola Ken Barozzi)
-**  Patch from N. Barozzi to allow either Toolkit or BufferedImages to be used
-
-*  Bug Fixes
-**  Incorrectly nested table content could produce invalid layout tree.
-**  Fix for nested percentage height calculations
-**  When printing, Swing components should be print()ed instead of paint()ed
-**  Only try to satisfy widows and orphans if page breaking is allowed
-**  Fix bug that was preventing positioned content from working in running() elements
-**  When paginating a table, rows that fit entirely on one page should never move to the next one (report from Jonathan Leech)
-**  Include children in link activation area
-**  Always paint default background even if there is no document (report from Richard Bair)
-**  Need to discard last cached page if it's being removed (report from Christophe Marchand)
-**  Fix incorrect layout of long runs of unbroken text in auto table layouts by using longs instead of ints everywhere lengths are involved.
-**   Fix regression in initial page number calculation (report from Christophe Marchand)
-**  Make sure resource streams are cleaned up (bug #201, patch by kaihei)
-**  Always use UTF-8 when parsing stylesheets (instead of the platform default)
-**  Need to propagate changes to user agent in SharedContext to containing StyleReference
-**  Fix: fonts not being keyed properly in font cache when a scaling factor was applied to the text renderer
-**  Form XObjects inherit the current graphics state from where they are called.  Make sure they get a clean slate (bug report from Evan Jones)
-**  Issues 186 and 130: fix configuration so that logging setup does not override any current settings for JDK logging classes. Disable logging by default.
-
-Download:
-
-table(properties){width: 100%}.
-| *DEVELOPMENT* | Binary Zip (2M) | "flyingsaucer-R8pre2.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre2.zip | For using Flying Saucer in your own programs
-| *DEVELOPMENT* | Source Bundle Zip (6M) | "flyingsaucer-R8pre2-src.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre2-src.zip | Includes source, demo programs, sample code, etc. 
+We thank the many people who contributed to this release; see the list of changes on our News page. 
 
 
 p{font-size: 14pt}. Release 8 - Pre 1 - Files No Longer Downloadable
@@ -69,54 +47,11 @@ p{font-size: 14pt}. Release 8 - First Code Drop (R8pre1)
 
 *Sepetember 2, 2007*: The Flying Saucer team announces Release 8pre1 of the Flying Saucer 100% Java XHTML+CSS renderer, including support for table pagination, margin boxes, running elements, named pages, and more:
 
-* Table pagination.  When turned on (by setting the @-fs-table-pagination@ property to @paginate@ vs. a default of @auto@ ), tables and table cells will be closed (with appropriate borders and padding) when a page ends and reopened when a page starts. Additionally, a table's @thead@ and @tfoot@ will be repeated on each page.
-* Proper support for CSS3 margin boxes - "CSS 3 spec":http://www.w3.org/TR/css3-page/#margin-boxes
-* A few items from the "CSS3 Selectors spec":http://www.w3.org/TR/css3-selectors/
-** Namespace aware CSS matching, for example, with attributes [although this also applies to elements] - "CSS 3 spec":http://www.w3.org/TR/css3-selectors/#attrnmsp
-** Pseudo-elements may now be specified with a double colon - "CSS 3 spec":http://www.w3.org/TR/css3-selectors/#pseudo-elements
-** The new substring selectors - "CSS 3 spec":http://www.w3.org/TR/css3-selectors/#attribute-substrings
-* Named pages - "CSS 3 spec":http://www.w3.org/TR/css3-page/#using-named-pages
-* The background property can now be used in a @page context - "CSS 3 spec":http://www.w3.org/TR/css3-page/#page-properties
-* Running elements "CSS 3 spec":http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#running1
-* A custom property named @-fs-page-sequence@ that takes a value of either @start@ or @auto@ (the default) and allows you to limit the scope of the page and pages counters to a portion of the document
-* A number of bug fixes
-
-We need your feedback. If you're willing to try out code still under active development, please check out R8pre1 and send in your comments. Note that this code may have bugs and is not recommended for production use. 
-
 p{font-size: 14pt}. Release 7 - Final! 
 
 *July 14, 2007*: The Flying Saucer team announces Release 7 of the Flying Saucer 100% Java XHTML+CSS renderer. 
 
-Download:
-
-table(properties){width: 100%}.
-| *STABLE* | Binary Zip (2M) | "flyingsaucer-R7final.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip | For using Flying Saucer in your own programs
-| *STABLE* | Source Bundle Zip (6M) | "flyingsaucer-R7final-src.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip | Includes source, demo programs, sample code, etc. 
-| *DEVELOPMENT* | Binary Zip (2M) | "flyingsaucer-R8pre2.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre2.zip | For using Flying Saucer in your own programs
-| *DEVELOPMENT* | Source Bundle Zip (6M) | "flyingsaucer-R8pre2-src.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8pre2-src.zip | Includes source, demo programs, sample code, etc. 
-
 Note that the R8pre1 files are no longer available for download (they were lost in a server upgrade). 
-
-Release 7 features major improvements in rendering accuracy, speed, and overall feature set. This includes:
-
-* Completely new, fast, accurate CSS 2 parser; CSS 2 compliant, reports errors accurately
-* Complete rewrite of table support.  Current table support includes:
-**   Floated tables
-**   display: inline-table
-**   display: table-caption (caption in (X)HTML)
-**   display: table-header-group, display: table-row-group, and table-footer-group (thead, tbody, and tfoot in (X)HTML)
-**   table-layout: fixed
-**   table-layout: auto (complete support, see below)
-**   Table box construction and layout follows the same code path as everything else
-**   display: table-column and display: table-column-group (col and colgroup in (X)HTML)
-**   vertical-align in table cells
-**   Full support for anonymous tables (with the exception that a table-column-group element won't force a table to be created.  This turned out to be awkward to implement [and marginally useful it would seem...])
-* improvements to XHTML forms support (for Swing)
-* CSS font property resolution improvements
-* CSS counter property support
-* CSS content property support: everything except quotes and external resources (content: url(...))
-
-You can see many of these features in action in our "demo pages":r7/demos.html.
 
 h2(fs_heading){ clear: left }. New Around Here?
 
@@ -129,7 +64,7 @@ There's also a blog entry by Dieter Wimberger "Customizable IM frontend with XHT
 
 h2(fs_heading). Demos
 
-Check out our spiffy "demo apps":r7/demos.html. 
+Check out our spiffy "demo apps":demos.html. 
 
 
 h2(fs_heading). Helping Out

@@ -1,0 +1,169 @@
+The Flying Saucer Project: News
+
+h2(fs_heading){ clear: left }. News
+
+p{font-size: 14pt}. Release 8 - Release Candidate 1 (R8rc1)
+
+*March 8, 2009*: After a long hiatus from releases, we are proud to present release candidate 1 of our R8 release; see
+below, under downloads. This release includes a large number of bug fixes since R8 pre 2. Given the stability of
+our current source trunk, this release will most likely be the same as the R8 final. We encourage you to test this
+release out and give us feedback so that R8 will be our best release ever.
+
+We once again thank the many people who contributed to this release (named in the changes that follow).
+
+* Features
+** Upgrade to use iText 2.0.8 
+** Support for callback on form submission using new FormSubmissionListener interface; patch from Christophe Marchand (thanks, Christophe!). 
+** Support reading properties which are not in our standard config file, passed in via an override config file or via System properties. This is to support extended configuration parameters for JDK logging, e.g. appenders, formatters, etc. 
+** Added XML-APIs to lib directory to support compilation when using Java 1.4, which includes it's own (old) version of the XML APIs. This allows us to reference classes in the newer XML APIs for which there are Java 1.4 implementations.
+** Support adding custom header properties on PDF output 
+** Add ability to set PDF version programmatically
+** Add ability to manipulate PDF output document before it's closed  
+** Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
+** Expose copy of parsed entities from catalog.
+** Add ability to have different starting page number for first document too  
+** Add API to retrieve PDF page and coordinates for boxes with an ID attribute
+** Improve support for PDF encryption, patch from Josh Hayes-Sheen: allow finer control over the encryption of PDF output; default to standard 128bit but now one can choose between that, 40bit, or AES_128, and can 'or'PdfWriter.DO_NOT_ENCRYPT_METADATA against it 
+** Support using a Document instance with Java2DRenderer; patch from Michael Janiszewski Browser 
+** demo app: Add PDF export to browser (patch from Mykola Gurov) 
+** Implement CMYK color support for PDF output, starting with patch from Mykola Gurov 
+** Make FSScrollPane a bean; patch from Nicholas Sushkin. 
+** Add rudimentary support for data URLs (patch from Sean Bright) 
+
+* Bug Fixes and Tweaks
+** Fix NPE in BlockBoxing reported by Christophe Marchand 
+** Always treat running elements as blocks 
+** Skip running blocks when calculating min/max widths 
+** Fix floats-aren't-exact bug in text measuring 
+** Avoid creating spurious line boxes when the root box/element is declared inline 
+** Fix off-by-one error in page location calculation 
+** Create left space for ol, ul, dir, menu with padding instead of margin per Safari and FF 
+** Make list marker display more like Safari and FF (patch from Mykola Gurov) 
+** Need to account for list-marker-position: inside when calculating inline min/max widths (CSS parsing) 
+** Allow percentages in cymk() function / Skip rule if value is outside the range 0 to 1 
+** Fix various bugs related to collapsed table borders (one manifestation found by Olly Headey)
+** Banish java.awt.Color from FS core layout classes (PDF) 
+** Expose root box and dotsPerPoint fields 
+** Fix, was using Font.getName() instead of Font.getFamily() to pick up the value to use in CSS font-family property. 
+** Issue 213: support foreground color setting in selection highlight. 
+** Fix two bugs when -fs-table-paginate is paginate. 
+** Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly. Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly. 
+** Don't assume namespace processing is turned on. It might not be for an externally provided Document. 
+** Use the URI class instead of the URL class when resolving @import rules. This avoids spurious exceptions due to missing protocol handlers when those protocols are handled by a custom user agent. 
+** Fix a pair of NPEs when absolutely positioned content is positioned off the page 
+** If no Document instance is available, getDocumentTitle() should return ""; suggestion from Nicholas Sushkin on mailing list. 
+** Allow root box to be a table box too instead of a plain block box 
+** Issue #228: when setting document from a file, use file.getAbsoluteFile().getParentFile() to find the parent, in case the file provided has no directory or path; otherwise, file.getParentFile() returns null, and we have no way of determining a base URI. Covers at least the (reproducible) part of the issue. 
+** Issue #243: handle case where for some reason, a JNLP launched app could not read the default configuration file. This was throwing an RE which then cause FS logging to fail. Now load hard-coded properties (ick!) if we can't read the file itself. 
+** Issue #244: handle case where, because image can't be loaded, an AWTFSImage is created with a null Image element. In this case, we replace it with a single-pixel transparent image. 
+** Ensure JDK 1.4 API compliance. 
+** If our minimum width is greater than the calculated CSS width, don't try to allocate any margin space to auto margins. 
+** Make sure to close file streams (patch from Christophe Marchand). 
+** Fix for bug #239: find must return null if box is hidden (detective work by Ludovic Durand-Texte) 
+** Fix for bug #240, #224 and #230: Mouse out events are not properly transferred on anchor boxes;  (patch from Ludovic Durand-Texte) 
+** Optimize implementation of page-break-inside: avoid 
+** Issue #226 patch from Christophe Marchand Issue #231: allow for centered page box in preview mode. 
+** Use getLocalName() instead of getTagName(), in case element is in a namespace--this works because we configure the parser to be namespace aware, otherwise getLocalName() might return null if not in a namespace. Reported by Erik Bruchez in email. 
+** Need to update current BFC offset when adjusting row position due to vertical border spacing / A row group with only empty rows (no cells) won't create a grid. Don't assume we have a grid just because we have rows. 
+** Continue processing even if a stylesheet can't be found or there is an I/O problem loading it. 
+** Issues #223,211,212,213,214,215,216: fixes for text selection. 
+** Issue #225: allow user to specify type for buffered image, instead of just defaulting to transparent image support. 
+** Upgrade to iText 2.0.8 / Fix iText related deprecation warnings / Implement page level XMP metadata for PDF output 
+** Comment out non-ASCII characters in escapeHTML() for now. Will only work if the compiler assumes the source file encoding is ISO-8859-1 (or maybe Cp1252). Does not work on Linux (with a default encoding of UTF-8). Should be replaced with equivalent Unicode escapes. 
+** On printing, not updating the total page count, required because this is not otherwise available in the rendering context we create for each page 
+** ITextRenderer: Added setDocumentFromString() 
+** On calling DocumentListener methods, make sure we catch exceptions from listener implementations which could otherwise kill our work on the EDT. 
+** Fix divide by zero error in justification algorithm 
+** Graphics2DRenderer should use the UAC available on the panel, and the document should not be set from base URL, but rather the current panel document, as base URL may point to a parent directory, not a file (from email from Eddy Zavaleta).
+
+
+p{font-size: 14pt}. Release 8 - Second Code Drop (R8pre2) 
+
+*January 28, 2008*: The second code drop for our R8 release is available; see below in the downloads section. This release includes a number of bug fixes since R8pre1. While not the final release, we think it's pretty stable and would love if you could take it for a drive and report any problems you find.
+
+We thank the many people who contributed to this release (named in the changes that follow).
+
+Changes since R8pre1 (mostly in order of checkin).
+
+* Features
+**  Support True Type Collection (.ttc) files
+**  Support encryption of PDF output via ITextRenderer.setPDFEncryption() (patch from Jason Blumenkrantz)
+**  Addtional work on support for rendering via SWT (thanks to Vianney le Cl&eacute;ment)
+**  Support logging via Log4J as an alternative to JDK logging (requires recompile)
+**  Handle hidden form elements
+**  Rudimentary support for JavaScript links (from Dan Kaplan)
+**  Provide property for setting initial page number of a document when rendering to PDF (patch from Christophe Marchand)
+**  Add rudimentary support for Type 1 fonts
+**  Add rudimentary support for @font-face rules
+**  Preliminary support for selection, highlighting and copying (thanks to Nick Reddel)
+**  Implement partial support for leader and target-counter (patch from Karl Tauber)
+**  Provide ReplacedElementFactory to Graphics2DRenderer to allow printing of replaced elements (patch from Nicola Ken Barozzi)
+**  Patch from N. Barozzi to allow either Toolkit or BufferedImages to be used
+
+*  Bug Fixes
+**  Incorrectly nested table content could produce invalid layout tree.
+**  Fix for nested percentage height calculations
+**  When printing, Swing components should be print()ed instead of paint()ed
+**  Only try to satisfy widows and orphans if page breaking is allowed
+**  Fix bug that was preventing positioned content from working in running() elements
+**  When paginating a table, rows that fit entirely on one page should never move to the next one (report from Jonathan Leech)
+**  Include children in link activation area
+**  Always paint default background even if there is no document (report from Richard Bair)
+**  Need to discard last cached page if it's being removed (report from Christophe Marchand)
+**  Fix incorrect layout of long runs of unbroken text in auto table layouts by using longs instead of ints everywhere lengths are involved.
+**   Fix regression in initial page number calculation (report from Christophe Marchand)
+**  Make sure resource streams are cleaned up (bug #201, patch from kaihei)
+**  Always use UTF-8 when parsing stylesheets (instead of the platform default)
+**  Need to propagate changes to user agent in SharedContext to containing StyleReference
+**  Fix: fonts not being keyed properly in font cache when a scaling factor was applied to the text renderer
+**  Form XObjects inherit the current graphics state from where they are called.  Make sure they get a clean slate (bug report from Evan Jones)
+**  Issues 186 and 130: fix configuration so that logging setup does not override any current settings for JDK logging classes. Disable logging by default.
+
+p{font-size: 14pt}. Release 8 - Pre 1 - Files No Longer Downloadable
+
+*January 27, 2008*: Unfortunately, during a server upgrade, the machine hosting our release files for R8pre1 lost those files. We have no backups (or at least none we can certify as being the same version). We apologize for the inconvenience. 
+
+We recommend you use the R8pre2 release, or alternately, CVS HEAD. You can also build a release of Flying Saucer using the CVS tag made at the time of the R8pre1 release, the tag being simple R8_pre1.
+
+p{font-size: 14pt}. Release 8 - First Code Drop (R8pre1) 
+
+*Sepetember 2, 2007*: The Flying Saucer team announces Release 8pre1 of the Flying Saucer 100% Java XHTML+CSS renderer, including support for table pagination, margin boxes, running elements, named pages, and more:
+
+* Table pagination.  When turned on (by setting the @-fs-table-pagination@ property to @paginate@ vs. a default of @auto@ ), tables and table cells will be closed (with appropriate borders and padding) when a page ends and reopened when a page starts. Additionally, a table's @thead@ and @tfoot@ will be repeated on each page.
+* Proper support for CSS3 margin boxes - "CSS 3 spec":http://www.w3.org/TR/css3-page/#margin-boxes
+* A few items from the "CSS3 Selectors spec":http://www.w3.org/TR/css3-selectors/
+** Namespace aware CSS matching, for example, with attributes [although this also applies to elements] - "CSS 3 spec":http://www.w3.org/TR/css3-selectors/#attrnmsp
+** Pseudo-elements may now be specified with a double colon - "CSS 3 spec":http://www.w3.org/TR/css3-selectors/#pseudo-elements
+** The new substring selectors - "CSS 3 spec":http://www.w3.org/TR/css3-selectors/#attribute-substrings
+* Named pages - "CSS 3 spec":http://www.w3.org/TR/css3-page/#using-named-pages
+* The background property can now be used in a @page context - "CSS 3 spec":http://www.w3.org/TR/css3-page/#page-properties
+* Running elements "CSS 3 spec":http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#running1
+* A custom property named @-fs-page-sequence@ that takes a value of either @start@ or @auto@ (the default) and allows you to limit the scope of the page and pages counters to a portion of the document
+* A number of bug fixes
+
+We need your feedback. If you're willing to try out code still under active development, please check out R8pre1 and send in your comments. Note that this code may have bugs and is not recommended for production use. 
+
+p{font-size: 14pt}. Release 7 - Final! 
+
+*July 14, 2007*: The Flying Saucer team announces Release 7 of the Flying Saucer 100% Java XHTML+CSS renderer. 
+
+Release 7 features major improvements in rendering accuracy, speed, and overall feature set. This includes:
+
+* Completely new, fast, accurate CSS 2 parser; CSS 2 compliant, reports errors accurately
+* Complete rewrite of table support.  Current table support includes:
+**   Floated tables
+**   display: inline-table
+**   display: table-caption (caption in (X)HTML)
+**   display: table-header-group, display: table-row-group, and table-footer-group (thead, tbody, and tfoot in (X)HTML)
+**   table-layout: fixed
+**   table-layout: auto (complete support, see below)
+**   Table box construction and layout follows the same code path as everything else
+**   display: table-column and display: table-column-group (col and colgroup in (X)HTML)
+**   vertical-align in table cells
+**   Full support for anonymous tables (with the exception that a table-column-group element won't force a table to be created.  This turned out to be awkward to implement [and marginally useful it would seem...])
+* improvements to XHTML forms support (for Swing)
+* CSS font property resolution improvements
+* CSS counter property support
+* CSS content property support: everything except quotes and external resources (content: url(...))
+
+

@@ -58,7 +58,7 @@ h3(fs_heading){clear:none}. What XHTML/CSS features is ${fs} missing?
 
 Check the ${issue-tracker} for a list or ask on the ${mailing-list} if you aren't sure.   
 
-Among other things there is  no support for things outside the scope of XHTML/CSS such as Javascript, printing, Flash, SVG, or legacy HTML (though there is interest in all of those).
+Among other things there is  no support for things outside the scope of XHTML/CSS such as Javascript, Flash, or legacy HTML (though there is interest in all of those).
 
 h3(fs_heading#acid2){clear:none}. So do you pass the Acid(2) test?
 
@@ -187,7 +187,7 @@ finally
 
 h3(fs_heading){clear:none}. Can I use Flying Saucer in an SWT application?
 
-If you're trying to output to an SWT canvas--there is an early mockup by Vianney le Clément which we plan to merge in the R8 release. See the mailing list thread starting with:
+If you're trying to output to an SWT canvas--there is an early mockup by Vianney le Clï¿½ment which we plan to merge in the R8 release. See the mailing list thread starting with:
 https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?listName=dev&msgNo=3452
 
 There are patches attached to that mail thread which provide initial support for SWT; some things are still missing, but it's a good start.

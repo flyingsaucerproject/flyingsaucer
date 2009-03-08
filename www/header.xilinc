@@ -38,19 +38,19 @@ divStart(#fs).
 divStart(#menu).
 
 * Downloads
-** "Release 7 Binaries":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip  
+** "Release 7 Binaries":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip
 ** "Release 7 All Files":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip  
 * About Flying Saucer
 ** "Home Page":/index.html  
-** "Feature List":/r7/feature-list.html  
-** "The FAQ":/r7/faq.html  
-** "Screenshots":/r7/screenshots.html  
-** "Demos":/r7/demos.html  
-** "User's Guide - HTML":/r7/users-guide-r7.html  
-** "User's Guide - PDF":/r7/users-guide-r7.pdf  
+** "Feature List":/feature-list.html
+** "The FAQ":/faq.html
+** "Screenshots":/screenshots.html
+** "Demos":/demos.html
+** "User's Guide - HTML (R7)":/guide/users-guide-r7.html
+** "User's Guide - PDF (R7)":/guide/users-guide-r7.pdf
 ** "Javadoc - Basic":http://pdoubleya.com/projects/flyingsaucer/doc/user/api/index.html
 ** "Javadoc - Full":http://pdoubleya.com/projects/flyingsaucer/doc/full/api/index.html  
-** "References":/r7/references.html  
+** "References":/references.html
 ** "License (LGPL)":http://www.gnu.org/copyleft/lesser.html  
 * Contribute
 ** "Mail: User's List":https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList  

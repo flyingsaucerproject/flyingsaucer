@@ -21,5 +21,4 @@ Limitations:
 * Resource loading is single threaded and occurs inline with layout. 
 * Support for XHTML is weaker than XML+CSS (for example, not all XHTML presentational attributes are supported nor are X/HTML features like the &lt;object&gt; element). 
 * No support for legacy HTML (although there are several open source Java HTML cleaners of varying quality available). 
-* Swing printing is supported, but quality is lacking.  Ask on the ${mailing-list} for details. 
 * No support for incremental layout (applies to screen media only).     
