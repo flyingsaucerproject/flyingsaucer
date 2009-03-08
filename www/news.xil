@@ -1,13 +1,10 @@
-The Flying Saucer Project: News
+Flying Saucer Project: News
 
-h2(fs_heading){ clear: left }. News
+h2(fs_heading){clear: none}. News
 
 p{font-size: 14pt}. Release 8 - Release Candidate 1 (R8rc1)
 
-*March 8, 2009*: After a long hiatus from releases, we are proud to present release candidate 1 of our R8 release; see
-below, under downloads. This release includes a large number of bug fixes since R8 pre 2. Given the stability of
-our current source trunk, this release will most likely be the same as the R8 final. We encourage you to test this
-release out and give us feedback so that R8 will be our best release ever.
+*March 8, 2009*: After a long hiatus from releases, we are proud to present release candidate 1 of our R8 releaseThis release includes a large number of bug fixes since R8 pre 2. Given the stability of our current source trunk, this release will most likely be the same as the R8 final. We encourage you to test this release out and give us feedback so that R8 will be our best release ever.
 
 We once again thank the many people who contributed to this release (named in the changes that follow).
 
@@ -47,7 +44,7 @@ We once again thank the many people who contributed to this release (named in th
 ** Fix, was using Font.getName() instead of Font.getFamily() to pick up the value to use in CSS font-family property. 
 ** Issue 213: support foreground color setting in selection highlight. 
 ** Fix two bugs when -fs-table-paginate is paginate. 
-** Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly. Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly. 
+** Block boxes in cells in a &lt;thead&gt; that were also early on the page could be positioned incorrectly. Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly. 
 ** Don't assume namespace processing is turned on. It might not be for an externally provided Document. 
 ** Use the URI class instead of the URL class when resolving @import rules. This avoids spurious exceptions due to missing protocol handlers when those protocols are handled by a custom user agent. 
 ** Fix a pair of NPEs when absolutely positioned content is positioned off the page 
