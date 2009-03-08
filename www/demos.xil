@@ -7,7 +7,7 @@ for our R8 Release Candidate 1 release.
 
 *Note: only the "browser" demo is downloadable for the R8 release candidate 1 release. You can always download the source release and try them out locally. Links to the source release are in the menu on the right-hand side of this page.*
 
-!../images/demobutton.png!:http://pigeonholdings.com/projects/flyingsaucer/demo/r8/browser/browser_demo.jnlp *Browser*
+!../images/demobutton.png!:http://pigeonholdings.com/projects/flyingsaucer/demo/r8/jnlp/browser/browser_demo.jnlp *Browser*
 
 A simple XHTML browser with scrolling, back button, link support, etc. This is not a "real" browser--but you can get an idea of how Flying Saucer can be used in a Real Application.
 
