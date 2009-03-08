@@ -3,3 +3,6 @@ build
 *.iws
 *.iml
 .DS_Store
+idea
+doc
+temp
