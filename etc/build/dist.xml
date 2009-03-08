@@ -15,15 +15,17 @@
                 <include name="README"/>
             </fileset>
             <fileset dir="${libraries.dir}">
-                <include name="itext*.jar"/>
+                <include name="iText*.jar"/>
                 <include name="minium*.jar"/>
+		<include name="xml*.jar"/>
             </fileset>
         </copy>
         <zip basedir="${dest.dir}" zipfile="build/${app.name}-${app.version}.zip">
             <include name="core-renderer.jar"/>
             <include name="core-renderer-minimal.jar"/>
-            <include name="itext*.jar"/>
+            <include name="iText*.jar"/>
             <include name="minium*.jar"/>
+            <include name="xml*.jar"/>
             <include name="demos/**"/>
             <include name="LICENSE*"/>
             <include name="README"/>
@@ -51,9 +53,9 @@
             <include name="demos/splash/**"/>
             <include name="demos/svg/**"/>
 
-            <include name="www/r7/users-guide-r7.html"/>
-            <include name="www/r7/users-guide-r7.pdf"/>
-            <include name="www/r7/*.png"/>
+            <include name="www/guide/users-guide-r7.html"/>
+            <include name="www/guide/users-guide-r7.pdf"/>
+            <include name="www/guide/*.png"/>
             <include name="www/base.css"/>
         </zip>
     </target>
