@@ -8,7 +8,7 @@ h3(fs_heading){ clear: none }. An XML/XHTML/CSS 2.1 Renderer
 
 _(in 100% Java)_
 
-h2(fs_heading){ clear: left }. Download Now!
+h2(fs_heading){ clear: both }. Download Now!
 
 table(properties){width: 100% }.
 | *Status* | *Type* | *URL* | *Description* | *MD5 Sum* 
@@ -23,18 +23,15 @@ h2(fs_heading){ clear: left }. Quick News
 
 p{font-size: 14pt}. Release 8 - Release Candidate 1 (R8rc1)
 
-*March 8, 2009*: After a long hiatus from releases, we are proud to present release candidate 1 of our R8 release; see
-below, under downloads. This release includes a large number of bug fixes since R8 pre 2. Given the stability of
-our current source trunk, this release will most likely be the same as the R8 final. We encourage you to test this
-release out and give us feedback so that R8 will be our best release ever.
+*March 8, 2009*: After a long hiatus from releases, we are proud to present release candidate 1 of our R8 release; see below, under downloads. This release includes a large number of bug fixes since R8 pre 2. Given the stability of our current source trunk, this release will most likely be the same as the R8 final. We encourage you to test this release out and give us feedback so that R8 will be our best release ever.
 
-We once again thank the many people who contributed to this release; see the list of changes on our News page.
+We once again thank the many people who contributed to this release; see the list of changes on our "News page":news.html.
 
 p{font-size: 14pt}. Release 8 - Second Code Drop (R8pre2) 
 
 *January 28, 2008*: The second code drop for our R8 release is available; see below in the downloads section. This release includes a number of bug fixes since R8pre1. While not the final release, we think it's pretty stable and would love if you could take it for a drive and report any problems you find.
 
-We thank the many people who contributed to this release; see the list of changes on our News page. 
+We thank the many people who contributed to this release; see the list of changes on our "News page":news.html. 
 
 
 p{font-size: 14pt}. Release 8 - Pre 1 - Files No Longer Downloadable
