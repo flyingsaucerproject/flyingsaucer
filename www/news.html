@@ -132,6 +132,119 @@
 </ul>
 
 
+<p style="font-size: 14pt;">Release 8 &#8211; Second Code Drop (R8pre2)</p>
+
+<p><strong>January 28, 2008</strong>: The second code drop for our R8 release is available; see below in the downloads section. This release includes a number of bug fixes since R8pre1. While not the final release, we think it's pretty stable and would love if you could take it for a drive and report any problems you find.</p>
+
+<p>We thank the many people who contributed to this release (named in the changes that follow).</p>
+
+<p>Changes since R8pre1 (mostly in order of checkin).</p>
+
+<ul>
+  <li>Features
+    <ul>
+      <li>Support True Type Collection (.ttc) files</li>
+      <li>Support encryption of <span class="caps">PDF</span> output via ITextRenderer.setPDFEncryption() (patch from Jason Blumenkrantz)</li>
+      <li>Addtional work on support for rendering via <span class="caps">SWT</span> (thanks to Vianney le Cl&eacute;ment)</li>
+      <li>Support logging via Log4J as an alternative to <span class="caps">JDK</span> logging (requires recompile)</li>
+      <li>Handle hidden form elements</li>
+      <li>Rudimentary support for JavaScript links (from Dan Kaplan)</li>
+      <li>Provide property for setting initial page number of a document when rendering to <span class="caps">PDF</span> (patch from Christophe Marchand)</li>
+      <li>Add rudimentary support for Type 1 fonts</li>
+      <li>Add rudimentary support for @font-face rules</li>
+      <li>Preliminary support for selection, highlighting and copying (thanks to Nick Reddel)</li>
+      <li>Implement partial support for leader and target-counter (patch from Karl Tauber)</li>
+      <li>Provide ReplacedElementFactory to Graphics2DRenderer to allow printing of replaced elements (patch from Nicola Ken Barozzi)</li>
+      <li>Patch from N. Barozzi to allow either Toolkit or BufferedImages to be used</li>
+    </ul>
+  </li>
+</ul>
+
+
+<ul>
+  <li>Bug Fixes
+    <ul>
+      <li>Incorrectly nested table content could produce invalid layout tree.</li>
+      <li>Fix for nested percentage height calculations</li>
+      <li>When printing, Swing components should be print()ed instead of paint()ed</li>
+      <li>Only try to satisfy widows and orphans if page breaking is allowed</li>
+      <li>Fix bug that was preventing positioned content from working in running() elements</li>
+      <li>When paginating a table, rows that fit entirely on one page should never move to the next one (report from Jonathan Leech)</li>
+      <li>Include children in link activation area</li>
+      <li>Always paint default background even if there is no document (report from Richard Bair)</li>
+      <li>Need to discard last cached page if it's being removed (report from Christophe Marchand)</li>
+      <li>Fix incorrect layout of long runs of unbroken text in auto table layouts by using longs instead of ints everywhere lengths are involved.</li>
+      <li>Fix regression in initial page number calculation (report from Christophe Marchand)</li>
+      <li>Make sure resource streams are cleaned up (bug #201, patch from kaihei)</li>
+      <li>Always use <span class="caps">UTF</span>-8 when parsing stylesheets (instead of the platform default)</li>
+      <li>Need to propagate changes to user agent in SharedContext to containing StyleReference</li>
+      <li>Fix: fonts not being keyed properly in font cache when a scaling factor was applied to the text renderer</li>
+      <li>Form XObjects inherit the current graphics state from where they are called.  Make sure they get a clean slate (bug report from Evan Jones)</li>
+      <li>Issues 186 and 130: fix configuration so that logging setup does not override any current settings for <span class="caps">JDK</span> logging classes. Disable logging by default.</li>
+    </ul>
+  </li>
+</ul>
+
+
+<p style="font-size: 14pt;">Release 8 &#8211; Pre 1 &#8211; Files No Longer Downloadable</p>
+
+<p><strong>January 27, 2008</strong>: Unfortunately, during a server upgrade, the machine hosting our release files for R8pre1 lost those files. We have no backups (or at least none we can certify as being the same version). We apologize for the inconvenience.</p>
+
+<p>We recommend you use the R8pre2 release, or alternately, <span class="caps">CVS</span> <span class="caps">HEAD</span>. You can also build a release of Flying Saucer using the <span class="caps">CVS</span> tag made at the time of the R8pre1 release, the tag being simple R8_pre1.</p>
+
+<p style="font-size: 14pt;">Release 8 &#8211; First Code Drop (R8pre1)</p>
+
+<p><strong>Sepetember 2, 2007</strong>: The Flying Saucer team announces Release 8pre1 of the Flying Saucer 100% Java <span class="caps">XHTML</span>+CSS renderer, including support for table pagination, margin boxes, running elements, named pages, and more:</p>
+
+<ul>
+  <li>Table pagination.  When turned on (by setting the <code>-fs-table-pagination</code> property to <code>paginate</code> vs. a default of <code>auto</code> ), tables and table cells will be closed (with appropriate borders and padding) when a page ends and reopened when a page starts. Additionally, a table's <code>thead</code> and <code>tfoot</code> will be repeated on each page.</li>
+  <li>Proper support for <span class="caps">CSS3</span> margin boxes &#8211; <a href="http://www.w3.org/TR/css3-page/#margin-boxes">CSS 3 spec</a></li>
+  <li>A few items from the <a href="http://www.w3.org/TR/css3-selectors/">CSS3 Selectors spec</a>
+    <ul>
+      <li>Namespace aware <span class="caps">CSS</span> matching, for example, with attributes [although this also applies to elements] &#8211; <a href="http://www.w3.org/TR/css3-selectors/#attrnmsp">CSS 3 spec</a></li>
+      <li>Pseudo-elements may now be specified with a double colon &#8211; <a href="http://www.w3.org/TR/css3-selectors/#pseudo-elements">CSS 3 spec</a></li>
+      <li>The new substring selectors &#8211; <a href="http://www.w3.org/TR/css3-selectors/#attribute-substrings">CSS 3 spec</a></li>
+    </ul>
+  </li>
+  <li>Named pages &#8211; <a href="http://www.w3.org/TR/css3-page/#using-named-pages">CSS 3 spec</a></li>
+  <li>The background property can now be used in a @page context &#8211; <a href="http://www.w3.org/TR/css3-page/#page-properties">CSS 3 spec</a></li>
+  <li>Running elements <a href="http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#running1">CSS 3 spec</a></li>
+  <li>A custom property named <code>-fs-page-sequence</code> that takes a value of either <code>start</code> or <code>auto</code> (the default) and allows you to limit the scope of the page and pages counters to a portion of the document</li>
+  <li>A number of bug fixes</li>
+</ul>
+
+
+<p>We need your feedback. If you're willing to try out code still under active development, please check out R8pre1 and send in your comments. Note that this code may have bugs and is not recommended for production use.</p>
+
+<p style="font-size: 14pt;">Release 7 &#8211; Final!</p>
+
+<p><strong>July 14, 2007</strong>: The Flying Saucer team announces Release 7 of the Flying Saucer 100% Java <span class="caps">XHTML</span>+CSS renderer.</p>
+
+<p>Release 7 features major improvements in rendering accuracy, speed, and overall feature set. This includes:</p>
+
+<ul>
+  <li>Completely new, fast, accurate <span class="caps">CSS</span> 2 parser; <span class="caps">CSS</span> 2 compliant, reports errors accurately</li>
+  <li>Complete rewrite of table support.  Current table support includes:
+    <ul>
+      <li>Floated tables</li>
+      <li>display: inline-table</li>
+      <li>display: table-caption (caption in (X)HTML)</li>
+      <li>display: table-header-group, display: table-row-group, and table-footer-group (thead, tbody, and tfoot in (X)HTML)</li>
+      <li>table-layout: fixed</li>
+      <li>table-layout: auto (complete support, see below)</li>
+      <li>Table box construction and layout follows the same code path as everything else</li>
+      <li>display: table-column and display: table-column-group (col and colgroup in (X)HTML)</li>
+      <li>vertical-align in table cells</li>
+      <li>Full support for anonymous tables (with the exception that a table-column-group element won't force a table to be created.  This turned out to be awkward to implement [and marginally useful it would seem...])</li>
+    </ul>
+  </li>
+  <li>improvements to <span class="caps">XHTML</span> forms support (for Swing)</li>
+  <li><span class="caps">CSS</span> font property resolution improvements</li>
+  <li><span class="caps">CSS</span> counter property support</li>
+  <li><span class="caps">CSS</span> content property support: everything except quotes and external resources (content: url(...))</li>
+</ul>
+
+
 </div>
 
 </body>
