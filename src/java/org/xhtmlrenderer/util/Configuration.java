@@ -64,7 +64,7 @@ import java.net.MalformedURLException;
  * LogStartupConfig.</p>
  * <p>
  * There are convenience converstion method for all the primitive types, in
- * methods like {@link #valueAsInt()}. A default must always be provided for these
+ * methods like {@link #valueAsInt(String, int)}. A default must always be provided for these
  * methods. The default is returned if the value is not found, or if the
  * conversion from String fails. If the value is not present, or the conversion
  * fails, a warning message is written to the log.</p>
@@ -118,7 +118,7 @@ public class Configuration {
                 // read logging level from System properties
                 // here we are trying to see if user wants to see logging about
                 // what configuration was loaded, e.g. debugging for config itself
-                String val = null;
+                String val;
                 try {
                     val = System.getProperty("show-config");
                 } catch (SecurityException ex) {
@@ -377,8 +377,7 @@ public class Configuration {
 
     private String getUserHomeOverrideFileName() {
         try {
-            String overrideName = System.getProperty("user.home") + File.separator + ".flyingsaucer" + File.separator + "local.xhtmlrenderer.conf";
-            return overrideName;
+            return System.getProperty("user.home") + File.separator + ".flyingsaucer" + File.separator + "local.xhtmlrenderer.conf";
         } catch (SecurityException e) {
             // can happen in a sandbox
             return null;
@@ -416,17 +415,21 @@ public class Configuration {
         fine("Configuration: " + cnt + " properties overridden from System properties.");
 
         // add any additional properties we don't already know about (e.g. used for extended logging properties)
-        final Properties sysProps = System.getProperties();
-        final Enumeration keys = sysProps.keys();
-        cnt = 0;
-        while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
-            if (key.startsWith("xr.") && !this.properties.containsKey(key)) {
-                final Object val = sysProps.get(key);
-                this.properties.put(key, val);
-                finer("  (+) " + key);
-                cnt++;
+        try {
+            final Properties sysProps = System.getProperties();
+            final Enumeration keys = sysProps.keys();
+            cnt = 0;
+            while (keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                if (key.startsWith("xr.") && !this.properties.containsKey(key)) {
+                    final Object val = sysProps.get(key);
+                    this.properties.put(key, val);
+                    finer("  (+) " + key);
+                    cnt++;
+                }
             }
+        } catch (SecurityException e) {
+            // skip, this will happen in webstart or sandbox
         }
         fine("Configuration: " + cnt + " FS properties added from System properties.");
     }
@@ -468,11 +471,7 @@ public class Configuration {
 	public static boolean hasValue(String key) {
         Configuration conf = instance();
         String val = conf.properties.getProperty(key);
-		if(val == null) { 
-			return false; 
-		} else {
-			return true;
-		}
+        return val != null;
 	}
 
     /**
@@ -491,7 +490,7 @@ public class Configuration {
             return defaultVal;
         }
 
-        byte bval = -1;
+        byte bval;
         try {
             bval = Byte.valueOf(val).byteValue();
         } catch (NumberFormatException nex) {
@@ -518,7 +517,7 @@ public class Configuration {
             return defaultVal;
         }
 
-        short sval = -1;
+        short sval;
         try {
             sval = Short.valueOf(val).shortValue();
         } catch (NumberFormatException nex) {
@@ -545,7 +544,7 @@ public class Configuration {
             return defaultVal;
         }
 
-        int ival = -1;
+        int ival;
         try {
             ival = Integer.valueOf(val).intValue();
         } catch (NumberFormatException nex) {
@@ -572,7 +571,7 @@ public class Configuration {
             return defaultVal;
         }
 
-        long lval = -1;
+        long lval;
         try {
             lval = Long.valueOf(val).longValue();
         } catch (NumberFormatException nex) {
@@ -599,7 +598,7 @@ public class Configuration {
             return defaultVal;
         }
 
-        float fval = -1;
+        float fval;
         try {
             fval = Float.valueOf(val).floatValue();
         } catch (NumberFormatException nex) {
@@ -626,7 +625,7 @@ public class Configuration {
             return defaultVal;
         }
 
-        double dval = -1;
+        double dval;
         try {
             dval = Double.valueOf(val).doubleValue();
         } catch (NumberFormatException nex) {
@@ -772,7 +771,7 @@ public class Configuration {
                     "should be FQN<dot>constant, is " + val);
             return defaultValue;
         }
-        Class klass = null;
+        Class klass;
         try {
             klass = Class.forName(klassname);
         } catch (ClassNotFoundException e) {
@@ -780,7 +779,7 @@ public class Configuration {
             return defaultValue;
         }
 
-        Object cnstVal = null;
+        Object cnstVal;
         try {
             Field fld = klass.getDeclaredField(cnst);
             try {
@@ -866,6 +865,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2009/03/08 16:49:06  pdoubleya
+ * Catch another couple of cases where sandbox could be broken (webstart)
+ *
  * Revision 1.23  2009/02/08 15:18:46  pdoubleya
  * Support reading properties which are not in our standard config file, passed in via an override config file or via System properties. This is to support extended configuration parameters for JDK logging, e.g. appenders, formatters, etc.
  *
