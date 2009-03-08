@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://pigeonholdings.com/projects/flyingsaucer/demo/browser/" href="browser_demo.jnlp">
+<jnlp codebase="http://pigeonholdings.com/projects/flyingsaucer/demo/r8/browser/" href="browser_demo.jnlp">
     <information>
         <title>XHTML Browser Demo</title>
         <vendor>Flying Saucer</vendor>
@@ -18,7 +18,7 @@
         <jar href="browser.jar"/>
         <jar href="../looks-2.1.4.jar"/>
         <jar href="../core-renderer.jar"/>
-        <jar href="../itext-paulo-155.jar"/>
+        <jar href="../iText-2.0.8.jar"/>
         <jar href="../minium.jar"/>
     </resources>
     <application-desc main-class="org.xhtmlrenderer.demo.browser.BrowserSandboxLauncher"/>

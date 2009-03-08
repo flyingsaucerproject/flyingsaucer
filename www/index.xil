@@ -14,8 +14,8 @@ table(properties){width: 100% }.
 | *Status* | *Type* | *URL* | *Description* | *MD5 Sum* 
 | *STABLE* | Binary Zip | "flyingsaucer-R7final.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip | For using Flying Saucer in your own programs (2M) | 3e1af1cec00ff00896eb319a2abdeb2d
 | *STABLE* | Source Bundle Zip |  "flyingsaucer-R7final-src.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip | Includes source, demo programs, sample code, etc. (6M) | 1adf2df8a462402bc4d4c52ab37dafe5
-| *RELEASE CANDIDATE* | Binary Zip | "flyingsaucer-R8rc1.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8rc1.zip | For using Flying Saucer in your own programs (3.1M) | 098e59dfb89dc3dc17f98e36610b533d
-| *RELEASE CANDIDATE* | Source Bundle Zip | "flyingsaucer-R8rc1-src.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8rc1-src.zip | Includes source, demo programs, sample code, etc.  (7.6M) | bf4628ee17ebcf5b72d0995365d6458b  
+| *RELEASE CANDIDATE* | Binary Zip | "flyingsaucer-R8rc1.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8rc1.zip | For using Flying Saucer in your own programs (3.1M) | 136ec738983bae52c0d198c54bd901de
+| *RELEASE CANDIDATE* | Source Bundle Zip | "flyingsaucer-R8rc1-src.zip":http://pigeonholdings.com/projects/flyingsaucer/downloads/r8/flyingsaucer-R8rc1-src.zip | Includes source, demo programs, sample code, etc.  (7.6M) | 5d7b4e1333762373a11c753eee541e0b  
 
 If you'd like to access _everything_, please use our source code repository (CVS); see the link to CVS on the left side of this page.
 
