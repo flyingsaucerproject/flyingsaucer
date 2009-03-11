@@ -160,6 +160,7 @@ public class CSSParser {
                 try {
                     t = next();
                     skip_whitespace();
+                    t = next();
                     if (t == Token.TK_STRING) {
                         /* String charset = getTokenValue(t); */
                         
