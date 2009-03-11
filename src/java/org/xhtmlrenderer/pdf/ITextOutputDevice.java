@@ -227,6 +227,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     private com.lowagie.text.Rectangle checkLinkArea(RenderingContext c, Box box) {
         com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
+        targetArea.setBorder(0);
+        targetArea.setBorderWidth(0);
         String key = createRectKey(targetArea);
         if (_linkTargetAreas.contains(key)) {
             return null;
