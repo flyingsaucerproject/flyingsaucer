@@ -241,18 +241,21 @@ public class BoxRenderer {
 			BufferedImage outputImage = createBufferedImage(this.width, height);
 			outputDevice = new Java2DOutputDevice(outputImage);
 			Graphics2D newG = (Graphics2D) outputImage.getGraphics();
-			if ( renderingHints != null ) {
-				newG.getRenderingHints().putAll(renderingHints);
-			}
+            try {
+                if ( renderingHints != null ) {
+                    newG.getRenderingHints().putAll(renderingHints);
+                }
 
-			RenderingContext rc = sharedContext.newRenderingContextInstance();
-			rc.setFontContext(new Java2DFontContext(newG));
-			rc.setOutputDevice(outputDevice);
-			sharedContext.getTextRenderer().setup(rc.getFontContext());
+                RenderingContext rc = sharedContext.newRenderingContextInstance();
+                rc.setFontContext(new Java2DFontContext(newG));
+                rc.setOutputDevice(outputDevice);
+                sharedContext.getTextRenderer().setup(rc.getFontContext());
 
-			root.getLayer().paint(rc);
+                root.getLayer().paint(rc);
+            } finally {
+                if (newG != null) newG.dispose();
+            }
 
-			newG.dispose();
 			rendered = true;
 		}
 
