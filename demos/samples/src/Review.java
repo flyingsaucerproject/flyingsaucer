@@ -267,7 +267,6 @@ public class Review {
             }
         }
 
-        @Override
         public void paint(Graphics g1) {
             Graphics2D g2d = (Graphics2D) g1;
             try {
