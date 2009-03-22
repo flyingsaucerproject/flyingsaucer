@@ -23,13 +23,56 @@ import java.awt.event.MouseEvent;
 
 import org.xhtmlrenderer.render.Box;
 
+
+/**
+ * An FSMouseListener is used to track mouse events on a subclass of {@link BasicPanel}.
+ * FSMouseListener instances can be added to the panel via {@link BasicPanel#addMouseTrackingListener(FSMouseListener)}.
+ * The listener will automatically receive callbacks as the user moves over the panel. It's the developer's
+ * responsibility to decide how to handle the events, in particular, locating the particular Box instance in the
+ * tree which should be acted upon. You may find it more useful to use one of the existing subclasses, for
+ * example {@link org.xhtmlrenderer.swing.LinkListener}, {@link org.xhtmlrenderer.swing.HoverListener}, or
+ * {@link org.xhtmlrenderer.swing.CursorListener}.
+ */
 public interface FSMouseListener {
-    public void onMouseOver(BasicPanel panel, Box box);
-    public void onMouseOut(BasicPanel panel, Box box);
-    public void onMouseUp(BasicPanel panel, Box box);
+    /**
+     * Sent when the mouse moves over a Box in the render tree.
+     *
+     * @param panel the panel where the box is displayed
+     * @param box the box the mouse has just moved over
+     */
+    void onMouseOver(BasicPanel panel, Box box);
+    /**
+     * Sent when the mouse leaves a Box in the render tree after entering it.
+     *
+     * @param panel the panel where the box is displayed
+     * @param box the box the mouse has just left
+     */
+    void onMouseOut(BasicPanel panel, Box box);
+    /**
+     * Sent when the mouse button is released while hovering over a Box in the render tree.
+     *
+     * @param panel the panel where the box is displayed
+     * @param box the box where the mouse is currently located
+     */
+    void onMouseUp(BasicPanel panel, Box box);
     
-    public void onMousePressed(BasicPanel panel, MouseEvent e);
-    public void onMouseDragged(BasicPanel panel, MouseEvent e);
-    
-    public void reset();
+    /**
+     * Sent when the mouse button is pressed.
+     *
+     * @param panel the panel where the box is displayed
+     * @param e information about the mouse position, etc.
+     */
+    void onMousePressed(BasicPanel panel, MouseEvent e);
+    /**
+     * Sent when the mouse button is held and the mouse is moved.
+     *
+     * @param panel the panel where the box is displayed
+     * @param e information about the mouse position, etc.
+     */
+    void onMouseDragged(BasicPanel panel, MouseEvent e);
+
+    /**
+     * Implementation-dependent. Sent via {@link BasicPanel#resetMouseTracker()}.
+     */
+    void reset();
 }
