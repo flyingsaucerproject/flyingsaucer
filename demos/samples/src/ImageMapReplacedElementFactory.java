@@ -44,6 +44,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+
+/**
+ * Sample for handling image maps in XHTML, as replaced elements.
+ *
+ * Sample is incomplete in current state and meant as a starting point for future work.
+ */
 public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory {
    private final ImageMapListener listener;
    private static final String IMG_USEMAP_ATTR = "usemap";
