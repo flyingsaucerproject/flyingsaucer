@@ -33,6 +33,7 @@ xilcom. An example of a URL abbreviation, "xilhome" would be used in link markup
 [xilhome]http://xilize.sourceforge.net/
 [css21]http://www.w3.org/TR/CSS21/
 [itext]http://www.lowagie.com/iText/
+[itext.jar]iText-2.0.8
 [jlogging]http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html
 [cssparser]http://cssparser.sourceforge.net/
 [mailing-list.user]https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList

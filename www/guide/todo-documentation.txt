@@ -1,0 +1,11 @@
+Todo Document Updates
+
+- headers/footers: running elements and page boxes: https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?listName=dev&msgNo=3707
+  - no more fs-move-to-flow
+- review fs- custom property list
+- don't pass in a null base url unless you have no external resources (images, css), otherwise URLs will probably not resolve correctly
+- new sample: image map REF
+- fs page sequence: http://markmail.org/thread/f4lok5k35wzii2of
+
+* minium removed
+

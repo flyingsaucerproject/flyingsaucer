@@ -58,7 +58,6 @@ public class HTMLTest extends JFrame {
      */
     public HTMLTest(String[] args) {
         super(BASE_TITLE);
-        //Toolkit.getDefaultToolkit().setDynamicLayout(true);
         panel = new XHTMLPanel();
         int width = 360;
         int height = 500;
@@ -89,35 +88,6 @@ public class HTMLTest extends JFrame {
         view.add(new ReloadPageAction());
 
 
-        /*
-        JMenu test = new JMenu( "Test" );
-        mb.add( test );
-        test.setMnemonic( 'T' );
-
-        String demoRootDir = "demos/browser/xhtml";
-        addFileLoadAction( test, "One Liner", demoRootDir + "/one-line.xhtml" );
-        addFileLoadAction( test, "Background Colors/Images", demoRootDir + "/background.xhtml" );
-        addFileLoadAction( test, "Borders", demoRootDir + "/border.xhtml" );
-        addFileLoadAction( test, "Box Sizing", demoRootDir + "/box-sizing.xhtml" );
-        addFileLoadAction( test, "Mixed Test (1)", demoRootDir + "/content.xhtml" );
-        addFileLoadAction( test, "Line Breaking", demoRootDir + "/breaking.xhtml" );
-        addFileLoadAction( test, "Headers", demoRootDir + "/header.xhtml" );
-        addFileLoadAction( test, "Inline Image", demoRootDir + "/image.xhtml" );
-        addFileLoadAction( test, "List ", demoRootDir + "/list.xhtml" );
-        addFileLoadAction( test, "Nesting", demoRootDir + "/nested.xhtml" );
-        addFileLoadAction( test, "General Styled Text", demoRootDir + "/paragraph.xhtml" );
-        addFileLoadAction( test, "CSS Selectors", demoRootDir + "/selectors.xhtml" );
-        addFileLoadAction( test, "Table", demoRootDir + "/table.xhtml" );
-        addFileLoadAction( test, "Text Alignment", demoRootDir + "/text-alignment.xhtml" );
-        addFileLoadAction( test, "Whitespace Handling", demoRootDir + "/whitespace.xhtml" );
-        addFileLoadAction( test, "iTunes Email", demoRootDir + "/itunes/itunes1.xhtml" );
-        addFileLoadAction( test, "Follow Links", demoRootDir + "/link.xhtml" );
-        addFileLoadAction( test, "Hamlet (slow!)", demoRootDir + "/hamlet.xhtml" );
-        addFileLoadAction( test, "extended", demoRootDir + "/extended.xhtml" );
-        addFileLoadAction( test, "XML-like", demoRootDir + "/xml.xhtml" );
-        addFileLoadAction( test, "XML", demoRootDir + "/xml.xml" );
-        addFileLoadAction( test, "pseudo-element", "/home/tobe/Projekt/xhtmlrenderer/test.xhtml" );
-        */
         JMenu debug = new JMenu("Debug");
         mb.add(debug);
         debug.setMnemonic('D');
@@ -486,6 +456,9 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2009/03/22 12:27:36  pdoubleya
+ * Remove Minium anti-aliasing library as sources are not available. Removed jar and all references to it. For R8 release.
+ *
  * Revision 1.36  2007/05/24 13:22:38  peterbrant
  * Optimize and clean up hover and link listeners
  *

@@ -19,11 +19,6 @@ websites, listed below.
 Java projects that are used for building and running Flying Saucer are:
 
 
-Minium Anti-Aliasing
-Direct submission from Julian Scheid julian at sektor37 de
-License: Unrestricted use; see LICENSE within minium.jar
-Included as lib/minium.jar
-
 JUnit (for testing)
 http://www.junit.org/index.htm
 License: Common Public License Version 1.0

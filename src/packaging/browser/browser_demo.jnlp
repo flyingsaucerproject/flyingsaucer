@@ -19,7 +19,6 @@
         <jar href="../looks-2.1.4.jar"/>
         <jar href="../core-renderer.jar"/>
         <jar href="../iText-2.0.8.jar"/>
-        <jar href="../minium.jar"/>
     </resources>
     <application-desc main-class="org.xhtmlrenderer.demo.browser.BrowserSandboxLauncher"/>
 </jnlp>

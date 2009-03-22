@@ -209,34 +209,6 @@ public class BrowserMenuBar extends JMenuBar {
         debugShow.add(new JCheckBoxMenuItem(new FontMetricsAction()));
 
         JMenu anti = new JMenu("Anti Aliasing");
-        ButtonGroup implementation = new ButtonGroup();
-        JRadioButtonMenuItem java2d = new JRadioButtonMenuItem(new AbstractAction("Java2D Implementation") {
-            public void actionPerformed(ActionEvent evt) {
-                SharedContext rc = panel.getSharedContext();
-                int level = rc.getTextRenderer().getSmoothingLevel();
-                rc.setTextRenderer(new Java2DTextRenderer());
-                rc.getTextRenderer().setSmoothingLevel(level);
-                panel.repaint();
-            }
-        });
-        java2d.setSelected(true);
-        implementation.add(java2d);
-        anti.add(java2d);
-
-        JRadioButtonMenuItem minium = new JRadioButtonMenuItem(new AbstractAction("Minium Implementation") {
-            public void actionPerformed(ActionEvent evt) {
-                SharedContext rc = panel.getSharedContext();
-                int level = rc.getTextRenderer().getSmoothingLevel();
-                rc.setTextRenderer(new MiniumTextRenderer());
-                rc.getTextRenderer().setSmoothingLevel(level);
-                panel.repaint();
-            }
-        });
-        implementation.add(minium);
-        anti.add(minium);
-
-        anti.add(new JSeparator());
-
         ButtonGroup anti_level = new ButtonGroup();
         addLevel(anti, anti_level, "None", TextRenderer.NONE);
         addLevel(anti, anti_level, "Low", TextRenderer.LOW).setSelected(true);
@@ -698,6 +670,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.49  2009/03/22 12:27:38  pdoubleya
+* Remove Minium anti-aliasing library as sources are not available. Removed jar and all references to it. For R8 release.
+*
 * Revision 1.48  2009/02/15 19:57:49  pdoubleya
 * Remove references to "r7", and move browser demos to top-level xhtml directory.
 *

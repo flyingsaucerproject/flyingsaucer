@@ -12,7 +12,6 @@
 //justified text
 //build calendar demo
 //boolean to turn off layout threading
-//integrate minium
 //fix list items
 //fix list item vertical positioning
 //build table demo

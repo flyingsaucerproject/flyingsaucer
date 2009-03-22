@@ -21,10 +21,6 @@
 			destfile="${dest.dir}/cssparser-0-9-4-fs.jar.pack"/>
 		<gzip src="${dest.dir}/cssparser-0-9-4-fs.jar.pack" 
 			destfile="${dest.dir}/cssparser-0-9-4-fs.jar.pack.gz"/>
-		<pack200 src="${dest.dir}/minium.jar"
-			destfile="${dest.dir}/minium.jar.pack"/>
-		<gzip src="${dest.dir}/minium.jar.pack"
-			destfile="${dest.dir}/minium.jar.pack.gz"/>
 		<pack200 src="${dest.dir}/about.jar"
 			destfile="${dest.dir}/about.jar.pack"/>
 		<gzip src="${dest.dir}/about.jar.pack"

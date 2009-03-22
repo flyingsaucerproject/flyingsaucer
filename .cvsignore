@@ -1,8 +1,15 @@
+.DS_Store
+*.iws
 build
+*.iml
 *.ipr
+<<<<<<< .cvsignore
+dist
+=======
 *.iws
 *.iml
 .DS_Store
 idea
 doc
 temp
+>>>>>>> 1.3

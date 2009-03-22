@@ -16,15 +16,13 @@
             </fileset>
             <fileset dir="${libraries.dir}">
                 <include name="iText*.jar"/>
-                <include name="minium*.jar"/>
-		<include name="xml*.jar"/>
+                <include name="xml*.jar"/>
             </fileset>
         </copy>
         <zip basedir="${dest.dir}" zipfile="build/${app.name}-${app.version}.zip">
             <include name="core-renderer.jar"/>
             <include name="core-renderer-minimal.jar"/>
             <include name="iText*.jar"/>
-            <include name="minium*.jar"/>
             <include name="xml*.jar"/>
             <include name="demos/**"/>
             <include name="LICENSE*"/>

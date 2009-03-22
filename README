@@ -48,24 +48,14 @@ WHAT'S IN THE DISTRIBUTION
 
     * core-renderer.jar: the main file, always in the classpath
     * itext*.jar: support for generating PDF files as output
-    * minium*.jar: support for a custom anti-aliasing algorithm on output; may look better on some older JVMs
 
     * core-renderer-minimal.jar: see note at end of this section
 
     In principle, for an application using only Swing JPanels for output, you could
     restrict yourself to using core-renderer.jar; however, we recommend you include
-    core*, itext* and minium* to avoid any linking errors/ClassNotFoundExceptions. When
+    core*, itext* and to avoid any linking errors/ClassNotFoundExceptions. When
     in doubt, contact us via mail.
 
-        "Minimal" Core JAR File
-        -----------------------
-        We now include a "minimal" core JAR file which does not contain X/HTML entity
-        definitions and DTDs. If you have are not using entities, or have defined entities
-        inline in your documents, you might use this JAR file for a smaller total download
-        in your own applications--for example, for applets or webstartables. However, if you
-        can spare the extra size, we recommend you just use the core-renderer.jar, which,
-        while a little larger, will save you some time tracking down XHTML parsing-related
-        errors.
 
     "SOURCE" DISTRIBUTION
     ---------------------
@@ -83,7 +73,7 @@ GETTING STARTED
 ---------------
 Please see the user's guide (URLs listed above) for info on how to get started.
 At a minimum, you'll need core-renderer.jar in your classpath; itext*.jar 
-for PDF output and minium.jar for alternate anti-aliasing in the renderer.
+for PDF output.
 Some good entry points (classes) are:
 org.xhtmlrenderer.simple.XHTMLPanel
 org.xhtmlrenderer.simple.PDFRenderer

@@ -98,6 +98,7 @@ toc. 3 3 #
 
 h3(fs_heading){clear:none}. How do I make my program follow hyperlinks?
 
+FIXME
 You need a mouse listener that detects link clicks and does the HTTP request. The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish. See the @org.xhtmlrenderer.swing.LinkListener@ class for an example.
 
 h3(fs_heading){clear:none}. How do I get access to the Swing components that make up my form fields?
@@ -129,6 +130,38 @@ Note that on some platforms and JREs, AA can slow things down considerably. It a
 h3(fs_heading){clear:none}. When I use the @setDocument(dom, url)@ constructor, what should the url parameter point to?
 
 The url is the "base", which for a normal URL would be the parent location (parent directory). For Documents usually a null will suffice, unless your document contains relative references to some resource; if so, then provide the parent location (what they are relative to).
+
+TODO: how do i get the starting index of selected text
+I have just tested the R8pre2 release, specifically for the addition
+of selection / highlighting capabilities. Hightlighting works fine,
+however for my own purposes I need to have the index of the selection
+in the plain text document. I use the following piece of code to
+extract the selected text (however, I am not sure if this is the best
+way to do this):
+[code]
+// highlighter is an instance of SelectionHighlighter.
+Range range = highlighter.getSelectionRange();
+String content = range.toString();
+[/code]
+
+I do not know how to retrieve the start index of the selection in the
+original plain text. Is there a way to retrieve this? If not, perhaps
+there is a way to retrieve the index in the html body?
+
+That's not possible out of the box.  The DOM interface doesn't provide
+position information.
+We found a way by walking through the nodes
+left of the start of the selected range and then adding all the text
+content lengths
+
+TODO: I am looking to "watermark" PDF's created through FS. Is there any existing code to help me do this out of the box, or can some one point me in the right direction...
+
+Either use the background property inside of @page or PdfStamper after
+the PDF is already created. PdfStamper is part of the iText API
+
+TODO: i've created a replacedelementfactory for a custom XML element (e.g. mathml), but it's not getting replaced within the document
+
+make sure the element has it's display style as inline-block or block. only block-level elements can be replaced.
 
 h3(fs_heading){clear:none}. My PDF isn't picking up my CSS!
 
@@ -236,12 +269,11 @@ h3(fs_heading){clear:none}. How do I set up my CLASSPATH?
 You only need the 
 
 * @core-renderer.jar@ (required) 
-* @lib/itext-paulo-155.jar@ 
-* @lib/minium.jar@ 
+* @${itext.jar}@  
 
-The first two are required; iText is needed for PDF rendering, and Minium if you need Minium anti-aliasing. 
+The first two are required; iText is needed for PDF rendering. 
 
-Before release R7, you needed to include a CSS parser in the CLASSPATH. This is no longer necessary, as ${fs} now includes a fast, compliant CSS parser.
+In earlier releases, you needed to include a CSS parser in the CLASSPATH. This is no longer necessary, as ${fs} now includes a fast, compliant CSS parser.
 
 That is all you need for your own programs. You also need an XML parser to be in your classpath, but this already included in recent versions of the JRE. 
 
