@@ -19,26 +19,16 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.demo.browser.actions.ZoomAction;
 import org.xhtmlrenderer.swing.*;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.demo.browser.actions.ZoomAction;
-import org.w3c.dom.Element;
 
 import javax.swing.*;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseListener;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -210,10 +200,10 @@ public class BrowserMenuBar extends JMenuBar {
 
         JMenu anti = new JMenu("Anti Aliasing");
         ButtonGroup anti_level = new ButtonGroup();
-        addLevel(anti, anti_level, "None", TextRenderer.NONE);
-        addLevel(anti, anti_level, "Low", TextRenderer.LOW).setSelected(true);
-        addLevel(anti, anti_level, "Medium", TextRenderer.MEDIUM);
-        addLevel(anti, anti_level, "High", TextRenderer.HIGH);
+        addLevel(anti, anti_level, "None", -1);
+        addLevel(anti, anti_level, "Low", 25).setSelected(true);
+        addLevel(anti, anti_level, "Medium", 12);
+        addLevel(anti, anti_level, "High", 0);
         debug.add(anti);
 
 
@@ -604,15 +594,15 @@ public class BrowserMenuBar extends JMenuBar {
     }
 
     class AntiAliasedAction extends AbstractAction {
-        int hint;
+        int fontSizeThreshold;
 
-        AntiAliasedAction(String text, int hint) {
+        AntiAliasedAction(String text, int fontSizeThreshold) {
             super(text);
-            this.hint = hint;
+            this.fontSizeThreshold = fontSizeThreshold;
         }
 
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getSharedContext().getTextRenderer().setSmoothingLevel(hint);
+            root.panel.view.getSharedContext().getTextRenderer().setSmoothingThreshold(fontSizeThreshold);
             root.panel.view.repaint();
         }
     }
@@ -670,6 +660,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.50  2009/03/22 15:13:24  pdoubleya
+* Follow up for removing Minium AA: font "smoothing level" now deprecated. Changed to use font smoothing threshold alone. Remove corresponding property from configuration file.
+*
 * Revision 1.49  2009/03/22 12:27:38  pdoubleya
 * Remove Minium anti-aliasing library as sources are not available. Removed jar and all references to it. For R8 release.
 *

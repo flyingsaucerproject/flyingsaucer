@@ -238,9 +238,6 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
         log.info("print");
 
         try {
-
-            Graphics2D g2 = (Graphics2D) graphics;
-
             if (j2dr == null) {
 
                 j2dr = new Java2DRenderer(file, 1024);
@@ -250,25 +247,8 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
                 context.setDPI(72f);
 
                 context.getTextRenderer().setSmoothingThreshold(0);
-                context.getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
 
-                /* FIXME
-                j2dr.setDocument(doc, base);
-
-                j2dr.layout(g2, null);
-                j2dr.getPanel().assignPagePrintPositions(g2);
-                log.info("minimum required width: "
-                        + j2dr.getMinimumSize().width);
-                 */
             }
-
-            /* FIXME
-            if (pi >= j2dr.getPanel().getRootLayer().getPages().size()) {
-                return Printable.NO_SUCH_PAGE;
-            }
-
-            // render the document
-            j2dr.getPanel().paintPage(g2, pi);*/
 
             return Printable.PAGE_EXISTS;
         } catch (Exception ex) {

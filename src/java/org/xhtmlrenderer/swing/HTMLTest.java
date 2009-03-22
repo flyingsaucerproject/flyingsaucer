@@ -103,10 +103,10 @@ public class HTMLTest extends JFrame {
 
 
         JMenu anti = new JMenu("Anti Aliasing");
-        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("None", TextRenderer.NONE)));
-        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("Low (Default)", TextRenderer.LOW)));
-        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("Medium", TextRenderer.MEDIUM)));
-        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("Highest", TextRenderer.HIGH)));
+        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("None", -1)));
+        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("Low (Default)", 25)));
+        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("Medium", 12)));
+        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("Highest", 0)));
         debug.add(anti);
 
         debug.add(new ShowDOMInspectorAction());
@@ -320,15 +320,15 @@ public class HTMLTest extends JFrame {
     class AntiAliasedAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        int hint;
+        int fontSizeThreshold;
 
-        AntiAliasedAction(String text, int hint) {
+        AntiAliasedAction(String text, int fontSizeThreshold) {
             super(text);
-            this.hint = hint;
+            this.fontSizeThreshold = fontSizeThreshold;
         }
 
         public void actionPerformed(ActionEvent evt) {
-            panel.getSharedContext().getTextRenderer().setSmoothingLevel(hint);
+            panel.getSharedContext().getTextRenderer().setSmoothingThreshold(fontSizeThreshold);
             panel.repaint();
         }
     }
@@ -456,6 +456,9 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2009/03/22 15:13:24  pdoubleya
+ * Follow up for removing Minium AA: font "smoothing level" now deprecated. Changed to use font smoothing threshold alone. Remove corresponding property from configuration file.
+ *
  * Revision 1.37  2009/03/22 12:27:36  pdoubleya
  * Remove Minium anti-aliasing library as sources are not available. Removed jar and all references to it. For R8 release.
  *
