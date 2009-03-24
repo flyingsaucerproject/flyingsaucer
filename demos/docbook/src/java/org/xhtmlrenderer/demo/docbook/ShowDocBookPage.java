@@ -73,7 +73,6 @@ public class ShowDocBookPage {
     private void setAntiAlias(XHTMLPanel introPanel) {
         SharedContext sharedContext = introPanel.getSharedContext();
         sharedContext.setTextRenderer(new Java2DTextRenderer());
-        sharedContext.getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
     }
 
     private void showAboutDialog() {
