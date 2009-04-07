@@ -20,7 +20,7 @@ h3(fs_heading){clear:none}. Does ${fs} support legacy HTML?
 
 h3(fs_heading){clear:none}. Can I use ${fs} to browse websites?
 
-${fs} is not an HTML component. It is a rendering component for XHTML content, but it cannot handle the malformed HTML 4.0 of general webpages, and it has no support for purely stylistic markup like FONT and CENTER. You have to use valid XHTML and CSS. For most embedded uses this is fine since the application author usually has control over the documents to be loaded. If you really need full IE/Mozilla/Safari-like fidelity for general purpose webpages you should look into a webbrowser wrapper like "JDIC's Browser component":http://jdic.dev.java.net, or a commercial component like "WebRenderer":http://www.webrenderer.com.
+${fs} is not an HTML component. It is a rendering component for XHTML content, but it cannot handle the malformed HTML 4.0 of general webpages, and it has no support for purely stylistic markup like FONT and CENTER. You have to use valid XHTML and CSS. For most embedded uses this is fine since the application author usually has control over the documents to be loaded. If you really need full IE/Mozilla/Safari-like fidelity for general purpose webpages you should look into a webbrowser wrapper like "JDIC's Browser component":http://jdic.dev.java.net, or a commercial component like "WebRenderer":http://www.webrenderer.com. Sun's Swing team has said they are working on a Java wrapper for WebKit called JWebPane, but there is no release schedule announced so far.
 
 h3(fs_heading){clear:none}. Is ${fs} a web browser?
 
@@ -47,6 +47,8 @@ An application using ${fs} can be as simple as a chat program or as complicated 
 * a javadoc viewer 
 * report generation and viewing 
 * a stock ticker / weather reporter
+
+${fs} has become a favorite recently for people who need to render clean XHTML to PDF; we support PDF output via the iText library.
 
 h3(fs_heading){clear:none}. What XHTML/CSS features does ${fs} currently support?
 
@@ -98,12 +100,11 @@ toc. 3 3 #
 
 h3(fs_heading){clear:none}. How do I make my program follow hyperlinks?
 
-FIXME
-You need a mouse listener that detects link clicks and does the HTTP request. The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish. See the @org.xhtmlrenderer.swing.LinkListener@ class for an example.
+You need a mouse listener that detects link clicks and does the HTTP request. The @BasicPanel@ supports tracking mouse events and delegating them to @FSMouseListener@ instances. You can use the @org.xhtmlrenderer.swing.LinkListener@ class, which implements @FSMouseListener@, for basic hyperlink navigation support.
 
 h3(fs_heading){clear:none}. How do I get access to the Swing components that make up my form fields?
 
-Take a look at the @org.xhtmlrenderer.simple.extend.XhtmlForm@ class. Form elements are "replaced" at runtime by the @org.xhtmlrenderer.swing.SwingReplacedElementFactory@ if you're using the @XHTMLPanel@ class for rendering. The factory actually creates a new XhtmlForm class which creates and tracks the components. There is a @submit()@ method in there that you can follow as an starting point.
+Take a look at the @org.xhtmlrenderer.simple.extend.XhtmlForm@ class. Form elements are "replaced" at runtime by the @org.xhtmlrenderer.swing.SwingReplacedElementFactory@ if you're using the @XHTMLPanel@ class for rendering. The factory actually creates a new @XhtmlForm@ class which creates and tracks the components. To receive a callback when the user submits a form, add a @FormSubmissionListener@ instance to your @BasicPanel@.
 
 h3(fs_heading){clear:none}. I have XML or XHTML stored in a Java String, not a file--how do I load this into an XHTMLPanel?
 
@@ -111,57 +112,42 @@ It's been tricky for us to come up with a decent set of method calls to cover in
 
 In Java APIs, there is some confusion on usage between a String that represents an address (like a URI or a file path) and strings that represent content. Our API tends to expect that Strings will represent addresses.
 
-You can use @panel.setDocumentFromString()@ to do this. The String will be passed to the standard XML parser and treated as a regular document.
+You can use @panel.setDocumentFromString()@ to render a document from a string containing XHTML content. The String will be passed to the standard XML parser and treated as a regular document.
 
 It's important to remember that FS expects well-formed XML documents, and we don't have an extremely friendly relationship with the XML parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java XML APIs, before loading them in FS. This is especially true if you are generating XHTML on-the-fly.
 
 h3(fs_heading){clear:none}. How do I force Anti-aliasing?
 
 Either 
-* Set the appropriate configuration properties: @xr.text.aa-fontsize-threshhold@ and @xr.text.aa-smoothing-level@
-* Get the @Java2DTextRenderer@ reference from the XHTMLPanel's @SharedContext@ property, then call @setSmoothingThreshold()@ and @setSmoothingLevel()@
+* Set the appropriate configuration properties: @xr.text.aa-fontsize-threshhold@ 
+* Get the @Java2DTextRenderer@ reference from the XHTMLPanel's @SharedContext@ property, then call @setSmoothingThreshold()@
 
-Smoothing level should be anything other than @TextRenderer.NONE@. The specific value is ignored for Java2D AA.
+The threshold is the font size at which AA should kick in, for text; font sizes below that size will *not* be drawn with AA. A threshold of -1 turns AA off completely.
 
-The threshold is the font size at which AA should kick in, for text; font sizes below that size will *not* be drawn with AA.
-
-Note that on some platforms and JREs, AA can slow things down considerably. It appears to be much better with more recent JREs, such as Java 6.
+Note that on some platforms and JREs, AA can slow things down considerably. It appears to be much better with more recent Sun JREs, such as Java 6.
 
 h3(fs_heading){clear:none}. When I use the @setDocument(dom, url)@ constructor, what should the url parameter point to?
 
-The url is the "base", which for a normal URL would be the parent location (parent directory). For Documents usually a null will suffice, unless your document contains relative references to some resource; if so, then provide the parent location (what they are relative to).
+The url is the "base", which for a normal URL would be the parent location--the parent directory, or the location where the document you are rendering is located.
 
-TODO: how do i get the starting index of selected text
-I have just tested the R8pre2 release, specifically for the addition
-of selection / highlighting capabilities. Hightlighting works fine,
-however for my own purposes I need to have the index of the selection
-in the plain text document. I use the following piece of code to
-extract the selected text (however, I am not sure if this is the best
-way to do this):
-[code]
-// highlighter is an instance of SelectionHighlighter.
-Range range = highlighter.getSelectionRange();
-String content = range.toString();
-[/code]
+If your document has absolute URIs for CSS and images, or it has no external references at all, then the base url can be null.
 
-I do not know how to retrieve the start index of the selection in the
-original plain text. Is there a way to retrieve this? If not, perhaps
-there is a way to retrieve the index in the html body?
+If your document has any relative URIs for CSS or images, then the base URL should *not* be null, but rather should point to the directory or address where the current document is located. 
 
-That's not possible out of the box.  The DOM interface doesn't provide
-position information.
-We found a way by walking through the nodes
-left of the start of the selected range and then adding all the text
-content lengths
 
-TODO: I am looking to "watermark" PDF's created through FS. Is there any existing code to help me do this out of the box, or can some one point me in the right direction...
+h3(fs_heading){clear:none}. How do i get the starting index of selected text?
 
-Either use the background property inside of @page or PdfStamper after
-the PDF is already created. PdfStamper is part of the iText API
+_I am using the selection / highlighting capabilities in ${fs}. Hightlighting works fine, but I need to have the index of the selection. Is this possible?
 
-TODO: i've created a replacedelementfactory for a custom XML element (e.g. mathml), but it's not getting replaced within the document
+That's not possible out of the box.  The DOM interface doesn't provide position information. An option is to walk through the nodes of the document to the left of the start of the selected range and then adding all the text content lengths.
 
-make sure the element has it's display style as inline-block or block. only block-level elements can be replaced.
+h3(fs_heading){clear:none}. How can I "watermark" PDF's created through FS?
+
+Either use the background property inside of @@page@ or @PdfStamper@ after the PDF is already created. @PdfStamper@ is part of the iText API.
+
+h3(fs_heading){clear:none}. I've created a replacedelementfactory for a custom XML element (e.g. MathML), but it's not getting replaced within the document.
+
+Make sure the element has it's display style as inline-block or block. Only block-level elements can be replaced.
 
 h3(fs_heading){clear:none}. My PDF isn't picking up my CSS!
 
