@@ -306,11 +306,11 @@ public class ITextRenderer {
                     _pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
                     _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
         }
-        firePreOpen();
-        doc.open();
-        
         _pdfDoc = doc;
         _writer = writer;
+
+        firePreOpen();
+        doc.open();
         
         writePDF(pages, c, firstPageSize, doc, writer);
         
