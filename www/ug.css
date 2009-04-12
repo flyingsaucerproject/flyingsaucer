@@ -1,25 +1,31 @@
 #toc {
-	page-break-before: always; 
+  page-break-before: always; 
+  font-size: 18pt; 
+  text-align: center;
+}
+#footer {
+  display: block;
+  position: running(footer)
 }
 h2 {
-	page-break-before: always;
+  page-break-before: always;
 }
 h3, h4 {
-	page-break-after: avoid;
+  page-break-after: avoid;
 }
-.printOnly, #footer {
-	display: block;
+.printOnly {
+  display: block;
 }
 body { 
-	margin: 0; 
-	padding: 0; 
+  margin: 0; 
+  padding: 0; 
 }
 a:link {
-	text-decoration: none;
-	color: black;
+  text-decoration: none;
+  color: black;
 }
 div #menu {
-	display: none;
+  display: none;
 }
 #pagenumber:before {
   content: counter(page); 
@@ -31,14 +37,20 @@ div #menu {
   size: A4;
   margin: 1in .75in 1in .75in;
   padding: 0.25in;
-  -fs-flow-top: "header";
-  -fs-flow-bottom: "footer";
-  -fs-flow-left: "left";
-  -fs-flow-right: "right";
+  @bottom-left {
+    content: element(footer);
+  }
+  @bottom-right {
+    content: "Page " counter(page) " of " counter(pages);
+  }
 }
 @page :first {
   border: thin solid black;
-  -fs-flow-bottom: "none";
+  @bottom-left {
+    content: "";
+  }
+  @bottom-right {
+    content: "";
+  }
 }
-
 
