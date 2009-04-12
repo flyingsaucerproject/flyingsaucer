@@ -6,20 +6,41 @@ import java.io.*;
  * @author patrick
  */
 public class IOUtil {
-    public static void copyFile(File page, File outputDir) throws IOException {
-        InputStream in = new BufferedInputStream(new FileInputStream(page));
-        File outputFile = new File(outputDir, page.getName());
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile));
+    public static File copyFile(File page, File outputDir) throws IOException {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = new BufferedInputStream(new FileInputStream(page));
+            File outputFile;
+            outputFile = new File(outputDir, page.getName());
+            out = new BufferedOutputStream(new FileOutputStream(outputFile));
 
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
+            // Transfer bytes from in to out
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.flush();
+            out.close();
+            return outputFile;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // swallow
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    // swallow
+                }
+            }
         }
-        in.close();
-        out.flush();
-        out.close();
     }
 
     public static void deleteAllFiles(final File dir) throws IOException {
