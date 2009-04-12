@@ -1,4 +1,6 @@
-define. title The ${fs} User's Guide 
+include. ../include/common-defines.inc
+
+define. title The ${fs} User's Guide
 
 define. headElementAdd <link rel="stylesheet" type="text/css" href="../ug.css" media="print" />
 
