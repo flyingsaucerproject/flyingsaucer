@@ -250,7 +250,7 @@ public class BrowserActions {
         usersManual = new EmptyAction("FS User's Guide", "Flying Saucer User's Guide", null) {
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    root.panel.loadPage("/r7/users-guide-r7.html");
+                    root.panel.loadPage("/guide/users-guide-r8.html");
                     root.panel.view.repaint();
                 } catch (Exception ex) {
                     Uu.p(ex);
@@ -422,6 +422,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2009/04/12 11:14:28  pdoubleya
+ * Fix path for user's guide.
+ *
  * Revision 1.32  2009/02/15 19:57:48  pdoubleya
  * Remove references to "r7", and move browser demos to top-level xhtml directory.
  *
