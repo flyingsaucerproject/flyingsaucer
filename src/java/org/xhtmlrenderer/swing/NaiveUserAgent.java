@@ -68,7 +68,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 	private String _baseURL;
 
 
-	/**
+    /**
      * Creates a new instance of NaiveUserAgent with a max image cache of 16 images.
      */
     public NaiveUserAgent() {
@@ -151,7 +151,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 	 * @return An ImageResource containing the image.
 	 */
 	public ImageResource getImageResource(String uri) {
-        ImageResource ir = null;
+        ImageResource ir;
         uri = resolveURI(uri);
         ir = (ImageResource) _imageCache.get(uri);
         //TODO: check that cached image is still valid
@@ -187,7 +187,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 	/**
 	 * Factory method to generate ImageResources from a given Image. May be overridden in subclass.
 
-	 * @param uri The URI for the image, resolved to an absolute URI. 
+	 * @param uri The URI for the image, resolved to an absolute URI.
 	 * @param img The image to package; may be null (for example, if image could not be loaded).
 	 *
 	 * @return An ImageResource containing the image.
@@ -218,7 +218,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         }
         return xmlResource;
     }
-    
+
     public byte[] getBinaryResource(String uri) {
         InputStream is = resolveAndOpenStream(uri);
         try {
@@ -230,7 +230,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
             }
             is.close();
             is = null;
-            
+
             return result.toByteArray();
         } catch (IOException e) {
             return null;
@@ -289,11 +289,17 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
                 }
             }
         }
+        // test if the URI is valid; if not, try to assign the base url as its parent
         try {
-            URL result = new URL(new URL(_baseURL), uri);
-            ret = result.toString();
-        } catch (MalformedURLException e1) {
-            XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
+            return new URL(uri).toString();
+        } catch (MalformedURLException e) {
+            XRLog.load("Could not read " + uri + " as a URL; may be relative. Testing using parent URL " + _baseURL);
+            try {
+                URL result = new URL(new URL(_baseURL), uri);
+                ret = result.toString();
+            } catch (MalformedURLException e1) {
+                XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
+            }
         }
         return ret;
     }
@@ -320,6 +326,9 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2009/04/12 11:16:51  pdoubleya
+ * Remove proposed patch for URLs that are incorrectly handled on Windows; need a more reliable solution.
+ *
  * Revision 1.38  2008/04/30 23:14:18  peterbrant
  * Do a better job of cleaning up open file streams (patch by Christophe Marchand)
  *
