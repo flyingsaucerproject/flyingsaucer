@@ -400,17 +400,17 @@ h4(fs_heading). Managing Hyperlinks
 
 The standard @LinkListener@ uses methods in @BasicPanel@ to find Box instances (Elements in the Document become zero to many Boxes on-screen).  
 
-The "configuration property":#configuration property @xr.use.listeners@ (values true, false) causes the @XHTMLPanel@ to automatically create and store a @LinkListener@. This means that an @XHTMLPanel@ is already enabled for mouse events and for hyperlink navigation. You can remove the standard @LinkListener@ and create your own. In our Browser demo, this is exactly what we do: our custom @LinkListener@ looks for links with an href starting with "demoNav", and, in that case, calls back to the Browser to go to the prior or next demo page. This lets us add new demo pages which contain, "demoNav:back" or "demoNav:forward" links, without having to hard-code the relative URLs between demo pages. Pages can be reordered without breaking navigation.  To change the listeners being used (and add your own) using the @BasicPanel.addMouseTrackingListener(FSMouseListener)@ and @BasicPanel.removeMouseTrackingListener(FSMouseListener)@ methods.
+The "configuration property":#configuration property @xr.use.listeners@ (values true, false) causes the @XHTMLPanel@ to automatically create and store a @LinkListener@, as well as listeners for hovering, cursor changes, and form submission. This means that an @XHTMLPanel@ is already enabled for mouse events and for hyperlink navigation. You can remove the standard @LinkListener@ and create your own. In our Browser demo, this is exactly what we do: our custom @LinkListener@ looks for links with an href starting with "demoNav", and, in that case, calls back to the Browser to go to the prior or next demo page. This lets us add new demo pages which contain, "demoNav:back" or "demoNav:forward" links, without having to hard-code the relative URLs between demo pages; thus pages can be reordered without breaking navigation.  To change the listeners being used (and add your own) using the @BasicPanel.addMouseTrackingListener(FSMouseListener)@ and @BasicPanel.removeMouseTrackingListener(FSMouseListener)@ methods.
 
 You might use a custom @LinkListener@ for special tasks during mouse events--for example, to show the current URL in the application status bar, or to handle specific URLs with a custom loader (like HTTPS or FTP URLs).
 
 h4(fs_heading). Hovering
 
-Like support for hyperlinks, @XHTMLPanel@ also supports hovering over elements. The CSS @:hover@ pseudo-selector assigns properties to an element where the mouse is currently hovering. The @org.xhtmlrenderer.swing.HoverListener@ class, like the @LinkListener@ class, is an @FSMouseListener@ that tracks mouse movements, and, when entering or leaving a box, calls back to the render routines to update the box's style on screen.
+Like support for hyperlinks, @XHTMLPanel@ also supports reacting as the mouse hovers over elements. The CSS @:hover@ pseudo-selector assigns properties to an element where the mouse is currently hovering. The @org.xhtmlrenderer.swing.HoverListener@ class, like the @LinkListener@ class, is an @FSMouseListener@ that tracks mouse movements, and, when entering or leaving a box, calls back to the render routines to update the box's style on screen.
 
 Like @LinkListener@, the "configuration property":#configuration property @xr.use.listeners@, if true, causes the @XHTMLPanel@ to automatically create and manage its own @HoverListener@ instance. You can change the listeners being used (and add your own) using the  @BasicPanel.addMouseTrackingListener(FSMouseListener)@ and @BasicPanel.removeMouseTrackingListener(FSMouseListener)@ methods. 
 
-h4(fs_heading). Hovering
+h4(fs_heading). Cursor Changes
 
 @XHTMLPanel@ also supports changes to the mouse cursor when moving over elements. The CSS @cursor@ property can be assigned to an rule to control which cursor is displayed when the selector matches; this would be most useful when hovering. Since a default cursor style is assigned to all elements, you actually only need to assign a custom cursor on :hover.
 
@@ -425,7 +425,7 @@ Like @LinkListener@, the "configuration property":#configuration property @xr.us
 
 h4(fs_heading). Scrolling
 
-When working within Swing, the @org.xhtmlrenderer.simple.FSScrollPane@ class provides some extended support for scrolling a document. The scroll pane has keyboard mappings for jump to top, jump to bottom, and scrolling up or down one line or one page. The amount of the scrolling is based on the current viewport size or an estimate of the current line height. 
+When working within Swing, the @org.xhtmlrenderer.simple.FSScrollPane@ class provides some extended support for scrolling a document. The scroll pane has keyboard mappings for jump to top, jump to bottom, and scrolling up or down one line or one page. The amount of the scrolling is based on the current viewport size or an estimate of the current line height. If you add an @XHTMLPanel@ to an @FSScrollPane@, you'll automatically get scrolling appropriate for rendered pages. If you use your own scroll pane, you will need to calculate scrolling "one line" and "one page" yourself. 
 
  h4(fs_heading). Scaling Displayed Fonts
 
@@ -457,7 +457,7 @@ try {
 
 p. That's it. You can use Java's @ImageIO@ class to write the image out in different formats; it supports writing most image formats you would want to use. Using @BufferedImage@, you can also manipulate (scale, rotate, transform) the images you create.
 
-h5(fs_heading). Advanced Rendering to an Image
+h5(fs_heading). Advanced Image Rendering
 
 For more advanced control over image output, you should use the @org.xhtmlrenderer.swing.Java2DRenderer@ class. As a matter of fact, the @org.xhtmlrenderer.simple.ImageRenderer@, described above, uses @Jave2DRenderer@ to prepare images before writing them to a file. 
 
@@ -528,17 +528,30 @@ Notes:
 ** You will start by creating the image at a certain size (in @Java2DRenderer@ ). 
 ** You can control some aspects of image quality and internal (Java2D) rendering using rendering hints on the renderer; use @setRenderingHints()@. These hints are documented in the Java2D APIs.
 ** You can control what type of image the Java2DRenderer creates in memory by overriding the @createBufferedImage()@ method in the class. 
-* To rescale the image, you can use Java2D APIs, or use our @org.xhtmlrenderer.util.ImageUtil@ utility class. There are some examples in the code block above. @ImageUtil@ supports several different scaling algorithms which vary in speed and quality. These algorithms are well-documented if you look for info on the topic in Java2D forums. You can control scaling to some degree using the @org.xhtmlrenderer.util.ScalingOptions@ class as a parameter to the relevant methods in @ImageUtil@.
+* To rescale the image, you can use Java2D APIs, or use our @org.xhtmlrenderer.util.ImageUtil@ utility class. There are some examples in the code block above. @ImageUtil@ supports several different scaling algorithms which vary in speed and quality. These algorithms are well-documented if you look for info on the topic in Java2D forums. You can control scaling to some degree using the @org.xhtmlrenderer.util.ScalingOptions@ class as a parameter to the relevant methods in @ImageUtil@. 
 
-Note that the image is always rendered to an internal "canvas" of a certain size. You always specify the width; the height is either specified, or determined based on the document's content. Once the image is created, it can be scaled, but there is always an image created at the original, target size during rendering. 
+Note that the image is always rendered to an internal "canvas" of a certain size. You must always specify the width; the height is either specified, or determined based on the document's content. Once the image is created, it can be scaled, but there is always an image created at the original, target size during rendering. 
 
 @Java2DRenderer@ is a mostly-immutable object, in the sense that once you've used it to render a document, it won't re-render. You must set your renderer up, provide all options, then render. You can reuse instances of scaling options, rendering hints, image writers, just not the renderer itself.
  
 
 h4(fs_heading). Printing
 
-Unfortunately, in release R6 we had a regression in our printing routines, and printing documents directly (using @XHTMLPrintable@ ) is not supported. What you can do is render your document to a PDF and print that--as described in our section on "creating PDF files":#pdf. We plan to have printing support available again in a future release--note that most of the capabilities are there, so if you are interested, contact us on our mailing list for how to implement this.
+You can print documents directly using the @XHTMLPrintable@ class, which renders a document and sends it directly to a printer, bypassing on-screen or PDF output. Alternatively, you could render your document to PDF, and send that to the printer, if, for example, you needed to print multiple copies or have fine-grained control over printing options. 
 
+To start a print job for a new document, create an @XHTMLPanel@ and assign your document URL to it. Then create a @java.awt.print.PrinterJob@ and pass it an @XHTMLPrintable@ containing your panel.
+
+bcx. {{
+import org.xhtmlrenderer.simple.*;
+import java.awt.print.*;
+// . . . .
+// xhtml_panel created earlier
+PrinterJob printJob = PrinterJob.getPrinterJob();
+printJob.setPrintable(new XHTMLPrintable(xhtml_panel));
+if(printJob.printDialog()) {
+  printJob.print();
+}
+}}
 
 h4(fs_heading). Putting It All Together
 
@@ -547,7 +560,7 @@ Jacobus Steenkamp has written an article (October 2006) about using ${fs} to gen
 
 h3(fs_heading#pdf). Creating PDF Files  
 
-You can use ${fs} to generate PDF files directly from XML/CSS input. This means that just by starting with XHTML and CSS, you can create portable PDF documents that will are readable by the standard "Adobe Acrobat Reader":http://www.adobe.com/products/acrobat/readermain.html or other PDF readers.
+You can use ${fs} to generate PDF files directly from XML/CSS input. This means that just by starting with XHTML and CSS, you can create PDF documents that will are readable by the standard "Adobe Acrobat Reader":http://www.adobe.com/products/acrobat/readermain.html or other PDF readers.
 
 PDF files are treated as _paged_ media, as defined by the ${css21}, in the section "Paged media":http://www.w3.org/TR/CSS21/page.html. This means that some CSS attributes that apply to paged media (as opposed to visual media, like a browser) are used to control PDF output. ${fs} supports the @@page@ rule, which means that page size, page margins and page break controls are all supported for PDF output.  
 
@@ -595,7 +608,7 @@ resolver.addFont (
 );
 }}
 
-Where the font supports Unicode characters (in this example). The @BaseFont@ class in the example comes from the iText library, which you'll of course need in your classpath when compiling.
+where the font supports Unicode characters (in this example). The @BaseFont@ class in the example comes from the iText library, which you'll of course need in your classpath when compiling.
 
 _Thanks for Manos Bastis for contributing this info and patches._
 
@@ -628,7 +641,7 @@ You can set margin, padding, and border in a @page rule (also part of the CSS3 P
 
 bcx. @page {  margin: 1in; }
 
-@:first@, @:right@, @:left@ pseudo-pages are supported. CSS3 named pages are not supported.
+@:first@, @:right@, @:left@ pseudo-pages are supported. CSS3 named pages are also supported.
 
 For purposes of pagination, there's nothing special about @<body>@ (e.g. if @<body>@ spans 20 pages, your top and bottom margins will appear on pages 1 and 20 respectively).
 
@@ -658,23 +671,23 @@ No,  PDF has its own way of representing image data, but no image fidelity is lo
 
 For intrinsic width/height calculations we assume a resolution of 96 DPI, but setting an explicit width/height makes it possible to use an arbitrary DPI.
 
+h4(fs_heading). How to I add a custom header or footer to my PDF?
+
+${fs} supports both "margin boxes"http://www.w3.org/TR/css3-page/#margin-boxes and "running elements":http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#running1 as defined in the CSS 3 specification.
+
 h4(fs_heading). Does ${fs} support PDF form components?
 
 _What happens with form components when generating a PDF? Is this supported at all (if I can't a non-editable form in my PDF output, say, printable form for handwritten entry?_
 
-Replaced elements are @OutputDevice@ -specific.  The PDF renderer doesn't use Graphics2D.  At this point, an @<input>@ element will be treated like regular content.  Adding AcroForm support is high on the list of priorities for the ${fs} team.  
-
-
+Replaced elements are @OutputDevice@ -specific.  The PDF renderer doesn't use Graphics2D.  At this point, an @<input>@ element will be treated like regular content. AcroForm support has been prototyped but not completed at this point.
 
 h4(fs_heading). How do I control font smoothing (anti-aliasing?)
 
 From our FAQ: 
 
 Either 
-* Set the appropriate "configuration":#configuration properties: @xr.text.aa-fontsize-threshhold@ and @xr.text.aa-smoothing-level@
-* Get the @Java2DTextRenderer@ reference from the XHTMLPanel's @SharedContext@ property, then call @setSmoothingThreshold()@ and @setSmoothingLevel()@
-
-Smoothing level should be anything other than @TextRenderer.NONE@. The specific value is ignored for Java2D AA.
+* Set the appropriate "configuration":#configuration properties: @xr.text.aa-fontsize-threshhold@ 
+* Get the @Java2DTextRenderer@ or @ITextTextRenderer@ reference from the XHTMLPanel's @SharedContext@ property, then call @setSmoothingThreshold()@.
 
 The threshold is the font size at which AA should kick in, for text; font sizes below that size will *not* be drawn with AA.
 
@@ -691,61 +704,17 @@ h3(fs_heading). Table of Extensions
 
 >xil> skipping Xilize syntax for tables, generates tbody and theads we can't proc in R6
 FIXME
--fs-border-spacing-horizontal
--fs-border-spacing-vertical
--fs-font-metric-src
--fs-keep-with-inline
--fs-page-height
--fs-page-orientation
--fs-page-sequence
--fs-page-width
--fs-pdf-font-embed
--fs-pdf-font-encoding
--fs-table-cell-colspan
--fs-table-cell-rowspan
--fs-table-paginate
--fs-text-decoration-extent
-
-
-@-fs-flow-top@ 
-@-fs-flow-right@ 
-@-fs-flow-bottom@ 
-@-fs-flow-left@ -String value (enclosed in "") or "none".  String value should refer to an absolute box named with an -fs-move-to-flow property. Used in an @page rule to define headers and footers.  Has no meaning outside of @page. -right, -bottom and -left are all described below    
-
-@-fs-move-to-flow@ -String value (enclosed in ""). Names an absolute box for reference in one of the -fs-flow-* properties. See below.    
-
+@-fs-keep-with-inline@ -values @keep@ or auto (the default).  If it's keep, FS will try to avoid breaking a block in
+such a way that only padding and borders appear on a page.  This works regardless of how deeply nested the inline content is in the block.
+@-fs-page-sequence@ -values @start@ or @auto@ (the default) and allows you to limit the scope of the page and pages counters to a portion of the document
+@-fs-font-metric-src@ -use inside a @font-face@ rule in case the font you want to embed in the PDF has a custom font metrics file; value is the URL to the metrics file for the font
+@-fs-pdf-font-embed@ -use with the value @embed@ inside a @font-face@ rule to have ${fs} embed a font file within a PDF document, avoiding the need to call the @addFont()@ method of the @FontResolver@ class
+@-fs-pdf-font-encoding@ -use inside a @font-face@ rule to specify the enconding for a custom font you are embedding inside a PDF; takes the name of the encoding as value.
+@-fs-table-cell-colspan@ -Whole number. Replaces use of legacy @colspan@ attribute for table columns.    
+@-fs-table-cell-rowspan@ -Whole number. Replaces use of legacy @rowspan@ attribute for table columns.
+@-fs-table-paginate@ - when used with the value @paginate@, modifies the table layout algorithm to repeat table headers and footers on subsequent pages and improve the appearance of cells that break across pages (for example by closing and reopening borders), but that's all it does.  If a table's minimum width is wider than the page, it will be chopped off. 
 @-fs-text-decoration-extent@ -Either line (default) or block. It controls how text decorations are drawn on a block level element.  With line, the spec compliant behavior is used: text decoration is drawn across line box.  With block, text decoration is drawn across entire content area of block.    
 
-@-fs-table-cell-colspan@ -Whole number. Replaces use of legacy rowspan attribute for table columns.    
-
-@-fs-table-cell-rowspan@ -Whole number. Replaces use of legacy rowspan attribute for table columns.
-
-h3(fs_heading). Extensions: using the @-fs-flow-<top|right|bottom|left>@ Properties
-
-The @-fs-flow-<top|right|bottom|left>@ properties are used within an @@page@ declaration to allow some content--say, a div--to appear outside the normal flow, but to control the position relative to the main body. This is essentially an absolute positioned box where you don't know the actual coordinates for the box, because they are relative to the rendered content.
-
-This may sound contradictory, but a good use for this is to create headers and footers in PDF documents. There are two properties that you coordinate. First, define an absolutely-positioned div at location 0,0 and assign it a unique name with the @-fs-move-to-flow@ property. Then, assign this property name as the value for one of the @-fs-flow-<top|right|bottom|left>@ in the @@page@ block.
-
-For example, to create a footer in your printed PDF:
-
-bcx. {{
-<style>   
-  @page {
-  -fs-flow-bottom: "my_footer";   
-  } 
-</style> 
-<body>
-  <div style="position: absolute; top: 0; left: 0; \
-  -fs-move-to-flow: 'my_footer';" >   
-    Copyright 2006 The ${fs} Team   
-  </div> 
-</body>
-}}
-
-p. The name of the div, my_footer, matches the flow property and it is positioned below the rendered content (the page) on layout.
-
-TODO: table pagination
-table style="-fs-table-paginate: paginate;"
 
 h2(#configuration). Configuration
 
@@ -759,7 +728,7 @@ You can change the default properties for the application right in the @.conf@ f
 
 h4(fs_heading). Override with Second Configuration File 
 
-Your override file should just re-assign values for properties originally given in xhtmlrenderer.conf. Please see the documentation in that file for a description of what each property affects. 
+Your override file should just re-assign values for properties originally given in @xhtmlrenderer.conf@. Please see the documentation in that file for a description of what each property affects. 
 
 You can override either by dropping a configuration file in a specific location in your home directory, or by specifying an override file path using the @-Dxr.conf=<filename>@ System property. If you specify the name of the override file on the command line, we do *not* look for an override file in your home directory.
 
@@ -767,7 +736,7 @@ In your home directory, we look for a specific override file in a specific locat
 
 bc. $user.home/.flyingsaucer/local.xhtmlrenderer.conf
 
-The user.home variable is a system property. If you call the @System.getProperty("user.home")@ from within any Java program on your machine, you will find out where this is. The location is usually @c:\Documents And Settings\{username}@ and under the @/usr@ directory on UNIX systems. Try that method call to see where it is on your machine.
+The @user.home@ variable is a system property. If you call the @System.getProperty("user.home")@ from within any Java program on your machine, you will find out where this is. The location is usually @c:\Documents And Settings\{username}@ under Windows and under the @/home/{username}@ directory on UNIX systems. Try that method call to see where it is on your machine.
 
 h4(fs_heading). Override with System Properties
 
@@ -783,7 +752,6 @@ bc. java -Dshow-config=ALL org.xhtmlrenderer.HTMLPanel
 
 This will output messages to the console as Configuration is loading and looking for overrides to the default property values for the renderer.
 
-We have just started using the Configuration system late in preparing release R4. Some runtime behavior that should be configurable (like XHTML parser) is not. If you would like to see some behavior made configurable, shoot us an email.
 
 h4(fs_heading). Looking up Configuration at Runtime
 
@@ -807,9 +775,11 @@ divEnd.
 
 h3(fs_heading). Logging
 
+By default, ${fs} ships with internal logging _disabled_.
+
 The renderer uses the ${jlogging} package for logging information and exceptions at runtime. Logging behavior (output) is controlled via the main configuration file. The defaults may be overridden just like any other configuration properties.
 
-You can turn off *ALL* logging from the ${fs} library by setting the property @xr.util-logging.loggingEnabled@ to false; as described above, you can specify a value for this on the command line, or in a configuration override file. With this property set to false, ${fs} will be completely silent, but other logging configuration is not affected, meaning you can "flip the switch" for logging on or off. As of R6, we ship with logging disabled. 
+You can turn off *ALL* logging from the ${fs} library by setting the property @xr.util-logging.loggingEnabled@ to false; as described above, you can specify a value for this on the command line, or in a configuration override file. With this property set to false, ${fs} will be completely silent, but other logging configuration is not affected, meaning you can "flip the switch" for logging on or off.  
 
 Please review the ${jlogging} package docs before proceeding.
 
@@ -839,7 +809,7 @@ h2. About this Document
 
 <img src="../images/xiLogo64.png" style="float: left; margin-right: 10px;" />
 
-This project website and our User's Guide are produced using the "Xilize":http://xilize.sourceforge.net/ (http://xilize.sourceforge.net/) syntax and rendering engine. The content is written in Xilize text markup, then converted to XHTML using the Xilize converter. We'd like to thank the Xilize team at CenteredWork for sharing this library. Try it out! It's a great way to write websites quickly, without losing control over formatting. Check it out!
+This project website and our User's Guide are produced using the "Xilize":http://xilize.sourceforge.net/ (http://xilize.sourceforge.net/) syntax and rendering engine. The content is written in Xilize text markup, then converted to XHTML using the Xilize converter. We'd like to thank the Xilize team at CenteredWork for sharing this library. Try it out! It's a great way to write websites quickly, without losing control over formatting. 
 
 <img src="../images/made-with-jedit-9.png" style="float: left; margin-right: 10px;" />
 
