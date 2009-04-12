@@ -72,7 +72,7 @@ public class Zipper {
         } else {
             byte[] buf = new byte[1024];
             int len;
-            ZipEntry entry = new ZipEntry(file.getPath());
+            ZipEntry entry = new ZipEntry(file.getName());
             FileInputStream fis = new FileInputStream(file);
             BufferedInputStream bis = new BufferedInputStream(fis);
             zos.putNextEntry(entry);

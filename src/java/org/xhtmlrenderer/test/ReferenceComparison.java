@@ -11,12 +11,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+
+/**
+ * ReferenceComparison runs a comparison of rendering a set of source XHTML files against a 
+ */
 public class ReferenceComparison {
     private int width;
     private boolean isVerbose;
     private static final String LINE_SEPARATOR = "\n";
 
     public static void main(String[] args) throws IOException {
+        // TODO: check args
         ReferenceComparison rc = new ReferenceComparison(1024, true);
         File source = new File(args[0]);
         File reference = new File(args[1]);
@@ -24,6 +29,12 @@ public class ReferenceComparison {
         rc.compareDirectory(source, reference, failed);
     }
 
+    /**
+     * Initializes (does not launch) the reference comparison.
+     *
+     * @param width width at which pages should be rendered
+     * @param verbose
+     */
     public ReferenceComparison(int width, boolean verbose) {
         this.width = width;
         this.isVerbose = verbose;
@@ -31,6 +42,7 @@ public class ReferenceComparison {
 
     public void compareDirectory(File sourceDirectory, File referenceDir, File failedDirectory) throws IOException {
         checkDirectories(sourceDirectory, referenceDir, failedDirectory);
+        log("Starting comparison using width " + width);
         IOUtil.deleteAllFiles(failedDirectory);
 
         boolean wasEnabled = enableLogging(false);
@@ -39,9 +51,6 @@ public class ReferenceComparison {
             CompareStatistics stats = new CompareStatistics();
             while (fileIt.hasNext()) {
                 File file = (File) fileIt.next();
-                if (verbose()) {
-                    System.out.println("Comparing source file " + file.getName());
-                }
                 try {
                     compareFile(file, referenceDir, failedDirectory, stats);
                 } catch (IOException e) {
@@ -61,7 +70,6 @@ public class ReferenceComparison {
         return orgVal;
     }
 
-
     private void checkDirectories(File sourceDirectory, File referenceDir, File failedDirectory) {
         if (!sourceDirectory.exists() || !sourceDirectory.isDirectory()) {
             throw new IllegalArgumentException("Source dir. doesn't exist, or not a directory: " + sourceDirectory);
@@ -72,7 +80,12 @@ public class ReferenceComparison {
         if (failedDirectory.exists() && !failedDirectory.isDirectory()) {
             throw new IllegalArgumentException("Need directory for failed matches, not a directory: " + failedDirectory);
         } else if (!failedDirectory.exists()) {
-            failedDirectory.mkdirs();
+            if (!failedDirectory.mkdirs()) {
+                throw new RuntimeException(
+                        "Could not create directory path (.mkdirs failed without an exception) " +
+                                failedDirectory.getAbsolutePath()
+                );
+            }
         }
     }
 
@@ -91,33 +104,33 @@ public class ReferenceComparison {
     }
 
     public void compareFile(File source, File referenceDir, File failedDirectory, CompareStatistics stat) throws IOException {
-        if (verbose()) {
-            System.out.println("Comparing " + source.getName());
-        }
+        log("Comparing " + source.getPath());
         stat.checking(source);
+        // TODO: reuse code from Regress
         BoxRenderer renderer = new BoxRenderer(source, width);
         Box box;
         try {
+            log("rendering");
             box = renderer.render();
+            log("rendered");
         } catch (Exception e) {
+            e.printStackTrace();
             stat.failedToRender(e);
             storeFailed(failedDirectory, source);
-            if (verbose()) {
-                System.err.println("Could not render input file, skipping: " + source + " err: " + e.getMessage());
-            }
+            log("Could not render input file, skipping: " + source + " err: " + e.getMessage());
             return;
         }
         LayoutContext layoutContext = renderer.getLayoutContext();
         String inputFileName = source.getName();
         String refRendered = trimTrailingLS(readReference(referenceDir, inputFileName, Regress.RENDER_SFX));
         String rendered = trimTrailingLS(box.dump(layoutContext, "", Box.DUMP_RENDER));
-        if (!match(refRendered, rendered, stat)) {
+        if (!compareLines(refRendered, rendered, stat)) {
             storeFailed(failedDirectory, new File(referenceDir, inputFileName), Regress.RENDER_SFX, rendered);
         }
 
         final String refLaidOut = trimTrailingLS(readReference(referenceDir, inputFileName, Regress.LAYOUT_SFX));
         final String laidOut = trimTrailingLS(box.dump(layoutContext, "", Box.DUMP_LAYOUT));
-        if (!match(refLaidOut, laidOut, stat)) {
+        if (!compareLines(refLaidOut, laidOut, stat)) {
             storeFailed(failedDirectory, new File(referenceDir, inputFileName), Regress.LAYOUT_SFX, laidOut);
         }
     }
@@ -160,13 +173,14 @@ public class ReferenceComparison {
             try {
                 IOUtil.copyFile(source, failedDirectory);
             } catch (IOException e) {
-                System.err.println("Failed to file (reference) " + source + " to failed directory, err " + e.getMessage());
+                System.err.println("Failed to copy file (reference) " + source + " to failed directory, err " + e.getMessage());
             }
 
         }
     }
 
-    private boolean match(String refText, String text, CompareStatistics statistics) throws IOException {
+    private boolean compareLines(String refText, String text, CompareStatistics statistics) throws IOException {
+        log("running comparison");
         LineNumberReader lnrRef = new LineNumberReader(new StringReader(refText));
         LineNumberReader lnrOther = new LineNumberReader(new StringReader(text));
         String lineRef;
@@ -214,10 +228,13 @@ public class ReferenceComparison {
                 rdr.close();
             }
         }
-        /*if (sb.length() > 0 && sb.substring(sb.length() - LINE_SEPARATOR.length()).equals(LINE_SEPARATOR)) {
-            sb.delete(sb.length() - LINE_SEPARATOR.length(), sb.length());
-        }*/
         return sb.toString();
+    }
+
+    private void log(final String msg) {
+        if (verbose()) {
+            System.out.println(msg);
+        }
     }
 
     private static class CompareStatistics {
