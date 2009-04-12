@@ -2,7 +2,7 @@
     <import file="../../build.xml" />
 
     <!-- Builds all jars and packages jar and 3rd party libraries into one jar -->
-    <target name="dist.binary" depends="jar" description="Play Binary Distro">
+    <target name="dist.binary" depends="check.app.version, jar" description="Play Binary Distro">
         <copy todir="${dest.dir}">
             <fileset dir=".">
                 <include name="LICENSE*"/>
@@ -28,7 +28,7 @@
     Builds a ZIP file of all source for distribution, with 3rd party libraries
     and XHTML samples included
     -->
-    <target name="dist.src" depends="init" description="Play Src Distro">
+    <target name="dist.src" depends="check.app.version, init" description="Play Src Distro">
         <zip basedir="${basedir}" zipfile="${dest.dir}/${app.name}-${app.version}-src.zip">
             <include name="LICENSE*"/>
             <include name="README"/>
