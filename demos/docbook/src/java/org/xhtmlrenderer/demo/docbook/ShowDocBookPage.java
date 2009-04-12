@@ -102,9 +102,6 @@ public class ShowDocBookPage {
 
         aboutDlg.setTitle("About the Browser Demo");
 
-        int x = (int) frame.getLocationOnScreen().getX();
-        int y = (int) frame.getLocationOnScreen().getX();
-
         int xx = (frame.getWidth() - aboutDlg.getWidth()) / 2;
         int yy = (frame.getHeight() - aboutDlg.getHeight()) / 2;
         aboutDlg.setLocation(xx, yy);
