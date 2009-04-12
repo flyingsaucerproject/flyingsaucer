@@ -39,9 +39,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 
@@ -155,38 +153,41 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
     }
 
     private static class ImageMapReplacedElement extends SwingReplacedElement {
-      private final Map<Shape, String> areas;
+      private final Map areas;
 
       public ImageMapReplacedElement(Image image, Node map, int targetWidth, int targetHeight, final ImageMapListener listener) {
          super(create(image, targetWidth, targetHeight));
          areas = parseMap(map);
          getJComponent().addMouseListener(new MouseAdapter() {
-            @Override
             public void mouseClicked(MouseEvent e) {
                final Point point = e.getPoint();
-               for (Map.Entry<Shape, String> entry : areas.entrySet()) {
-                  if (entry.getKey().contains(point)) {
-                     listener.areaClicked(new ImageMapEvent(this, entry.getValue()));
-                  }
-               }
+                final Set set = areas.entrySet();
+                for (Iterator iterator = set.iterator(); iterator.hasNext();) {
+                    Map.Entry entry = (Map.Entry) iterator.next();
+
+                    if (((Shape) entry.getKey()).contains(point)) {
+                        listener.areaClicked(new ImageMapEvent(this, (String) entry.getValue()));
+                    }
+                }
             }
 
-            @Override
             public void mouseExited(MouseEvent e) {
                getJComponent().setCursor(Cursor.getDefaultCursor());
             }
          });
          getJComponent().addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
             public void mouseMoved(MouseEvent e) {
                final JComponent c = getJComponent();
                final Point point = e.getPoint();
-               for (Map.Entry<Shape, String> entry : areas.entrySet()) {
-                  if (entry.getKey().contains(point)) {
-                     updateCursor(c, Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                     return;
-                  }
-               }
+                final Set set = areas.entrySet();
+                for (Iterator iterator = set.iterator(); iterator.hasNext();) {
+                    Map.Entry entry = (Map.Entry) iterator.next();
+
+                    if (((Shape) entry.getKey()).contains(point)) {
+                        updateCursor(c, Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                        return;
+                    }
+                }
                updateCursor(c, Cursor.getDefaultCursor());
             }
          });
@@ -198,12 +199,12 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
          }
       }
 
-      private static Map<Shape, String> parseMap(Node map) {
+      private static Map parseMap(Node map) {
          if (null == map) {
             return Collections.emptyMap();
          } else if (map.hasChildNodes()) {
             final NodeList children = map.getChildNodes();
-            final Map<Shape, String> areas = new HashMap<Shape, String>(children.getLength());
+            final Map areas = new HashMap(children.getLength());
             for (int i = 0; i < children.getLength(); i++) {
                final Node area = children.item(i);
                if (areEqualIgnoreCase(AREA_ELT, area.getNodeName())) {
@@ -250,14 +251,15 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
          if ((-1 == length && 0 == coordValues.length % 2) || length == coordValues.length) {
             int[] coords = new int[coordValues.length];
             int i = 0;
-            for (String coord : coordValues) {
-               try {
-                  coords[i++] = Integer.parseInt(coord.trim());
-               } catch (NumberFormatException e) {
-                  XRLog.layout(Level.WARNING, "Error while parsing shape coords", e);
-                  return null;
-               }
-            }
+             for (int i1 = 0; i1 < coordValues.length; i1++) {
+                 String coord = coordValues[i1];
+                 try {
+                     coords[i++] = Integer.parseInt(coord.trim());
+                 } catch (NumberFormatException e) {
+                     XRLog.layout(Level.WARNING, "Error while parsing shape coords", e);
+                     return null;
+                 }
+             }
             if (4 == length) {
                return new Rectangle2D.Float(coords[0], coords[1], coords[2] - coords[0], coords[3] - coords[1]);
             } else if (3 == length) {
