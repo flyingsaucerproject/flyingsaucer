@@ -24,6 +24,9 @@ import org.xhtmlrenderer.simple.XHTMLPrintable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 
 /**
@@ -33,7 +36,7 @@ import java.io.File;
  * @author Patrick Wright
  */
 public class SimplePrintable {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws MalformedURLException, URISyntaxException {
         if (args.length == 0) {
             System.err.println("Need file path");
             System.exit(-1);
@@ -42,7 +45,14 @@ public class SimplePrintable {
         if (args[0].startsWith("http:")) {
             new SimplePrintable().printURL(args[0]);
         } else {
-            new SimplePrintable().printFile(new File(args[0]));
+            final String path = args[0];
+            final URL url = new URL(path);
+            final File file = new File(url.toURI());
+            if (!file.exists()) {
+                System.err.println("File not found: " + args[0]);
+                System.exit(-1);
+            }
+            new SimplePrintable().printURL(url.toExternalForm());
         }
     }
 
@@ -63,6 +73,8 @@ public class SimplePrintable {
 
     private void printURL(String url) {
         XHTMLPanel panel = new XHTMLPanel();
+        panel.getSharedContext().setPrint(true);
+        panel.getSharedContext().setInteractive(false);
 
         try {
             panel.setDocument(url);
