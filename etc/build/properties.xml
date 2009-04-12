@@ -1,5 +1,6 @@
 <!-- :mode=xml:folding=none: -->
 <project name="build.properties">
+  <tstamp />
   <property name="app.name" value="flyingsaucer"/>
   <property name="app.version" value="VERSION_MISSING"/>
   <property name="user.overrides"
@@ -57,8 +58,11 @@
   <property name="src.demo.splash.dir" location="demos/splash"/>
   <property name="src.about.xhtml.dir" location="demos/about/xhtml"/>
   <property name="www.dir" location="www"/>
-  <property name="regress.source.dir" location="tests/eeze"/>
-  <property name="regress.target.zip" location="tests/regress/regress-output.zip"/>
+  <property name="regress.source.dir" location="tests/regress/xhtml"/>
+  <property name="regress.target.zip" location="tests/regress/snapshots/regress-output-${app.version}.zip"/>
+  <property name="regress.verify.dir" location="tests/regress/verify/reference"/>
+  <property name="regress.temp.dir" location="tests/regress/temp"/>
+  <property name="regress.verify.failed.dir" location="tests/regress/verify/failed"/>
 
   <property name="src.log4j.dir" location="${src.dir}/log4j" />
   <property name="lib.log4j" location="../StaticJars/log4j-1_2_8.jar" />

@@ -1,12 +1,6 @@
 <project name="build.dist">
     <import file="../../build.xml" />
 
-<!--
-    <target name="zip" description="zip file" depends="jar">
-        <zip basedir="${basedir}" zipfile="../flyingsaucer.zip"/>
-    </target>
--->
-
     <!-- Builds all jars and packages jar and 3rd party libraries into one jar -->
     <target name="dist.binary" depends="jar" description="Play Binary Distro">
         <copy todir="${dest.dir}">

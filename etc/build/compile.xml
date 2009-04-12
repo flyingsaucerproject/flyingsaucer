@@ -1,5 +1,8 @@
-
 <project name="build.compile">
+    <import file="properties.xml" />
+    <import file="preset-defs.xml" />
+    <import file="../../build.xml" />
+
 <!-- Compiles the Flying Saucer browser along with the main codebase -->
 	<target name="compile.browser" depends="compile,resources.browser">
 		<javac-full srcdir="${src.browser.java.dir}"/>

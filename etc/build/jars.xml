@@ -1,4 +1,7 @@
 <project name="build.jars">
+    <import file="properties.xml" />
+    <import file="compile.xml" />
+
     <!-- Compiles main codebase, and builds jar for it -->
     <target name="jar.core" depends="compile" description="build core jar">
         <jar jarfile="${dest.dir}/core-renderer.jar" compress="true" index="true">
@@ -6,6 +9,7 @@
                 <include name="**/*.class"/>
                 <exclude name="org/joshy/html/app"/>
                 <exclude name="**/demo/**"/>
+                <exclude name="**/test/**"/>
             </fileset>
             <fileset dir="${dest.dir}">
                 <include name="resources/**"/>
@@ -14,10 +18,7 @@
                 <include name="resources/**"/>
             </fileset>
         </jar>
-		
-		
 	</target>
-
 
     <!-- builds minmal version of core jar, excluding entity files -->
     <target name="jar.core-minimal" depends="compile" description="build core jar">
@@ -26,10 +27,9 @@
                 <include name="**/*.class"/>
                 <exclude name="org/joshy/html/app"/>
                 <exclude name="**/demo/**"/>
+                <exclude name="**/test/**"/>
             </fileset>
         </jar>
-
-
 	</target>
 
     <!-- Compiles browser and main codebase, and builds jar for browser -->
