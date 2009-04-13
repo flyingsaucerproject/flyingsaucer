@@ -25,11 +25,8 @@
         <scp todir="${dist.upload.username}:${dist.upload.password}@${dist.upload.hostname}:${dist.upload.path}"
              verbose="true"
              port="${dist.upload.port}">
-            <fileset dir="${dist.dir}/demo_repo">
+            <fileset dir="${dist.dir}">
                 <include name="**/*"/>
-            </fileset>
-            <fileset dir="${dist.dir}/${app.version}">
-                <include name="**/*.tar.gz"/>
             </fileset>
         </scp>
 
