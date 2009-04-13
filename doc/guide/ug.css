@@ -10,12 +10,12 @@
 }
 
 h2 {
-    margin-top: 70px;
+    margin-top: 18pt;
     page-break-before: always;
 }
 
 h3, h4 {
-    margin-top: 50px;
+    margin-top: 18pt;
     page-break-after: avoid;
 }
 
@@ -24,7 +24,6 @@ h3, h4 {
 }
 
 body {
-    margin: 25px;
     padding: 0;
 }
 
@@ -58,9 +57,8 @@ div #menu {
 
 @page {
     size: A4;
-    margin: 1in .75in 1in .75in;
-    padding: 0.25in;
-    
+    margin: 0.5in .5in 1in .5in;
+
     @bottom-left {
         content : element(footer);
     }
