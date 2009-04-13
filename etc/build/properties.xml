@@ -67,6 +67,8 @@
     <property name="lib.log4j" location="../StaticJars/log4j-1_2_8.jar"/>
 
     <property name="nb_profile" location="nb_profile"/>
+    <property name="guide" location="doc/guide"/>
+    <property name="dist.dir" location="dist"/>
 
     <!-- Compiler flags -->
     <!-- For details on each flag, see http://ant.apache.org/manual/CoreTasks/javac.html -->
@@ -195,4 +197,8 @@
         </fail>
     </target>
 
+    <path id="xilize.path" path="">
+        <pathelement path="${libraries.dev.dir}/xilize-engine.jar" />
+        <pathelement path="${libraries.dev.dir}/bsh-core-2.0b4.jar" />
+    </path>
 </project>

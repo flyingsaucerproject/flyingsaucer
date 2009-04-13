@@ -1,5 +1,5 @@
 <project name="build.dist">
-    <import file="../../build.xml" />
+    <import file="../../build.xml"/>
 
     <!-- Builds all jars and packages jar and 3rd party libraries into one jar -->
     <target name="dist.binary" depends="check.app.version, jar" description="Play Binary Distro">
@@ -62,6 +62,99 @@
                 <include name="svg_demo.jnlp"/>
                 <include name="flyingsaucer.png"/>
             </fileset>
+        </copy>
+    </target>
+
+    <!--
+        <target name="dist.all" depends="dist.binary, dist.jnlp, dist.src, docs" description="build complete distro set">
+    -->
+    <target name="dist.all" depends="check.app.version, clean, dist.binary, dist.jnlp, dist.src, docs" description="build complete distro set">
+        <delete dir="${dist.dir}"/>
+        <mkdir dir="${dist.dir}/demo_repo"/>
+        <mkdir dir="${dist.dir}/demo_repo/packed"/>
+        <mkdir dir="${dist.dir}/demo_repo/unpacked"/>
+        <mkdir dir="${dist.dir}/${app.version}"/>
+        <mkdir dir="${dist.dir}/${app.version}/demo"/>
+        <mkdir dir="${dist.dir}/${app.version}/demo/packed"/>
+        <mkdir dir="${dist.dir}/${app.version}/demo/unpacked"/>
+        <mkdir dir="${dist.dir}/${app.version}/demo/browser/packed"/>
+        <mkdir dir="${dist.dir}/${app.version}/demo/browser/unpacked"/>
+        <mkdir dir="${dist.dir}/${app.version}/download"/>
+        <mkdir dir="${dist.dir}/${app.version}/doc"/>
+
+        <!-- demos -->
+        <copy todir="${dist.dir}/${app.version}/demo">
+            <fileset dir="${src.packaging.dir}">
+                <include name="flyingsaucer.png"/>
+            </fileset>
+        </copy>
+        <copy todir="${dist.dir}/${app.version}/demo/unpacked" file="${dest.dir}/core-renderer.jar"/>
+        <copy todir="${dist.dir}/demo_repo/unpacked">
+            <fileset dir="${dest.dir}">
+                <include name="iText*.jar"/>
+                <include name="xml*.jar"/>
+            </fileset>
+            <fileset dir="${libraries.dev.dir}">
+                <include name="looks-2.1.4.jar"/>
+            </fileset>
+        </copy>
+        <pack200 src="${dest.dir}/core-renderer.jar"
+                 destfile="${dist.dir}/${app.version}/demo/packed/core-renderer.jar.pack.gz"
+                 gzipoutput="true"/>
+        <pack200 src="${dest.dir}/iText-2.0.8.jar"
+                 destfile="${dist.dir}/demo_repo/packed/iText-2.0.8.jar.pack.gz"
+                 gzipoutput="true"/>
+        <pack200 src="${dest.dir}/xml-apis-xerces-2.9.1.jar"
+                 destfile="${dist.dir}/demo_repo/packed/xml-apis-xerces-2.9.1.jar.pack.gz"
+                 gzipoutput="true"/>
+        <pack200 src="${libraries.dev.dir}/looks-2.1.4.jar"
+                 destfile="${dist.dir}/demo_repo/packed/looks-2.1.4.jar.pack.gz"
+                 gzipoutput="true"/>
+
+        <copy file="${src.packaging.dir}/template.jar.var"
+              tofile="${dist.dir}/${app.version}/demo/core-renderer.jar.var"/>
+        <replace file="${dist.dir}/${app.version}/demo/core-renderer.jar.var" token="FILENAME" value="core-renderer"/>
+
+        <copy file="${src.packaging.dir}/template.jar.var"
+              tofile="${dist.dir}/demo_repo/iText-2.0.8.jar.var"/>
+        <replace file="${dist.dir}/demo_repo/iText-2.0.8.jar.var" token="FILENAME" value="iText-2.0.8.jar"/>
+
+        <copy file="${src.packaging.dir}/template.jar.var"
+              tofile="${dist.dir}/demo_repo/xml-apis-xerces-2.9.1.jar.var"/>
+        <replace file="${dist.dir}/demo_repo/xml-apis-xerces-2.9.1.jar.var" token="FILENAME"
+                 value="xml-apis-xerces-2.9.1.jar"/>
+
+        <copy file="${src.packaging.dir}/template.jar.var"
+              tofile="${dist.dir}/demo_repo/looks-2.1.4.jar.var"/>
+        <replace file="${dist.dir}/demo_repo/looks-2.1.4.jar.var" token="FILENAME" value="looks-2.1.4.jar"/>
+
+        <copy todir="${dist.dir}/${app.version}/demo/browser/unpacked">
+            <fileset dir="${dest.dir}">
+                <include name="browser.jar"/>
+            </fileset>
+        </copy>
+        <pack200 src="${dest.dir}/browser.jar"
+                 destfile="${dist.dir}/${app.version}/demo/browser/packed/browser.jar.pack.gz"
+                 gzipoutput="true"/>
+        <copy file="${src.packaging.dir}/template.jar.var"
+              tofile="${dist.dir}/${app.version}/demo/browser/browser.jar.var"/>
+        <replace file="${dist.dir}/${app.version}/demo/browser/browser.jar.var" token="FILENAME" value="browser.jar"/>
+
+        <copy todir="${dist.dir}/${app.version}/demo/browser" file="${src.packaging.dir}/browser/browser_demo.jnlp"/>
+        <copy tofile="${dist.dir}/${app.version}/demo/browser/.htaccess"
+              file="${src.packaging.dir}/apache-jnlp-config.htaccess"/>
+
+        <!-- downloads -->
+        <copy todir="${dist.dir}/${app.version}/download">
+            <fileset dir="${dest.dir}">
+                <include name="flyingsaucer-*.zip"/>
+            </fileset>
+        </copy>
+
+        <!-- javadoc -->
+        <copy todir="${dist.dir}/${app.version}/doc">
+            <fileset dir="${dest.javadoc.full.dir}"/>
+            <fileset dir="${dest.javadoc.user.dir}"/>
         </copy>
     </target>
 </project>

@@ -1,5 +1,6 @@
 <!-- :mode=xml:folding=none: -->
 <project name="build.preset-defs">
+    <import file="properties.xml" />
     <!-- 
          definition of a javac task with all compiler parameters read from
          properties. can be used for most uses of javac in this file.
@@ -27,5 +28,41 @@
             <exclude name="**/prototype/**" />
         </javac>
     </presetdef>
+
+    <macrodef name="xilize">
+        <attribute name="args"/>
+        <sequential>
+            <java
+                    classpathref="xilize.path"
+                    classname="com.centeredwork.xilize.Main"
+                    failonerror="true"
+                    fork="true">
+                <arg line="@{args}"/>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="fs_to_pdf">
+        <attribute name="args"/>
+        <sequential>
+            <java
+                    classpathref="libraries-and-dest.all"
+                    classname="org.xhtmlrenderer.simple.PDFRenderer"
+                    failonerror="true"
+                    fork="true">
+                <arg line="@{args}"/>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <taskdef name="pack200"
+        classname="com.sun.tools.apache.ant.pack200.Pack200Task"
+        classpath="${libraries.dev.dir}/Pack200Task.jar"
+        />
+    <!-- Create our unpacker task -->
+    <taskdef name="unpack200"
+        classname="com.sun.tools.apache.ant.pack200.Unpack200Task"
+        classpath="${libraries.dev.dir}/Pack200Task.jar"/>
+
 </project>
 
