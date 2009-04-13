@@ -7,3 +7,4 @@ dist
 idea
 doc
 temp
+local.build.properties
