@@ -16,6 +16,7 @@
   <import file="./etc/build/upload.xml" />
   <import file="./etc/build/demo-apps.xml" />
   <import file="./etc/build/netbeans.xml" />
+  <import file="./etc/build/convert.xml" />
 
   <target name="help">
     <echo message=" ant settings: show all Ant properties to be used"/>
@@ -269,6 +270,9 @@
 $Id$
 
 $Log$
+Revision 1.99  2009/04/13 14:00:17  pdoubleya
+Update Ant build to handle Xilize conversion of WWW and UG files, distribution build, and distro upload
+
 Revision 1.98  2009/02/08 15:25:23  pdoubleya
 Remove references to photogallery and filebrowser demo apps, as these are no longer maintained
 
