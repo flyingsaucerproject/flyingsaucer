@@ -69,21 +69,10 @@
                   fileext=".asc.txt" />
     </target>
 
-    <!-- Build the Javadoc distribution -->
-    <target name="dist.javadoc" depends="init" description="Build JNLP Distro">
-        <!-- javadoc -->
-        <tar destfile="${dist.dir}/${app.version}/javadoc-full.tar.gz" compression="gzip">
-            <fileset dir="${dest.javadoc.full.dir}"/>
-        </tar>
-        <tar destfile="${dist.dir}/${app.version}/javadoc-user.tar.gz" compression="gzip">
-            <fileset dir="${dest.javadoc.user.dir}"/>
-        </tar>
-    </target>
-
     <!--
         <target name="dist.all" depends="dist.binary, dist.jnlp, dist.src, docs" description="build complete distro set">
     -->
-    <target name="dist.all" depends="check.app.version, clean, dist.binary, dist.javadoc, dist.src" description="build complete distro set">
+    <target name="dist.all" depends="check.app.version, clean, dist.binary, dist.src" description="build complete distro set">
         <delete dir="${dist.dir}"/>
         <mkdir dir="${dist.dir}/demo_repo"/>
         <mkdir dir="${dist.dir}/demo_repo/packed"/>
@@ -94,17 +83,33 @@
         <mkdir dir="${dist.dir}/${app.version}/demo/unpacked"/>
         <mkdir dir="${dist.dir}/${app.version}/demo/browser/packed"/>
         <mkdir dir="${dist.dir}/${app.version}/demo/browser/unpacked"/>
-        <mkdir dir="${dist.dir}/${app.version}/download"/>
+        <mkdir dir="${dist.dir}/${app.version}/downloads"/>
         <mkdir dir="${dist.dir}/${app.version}/doc"/>
 
         <!-- downloads -->
-        <copy todir="${dist.dir}/${app.version}/download">
+        <copy todir="${dist.dir}/${app.version}/downloads">
             <fileset dir="${dest.dir}">
                 <include name="flyingsaucer-*.zip"/>
                 <!-- include MD5 and SHA hash files -->
                 <include name="flyingsaucer-*.zip.*"/>
             </fileset>
         </copy>
+
+        <!-- users guide -->
+        <copy todir="${dist.dir}/${app.version}/doc/guide">
+            <fileset dir="${guide}">
+                <include name="*.html"/>
+                <include name="*.pdf"/>
+            </fileset>
+        </copy>
+
+        <!-- javadoc -->
+        <tar destfile="${dist.dir}/${app.version}/javadoc-full.tar.gz" compression="gzip">
+            <fileset dir="${dest.javadoc.full.dir}"/>
+        </tar>
+        <tar destfile="${dist.dir}/${app.version}/javadoc-user.tar.gz" compression="gzip">
+            <fileset dir="${dest.javadoc.user.dir}"/>
+        </tar>
 
         <!-- demos -->
         <copy todir="${dist.dir}/${app.version}/demo">
