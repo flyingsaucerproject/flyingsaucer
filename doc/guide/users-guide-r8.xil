@@ -2,7 +2,7 @@ include. include/common-defines.inc
 
 define. title The ${fs} User's Guide
 
-define. headElementAdd <link rel="stylesheet" type="text/css" href="ug.css" media="print" />
+define. headAppend <link rel="stylesheet" type="text/css" href="base.css" media="screen" /><link rel="stylesheet" type="text/css" href="ug.css" media="print" />
 
 define. style
 #toc {
