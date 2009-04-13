@@ -47,10 +47,12 @@ divStart(#menu).
 ** "The FAQ":/faq.html
 ** "Screenshots":/screenshots.html
 ** "Demos":/demos.html
-** "User's Guide - HTML (R7)":/guide/users-guide-r7.html
-** "User's Guide - PDF (R7)":/guide/users-guide-r7.pdf
-** "Javadoc - Basic":http://pdoubleya.com/projects/flyingsaucer/doc/user/api/index.html
-** "Javadoc - Full":http://pdoubleya.com/projects/flyingsaucer/doc/full/api/index.html  
+** "User's Guide R7 - HTML":http://pigeonholdings.com/projects/flyingsaucer/R7/doc/guide/users-guide-r7.html
+** "User's Guide R7 - PDF":http://pigeonholdings.com/projects/flyingsaucer/R7/doc/guide/users-guide-r7.pdf
+** "User's Guide R8 - HTML":http://pigeonholdings.com/projects/flyingsaucer/R8rc2/doc/guide/users-guide-r8.html
+** "User's Guide R8 - PDF":http://pigeonholdings.com/projects/flyingsaucer/R8rc2/doc/guide/users-guide-r8.pdf
+** "Javadoc - Basic":http://pigeonholdings.com/projects/flyingsaucer/R8rc2/javadoc/user/index.html
+** "Javadoc - Full":http://pigeonholdings.com/projects/flyingsaucer/R8rc2/javadoc/full/index.html
 ** "References":/references.html
 ** "License (LGPL)":http://www.gnu.org/copyleft/lesser.html  
 * Contribute

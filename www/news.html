@@ -26,10 +26,12 @@
       <li><a href="/faq.html">The <span class="caps">FAQ</span></a></li>
       <li><a href="/screenshots.html">Screenshots</a></li>
       <li><a href="/demos.html">Demos</a></li>
-      <li><a href="/guide/users-guide-r7.html" title="R7">User's Guide &#8211; <span class="caps">HTML</span></a></li>
-      <li><a href="/guide/users-guide-r7.pdf" title="R7">User's Guide &#8211; <span class="caps">PDF</span></a></li>
-      <li><a href="http://pdoubleya.com/projects/flyingsaucer/doc/user/api/index.html">Javadoc &#8211; Basic</a></li>
-      <li><a href="http://pdoubleya.com/projects/flyingsaucer/doc/full/api/index.html">Javadoc &#8211; Full</a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R7/doc/guide/users-guide-r7.html">User's Guide R7 &#8211; <span class="caps">HTML</span></a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R7/doc/guide/users-guide-r7.pdf">User's Guide R7 &#8211; <span class="caps">PDF</span></a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R8rc2/doc/guide/users-guide-r8.html">User's Guide R8 &#8211; <span class="caps">HTML</span></a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R8rc2/doc/guide/users-guide-r8.pdf">User's Guide R8 &#8211; <span class="caps">PDF</span></a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R8rc2/javadoc/user/index.html">Javadoc &#8211; Basic</a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R8rc2/javadoc/full/index.html">Javadoc &#8211; Full</a></li>
       <li><a href="/references.html">References</a></li>
       <li><a href="http://www.gnu.org/copyleft/lesser.html" title="LGPL">License</a></li>
     </ul>
@@ -48,6 +50,35 @@
 <h1>Flying Saucer Project: News</h1>
 
 <h2 class="fs_heading" style="clear: none;">News</h2>
+
+<p style="font-size: 14pt;">Release 8 &#8211; Release Candidate 2 (R8rc2)</p>
+
+<p><strong>April 13, 2009</strong>: We are proud to present release candidate 2 of our R8 release. This release includes a handful of bug fixes since R8 release candidate 1. This release will most likely be the same as the R8 final. We encourage you to test this release out and give us feedback so that R8 will be our best release ever.</p>
+
+<p>We once again thank the people who contributed to this release (named in the changes that follow).</p>
+
+<ul>
+  <li>Features
+    <ul>
+      <li>ImageMapReplacedElementFactory.java: Sample for handling image maps, submitted via users mailing list by elbart0 at free.fr on March 5, 2008. This sample is a work-in-progress as it was originally written using Java 5 features; however, it should be a useful starting point.</li>
+    </ul>
+  </li>
+  <li>Changes
+    <ul>
+      <li>As of this release, "minium" anti-aliasing is no longer supported, and the minium.jar file is no longer distributed or kept in our repository. Minium was contributed by a community member several years ago, but we are unable to get the sources or contact the owner. As modern JDKs have good native support for AA, this shouldn't affect many users.</li>
+      <li>The configuration property and methods related to anti-aliasing "smoothing level" were only used by Minium and have been removed in this release. Smoothing threshold is still supported.</li>
+    </ul>
+  </li>
+  <li>Bug Fixes
+    <ul>
+      <li>Make sure references to PDFWriter and document are set in instance fields before calling preOpen(), as listeners to preOpen() will probably need access to them. Report via email by Alexander Zagniotov on the user's mailing list (thanks!).</li>
+      <li>External stylesheets which use relative addresses to import other stylesheets may not parse correctly when using the <span class="caps">URI</span> class; case in point was the DocBook demo app. With this change, we first attempt the parse using the <span class="caps">URL</span> class (as before 1.17), and only if that fails, we use <span class="caps">URI</span>. <span class="caps">URL</span> should work for normal cases where the url follows a standard protocols. Tested with both the DocBook demo and the browser demo.</li>
+      <li>Issue #264 (patch by sackley)</li>
+      <li>Issue #265: Potential fix for bug #265 (report and initial patch by sackley)</li>
+    </ul>
+  </li>
+</ul>
+
 
 <p style="font-size: 14pt;">Release 8 &#8211; Release Candidate 1 (R8rc1)</p>
 

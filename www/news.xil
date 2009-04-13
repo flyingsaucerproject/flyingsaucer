@@ -2,6 +2,23 @@ Flying Saucer Project: News
 
 h2(fs_heading){clear: none}. News
 
+p{font-size: 14pt}. Release 8 - Release Candidate 2 (R8rc2)
+
+*April 13, 2009*: We are proud to present release candidate 2 of our R8 release. This release includes a handful of bug fixes since R8 release candidate 1. This release will most likely be the same as the R8 final. We encourage you to test this release out and give us feedback so that R8 will be our best release ever.
+
+We once again thank the people who contributed to this release (named in the changes that follow).
+
+* Features
+** ImageMapReplacedElementFactory.java: Sample for handling image maps, submitted via users mailing list by elbart0 at free.fr on March 5, 2008. This sample is a work-in-progress as it was originally written using Java 5 features; however, it should be a useful starting point.
+* Changes
+** As of this release, "minium" anti-aliasing is no longer supported, and the minium.jar file is no longer distributed or kept in our repository. Minium was contributed by a community member several years ago, but we are unable to get the sources or contact the owner. As modern JDKs have good native support for AA, this shouldn't affect many users. 
+** The configuration property and methods related to anti-aliasing "smoothing level" were only used by Minium and have been removed in this release. Smoothing threshold is still supported.
+* Bug Fixes
+** Make sure references to PDFWriter and document are set in instance fields before calling preOpen(), as listeners to preOpen() will probably need access to them. Report via email by Alexander Zagniotov on the user's mailing list (thanks!).
+** External stylesheets which use relative addresses to import other stylesheets may not parse correctly when using the URI class; case in point was the DocBook demo app. With this change, we first attempt the parse using the URL class (as before 1.17), and only if that fails, we use URI. URL should work for normal cases where the url follows a standard protocols. Tested with both the DocBook demo and the browser demo.
+** Issue #264 (patch by sackley)
+** Issue #265: Potential fix for bug #265 (report and initial patch by sackley)
+
 p{font-size: 14pt}. Release 8 - Release Candidate 1 (R8rc1)
 
 *March 8, 2009*: After a long hiatus from releases, we are proud to present release candidate 1 of our R8 releaseThis release includes a large number of bug fixes since R8 pre 2. Given the stability of our current source trunk, this release will most likely be the same as the R8 final. We encourage you to test this release out and give us feedback so that R8 will be our best release ever.

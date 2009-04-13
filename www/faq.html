@@ -26,10 +26,12 @@
       <li><a href="/faq.html">The <span class="caps">FAQ</span></a></li>
       <li><a href="/screenshots.html">Screenshots</a></li>
       <li><a href="/demos.html">Demos</a></li>
-      <li><a href="/guide/users-guide-r7.html" title="R7">User's Guide &#8211; <span class="caps">HTML</span></a></li>
-      <li><a href="/guide/users-guide-r7.pdf" title="R7">User's Guide &#8211; <span class="caps">PDF</span></a></li>
-      <li><a href="http://pdoubleya.com/projects/flyingsaucer/doc/user/api/index.html">Javadoc &#8211; Basic</a></li>
-      <li><a href="http://pdoubleya.com/projects/flyingsaucer/doc/full/api/index.html">Javadoc &#8211; Full</a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R7/doc/guide/users-guide-r7.html">User's Guide R7 &#8211; <span class="caps">HTML</span></a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R7/doc/guide/users-guide-r7.pdf">User's Guide R7 &#8211; <span class="caps">PDF</span></a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R8rc2/doc/guide/users-guide-r8.html">User's Guide R8 &#8211; <span class="caps">HTML</span></a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R8rc2/doc/guide/users-guide-r8.pdf">User's Guide R8 &#8211; <span class="caps">PDF</span></a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R8rc2/javadoc/user/index.html">Javadoc &#8211; Basic</a></li>
+      <li><a href="http://pigeonholdings.com/projects/flyingsaucer/R8rc2/javadoc/full/index.html">Javadoc &#8211; Full</a></li>
       <li><a href="/references.html">References</a></li>
       <li><a href="http://www.gnu.org/copyleft/lesser.html" title="LGPL">License</a></li>
     </ul>
@@ -78,7 +80,7 @@
 
 <h3 class="fs_heading" id="xil_4" style="clear:none;">Can I use Flying Saucer to browse websites?</h3>
 
-<p>Flying Saucer is not an <span class="caps">HTML</span> component. It is a rendering component for <span class="caps">XHTML</span> content, but it cannot handle the malformed <span class="caps">HTML</span> 4.0 of general webpages, and it has no support for purely stylistic markup like <span class="caps">FONT</span> and <span class="caps">CENTER</span>. You have to use valid <span class="caps">XHTML</span> and <span class="caps">CSS</span>. For most embedded uses this is fine since the application author usually has control over the documents to be loaded. If you really need full IE/Mozilla/Safari-like fidelity for general purpose webpages you should look into a webbrowser wrapper like <a href="http://jdic.dev.java.net">JDIC's Browser component</a>, or a commercial component like <a href="http://www.webrenderer.com">WebRenderer</a>.</p>
+<p>Flying Saucer is not an <span class="caps">HTML</span> component. It is a rendering component for <span class="caps">XHTML</span> content, but it cannot handle the malformed <span class="caps">HTML</span> 4.0 of general webpages, and it has no support for purely stylistic markup like <span class="caps">FONT</span> and <span class="caps">CENTER</span>. You have to use valid <span class="caps">XHTML</span> and <span class="caps">CSS</span>. For most embedded uses this is fine since the application author usually has control over the documents to be loaded. If you really need full IE/Mozilla/Safari-like fidelity for general purpose webpages you should look into a webbrowser wrapper like <a href="http://jdic.dev.java.net">JDIC's Browser component</a>, or a commercial component like <a href="http://www.webrenderer.com">WebRenderer</a>. Sun's Swing team has said they are working on a Java wrapper for WebKit called JWebPane, but there is no release schedule announced so far.</p>
 
 <h3 class="fs_heading" id="xil_5" style="clear:none;">Is Flying Saucer a web browser?</h3>
 
@@ -108,6 +110,8 @@
   <li>a stock ticker / weather reporter</li>
 </ul>
 
+
+<p>Flying Saucer has become a favorite recently for people who need to render clean <span class="caps">XHTML</span> to <span class="caps">PDF</span>; we support <span class="caps">PDF</span> output via the iText library.</p>
 
 <h3 class="fs_heading" id="xil_7" style="clear:none;">What <span class="caps">XHTML</span>/CSS features does Flying Saucer currently support?</h3>
 
@@ -164,22 +168,25 @@
   <li><a href="#xil_11">I have <span class="caps">XML</span> or <span class="caps">XHTML</span> stored in a Java String, not a file&#8212;how do I load this into an XHTMLPanel?</a></li>
   <li><a href="#xil_12">How do I force Anti-aliasing?</a></li>
   <li><a href="#xil_13">When I use the <code>setDocument(dom, url)</code> constructor, what should the url parameter point to?</a></li>
-  <li><a href="#xil_14">My <span class="caps">PDF</span> isn't picking up my <span class="caps">CSS</span>!</a></li>
-  <li><a href="#xil_15">How can I print multiple pages on to one <span class="caps">PDF</span>, if they come from multiple documents?</a></li>
-  <li><a href="#xil_16">Can I use Flying Saucer in an <span class="caps">SWT</span> application?</a></li>
-  <li><a href="#xil_17">My header is not showing up correctly in my <span class="caps">PDF</span>.</a></li>
-  <li><a href="#xil_18">How do I set a custom UserAgentCallback when generating <span class="caps">PDF</span>?</a></li>
-  <li><a href="#xil_19">How do I figure out the size of a document I'm rendering? Can I get this from the renderer? How about preferred size of XHTMLPanel? Why isn't my panel properly sized on screen?</a></li>
+  <li><a href="#xil_14">How do i get the starting index of selected text?</a></li>
+  <li><a href="#xil_15">How can I "watermark" <span class="caps">PDF</span>'s created through FS?</a></li>
+  <li><a href="#xil_16">I've created a replacedelementfactory for a custom <span class="caps">XML</span> element (e.g. MathML), but it's not getting replaced within the document.</a></li>
+  <li><a href="#xil_17">My <span class="caps">PDF</span> isn't picking up my <span class="caps">CSS</span>!</a></li>
+  <li><a href="#xil_18">How can I print multiple pages on to one <span class="caps">PDF</span>, if they come from multiple documents?</a></li>
+  <li><a href="#xil_19">Can I use Flying Saucer in an <span class="caps">SWT</span> application?</a></li>
+  <li><a href="#xil_20">My header is not showing up correctly in my <span class="caps">PDF</span>.</a></li>
+  <li><a href="#xil_21">How do I set a custom UserAgentCallback when generating <span class="caps">PDF</span>?</a></li>
+  <li><a href="#xil_22">How do I figure out the size of a document I'm rendering? Can I get this from the renderer? How about preferred size of XHTMLPanel? Why isn't my panel properly sized on screen?</a></li>
 </ol>
 
 
 <h3 class="fs_heading" id="xil_9" style="clear:none;">How do I make my program follow hyperlinks?</h3>
 
-<p>You need a mouse listener that detects link clicks and does the <span class="caps">HTTP</span> request. The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish. See the <code>org.xhtmlrenderer.swing.LinkListener</code> class for an example.</p>
+<p>You need a mouse listener that detects link clicks and does the <span class="caps">HTTP</span> request. The <code>BasicPanel</code> supports tracking mouse events and delegating them to <code>FSMouseListener</code> instances. You can use the <code>org.xhtmlrenderer.swing.LinkListener</code> class, which implements <code>FSMouseListener</code>, for basic hyperlink navigation support.</p>
 
 <h3 class="fs_heading" id="xil_10" style="clear:none;">How do I get access to the Swing components that make up my form fields?</h3>
 
-<p>Take a look at the <code>org.xhtmlrenderer.simple.extend.XhtmlForm</code> class. Form elements are "replaced" at runtime by the <code>org.xhtmlrenderer.swing.SwingReplacedElementFactory</code> if you're using the <code>XHTMLPanel</code> class for rendering. The factory actually creates a new XhtmlForm class which creates and tracks the components. There is a <code>submit()</code> method in there that you can follow as an starting point.</p>
+<p>Take a look at the <code>org.xhtmlrenderer.simple.extend.XhtmlForm</code> class. Form elements are "replaced" at runtime by the <code>org.xhtmlrenderer.swing.SwingReplacedElementFactory</code> if you're using the <code>XHTMLPanel</code> class for rendering. The factory actually creates a new <code>XhtmlForm</code> class which creates and tracks the components. To receive a callback when the user submits a form, add a <code>FormSubmissionListener</code> instance to your <code>BasicPanel</code>.</p>
 
 <h3 class="fs_heading" id="xil_11" style="clear:none;">I have <span class="caps">XML</span> or <span class="caps">XHTML</span> stored in a Java String, not a file&#8212;how do I load this into an XHTMLPanel?</h3>
 
@@ -187,31 +194,47 @@
 
 <p>In Java APIs, there is some confusion on usage between a String that represents an address (like a <span class="caps">URI</span> or a file path) and strings that represent content. Our <span class="caps">API</span> tends to expect that Strings will represent addresses.</p>
 
-<p>You can use <code>panel.setDocumentFromString()</code> to do this. The String will be passed to the standard <span class="caps">XML</span> parser and treated as a regular document.</p>
+<p>You can use <code>panel.setDocumentFromString()</code> to render a document from a string containing <span class="caps">XHTML</span> content. The String will be passed to the standard <span class="caps">XML</span> parser and treated as a regular document.</p>
 
 <p>It's important to remember that FS expects well-formed <span class="caps">XML</span> documents, and we don't have an extremely friendly relationship with the <span class="caps">XML</span> parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java <span class="caps">XML</span> APIs, before loading them in FS. This is especially true if you are generating <span class="caps">XHTML</span> on-the-fly.</p>
 
 <h3 class="fs_heading" id="xil_12" style="clear:none;">How do I force Anti-aliasing?</h3>
 
 <p>Either<br />
-* Set the appropriate configuration properties: <code>xr.text.aa-fontsize-threshhold</code> and <code>xr.text.aa-smoothing-level</code><br />
-* Get the <code>Java2DTextRenderer</code> reference from the XHTMLPanel's <code>SharedContext</code> property, then call <code>setSmoothingThreshold()</code> and <code>setSmoothingLevel()</code></p>
+* Set the appropriate configuration properties: <code>xr.text.aa-fontsize-threshhold</code><br />
+* Get the <code>Java2DTextRenderer</code> reference from the XHTMLPanel's <code>SharedContext</code> property, then call <code>setSmoothingThreshold()</code></p>
 
-<p>Smoothing level should be anything other than <code>TextRenderer.NONE</code>. The specific value is ignored for Java2D AA.</p>
+<p>The threshold is the font size at which AA should kick in, for text; font sizes below that size will <strong>not</strong> be drawn with AA. A threshold of -1 turns AA off completely.</p>
 
-<p>The threshold is the font size at which AA should kick in, for text; font sizes below that size will <strong>not</strong> be drawn with AA.</p>
-
-<p>Note that on some platforms and JREs, AA can slow things down considerably. It appears to be much better with more recent JREs, such as Java 6.</p>
+<p>Note that on some platforms and JREs, AA can slow things down considerably. It appears to be much better with more recent Sun JREs, such as Java 6.</p>
 
 <h3 class="fs_heading" id="xil_13" style="clear:none;">When I use the <code>setDocument(dom, url)</code> constructor, what should the url parameter point to?</h3>
 
-<p>The url is the "base", which for a normal <span class="caps">URL</span> would be the parent location (parent directory). For Documents usually a null will suffice, unless your document contains relative references to some resource; if so, then provide the parent location (what they are relative to).</p>
+<p>The url is the "base", which for a normal <span class="caps">URL</span> would be the parent location&#8212;the parent directory, or the location where the document you are rendering is located.</p>
 
-<h3 class="fs_heading" id="xil_14" style="clear:none;">My <span class="caps">PDF</span> isn't picking up my <span class="caps">CSS</span>!</h3>
+<p>If your document has absolute URIs for <span class="caps">CSS</span> and images, or it has no external references at all, then the base url can be null.</p>
+
+<p>If your document has any relative URIs for <span class="caps">CSS</span> or images, then the base <span class="caps">URL</span> should <strong>not</strong> be null, but rather should point to the directory or address where the current document is located.</p>
+
+<h3 class="fs_heading" id="xil_14" style="clear:none;">How do i get the starting index of selected text?</h3>
+
+<p>_I am using the selection / highlighting capabilities in Flying Saucer. Hightlighting works fine, but I need to have the index of the selection. Is this possible?</p>
+
+<p>That's not possible out of the box.  The <span class="caps">DOM</span> interface doesn't provide position information. An option is to walk through the nodes of the document to the left of the start of the selected range and then adding all the text content lengths.</p>
+
+<h3 class="fs_heading" id="xil_15" style="clear:none;">How can I "watermark" <span class="caps">PDF</span>'s created through FS?</h3>
+
+<p>Either use the background property inside of <code>@page</code> or <code>PdfStamper</code> after the <span class="caps">PDF</span> is already created. <code>PdfStamper</code> is part of the iText <span class="caps">API</span>.</p>
+
+<h3 class="fs_heading" id="xil_16" style="clear:none;">I've created a replacedelementfactory for a custom <span class="caps">XML</span> element (e.g. MathML), but it's not getting replaced within the document.</h3>
+
+<p>Make sure the element has it's display style as inline-block or block. Only block-level elements can be replaced.</p>
+
+<h3 class="fs_heading" id="xil_17" style="clear:none;">My <span class="caps">PDF</span> isn't picking up my <span class="caps">CSS</span>!</h3>
 
 <p><span class="caps">PDF</span> is treated as "print" media; see the <a href="http://www.w3.org/TR/CSS21/media.html">CSS 2.1 specification section on media types</a>. Make sure you have specified the media type for your <span class="caps">CSS</span> when you link or embed it; use type "print" or "all".</p>
 
-<h3 class="fs_heading" id="xil_15" style="clear:none;">How can I print multiple pages on to one <span class="caps">PDF</span>, if they come from multiple documents?</h3>
+<h3 class="fs_heading" id="xil_18" style="clear:none;">How can I print multiple pages on to one <span class="caps">PDF</span>, if they come from multiple documents?</h3>
 
 <p>For the first document in the set (e.g. starting with the first page in the <span class="caps">PDF</span> you want to render) take an ITextRenderer and call <code>setDocument()</code>, <code>layout()</code> and <code>createPDF()</code>; for each subsequent document, use the same renderer and call <code>setDocument()</code>, <code>layout()</code>, and <code>writeNextDocument()</code>. Call <code>finishPDF()</code> to complete the process. A sample follows below; a cleaned-up example, <code>PDFRenderToMultiplePages</code>, is in our demos/samples directory in our source distribution.</p>
 
@@ -261,14 +284,14 @@ finally
 }
 </code></pre>
 
-<h3 class="fs_heading" id="xil_16" style="clear:none;">Can I use Flying Saucer in an <span class="caps">SWT</span> application?</h3>
+<h3 class="fs_heading" id="xil_19" style="clear:none;">Can I use Flying Saucer in an <span class="caps">SWT</span> application?</h3>
 
 <p>If you're trying to output to an <span class="caps">SWT</span> canvas&#8212;there is an early mockup by Vianney le Cl???ment which we plan to merge in the R8 release. See the mailing list thread starting with:<br />
 https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?listName=dev&msgNo=3452</p>
 
 <p>There are patches attached to that mail thread which provide initial support for <span class="caps">SWT</span>; some things are still missing, but it's a good start.</p>
 
-<h3 class="fs_heading" id="xil_17" style="clear:none;">My header is not showing up correctly in my <span class="caps">PDF</span>.</h3>
+<h3 class="fs_heading" id="xil_20" style="clear:none;">My header is not showing up correctly in my <span class="caps">PDF</span>.</h3>
 
 <p>The values of <code>-fs-flow-top/right/bottom/left</code> and <code>-fs-move-to-flow</code> must<br />
 be strings and not keywords (e.g. <code>-fs-flow-top: 'header'</code> instead of<br />
@@ -276,7 +299,7 @@ be strings and not keywords (e.g. <code>-fs-flow-top: 'header'</code> instead of
 
 <p>The new <span class="caps">CSS</span> parser validates this (and will give you a warning message if you have logging turned on).</p>
 
-<h3 class="fs_heading" id="xil_18" style="clear: none;">How do I set a custom UserAgentCallback when generating <span class="caps">PDF</span>?</h3>
+<h3 class="fs_heading" id="xil_21" style="clear: none;">How do I set a custom UserAgentCallback when generating <span class="caps">PDF</span>?</h3>
 
 <pre><code>ITextRenderer renderer = new ITextRenderer();
 
@@ -289,7 +312,7 @@ renderer.layout();
 renderer.createPDF(os);
 </code></pre>
 
-<h3 class="fs_heading" id="xil_19" style="clear: none;">How do I figure out the size of a document I'm rendering? Can I get this from the renderer? How about preferred size of XHTMLPanel? Why isn't my panel properly sized on screen?</h3>
+<h3 class="fs_heading" id="xil_22" style="clear: none;">How do I figure out the size of a document I'm rendering? Can I get this from the renderer? How about preferred size of XHTMLPanel? Why isn't my panel properly sized on screen?</h3>
 
 <p>The rules are that the document size is calculated after a layout takes place; for rendering to a Swing panel, this can only happen if the container for the panel (e.g. the window) is displayable. See <a href="https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?list=users&msgNo=777">this email thread in our mailing list</a> for a discussion. In our demos/samples directory in the source distribution, the <code>PanelResizeToPreferredSize</code> and <code>JPanelSizeToDocument</code> show how this is done. Basically (quoting from the mail thread):</p>
 
@@ -308,33 +331,33 @@ renderer.createPDF(os);
 <h2 class="fs_heading" style="clear:none;">Developer's <span class="caps">FAQ</span></h2>
 
 <ol class="toc">
-  <li><a href="#xil_20">How do I set up my <span class="caps">CLASSPATH</span>?</a></li>
-  <li><a href="#xil_21">How do I build XR without Ant?</a></li>
-  <li><a href="#xil_22">How do I build XR from within my <span class="caps">IDE</span>?</a></li>
+  <li><a href="#xil_23">How do I set up my <span class="caps">CLASSPATH</span>?</a></li>
+  <li><a href="#xil_24">How do I build XR without Ant?</a></li>
+  <li><a href="#xil_25">How do I build XR from within my <span class="caps">IDE</span>?</a></li>
 </ol>
 
 
-<h3 class="fs_heading" id="xil_20" style="clear:none;">How do I set up my <span class="caps">CLASSPATH</span>?</h3>
+<h3 class="fs_heading" id="xil_23" style="clear:none;">How do I set up my <span class="caps">CLASSPATH</span>?</h3>
 
 <p>You only need the</p>
 
 <ul>
   <li><code>core-renderer.jar</code> (required)</li>
-  <li><code>lib/iText-2.0.8.jar</code></li>
+  <li><code>${itext.jar}</code></li>
 </ul>
 
 
-<p>iText is used for <span class="caps">PDF</span> rendering.</p>
+<p>The first two are required; iText is needed for <span class="caps">PDF</span> rendering.</p>
 
-<p>Before release R7, you needed to include a <span class="caps">CSS</span> parser in the <span class="caps">CLASSPATH</span>. This is no longer necessary, as Flying Saucer now includes a fast, compliant <span class="caps">CSS</span> parser.</p>
+<p>In earlier releases, you needed to include a <span class="caps">CSS</span> parser in the <span class="caps">CLASSPATH</span>. This is no longer necessary, as Flying Saucer now includes a fast, compliant <span class="caps">CSS</span> parser.</p>
 
 <p>That is all you need for your own programs. You also need an <span class="caps">XML</span> parser to be in your classpath, but this already included in recent versions of the <span class="caps">JRE</span>.</p>
 
 <p>To run the browser or use any of it's support classes you will need the <code>browser.jar</code> file.</p>
 
-<h3 class="fs_heading" id="xil_21" style="clear:none;">How do I build XR without Ant?</h3>
+<h3 class="fs_heading" id="xil_24" style="clear:none;">How do I build XR without Ant?</h3>
 
-<h3 class="fs_heading" id="xil_22" style="clear:none;">How do I build XR from within my <span class="caps">IDE</span>?</h3>
+<h3 class="fs_heading" id="xil_25" style="clear:none;">How do I build XR from within my <span class="caps">IDE</span>?</h3>
 
 <p>Our Ant <code>build.xml</code> file includes all <span class="caps">JAR</span> files in the <code>/lib</code> directory, plus the <code>/resources</code> directory tree in the classpath. The compile target also copies <span class="caps">CSS</span> and properties resources from <code>/src/css</code> and <code>src/conf</code> to <code>/build/resources</code>. If running from an <span class="caps">IDE</span>, you will need to synchronize this yourself.</p>
 
