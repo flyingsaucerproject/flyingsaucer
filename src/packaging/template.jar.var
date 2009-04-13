@@ -1,0 +1,6 @@
+URI: packed/FILENAME.pack.gz
+Content-Type: x-java-archive
+Content-Encoding: pack200-gzip
+
+URI: unpacked/FILENAME
+Content-Type: x-java-archive
