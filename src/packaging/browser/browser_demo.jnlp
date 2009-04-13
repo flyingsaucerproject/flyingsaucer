@@ -16,9 +16,9 @@
     <resources>
         <j2se version="1.4+"/>
         <jar href="browser.jar"/>
-        <jar href="../looks-2.1.4.jar"/>
-        <jar href="../core-renderer.jar"/>
-        <jar href="../iText-2.0.8.jar"/>
+        <jar href="../../../demo_repo/looks-2.1.4.jar"/>
+        <jar href="../../../demo_repo/core-renderer.jar"/>
+        <jar href="../../../demo_repo/iText-2.0.8.jar"/>
     </resources>
     <application-desc main-class="org.xhtmlrenderer.demo.browser.BrowserSandboxLauncher"/>
 </jnlp>
