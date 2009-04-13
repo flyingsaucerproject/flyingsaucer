@@ -15,16 +15,39 @@
             </condition>
         </fail>
 
-        <property file="local.build.properties" />
+        <property file="local.build.properties"/>
+        <sshexec host="${dist.upload.hostname}"
+                 port="${dist.upload.port}"
+                 username="${dist.upload.username}"
+                 password="${dist.upload.password}"
+                 command="mkdir -p ${dist.upload.path}"/>
+
         <scp todir="${dist.upload.username}:${dist.upload.password}@${dist.upload.hostname}:${dist.upload.path}"
-                verbose="true"
-                port="7822">
+             verbose="true"
+             port="${dist.upload.port}">
             <fileset dir="${dist.dir}/demo_repo">
                 <include name="**/*"/>
             </fileset>
             <fileset dir="${dist.dir}/${app.version}">
-                <include name="**/*"/>
+                <include name="**/*.tar.gz"/>
             </fileset>
         </scp>
+
+        <sshexec host="${dist.upload.hostname}"
+                 port="${dist.upload.port}"
+                 username="${dist.upload.username}"
+                 password="${dist.upload.password}"
+                 command="mkdir -p ${dist.upload.path}/javadoc/{full,user}"/>
+
+        <sshexec host="${dist.upload.hostname}"
+                 port="${dist.upload.port}"
+                 username="${dist.upload.username}"
+                 password="${dist.upload.password}"
+                 command="tar xzf ${dist.upload.path}/javadoc-full.tar.gz --directory ${dist.upload.path}/javadoc/full "/>
+        <sshexec host="${dist.upload.hostname}"
+                 port="${dist.upload.port}"
+                 username="${dist.upload.username}"
+                 password="${dist.upload.password}"
+                 command="tar xzf ${dist.upload.path}/javadoc-user.tar.gz --directory ${dist.upload.path}/javadoc/user"/>
     </target>
 </project>

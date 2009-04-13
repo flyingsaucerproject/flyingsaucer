@@ -69,23 +69,21 @@
                   fileext=".asc.txt" />
     </target>
 
-    <!-- Build the JNLP distribution -->
-    <target name="dist.jnlp" depends="init, jar" description="Build JNLP Distro">
-        <copy todir="${dest.dir}">
-            <fileset dir="${src.packaging.dir}">
-                <include name="browser_demo.jnlp"/>
-                <include name="aboutbox_demo.jnlp"/>
-                <include name="docbook_demo.jnlp"/>
-                <include name="svg_demo.jnlp"/>
-                <include name="flyingsaucer.png"/>
-            </fileset>
-        </copy>
+    <!-- Build the Javadoc distribution -->
+    <target name="dist.javadoc" depends="init" description="Build JNLP Distro">
+        <!-- javadoc -->
+        <tar destfile="${dist.dir}/${app.version}/javadoc-full.tar.gz" compression="gzip">
+            <fileset dir="${dest.javadoc.full.dir}"/>
+        </tar>
+        <tar destfile="${dist.dir}/${app.version}/javadoc-user.tar.gz" compression="gzip">
+            <fileset dir="${dest.javadoc.user.dir}"/>
+        </tar>
     </target>
 
     <!--
         <target name="dist.all" depends="dist.binary, dist.jnlp, dist.src, docs" description="build complete distro set">
     -->
-    <target name="dist.all" depends="check.app.version, clean, dist.binary, dist.jnlp, dist.src, docs" description="build complete distro set">
+    <target name="dist.all" depends="check.app.version, clean, dist.binary, dist.javadoc, dist.src" description="build complete distro set">
         <delete dir="${dist.dir}"/>
         <mkdir dir="${dist.dir}/demo_repo"/>
         <mkdir dir="${dist.dir}/demo_repo/packed"/>
@@ -106,12 +104,6 @@
                 <!-- include MD5 and SHA hash files -->
                 <include name="flyingsaucer-*.zip.*"/>
             </fileset>
-        </copy>
-
-        <!-- javadoc -->
-        <copy todir="${dist.dir}/${app.version}/doc">
-            <fileset dir="${dest.javadoc.full.dir}"/>
-            <fileset dir="${dest.javadoc.user.dir}"/>
         </copy>
 
         <!-- demos -->
