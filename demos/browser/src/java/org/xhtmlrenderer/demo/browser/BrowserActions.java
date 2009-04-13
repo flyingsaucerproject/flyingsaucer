@@ -250,7 +250,7 @@ public class BrowserActions {
         usersManual = new EmptyAction("FS User's Guide", "Flying Saucer User's Guide", null) {
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    root.panel.loadPage("/guide/users-guide-r8.html");
+                    root.panel.loadPage("/users-guide-r8.html");
                     root.panel.view.repaint();
                 } catch (Exception ex) {
                     Uu.p(ex);
@@ -422,6 +422,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2009/04/13 14:45:19  pdoubleya
+ * Fix location for user's guide within browser JAR
+ *
  * Revision 1.33  2009/04/12 11:14:28  pdoubleya
  * Fix path for user's guide.
  *

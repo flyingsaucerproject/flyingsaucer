@@ -48,7 +48,7 @@
               <include name="images/**" />
             </fileset>
             <fileset dir="${guide}">
-                <include name="guide/users-guide-r8.html"/>
+                <include name="users-guide-r8.html"/>
                 <include name="images/**/*"/>
                 <include name="base.css"/>
                 <include name="ug.css"/>
