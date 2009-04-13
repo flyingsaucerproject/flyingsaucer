@@ -22,6 +22,15 @@
             <include name="LICENSE*"/>
             <include name="README"/>
         </zip>
+        <checksum file="build/${app.name}-${app.version}.zip"
+                  forceOverwrite="yes"
+                  fileext=".md5.txt"
+                />
+        <checksum file="build/${app.name}-${app.version}.zip"
+                  algorithm="SHA"
+                  forceOverwrite="yes"
+                  fileext=".asc.txt"
+                />
     </target>
 
     <!-- 
@@ -50,6 +59,14 @@
             <include name="www/guide/*.png"/>
             <include name="www/base.css"/>
         </zip>
+        <checksum file="${dest.dir}/${app.name}-${app.version}-src.zip"
+                  forceOverwrite="yes"
+                  fileext=".md5.txt"
+                />
+        <checksum file="${dest.dir}/${app.name}-${app.version}-src.zip"
+                  algorithm="SHA"
+                  forceOverwrite="yes"
+                  fileext=".asc.txt" />
     </target>
 
     <!-- Build the JNLP distribution -->
@@ -81,6 +98,21 @@
         <mkdir dir="${dist.dir}/${app.version}/demo/browser/unpacked"/>
         <mkdir dir="${dist.dir}/${app.version}/download"/>
         <mkdir dir="${dist.dir}/${app.version}/doc"/>
+
+        <!-- downloads -->
+        <copy todir="${dist.dir}/${app.version}/download">
+            <fileset dir="${dest.dir}">
+                <include name="flyingsaucer-*.zip"/>
+                <!-- include MD5 and SHA hash files -->
+                <include name="flyingsaucer-*.zip.*"/>
+            </fileset>
+        </copy>
+
+        <!-- javadoc -->
+        <copy todir="${dist.dir}/${app.version}/doc">
+            <fileset dir="${dest.javadoc.full.dir}"/>
+            <fileset dir="${dest.javadoc.user.dir}"/>
+        </copy>
 
         <!-- demos -->
         <copy todir="${dist.dir}/${app.version}/demo">
@@ -144,17 +176,5 @@
         <copy tofile="${dist.dir}/${app.version}/demo/browser/.htaccess"
               file="${src.packaging.dir}/apache-jnlp-config.htaccess"/>
 
-        <!-- downloads -->
-        <copy todir="${dist.dir}/${app.version}/download">
-            <fileset dir="${dest.dir}">
-                <include name="flyingsaucer-*.zip"/>
-            </fileset>
-        </copy>
-
-        <!-- javadoc -->
-        <copy todir="${dist.dir}/${app.version}/doc">
-            <fileset dir="${dest.javadoc.full.dir}"/>
-            <fileset dir="${dest.javadoc.user.dir}"/>
-        </copy>
     </target>
 </project>
