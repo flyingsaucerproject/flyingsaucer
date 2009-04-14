@@ -6,7 +6,7 @@
         <xilize args="-do ${www.dir}" />
     </target>
     
-    <target name="convert.guide" depends="check.app.version" description="Convert User's Guide Xilize files to XHTML and PDF">
+    <target name="convert.guide" depends="check.app.version, jar.core" description="Convert User's Guide Xilize files to XHTML and PDF">
         <property name="ugxil" value="${guide}/users-guide-${app.version}.xil" />
         <fail message="Can't find User's Guide file named ${ugxil}.">
             <condition>                                                     
