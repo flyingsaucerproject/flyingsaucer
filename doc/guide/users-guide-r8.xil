@@ -130,7 +130,7 @@ Basic requirements:
 
 * Java Runtime Environment 1.4 or above (or JDK of course) 
 * core-renderer.jar (our distribution) 
-* ${itext} (also at "iText PDF":http://itextpdf.sourceforge.net)
+* ${itext} (also at "iText PDF":http://itextpdf.sourceforge.net )
 * "Ant":http://ant.apache.org if you want to build from source 
 
 As a rule, we try to limit our dependencies on external libraries to keep the download size to a minimum.
@@ -705,7 +705,7 @@ All of the properties in the following table are used just like regular properti
 h3(fs_heading){page-break-before: avoid;}. Table of Extensions
 
 table(extensions). |{width:15%}  **Property** | **Description**
-| @-fs-keep-with-inline@ | values @keep@ or auto (the default).  If it's keep, FS will try to avoid breaking a block in ssuch a way that only padding and borders appear on a page.  This works regardless of how deeply nested the inline content is in the block.
+| @-fs-keep-with-inline@ | values @keep@ or auto (the default).  If it's keep, FS will try to avoid breaking a block in such a way that only padding and borders appear on a page.  This works regardless of how deeply nested the inline content is in the block.
 | @-fs-page-sequence@ |  values @start@ or @auto@ (the default) and allows you to limit the scope of the page and pages counters to a portion of the document
 | @-fs-font-metric-src@ |  use inside a @font-face@ rule in case the font you want to embed in the PDF has a custom font metrics file; value is the URL to the metrics file for the font
 | @-fs-pdf-font-embed@ |  use with the value @embed@ inside a @font-face@ rule to have ${fs} embed a font file within a PDF document, avoiding the need to call the @addFont()@ method of the @FontResolver@ class
@@ -823,3 +823,4 @@ Links:
 
 * "Xilize":http://xilize.sourceforge.net/ http://xilize.sourceforge.net/
 * "jEdit":http://www.jedit.org http://www.jedit.org
+
