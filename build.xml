@@ -77,11 +77,7 @@
     <!-- =====================================================
          Build the various distributions
          ===================================================== -->
-  <target name="dist" description="Builds all distribution files.">
-    <antcall target="dist.jnlp" />
-    <antcall target="dist.src" />
-    <antcall target="dist.binary" />
-  </target>
+  <target name="dist" depends="check.app.version, dist.all" description="Builds all distribution files."/>
 
     <!-- Builds a ZIP file of entire project from base directory. -->
   <target name="zip" description="Builds ZIP file of entire project." depends="jar">
@@ -270,6 +266,9 @@
 $Id$
 
 $Log$
+Revision 1.100  2009/04/14 12:53:46  pdoubleya
+main dist target doesn't need subtargets, can use dist.all; remove iText.jar from demos dist as it's not used in the browser demo
+
 Revision 1.99  2009/04/13 14:00:17  pdoubleya
 Update Ant build to handle Xilize conversion of WWW and UG files, distribution build, and distro upload
 

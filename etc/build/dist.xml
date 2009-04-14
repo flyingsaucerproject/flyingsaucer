@@ -120,7 +120,6 @@
         <copy todir="${dist.dir}/${app.version}/demo/unpacked" file="${dest.dir}/core-renderer.jar"/>
         <copy todir="${dist.dir}/demo_repo/unpacked">
             <fileset dir="${dest.dir}">
-                <include name="iText*.jar"/>
                 <include name="xml*.jar"/>
             </fileset>
             <fileset dir="${libraries.dev.dir}">
@@ -129,9 +128,6 @@
         </copy>
         <pack200 src="${dest.dir}/core-renderer.jar"
                  destfile="${dist.dir}/${app.version}/demo/packed/core-renderer.jar.pack.gz"
-                 gzipoutput="true"/>
-        <pack200 src="${dest.dir}/iText-2.0.8.jar"
-                 destfile="${dist.dir}/demo_repo/packed/iText-2.0.8.jar.pack.gz"
                  gzipoutput="true"/>
         <pack200 src="${dest.dir}/xml-apis-xerces-2.9.1.jar"
                  destfile="${dist.dir}/demo_repo/packed/xml-apis-xerces-2.9.1.jar.pack.gz"
@@ -143,10 +139,6 @@
         <copy file="${src.packaging.dir}/template.jar.var"
               tofile="${dist.dir}/${app.version}/demo/core-renderer.jar.var"/>
         <replace file="${dist.dir}/${app.version}/demo/core-renderer.jar.var" token="FILENAME" value="core-renderer"/>
-
-        <copy file="${src.packaging.dir}/template.jar.var"
-              tofile="${dist.dir}/demo_repo/iText-2.0.8.jar.var"/>
-        <replace file="${dist.dir}/demo_repo/iText-2.0.8.jar.var" token="FILENAME" value="iText-2.0.8.jar"/>
 
         <copy file="${src.packaging.dir}/template.jar.var"
               tofile="${dist.dir}/demo_repo/xml-apis-xerces-2.9.1.jar.var"/>
