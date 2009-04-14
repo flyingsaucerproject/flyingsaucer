@@ -192,7 +192,7 @@ about.addActionListener(new ActionListener() {
   public void actionPerformed(ActionEvent evt) {
   AboutBox ab = new AboutBox
     (
-    "About ${fs}", 
+    "About Flying Saucer", 
     "demos/about/index.xhtml"
     );         
     ab.setVisible(true);     
@@ -331,7 +331,7 @@ private void run(String[] args) throws Exception {
     // FSScrollPane is already set up to move the correct     
     // amount when scrolling 1 line or 1 page     
     FSScrollPane scroll = new FSScrollPane(panel);     
-    JFrame frame = new JFrame("${fs} Single Page Demo");
+    JFrame frame = new JFrame("Flying Saucer Single Page Demo");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.getContentPane().add(scroll);     
     frame.pack();     

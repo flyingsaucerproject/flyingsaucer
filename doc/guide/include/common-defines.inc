@@ -4,6 +4,8 @@ define. css21 "CSS 2.1 Specification":http://www.w3.org/TR/CSS21/
 
 define. itext "iText":http://www.lowagie.com/iText/
 
+define. itext.jar iText-2.0.8.jar
+
 define. jlogging "java.util.logging":http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html
 
 define. cssparser "CSSParser":http://cssparser.sourceforge.net/
