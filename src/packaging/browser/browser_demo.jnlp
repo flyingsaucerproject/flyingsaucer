@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://pigeonholdings.com/projects/flyingsaucer/demo/r8/browser/" href="browser_demo.jnlp">
+<!-- TODO: replace codebase URL during build process -->
+<jnlp codebase="http://pigeonholdings.com/projects/flyingsaucer/R8rc2/demo/browser/" href="browser_demo.jnlp">
     <information>
         <title>XHTML Browser Demo</title>
         <vendor>Flying Saucer</vendor>
@@ -18,7 +19,6 @@
         <jar href="browser.jar"/>
         <jar href="../../../demo_repo/looks-2.1.4.jar"/>
         <jar href="../../../demo_repo/core-renderer.jar"/>
-        <jar href="../../../demo_repo/iText-2.0.8.jar"/>
     </resources>
     <application-desc main-class="org.xhtmlrenderer.demo.browser.BrowserSandboxLauncher"/>
 </jnlp>
