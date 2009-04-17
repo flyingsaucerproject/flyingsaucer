@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/docbook/" href="docbook_demo.jnlp">
+<jnlp codebase="DEMO_CODEBASE/docbook/" href="docbook_demo.jnlp">
     <information>
-        <title>XHTML Embedded SVG Demo</title>
+        <title>DocBook XML/CSS Demo</title>
         <vendor>Flying Saucer</vendor>
         <offline-allowed/>
         <homepage href="http://xhtmlrenderer.dev.java.net/"/>
@@ -17,5 +17,6 @@
         <jar href="docbook.jar"/>
         <jar href="../core-renderer.jar"/>
     </resources>
+
     <application-desc main-class="org.xhtmlrenderer.demo.docbook.ShowDocBookPage"/>
 </jnlp>

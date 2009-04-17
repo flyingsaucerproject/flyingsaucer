@@ -87,7 +87,7 @@
 
     <!-- Compiles about box and main codebase, and builds jar for about box -->
     <target name="jar.about" depends="compile.about" description="build about jar">
-        <jar jarfile="${dest.dir}/about.jar" compress="true"
+        <jar jarfile="${dest.dir}/aboutbox.jar" compress="true"
             manifest="${src.packaging.dir}/manifest"
             duplicate="preserve"
             index="true"

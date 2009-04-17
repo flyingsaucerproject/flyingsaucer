@@ -1,10 +1,5 @@
 Notes on TODO items for the Ant build scripts
 
-- add rest of demo apps to distribution
-  - update JNLP files using browser_demo.jnlp as a model
-  - see if we can generify dist.all to handle multiple demo apps without so much Ant code
-- in demo apps, codebase should be replaceable parameter
-  - can replace CODEBASE during dist.all
 - remove unused targets
   - need to search per target across all .xml files
 - clean properties

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/svg/" href="svg_demo.jnlp">
+<jnlp codebase="DEMO_CODEBASE/svg/" href="svg_demo.jnlp">
     <information>
         <title>XHTML Embedded SVG Demo</title>
         <vendor>Flying Saucer</vendor>
@@ -10,14 +10,15 @@
         renderer with a page containing embedded SVG references. This shows a single
         fixed page rendering SVG content..</description>
         <description kind="tooltip">FS SVG Demo</description>
-        <icon kind="splash" href="flyingsaucer.png"/>
-        <icon href="flyingsaucer.png"/>
+        <icon kind="splash" href="../flyingsaucer.png"/>
+        <icon href="../flyingsaucer.png"/>
     </information>
     <resources>
         <j2se version="1.4+"/>
         <jar href="svg.jar"/>
+        <jar href="../../../demo_repo/svgSalamander.jar"/>
         <jar href="../core-renderer.jar"/>
-        <jar href="../svgSalamander.jar"/>
     </resources>
+
     <application-desc main-class="org.xhtmlrenderer.demo.svg.ShowSVGPage"/>
 </jnlp>

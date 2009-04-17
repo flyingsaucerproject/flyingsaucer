@@ -66,13 +66,121 @@
         <checksum file="${dest.dir}/${app.name}-${app.version}-src.zip"
                   algorithm="SHA"
                   forceOverwrite="yes"
-                  fileext=".asc.txt" />
+                  fileext=".asc.txt"/>
     </target>
 
     <!--
         <target name="dist.all" depends="dist.binary, dist.jnlp, dist.src, docs" description="build complete distro set">
     -->
-    <target name="dist.all" depends="check.app.version, clean, dist.binary, dist.src" description="build complete distro set">
+    <target name="dist.jnlp" depends="check.app.version" description="build complete distro set">
+        <property file="local.build.properties"/>
+        <delete dir="${dist.dir}/demo_repo"/>
+        <mkdir dir="${dist.dir}/demo_repo"/>
+        <mkdir dir="${dist.dir}/demo_repo/packed"/>
+        <mkdir dir="${dist.dir}/demo_repo/unpacked"/>
+        <mkdir dir="${dist.dir}/${app.version}"/>
+        <delete dir="${dist.dir}/demo"/>
+        <mkdir dir="${dist.dir}/${app.version}/demo"/>
+        <mkdir dir="${dist.dir}/${app.version}/demo/packed"/>
+        <mkdir dir="${dist.dir}/${app.version}/demo/unpacked"/>
+
+        <!-- demos -->
+        <!--   shared distributables across all demos -->
+        <copy todir="${dist.dir}/${app.version}/demo">
+            <fileset dir="${src.packaging.dir}">
+                <include name="flyingsaucer.png"/>
+            </fileset>
+        </copy>
+        <copy todir="${dist.dir}/${app.version}/demo/unpacked" file="${dest.dir}/core-renderer.jar"/>
+        <copy todir="${dist.dir}/demo_repo/unpacked">
+            <fileset dir="${libraries.dir}">
+                <include name="xml*.jar"/>
+            </fileset>
+            <fileset dir="${libraries.dev.dir}">
+                <include name="looks-2.1.4.jar"/>
+            </fileset>
+            <fileset dir="${libraries.dev.dir}">
+                <include name="svgSalamander.jar"/>
+            </fileset>
+        </copy>
+        <pack200 src="${dest.dir}/core-renderer.jar"
+                 destfile="${dist.dir}/${app.version}/demo/packed/core-renderer.jar.pack.gz"
+                 gzipoutput="true"/>
+        <pack200 src="${libraries.dir}/xml-apis-xerces-2.9.1.jar"
+                 destfile="${dist.dir}/demo_repo/packed/xml-apis-xerces-2.9.1.jar.pack.gz"
+                 gzipoutput="true"/>
+        <pack200 src="${libraries.dev.dir}/looks-2.1.4.jar"
+                 destfile="${dist.dir}/demo_repo/packed/looks-2.1.4.jar.pack.gz"
+                 gzipoutput="true"/>
+        <pack200 src="${libraries.dev.dir}/svgSalamander.jar"
+                 destfile="${dist.dir}/demo_repo/packed/svgSalamander.jar.pack.gz"
+                 gzipoutput="true"/>
+
+        <copy file="${src.packaging.dir}/template.jar.var"
+              tofile="${dist.dir}/${app.version}/demo/core-renderer.jar.var"/>
+        <replace file="${dist.dir}/${app.version}/demo/core-renderer.jar.var"
+                 token="FILENAME"
+                 value="core-renderer"/>
+        <copy tofile="${dist.dir}/${app.version}/demo/.htaccess"
+              file="${src.packaging.dir}/apache-jnlp-config.htaccess"/>
+
+
+        <copy file="${src.packaging.dir}/template.jar.var"
+              tofile="${dist.dir}/demo_repo/xml-apis-xerces-2.9.1.jar.var"/>
+        <replace file="${dist.dir}/demo_repo/xml-apis-xerces-2.9.1.jar.var"
+                 token="FILENAME"
+                 value="xml-apis-xerces-2.9.1.jar"/>
+
+        <copy file="${src.packaging.dir}/template.jar.var"
+              tofile="${dist.dir}/demo_repo/looks-2.1.4.jar.var"/>
+        <replace file="${dist.dir}/demo_repo/looks-2.1.4.jar.var" token="FILENAME" value="looks-2.1.4.jar"/>
+        <copy tofile="${dist.dir}/demo_repo/.htaccess"
+              file="${src.packaging.dir}/apache-jnlp-config.htaccess"/>
+
+        <copy file="${src.packaging.dir}/template.jar.var"
+              tofile="${dist.dir}/demo_repo/svgSalamander.jar.var"/>
+        <replace file="${dist.dir}/demo_repo/svgSalamander.jar.var" token="FILENAME" value="svgSalamander.jar"/>
+        <copy tofile="${dist.dir}/demo_repo/.htaccess"
+              file="${src.packaging.dir}/apache-jnlp-config.htaccess"/>
+
+        <!-- browser demo -->
+        <m.dist.demo demoname="browser" />
+        <m.dist.demo demoname="aboutbox" />
+        <m.dist.demo demoname="docbook" />
+        <m.dist.demo demoname="svg" />
+
+    </target>
+    <macrodef name="m.dist.demo">
+        <attribute name="demoname"/>
+        <sequential>
+            <mkdir dir="${dist.dir}/${app.version}/demo/@{demoname}/packed"/>
+            <mkdir dir="${dist.dir}/${app.version}/demo/@{demoname}/unpacked"/>
+            <copy todir="${dist.dir}/${app.version}/demo/@{demoname}/unpacked">
+                <fileset dir="${dest.dir}">
+                    <include name="@{demoname}.jar"/>
+                </fileset>
+            </copy>
+            <pack200 src="${dest.dir}/@{demoname}.jar"
+                     destfile="${dist.dir}/${app.version}/demo/@{demoname}/packed/@{demoname}.jar.pack.gz"
+                     gzipoutput="true"/>
+            <copy file="${src.packaging.dir}/template.jar.var"
+                  tofile="${dist.dir}/${app.version}/demo/@{demoname}/@{demoname}.jar.var"/>
+            <replace file="${dist.dir}/${app.version}/demo/@{demoname}/@{demoname}.jar.var"
+                     token="FILENAME"
+                     value="@{demoname}.jar"/>
+
+            <copy todir="${dist.dir}/${app.version}/demo/@{demoname}"
+                  file="${src.packaging.dir}/@{demoname}/@{demoname}_demo.jnlp"/>
+            <replace file="${dist.dir}/${app.version}/demo/@{demoname}/@{demoname}_demo.jnlp"
+                     token="DEMO_CODEBASE"
+                     value="${dist.demo.path}"/>
+            <copy tofile="${dist.dir}/${app.version}/demo/@{demoname}/.htaccess"
+                  file="${src.packaging.dir}/apache-jnlp-config.htaccess"/>
+        </sequential>
+    </macrodef>
+
+    <target name="dist.all" depends="check.app.version, clean, dist.binary, dist.src"
+            description="build complete distro set">
         <delete dir="${dist.dir}"/>
         <mkdir dir="${dist.dir}/demo_repo"/>
         <mkdir dir="${dist.dir}/demo_repo/packed"/>
@@ -162,6 +270,8 @@
         <replace file="${dist.dir}/${app.version}/demo/browser/browser.jar.var" token="FILENAME" value="browser.jar"/>
 
         <copy todir="${dist.dir}/${app.version}/demo/browser" file="${src.packaging.dir}/browser/browser_demo.jnlp"/>
+        <replace file="${dist.dir}/${app.version}/demo/browser/browser_demo.jnlp" token="DEMO_CODEBASE"
+                 value="${dist.dir}/${app.version}/demo"/>
         <copy tofile="${dist.dir}/${app.version}/demo/browser/.htaccess"
               file="${src.packaging.dir}/apache-jnlp-config.htaccess"/>
 

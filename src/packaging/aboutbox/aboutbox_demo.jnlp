@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/aboutbox/" href="aboutbox_demo.jnlp">
+<jnlp codebase="DEMO_CODEBASE/aboutbox/" href="aboutbox_demo.jnlp">
 
     <information>
         <title>XHTML About Box Demo</title>
@@ -10,15 +10,16 @@
         <description kind="short">A demonstration of the Flying Saucer XHTML
             renderer. This demo shows off a simple About Box</description>
         <description kind="tooltip">Flying Saucer About Box</description>
-        <icon kind="splash" href="flyingsaucer.png"/>
-        <icon href="flyingsaucer.png"/>
+        <icon kind="splash" href="../flyingsaucer.png"/>
+        <icon href="../flyingsaucer.png"/>
     </information>
     
     <resources>
         <j2se version="1.4+"/>
-        <jar href="about.jar"/>
+        <jar href="aboutbox.jar"/>
         <jar href="../core-renderer.jar"/>
     </resources>
+
     
     <application-desc main-class="org.xhtmlrenderer.demo.aboutbox.AboutBox"/>
 </jnlp>
