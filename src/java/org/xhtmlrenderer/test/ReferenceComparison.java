@@ -22,7 +22,7 @@ public class ReferenceComparison {
 
     public static void main(String[] args) throws IOException {
         // TODO: check args
-        ReferenceComparison rc = new ReferenceComparison(1024, true);
+        ReferenceComparison rc = new ReferenceComparison(1024, false);
         File source = new File(args[0]);
         File reference = new File(args[1]);
         File failed = new File(args[2]);
@@ -280,11 +280,17 @@ public class ReferenceComparison {
         }
 
         public void report() {
+            int failed = 0;
             for (Iterator it = files.keySet().iterator(); it.hasNext();) {
                 File file = (File) it.next();
                 Result result = (Result) files.get(file);
-                System.out.println(result.describe(file));
+
+                if (result instanceof FailedResult) {
+                    failed++;
+                    System.out.println(result.describe(file));
+                }
             }
+            System.out.println("Checked " + files.keySet().size() + " files, " + (failed > 0 ? failed + " failed." : "all OK."));
         }
 
         private class RenderFailed implements Result {

@@ -82,17 +82,13 @@ public class Regress {
 
     public static void main(String[] args) throws Exception {
         final File sourceDir = getArgSourceDir(args);
-        final File outputZip = getArgOutputZipFile(args);
-        final File outputDir = createOutputDir();
+        final File outputDir = sourceDir;
         final int width = 1024;
 
-        System.out.println("Running regression against files in " + sourceDir + " to output directory " + outputDir);
+        System.out.println("Running regression against files in " + sourceDir);
         Regress regress = new Regress(sourceDir, outputDir, width);
         regress.snapshot();
         System.out.println("Ran regressions against " + regress.getFileCount() + " files in source directory; " + regress.getFailedCount() + " failed to generate");
-        new Zipper(outputDir, outputZip).zipDirectory();
-        outputDir.delete();
-        System.out.println("Built regressions ZIP file: " + outputZip.getPath());
     }
 
     /**
@@ -128,7 +124,6 @@ public class Regress {
     public void snapshot() throws IOException {
         fileCount = 0;
         failedCount = 0;
-        IOUtil.deleteAllFiles(outputDir);
         final boolean wasLogging = enableLogging(false);
         try {
             Iterator iter = listInputFiles(sourceDir);
@@ -163,7 +158,6 @@ public class Regress {
             }
             String fileName = outputFile.getPath();
             imageWriter.write(img, fileName);
-            new File(fileName).deleteOnExit();
         } catch (Exception e) {
             System.err.println("Could not render input file to image, skipping: " + page + " err: " + e.getMessage());
         }
@@ -181,8 +175,6 @@ public class Regress {
         }
         LayoutContext layoutContext = renderer.getLayoutContext();
         String inputFileName = page.getName();
-        final File copy = IOUtil.copyFile(page, outputDir);
-        copy.deleteOnExit();
         writeToFile(outputDir, inputFileName + RENDER_SFX, box.dump(layoutContext, "", Box.DUMP_RENDER));
         writeToFile(outputDir, inputFileName + LAYOUT_SFX, box.dump(layoutContext, "", Box.DUMP_LAYOUT));
         fileCount++;
@@ -195,7 +187,6 @@ public class Regress {
                     "On rendering, could not delete new output file (.delete failed) " + outputFile.getAbsolutePath()
             );
         }
-        outputFile.deleteOnExit();
         OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
         PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
         pw.print(output);
@@ -233,19 +224,6 @@ public class Regress {
             usageAndExit("Source directory not found: " + sourceDirPath);
         }
         return sourceDir;
-    }
-
-    private static File createOutputDir() {
-        File parent = new File(System.getProperty("java.io.tmpdir"));
-        File outputDir = new File(parent, "reference");
-        if (!outputDir.exists() && !outputDir.mkdirs()) {
-            throw new RuntimeException(
-                    "Could not create temporary output directory (.mkdirs failed) " +
-                            outputDir.getAbsoluteFile()
-            );
-        }
-        outputDir.deleteOnExit();
-        return outputDir;
     }
 
     private boolean enableLogging(final boolean isEnabled) {

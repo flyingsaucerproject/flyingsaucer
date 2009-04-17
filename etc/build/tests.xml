@@ -197,6 +197,13 @@
 	</target>
 
     <target name="regress.snapshot" depends="check.app.version, jar.core">
+        <!-- copy current test files -->
+        <delete dir="${regress.temp.dir}" failonerror="true" includeemptydirs="true" quiet="true" />
+        <delete file="${regress.target.zip}" />
+        <mkdir  dir="${regress.temp.dir}" />
+        <copy   todir="${regress.temp.dir}">
+            <fileset dir="${regress.source.dir}" />
+        </copy>
         <java classname="org.xhtmlrenderer.test.Regress"
                 fork="${java-exec.fork.tests}">
             <classpath>
@@ -210,9 +217,10 @@
             <syspropertyset>
                 <propertyref prefix="xr."/>
             </syspropertyset>
-            <arg value="${regress.source.dir}"/>
-            <arg value="${regress.target.zip}"/>
+            <arg value="${regress.temp.dir}"/>
         </java>
+        <zip basedir="${regress.temp.dir}" zipfile="${regress.target.zip}" encoding="utf-8" level="9" />
+        <delete file="${regress.temp.dir}" />
     </target>
 
     <target name="regress.verify" depends="check.app.version, jar.core">
@@ -245,7 +253,7 @@
             <syspropertyset>
                 <propertyref prefix="xr."/>
             </syspropertyset>
-            <jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005" />
+            <!--<jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005" />-->
             <arg value="${regress.source.dir}"/>
             <arg value="${regress.verify.dir}"/>
             <arg value="${regress.verify.failed.dir}"/>
