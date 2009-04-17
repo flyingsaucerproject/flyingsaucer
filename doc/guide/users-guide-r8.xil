@@ -50,7 +50,7 @@ h3(fs_heading). What it is
 
 <img src="images/screenshots/backgrounds-thumb.png" style="float: right; margin-left: 10px;" /> 
 
-${fs} is an XML/CSS _renderer_, which means it takes XML files as input, applies formatting and styling using CSS, and generates a rendered representation of that XML as output. The output may go to the screen (in a GUI), to an image, or to a PDF file. Because we believe most people will be interested in re-using their knowledge of web layout, our main target for content is XHTML 1.0 (strict), an XML document format that standardizes HTML. However, we accept any well-formed XML for rendering as long as CSS is provided that tells us how to lay it out. In the case of XHTML, default stylesheets are provided out of the box and packaged within the library, which means ${fs} can render any XHTML out of the box with decent results.
+${fs} is an XML/CSS _renderer_, which means it takes XML files as input, applies formatting and styling using CSS, and generates a rendered representation of that XML as output. The output may go to the screen (in a GUI), to an image, or to a PDF file. Because we believe most people will be interested in re-using their knowledge of web layout, our main target for content is XHTML 1.0 (strict), an XML document format that standardizes HTML. However, we accept any well-formed XML for rendering as long as CSS is provided that tells us how to lay it out. In the case of XHTML, default stylesheets are provided out of the box and packaged within the library, which means ${fs} can render most XHTML out of the box with decent results.
 
 Internally, ${fs} works with an XML document and uses CSS to determine how to lay it out visually. The rules for layout come from the "CSS 2.1 specification":css21, and according to that spec, element nodes and attributes are matched to CSS selectors, where each selector identifies some formatting rules. We can't cover how to use CSS here--it's a long and complex specification--but there are many good books available, and tutorials on the web. Check out the "W3Schools CSS Tutorial":http://www.w3schools.com/css/default.asp for a starting point. 
 
@@ -619,7 +619,7 @@ h4(fs_heading). How do you control page size?
 
 _What CSS attributes correspond to "page size" (e.g. letter, legal, A4) in CSS and XHTML?_
 
-The @size@ property as documented in the "CSS3 Paged Media module":http://www.w3.org/TR/css3-page/.  Everything in the spec is implemented except auto page handling (the default stylesheet currently sets letter-sized paper with a half-inch margin)
+The @size@ property as documented in the "CSS3 Paged Media module":http://www.w3.org/TR/css3-page/.  Everything in the spec is implemented except auto page handling (the default stylesheet a half margin and paper size is either US-Letter or A4 depending on the current locale)
 
 h4(fs_heading). How do you control page size on PDF output?
 
@@ -675,7 +675,7 @@ For intrinsic width/height calculations we assume a resolution of 96 DPI, but se
 
 h4(fs_heading). How to I add a custom header or footer to my PDF?
 
-${fs} supports both "margin boxes"http://www.w3.org/TR/css3-page/#margin-boxes and "running elements":http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#running1 as defined in the CSS 3 specification.
+${fs} supports both "margin boxes":http://www.w3.org/TR/css3-page/#margin-boxes and "running elements":http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#running1 as defined in the CSS 3 specification.
 
 h4(fs_heading). Does ${fs} support PDF form components?
 
