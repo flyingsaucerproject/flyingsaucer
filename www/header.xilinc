@@ -38,8 +38,8 @@ divStart(#fs).
 divStart(#menu).
 
 * Downloads
-** "Release 7 Binaries":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final.zip
-** "Release 7 All Files":http://pigeonholdings.com/projects/flyingsaucer/downloads/r7/flyingsaucer-R7final-src.zip  
+** "Release 8 Binaries":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8.zip
+** "Release 8 All Files":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8-src.zip
 * About Flying Saucer
 ** "Project Home":/index.html
 ** "News":/news.html
@@ -47,12 +47,10 @@ divStart(#menu).
 ** "The FAQ":/faq.html
 ** "Screenshots":/screenshots.html
 ** "Demos":/demos.html
-** "User's Guide R7 - HTML":http://pigeonholdings.com/projects/flyingsaucer/R7/doc/guide/users-guide-r7.html
-** "User's Guide R7 - PDF":http://pigeonholdings.com/projects/flyingsaucer/R7/doc/guide/users-guide-r7.pdf
-** "User's Guide R8 - HTML":http://pigeonholdings.com/projects/flyingsaucer/R8rc2/doc/guide/users-guide-r8.html
-** "User's Guide R8 - PDF":http://pigeonholdings.com/projects/flyingsaucer/R8rc2/doc/guide/users-guide-r8.pdf
-** "Javadoc - Basic":http://pigeonholdings.com/projects/flyingsaucer/R8rc2/javadoc/user/index.html
-** "Javadoc - Full":http://pigeonholdings.com/projects/flyingsaucer/R8rc2/javadoc/full/index.html
+** "User's Guide R8 - HTML":http://pigeonholdings.com/projects/flyingsaucer/R8/doc/guide/users-guide-r8.html
+** "User's Guide R8 - PDF":http://pigeonholdings.com/projects/flyingsaucer/R8/doc/guide/users-guide-r8.pdf
+** "Javadoc - Basic":http://pigeonholdings.com/projects/flyingsaucer/R8/javadoc/user/index.html
+** "Javadoc - Full":http://pigeonholdings.com/projects/flyingsaucer/R8/javadoc/full/index.html
 ** "References":/references.html
 ** "License (LGPL)":http://www.gnu.org/copyleft/lesser.html  
 * Contribute

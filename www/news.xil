@@ -2,6 +2,10 @@ Flying Saucer Project: News
 
 h2(fs_heading){clear: none}. News
 
+p{font-size: 14pt}. Release 8 - Final (R8)
+
+*April 18, 2009*: We are proud to present our R8 release. This release includes no changes since R8 release candidate 2.
+
 p{font-size: 14pt}. Release 8 - Release Candidate 2 (R8rc2)
 
 *April 13, 2009*: We are proud to present release candidate 2 of our R8 release. This release includes a handful of bug fixes since R8 release candidate 1. This release will most likely be the same as the R8 final. We encourage you to test this release out and give us feedback so that R8 will be our best release ever.

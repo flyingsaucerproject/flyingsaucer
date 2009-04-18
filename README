@@ -1,6 +1,6 @@
 Flying Saucer
-Release R8pre2
-Jan 27, 2008
+Release R8
+April 18, 2009
 
 https://xhtmlrenderer.dev.java.net
 Please see project website for links to CVS, mailing lists, issue tracker, etc.
@@ -12,11 +12,8 @@ Flying Saucer is a pure-Java library for rendering arbitrary well-formed XML
 (or XHTML) using CSS 2.1 for layout and formatting, output to Swing panels, 
 PDF, and images.
 
-Comprehensive documentation available in our user's guide,
-https://xhtmlrenderer.dev.java.net/r7/users-guide-r7.html online or
-located under www/r7/users-guide-r7.html in the source. The documentation is 
-current as of the R7 release. For information on our development releases 
-(R8preX), please contact us on our mailing lists.
+Comprehensive documentation available in our user's guide, linked from our website at http://xhtmlrenderer.dev.java.net.
+For information on our development releases (R8preX), please contact us on our mailing lists.
 
 If you end up using Flying Saucer for your own projects, please drop us an
 email and tell us about it; it helps inform where we go next, and is interesting

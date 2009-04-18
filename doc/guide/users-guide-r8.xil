@@ -21,15 +21,13 @@ h1{text-align: center;}. The ${fs} User's Guide
   
     p{font-size: 12pt; text-align: center}. Release R8
   
-    p{font-size: 12pt; text-align: center}. Draft 
-  
-    p{font-size: 12pt; text-align: center}. March 2009
+    p{font-size: 12pt; text-align: center}. April 2009
     
   divEnd.
 
   divStart(#footer). 
   
-  <span style="font-size: 12pt; font-weight: normal;">${fs} User's Guide - R8 Draft</span>
+  <span style="font-size: 12pt; font-weight: normal;">${fs} Release R8 User's Guide</span>
     
   divEnd.
   
@@ -42,7 +40,9 @@ h2. Document History
 
 Updates to this document:
 
-* 21-03-2009: Updated for release R8
+* 18-04-2009: Final copy-edit for release R8.
+
+* 21-03-2009: Updated for release R8         
 
 h2. An Introduction to ${fs}
 

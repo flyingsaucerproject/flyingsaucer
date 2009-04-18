@@ -206,7 +206,7 @@ finally
 
 h3(fs_heading){clear:none}. Can I use Flying Saucer in an SWT application?
 
-If you're trying to output to an SWT canvas--there is an early mockup by Vianney le Cl�ment which we plan to merge in the R8 release. See the mailing list thread starting with:
+If you're trying to output to an SWT canvas--there is an early mockup by Vianney le Clement which we plan to merge in the R8 release. See the mailing list thread starting with:
 https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?listName=dev&msgNo=3452
 
 There are patches attached to that mail thread which provide initial support for SWT; some things are still missing, but it's a good start.
