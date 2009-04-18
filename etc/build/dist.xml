@@ -54,10 +54,9 @@
             <include name="demos/splash/**"/>
             <include name="demos/svg/**"/>
 
-            <include name="www/guide/users-guide-r7.html"/>
-            <include name="www/guide/users-guide-r7.pdf"/>
-            <include name="www/guide/*.png"/>
-            <include name="www/base.css"/>
+            <include name="doc/guide/users-guide-${app.version}.*"/>
+            <include name="doc/guide/**/*.png"/>
+            <include name="doc/guide/**/*.css"/>
         </zip>
         <checksum file="${dest.dir}/${app.name}-${app.version}-src.zip"
                   forceOverwrite="yes"
