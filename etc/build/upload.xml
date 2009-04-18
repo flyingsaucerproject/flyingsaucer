@@ -20,7 +20,7 @@
                  port="${dist.upload.port}"
                  username="${dist.upload.username}"
                  password="${dist.upload.password}"
-                 command="mkdir -p ${dist.upload.path}"/>
+                 command="mkdir -p ${dist.upload.path}/${app.version}"/>
 
         <scp todir="${dist.upload.username}:${dist.upload.password}@${dist.upload.hostname}:${dist.upload.path}"
              verbose="true"
@@ -34,18 +34,18 @@
                  port="${dist.upload.port}"
                  username="${dist.upload.username}"
                  password="${dist.upload.password}"
-                 command="mkdir -p ${dist.upload.path}/javadoc/{full,user}"/>
+                 command="mkdir -p ${dist.upload.path}/${app.version}/javadoc/{full,user}"/>
 
         <sshexec host="${dist.upload.hostname}"
                  port="${dist.upload.port}"
                  username="${dist.upload.username}"
                  password="${dist.upload.password}"
-                 command="tar xzf ${dist.upload.path}/javadoc-full.tar.gz --directory ${dist.upload.path}/javadoc/full "/>
+                 command="tar xzf ${dist.upload.path}/${app.version}/javadoc-full.tar.gz --directory ${dist.upload.path}/${app.version}/javadoc/full "/>
         <sshexec host="${dist.upload.hostname}"
                  port="${dist.upload.port}"
                  username="${dist.upload.username}"
                  password="${dist.upload.password}"
-                 command="tar xzf ${dist.upload.path}/javadoc-user.tar.gz --directory ${dist.upload.path}/javadoc/user"/>
+                 command="tar xzf ${dist.upload.path}/${app.version}/javadoc-user.tar.gz --directory ${dist.upload.path}/${app.version}/javadoc/user"/>
     </target>
     <target name="upload.dist-demos" description="Upload demos" depends="properties, check.app.version">
         <fail message="Need property dist.upload.username, specify with -Ddist.upload.username">

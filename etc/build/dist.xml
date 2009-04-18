@@ -178,7 +178,7 @@
         </sequential>
     </macrodef>
 
-    <target name="dist.all" depends="check.app.version, clean, dist.binary, dist.src, dist.jnlp"
+    <target name="dist.all" depends="check.app.version, clean, dist.binary, dist.src"
             description="build complete distro set">
         <delete dir="${dist.dir}"/>
         <mkdir dir="${dist.dir}/demo_repo"/>
@@ -192,6 +192,8 @@
         <mkdir dir="${dist.dir}/${app.version}/demo/browser/unpacked"/>
         <mkdir dir="${dist.dir}/${app.version}/downloads"/>
         <mkdir dir="${dist.dir}/${app.version}/doc"/>
+
+        <antcall target="dist.jnlp" />
 
         <!-- downloads -->
         <copy todir="${dist.dir}/${app.version}/downloads">
