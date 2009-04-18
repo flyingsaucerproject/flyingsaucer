@@ -14,13 +14,6 @@ h2(fs_heading){ clear: left }. "Browser" Demo
 A simple XHTML browser with scrolling, back button, link support, etc. This is not a "real" browser--but you can get an idea of how Flying Saucer can be used in a Real Application.
 
 
-h2(fs_heading){ clear: left }. "About Box" Demo
-
-!../images/demobutton.png!:http://pigeonholdings.com/projects/flyingsaucer/R8/demo/aboutbox/aboutbox_demo.jnlp *About Box*
-
-Shows how you might use Flying Saucer to create an application "about box" using XHTML, CSS and scrolling content.
-
-
 h2(fs_heading){ clear: left }. DocBook Demo
 
 !../images/demobutton.png!:http://pigeonholdings.com/projects/flyingsaucer/R8/demo/docbook/docbook_demo.jnlp *DocBook*
