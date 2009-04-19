@@ -25,42 +25,52 @@ p{font-size: 14pt}. Release 8 - Final (R8)
 
 *April 18, 2009*: We are proud to present our R8 release. This release includes no changes since R8 release candidate 2.
 
-p{font-size: 14pt}. Release 8 - Release Candidate 2 (R8rc2)
+Our R8 release includes a number of improvements over R7, as well as bug fixes. You can read the complete list of changes on our "news":./news.html page; here are some
+highlights about what you'll find in R8:
 
-*April 13, 2009*: We are proud to present release candidate 2 of our R8 release. This release includes a handful of bug fixes since R8 release candidate 1. This release will most likely be the same as the R8 final. 
+* PDF
+** Upgrade to use iText 2.0.8
+** Support adding custom header properties on PDF output
+** Add ability to set PDF version programmatically
+** Add ability to manipulate PDF output document before it's closed
+** Add ability to have different starting page number for first document in multiple documents
+** Add API to retrieve PDF page and coordinates for boxes with an ID attribute
+** Implement CMYK color support for PDF output
+** Support encryption of PDF output
+* Swing
+** Basic support for selection, highlighting and copying
+* General
+** Expose copy of parsed entities from catalog.
+** Preliminary support for data URLs
+** Support True Type Collection (.ttc) files
+** Preliminary support for Type 1 fonts
+** Support logging via Log4J as an alternative to JDK logging (requires recompile)
+** Handle hidden form elements
+** Rudimentary support for JavaScript links (from Dan Kaplan)
+** Support for callback on form submission
+* CSS
+** Prelimary support for @font-face rules
+** Implement partial support for leader and target-counter (patch from Karl Tauber)
+** Table pagination.  When turned on (by setting the @-fs-table-pagination@ property to @paginate@ vs. a default of @auto@ ), tables and table cells will be closed (with appropriate borders and padding) when a page ends and reopened when a page starts. Additionally, a table's @thead@ and @tfoot@ will be repeated on each page.
+** "CSS3 margin boxes":http://www.w3.org/TR/css3-page/#margin-boxes
+** "Named pages":http://www.w3.org/TR/css3-page/#using-named-pages
+** "Running elements":http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#running1
+** "Namespace-aware CSS matching":http://www.w3.org/TR/css3-selectors/#attrnmsp, for example, with attributes [although this also applies to elements]
+** "Pseudo-elements":http://www.w3.org/TR/css3-selectors/#pseudo-elements may now be specified with a double colon
+** "Substring selectors":http://www.w3.org/TR/css3-selectors/#attribute-substrings
+** The background property can now be used in a @page context - "CSS 3 spec":http://www.w3.org/TR/css3-page/#page-properties
+** Custom property to limit the scope of the page and pages counters to a portion of the document
+** Custom property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
 
-We encourage you to test this release out and give us feedback so that R8 will be our best release ever.
 
-You can find the list of changes since release candidate 1 on our "news page":news.html.
-
-p{font-size: 14pt}. Release 8 - Release Candidate 1 (R8rc1)
-
-*March 8, 2009*: After a long hiatus from releases, we are proud to present release candidate 1 of our R8 release. This release includes a large number of bug fixes since R8 pre 2. Given the stability of our current source trunk, this release will most likely be the same as the R8 final. We encourage you to test this release out and give us feedback so that R8 will be our best release ever.
-
-We once again thank the many people who contributed to this release; see the list of changes on our "News page":news.html.
-
-p{font-size: 14pt}. Release 8 - Second Code Drop (R8pre2) 
-
-*January 28, 2008*: The second code drop for our R8 release is available; see below in the downloads section. This release includes a number of bug fixes since R8pre1. While not the final release, we think it's pretty stable and would love if you could take it for a drive and report any problems you find.
-
-We thank the many people who contributed to this release; see the list of changes on our "News page":news.html. 
+"More news...":./news.html
 
 
-p{font-size: 14pt}. Release 8 - Pre 1 - Files No Longer Downloadable
+h2(fs_heading){ clear: left }. Project Statistics
 
-*January 27, 2008*: Unfortunately, during a server upgrade, the machine hosting our release files for R8pre1 lost those files. We have no backups (or at least none we can certify as being the same version). We apologize for the inconvenience. 
+Thanks to the "Ohloh website":http://www.ohloh.net/p/xhtmlrenderer.
 
-We recommend you use the R8pre2 release, or alternately, CVS HEAD. You can also build a release of Flying Saucer using the CVS tag made at the time of the R8pre1 release, the tag being simple R8_pre1.
-
-p{font-size: 14pt}. Release 8 - First Code Drop (R8pre1) 
-
-*Sepetember 2, 2007*: The Flying Saucer team announces Release 8pre1 of the Flying Saucer 100% Java XHTML+CSS renderer, including support for table pagination, margin boxes, running elements, named pages, and more:
-
-p{font-size: 14pt}. Release 7 - Final! 
-
-*July 14, 2007*: The Flying Saucer team announces Release 7 of the Flying Saucer 100% Java XHTML+CSS renderer. 
-
-Note that the R8pre1 files are no longer available for download (they were lost in a server upgrade). 
+==<script type="text/javascript" src="http://www.ohloh.net/p/659/widgets/project_basic_stats.js"></script>==
 
 h2(fs_heading){ clear: left }. New Around Here?
 
