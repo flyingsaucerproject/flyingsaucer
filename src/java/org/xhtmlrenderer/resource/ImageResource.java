@@ -37,12 +37,20 @@ public class ImageResource extends AbstractResource {
     public FSImage getImage() {
         return _img;
     }
+
+    public boolean isLoaded() {
+        // TODO: will be used to support deferred image loading where necessary
+        return true;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2009/04/24 16:09:44  pdoubleya
+ * Early cut to support background image loading. Not checking in changes to user agent, REF, etc. until design settles down.
+ *
  * Revision 1.4  2007/04/11 21:09:06  pdoubleya
  * Remove commented block
  *

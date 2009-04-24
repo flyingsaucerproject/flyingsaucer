@@ -66,6 +66,18 @@ public class ImageUtil {
 		clearImage(image, Color.WHITE);
 	}
 
+    public static BufferedImage makeCompatible(BufferedImage bimg) {
+        GraphicsConfiguration gc = getGraphicsConfiguration();
+        if (bimg.getColorModel().equals(gc.getColorModel())) {
+            return bimg;
+        }
+        BufferedImage cimg = gc.createCompatibleImage(bimg.getWidth(), bimg.getHeight(), bimg.getTransparency());
+        Graphics cg = cimg.getGraphics();
+        cg.drawImage(bimg, 0, 0, null);
+        cg.dispose();
+        return cimg;
+    }
+
 	/**
 	 * Helper method to instantiate new BufferedImages; if the graphics environment is actually connected to real
 	 * screen devices (e.g. not in headless mode), the image will be compatible with the screen device allowing
@@ -90,8 +102,7 @@ public class ImageUtil {
 		if (ge.isHeadlessInstance()) {
 			bimage = new BufferedImage(width, height, biType);
 		} else {
-			GraphicsDevice gs = ge.getDefaultScreenDevice();
-			GraphicsConfiguration gc = gs.getDefaultConfiguration();
+            GraphicsConfiguration gc = getGraphicsConfiguration();
 
             // TODO: check type using image type - can be sniffed; see Filthy Rich Clients
             int type = (biType == BufferedImage.TYPE_INT_ARGB || biType == BufferedImage.TYPE_INT_ARGB_PRE ?
@@ -102,6 +113,13 @@ public class ImageUtil {
 
 		return bimage;
 	}
+
+    private static GraphicsConfiguration getGraphicsConfiguration() {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gs = ge.getDefaultScreenDevice();
+        GraphicsConfiguration gc = gs.getDefaultConfiguration();
+        return gc;
+    }
 
 	/**
 	 * Creates a BufferedImage compatible with the local graphics environment; this is a helper method for a
@@ -226,7 +244,7 @@ public class ImageUtil {
 		return bimg;
 	}
 
-    public static Image createTransparentImage(int width, int height) {
+    public static BufferedImage createTransparentImage(int width, int height) {
         BufferedImage bi = createCompatibleBufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bi.createGraphics();
 
