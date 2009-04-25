@@ -26,6 +26,8 @@ import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,18 +61,6 @@ public class FSCatalog {
     public FSCatalog() {
     }
 
-    /** Main processing method for the FSCatalog object */
-/*   private void run() {
-    try {
-      // load catalog file as XML, no validation
-      URL url = FSCatalog.class.getClassLoader().getResource("resources/dtd/docbook/catalog.xml");
-      InputSource is = new InputSource(new BufferedInputStream(url.openStream()));
-      loadDocument(is);
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }
-  } */
-
     /**
      * Parses an XML catalog file and returns a Map of public ids to local URIs read
      * from the catalog. Only the catalog public elements are parsed.
@@ -78,14 +68,24 @@ public class FSCatalog {
      * @param catalogURI A String URI to a catalog XML file on the classpath.
      */
     public Map parseCatalog(String catalogURI) {
-        URL url = null;
+        URL url;
         Map map = null;
+        InputStream s = null;
         try {
             url = FSCatalog.class.getClassLoader().getResource(catalogURI);
-            map = parseCatalog(new InputSource(new BufferedInputStream(url.openStream())));
+            s = new BufferedInputStream(url.openStream());
+            map = parseCatalog(new InputSource(s));
         } catch (Exception ex) {
             XRLog.xmlEntities(Level.WARNING, "Could not open XML catalog from URI '" + catalogURI + "'", ex);
             map = new HashMap();
+        } finally {
+            try {
+                if (s != null) {
+                    s.close();
+                }
+            } catch (IOException e) {
+                // ignore..
+            }
         }
         return map;
     }
@@ -118,20 +118,24 @@ public class FSCatalog {
     private void addHandlers(XMLReader xmlReader, ContentHandler ch) {
         try {
             // add our own entity resolver
-            //xmlReader.setEntityResolver(FSEntityResolver.instance());
             xmlReader.setContentHandler(ch);
             xmlReader.setErrorHandler(new ErrorHandler() {
-
                 public void error(SAXParseException ex) {
-                    XRLog.xmlEntities(Level.WARNING, ex.getMessage());
+                    if (XRLog.isLoggingEnabled()) {
+                        XRLog.xmlEntities(Level.WARNING, ex.getMessage());
+                    }
                 }
 
                 public void fatalError(SAXParseException ex) {
-                    XRLog.xmlEntities(Level.WARNING, ex.getMessage());
+                    if (XRLog.isLoggingEnabled()) {
+                        XRLog.xmlEntities(Level.WARNING, ex.getMessage());
+                    }
                 }
 
                 public void warning(SAXParseException ex) {
-                    XRLog.xmlEntities(Level.WARNING, ex.getMessage());
+                    if (XRLog.isLoggingEnabled()) {
+                        XRLog.xmlEntities(Level.WARNING, ex.getMessage());
+                    }
                 }
             });
         } catch (Exception ex) {
