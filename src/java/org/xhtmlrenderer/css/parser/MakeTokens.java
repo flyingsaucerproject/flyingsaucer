@@ -42,8 +42,6 @@ public class MakeTokens {
             while ( (s = reader.readLine()) != null) {
                 tokens.add(s);
             }
-            reader.close();
-            reader = null;
         } finally {
             if (reader != null) {
                 try {
