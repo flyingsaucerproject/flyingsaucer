@@ -116,7 +116,7 @@ public class DocumentSplitter implements ContentHandler {
             _head.startElement(uri, localName, qName, atts);
         } else if (_inDocument) {
             if (_depth == 2 && ! _replayedHead) {
-                if (qName.equals(HEAD_ELEMENT_NAME)) {
+                if (HEAD_ELEMENT_NAME.equalsIgnoreCase(qName)) {
                     _handler.startElement(uri, localName, qName, atts);
                     _head.replay(_handler);
                 } else {
@@ -138,7 +138,7 @@ public class DocumentSplitter implements ContentHandler {
             }
             
             if (_depth == 1) {
-                if (HEAD_ELEMENT_NAME.equals(qName)) {
+                if (HEAD_ELEMENT_NAME.equalsIgnoreCase(qName)) {
                     _inHead = true;
                     _currentNSScope.replay(_head, true);
                 } else {
