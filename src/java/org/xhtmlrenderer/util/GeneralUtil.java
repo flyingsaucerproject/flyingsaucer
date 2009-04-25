@@ -58,7 +58,7 @@ public class GeneralUtil {
             }
             if (readStream == null) {
                 URL stream = resource.getClass().getResource(resource);
-                if ( stream != null ) readStream = stream.openStream();
+                if (stream != null) readStream = stream.openStream();
             }
         } catch (Exception ex) {
             XRLog.exception("Could not open stream from CLASSPATH: " + resource, ex);
@@ -144,7 +144,7 @@ public class GeneralUtil {
             sb.append(GeneralUtil.classNameOnly(ste.getClassName()));
             sb.append(".");
             sb.append(ste.getMethodName());
-            sb.append("(ln " + ste.getLineNumber() + ")");
+            sb.append("(ln ").append(ste.getLineNumber()).append(")");
             list.add(sb.toString());
             sb = new StringBuffer();
         }
@@ -154,7 +154,7 @@ public class GeneralUtil {
         StringBuffer trackback = new StringBuffer();
         while (iter.hasNext()) {
             String s = (String) iter.next();
-            trackback.append(padding + s + "\n");
+            trackback.append(padding).append(s).append("\n");
             padding.append("   ");
         }
         return trackback.toString();
@@ -221,7 +221,7 @@ public class GeneralUtil {
             ch = uri.charAt(i);
             if (ch == ' ') {
                 sbURI.append("%20");
-            } else if (ch == '\\'){
+            } else if (ch == '\\') {
                 sbURI.append('/');
             } else {
                 sbURI.append(ch);
@@ -230,6 +230,15 @@ public class GeneralUtil {
         return sbURI;
     }
 
+    /**
+     * Reads all content from a given InputStream into a String using the default platform encoding.
+     *
+     * @param is the InputStream to read from. Must already be open, and will NOT be closed by this function. Failing to
+     * close this stream after the call will result in a resource leak.
+     *
+     * @return String containing contents read from the stream
+     * @throws IOException if the stream could not be read
+     */
     public static String inputStreamToString(InputStream is) throws IOException {
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
@@ -237,34 +246,32 @@ public class GeneralUtil {
         char c[] = new char[1024];
         while (true) {
             int n = br.read(c, 0, c.length);
-            if ( n < 0 ) break;
+            if (n < 0) break;
             sw.write(c, 0, n);
         }
         isr.close();
         return sw.toString();
     }
 
-    public static void main(String[] args) {
-        File f = new File(args[0]);
-        try {
-            System.out.println(GeneralUtil.inputStreamToString(new FileInputStream(f)));
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
-
     public static void writeStringToFile(String content, String encoding, String fileName)
-            throws IOException, UnsupportedEncodingException {
-        File f = new File (fileName);
+            throws IOException {
+        File f = new File(fileName);
         FileOutputStream fos = new FileOutputStream(f);
-        OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
+        try {
+            OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
 
-        BufferedWriter bw = new BufferedWriter(osw);
-        PrintWriter pw = new PrintWriter(bw);
-        pw.print(content);
-        pw.flush();
-        bw.flush();
-        fos.close();
+            BufferedWriter bw = new BufferedWriter(osw);
+            PrintWriter pw = new PrintWriter(bw);
+            pw.print(content);
+            pw.flush();
+            bw.flush();
+        } finally {
+            try {
+                fos.close();
+            } catch (Exception e) {
+                // ignore
+            }
+        }
         System.out.println("Wrote file: " + f.getAbsolutePath());
     }
 
@@ -272,24 +279,23 @@ public class GeneralUtil {
      * Parses an integer from a string using less restrictive rules about which
      * characters we won't accept.  This scavenges the supplied string for any
      * numeric character, while dropping all others.
-     * 
+     *
      * @param s The string to parse
      * @return The number represented by the passed string, or 0 if the string
      *         is null, empty, white-space only, contains only non-numeric
      *         characters, or simply evaluates to 0 after parsing (e.g. "0")
      */
-    public static int parseIntRelaxed(String s)
-    {
+    public static int parseIntRelaxed(String s) {
         // An edge-case short circuit...
         if (s == null || s.length() == 0 || s.trim().length() == 0) {
             return 0;
         }
-    
+
         StringBuffer buffer = new StringBuffer();
-        
+
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-    
+
             if (Character.isDigit(c)) {
                 buffer.append(c);
             } else {
@@ -300,11 +306,11 @@ public class GeneralUtil {
                 }
             }
         }
-        
+
         if (buffer.length() == 0) {
             return 0;
         }
-        
+
         try {
             return Integer.parseInt(buffer.toString());
         } catch (NumberFormatException exception) {
@@ -323,63 +329,75 @@ public class GeneralUtil {
      * @param s The String which may contain characters to escape.
      * @return The string with the characters as HTML entities.
      */
-    public static final String escapeHTML(String s){
-       StringBuffer sb = new StringBuffer();
-       int n = s.length();
-       for (int i = 0; i < n; i++) {
-          char c = s.charAt(i);
-          switch (c) {
-             case '<': sb.append("&lt;"); break;
-             case '>': sb.append("&gt;"); break;
-             case '&': sb.append("&amp;"); break;
-             case '"': sb.append("&quot;"); break;
-             /*
-             case '�': sb.append("&agrave;");break;
-             case '�': sb.append("&Agrave;");break;
-             case '�': sb.append("&acirc;");break;
-             case '�': sb.append("&Acirc;");break;
-             case '�': sb.append("&auml;");break;
-             case '�': sb.append("&Auml;");break;
-             case '�': sb.append("&aring;");break;
-             case '�': sb.append("&Aring;");break;
-             case '�': sb.append("&aelig;");break;
-             case '�': sb.append("&AElig;");break;
-             case '�': sb.append("&ccedil;");break;
-             case '�': sb.append("&Ccedil;");break;
-             case '�': sb.append("&eacute;");break;
-             case '�': sb.append("&Eacute;");break;
-             case '�': sb.append("&egrave;");break;
-             case '�': sb.append("&Egrave;");break;
-             case '�': sb.append("&ecirc;");break;
-             case '�': sb.append("&Ecirc;");break;
-             case '�': sb.append("&euml;");break;
-             case '�': sb.append("&Euml;");break;
-             case '�': sb.append("&iuml;");break;
-             case '�': sb.append("&Iuml;");break;
-             case '�': sb.append("&ocirc;");break;
-             case '�': sb.append("&Ocirc;");break;
-             case '�': sb.append("&ouml;");break;
-             case '�': sb.append("&Ouml;");break;
-             case '�': sb.append("&oslash;");break;
-             case '�': sb.append("&Oslash;");break;
-             case '�': sb.append("&szlig;");break;
-             case '�': sb.append("&ugrave;");break;
-             case '�': sb.append("&Ugrave;");break;
-             case '�': sb.append("&ucirc;");break;
-             case '�': sb.append("&Ucirc;");break;
-             case '�': sb.append("&uuml;");break;
-             case '�': sb.append("&Uuml;");break;
-             case '�': sb.append("&reg;");break;
-             case '�': sb.append("&copy;");break;
-             case '�': sb.append("&euro;"); break;
-             */
-             // be carefull with this one (non-breaking whitee space)
-             case ' ': sb.append("&nbsp;");break;
+    public static String escapeHTML(String s){
+        StringBuffer sb = new StringBuffer();
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '<':
+                    sb.append("&lt;");
+                    break;
+                case '>':
+                    sb.append("&gt;");
+                    break;
+                case '&':
+                    sb.append("&amp;");
+                    break;
+                case '"':
+                    sb.append("&quot;");
+                    break;
+                /*
+             case 'ÔøΩ': sb.append("&agrave;");break;
+             case 'ÔøΩ': sb.append("&Agrave;");break;
+             case 'ÔøΩ': sb.append("&acirc;");break;
+             case 'ÔøΩ': sb.append("&Acirc;");break;
+             case 'ÔøΩ': sb.append("&auml;");break;
+             case 'ÔøΩ': sb.append("&Auml;");break;
+             case 'ÔøΩ': sb.append("&aring;");break;
+             case 'ÔøΩ': sb.append("&Aring;");break;
+             case 'ÔøΩ': sb.append("&aelig;");break;
+             case 'ÔøΩ': sb.append("&AElig;");break;
+             case 'ÔøΩ': sb.append("&ccedil;");break;
+             case 'ÔøΩ': sb.append("&Ccedil;");break;
+             case 'ÔøΩ': sb.append("&eacute;");break;
+             case 'ÔøΩ': sb.append("&Eacute;");break;
+             case 'ÔøΩ': sb.append("&egrave;");break;
+             case 'ÔøΩ': sb.append("&Egrave;");break;
+             case 'ÔøΩ': sb.append("&ecirc;");break;
+             case 'ÔøΩ': sb.append("&Ecirc;");break;
+             case 'ÔøΩ': sb.append("&euml;");break;
+             case 'ÔøΩ': sb.append("&Euml;");break;
+             case 'ÔøΩ': sb.append("&iuml;");break;
+             case 'ÔøΩ': sb.append("&Iuml;");break;
+             case 'ÔøΩ': sb.append("&ocirc;");break;
+             case 'ÔøΩ': sb.append("&Ocirc;");break;
+             case 'ÔøΩ': sb.append("&ouml;");break;
+             case 'ÔøΩ': sb.append("&Ouml;");break;
+             case 'ÔøΩ': sb.append("&oslash;");break;
+             case 'ÔøΩ': sb.append("&Oslash;");break;
+             case 'ÔøΩ': sb.append("&szlig;");break;
+             case 'ÔøΩ': sb.append("&ugrave;");break;
+             case 'ÔøΩ': sb.append("&Ugrave;");break;
+             case 'ÔøΩ': sb.append("&ucirc;");break;
+              case 'ÔøΩ': sb.append("&Ucirc;");break;
+             case 'ÔøΩ': sb.append("&uuml;");break;
+             case 'ÔøΩ': sb.append("&Uuml;");break;
+             case 'ÔøΩ': sb.append("&reg;");break;
+             case 'ÔøΩ': sb.append("&copy;");break;
+             case 'ÔøΩ': sb.append("&euro;"); break;
+                */
+                // be carefull with this one (non-breaking whitee space)
+                case ' ':
+                    sb.append("&nbsp;");
+                    break;
 
-             default:  sb.append(c); break;
-          }
-       }
-       return sb.toString();
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
+        return sb.toString();
     }
 
 }
@@ -388,6 +406,9 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2009/04/25 11:03:27  pdoubleya
+ * Fix some potential IO resource leaks, patches from Peter Fassev in issue #263. Clarifying docs on inputStreamToString() (we don't close the stream, the caller does), and a couple of other minor edits.
+ *
  * Revision 1.17  2008/03/13 16:46:47  peterbrant
  * Comment out non-ASCII characters in escapeHTML() for now.  Will only work if the compiler assumes the source file encoding is ISO-8859-1 (or maybe Cp1252).  Does not work on Linux (with a default encoding of UTF-8).  Should be replaced with equivalent Unicode escapes.
  *
