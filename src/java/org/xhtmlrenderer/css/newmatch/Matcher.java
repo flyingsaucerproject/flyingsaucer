@@ -39,10 +39,11 @@ import org.xhtmlrenderer.css.sheet.PageRule;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.Util;
 
 
 /**
- * @author Torbj�rn Gannholm
+ * @author Torbjorn Gannholm
  */
 public class Matcher {
 
@@ -290,7 +291,7 @@ public class Matcher {
             }
             
             String style = _attRes.getElementStyling(e);
-            if (style == null || style.equals("")) {
+            if (Util.isNullOrEmpty(style)) {
                 return null;
             }
             
@@ -304,7 +305,7 @@ public class Matcher {
                 return null;
             }
             String style = _attRes.getNonCssStyling(e);
-            if (style == null || style.equals("")) {
+            if (Util.isNullOrEmpty(style)) {
                 return null;
             }
             return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
@@ -315,7 +316,7 @@ public class Matcher {
      * Mapper represents a local CSS for a Node that is used to match the Node's
      * children.
      *
-     * @author Torbj�rn Gannholm
+     * @author Torbjorn Gannholm
      */
     class Mapper {
         java.util.List axes;
@@ -344,7 +345,7 @@ public class Matcher {
             java.util.HashMap pseudoSelectors = new java.util.HashMap();
             java.util.List mappedSelectors = new java.util.LinkedList();
             StringBuffer key = new StringBuffer();
-            for (int i = 0; i < axes.size(); i++) {
+            for (int i = 0, size = axes.size(); i < size; i++) {
                 Selector sel = (Selector) axes.get(i);
                 if (sel.getAxis() == Selector.DESCENDANT_AXIS) {
                     //carry it forward to other descendants
