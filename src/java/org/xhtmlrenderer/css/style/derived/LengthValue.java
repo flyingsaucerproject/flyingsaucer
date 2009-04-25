@@ -183,14 +183,16 @@ public class LengthValue extends DerivedValue {
         }
         //assert (new Float(absVal).intValue() >= 0);
 
-        if (cssName == CSSName.FONT_SIZE) {
-            XRLog.cascade(Level.FINEST, cssName + ", relative= " +
-                    relVal + " (" + stringValue + "), absolute= "
-                    + absVal);
-        } else {
-            XRLog.cascade(Level.FINEST, cssName + ", relative= " +
-                    relVal + " (" + stringValue + "), absolute= "
-                    + absVal + " using base=" + baseValue);
+        if (XRLog.isLoggingEnabled()) {
+            if (cssName == CSSName.FONT_SIZE) {
+                XRLog.cascade(Level.FINEST, cssName + ", relative= " +
+                        relVal + " (" + stringValue + "), absolute= "
+                        + absVal);
+            } else {
+                XRLog.cascade(Level.FINEST, cssName + ", relative= " +
+                        relVal + " (" + stringValue + "), absolute= "
+                        + absVal + " using base=" + baseValue);
+            }
         }
 
         double d = Math.round((double) absVal);
