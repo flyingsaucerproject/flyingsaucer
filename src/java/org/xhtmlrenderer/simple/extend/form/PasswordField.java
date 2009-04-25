@@ -54,7 +54,7 @@ class PasswordField extends InputField {
         }
 
         if (hasAttribute("readonly") &&
-                getAttribute("readonly").equals("readonly")) {
+                getAttribute("readonly").equalsIgnoreCase("readonly")) {
             password.setEditable(false);
         }
 

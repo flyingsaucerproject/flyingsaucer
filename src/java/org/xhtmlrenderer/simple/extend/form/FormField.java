@@ -68,7 +68,7 @@ public abstract class FormField {
     }
     
     protected boolean hasAttribute(String attributeName) {
-        return getElement().hasAttribute(attributeName);
+        return getElement().getAttribute(attributeName).length() > 0;
     }
 
     protected String getAttribute(String attributeName) {
@@ -81,8 +81,8 @@ public abstract class FormField {
         if (_component != null) {
             _component.setSize(_component.getPreferredSize());
 
-            if (_element.hasAttribute("disabled") &&
-                _element.getAttribute("disabled").equals("disabled")) {
+            String d = _element.getAttribute("disabled");
+            if (d.equalsIgnoreCase("disabled")) {
                 _component.setEnabled(false);
             }
         }

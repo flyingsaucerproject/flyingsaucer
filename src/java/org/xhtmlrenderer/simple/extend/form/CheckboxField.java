@@ -42,7 +42,7 @@ class CheckboxField extends InputField {
     
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromBoolean(
-                getAttribute("checked").equals("checked"));
+                getAttribute("checked").equalsIgnoreCase("checked"));
     }
     
     protected void applyOriginalState() {

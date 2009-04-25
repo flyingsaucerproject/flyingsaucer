@@ -31,6 +31,7 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.*;
 
 import com.lowagie.text.pdf.PdfAnnotation;
 import com.lowagie.text.pdf.PdfAppearance;
@@ -119,7 +120,7 @@ public class SelectFormField extends AbstractFormField {
         
         Node n = e.getFirstChild();
         while (n != null) {
-            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals("option")) {
+            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equalsIgnoreCase("option")) {
                 Element optionElem = (Element)n;
                 
                 
@@ -198,7 +199,7 @@ public class SelectFormField extends AbstractFormField {
     }
     
     protected boolean isMultiple(Element e) {
-        return !e.getAttribute("multiple").equals("");
+        return !Util.isNullOrEmpty(e.getAttribute("multiple"));
     }
     
     protected String getFieldType() {

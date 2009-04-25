@@ -24,6 +24,7 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.*;
 
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfAnnotation;
@@ -131,7 +132,7 @@ public class TextFormField extends AbstractFormField {
     
     private int getSize(Element elem) {
         String sSize = elem.getAttribute("size");
-        if (sSize.equals("")) {
+        if (Util.isNullOrEmpty(sSize)) {
             return DEFAULT_SIZE;
         } else {
             try {
@@ -144,7 +145,7 @@ public class TextFormField extends AbstractFormField {
     
     private int getMaxLength(Element elem) {
         String sMaxLen = elem.getAttribute("maxlength");
-        if (sMaxLen.equals("")) {
+        if (Util.isNullOrEmpty(sMaxLen)) {
             return 0;
         } else {
             try {
@@ -157,7 +158,7 @@ public class TextFormField extends AbstractFormField {
     
     protected String getValue(Element e) {
         String result = e.getAttribute("value");
-        if (result.trim().equals("")) {
+        if (Util.isNullOrEmpty(result)) {
             return "";
         } else {
             return result;

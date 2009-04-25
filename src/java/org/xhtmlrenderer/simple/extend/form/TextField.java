@@ -54,7 +54,7 @@ class TextField extends InputField {
         }
 
         if (hasAttribute("readonly") &&
-                getAttribute("readonly").equals("readonly")) {
+                getAttribute("readonly").equalsIgnoreCase("readonly")) {
             textfield.setEditable(false);
         }
 

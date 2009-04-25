@@ -45,7 +45,7 @@ class SelectField extends FormField {
         if (shouldRenderAsList()) {
             JList select = new JList(optionList.toArray());
 
-            if (hasAttribute("multiple") && getAttribute("multiple").equals("true")) {
+            if (hasAttribute("multiple") && getAttribute("multiple").equalsIgnoreCase("true")) {
                 select.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
             } else {
                 select.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -82,7 +82,7 @@ class SelectField extends FormField {
         for (int i = 0; i < options.getLength(); i++) {
             Element option = (Element) options.item(i);
 
-            if (option.hasAttribute("selected") && option.getAttribute("selected").equals("selected")) {
+            if (option.hasAttribute("selected") && option.getAttribute("selected").equalsIgnoreCase("selected")) {
                 list.add(new Integer(i));
             }
         }
@@ -161,7 +161,7 @@ class SelectField extends FormField {
     private boolean shouldRenderAsList() {
         boolean result = false;
         
-        if (hasAttribute("multiple") && getAttribute("multiple").equals("true")) {
+        if (hasAttribute("multiple") && getAttribute("multiple").equalsIgnoreCase("true")) {
             result = true;
         } else if (hasAttribute("size")) {
             int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
