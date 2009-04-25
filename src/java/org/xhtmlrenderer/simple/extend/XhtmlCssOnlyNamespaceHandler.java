@@ -98,11 +98,18 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         return true;
     }
-    
+
+    /**
+     * Looks for attribute named attrName on the element, and returns null if not
+     * found, or the attribute value, trimmed, if found.
+     * @param e element to test for the given attribute
+     * @param attrName name of the attribute to look for
+     * @return returns null if not
+     * found, or the attribute value, trimmed, if found
+     */
     protected String getAttribute(Element e, String attrName) {
         String result = e.getAttribute(attrName);
-        result = result.trim();
-        return result.length() == 0 ? null : result;
+        return result.length() == 0 ? null : result.trim();
     }
 
     /**
