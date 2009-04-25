@@ -569,12 +569,30 @@ public class Util {
         }
     }
 
+    public static boolean isNullOrEmpty(String str) {
+        return str == null || str.length() == 0;
+    }
+
+    public static boolean isNullOrEmpty(String str, boolean trim) {
+        return str == null || str.length() == 0 || (trim && str.trim().length() == 0);
+    }
+
+    public static boolean isEqual(String str1, String str2) {
+        return str1 == str2 || (str1 != null && str1.equals(str2));
+    }
+
+    public static boolean isEqual(String str1, String str2, boolean ignoreCase) {
+        return str1 == str2 || (str1 != null && (ignoreCase ? str1.equalsIgnoreCase(str2) : str1.equals(str2)));
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2009/04/25 11:19:07  pdoubleya
+ * Add utility methods to compare strings, patch from Peter Fassev in issue #263.
+ *
  * Revision 1.6  2007/05/20 23:25:31  peterbrant
  * Various code cleanups (e.g. remove unused imports)
  *
