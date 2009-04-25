@@ -27,6 +27,7 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.util.*;
 
 import com.lowagie.text.pdf.PdfTemplate;
 
@@ -82,7 +83,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
         if (_fieldName == null) {
             String result = e.getAttribute("name");
 
-            if (result.equals("")) {
+            if (Util.isNullOrEmpty(result)) {
                 _fieldName = getFieldType()
                         + outputDevice.getNextFormFieldIndex();
             } else {
@@ -96,7 +97,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     protected String getValue(Element e) {
         String result = e.getAttribute("value");
 
-        if (result.equals("")) {
+        if (Util.isNullOrEmpty(result)) {
             return DEFAULT_CHECKED_STATE;
         } else {
             return result;
@@ -104,15 +105,15 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     }
 
     protected boolean isChecked(Element e) {
-        return !e.getAttribute("checked").equals("");
+        return !Util.isNullOrEmpty(e.getAttribute("checked"));
     }
 
     protected boolean isReadOnly(Element e) {
-        return !e.getAttribute("readonly").equals("");
+        return Util.isNullOrEmpty(e.getAttribute("readonly"));
     }
     
     protected boolean isSelected(Element e) {
-        return !e.getAttribute("selected").equals("");
+        return Util.isNullOrEmpty(e.getAttribute("selected"));
     }
 
     public void detach(LayoutContext c) {
