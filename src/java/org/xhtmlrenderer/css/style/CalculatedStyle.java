@@ -879,13 +879,12 @@ public class CalculatedStyle {
     }
 
     public boolean establishesBFC() {
-        IdentValue display = getIdent(CSSName.DISPLAY);
-        
         FSDerivedValue value = valueByName(CSSName.POSITION);
         
         if (value instanceof FunctionValue) {  // running(header)
             return false;
         } else {
+            IdentValue display = getIdent(CSSName.DISPLAY);
             IdentValue position = (IdentValue)value;
     
             return isFloated() ||
@@ -1174,6 +1173,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.107  2009/04/25 10:48:42  pdoubleya
+ * Small opt, don't pull Ident unless needed, patch from Peter Fassev issue #263
+ *
  * Revision 1.106  2008/12/14 19:27:16  peterbrant
  * Always treat running elements as blocks
  *
