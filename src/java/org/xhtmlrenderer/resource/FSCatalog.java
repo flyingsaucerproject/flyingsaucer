@@ -168,8 +168,8 @@ public class FSCatalog {
          * for public IDs to local URIs in the catalog.
          */
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
-            if (localName.equals("public") ||
-                    (localName.equals("") && qName.equals("public"))) {
+            if (localName.equalsIgnoreCase("public") ||
+                    (localName.equals("") && qName.equalsIgnoreCase("public"))) {
                 entityMap.put(atts.getValue("publicId"), atts.getValue("uri"));
             }
         }
