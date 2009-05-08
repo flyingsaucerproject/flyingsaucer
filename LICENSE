@@ -41,6 +41,11 @@ https://svgsalamander.dev.java.net/
 License: LGPL
 Using version 1, released on the project website
 
+SWT (Standard Widget Toolkit)
+http://www.eclipse.org/swt/
+License: Eclipse Public License Version 1.0 ("EPL"). A copy of the EPL is available at http://www.eclipse.org/legal/epl-v10.html
+Including version 3.5 libraries for Windows, Mac, and Linux
+
 DocBook CSS (DocBook XML Rendering with CSS)
   MozBook CSS (public domain, released by David Horton)
   WSIWYGDocBook 1.01 -- see demos\docbook\wysiwygdocbook1.01, and COPYING therein
