@@ -153,10 +153,14 @@ public class ITextRenderer {
     }
 
     public void setDocumentFromString(String content) {
+        setDocumentFromString(content, null);
+    }
+
+    public void setDocumentFromString(String content, String baseUrl) {
         InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
         Document dom = XMLResource.load(is).getDocument();
 
-        setDocument(dom, null);
+        setDocument(dom, baseUrl);
     }
 
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
