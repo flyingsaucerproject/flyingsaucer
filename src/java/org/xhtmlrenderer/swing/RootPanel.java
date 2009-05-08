@@ -40,8 +40,7 @@ import javax.swing.JViewport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.UserInterface;
+import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -56,7 +55,7 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 
-public class RootPanel extends JPanel implements ComponentListener, UserInterface {
+public class RootPanel extends JPanel implements ComponentListener, UserInterface, FSCanvas {
     static final long serialVersionUID = 1L;
 
     public RootPanel() {

@@ -25,6 +25,7 @@ import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.extend.FSCanvas;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.swing.AWTFSImage;
@@ -80,7 +81,10 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
          if (isNotBlank(usemapAttr)) {
             final ReplacedElement re = replaceImageMap(uac, context, e, usemapAttr, cssWidth, cssHeight);
             if (context.isInteractive() && re instanceof SwingReplacedElement) {
-                context.getCanvas().add(((SwingReplacedElement) re).getJComponent());
+                FSCanvas canvas = context.getCanvas();
+                if (canvas instanceof JComponent) {
+                    ((JComponent) canvas).add(((SwingReplacedElement) re).getJComponent());
+                }
             }
             return re;
          } else {

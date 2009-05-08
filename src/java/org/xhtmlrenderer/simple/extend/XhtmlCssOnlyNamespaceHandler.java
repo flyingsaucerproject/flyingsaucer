@@ -33,7 +33,7 @@ import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.swing.NoNamespaceHandler;
+import org.xhtmlrenderer.simple.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 

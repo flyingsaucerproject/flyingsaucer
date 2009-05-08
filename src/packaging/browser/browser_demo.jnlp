@@ -20,5 +20,5 @@
         <jar href="../../../demo_repo/looks-2.1.4.jar"/>
         <jar href="../core-renderer.jar"/>
     </resources>
-    <application-desc main-class="org.xhtmlrenderer.demo.browser.BrowserSandboxLauncher"/>
+    <application-desc main-class="org.xhtmlrenderer.demo.browser.swing.BrowserSandboxLauncher"/>
 </jnlp>

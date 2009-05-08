@@ -55,6 +55,8 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
+import org.xhtmlrenderer.simple.NoNamespaceHandler;
+
 
 
 
@@ -72,7 +74,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
     // The XMLResource proxing the current document in the BasicPanel
     private XMLResource xmlResource;
-    
+
     private MouseTracker mouseTracker;
     private boolean centeredPagedView;
     protected FormSubmissionListener formSubmissionListener;
@@ -130,7 +132,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
             paintDefaultBackground(g);
             return;
         }
-        
+
         // if this is the first time painting this document, then calc layout
         Layer root = getRootLayer();
         if (root == null || isPendingResize()) {
@@ -155,9 +157,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         try {
             // paint the normal swing background first
             // but only if we aren't printing.
-            Graphics g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();            
+            Graphics g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();
             paintDefaultBackground(g);
-    
+
             long start = System.currentTimeMillis();
             if (!c.isPrint()) {
                 root.paint(c);
@@ -180,7 +182,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
                 if (t instanceof RuntimeException) {
                     throw (RuntimeException)t;
                 }
-                
+
                 // "Shouldn't" happen
                 XRLog.exception(t.getMessage(), t);
             }
@@ -193,7 +195,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
             g.fillRect(0, 0, getWidth(), getHeight());
         }
     }
-    
+
     private void paintPagedView(RenderingContext c, Layer root) {
         if (root.getLastPage() == null) {
             return;
@@ -220,13 +222,13 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
             c.setPage(i, page);
 
             g.setClip(working);
-            
+
             Rectangle overall = page.getScreenPaintingBounds(c, pagePaintingClearanceWidth);
             overall.x -= 1;
             overall.y -= 1;
             overall.width += 1;
             overall.height += 1;
-            
+
             Rectangle bounds = new Rectangle(overall);
             bounds.width += 1;
             bounds.height += 1;
@@ -234,30 +236,30 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
                 page.paintBackground(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
                 page.paintMarginAreas(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
                 page.paintBorder(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
-                
+
                 Color old = g.getColor();
-                
+
                 g.setColor(Color.BLACK);
                 g.drawRect(overall.x, overall.y, overall.width, overall.height);
                 g.setColor(old);
-                
+
                 Rectangle content = page.getPagedViewClippingBounds(c, pagePaintingClearanceWidth);
                 g.clip(content);
-                
+
                 int left = pagePaintingClearanceWidth +
                     page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
-                int top = page.getPaintingTop() 
+                int top = page.getPaintingTop()
                     + page.getMarginBorderPadding(c, CalculatedStyle.TOP)
                     - page.getTop();
-                
+
                 g.translate(left, top);
                 root.paint(c);
                 g.translate(-left, -top);
-                
+
                 g.setClip(working);
-            } 
+            }
         }
-        
+
         g.setClip(working);
     }
 
@@ -271,7 +273,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         if (root == null) {
             throw new RuntimeException("Document needs layout");
         }
-        
+
         if (pageNo < 0 || pageNo >= root.getPages().size()) {
             throw new IllegalArgumentException("Page " + pageNo + " is not between 0 " +
                     "and " + root.getPages().size());
@@ -282,28 +284,28 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         PageBox page = (PageBox)root.getPages().get(pageNo);
         c.setPageCount(root.getPages().size());
         c.setPage(pageNo, page);
-        
+
         page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
         page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
         page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
-        
+
         Shape working = g.getClip();
-        
+
         Rectangle content = page.getPrintClippingBounds(c);
         g.clip(content);
-        
-        int top = -page.getPaintingTop() + 
+
+        int top = -page.getPaintingTop() +
             page.getMarginBorderPadding(c, CalculatedStyle.TOP);
-        
+
         int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
-        
+
         g.translate(left, top);
         root.paint(c);
         g.translate(-left, -top);
-        
+
         g.setClip(working);
     }
-    
+
     public void assignPagePrintPositions(Graphics2D g) {
         RenderingContext c = newRenderingContext(g);
         getRootLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
@@ -350,7 +352,8 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     } */
     }
 
-    /* =========== set document utility methods =============== */
+    /*
+=========== set document utility methods =============== */
 
     public void setDocument(InputStream stream, String url, NamespaceHandler nsh) {
         Document dom = XMLResource.load(stream).getDocument();
@@ -448,7 +451,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         }
         return base;
     }
-    
+
     public Document getDocument() {
         return doc;
     }
@@ -469,7 +472,8 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         return this.xmlResource.getDocument();
     }
 
-    /* ====== hover and active utility methods ========= */
+    /* ====== hover and active utility methods
+========= */
 
     public boolean isHover(org.w3c.dom.Element e) {
         if (e == hovered_element) {
@@ -577,19 +581,19 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     public void setInteractive(boolean interactive) {
         this.getSharedContext().setInteractive(interactive);
     }
-    
+
     public void addMouseTrackingListener(FSMouseListener l) {
         mouseTracker.addListener(l);
     }
-    
+
     public void removeMouseTrackingListener(FSMouseListener l) {
         mouseTracker.removeListener(l);
     }
-    
+
     public List getMouseTrackingListeners() {
         return mouseTracker.getListeners();
     }
-    
+
     protected void resetMouseTracker() {
         mouseTracker.reset();
     }
@@ -611,17 +615,10 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 }
 
 /*
- * $Id$
  *
  * $Log$
- * Revision 1.122  2009/02/15 17:17:23  pdoubleya
- * Support for callback on form submission using new FormSubmissionListener interface; patch from Christophe Marchand (thanks, Christophe!).
- *
- * Revision 1.121  2008/06/07 20:39:55  pdoubleya
- * JavaDoc for last commit.
- *
- * Revision 1.120  2008/06/07 20:19:28  pdoubleya
- * If no Document instance is available, getDocumentTitle() should return ""; suggestion from Nicholas Sushkin on mailing list.
+ * Revision 1.123  2009/05/08 12:22:26  pdoubleya
+ * Merge Vianney's SWT branch to trunk. Passes regress.verify and browser still works :).
  *
  * Revision 1.119  2008/03/30 16:35:20  pdoubleya
  * Issue #231: allow for centered page box in preview mode.
@@ -1288,4 +1285,3 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
  *
  *
  */
-

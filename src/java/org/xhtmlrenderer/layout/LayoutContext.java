@@ -35,17 +35,13 @@ import org.xhtmlrenderer.css.parser.CounterData;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.extend.FontContext;
-import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.ReplacedElementFactory;
-import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.PageBox;
-import org.xhtmlrenderer.swing.RootPanel;
+
 
 /**
  * This class tracks state which changes over the course of a layout run.
@@ -94,7 +90,7 @@ public class LayoutContext implements CssContext {
         return _sharedContext.getCss();
     }
 
-    public RootPanel getCanvas() {
+    public FSCanvas getCanvas() {
         return _sharedContext.getCanvas();
     }
 

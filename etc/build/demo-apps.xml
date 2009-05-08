@@ -1,5 +1,6 @@
 
 <project name="build.demo-apps">
+    <import file="properties.xml" />
     <!-- Builds and jars the browser demo, and runs it -->
 	<target name="browser" depends="jar.browser">
 		<java classname="org.xhtmlrenderer.demo.browser.BrowserStartup"
@@ -15,7 +16,7 @@
 	</target>
 
 	<target name="browser-ws" depends="jar.browser">
-		<java classname="org.xhtmlrenderer.demo.browser.BrowserSandboxLauncher"
+		<java classname="org.xhtmlrenderer.demo.browser.swing.BrowserSandboxLauncher"
 				fork="${java-exec.fork.tests}">
 			<classpath refid="libraries-and-dest.all"/>
 			<sysproperty key="show-config" value="${show-config}"/>
@@ -23,7 +24,20 @@
 				<propertyref prefix="xr."/>
 			</syspropertyset>
 			<sysproperty key="sun.java2D.opengl" value="true"/>
+		</java>
+	</target>
+	
+	<target name="browser-swt" depends="jar.browser">
+		<echo message="Please make sure you have the swt.jar corresponding to your platform in the lib directory."/>
+		<java classname="org.xhtmlrenderer.demo.browser.swt.BrowserStartup"
+				fork="${java-exec.fork.tests}">
+			<classpath refid="libraries-and-dest.all"/>
+			<sysproperty key="show-config" value="${show-config}"/>
+			<syspropertyset>
+				<propertyref prefix="xr."/>
+			</syspropertyset>
 			<sysproperty key="java.protocol.handler.pkgs" value="org.xhtmlrenderer.protocols"/>
+            <jvmarg line="-XstartOnFirstThread" />
 		</java>
 	</target>
 

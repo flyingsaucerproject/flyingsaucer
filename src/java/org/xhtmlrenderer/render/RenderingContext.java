@@ -24,11 +24,7 @@ import java.awt.Rectangle;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.extend.FontContext;
-import org.xhtmlrenderer.extend.FontResolver;
-import org.xhtmlrenderer.extend.OutputDevice;
-import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.swing.RootPanel;
@@ -122,7 +118,7 @@ public class RenderingContext implements CssContext {
         return sharedContext.getFont(font);
     }
 
-    public RootPanel getCanvas() {
+    public FSCanvas getCanvas() {
         return sharedContext.getCanvas();
     }
 

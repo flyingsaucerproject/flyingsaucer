@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.context.AWTFontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;

@@ -19,13 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Font;
-import java.awt.HeadlessException;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -35,21 +28,19 @@ import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.extend.FontContext;
-import org.xhtmlrenderer.extend.FontResolver;
-import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.ReplacedElementFactory;
-import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.swing.Java2DTextRenderer;
-import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.XRLog;
+
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The SharedContext is that which is kept between successive layout and render runs.
@@ -62,7 +53,7 @@ public class SharedContext {
     private UserAgentCallback uac;
 
     private boolean interactive = true;
-    
+
     private Map idMap;
 
     /*
@@ -87,11 +78,11 @@ public class SharedContext {
 
     private final static float DEFAULT_DPI = 72;
     private boolean print;
-    
+
     private int dotsPerPixel = 1;
-    
+
     private Map styleMap;
-    
+
     private ReplacedElementFactory replacedElementFactory;
     private Rectangle temp_canvas;
 
@@ -112,6 +103,22 @@ public class SharedContext {
             setDPI(DEFAULT_DPI);
         }
     }
+
+
+    /**
+     * Constructor for the Context object
+     */
+    public SharedContext(UserAgentCallback uac, FontResolver fr, ReplacedElementFactory ref, TextRenderer tr, float dpi) {
+        font_resolver = fr;
+        replacedElementFactory = ref;
+        setMedia("screen");
+        this.uac = uac;
+        setCss(new StyleReference(uac));
+        XRLog.render("Using CSS implementation from: " + getCss().getClass().getName());
+        setTextRenderer(tr);
+        setDPI(dpi);
+    }
+
     public void setFormSubmissionListener(FormSubmissionListener fsl) {
         replacedElementFactory.setFormSubmissionListener(fsl);
     }
@@ -126,7 +133,8 @@ public class SharedContext {
         return c;
     }
 
-    /* =========== Font stuff ============== */
+    /*
+=========== Font stuff ============== */
 
     /**
      * Gets the fontResolver attribute of the Context object
@@ -173,7 +181,7 @@ public class SharedContext {
     /**
      * Description of the Field
      */
-    protected RootPanel canvas;
+    protected FSCanvas canvas;
 
     /*
      * selection management code
@@ -245,10 +253,11 @@ public class SharedContext {
         this.debug_draw_font_metrics = debug_draw_font_metrics;
     }
 
-    
-    /* =========== Selection Management ============== */
-    
-    
+
+    /*
+=========== Selection Management ============== */
+
+
     public StyleReference getCss() {
         return css;
     }
@@ -257,11 +266,11 @@ public class SharedContext {
         this.css = css;
     }
 
-    public RootPanel getCanvas() {
+    public FSCanvas getCanvas() {
         return canvas;
     }
 
-    public void setCanvas(RootPanel canvas) {
+    public void setCanvas(FSCanvas canvas) {
         this.canvas = canvas;
     }
 
@@ -304,18 +313,18 @@ public class SharedContext {
         }
         return (Box) idMap.get(id);
     }
-    
+
     public void removeBoxId(String id) {
         if (idMap != null) {
             idMap.remove(id);
         }
     }
-    
+
     public Map getIdMap()
     {
         return idMap;
     }
-    
+
     /**
      * Sets the textRenderer attribute of the RenderingContext object
      *
@@ -347,11 +356,11 @@ public class SharedContext {
     public UserAgentCallback getUac() {
         return uac;
     }
-    
+
     public UserAgentCallback getUserAgentCallback() {
         return uac;
     }
-    
+
     public void setUserAgentCallback(UserAgentCallback userAgentCallback) {
         StyleReference styleReference = getCss();
         if (styleReference != null) {
@@ -392,7 +401,7 @@ public class SharedContext {
     public float getMmPerPx() {
         return this.mm_per_dot;
     }
-    
+
     public FSFont getFont(FontSpecification spec) {
         return getFontResolver().resolveFont(this, spec);
     }
@@ -510,7 +519,7 @@ public class SharedContext {
             ((AWTFontResolver)resolver).setFontMapping(name, font);
         }
     }
-    
+
     public void setFontResolver(FontResolver resolver) {
         font_resolver = resolver;
     }
@@ -522,16 +531,16 @@ public class SharedContext {
     public void setDotsPerPixel(int pixelsPerDot) {
         this.dotsPerPixel = pixelsPerDot;
     }
-    
+
     public CalculatedStyle getStyle(Element e) {
         return getStyle(e, false);
     }
-    
+
     public CalculatedStyle getStyle(Element e, boolean restyle) {
         if (styleMap == null) {
             styleMap = new HashMap(1024, 0.75f);
         }
-        
+
         CalculatedStyle result = null;
         if (! restyle) {
             result = (CalculatedStyle)styleMap.get(e);
@@ -544,15 +553,15 @@ public class SharedContext {
             } else {
                 parentCalculatedStyle = getStyle((Element)parent, false);
             }
-            
+
             result = parentCalculatedStyle.deriveStyle(getCss().getCascadedStyle(e, restyle));
-            
+
             styleMap.put(e, result);
         }
-        
+
         return result;
     }
-    
+
     public void reset() {
        styleMap = null;
        idMap = null;
@@ -567,26 +576,26 @@ public class SharedContext {
         if (ref == null) {
             throw new NullPointerException("replacedElementFactory may not be null");
         }
-        
+
         if (this.replacedElementFactory != null) {
             this.replacedElementFactory.reset();
         }
         this.replacedElementFactory = ref;
     }
-    
+
     public void removeElementReferences(Element e) {
         String id = namespaceHandler.getID(e);
         if (id != null && id.length() > 0) {
             removeBoxId(id);
         }
-        
+
         if (styleMap != null) {
             styleMap.remove(e);
         }
-        
+
         getCss().removeStyle(e);
         getReplacedElementFactory().remove(e);
-        
+
         if (e.hasChildNodes()) {
             NodeList children = e.getChildNodes();
             for (int i = 0; i < children.getLength(); i++) {
@@ -600,17 +609,10 @@ public class SharedContext {
 }
 
 /*
- * $Id$
  *
  * $Log$
- * Revision 1.45  2009/02/15 17:17:23  pdoubleya
- * Support for callback on form submission using new FormSubmissionListener interface; patch from Christophe Marchand (thanks, Christophe!).
- *
- * Revision 1.44  2008/11/07 18:34:34  peterbrant
- * Add API to retrieve PDF page and coordinates for boxes with an ID attribute
- *
- * Revision 1.43  2008/09/06 18:47:16  peterbrant
- * Make setMedia() public
+ * Revision 1.46  2009/05/08 12:22:30  pdoubleya
+ * Merge Vianney's SWT branch to trunk. Passes regress.verify and browser still works :).
  *
  * Revision 1.42  2008/01/22 00:29:24  peterbrant
  * Need to propagate changes to user agent in SharedContext to containing StyleReference
@@ -1011,4 +1013,3 @@ public class SharedContext {
  *
  *
  */
-

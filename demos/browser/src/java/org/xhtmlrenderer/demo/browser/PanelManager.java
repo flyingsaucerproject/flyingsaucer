@@ -50,6 +50,57 @@ public class PanelManager extends NaiveUserAgent {
     private ArrayList history = new ArrayList();
 
 
+    /**
+     * {@inheritdoc}.
+     */
+    public String resolveURI(String uri) {
+        final String burl = getBaseURL();
+
+        URL ref = null;
+
+        if (uri == null) return burl;
+        if (uri.trim().equals("")) return burl; //jar URLs don't resolve this right
+
+        if (uri.startsWith("demo:")) {
+            DemoMarker marker = new DemoMarker();
+            String short_url = uri.substring(5);
+            if (!short_url.startsWith("/")) {
+                short_url = "/" + short_url;
+            }
+            ref = marker.getClass().getResource(short_url);
+            Uu.p("ref = " + ref);
+        } else if (uri.startsWith("demoNav:")) {
+            DemoMarker marker = new DemoMarker();
+            String short_url = uri.substring("demoNav:".length());
+            if (!short_url.startsWith("/")) {
+                short_url = "/" + short_url;
+            }
+            ref = marker.getClass().getResource(short_url);
+            Uu.p("Demo navigation URI, ref = " + ref);
+        } else if (uri.startsWith("javascript")) {
+            Uu.p("Javascript URI, ignoring: " + uri);
+        } else if (uri.startsWith("news")) {
+            Uu.p("News URI, ignoring: " + uri);
+        } else {
+            try {
+                URL base;
+                if (burl == null || burl.length() == 0) {
+                    base = new File(".").toURL();
+                } else {
+                    base = new URL(burl);
+                }
+                ref = new URL(base, uri);
+            } catch (MalformedURLException e) {
+                Uu.p("URI/URL is malformed: " + burl + " or " + uri);
+            }
+        }
+
+        if (ref == null)
+            return null;
+        else
+            return ref.toExternalForm();
+    }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -172,56 +223,6 @@ public class PanelManager extends NaiveUserAgent {
         history.add(index, burl);
     }
 
-	/**
-	 * {@inheritdoc}.
-	 */
-	public String resolveURI(String uri) {
-		final String burl = getBaseURL();
-
-		URL ref = null;
-
-		if (uri == null) return burl;
-        if (uri.trim().equals("")) return burl; //jar URLs don't resolve this right
-
-		if (uri.startsWith("demo:")) {
-            DemoMarker marker = new DemoMarker();
-            String short_url = uri.substring(5);
-            if (!short_url.startsWith("/")) {
-                short_url = "/" + short_url;
-            }
-            ref = marker.getClass().getResource(short_url);
-            Uu.p("ref = " + ref);
-        } else if (uri.startsWith("demoNav:")) {
-            DemoMarker marker = new DemoMarker();
-            String short_url = uri.substring("demoNav:".length());
-            if (!short_url.startsWith("/")) {
-                short_url = "/" + short_url;
-            }
-            ref = marker.getClass().getResource(short_url);
-            Uu.p("Demo navigation URI, ref = " + ref);
-        } else if (uri.startsWith("javascript")) {
-            Uu.p("Javascript URI, ignoring: " + uri);
-        } else if (uri.startsWith("news")) {
-            Uu.p("News URI, ignoring: " + uri);
-        } else {
-            try {
-                URL base;
-                if (burl == null || burl.length() == 0) {
-                    base = new File(".").toURL();
-                } else {
-                    base = new URL(burl);
-                }
-                ref = new URL(base, uri);
-            } catch (MalformedURLException e) {
-                Uu.p("URI/URL is malformed: " + burl + " or " + uri);
-            }
-        }
-
-        if (ref == null)
-            return null;
-        else
-            return ref.toExternalForm();
-    }
 
 	/**
 	 * Returns the "next" URI in the history of visiting URIs. Advances the URI tracking (as if browser "forward" was

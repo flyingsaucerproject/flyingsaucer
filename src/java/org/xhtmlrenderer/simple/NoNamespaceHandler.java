@@ -1,7 +1,7 @@
 /*
  *
  * XhtmlDocument.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjorn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,7 +19,7 @@
  *
  */
 
-package org.xhtmlrenderer.swing;
+package org.xhtmlrenderer.simple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +35,14 @@ import org.w3c.dom.ProcessingInstruction;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.extend.NamespaceHandler;
 
 /**
  * Handles a general XML document
  *
- * @author Torbjörn Gannholm
+ * @author Torbjorn Gannholm
  */
-public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHandler {
+public class NoNamespaceHandler implements NamespaceHandler {
 
     static final String _namespace = "http://www.w3.org/XML/1998/namespace";
 

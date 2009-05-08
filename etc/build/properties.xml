@@ -3,8 +3,19 @@
     <tstamp/>
 
     <target name="checkOS" description="if switch to set OS specivic settings">
-        <condition property="isMac">
-            <os family="mac"/>
+        <property name="is64" value="${java.vm.name}" />
+        <condition property="isMac32">
+            <and>
+                <os family="mac"/>
+                <contains string="${sun.arch.data.model}" substring="32" />
+            </and>
+        </condition>
+        <condition property="isMac64">
+            <and>
+                <os family="mac"/>
+                <contains string="${sun.arch.data.model}" substring="64" />
+            </and>
+
         </condition>
 
         <condition property="isUnix">
@@ -31,8 +42,13 @@
         <!--<property file="unix.properties"/>-->
     </target>
 
-    <target name="setMacEnv" if="isMac">
-        <echo>This is a Mac machine.</echo>
+    <target name="setMacEnv" if="isMac32">
+        <echo>This is a Mac 32bit machine.</echo>
+        <!-- affects local scope only -->
+        <!--<property file="mac.properties"/>-->
+    </target>
+    <target name="setMacEnv64" if="isMac64">
+        <echo>This is a Mac 64bit machine.</echo>
         <!-- affects local scope only -->
         <!--<property file="mac.properties"/>-->
     </target>
@@ -146,8 +162,11 @@
         </fileset>
         <fileset dir="${libraries.dir}/swt">
             <or>
-                <selector if="isMac">
+                <selector if="isMac32">
                     <filename name="swt-3.5m6-osx.jar"/>
+                </selector>
+                <selector if="isMac64">
+                    <filename name="swt-3.5m6-osx-64.jar"/>
                 </selector>
                 <selector if="isWin">
                     <filename name="swt-3.5m6-win32.jar"/>

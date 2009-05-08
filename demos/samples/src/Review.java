@@ -160,7 +160,7 @@ public class Review {
         public final static double MIN_SCALE = 0.2;
         JViewport jvp = null;
         public final int SCROLLBAR_BORDER = 2;
-        public final int SCROLLBAR_WIDTH = SCROLLBAR_BORDER + (Integer) UIManager.get("ScrollBar.width");
+        public final int SCROLLBAR_WIDTH = SCROLLBAR_BORDER + ((Integer) UIManager.get("ScrollBar.width")).intValue();
 
         public FSPagePanel() {
             super();

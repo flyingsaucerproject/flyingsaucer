@@ -98,7 +98,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         } else {
             SwingReplacedElement result = new SwingReplacedElement(cc);
             if (context.isInteractive()) {
-                context.getCanvas().add(cc);
+                ((RootPanel)context.getCanvas()).add(cc);
             }
             return result;
         }
