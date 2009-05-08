@@ -4,6 +4,9 @@
 
     <target name="checkOS" description="if switch to set OS specivic settings">
         <property name="is64" value="${java.vm.name}" />
+        <condition property="isMac">
+            <os family="mac"/>
+        </condition>
         <condition property="isMac32">
             <and>
                 <os family="mac"/>
