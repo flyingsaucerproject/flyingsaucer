@@ -161,20 +161,24 @@
             <include name="iText*.jar"/>
         </fileset>
         <fileset dir="${libraries.dir}/swt">
-            <or>
-                <selector if="isMac32">
-                    <filename name="swt-3.5m6-osx.jar"/>
-                </selector>
-                <selector if="isMac64">
-                    <filename name="swt-3.5m6-osx-64.jar"/>
-                </selector>
-                <selector if="isWin">
-                    <filename name="swt-3.5m6-win32.jar"/>
-                </selector>
                 <selector if="isUnix">
                     <filename name="swt-3.5m6-linux.jar"/>
                 </selector>
-            </or>
+        </fileset>
+        <fileset dir="${libraries.dir}/swt">
+                <selector if="isWindows">
+                    <filename name="swt-3.5m6-win32.jar"/>
+                </selector>
+        </fileset>
+        <fileset dir="${libraries.dir}/swt">
+                <selector if="isMac32">
+                    <filename name="swt-3.5m6-osx.jar"/>
+                </selector>
+        </fileset>
+        <fileset dir="${libraries.dir}/swt">
+                <selector if="isMac64">
+                    <filename name="swt-3.5m6-osx-64.jar"/>
+                </selector>            
         </fileset>
     </path>
 
