@@ -1,6 +1,48 @@
 <!-- :mode=xml:folding=none: -->
 <project name="build.properties">
     <tstamp/>
+
+    <target name="checkOS" description="if switch to set OS specivic settings">
+        <condition property="isMac">
+            <os family="mac"/>
+        </condition>
+
+        <condition property="isUnix">
+            <and>
+                <os family="unix"/>
+                <not>
+                    <os family="mac"/>
+                </not>
+            </and>
+        </condition>
+
+        <condition property="isWindows">
+            <os family="windows"/>
+        </condition>
+
+        <antcall target="setMacEnv"/>
+        <antcall target="setUnixEnv"/>
+        <antcall target="setWindowsEnv"/>
+    </target>
+
+    <target name="setUnixEnv" if="isUnix">
+        <echo>This is a Unix machine.</echo>
+        <!-- affects local scope only -->
+        <!--<property file="unix.properties"/>-->
+    </target>
+
+    <target name="setMacEnv" if="isMac">
+        <echo>This is a Mac machine.</echo>
+        <!-- affects local scope only -->
+        <!--<property file="mac.properties"/>-->
+    </target>
+
+    <target name="setWindowsEnv" if="isWindows">
+        <echo>This is a Windows machine.</echo>
+        <!-- affects local scope only -->
+        <!--<property file="windows.properties"/>-->
+    </target>
+
     <property name="app.name" value="flyingsaucer"/>
     <property name="user.overrides"
               location="${user.home}/.${app.name}/${app.name}.build.properties"/>
@@ -94,15 +136,26 @@
     </path>
 
     <path id="debug.sourcepath">
-        <fileset dir="${src.java.dir}/">
-
-        </fileset>
+        <fileset dir="${src.java.dir}/"/>
     </path>
 
     <!-- path reference for all JAR files in /lib -->
     <path id="libraries.all">
         <fileset dir="${libraries.dir}">
-            <include name="*.jar"/>
+            <include name="iText*.jar"/>
+        </fileset>
+        <fileset dir="${libraries.dir}/swt">
+            <or>
+                <selector if="isMac">
+                    <filename name="swt-3.5m6-osx.jar"/>
+                </selector>
+                <selector if="isWin">
+                    <filename name="swt-3.5m6-win32.jar"/>
+                </selector>
+                <selector if="isUnix">
+                    <filename name="swt-3.5m6-linux.jar"/>
+                </selector>
+            </or>
         </fileset>
     </path>
 
@@ -198,7 +251,7 @@
     </target>
 
     <path id="xilize.path" path="">
-        <pathelement path="${libraries.dev.dir}/xilize-engine.jar" />
-        <pathelement path="${libraries.dev.dir}/bsh-core-2.0b4.jar" />
+        <pathelement path="${libraries.dev.dir}/xilize-engine.jar"/>
+        <pathelement path="${libraries.dev.dir}/bsh-core-2.0b4.jar"/>
     </path>
 </project>
