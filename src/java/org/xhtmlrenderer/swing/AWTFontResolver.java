@@ -65,7 +65,7 @@ public class AWTFontResolver implements FontResolver {
         // put empty strings in instead
         available_fonts_hash = new HashMap();
         for (int i = 0; i < available_fonts.length; i++) {
-            available_fonts_hash.put(available_fonts[i], new String());
+            available_fonts_hash.put(available_fonts[i], "");
         }
 
         // preload sans, serif, and monospace into the available font hash
@@ -264,6 +264,9 @@ public class AWTFontResolver implements FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2009/05/09 14:44:18  pdoubleya
+ * FindBugs: redundant call to someObject.toString() and new String("")
+ *
  * Revision 1.2  2009/05/08 12:22:26  pdoubleya
  * Merge Vianney's SWT branch to trunk. Passes regress.verify and browser still works :).
  *

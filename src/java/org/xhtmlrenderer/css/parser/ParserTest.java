@@ -63,7 +63,7 @@ public class ParserTest {
         for (int i = 0; i < 10; i++) {
             long start = System.currentTimeMillis();
             for (int j = 0; j < 10000; j++) {
-                p.parseStylesheet(null, 0, new StringReader(test.toString()));
+                p.parseStylesheet(null, 0, new StringReader(test));
             }
             long end = System.currentTimeMillis();
             // System.out.println("Took " + (end-start) + " ms");
