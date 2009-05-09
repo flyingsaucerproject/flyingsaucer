@@ -151,10 +151,20 @@ public class ReferenceComparison {
         try {
             fw = new OutputStreamWriter(new FileOutputStream(new File(failedDirectory, refFile.getName() + ".err" + suffix)), "UTF-8");
             BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(compareTo);
-            bw.flush();
+            try {
+                bw.write(compareTo);
+                bw.flush();
+            } catch (IOException e) {
+                throw new RuntimeException("unexpected IO exception on writing 'failed' info for test.", e);
+            } finally {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    // swallow
+                }
+            }
         } catch (IOException e) {
-            e.printStackTrace();  // FIXME
+            throw new RuntimeException("unexpected IO exception on writing 'failed' info for test.", e);
         } finally {
             if (fw != null) {
                 try {
@@ -214,9 +224,9 @@ public class ReferenceComparison {
     private String readReference(File referenceDir, String input, String sfx) throws IOException {
         BufferedReader rdr = null;
         StringBuffer sb;
+        File f = new File(referenceDir, input + sfx);
+        rdr = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
         try {
-            File f = new File(referenceDir, input + sfx);
-            rdr = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
             String line;
             sb = new StringBuffer();
             while ((line = rdr.readLine()) != null) {
@@ -224,8 +234,10 @@ public class ReferenceComparison {
                 sb.append(LINE_SEPARATOR);
             }
         } finally {
-            if (rdr != null) {
+            try {
                 rdr.close();
+            } catch (IOException e) {
+                // swallow
             }
         }
         return sb.toString();
@@ -263,7 +275,7 @@ public class ReferenceComparison {
         }
 
         public void failedIOException(IOException e) {
-            files.put(currentFile, new FailedIOException(e));
+            files.put(currentFile, new FailedIO(e));
         }
 
         public boolean failed() {
@@ -293,7 +305,7 @@ public class ReferenceComparison {
             System.out.println("Checked " + files.keySet().size() + " files, " + (failed > 0 ? failed + " failed." : "all OK."));
         }
 
-        private class RenderFailed implements Result {
+        private static class RenderFailed implements Result {
             private final Exception exception;
 
             public RenderFailed(Exception exception) {
@@ -305,13 +317,13 @@ public class ReferenceComparison {
             }
         }
 
-        private class RefIsLonger implements FailedResult {
+        private static class RefIsLonger implements FailedResult {
             public String describe(File file) {
                 return "FAIL: reference is longer (more lines): " + file.getName();
             }
         }
 
-        private class LineMismatch implements FailedResult {
+        private static class LineMismatch implements FailedResult {
             private final String lineRef;
             private final String lineOther;
 
@@ -325,16 +337,16 @@ public class ReferenceComparison {
             }
         }
 
-        private class OtherIsLonger implements FailedResult {
+        private static class OtherIsLonger implements FailedResult {
             public String describe(File file) {
                 return "FAIL: new rendered output is longer (more lines): " +  file.getName();
             }
         }
 
-        private class FailedIOException implements FailedResult {
+        private static class FailedIO implements FailedResult {
             private final IOException exception;
 
-            public FailedIOException(IOException e) {
+            public FailedIO(IOException e) {
                 this.exception = e;
             }
 
