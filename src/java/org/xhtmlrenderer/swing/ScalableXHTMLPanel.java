@@ -188,6 +188,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
 	protected void calculateScaleAccordingToPolicy(Dimension layoutSize) {
 		Rectangle viewportBounds = getFixedRectangle();
 		if (getScalePolicy() == SCALE_POLICY_NONE) {
+            // FIXME: float comparison
 			if (scale == -1.0d) scale = 1.0d;
 			return;
 		}
