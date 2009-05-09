@@ -40,7 +40,7 @@ class ImageField extends InputField {
     }
 
     public JComponent create() {
-        JButton button = new JButton();
+        JButton button;
         Image image = null;
 
         if (hasAttribute("src")) {

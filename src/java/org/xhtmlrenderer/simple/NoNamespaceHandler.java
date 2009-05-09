@@ -137,7 +137,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
             if (node.getNodeType() != Node.PROCESSING_INSTRUCTION_NODE) continue;
             ProcessingInstruction piNode = (ProcessingInstruction) node;
             if (!piNode.getTarget().equals("xml-stylesheet")) continue;
-            StylesheetInfo info = new StylesheetInfo();
+            StylesheetInfo info;
             info = new StylesheetInfo();
             info.setOrigin(StylesheetInfo.AUTHOR);
             String pi = piNode.getData();
