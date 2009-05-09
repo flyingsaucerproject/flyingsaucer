@@ -196,9 +196,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         result.setOutputDevice(new Java2DOutputDevice(g));
         
         getSharedContext().getTextRenderer().setup(result.getFontContext());
-        
-        if (rootBox != null) {
-            result.setRootLayer(rootBox.getLayer());
+
+        final Box rb = getRootBox();
+        if (rb != null) {
+            result.setRootLayer(rb.getLayer());
         }
 
         return result;

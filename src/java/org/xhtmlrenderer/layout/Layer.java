@@ -357,7 +357,8 @@ public class Layer {
             result = find(cssCtx, absX, absY, getSortedLayers(ZERO), findAnonymous);
             if (result != null) {
                 return result;
-            } 
+            }
+ 
             result = find(cssCtx, absX, absY, collectLayers(AUTO), findAnonymous);
             if (result != null) {
                 return result;
@@ -620,18 +621,21 @@ public class Layer {
     
     private void remove(Layer layer) {
         boolean removed = false;
-        
-        if (_children != null) {
-            for (Iterator i = _children.iterator(); i.hasNext(); ) {
-                Layer child = (Layer)i.next();
-                if (child == layer) {
-                    removed = true;
-                    i.remove();
-                    break;
+
+        // access to _children is synchronized
+        synchronized (this) {
+            if (_children != null) {
+                for (Iterator i = _children.iterator(); i.hasNext(); ) {
+                    Layer child = (Layer)i.next();
+                    if (child == layer) {
+                        removed = true;
+                        i.remove();
+                        break;
+                    }
                 }
             }
         }
-        
+
         if (! removed) {
             throw new RuntimeException("Could not find layer to remove");
         }
