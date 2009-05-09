@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
  * Implements zooming of the browser panel.
  */
 public class ZoomAction extends AbstractAction {
-    private static boolean needsWarning;
+    private static boolean needsWarning = true;
 
     private ScaleFactor scalingFactor;
     private final ScalableXHTMLPanel view;
@@ -19,7 +19,6 @@ public class ZoomAction extends AbstractAction {
         super(factor.getZoomLabel());
         this.scalingFactor = factor;
         this.view = panel;
-        this.needsWarning = true;
     }
 
     public void actionPerformed(ActionEvent evt) {
