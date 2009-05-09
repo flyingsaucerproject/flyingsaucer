@@ -38,7 +38,7 @@ public class RectPropertySet {
     public static RectPropertySet newInstance(
             CalculatedStyle style,
             CSSName shortHandProperty,
-            CSSName[] sideProperties,
+            CSSName.CSSSideProperties sideProperties,
             float cbWidth,
             CssContext ctx
     ) {
@@ -46,10 +46,10 @@ public class RectPropertySet {
         RectPropertySet rect =
                 new RectPropertySet(
                         shortHandProperty,
-                        ! style.isLengthOrNumber(sideProperties[0]) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties[0], cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties[1]) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties[1], cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties[2]) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties[2], cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties[3]) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties[3], cbWidth, ctx)
+                        ! style.isLengthOrNumber(sideProperties.top) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.top, cbWidth, ctx),
+                        ! style.isLengthOrNumber(sideProperties.right) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.right, cbWidth, ctx),
+                        ! style.isLengthOrNumber(sideProperties.bottom) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.bottom, cbWidth, ctx),
+                        ! style.isLengthOrNumber(sideProperties.left) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.left, cbWidth, ctx)
                 );
         return rect;
     }

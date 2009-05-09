@@ -1467,46 +1467,42 @@ public final class CSSName implements Comparable {
                     new SizePropertyBuilder()
             );
 
-    public final static CSSName[] MARGIN_SIDE_PROPERTIES =
-            new CSSName[]{
+    public final static CSSSideProperties MARGIN_SIDE_PROPERTIES =
+            new CSSSideProperties(
                     CSSName.MARGIN_TOP,
                     CSSName.MARGIN_RIGHT,
                     CSSName.MARGIN_BOTTOM,
-                    CSSName.MARGIN_LEFT
-            };
+                    CSSName.MARGIN_LEFT);
 
-    public final static CSSName[] PADDING_SIDE_PROPERTIES =
-            new CSSName[]{
+    public final static CSSSideProperties PADDING_SIDE_PROPERTIES =
+            new CSSSideProperties(
                     CSSName.PADDING_TOP,
                     CSSName.PADDING_RIGHT,
                     CSSName.PADDING_BOTTOM,
-                    CSSName.PADDING_LEFT
-            };
+                    CSSName.PADDING_LEFT);
 
-    public final static CSSName[] BORDER_SIDE_PROPERTIES =
-            new CSSName[]{
+    public final static CSSSideProperties BORDER_SIDE_PROPERTIES =
+            new CSSSideProperties(
                     CSSName.BORDER_TOP_WIDTH,
                     CSSName.BORDER_RIGHT_WIDTH,
                     CSSName.BORDER_BOTTOM_WIDTH,
-                    CSSName.BORDER_LEFT_WIDTH
-            };
+                    CSSName.BORDER_LEFT_WIDTH);
 
-    public final static CSSName[] BORDER_STYLE_PROPERTIES =
-            new CSSName[]{
+    public final static CSSSideProperties BORDER_STYLE_PROPERTIES =
+            new CSSSideProperties(
                     CSSName.BORDER_TOP_STYLE,
                     CSSName.BORDER_RIGHT_STYLE,
                     CSSName.BORDER_BOTTOM_STYLE,
-                    CSSName.BORDER_LEFT_STYLE
-            };
+                    CSSName.BORDER_LEFT_STYLE);
 
-    public final static CSSName[] BORDER_COLOR_PROPERTIES =
-            new CSSName[]{
+    public final static CSSSideProperties BORDER_COLOR_PROPERTIES =
+            new CSSSideProperties(
                     CSSName.BORDER_TOP_COLOR,
                     CSSName.BORDER_RIGHT_COLOR,
                     CSSName.BORDER_BOTTOM_COLOR,
-                    CSSName.BORDER_LEFT_COLOR
-            };
-    
+                    CSSName.BORDER_LEFT_COLOR);
+
+
     /**
      * Constructor for the CSSName object
      *
@@ -1700,18 +1696,44 @@ public final class CSSName implements Comparable {
         if (object == null) throw new NullPointerException();//required by Comparable
         return FS_ID - ((CSSName) object).FS_ID;//will throw ClassCastException according to Comparable if not a CSSName
     }
-    
+
+    // FIXME equals, hashcode
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CSSName)) return false;
+
+        CSSName cssName = (CSSName) o;
+
+        return FS_ID == cssName.FS_ID;
+    }
+
     public int hashCode() {
         return FS_ID;
     }
 
+    public static class CSSSideProperties {
+        public final CSSName top;
+        public final CSSName right;
+        public final CSSName bottom;
+        public final CSSName left;
 
+        public CSSSideProperties(CSSName top, CSSName right, CSSName bottom, CSSName left) {
+            this.top = top;
+            this.right = right;
+            this.bottom = bottom;
+            this.left = left;
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2009/05/09 14:17:41  pdoubleya
+ * FindBugs: static field should not be mutable; use inner class to declare CSS 4-side properties
+ *
  * Revision 1.38  2008/12/14 13:53:30  peterbrant
  * Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
  *

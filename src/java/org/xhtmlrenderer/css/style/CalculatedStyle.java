@@ -601,7 +601,7 @@ public class CalculatedStyle {
 
     private static RectPropertySet getPaddingProperty(CalculatedStyle style,
                                                       CSSName shorthandProp,
-                                                      CSSName[] sides,
+                                                      CSSName.CSSSideProperties sides,
                                                       float cbWidth,
                                                       CssContext ctx,
                                                       boolean useCache) {
@@ -629,7 +629,7 @@ public class CalculatedStyle {
 
     private static RectPropertySet getMarginProperty(CalculatedStyle style,
                                                      CSSName shorthandProp,
-                                                     CSSName[] sides,
+                                                     CSSName.CSSSideProperties sides,
                                                      float cbWidth,
                                                      CssContext ctx,
                                                      boolean useCache) {
@@ -650,7 +650,7 @@ public class CalculatedStyle {
     
     private static RectPropertySet newRectInstance(CalculatedStyle style,
                                                    CSSName shorthand,
-                                                   CSSName[] sides,
+                                                   CSSName.CSSSideProperties sides,
                                                    float cbWidth,
                                                    CssContext ctx) {
         RectPropertySet rect;
@@ -1173,6 +1173,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.108  2009/05/09 14:17:41  pdoubleya
+ * FindBugs: static field should not be mutable; use inner class to declare CSS 4-side properties
+ *
  * Revision 1.107  2009/04/25 10:48:42  pdoubleya
  * Small opt, don't pull Ident unless needed, patch from Peter Fassev issue #263
  *
