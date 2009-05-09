@@ -99,4 +99,22 @@ public class CollapsedBorderSide implements Comparable {
             return result == v1 ? 1 : -1;
         }
     }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CollapsedBorderSide)) return false;
+
+        CollapsedBorderSide that = (CollapsedBorderSide) o;
+
+        if (_side != that._side) return false;
+        if (!_cell.equals(that._cell)) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result = _cell.hashCode();
+        result = 31 * result + _side;
+        return result;
+    }
 }

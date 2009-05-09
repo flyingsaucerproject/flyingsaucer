@@ -69,18 +69,26 @@ public class FSRGBColor implements FSColor {
         }
     }
 
-    public boolean equals(Object o)
-    {
-        if (o == null || ! (o instanceof FSRGBColor))
-        {
-            return false;
-        }
-        
-        FSRGBColor other = (FSRGBColor)o;
-        return _red == other._red && _green == other._green && _blue == other._blue;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FSRGBColor)) return false;
+
+        FSRGBColor that = (FSRGBColor) o;
+
+        if (_blue != that._blue) return false;
+        if (_green != that._green) return false;
+        if (_red != that._red) return false;
+
+        return true;
     }
-    
-    
+
+    public int hashCode() {
+        int result = _red;
+        result = 31 * result + _green;
+        result = 31 * result + _blue;
+        return result;
+    }
+
     public FSColor lightenColor() {
         float[] hsb = RGBtoHSB(getRed(), getGreen(), getBlue(), null);
         float hBase = hsb[0];

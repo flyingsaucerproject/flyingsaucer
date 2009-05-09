@@ -139,13 +139,22 @@ public class DemosNavigation {
             return _name;
         }
 
-        public boolean equals(Object obj) {
-            if (obj == null || !(obj instanceof Demo)) {
-                return false;
-            }
-            Demo demo = (Demo) obj;
-            return (getUrl().equals(demo.getUrl()) && getName().equals(
-                demo.getName()));
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Demo)) return false;
+
+            Demo demo = (Demo) o;
+
+            if (!_name.equals(demo._name)) return false;
+            if (!_url.equals(demo._url)) return false;
+
+            return true;
+        }
+
+        public int hashCode() {
+            int result = _url.hashCode();
+            result = 31 * result + _name.hashCode();
+            return result;
         }
     }
 
