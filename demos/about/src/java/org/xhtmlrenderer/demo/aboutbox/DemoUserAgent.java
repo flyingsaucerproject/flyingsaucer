@@ -155,8 +155,7 @@ public class DemoUserAgent implements UserAgentCallback {
         try {
             URLConnection uc = new URL(uri).openConnection();
             uc.connect();
-            String contentType = uc.getContentType();
-            //Maybe should popup a choice when content/unknown!
+            // TODO: String contentType = uc.getContentType(); Maybe should popup a choice when content/unknown!
             inputStream = uc.getInputStream();
             xr = XMLResource.load(inputStream);
         } catch (MalformedURLException e) {
