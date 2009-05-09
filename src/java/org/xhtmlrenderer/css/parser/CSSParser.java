@@ -737,6 +737,7 @@ public class CSSParser {
                     } else {
                         declaration(ruleset, inFontFace);
                     }
+                    // FIXME: intentional fall-thru here?
                 case Token.EOF:
                     if (expectEOF) {
                         break LOOP;
