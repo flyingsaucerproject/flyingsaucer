@@ -23,6 +23,7 @@ package org.xhtmlrenderer.css.style.derived;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.DerivedValue;
+import org.xhtmlrenderer.util.ArrayUtil;
 
 public class StringValue extends DerivedValue {
     private String[] _stringAsArray;
@@ -30,12 +31,12 @@ public class StringValue extends DerivedValue {
     public StringValue(CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getStringValue());
         if (value.getStringArrayValue() != null) {
-            _stringAsArray = value.getStringArrayValue();   
+            _stringAsArray = value.getStringArrayValue();
         }
     }
 
     public String[] asStringArray() {
-        return _stringAsArray;
+        return ArrayUtil.cloneOrEmpty(_stringAsArray);
     }
 
     public String toString() {

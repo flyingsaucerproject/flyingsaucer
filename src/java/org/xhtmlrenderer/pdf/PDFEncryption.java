@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.pdf;
 
 import com.lowagie.text.pdf.PdfWriter;
+import org.xhtmlrenderer.util.ArrayUtil;
 
 public class PDFEncryption {
     private byte[] _userPassword;
@@ -31,37 +32,37 @@ public class PDFEncryption {
     }
 
     public PDFEncryption(byte[] userPassword, byte[] ownerPassword) {
-        _userPassword = userPassword;
-        _ownerPassword = ownerPassword;
+        _userPassword = ArrayUtil.cloneOrEmpty(userPassword);
+        _ownerPassword = ArrayUtil.cloneOrEmpty(ownerPassword);
     }
 
     public PDFEncryption(byte[] userPassword, byte[] ownerPassword, int allowedPrivileges) {
-        _userPassword = userPassword;
-        _ownerPassword = ownerPassword;
+        _userPassword = ArrayUtil.cloneOrEmpty(userPassword);
+        _ownerPassword = ArrayUtil.cloneOrEmpty(ownerPassword);
         _allowedPrivileges = allowedPrivileges;
     }
     
     public PDFEncryption(byte[] userPassword, byte[] ownerPassword, int allowedPrivileges, int encryptionType) {
-        _userPassword = userPassword;
-        _ownerPassword = ownerPassword;
+        _userPassword = ArrayUtil.cloneOrEmpty(userPassword);
+        _ownerPassword = ArrayUtil.cloneOrEmpty(ownerPassword);
         _allowedPrivileges = allowedPrivileges;
         _encryptionType = encryptionType;
     }
 
     public byte[] getUserPassword() {
-        return _userPassword;
+        return ArrayUtil.cloneOrEmpty(_userPassword);
     }
 
     public void setUserPassword(byte[] userPassword) {
-        _userPassword = userPassword;
+        _userPassword = ArrayUtil.cloneOrEmpty(userPassword);
     }
 
     public byte[] getOwnerPassword() {
-        return _ownerPassword;
+        return ArrayUtil.cloneOrEmpty(_ownerPassword);
     }
 
     public void setOwnerPassword(byte[] ownerPassword) {
-        _ownerPassword = ownerPassword;
+        _ownerPassword = ArrayUtil.cloneOrEmpty(ownerPassword);
     }
 
     public int getAllowedPrivileges() {

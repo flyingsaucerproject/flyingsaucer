@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.css.parser;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -28,6 +29,7 @@ import org.w3c.dom.css.Counter;
 import org.w3c.dom.css.RGBColor;
 import org.w3c.dom.css.Rect;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.util.ArrayUtil;
 
 public class PropertyValue implements CSSPrimitiveValue {
     public static final short VALUE_TYPE_NUMBER = 1;
@@ -57,7 +59,7 @@ public class PropertyValue implements CSSPrimitiveValue {
     
     private List _values;
     private FSFunction _function;
-    
+
     public PropertyValue(short type, float floatValue, String cssText) {
         _type = type;
         _floatValue = floatValue;
@@ -196,11 +198,11 @@ public class PropertyValue implements CSSPrimitiveValue {
     }
 
     public String[] getStringArrayValue() {
-        return _stringArrayValue;
+        return ArrayUtil.cloneOrEmpty(_stringArrayValue);
     }
 
     public void setStringArrayValue(String[] stringArrayValue) {
-        _stringArrayValue = stringArrayValue;
+        _stringArrayValue = ArrayUtil.cloneOrEmpty(stringArrayValue);
     }
     
     public String toString() {
@@ -208,7 +210,7 @@ public class PropertyValue implements CSSPrimitiveValue {
     }
     
     public List getValues() {
-        return _values;
+        return new ArrayList(_values);
     }
     
     public FSFunction getFunction() {

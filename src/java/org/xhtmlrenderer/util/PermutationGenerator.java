@@ -115,7 +115,7 @@ public class PermutationGenerator {
 
         if (numLeft.equals(total)) {
             numLeft = numLeft.subtract(BigInteger.ONE);
-            return a;
+            return ArrayUtil.cloneOrEmpty(a);
         }
 
         int temp;
@@ -155,7 +155,6 @@ public class PermutationGenerator {
         }
 
         numLeft = numLeft.subtract(BigInteger.ONE);
-        return a;
-
+        return ArrayUtil.cloneOrEmpty(a);
     }
 } // end class

@@ -42,6 +42,7 @@ import org.xhtmlrenderer.render.ContentLimitContainer;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.ArrayUtil;
 
 // Much of this code is directly inspired by (and even copied from) 
 // the equivalent code in KHTML (including the idea of "effective columns" to 
@@ -91,7 +92,7 @@ public class TableBox extends BlockBox {
     }
     
     public int[] getColumnPos() {
-        return _columnPos;
+        return ArrayUtil.cloneOrEmpty(_columnPos);
     }
     
     private void setColumnPos(int[] columnPos) {
