@@ -279,7 +279,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         
         String css = buf.toString().trim();
         if (css.length() > 0) {
-            info.setContent(css.toString());
+            info.setContent(css);
             
             return info;
         } else {
@@ -415,7 +415,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     private InputStream getDefaultStylesheetStream() {
         InputStream stream = null;
         String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
-        stream = this.getClass().getResourceAsStream(defaultStyleSheet);
+        stream = XhtmlCssOnlyNamespaceHandler.class.getResourceAsStream(defaultStyleSheet);
         if (stream == null) {
             XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
                     "This file must be on your CLASSPATH. Please check before continuing.");
