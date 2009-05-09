@@ -670,6 +670,7 @@ public class InlineBoxing {
             } else if (vAlign == IdentValue.TEXT_BOTTOM) {
                 box.setY(Math.round(measurements.getTextBottom() - descent - ascent));
             } else if (vAlign == IdentValue.MIDDLE) {
+                // FIXME: findbugs, loss of precision, try / (float)2
                 box.setY(Math.round((measurements.getBaseline() - measurements.getTextTop()) / 2
                         - (ascent + descent) / 2));
             } else if (vAlign == IdentValue.SUPER) {
@@ -726,7 +727,7 @@ public class InlineBoxing {
         if (child instanceof InlineLayoutBox) {
             InlineLayoutBox iB = (InlineLayoutBox) child;
             positionInlineVertically(c, vaTarget, iB);
-        } else if (child instanceof Box) {
+        } else { // any other Box class
             positionInlineBlockVertically(c, vaTarget, (BlockBox)child);
         }
     }
