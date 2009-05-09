@@ -326,19 +326,24 @@ public class Util {
      */
     public static void string_to_file(String text, File file)
             throws IOException {
-        FileWriter writer = new FileWriter(file);
-        StringReader reader = new StringReader(text);
-        char[] buf = new char[1000];
-        while (true) {
-            int n = reader.read(buf, 0, 1000);
-            if (n == -1) {
-                break;
+        FileWriter writer = null;
+        writer = new FileWriter(file);
+        try {
+            StringReader reader = new StringReader(text);
+            char[] buf = new char[1000];
+            while (true) {
+                int n = reader.read(buf, 0, 1000);
+                if (n == -1) {
+                    break;
+                }
+                writer.write(buf, 0, n);
             }
-            writer.write(buf, 0, n);
+            writer.flush();
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
         }
-        writer.flush();
-        writer.close();
-        //return writer.toString();
     }
 
     /**
@@ -410,18 +415,31 @@ public class Util {
      * @throws IOException           Throws
      */
     public static String file_to_string(File file)
-            throws FileNotFoundException, IOException {
-        FileReader reader = new FileReader(file);
-        StringWriter writer = new StringWriter();
-        char[] buf = new char[1000];
-        while (true) {
-            int n = reader.read(buf, 0, 1000);
-            if (n == -1) {
-                break;
+            throws IOException {
+        FileReader reader = null;
+        StringWriter writer = null;
+        String str;
+        try {
+            reader = new FileReader(file);
+            writer = new StringWriter();
+            char[] buf = new char[1000];
+            while (true) {
+                int n = reader.read(buf, 0, 1000);
+                if (n == -1) {
+                    break;
+                }
+                writer.write(buf, 0, n);
             }
-            writer.write(buf, 0, n);
+            str = writer.toString();
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
+            if (writer != null) {
+                writer.close();
+            }
         }
-        return writer.toString();
+        return str;
     }
 
     /**
@@ -590,6 +608,9 @@ public class Util {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2009/05/09 15:16:43  pdoubleya
+ * FindBugs: proper disposal of IO resources
+ *
  * Revision 1.7  2009/04/25 11:19:07  pdoubleya
  * Add utility methods to compare strings, patch from Peter Fassev in issue #263.
  *

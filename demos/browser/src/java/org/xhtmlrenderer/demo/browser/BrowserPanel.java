@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.io.IOException;
 
 import javax.swing.*;
 
@@ -115,7 +116,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 	/**
 	 * Description of the Field
 	 */
-	public static Logger logger = Logger.getLogger("app.browser");
+	public static final Logger logger = Logger.getLogger("app.browser");
 
 	private PanelManager manager;
 	JButton goToPage;
@@ -363,22 +364,32 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 	{
        if (manager.getBaseURL() != null) {
            setStatus( "Exporting to " + path + "..." );
+           OutputStream os = null;
            try {
-               OutputStream os = new FileOutputStream(path);
-               ITextRenderer renderer = new ITextRenderer();
- 
-               renderer.setDocument(manager.getBaseURL());
-               renderer.layout();
+               os = new FileOutputStream(path);
+               try {
+                   ITextRenderer renderer = new ITextRenderer();
 
-               renderer.createPDF(os);
-               os.close();
-               setStatus( "Done export." );
-            } catch (Exception e) {
-                XRLog.general(Level.SEVERE, "Could not export PDF.", e);
-                e.printStackTrace();
-                setStatus( "Error exporting to PDF." );
-            }
-        }
+                   renderer.setDocument(manager.getBaseURL());
+                   renderer.layout();
+
+                   renderer.createPDF(os);
+                   setStatus("Done export.");
+               } catch (Exception e) {
+                   XRLog.general(Level.SEVERE, "Could not export PDF.", e);
+                   e.printStackTrace();
+                   setStatus("Error exporting to PDF.");
+               } finally {
+                   try {
+                       os.close();
+                   } catch (IOException e) {
+                       // swallow
+                   }
+               }
+           } catch (Exception e) {
+               e.printStackTrace();  
+           }
+       }
 	}
 
     private void handlePageLoadFailed(String url_text, XRRuntimeException ex) {
@@ -427,6 +438,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     }
 
     private String getRootCause(Exception ex) {
+        // FIXME
         Throwable cause = ex;
         while (cause != null) {
             cause = cause.getCause();
@@ -489,6 +501,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2009/05/09 15:16:43  pdoubleya
+ * FindBugs: proper disposal of IO resources
+ *
  * Revision 1.38  2008/09/06 18:44:29  peterbrant
  * Add PDF export to browser (patch from Mykola Gurov)
  *

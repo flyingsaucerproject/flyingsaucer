@@ -250,21 +250,39 @@ public class BrowserMenuBar extends JMenuBar {
     private void populateDemoList() {
         List demoList = new ArrayList();
         URL url = BrowserMenuBar.class.getResource("/demos/file-list.txt");
+        InputStream is = null;
+        LineNumberReader lnr = null;
         if (url != null) {
             try {
-                InputStream is = url.openStream();
+                is = url.openStream();
                 InputStreamReader reader = new InputStreamReader(is);
-                LineNumberReader lnr = new LineNumberReader(reader);
-                String line = null;
-                while ((line = lnr.readLine()) != null) {
-                    demoList.add(line);
+                lnr = new LineNumberReader(reader);
+                try {
+                    String line;
+                    while ((line = lnr.readLine()) != null) {
+                        demoList.add(line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        lnr.close();
+                    } catch (IOException e) {
+                        // swallow
+                    }
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        // swallow
+                    }
+                }
             }
-    
+
             for (Iterator itr = demoList.iterator(); itr.hasNext();) {
                 String s = (String) itr.next();
                 String s1[] = s.split(",");
@@ -660,6 +678,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.51  2009/05/09 15:16:43  pdoubleya
+* FindBugs: proper disposal of IO resources
+*
 * Revision 1.50  2009/03/22 15:13:24  pdoubleya
 * Follow up for removing Minium AA: font "smoothing level" now deprecated. Changed to use font smoothing threshold alone. Remove corresponding property from configuration file.
 *

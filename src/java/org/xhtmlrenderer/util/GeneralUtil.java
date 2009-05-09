@@ -259,12 +259,21 @@ public class GeneralUtil {
         FileOutputStream fos = new FileOutputStream(f);
         try {
             OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
-
             BufferedWriter bw = new BufferedWriter(osw);
             PrintWriter pw = new PrintWriter(bw);
-            pw.print(content);
-            pw.flush();
-            bw.flush();
+            try {
+                pw.print(content);
+                pw.flush();
+                bw.flush();
+            } finally {
+                try {
+                    pw.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+        } catch (IOException e) {
+            throw e;
         } finally {
             try {
                 fos.close();
@@ -406,6 +415,9 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2009/05/09 15:16:43  pdoubleya
+ * FindBugs: proper disposal of IO resources
+ *
  * Revision 1.18  2009/04/25 11:03:27  pdoubleya
  * Fix some potential IO resource leaks, patches from Peter Fassev in issue #263. Clarifying docs on inputStreamToString() (we don't close the stream, the caller does), and a couple of other minor edits.
  *

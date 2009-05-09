@@ -187,12 +187,30 @@ public class Regress {
                     "On rendering, could not delete new output file (.delete failed) " + outputFile.getAbsolutePath()
             );
         }
-        OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
-        PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
-        pw.print(output);
-        pw.print(LINE_SEPARATOR);
-        pw.flush();
-        fw.close();
+        FileOutputStream fos = new FileOutputStream(outputFile);
+        try {
+            OutputStreamWriter fw = new OutputStreamWriter(fos, "UTF-8");
+            PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
+            try {
+                pw.print(output);
+                pw.print(LINE_SEPARATOR);
+                pw.flush();
+            } finally {
+                try {
+                    pw.close();
+                } catch (Exception e) {
+                    // swallow
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();  
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                // swallow
+            }
+        }
     }
 
     private static File getArgOutputZipFile(String[] args) throws IOException {
