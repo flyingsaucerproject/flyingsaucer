@@ -64,7 +64,7 @@ public class AWTFontResolver implements FontResolver {
         // put empty strings in instead
         available_fonts_hash = new HashMap();
         for (int i = 0; i < available_fonts.length; i++) {
-            available_fonts_hash.put(available_fonts[i], new String());
+            available_fonts_hash.put(available_fonts[i], "");
         }
 
         // preload sans, serif, and monospace into the available font hash
@@ -248,6 +248,9 @@ public class AWTFontResolver implements FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2009/05/09 14:13:20  pdoubleya
+ * FindBugs: use "" instead of new String("")
+ *
  * Revision 1.4  2009/04/25 11:09:32  pdoubleya
  * Case-insensitve checks for font name, fix by Peter Fassev in issue #263. Also, remove commented calls to Uu.p.
  *

@@ -28,7 +28,7 @@ package org.xhtmlrenderer.css.extend;
  */
 public interface TreeResolver {
     // XXX Where should this go (used by parser, TreeResolver, and AttributeResolver
-    public static final String NO_NAMESPACE = new String("");
+    public static final String NO_NAMESPACE = "";
     
     /**
      * returns the parent element of an element, or null if this was the root element
