@@ -23,10 +23,7 @@ public class CopySelectionAction extends AbstractAction {
 
 
     public void actionPerformed(ActionEvent evt) {
-        BasicPanel panel = root.panel.view;
-
         // ... collection seleciton here
-        
         Toolkit tk = Toolkit.getDefaultToolkit();
         Clipboard clip = tk.getSystemClipboard();
         clip.setContents(new StringSelection("..."), null);
