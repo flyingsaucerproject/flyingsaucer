@@ -66,9 +66,7 @@ public class CounterFunction {
             text = toRoman(listCounter).toUpperCase();
         } else if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
             text = (listCounter >= 10 ? "" : "0") + listCounter;
-        } else if (listStyle == IdentValue.DECIMAL) {
-            text = Integer.toString(listCounter);
-        } else {
+        } else { // listStyle == IdentValue.DECIMAL or anything else
             text = Integer.toString(listCounter);
         }
         return text;
