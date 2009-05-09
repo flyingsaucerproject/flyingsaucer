@@ -134,9 +134,17 @@ public class TrueTypeUtil {
             throw new DocumentException("Table 'OS/2' does not exist in " + path);
         }
         rf.seek(location[0]);
-        rf.skip(4);
+        int want = 4;
+        long got = rf.skip(want);
+        if (got < want) {
+            throw new DocumentException("Skip TT font weight, expect read " + want + " bytes, but only got " + got);
+        }
         descr.setWeight(rf.readUnsignedShort());
-        rf.skip(20);
+        want = 20;
+        got = rf.skip(want);
+        if (got < want) {
+            throw new DocumentException("Skip TT font strikeout, expect read " + want + " bytes, but only got " + got);
+        }
         descr.setYStrikeoutSize(rf.readShort());
         descr.setYStrikeoutPosition(rf.readShort());
         
@@ -144,7 +152,11 @@ public class TrueTypeUtil {
         
         if (location != null) {
             rf.seek(location[0]);
-            rf.skip(8);
+            want = 8;
+            got = rf.skip(want);
+            if (got < want) {
+                throw new DocumentException("Skip TT font underline, expect read " + want + " bytes, but only got " + got);
+            }
             descr.setUnderlinePosition(rf.readShort());
             descr.setUnderlineThickness(rf.readShort());
         }
