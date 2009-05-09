@@ -162,9 +162,10 @@ public class ImageUtil {
 		h = (opt.getTargetHeight() <= 0 ? h : opt.getTargetHeight());
 
 		Scaler scaler = (ImageUtil.Scaler) qual.get(opt.getDownscalingHint());
-		BufferedImage tmp = scaler.getScaledInstance(orgImage, opt);
+        opt.setTargetWidth(w);
+        opt.setTargetHeight(h);
 
-		return tmp;
+        return scaler.getScaledInstance(orgImage, opt);
 	}
 
 	/**
