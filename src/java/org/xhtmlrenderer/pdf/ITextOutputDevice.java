@@ -35,6 +35,8 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URISyntaxException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -362,20 +364,21 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         float h = bounds.height;
         
         float adj = solid ? (float)lineWidth / 2 : 0;
-        float adj2 = lineWidth % 2 == 1 ? 0.5f : 0f;
+        float adj2 = lineWidth % 2 != 0 ? 0.5f : 0f;
         
         Line2D.Float line = null;
-        
+
+        // FIXME: findbugs reports possible loss of precision, compare with width / (float)2
         if (side == BorderPainter.TOP) {
             line = new Line2D.Float(
                     x + adj, y + lineWidth / 2 + adj2, x + w - adj, y + lineWidth / 2 + adj2);
         } else if (side == BorderPainter.LEFT) {
             line = new Line2D.Float(
-                    x + lineWidth / 2 + adj2, y + adj, 
+                    x + lineWidth / 2 + adj2, y + adj,
                     x + lineWidth / 2 + adj2, y + h - adj);
         } else if (side == BorderPainter.RIGHT) {
             float offset = lineWidth / 2;
-            if (lineWidth % 2 == 1) {
+            if (lineWidth % 2 != 0) {
                 offset += 1;
             }
             line = new Line2D.Float(
@@ -383,7 +386,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     x + w - offset + adj2, y + h - adj);
         } else if (side == BorderPainter.BOTTOM) {
             float offset = lineWidth / 2;
-            if (lineWidth % 2 == 1) {
+            if (lineWidth % 2 != 0) {
                 offset += 1;
             }
             line = new Line2D.Float(x + adj, y + h - offset + adj2, x + w - adj, y + h - offset + adj2);
@@ -714,13 +717,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     } 
     
     public void clip(Shape s) {
-        if (s != null)
+        if (s != null) {
             s = _transform.createTransformedShape(s);
-        if (_clip == null)
-            _clip = new Area(s);
-        else
-            _clip.intersect(new Area(s));
-        followPath(s, CLIP);
+            if (_clip == null)
+                _clip = new Area(s);
+            else
+                _clip.intersect(new Area(s));
+            followPath(s, CLIP);
+        } else {
+            throw new XRRuntimeException("Shape is null, unexpected");
+        }
     }
     
     public Shape getClip() {
@@ -795,8 +801,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         } catch (IOException e) {
             throw new XRRuntimeException("Could not load " + url + ": " + 
                     e.getMessage(), e);
+        } catch (URISyntaxException e) {
+            throw new XRRuntimeException("Could not load " + url + ": " +
+                    e.getMessage(), e);
         }
-        
+
         PdfImportedPage page = getWriter().getImportedPage(reader, 1);
         
         AffineTransform at = AffineTransform.getTranslateInstance(x,y);
@@ -821,11 +830,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _currentPage.saveState();
     }
     
-    public PdfReader getReader(URL url) throws IOException {
-        PdfReader result = (PdfReader) _readerCache.get(url);
+    public PdfReader getReader(URL url) throws IOException, URISyntaxException {
+        URI uri = url.toURI();
+        PdfReader result = (PdfReader) _readerCache.get(uri);
         if (result ==  null) {
             result = new PdfReader(url);
-            _readerCache.put(url, result);
+            _readerCache.put(uri, result);
         }
         return result;
     }

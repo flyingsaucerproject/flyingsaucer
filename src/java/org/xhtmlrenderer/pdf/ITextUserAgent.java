@@ -23,6 +23,7 @@ package org.xhtmlrenderer.pdf;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URISyntaxException;
 
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.resource.ImageResource;
@@ -72,6 +73,8 @@ public class ITextUserAgent extends NaiveUserAgent {
                 } catch (IOException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
                 } catch (BadElementException e) {
+                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
+                } catch (URISyntaxException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
                 } finally {
                     try {
