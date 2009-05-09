@@ -393,7 +393,6 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
             final Range acceptRange = docRange.createRange();
             final Range tr = range;
-            final Node selectionEndNode = range.getEndContainer();
             NodeFilter f = new NodeFilter() {
                 public short acceptNode(Node n) {
                     acceptRange.setStart(n, 0);
@@ -413,7 +412,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             NodeIterator nodeIterator = this.docTraversal.createNodeIterator(range
                     .getCommonAncestorContainer(), NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT
                     | NodeFilter.SHOW_CDATA_SECTION, f, false);
-            Box box = getElementContainerBox(t1);
+            Box box;
             boolean lastNodeWasBox = false;
             for (Node n = nodeIterator.nextNode(); n != null; n = nodeIterator.nextNode()) {
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
@@ -756,6 +755,10 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         return e;
     }
 
+    public void setHandler(TransferHandler handler) {
+        this.handler = handler;
+    }
+
     public class ViewModelInfo {
         Range range;
 
@@ -771,9 +774,22 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             return range.getStartContainer() + ":" + range.getStartOffset();
         }
 
-        public boolean equals(Object obj) {
-            ViewModelInfo i2 = (ViewModelInfo) obj;
-            return (i2.range == range && i2.text == text);
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ViewModelInfo)) return false;
+
+            ViewModelInfo that = (ViewModelInfo) o;
+
+            if (!range.equals(that.range)) return false;
+            if (!text.equals(that.text)) return false;
+
+            return true;
+        }
+
+        public int hashCode() {
+            int result = range.hashCode();
+            result = 31 * result + text.hashCode();
+            return result;
         }
 
         public boolean canCopy() {
