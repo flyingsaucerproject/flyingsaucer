@@ -64,7 +64,7 @@ public class BrowserActions {
     /**
      * The system logger for app.browser
      */
-    public static Logger logger = Logger.getLogger("app.browser");
+    public static final Logger logger = Logger.getLogger("app.browser");
 
     /**
      * Constructor for the BrowserActions object
@@ -323,9 +323,6 @@ public class BrowserActions {
 
         aboutDlg.setTitle("About the Browser Demo");
 
-        int x = (int) root.frame.getLocationOnScreen().getX();
-        int y = (int) root.frame.getLocationOnScreen().getX();
-
         int xx = (root.frame.getWidth() - aboutDlg.getWidth()) / 2;
         int yy = (root.frame.getHeight() - aboutDlg.getHeight()) / 2;
         aboutDlg.setLocation(xx, yy);
@@ -422,6 +419,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2009/05/09 13:54:45  pdoubleya
+ * FindBugs: field can be final; remove unused local vars.
+ *
  * Revision 1.34  2009/04/13 14:45:19  pdoubleya
  * Fix location for user's guide within browser JAR
  *
