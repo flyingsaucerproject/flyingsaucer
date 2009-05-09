@@ -17,15 +17,12 @@
  */
 
 
-import java.awt.*;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.swing.Java2DRenderer;
+import org.xhtmlrenderer.swing.NaiveUserAgent;
+
 import javax.print.*;
 import javax.print.attribute.Attribute;
 import javax.print.attribute.HashPrintRequestAttributeSet;
@@ -36,14 +33,14 @@ import javax.print.attribute.standard.OrientationRequested;
 import javax.print.attribute.standard.PrintQuality;
 import javax.print.event.PrintJobEvent;
 import javax.print.event.PrintJobListener;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.simple.Graphics2DRenderer;
-import org.xhtmlrenderer.swing.Java2DRenderer;
+import java.awt.*;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 
 /**
@@ -52,13 +49,7 @@ import org.xhtmlrenderer.swing.Java2DRenderer;
  * @author rk
  */
 public class Printer implements Runnable, DocumentListener, Printable, PrintJobListener {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 6115417677320950273L;
-
-    private final String template = "printingtemplate.xhtml";
+    private final static String template = "printingtemplate.xhtml";
 
     /**
      * the base directory of the templates
@@ -76,25 +67,12 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
     private Thread runner;
 
     /**
-     * the xhtml element dom tree
-     */
-    private Document doc;
-
-    /**
-     * the print job to be printed
-     */
-    private DocPrintJob job;
-
-    /**
      * the renderer used to render the xhtml dom tree into the page
      */
     private Java2DRenderer j2dr;
 
-    /**
-     * initialization values of the Renderer
-     */
-    private SharedContext ctx;
     private final File file;
+    private UserAgentCallback uac;
 
     /**
      * the constructor of the cameventprinter: starts logging and starts the
@@ -109,6 +87,7 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
         base = System.getProperty("user.dir") + File.separator + "config"
                 + File.separator + "template" + File.separator;
 
+        uac = new NaiveUserAgent();
         // </snip>
 
         log.info("template printing");
@@ -134,14 +113,12 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
         try {
             if (file.exists()) {
                 // load the xml template here
-                FileInputStream xmldoc = new FileInputStream(file);
                 log.info("loading template from: " + file.getName());
                 /* FIXME
                 DOMParser parser = new DOMParser();
                 parser.parse(xmldoc);
                 doc = parser.getDocument();
                 */
-                Element e = doc.getDocumentElement();
 
                 // show the document in the log for debugging purpose
                 log.fine("--------------------------------");
@@ -165,7 +142,7 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
 
                 if (service != null) {
                     log.info("printer selected : " + service.getName());
-                    job = service.createPrintJob();
+                    DocPrintJob job = service.createPrintJob();
                     job.addPrintJobListener(this);
                     PrintJobAttributeSet atts = job.getAttributes();
                     Attribute[] arr = atts.toArray();
@@ -174,7 +151,7 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
                     }
 
                     Doc sdoc = new SimpleDoc(this, flavor, null);
-                    ctx = null; // new SharedContext(this);
+                    SharedContext ctx = new SharedContext(uac);
                     ctx.setBaseURL(base);
 
                     // print the doc as specified
