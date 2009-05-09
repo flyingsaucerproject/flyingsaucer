@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  * Copyright (c) 2007 Sean Bright
  *
  * This program is free software; you can redistribute it and/or
@@ -41,12 +41,12 @@ import org.xhtmlrenderer.util.XRLog;
 /**
  * Represents a form object
  *
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  * @author Sean Bright
  */
 public class XhtmlForm {
     private static final String FS_DEFAULT_GROUP = "__fs_default_group_";
-    public static JComponent HIDDEN_FIELD = new JComponent() {
+    public static final JComponent HIDDEN_FIELD = new JComponent() {
         private static final long serialVersionUID = 1L;
     };
 
