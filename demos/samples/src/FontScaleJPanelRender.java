@@ -40,7 +40,11 @@ public class FontScaleJPanelRender {
     private String fileName;
 
     public static void main(String[] args) throws Exception {
-        new FontScaleJPanelRender().run(args);
+        try {
+            new FontScaleJPanelRender().run(args);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     private void run(String[] args) {
@@ -107,13 +111,11 @@ public class FontScaleJPanelRender {
 
     private void loadAndCheckArgs(String[] args) {
         if (args.length == 0) {
-            System.out.println("Enter a file or URI.");
-            System.exit(-1);
+            throw new IllegalArgumentException("Enter a file or URI.");
         }
         String name = args[0];
         if (! new File(name).exists()) {
-            System.out.println("File " + name + " does not exist.");
-            System.exit(-1);
+            throw new IllegalArgumentException("File " + name + " does not exist.");
         }
         this.fileName = name;
     }

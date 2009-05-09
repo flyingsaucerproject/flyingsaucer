@@ -50,7 +50,11 @@ public class BrowsePanel {
     private UserAgentCallback uac;
 
     public static void main(String[] args) throws Exception {
-        new BrowsePanel().run(args);
+        try {
+            new BrowsePanel().run(args);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     private void run(String[] args) {
@@ -196,16 +200,14 @@ public class BrowsePanel {
 
     private void loadAndCheckArgs(String[] args) {
         if (args.length == 0) {
-            System.out.println("Enter a file or URI.");
-            System.exit(-1);
+            throw new IllegalArgumentException("Enter a file or URI.");
         }
         String name = args[0];
         if (!new File(name).exists()) {
             try {
-                URL url = new URL(name);
+                new URL(name);
             } catch (MalformedURLException e) {
-                System.out.println("File " + name + " does not exist or is not a URI");
-                System.exit(-1);
+                throw new IllegalArgumentException("File " + name + " does not exist or is not a URI");
             }
         }
         this.uri = name;
