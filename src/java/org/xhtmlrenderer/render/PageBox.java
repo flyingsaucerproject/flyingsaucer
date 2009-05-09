@@ -425,7 +425,7 @@ public class PageBox {
     }
     
     public boolean isRightPage() {
-        return _pageNo % 2 == 1;
+        return _pageNo % 2 != 0;
     }
     
     public void exportLeadingText(RenderingContext c, Writer writer) throws IOException {

@@ -135,13 +135,13 @@ public class SWTOutputDevice extends AbstractOutputDevice {
             drawLine(x + (lineWidth / 2), y, x + (lineWidth / 2), y + h - adj);
         } else if (side == BorderPainter.RIGHT) {
             int offset = (lineWidth / 2);
-            if (lineWidth % 2 == 1) {
+            if (lineWidth % 2 != 0) {
                 offset += 1;
             }
             drawLine(x + w - offset, y, x + w - offset, y + h - adj);
         } else if (side == BorderPainter.BOTTOM) {
             int offset = (lineWidth / 2);
-            if (lineWidth % 2 == 1) {
+            if (lineWidth % 2 != 0) {
                 offset += 1;
             }
             drawLine(x, y + h - offset, x + w - adj, y + h - offset);
