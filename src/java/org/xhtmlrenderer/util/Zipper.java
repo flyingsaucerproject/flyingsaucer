@@ -39,7 +39,9 @@ public class Zipper {
     public Zipper(File sourceDir, File outputFile) {
         this.sourceDir = sourceDir;
         this.outputFile = outputFile;
-        this.outputFile.delete();
+        if (!this.outputFile.delete()) {
+            throw new IllegalArgumentException("Can't delete outputfile " + outputFile.getAbsolutePath());
+        }
     }
 
     public static void main(String[] args) {
