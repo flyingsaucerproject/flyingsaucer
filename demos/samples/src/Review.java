@@ -147,7 +147,7 @@ public class Review {
         codeEditor.setText(sb.toString());
     }
 
-    public class FSPagePanel extends JPanel implements ImageObserver, MouseListener, MouseMotionListener {
+    public static class FSPagePanel extends JPanel implements ImageObserver, MouseListener, MouseMotionListener {
 
         Image currentImage;
         PDFPage currentPage;
@@ -297,7 +297,7 @@ public class Review {
             requestFocus();
         }
 
-        public void setZoom(double zf) {
+        public synchronized void setZoom(double zf) {
             if (zf > 1) {
                 this.zoomFactor = Math.min(zf, MAX_SCALE);
             } else if (zf < 1 && zf > 0) {
@@ -312,7 +312,7 @@ public class Review {
             return this.scale;
         }
 
-        public PDFPage getPage() {
+        public synchronized PDFPage getPage() {
             return currentPage;
         }
 
@@ -376,7 +376,7 @@ public class Review {
         }
     }
 
-    public class Flag {
+    public static class Flag {
         private boolean isSet;
 
         /**
@@ -401,10 +401,11 @@ public class Review {
          * instead.
          */
         public synchronized void waitForFlag() {
-            if (!isSet) {
+            while (!isSet) {
                 try {
                     wait();
                 } catch (InterruptedException ie) {
+                    // swallow
                 }
             }
         }
@@ -414,7 +415,7 @@ public class Review {
          */
         public synchronized void interruptibleWaitForFlag()
                 throws InterruptedException {
-            if (!isSet) {
+            while (!isSet) {
                 wait();
             }
         }
