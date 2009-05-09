@@ -1033,7 +1033,7 @@ public class BoxBuilder {
 
     private static InlineBox createInlineBox(
             String text, Element parent, CalculatedStyle parentStyle, Text node) {
-        InlineBox result = new InlineBox(text.toString(), node);
+        InlineBox result = new InlineBox(text, node);
 
         if (parentStyle.isInline() && ! (parent.getParentNode() instanceof Document)) {
             result.setStyle(parentStyle);
@@ -1076,8 +1076,8 @@ public class BoxBuilder {
 
                     if (style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN)
                             || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN_GROUP)) {
-                        if (blockParent != null &&
-                                blockParent.getStyle().isTable() || blockParent.getStyle().isInlineTable()) {
+                        if ((blockParent != null) &&
+                                (blockParent.getStyle().isTable() || blockParent.getStyle().isInlineTable())) {
                             TableBox table = (TableBox) blockParent;
                             addColumnOrColumnGroup(c, table, element, style);
                         }
