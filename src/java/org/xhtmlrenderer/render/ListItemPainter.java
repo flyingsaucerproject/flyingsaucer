@@ -62,7 +62,8 @@ public class ListItemPainter {
         if (img != null) {
             StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
             int x = getReferenceX(c, box);
-            x += -marker.getLayoutWidth() + 
+            // FIXME: findbugs possible loss of precision, cf. int / (float)2
+            x += -marker.getLayoutWidth() +
                     (marker.getLayoutWidth() / 2 - img.getWidth() / 2);
             c.getOutputDevice().drawImage(img, 
                     x,
@@ -137,6 +138,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2009/05/09 15:13:11  pdoubleya
+ * FindBugs: FIXME for possible loss of precision in float, int arithmetic
+ *
  * Revision 1.38  2008/09/06 18:33:53  peterbrant
  * Make list marker display more like Safari and FF (patch from Mykola Gurov)
  *

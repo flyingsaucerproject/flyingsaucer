@@ -54,6 +54,7 @@ public class SelectFormField extends AbstractFormField {
         initDimensions(c, box, cssWidth, cssHeight);
         
         float fontSize = box.getStyle().getFSFont(c).getSize2D();
+        // FIXME: findbugs possible loss of precision, cf. int / (float)2
         _baseline = (int)(getHeight() / 2 + (fontSize * 0.3f));
     }
     
