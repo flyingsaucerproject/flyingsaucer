@@ -149,7 +149,7 @@ public class FSCatalog {
      * To use, just call XMLReader.setContentHandler() with an instance of the class,
      * parse, then call getEntityMap().
      */
-    private class CatalogContentHandler extends DefaultHandler {
+    private static class CatalogContentHandler extends DefaultHandler {
         private Map entityMap;
 
         public CatalogContentHandler() {

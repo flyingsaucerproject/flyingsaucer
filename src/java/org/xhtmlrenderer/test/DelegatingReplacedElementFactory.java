@@ -104,7 +104,7 @@ public class DelegatingReplacedElementFactory implements ReplacedElementFactory 
         // maybe there is nothing to do...
     }
 
-    private class ERItem {
+    private static class ERItem {
         private final Element element;
         private final ReplacedElement replacedElement;
         private final ElementReplacer elementReplacer;

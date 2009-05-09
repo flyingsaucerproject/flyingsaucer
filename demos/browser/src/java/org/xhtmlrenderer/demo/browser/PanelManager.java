@@ -269,13 +269,9 @@ public class PanelManager extends NaiveUserAgent {
 	/**
 	 * Simple wrapper class for image URIs that can't be loaded.
 	 */
-	private class DummyImageResource extends ImageResource {
-        private final String uri;
-
+	private static class DummyImageResource extends ImageResource {
         public DummyImageResource(String uri) {
             super(null);
-            this.uri = uri;
         }
     }
-
 }

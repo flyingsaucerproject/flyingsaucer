@@ -304,7 +304,7 @@ class ElementPropertiesPanel extends JPanel {
      *
      * @author empty
      */
-    class PropertiesJTable extends JTable {
+    static class PropertiesJTable extends JTable {
         private static final long serialVersionUID = 1L;
 
         /**
@@ -358,7 +358,7 @@ class ElementPropertiesPanel extends JPanel {
      *
      * @author Patrick Wright
      */
-    class PropertiesTableModel extends AbstractTableModel {
+    static class PropertiesTableModel extends AbstractTableModel {
         private static final long serialVersionUID = 1L;
 
         /**
@@ -796,6 +796,9 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2009/05/09 14:15:14  pdoubleya
+ * FindBugs: inner class could be static
+ *
  * Revision 1.17  2007/05/20 23:25:33  peterbrant
  * Various code cleanups (e.g. remove unused imports)
  *

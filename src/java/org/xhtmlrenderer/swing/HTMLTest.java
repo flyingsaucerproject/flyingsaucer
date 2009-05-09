@@ -193,7 +193,7 @@ public class HTMLTest extends JFrame {
      *
      * @author empty
      */
-    class QuitAction extends AbstractAction {
+    static class QuitAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
         /**
@@ -389,7 +389,7 @@ public class HTMLTest extends JFrame {
      *
      * @author empty
      */
-    class RefreshPageAction extends AbstractAction {
+    static class RefreshPageAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
         /**
@@ -418,7 +418,7 @@ public class HTMLTest extends JFrame {
      *
      * @author empty
      */
-    class ReloadPageAction extends AbstractAction {
+    static class ReloadPageAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
         /**
@@ -442,7 +442,6 @@ public class HTMLTest extends JFrame {
             System.out.println("Reload Page triggered");
         }
     }
-
 }
 
 
@@ -456,6 +455,9 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2009/05/09 14:15:14  pdoubleya
+ * FindBugs: inner class could be static
+ *
  * Revision 1.38  2009/03/22 15:13:24  pdoubleya
  * Follow up for removing Minium AA: font "smoothing level" now deprecated. Changed to use font smoothing threshold alone. Remove corresponding property from configuration file.
  *
