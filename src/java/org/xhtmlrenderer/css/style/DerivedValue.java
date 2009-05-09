@@ -1,3 +1,22 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2004-2009 Josh Marinacci, Tobjorn Gannholm, Patrick Wright, Wisconsin Court System
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.css.style;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -7,13 +26,7 @@ import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: patrick
- * Date: Oct 17, 2005
- * Time: 12:53:07 PM
- * To change this template use File | Settings | File Templates.
- */
+
 public abstract class DerivedValue implements FSDerivedValue {
     private String _asString;
 
@@ -28,11 +41,10 @@ public abstract class DerivedValue implements FSDerivedValue {
             String cssStringValue) {
         this._cssSacUnitType = cssSACUnitType;
 
-        String orgText = cssText;
         if ( cssText == null ) {
             throw new XRRuntimeException(
                     "CSSValue for '" + name + "' is null after " +
-                    "resolving CSS identifier for value '" + orgText + "'");
+                    "resolving CSS identifier for value '" + cssStringValue + "'");
         }
         this._asString = deriveStringValue(cssText, cssStringValue);
     }

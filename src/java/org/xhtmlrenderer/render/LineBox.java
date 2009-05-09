@@ -42,7 +42,7 @@ import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PaintingInfo;
-import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 /**
  * A line box contains a single line of text (or other inline content).  It
@@ -404,7 +404,7 @@ public class LineBox extends Box implements InlinePaintable {
     public void calcCanvasLocation() {
         Box parent = getParent();
         if (parent == null) {
-            XRLog.layout(Level.WARNING, "calcCanvasLocation() called with no parent");
+            throw new XRRuntimeException("calcCanvasLocation() called with no parent");
         }
         setAbsX(parent.getAbsX() + parent.getTx() + getX());
         setAbsY(parent.getAbsY() + parent.getTy() + getY());        
@@ -643,6 +643,9 @@ public class LineBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.73  2009/05/09 14:18:24  pdoubleya
+ * FindBugs: use of ref that is provably null
+ *
  * Revision 1.72  2008/07/27 00:21:47  peterbrant
  * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
  *
