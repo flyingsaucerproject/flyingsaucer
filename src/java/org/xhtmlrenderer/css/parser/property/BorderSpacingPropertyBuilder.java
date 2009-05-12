@@ -61,7 +61,7 @@ public class BorderSpacingPropertyBuilder extends AbstractPropertyBuilder {
             horizontalSpacing = new PropertyDeclaration(
                     CSSName.FS_BORDER_SPACING_HORIZONTAL, horizontal, important, origin);
             
-            PropertyValue vertical = (PropertyValue)values.get(0);
+            PropertyValue vertical = (PropertyValue)values.get(1);
             checkLengthType(cssName, vertical);
             if (vertical.getFloatValue() < 0.0f) {
                 throw new CSSParseException("border-spacing may not be negative", -1);
