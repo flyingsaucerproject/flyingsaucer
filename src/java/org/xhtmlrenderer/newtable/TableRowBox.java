@@ -228,23 +228,24 @@ public class TableRowBox extends BlockBox {
                 found = true;
             }
         }
-        for (int i = 0; i < getChildCount(); i++) {
-            TableCellBox cell = (TableCellBox)getChild(i);
-            
-            if (cell.getVerticalAlign() == IdentValue.BASELINE) {
-                int deltaY = lowest - baselines[i];
-                if (deltaY != 0) {
-                    if (c.isPrint() && cell.isPageBreaksChange(c, deltaY)) {
-                        relayoutCell(c, cell, deltaY);
-                    } else {
-                        cell.moveContent(c, deltaY);
-                        cell.setHeight(cell.getHeight() + deltaY);
+        
+        if (found) {
+            for (int i = 0; i < getChildCount(); i++) {
+                TableCellBox cell = (TableCellBox)getChild(i);
+                
+                if (cell.getVerticalAlign() == IdentValue.BASELINE) {
+                    int deltaY = lowest - baselines[i];
+                    if (deltaY != 0) {
+                        if (c.isPrint() && cell.isPageBreaksChange(c, deltaY)) {
+                            relayoutCell(c, cell, deltaY);
+                        } else {
+                            cell.moveContent(c, deltaY);
+                            cell.setHeight(cell.getHeight() + deltaY);
+                        }
                     }
                 }
             }
-        }
         
-        if (found) {
             setBaseline(lowest - getAbsY());
             setHaveBaseline(true);
         }
