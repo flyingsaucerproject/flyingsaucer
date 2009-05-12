@@ -205,6 +205,10 @@ public class BlockBoxing {
             PageBox startPageBox = c.getRootLayer().getFirstPage(c, startBox);
             childOffset += startPageBox.getBottom() - startBox.getAbsY();
         }
+        
+        // reset height of parent as it is used for Y-setting of children
+        block.setHeight(childOffset);
+        
 
         for (int i = start; i <= end; i++) {
             BlockBox child = (BlockBox) localChildren.get(i);
@@ -254,6 +258,10 @@ public class BlockBoxing {
                 childOffset = child.getY() + child.getHeight();
             } else {
                 childOffset = child.getY() - relativeOffset.height + child.getHeight();
+            }
+            
+            if (childOffset > block.getHeight()) {
+                block.setHeight(childOffset);
             }
 
             if (child.getStyle().isForcePageBreakAfter()) {
@@ -468,6 +476,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.69  2009/05/12 17:38:30  peterbrant
+ * Patch from Stefan Hoffmann
+ *
  * Revision 1.68  2009/01/23 22:32:07  peterbrant
  * Fix NPE reported by Christophe M (thanks Patrick)
  *
