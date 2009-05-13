@@ -51,6 +51,10 @@ class ImageLoadWorker extends Thread {
         try {
             while (true) {
                 ImageLoadItem loadItem = queue.getTask();
+
+                if (ImageLoadQueue.isKillSwitch(loadItem)) {
+                    break;
+                }
                 BufferedImage bi = loadImage(loadItem.uri);
                 loadItem.mfsImage.setImage(loadItem.uri, bi);
             }
