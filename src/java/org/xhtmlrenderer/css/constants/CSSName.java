@@ -1509,10 +1509,12 @@ public final class CSSName implements Comparable {
      * @param propName     PARAM
      * @param initialValue
      * @param inherits
+     * @param implemented
+     * @param builder
      */
     private CSSName(
-            String propName, String initialValue, boolean inherits, 
-            Object type, boolean implemented, PropertyBuilder builder) {
+            String propName, String initialValue, boolean inherits,
+            boolean implemented, PropertyBuilder builder) {
         this.propName = propName;
         this.FS_ID = CSSName.maxAssigned++;
         this.initialValue = initialValue;
@@ -1536,7 +1538,7 @@ public final class CSSName implements Comparable {
      *
      * @return Returns
      */
-    public final static int countCSSNames() {
+    public static int countCSSNames() {
         return CSSName.maxAssigned;
     }
 
@@ -1545,7 +1547,7 @@ public final class CSSName implements Comparable {
      *
      * @return Returns
      */
-    public final static int countCSSPrimitiveNames() {
+    public static int countCSSPrimitiveNames() {
         return ALL_PRIMITIVE_PROPERTY_NAMES.size();
     }
 
@@ -1554,7 +1556,7 @@ public final class CSSName implements Comparable {
      *
      * @return Returns
      */
-    public final static Iterator allCSS2PropertyNames() {
+    public static Iterator allCSS2PropertyNames() {
         return ALL_PROPERTY_NAMES.keySet().iterator();
     }
 
@@ -1563,7 +1565,7 @@ public final class CSSName implements Comparable {
      *
      * @return Returns
      */
-    public final static Iterator allCSS2PrimitivePropertyNames() {
+    public static Iterator allCSS2PrimitivePropertyNames() {
         return ALL_PRIMITIVE_PROPERTY_NAMES.keySet().iterator();
     }
 
@@ -1575,7 +1577,7 @@ public final class CSSName implements Comparable {
      * @return Returns
      */
     // CLEAN: method is now unnecessary
-    public final static boolean propertyInherits(CSSName cssName) {
+    public static boolean propertyInherits(CSSName cssName) {
         return cssName.propertyInherits;
     }
 
@@ -1588,19 +1590,19 @@ public final class CSSName implements Comparable {
      * @return Returns
      */
     // CLEAN: method is now unnecessary
-    public final static String initialValue(CSSName cssName) {
+    public static String initialValue(CSSName cssName) {
         return cssName.initialValue;
     }
     
-    public final static FSDerivedValue initialDerivedValue(CSSName cssName) {
+    public static FSDerivedValue initialDerivedValue(CSSName cssName) {
         return cssName.initialDerivedValue;
     }
     
-    public final static boolean isImplemented(CSSName cssName) {
+    public static boolean isImplemented(CSSName cssName) {
         return cssName.implemented;
     }
     
-    public final static PropertyBuilder getPropertyBuilder(CSSName cssName) {
+    public static PropertyBuilder getPropertyBuilder(CSSName cssName) {
         return cssName.builder;
     }
 
@@ -1619,7 +1621,7 @@ public final class CSSName implements Comparable {
         return ALL_PROPERTIES[id];
     }
     
-    private final static synchronized CSSName addProperty(
+    private static synchronized CSSName addProperty(
             String propName,
             Object type,
             String initialValue, 
@@ -1633,12 +1635,14 @@ public final class CSSName implements Comparable {
      * Adds a feature to the Property attribute of the CSSName class
      *
      * @param propName     The feature to be added to the Property attribute
-     * @param type
+     * @param ‚type
      * @param initialValue
      * @param inherit
+     * @param implemented
+     * @param builder
      * @return Returns
      */
-    private final static synchronized CSSName addProperty(
+    private static synchronized CSSName addProperty(
             String propName,
             Object type,
             String initialValue, 
@@ -1647,7 +1651,7 @@ public final class CSSName implements Comparable {
             PropertyBuilder builder
     ) {
         CSSName cssName = new CSSName(
-                propName, initialValue, (inherit == INHERITS), type, implemented, builder);
+                propName, initialValue, (inherit == INHERITS), implemented, builder);
 
         ALL_PROPERTY_NAMES.put(propName, cssName);
 
@@ -1731,6 +1735,9 @@ public final class CSSName implements Comparable {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2009/05/13 18:13:53  pdoubleya
+ * FindBugs: static methods don't need to be declared final; remove unused constructor parameter
+ *
  * Revision 1.39  2009/05/09 14:17:41  pdoubleya
  * FindBugs: static field should not be mutable; use inner class to declare CSS 4-side properties
  *
