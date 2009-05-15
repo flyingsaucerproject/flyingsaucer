@@ -26,11 +26,21 @@ package org.xhtmlrenderer.swing;
  * BackgroundImageLoader and loaded by a BackgroundImageLoaderThread.
  */
 class ImageLoadItem {
-    final String uri;
-    final MutableFSImage mfsImage;
+    final ImageResourceLoader _imageResourceLoader;
+    final String _uri;
+    final MutableFSImage _mfsImage;
+    final int _targetWidth;
+    final int _targetHeight;
 
-    public ImageLoadItem(String uri, MutableFSImage fsi) {
-        this.uri = uri;
-        this.mfsImage = fsi;
+    public ImageLoadItem(final ImageResourceLoader imageResourceLoader, String uri, MutableFSImage fsi, int width, int height) {
+        this._imageResourceLoader = imageResourceLoader;
+        this._uri = uri;
+        this._mfsImage = fsi;
+        this._targetWidth = width;
+        this._targetHeight = height;
+    }
+
+    public boolean haveTargetDimensions() {
+        return _targetWidth > -1 && _targetHeight > -1;
     }
 }

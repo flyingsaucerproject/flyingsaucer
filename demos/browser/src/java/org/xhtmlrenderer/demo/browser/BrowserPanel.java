@@ -35,6 +35,8 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.swing.ScalableXHTMLPanel;
+import org.xhtmlrenderer.swing.ImageResourceLoader;
+import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -161,6 +163,11 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
 		manager = new PanelManager();
         view = new ScalableXHTMLPanel(manager);
+        manager.setRepaintListener(view);
+        ImageResourceLoader irl = new ImageResourceLoader();
+        irl.setRepaintListener(view);
+        manager.setImageResourceLoader(irl);
+        view.getSharedContext().setReplacedElementFactory(new SwingReplacedElementFactory(view, irl));
         view.addDocumentListener(manager);
         view.setCenteredPagedView(true);
         view.setBackground(Color.LIGHT_GRAY);
@@ -501,6 +508,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2009/05/15 16:28:14  pdoubleya
+ * Integrate async image loading, starting point is DelegatingUserAgentCallback. AWT images are now always buffered, but screen-compatible. RootPanel now supports a repaint mechanism, with optional layout, with some attempt to control how often one or the other actually takes place when many images have been loaded.
+ *
  * Revision 1.39  2009/05/09 15:16:43  pdoubleya
  * FindBugs: proper disposal of IO resources
  *

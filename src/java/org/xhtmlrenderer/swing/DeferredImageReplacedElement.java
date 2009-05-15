@@ -41,14 +41,13 @@ import javax.swing.*;
  * instances of DeferredImageReplacedElement will return either the original dummy image, or the actual image
  * loaded into the ImageResource.
  */
-public class DeferredImageReplacedElement implements ReplacedElement {
+public class DeferredImageReplacedElement extends ImageReplacedElement {
     private Point _location = new Point(0, 0);
 
     private final RepaintListener repaintListener;
     private final int _targetHeight;
     private final int _targetWidth;
 
-    private Image _image;
     private boolean _doScaleImage;
     private boolean _loaded;
     private final ImageResource _imageResource;

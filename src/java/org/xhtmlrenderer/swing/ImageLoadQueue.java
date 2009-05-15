@@ -33,16 +33,16 @@ import java.util.logging.Level;
 class ImageLoadQueue {
     // marker queue item which, if read, means the reading threads should simply stop their polling
     // introduced by kill()
-    private static final ImageLoadItem KILL_SWITCH = new ImageLoadItem(null, null);
+    private static final ImageLoadItem KILL_SWITCH = new ImageLoadItem(null, null, null, -1, -1);
 
     // list of items to be loaded
-    private final java.util.LinkedList loadQueue;
+    private final java.util.LinkedList _loadQueue;
 
     /**
      * Intantiates a new queue.
      */
     public ImageLoadQueue() {
-        this.loadQueue = new LinkedList();
+        this._loadQueue = new LinkedList();
     }
 
     /**
@@ -51,11 +51,23 @@ class ImageLoadQueue {
      * @param uri URI of the item to be loaded. As there is no good way of reporting failures, you should ensure
      *            the URI is a proper URL before calling this method.
      * @param re  container for the image to be loaded; will be updated via
-     *            {@link org.xhtmlrenderer.swing.MutableFSImage#setImage(String, java.awt.Image)} once image is loaded
-     */
+     *            {@link MutableFSImage#setImage(String,java.awt.Image,boolean)} once image is loaded
     public synchronized void addToQueue(String uri, MutableFSImage re) {
-        XRLog.general("Queueing load for image uri " + uri);
-        loadQueue.addLast(new ImageLoadItem(uri, re));
+        this.addToQueue(uri, re, -1, -1);
+    }
+     */
+
+
+    /**
+     * Queues a new item to be loaded. Thread-safe.
+     *
+     * @param imageResourceLoader
+     * @param uri URI of the item to be loaded. As there is no good way of reporting failures, you should ensure
+     *            the URI is a proper URL before calling this method.
+     */
+    public synchronized void addToQueue(final ImageResourceLoader imageResourceLoader, final String uri, final MutableFSImage mfsi, final int width, final int height) {
+        XRLog.general(Level.FINE, "Queueing load for image uri " + uri);
+        _loadQueue.addLast(new ImageLoadItem(imageResourceLoader, uri, mfsi, width, height));
         notifyAll();
     }
 
@@ -67,18 +79,18 @@ class ImageLoadQueue {
      * @throws InterruptedException if the wait (block) was interrupted externally
      */
     public synchronized ImageLoadItem getTask() throws InterruptedException {
-        while (loadQueue.isEmpty()) {
+        while (_loadQueue.isEmpty()) {
             wait();
         }
-        if (loadQueue.peekLast() == KILL_SWITCH) {
+        if (_loadQueue.getLast() == KILL_SWITCH) {
             XRLog.general(Level.FINE, "Thread " + Thread.currentThread().getName() +
                     " requested item, but queue is shutting down; returning kill switch.");
             return KILL_SWITCH;
         } else {
-            ImageLoadItem item = (ImageLoadItem) loadQueue.removeLast();
+            ImageLoadItem item = (ImageLoadItem) _loadQueue.removeLast();
 
             XRLog.general(Level.FINE, "Thread " + Thread.currentThread().getName() +
-                    " pulled item " + item.uri + " from queue, " + (loadQueue.size() - 1) + " remaining");
+                    " pulled item " + item._uri + " from queue, " + (_loadQueue.size() - 1) + " remaining");
             return item;
         }
     }
@@ -87,7 +99,7 @@ class ImageLoadQueue {
      * Removes all items currently in the queue.
      */
     public synchronized void reset() {
-        loadQueue.clear();
+        _loadQueue.clear();
     }
 
     /**
@@ -95,7 +107,7 @@ class ImageLoadQueue {
      * and that worker threads polling this queue should shut down.
      */
     public synchronized void kill() {
-        loadQueue.addLast(KILL_SWITCH);
+        _loadQueue.addLast(KILL_SWITCH);
         notifyAll();
     }
 
@@ -109,5 +121,9 @@ class ImageLoadQueue {
      */
     public static boolean isKillSwitch(Object queueItem) {
         return queueItem == KILL_SWITCH;
+    }
+
+    public int size() {
+        return _loadQueue.size();
     }
 }

@@ -19,18 +19,14 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
-import org.xhtmlrenderer.swing.AWTFSImage;
-import org.xhtmlrenderer.swing.NaiveUserAgent;
+import org.xhtmlrenderer.swing.DelegatingUserAgent;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xml.sax.InputSource;
 
-import javax.imageio.ImageIO;
 import javax.xml.transform.sax.SAXSource;
-import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -45,7 +41,7 @@ import java.util.ArrayList;
  * events (like a RootPanel subclass).
  *  
  */
-public class PanelManager extends NaiveUserAgent {
+public class PanelManager extends DelegatingUserAgent {
     private int index = -1;
     private ArrayList history = new ArrayList();
 
@@ -100,18 +96,6 @@ public class PanelManager extends NaiveUserAgent {
         else
             return ref.toExternalForm();
     }
-
-	/**
-	 * {@inheritDoc}
-	 */
-	protected ImageResource createImageResource(String uri, Image img) {
-		if (img == null) {
-			return new DummyImageResource(uri);
-		} else {
-			return super.createImageResource(uri, img);
-		}
-
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -263,15 +247,6 @@ public class PanelManager extends NaiveUserAgent {
             return true;
         } else {
             return false;
-        }
-    }
-
-	/**
-	 * Simple wrapper class for image URIs that can't be loaded.
-	 */
-	private static class DummyImageResource extends ImageResource {
-        public DummyImageResource(String uri) {
-            super(null);
         }
     }
 }

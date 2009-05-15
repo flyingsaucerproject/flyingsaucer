@@ -24,6 +24,7 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 
 
@@ -34,7 +35,7 @@ import java.util.logging.Level;
  * image has loaded, a 1x1 transparent pixel will be returned from getImage().
  */
 public class MutableFSImage extends AWTFSImage {
-    private volatile Image img;
+    private volatile BufferedImage img;
     private final RepaintListener repaintListener;
     private volatile boolean loaded;
 
@@ -43,7 +44,7 @@ public class MutableFSImage extends AWTFSImage {
         img = ImageUtil.createTransparentImage(10, 10);
     }
 
-    public synchronized Image getImage() {
+    public synchronized BufferedImage getImage() {
         return img;
     }
 
@@ -59,7 +60,7 @@ public class MutableFSImage extends AWTFSImage {
         img.getScaledInstance(width, height, Image.SCALE_DEFAULT);
     }
 
-    public synchronized void setImage(String uri, Image newImg, final boolean wasScaled) {
+    public synchronized void setImage(String uri, BufferedImage newImg, final boolean wasScaled) {
         assert EventQueue.isDispatchThread() : "setImage() must be called on EDT";
         
         img = newImg;

@@ -297,7 +297,9 @@ public class BrowserActions {
         final JDialog aboutDlg = new JDialog(root.frame);
         aboutDlg.setSize(new Dimension(500, 450));
 
-        XHTMLPanel panel = new XHTMLPanel(new PanelManager());
+        PanelManager uac = new PanelManager();
+        XHTMLPanel panel = new XHTMLPanel(uac);
+        uac.setRepaintListener(panel);
         panel.setOpaque(false);
 
         panel.setDocument("demo:/demos/about.xhtml");
@@ -419,6 +421,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2009/05/15 16:28:14  pdoubleya
+ * Integrate async image loading, starting point is DelegatingUserAgentCallback. AWT images are now always buffered, but screen-compatible. RootPanel now supports a repaint mechanism, with optional layout, with some attempt to control how often one or the other actually takes place when many images have been loaded.
+ *
  * Revision 1.35  2009/05/09 13:54:45  pdoubleya
  * FindBugs: field can be final; remove unused local vars.
  *

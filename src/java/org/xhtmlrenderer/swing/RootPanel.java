@@ -19,12 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -33,14 +28,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
+import javax.swing.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.*;
+import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.UserInterface;
+import org.xhtmlrenderer.extend.FSCanvas;
 import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -53,9 +48,12 @@ import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 
-public class RootPanel extends JPanel implements ComponentListener, UserInterface, FSCanvas {
+public class RootPanel extends JPanel implements ComponentListener, UserInterface, FSCanvas, RepaintListener {
     static final long serialVersionUID = 1L;
 
     public RootPanel() {
@@ -66,7 +64,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     public SharedContext getSharedContext() {
         return sharedContext;
     }
-    
+
     public LayoutContext getLayoutContext() {
         return layout_context;
     }
@@ -92,13 +90,35 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         } else {
             getSharedContext().getCss().flushAllStyleSheets();
         }
-        
+
         getSharedContext().reset();
         getSharedContext().setBaseURL(url);
         getSharedContext().setNamespaceHandler(nsh);
         getSharedContext().getCss().setDocumentContext(getSharedContext(), getSharedContext().getNamespaceHandler(), doc, this);
 
         repaint();
+    }
+
+    // iterates over all boxes and, if they have a BG url assigned, makes a call to the UAC
+    // to request it. when running with async image loading, this means BG images will start
+    // loading before the box ever shows on screen
+    private void requestBGImages(final Box box) {
+        if (box.getChildCount() == 0) return;
+        Iterator ci = box.getChildIterator();
+        while (ci.hasNext()) {
+            final Box cb = (Box) ci.next();
+            CalculatedStyle style = cb.getStyle();
+            if (!style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
+                String uri = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
+                XRLog.load(Level.FINE, "Greedily loading background property " + uri);
+                try {
+                    getSharedContext().getUac().getImageResource(uri);
+                } catch (Exception ex) {
+                    // swallow
+                }
+            }
+            requestBGImages(cb);
+        }
     }
 
     protected JScrollPane enclosingScrollPane;
@@ -190,11 +210,11 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         getSharedContext().setCanvas(this);
 
         XRLog.layout(Level.FINEST, "new context end");
-        
+
         RenderingContext result = getSharedContext().newRenderingContextInstance();
         result.setFontContext(new Java2DFontContext(g));
         result.setOutputDevice(new Java2DOutputDevice(g));
-        
+
         getSharedContext().getTextRenderer().setup(result.getFontContext());
 
         final Box rb = getRootBox();
@@ -338,6 +358,15 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             } 
 
             this.fireDocumentLoaded();
+            /* FIXME
+            if (Configuration.isTrue("xr.image.background.greedy", false)) {
+                EventQueue.invokeLater(new Runnable() {
+                    public void run() {
+                        XRLog.load("loading images in document and css greedily");
+                        requestBGImages(getRootBox());
+                    }
+                });
+            }*/
         } catch (ThreadDeath t) {
             throw t;
         } catch (Throwable t) {
@@ -502,5 +531,51 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     protected synchronized void setPendingResize(boolean pendingResize) {
         this.pendingResize = pendingResize;
+    }
+
+    // On-demand repaint requests for async image loading
+    private long lastRepaintRunAt = System.currentTimeMillis();
+    private long maxRepaintRequestWaitMs = 50;
+    private boolean repaintRequestPending = false;
+    private long pendingRepaintCount = 0;
+
+    public void repaintRequested(final boolean doLayout) {
+        final long now = System.currentTimeMillis();
+        final long el = now - lastRepaintRunAt;
+        if (!doLayout || el > maxRepaintRequestWaitMs || pendingRepaintCount > 5) {
+            XRLog.general(Level.FINE, "*** Repainting panel, by request, el: " + el + " pending " + pendingRepaintCount);
+            if (doLayout) {
+                relayout(null);
+            } else {
+                repaint();
+            }
+            lastRepaintRunAt = System.currentTimeMillis();
+            repaintRequestPending = false;
+            pendingRepaintCount = 0;
+        } else {
+            if (!repaintRequestPending) {
+                XRLog.general(Level.FINE, "... Queueing new repaint request, el: " + el + " < " + maxRepaintRequestWaitMs);
+                repaintRequestPending = true;
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            Thread.currentThread().sleep(Math.min(maxRepaintRequestWaitMs, Math.abs(maxRepaintRequestWaitMs - el)));
+                            EventQueue.invokeLater(new Runnable() {
+                                public void run() {
+                                    XRLog.general(Level.FINE, "--> running queued repaint request");
+                                    repaintRequested(doLayout);
+                                    repaintRequestPending = false;
+                                }
+                            });
+                        } catch (InterruptedException e) {
+                            // swallow
+                        }
+                    }
+                }).start();
+            } else {
+                pendingRepaintCount++;
+                XRLog.general("hmm... repaint request, but already have one");
+            }
+        }
     }
 }
