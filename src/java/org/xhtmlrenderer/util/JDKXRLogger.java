@@ -50,7 +50,7 @@ public class JDKXRLogger implements XRLogger {
         if (initPending) {
             init();
         }
-        
+
         getLogger(where).log(level, msg);
     }
 
@@ -135,7 +135,7 @@ public class JDKXRLogger implements XRLogger {
             String key = (String) keys.nextElement();
             String prop = fsLoggingProperties.getProperty(key);
             if (key.endsWith("level")) {
-                configureLogLevel(key, prop);
+                configureLogLevel(key.substring(0, key.lastIndexOf(".")), prop);
             } else if (key.endsWith("handlers")) {
                 handlers = configureLogHandlers(loggers, prop);
             } else if (key.endsWith("formatter")) {
@@ -217,6 +217,8 @@ public class JDKXRLogger implements XRLogger {
                 Class handlerClass = Class.forName(name);
                 Handler handler = (Handler) handlerClass.newInstance();
                 handlers.put(name, handler);
+                String hl = Configuration.valueFor("xr.util-logging." + name + ".level", "INFO");
+                handler.setLevel(LoggerUtil.parseLogLevel(hl, Level.INFO));
             } catch (ClassNotFoundException e) {
                 throw new XRRuntimeException("Could not initialize logging properties; " +
                         "Handler class not found: " + name);
