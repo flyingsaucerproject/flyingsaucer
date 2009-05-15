@@ -72,9 +72,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
     private boolean explicitlyOpaque;
 
-    // The XMLResource proxing the current document in the BasicPanel
-    private XMLResource xmlResource;
-
     private MouseTracker mouseTracker;
     private boolean centeredPagedView;
     protected FormSubmissionListener formSubmissionListener;
@@ -468,8 +465,8 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     protected Document loadDocument(final String uri) {
-        xmlResource = sharedContext.getUac().getXMLResource(uri);
-        return this.xmlResource.getDocument();
+        XMLResource xmlResource = sharedContext.getUac().getXMLResource(uri);
+        return xmlResource.getDocument();
     }
 
     /* ====== hover and active utility methods
@@ -617,6 +614,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 /*
  *
  * $Log$
+ * Revision 1.124  2009/05/15 16:12:54  pdoubleya
+ * Field can be local
+ *
  * Revision 1.123  2009/05/08 12:22:26  pdoubleya
  * Merge Vianney's SWT branch to trunk. Passes regress.verify and browser still works :).
  *
