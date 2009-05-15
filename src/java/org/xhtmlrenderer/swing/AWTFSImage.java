@@ -19,38 +19,44 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public abstract class AWTFSImage implements FSImage {
     private static final FSImage NULL_FS_IMAGE = new NullImage();
 
     /**
-     * @deprecated  replaced by {@link #createImage()}, that decides on 
-     *              which system to use to create the Image
+     * @deprecated replaced by {@link #createImage()}, that decides on
+     *             which system to use to create the Image
      */
     public static FSImage createLegacyImage(Image img) {
         return new OldAWTFSImage(img);
     }
 
     public static FSImage createImage(Image img) {
-        boolean useBufferedImage =  Configuration.isTrue("xr.image.buffered", false);
+        boolean useBufferedImage = Configuration.isTrue("xr.image.buffered", false);
 
         if (img == null) {
             return NULL_FS_IMAGE;
         } else {
             if (useBufferedImage) {
-                return new NewAWTFSImage(img);
+                BufferedImage bimg;
+                if (img instanceof BufferedImage) {
+                    bimg = ImageUtil.makeCompatible((BufferedImage) img);
+                } else {
+                    bimg = ImageUtil.convertToBufferedImage(img, BufferedImage.TYPE_INT_ARGB);
+                }
+                return new NewAWTFSImage(bimg);
             } else {
                 return new OldAWTFSImage(img);
             }
         }
     }
-        
+
     protected AWTFSImage() { }
 
     public abstract Image getImage();
@@ -61,7 +67,7 @@ public abstract class AWTFSImage implements FSImage {
         public OldAWTFSImage(Image img) {
             // we "clean" the image here to force conversion to a Toolkit
             // image (hence "old" AWT) instead of a BufferedImage
-            if ( img instanceof BufferedImage )
+            if (img instanceof BufferedImage)
                 img = img.getScaledInstance(img.getWidth(null), img.getHeight(null), Image.SCALE_FAST);
 
             this.img = img;
@@ -83,14 +89,14 @@ public abstract class AWTFSImage implements FSImage {
             img = img.getScaledInstance(width, height, Image.SCALE_FAST);
         }
     }
-    
+
 
     static class NewAWTFSImage extends AWTFSImage {
         private Image img;
 
         public NewAWTFSImage(Image img) {
             this.img = img;
-}
+        }
 
         public int getWidth() {
             return img.getWidth(null);
@@ -111,7 +117,7 @@ public abstract class AWTFSImage implements FSImage {
 
     private static class NullImage extends AWTFSImage {
         private static final Image EMPTY_IMAGE = ImageUtil.createTransparentImage(1, 1);
-        
+
         public int getWidth() {
             return 0;
         }
@@ -120,7 +126,8 @@ public abstract class AWTFSImage implements FSImage {
             return 0;
         }
 
-        public void scale(int width, int height) {}
+        public void scale(int width, int height) {
+        }
 
         public Image getImage() {
             return EMPTY_IMAGE;
