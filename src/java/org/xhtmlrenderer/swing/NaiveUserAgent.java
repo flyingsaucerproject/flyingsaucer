@@ -55,7 +55,7 @@ import java.util.Iterator;
  * <p>This class is meant as a starting point--it will work out of the box, but you should really implement your
  * own, tuned to your application's needs.
  *
- * @author Torbj�rn Gannholm
+ * @author Torbjorn Gannholm
  */
 public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 	private static final int DEFAULT_IMAGE_CACHE_SIZE = 16;
@@ -193,7 +193,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 	 * @return An ImageResource containing the image.
 	 */
 	protected ImageResource createImageResource(String uri, Image img) {
-		return new ImageResource(AWTFSImage.createImage(img));
+		return new ImageResource(uri, AWTFSImage.createImage(img));
 	}
 
 	/**
@@ -326,6 +326,9 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2009/05/15 16:20:10  pdoubleya
+ * ImageResource now tracks the URI for the image that was created and handles mutable images.
+ *
  * Revision 1.39  2009/04/12 11:16:51  pdoubleya
  * Remove proposed patch for URLs that are incorrectly handled on Windows; need a more reliable solution.
  *

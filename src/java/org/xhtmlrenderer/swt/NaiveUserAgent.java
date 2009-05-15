@@ -96,7 +96,7 @@ public class NaiveUserAgent implements UserAgentCallback {
             InputStream is = getInputStream(uri);
             if (is != null) {
                 try {
-                    ir = new ImageResource(new SWTFSImage(
+                    ir = new ImageResource(uri, new SWTFSImage(
                         new Image(_device, is), this, uri));
                     if (_imageCache.size() >= _imageCacheCapacity) {
                         // prevent the cache from growing too big
@@ -119,7 +119,7 @@ public class NaiveUserAgent implements UserAgentCallback {
             }
         }
         if (ir == null) {
-            ir = new ImageResource(null);
+            ir = new ImageResource(uri, null);
         }
         return ir;
     }

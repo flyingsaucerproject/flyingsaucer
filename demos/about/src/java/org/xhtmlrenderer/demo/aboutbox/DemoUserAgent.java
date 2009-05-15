@@ -100,14 +100,14 @@ public class DemoUserAgent implements UserAgentCallback {
             if (is != null) {
                 try {
                     BufferedImage img = ImageIO.read(is);
-                    ir = new ImageResource(AWTFSImage.createLegacyImage(img));
+                    ir = new ImageResource(uri, AWTFSImage.createImage(img));
                     imageCache.put(uri, ir);
                 } catch (IOException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
                 }
             }
         }
-        if (ir == null) ir = new ImageResource(null);
+        if (ir == null) ir = new ImageResource(uri, null);
         return ir;
     }
     

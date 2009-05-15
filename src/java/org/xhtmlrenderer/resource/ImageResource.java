@@ -20,17 +20,21 @@
 package org.xhtmlrenderer.resource;
 
 import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.swing.MutableFSImage;
+import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xml.sax.InputSource;
 
 /**
  * @author Administrator
  */
 public class ImageResource extends AbstractResource {
+    private final String _imageUri;
     private FSImage _img;
 
     //HACK: at least for now, till we know what we want to do here
-    public ImageResource(FSImage img) {
+    public ImageResource(final String uri, FSImage img) {
         super((InputSource) null);
+        _imageUri = uri;
         _img = img;
     }
 
@@ -39,8 +43,24 @@ public class ImageResource extends AbstractResource {
     }
 
     public boolean isLoaded() {
-        // TODO: will be used to support deferred image loading where necessary
-        return true;
+        return _img instanceof MutableFSImage ? ((MutableFSImage) _img).isLoaded() : true;
+    }
+
+    public String getImageUri() {
+        return _imageUri;
+    }
+
+    public boolean hasDimensions(final int width, final int height) {
+        if (isLoaded()) {
+            if (_img instanceof AWTFSImage) {
+                AWTFSImage awtfi = (AWTFSImage) _img;
+                return awtfi.getWidth() == width && awtfi.getHeight() == height;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }
 
@@ -48,8 +68,8 @@ public class ImageResource extends AbstractResource {
  * $Id$
  *
  * $Log$
- * Revision 1.5  2009/04/24 16:09:44  pdoubleya
- * Early cut to support background image loading. Not checking in changes to user agent, REF, etc. until design settles down.
+ * Revision 1.6  2009/05/15 16:20:13  pdoubleya
+ * ImageResource now tracks the URI for the image that was created and handles mutable images.
  *
  * Revision 1.4  2007/04/11 21:09:06  pdoubleya
  * Remove commented block

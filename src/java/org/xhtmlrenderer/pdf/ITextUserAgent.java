@@ -63,11 +63,11 @@ public class ITextUserAgent extends NaiveUserAgent {
                         Rectangle rect = reader.getPageSizeWithRotation(1);
                         image.setInitialWidth(rect.getWidth()*_outputDevice.getDotsPerPoint());
                         image.setInitialHeight(rect.getHeight()*_outputDevice.getDotsPerPoint());
-                        resource = new ImageResource(image);
+                        resource = new ImageResource(uri, image);
                     } else {
 	                    Image image = Image.getInstance(url);
 	                    scaleToOutputResolution(image);
-	                    resource = new ImageResource(new ITextFSImage(image));
+	                    resource = new ImageResource(uri, new ITextFSImage(image));
                     }
                     _imageCache.put(uri, resource);
                 } catch (IOException e) {
@@ -86,7 +86,7 @@ public class ITextUserAgent extends NaiveUserAgent {
             }
         }
         if (resource == null) {
-            resource = new ImageResource(null);
+            resource = new ImageResource(uri, null);
         }
         return resource;
     }
