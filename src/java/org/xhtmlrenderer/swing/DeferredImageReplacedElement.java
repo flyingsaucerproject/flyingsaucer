@@ -21,11 +21,13 @@ package org.xhtmlrenderer.swing;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.logging.Level;
 
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.resource.ImageResource;
 
 import javax.swing.*;
@@ -133,7 +135,7 @@ public class DeferredImageReplacedElement implements ReplacedElement {
                         image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
                     } else {
                         if (true) {
-                            throw new RuntimeException("image is not a buffered image!");
+                            throw new RuntimeException("image is not a buffered image! " + _imageResource.getImageUri());
                         }
                         String scalingType = Configuration.valueFor("xr.image.scale", "HIGH").trim();
 
@@ -149,10 +151,10 @@ public class DeferredImageReplacedElement implements ReplacedElement {
                 _image = image;
             }
             _loaded = true;
-            System.out.println("Icon: replaced image, repaint requested");
+            XRLog.load(Level.FINE, "Icon: replaced image " + _imageResource.getImageUri() + ", repaint requested");
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    repaintListener.repaintRequested(true);
+                    repaintListener.repaintRequested(_doScaleImage);
                 }
             });
 
