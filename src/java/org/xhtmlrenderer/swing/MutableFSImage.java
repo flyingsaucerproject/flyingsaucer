@@ -24,6 +24,7 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.logging.Level;
 
 
 /**
@@ -39,7 +40,7 @@ public class MutableFSImage extends AWTFSImage {
 
     public MutableFSImage(RepaintListener repaintListener) {
         this.repaintListener = repaintListener;
-        img = ImageUtil.createTransparentImage(1, 1);
+        img = ImageUtil.createTransparentImage(10, 10);
     }
 
     public synchronized Image getImage() {
@@ -58,15 +59,13 @@ public class MutableFSImage extends AWTFSImage {
         img.getScaledInstance(width, height, Image.SCALE_DEFAULT);
     }
 
-    public synchronized void setImage(String uri, Image newImg) {
+    public synchronized void setImage(String uri, Image newImg, final boolean wasScaled) {
+        assert EventQueue.isDispatchThread() : "setImage() must be called on EDT";
+        
         img = newImg;
         loaded = true;
-        XRLog.general("Mutable image " + uri + " loaded, repaint requested");
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                repaintListener.repaintRequested(true);
-            }
-        });
+        XRLog.general(Level.FINE, "Mutable image " + uri + " loaded, repaint requested");
+        repaintListener.repaintRequested(wasScaled);
     }
 
     public boolean isLoaded() {
