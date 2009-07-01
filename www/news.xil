@@ -2,6 +2,10 @@ Flying Saucer Project: News
 
 h2(fs_heading){clear: none}. News
 
+p{font-size: 14pt}. Release 7 No Longer Available
+
+*July 1, 2009*: The release files for Release 7 (R7) are no longer available. While we recommend that you work with the current R8 release, if for some reason you need to stick with the R7 release you can check out that version of the source code from our CVS repository. The R7 release is tagged in the repository as R7_FINAL.
+
 p{font-size: 14pt}. Release 8 - Final (R8)
 
 *April 18, 2009*: We are proud to present our R8 release. This release includes no changes since R8 release candidate 2.
