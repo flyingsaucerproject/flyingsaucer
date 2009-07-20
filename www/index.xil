@@ -12,8 +12,8 @@ h2(fs_heading){ clear: both }. Download Now!
 
 table(properties){width: 100% }.
 | *Status* | *Type* | *URL* | *Description* | *MD5 Sum* 
-| *STABLE* | Binary Zip | "flyingsaucer-R8.zip":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8.zip | For using Flying Saucer in your own programs (3.0M) | "MD5 Checksum":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8.zip.md5.txt "SHA Checksum":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8.zip.asc.txt
-| *STABLE* | Source Bundle Zip | "flyingsaucer-R8-src.zip":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8-src.zip | Includes source, demo programs, sample code, etc.  (7.5M) | "MD5 Checksum":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8-src.zip.md5.txt "SHA Checksum":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8-src.zip.asc.txt
+| *STABLE* | Binary Zip | "flyingsaucer-R8.zip":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8.zip | For using Flying Saucer in your own programs (3.0M) | "MD5 Checksum":sig/flyingsaucer-R8.zip.md5.txt "SHA Checksum":sig/flyingsaucer-R8.zip.asc.txt
+| *STABLE* | Source Bundle Zip | "flyingsaucer-R8-src.zip":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8-src.zip | Includes source, demo programs, sample code, etc.  (7.5M) | "MD5 Checksum":sig/flyingsaucer-R8-src.zip.md5.txt "SHA Checksum":sig/flyingsaucer-R8-src.zip.asc.txt
 
 If you'd like to access _everything_, please use our source code repository (CVS); see the link to CVS on the left side of this page.
 
