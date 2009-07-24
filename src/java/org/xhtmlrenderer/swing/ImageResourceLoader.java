@@ -58,6 +58,7 @@ public class ImageResourceLoader {
     }
 
     public static ImageResource loadImageResourceFromUri(final String uri) {
+        System.out.println(": " + uri);
         StreamResource sr = new StreamResource(uri);
         InputStream is;
         ImageResource ir = null;
@@ -115,7 +116,7 @@ public class ImageResourceLoader {
 
             // no: loaded
             if (ir == null) {
-                if (uri.startsWith("jar:file:") || uri.startsWith("file:")) {
+                if (isImmediateLoadUri(uri)) {
                     XRLog.load(Level.FINE, "Load immediate: " + uri);
                     ir = loadImageResourceFromUri(uri);
                     FSImage awtfsImage = ir.getImage();
@@ -147,6 +148,10 @@ public class ImageResourceLoader {
             }
         }
         return ir;
+    }
+
+    public boolean isImmediateLoadUri(final String uri) {
+        return uri.startsWith("jar:file:") || uri.startsWith("file:");
     }
 
     public synchronized void loaded(final ImageResource ir, final int width, final int height) {
