@@ -143,7 +143,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
                 XRLog.layout(Level.WARNING, "No source provided for img element.");
                 re = newIrreplaceableImageElement(cssWidth, cssHeight);
             } else {
-                XRLog.load("Swing: Image " + ruri + " requested at "+ " to " + cssWidth + ", " + cssHeight);
+                XRLog.load(Level.FINE, "Swing: Image " + ruri + " requested at "+ " to " + cssWidth + ", " + cssHeight);
                 ImageResource imageResource = _imageResourceLoader.get(ruri, cssWidth, cssHeight);
                 if (imageResource.isLoaded()) {
                     re = new ImageReplacedElement(((AWTFSImage) imageResource.getImage()).getImage(), cssWidth, cssHeight);

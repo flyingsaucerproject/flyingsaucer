@@ -5,6 +5,7 @@ import org.xhtmlrenderer.util.XRLog;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.File;
+import java.util.logging.Level;
 
 public class UriResolver {
     private String _baseUri;
@@ -29,10 +30,11 @@ public class UriResolver {
         try {
             return new URL(uri).toString();
         } catch (MalformedURLException e) {
-            XRLog.load("Could not read " + uri + " as a URL; may be relative. Testing using parent URL " + _baseUri);
+            XRLog.load(Level.FINE, "Could not read " + uri + " as a URL; may be relative. Testing using parent URL " + _baseUri);
             try {
                 URL result = new URL(new URL(_baseUri), uri);
                 ret = result.toString();
+                XRLog.load(Level.FINE, "Was able to read from " + uri + " using parent URL " + _baseUri);
             } catch (MalformedURLException e1) {
                 XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseUri);
             }
