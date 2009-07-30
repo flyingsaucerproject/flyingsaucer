@@ -56,7 +56,7 @@ class CheckboxField extends InputField {
         
         if (button.isSelected()) {
             return new String [] {
-                    hasAttribute("value") ? getAttribute("value") : "" 
+                    hasAttribute("value") ? getAttribute("value") : "on"
             };
         } else {
             return new String[] {};
