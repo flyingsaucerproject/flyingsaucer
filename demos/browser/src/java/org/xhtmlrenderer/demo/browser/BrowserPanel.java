@@ -19,32 +19,34 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import org.w3c.dom.Document;
+import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.xhtmlrenderer.pdf.PDFCreationListener;
+import org.xhtmlrenderer.pdf.util.XHtmlMetaToPdfInfoAdapter;
+import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.simple.FSScrollPane;
+import org.xhtmlrenderer.swing.ImageResourceLoader;
+import org.xhtmlrenderer.swing.ScalableXHTMLPanel;
+import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
+import org.xhtmlrenderer.util.GeneralUtil;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.XRRuntimeException;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.IOException;
-
-import javax.swing.*;
-
-import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.simple.FSScrollPane;
-import org.xhtmlrenderer.swing.ScalableXHTMLPanel;
-import org.xhtmlrenderer.swing.ImageResourceLoader;
-import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
-import org.xhtmlrenderer.util.GeneralUtil;
-import org.xhtmlrenderer.pdf.ITextRenderer;
-import org.xhtmlrenderer.resource.XMLResource;
-
-import com.lowagie.text.DocumentException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -375,27 +377,34 @@ public class BrowserPanel extends JPanel implements DocumentListener {
            try {
                os = new FileOutputStream(path);
                try {
-                   ITextRenderer renderer = new ITextRenderer();
+               ITextRenderer renderer = new ITextRenderer();
 
-                   renderer.setDocument(manager.getBaseURL());
-                   renderer.layout();
+               DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+               DocumentBuilder db = dbf.newDocumentBuilder();
+               Document doc =  db.parse(manager.getBaseURL());
 
-                   renderer.createPDF(os);
-                   setStatus("Done export.");
-               } catch (Exception e) {
-                   XRLog.general(Level.SEVERE, "Could not export PDF.", e);
-                   e.printStackTrace();
-                   setStatus("Error exporting to PDF.");
+               PDFCreationListener pdfCreationListener = new XHtmlMetaToPdfInfoAdapter( doc );
+               renderer.setListener( pdfCreationListener );
+                              
+               renderer.setDocument(manager.getBaseURL());
+               renderer.layout();
+
+               renderer.createPDF(os);
+               setStatus( "Done export." );
+            } catch (Exception e) {
+                XRLog.general(Level.SEVERE, "Could not export PDF.", e);
+                e.printStackTrace();
+                setStatus( "Error exporting to PDF." );
                } finally {
                    try {
                        os.close();
                    } catch (IOException e) {
                        // swallow
-                   }
-               }
+            }
+        }
            } catch (Exception e) {
-               e.printStackTrace();  
-           }
+               e.printStackTrace();
+	}
        }
 	}
 
@@ -508,11 +517,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
- * Revision 1.40  2009/05/15 16:28:14  pdoubleya
- * Integrate async image loading, starting point is DelegatingUserAgentCallback. AWT images are now always buffered, but screen-compatible. RootPanel now supports a repaint mechanism, with optional layout, with some attempt to control how often one or the other actually takes place when many images have been loaded.
- *
- * Revision 1.39  2009/05/09 15:16:43  pdoubleya
- * FindBugs: proper disposal of IO resources
+ * Revision 1.41  2009/08/03 19:36:29  pdoubleya
+ * Add new listener for PDF generation which automatically parses HTML header information and adds it as PDF properties (e.g. title, subject). Patch submitted by Tim Telcik in email. Thanks!
  *
  * Revision 1.38  2008/09/06 18:44:29  peterbrant
  * Add PDF export to browser (patch from Mykola Gurov)
