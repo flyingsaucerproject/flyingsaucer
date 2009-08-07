@@ -2,10 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="demos/about/src/java"/>
 	<classpathentry kind="src" path="demos/browser/src/java"/>
-	<classpathentry kind="src" path="demos/filebrowser/src/java"/>
-	<classpathentry kind="src" path="demos/photogallery/src/java"/>
 	<classpathentry excluding="compare/**|net/homelinux/tobe/**|utilities/**" kind="src" path="src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/iText-2.0.8.jar"/>
+	<classpathentry kind="lib" path="lib/iText-2.1.7.jar"/>
+	<classpathentry kind="lib" path="lib/swt/swt-3.5m6-linux.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
