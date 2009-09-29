@@ -1163,6 +1163,8 @@ public class CSSParser {
             selector.setPseudoClass(Selector.HOVER_PSEUDOCLASS);
         } else if (value.equals("focus")) {
             selector.setPseudoClass(Selector.FOCUS_PSEUDOCLASS);
+        } else if (value.equals("active")) {
+            selector.setPseudoClass(Selector.ACTIVE_PSEUDOCLASS);
         } else if (value.equals("first-child")) {
             selector.addFirstChildCondition();
         } else if (CSS21_PSEUDO_ELEMENTS.contains(value)){
