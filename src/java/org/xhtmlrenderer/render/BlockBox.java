@@ -1263,13 +1263,21 @@ public class BlockBox extends Box implements InlinePaintable {
     public void setBottomMarginCalculated(boolean bottomMarginCalculated) {
         _bottomMarginCalculated = bottomMarginCalculated;
     }
-
+    
     protected int getCSSWidth(CssContext c) {
+        return getCSSWidth(c, false);
+    }
+
+    protected int getCSSWidth(CssContext c, boolean shrinkingToFit) {
         if (! isAnonymous()) {
             if (! getStyle().isAutoWidth()) {
-                int result = (int) getStyle().getFloatPropertyProportionalWidth(
-                        CSSName.WIDTH, getContainingBlock().getContentWidth(), c);
-                return result >= 0 ? result : -1;
+                if (shrinkingToFit && ! getStyle().isAbsoluteWidth()) {
+                    return -1;
+                } else {
+                    int result = (int) getStyle().getFloatPropertyProportionalWidth(
+                            CSSName.WIDTH, getContainingBlock().getContentWidth(), c);
+                    return result >= 0 ? result : -1;
+                }
             }
         }
 
@@ -1418,7 +1426,7 @@ public class BlockBox extends Box implements InlinePaintable {
             BorderPropertySet border = getBorder(c);
             RectPropertySet padding = getPadding(c);
 
-            int width = getCSSWidth(c);
+            int width = getCSSWidth(c, true);
 
             if (width == -1) {
                 if (isReplaced()) {
@@ -2101,6 +2109,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.100  2009/11/08 23:52:48  peterbrant
+ * Treat percentage widths as auto when calculating min/max widths
+ *
  * Revision 1.99  2008/12/14 19:20:05  peterbrant
  * Skip running blocks when calculating min/max widths
  *

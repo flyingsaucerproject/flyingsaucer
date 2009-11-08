@@ -869,6 +869,10 @@ public class CalculatedStyle {
     public boolean isAutoWidth() {
         return isIdent(CSSName.WIDTH, IdentValue.AUTO);
     }
+    
+    public boolean isAbsoluteWidth() {
+        return valueByName(CSSName.WIDTH).hasAbsoluteUnit();
+    }
 
     public boolean isAutoHeight() {
         return isIdent(CSSName.HEIGHT, IdentValue.AUTO);
@@ -1173,6 +1177,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.109  2009/11/08 23:52:48  peterbrant
+ * Treat percentage widths as auto when calculating min/max widths
+ *
  * Revision 1.108  2009/05/09 14:17:41  pdoubleya
  * FindBugs: static field should not be mutable; use inner class to declare CSS 4-side properties
  *
