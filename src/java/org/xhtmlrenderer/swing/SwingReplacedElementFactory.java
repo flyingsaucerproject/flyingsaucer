@@ -29,7 +29,6 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.DefaultFormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
-import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.resource.ImageResource;
@@ -59,20 +58,21 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
 
     protected final RepaintListener repaintListener;
 
-    private ImageResourceLoader _imageResourceLoader;
+    private ImageResourceLoader imageResourceLoader;
 
 
     public SwingReplacedElementFactory() {
         this(ImageResourceLoader.NO_OP_REPAINT_LISTENER);
     }
+    
     public SwingReplacedElementFactory(RepaintListener repaintListener) {
-        this.repaintListener = repaintListener;
-        this.formSubmissionListener = new DefaultFormSubmissionListener();
+        this(repaintListener, new ImageResourceLoader());
     }
 
     public SwingReplacedElementFactory(final RepaintListener listener, final ImageResourceLoader irl) {
-        this(listener);
-        _imageResourceLoader = irl;
+        this.repaintListener = listener;
+        this.imageResourceLoader = irl;
+        this.formSubmissionListener = new DefaultFormSubmissionListener();
     }
 
     /**
@@ -144,7 +144,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
                 re = newIrreplaceableImageElement(cssWidth, cssHeight);
             } else {
                 XRLog.load(Level.FINE, "Swing: Image " + ruri + " requested at "+ " to " + cssWidth + ", " + cssHeight);
-                ImageResource imageResource = _imageResourceLoader.get(ruri, cssWidth, cssHeight);
+                ImageResource imageResource = imageResourceLoader.get(ruri, cssWidth, cssHeight);
                 if (imageResource.isLoaded()) {
                     re = new ImageReplacedElement(((AWTFSImage) imageResource.getImage()).getImage(), cssWidth, cssHeight);
                 } else {
