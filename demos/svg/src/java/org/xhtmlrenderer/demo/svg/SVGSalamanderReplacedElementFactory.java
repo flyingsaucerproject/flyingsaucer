@@ -23,6 +23,7 @@ package org.xhtmlrenderer.demo.svg;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.app.beans.SVGPanel;
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.extend.FSCanvas;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -99,7 +100,10 @@ public class SVGSalamanderReplacedElementFactory implements ReplacedElementFacto
         } else {
             SwingReplacedElement result = new SwingReplacedElement(cc);
             if (c.isInteractive()) {
-                c.getCanvas().add(cc);
+                FSCanvas canvas = c.getCanvas();
+                if (canvas instanceof JComponent) {
+                    ((JComponent) canvas).add(cc);
+                }
             }
             return result;
         }
