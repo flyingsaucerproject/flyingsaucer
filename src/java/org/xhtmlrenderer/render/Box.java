@@ -453,7 +453,7 @@ public abstract class Box implements Styleable {
         Dimension marginCorner = pI.getOuterMarginCorner();
         Rectangle canvasBounds = new Rectangle(0, 0, marginCorner.width, marginCorner.height);
         canvasBounds.add(c.getViewportRectangle());
-        c.getOutputDevice().paintBackground(c, getStyle(), canvasBounds, canvasBounds);
+        c.getOutputDevice().paintBackground(c, getStyle(), canvasBounds, canvasBounds, null);
     }
 
     public Layer getContainingLayer() {
@@ -1122,6 +1122,11 @@ public abstract class Box implements Styleable {
  * $Id$
  * 
  * $Log$
+ * Revision 1.147  2010/01/11 01:27:41  peterbrant
+ * Correct background-position calculation.  Detective work and initial patch from Stefano Bagnara.
+ *
+ * 14.2 says backgrounds are painted over the border box.  However, background-position is calculated relative to the padding box (spec 14.2.1).  We were calculating it relative to the border box.
+ *
  * Revision 1.146  2008/11/07 18:34:33  peterbrant
  * Add API to retrieve PDF page and coordinates for boxes with an ID attribute
  *

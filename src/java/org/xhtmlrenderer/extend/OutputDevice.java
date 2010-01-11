@@ -53,7 +53,8 @@ public interface OutputDevice {
     public void paintBackground(RenderingContext c, Box box);
     public void paintBackground(
             RenderingContext c, CalculatedStyle style, 
-            Rectangle bounds, Rectangle bgImageContainer);
+            Rectangle bounds, Rectangle bgImageContainer,
+            BorderPropertySet border);
     
     public void paintReplacedElement(RenderingContext c, BlockBox box);
     

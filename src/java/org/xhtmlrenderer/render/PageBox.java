@@ -303,7 +303,7 @@ public class PageBox {
             bounds = getPrintPaintingBounds(c);
         }
         
-        c.getOutputDevice().paintBackground(c, getStyle(), bounds, bounds);
+        c.getOutputDevice().paintBackground(c, getStyle(), bounds, bounds, getStyle().getBorder(c));
     }
     
     public void paintMarginAreas(RenderingContext c, int additionalClearance, short mode) {

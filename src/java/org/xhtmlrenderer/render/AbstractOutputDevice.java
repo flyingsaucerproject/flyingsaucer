@@ -178,8 +178,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     
     public void paintBackground(
             RenderingContext c, CalculatedStyle style, 
-            Rectangle bounds, Rectangle bgImageContainer) {
-        paintBackground0(c, style, bounds, bgImageContainer);
+            Rectangle bounds, Rectangle bgImageContainer, BorderPropertySet border) {
+        paintBackground0(c, style, bounds, bgImageContainer, border);
     }
     
     public void paintBackground(RenderingContext c, Box box) {
@@ -188,12 +188,14 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
         
         Rectangle backgroundBounds = box.getPaintingBorderEdge(c);
-        paintBackground0(c, box.getStyle(), backgroundBounds, backgroundBounds);
+        BorderPropertySet border = box.getStyle().getBorder(c);
+        paintBackground0(c, box.getStyle(), backgroundBounds, backgroundBounds, border);
     }
 
     private void paintBackground0(
             RenderingContext c, CalculatedStyle style, 
-            Rectangle backgroundBounds, Rectangle bgImageContainer) {
+            Rectangle backgroundBounds, Rectangle bgImageContainer,
+            BorderPropertySet border) {
         if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
             return;
         }
@@ -219,6 +221,11 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         
             int xoff = localBGImageContainer.x;
             int yoff = localBGImageContainer.y;
+            
+            if (border != null) {
+                xoff += (int)border.left();
+                yoff += (int)border.top();
+            }
             
             Shape oldclip = getClip();
     

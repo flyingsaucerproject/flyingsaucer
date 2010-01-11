@@ -402,7 +402,8 @@ public class TableBox extends BlockBox {
             super.paintBackground(c);
         } else if (getStyle().isVisible()) {
             c.getOutputDevice().paintBackground(
-                    c, getStyle(), getContentLimitedBorderEdge(c), getPaintingBorderEdge(c));
+                    c, getStyle(), getContentLimitedBorderEdge(c), getPaintingBorderEdge(c),
+                    getStyle().getBorder(c));
         }
     }
     
