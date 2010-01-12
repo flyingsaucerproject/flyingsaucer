@@ -238,7 +238,7 @@ public class TableBox extends BlockBox {
         // don't try to allocate any margin space to auto margins.  It
         // will just confuse the issue later when we expand the effective
         // table width to its minimum width.
-        if (getMinWidth() < cssWidth)
+        if (getMinWidth() <= cssWidth)
         {
             super.resolveAutoMargins(c, cssWidth, padding, border);
         }
@@ -1545,7 +1545,8 @@ public class TableBox extends BlockBox {
             Length tw = table.getStyle().asLength(c, CSSName.WIDTH);
             if (tw.isFixed() && tw.value() > 0) {
                 table.calcDimensions(c);
-                int width = table.getWidth();
+                RectPropertySet margin = table.getMargin(c);
+                int width = table.getWidth() - (int)margin.left() - (int)margin.right();
                 minWidth = Math.max(minWidth, width);
                 maxWidth = minWidth;
             }
