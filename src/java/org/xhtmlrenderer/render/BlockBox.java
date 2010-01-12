@@ -610,8 +610,8 @@ public class BlockBox extends Box implements InlinePaintable {
         if (withoutMargins < getContainingBlockWidth()) {
             int available = getContainingBlockWidth() - withoutMargins;
 
-            boolean autoLeft = getStyle().isIdent(CSSName.MARGIN_LEFT, IdentValue.AUTO);
-            boolean autoRight = getStyle().isIdent(CSSName.MARGIN_RIGHT, IdentValue.AUTO);
+            boolean autoLeft = getStyle().isAutoLeftMargin();
+            boolean autoRight = getStyle().isAutoRightMargin();
 
             if (autoLeft && autoRight) {
                 setMarginLeft(c, available / 2);
@@ -2109,6 +2109,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.101  2010/01/12 14:33:27  peterbrant
+ * Ignore auto margins when calculating table min/max width.  Also, when deciding whether or not to proceed with the auto margin calculation for a table,  make sure we compare consistently with how the table min width is actually set.
+ *
  * Revision 1.100  2009/11/08 23:52:48  peterbrant
  * Treat percentage widths as auto when calculating min/max widths
  *

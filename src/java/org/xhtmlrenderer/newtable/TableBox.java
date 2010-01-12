@@ -174,10 +174,15 @@ public class TableBox extends BlockBox {
         }
     }
     
-    public int marginsBordersPaddingAndSpacing(CssContext c) {
+    public int marginsBordersPaddingAndSpacing(CssContext c, boolean ignoreAutoMargins) {
         int result = 0;
         RectPropertySet margin = getMargin(c);
-        result += (int)margin.left() + (int)margin.right();
+        if (! ignoreAutoMargins || ! getStyle().isAutoLeftMargin()) {
+            result += (int)margin.left();
+        }
+        if (! ignoreAutoMargins || ! getStyle().isAutoRightMargin()) {
+            result += (int)margin.right();
+        }
         BorderPropertySet border = getBorder(c);
         result += (int)border.left() + (int)border.right();
         if (! getStyle().isCollapseBorders()) {
@@ -238,20 +243,13 @@ public class TableBox extends BlockBox {
         // don't try to allocate any margin space to auto margins.  It
         // will just confuse the issue later when we expand the effective
         // table width to its minimum width.
-        if (getMinWidth() <= cssWidth)
-        {
+        if (getMinWidth() <= getContentWidth() + marginsBordersPaddingAndSpacing(c, true)) {
             super.resolveAutoMargins(c, cssWidth, padding, border);
-        }
-        else
-        {
-            boolean autoLeft = getStyle().isIdent(CSSName.MARGIN_LEFT, IdentValue.AUTO);
-            if (autoLeft)
-            {
+        } else {
+            if (getStyle().isAutoLeftMargin()) {
                 setMarginLeft(c, 0);
             }
-            boolean autoRight = getStyle().isIdent(CSSName.MARGIN_RIGHT, IdentValue.AUTO);
-            if (autoRight)
-            {
+            if (getStyle().isAutoRightMargin()) {
                 setMarginRight(c, 0);
             }
         }
@@ -1027,7 +1025,7 @@ public class TableBox extends BlockBox {
         }
         
         public void calcMinMaxWidth(LayoutContext c) {
-            int bs = _table.marginsBordersPaddingAndSpacing(c);
+            int bs = _table.marginsBordersPaddingAndSpacing(c, true);
             
             _table.calcDimensions(c);
             
@@ -1056,7 +1054,7 @@ public class TableBox extends BlockBox {
         }
         
         public void layout(LayoutContext c) {
-            int tableWidth = _table.getWidth() - _table.marginsBordersPaddingAndSpacing(c);
+            int tableWidth = _table.getWidth() - _table.marginsBordersPaddingAndSpacing(c, false);
             int available = tableWidth;
             int nEffCols = _table.numEffCols();
 
@@ -1538,15 +1536,14 @@ public class TableBox extends BlockBox {
              
             maxWidth = Math.max(maxWidth, spanMaxWidth);
 
-            int bs = table.marginsBordersPaddingAndSpacing(c);
+            int bs = table.marginsBordersPaddingAndSpacing(c, true);
             minWidth += bs;
             maxWidth += bs;
 
             Length tw = table.getStyle().asLength(c, CSSName.WIDTH);
             if (tw.isFixed() && tw.value() > 0) {
                 table.calcDimensions(c);
-                RectPropertySet margin = table.getMargin(c);
-                int width = table.getWidth() - (int)margin.left() - (int)margin.right();
+                int width = table.getContentWidth() + table.marginsBordersPaddingAndSpacing(c, true);
                 minWidth = Math.max(minWidth, width);
                 maxWidth = minWidth;
             }
@@ -1560,7 +1557,7 @@ public class TableBox extends BlockBox {
             TableBox table = _table;
             // table layout based on the values collected in the layout
             // structure.
-            int tableWidth = table.getWidth() - table.marginsBordersPaddingAndSpacing(c);
+            int tableWidth = table.getWidth() - table.marginsBordersPaddingAndSpacing(c, false);
             int available = tableWidth;
             int nEffCols = table.numEffCols();
 

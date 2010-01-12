@@ -877,6 +877,14 @@ public class CalculatedStyle {
     public boolean isAutoHeight() {
         return isIdent(CSSName.HEIGHT, IdentValue.AUTO);
     }
+    
+    public boolean isAutoLeftMargin() {
+        return isIdent(CSSName.MARGIN_LEFT, IdentValue.AUTO);
+    }
+    
+    public boolean isAutoRightMargin() {
+        return isIdent(CSSName.MARGIN_RIGHT, IdentValue.AUTO);
+    }
 
     public boolean isAutoZIndex() {
         return isIdent(CSSName.Z_INDEX, IdentValue.AUTO);
@@ -1177,6 +1185,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.110  2010/01/12 14:33:27  peterbrant
+ * Ignore auto margins when calculating table min/max width.  Also, when deciding whether or not to proceed with the auto margin calculation for a table,  make sure we compare consistently with how the table min width is actually set.
+ *
  * Revision 1.109  2009/11/08 23:52:48  peterbrant
  * Treat percentage widths as auto when calculating min/max widths
  *
