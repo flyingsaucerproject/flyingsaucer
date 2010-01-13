@@ -198,7 +198,7 @@ public class XRLog {
         log(RENDER, level, msg, th);
     }
 
-    public static void log(String where, Level level, String msg) {
+    public static synchronized void log(String where, Level level, String msg) {
         if (initPending) {
             init();
         }
@@ -207,7 +207,7 @@ public class XRLog {
         }
     }
 
-    public static void log(String where, Level level, String msg, Throwable th) {
+    public static synchronized void log(String where, Level level, String msg, Throwable th) {
         if (initPending) {
             init();
         }
@@ -296,6 +296,9 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2010/01/13 01:28:46  peterbrant
+ * Add synchronization to XRLog#log to avoid spurious errors on initializatoin
+ *
  * Revision 1.19  2008/01/27 16:40:29  pdoubleya
  * Issues 186 and 130: fix configuration so that logging setup does not override any current settings for JDK logging classes. Disable logging by default.
  *
