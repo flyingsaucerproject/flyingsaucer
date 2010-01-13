@@ -884,7 +884,7 @@ public class Layer {
         // Empty pages may result when a "keep together" constraint
         // cannot be satisfied and is dropped
         List pages = getPages();
-        for (int i = pages.size() - 1; i >= 0; i--) {
+        for (int i = pages.size() - 1; i > 0; i--) {
             PageBox page = (PageBox)pages.get(i);
             if (page.getTop() >= maxYHeight) {
                 if (page == getLastRequestedPage()) {
