@@ -323,7 +323,7 @@ public class InlineBox implements Styleable {
             } else /* if (whitespace == IdentValue.NORMAL) */ {
                 _maxWidth = calcMinWidthFromWordLength(c, cbWidth, trimLeadingSpace, false);
             }
-            
+            _minWidth = Math.min(_maxWidth, _minWidth);
             _minMaxCalculated = true;
         }
     }
