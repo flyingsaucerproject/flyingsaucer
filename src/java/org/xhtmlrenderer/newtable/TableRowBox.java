@@ -418,7 +418,7 @@ public class TableRowBox extends BlockBox {
         int cRow = getIndex();
         int totalRows = getSection().getChildCount();
         List grid = getSection().getGrid();
-        if (grid.size() > 0) {
+        if (cRow < grid.size()) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
