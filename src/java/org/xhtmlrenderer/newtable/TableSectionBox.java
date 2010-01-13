@@ -99,7 +99,10 @@ public class TableSectionBox extends BlockBox {
     }
     
     public TableCellBox cellAt(int row, int col) {
-        return (TableCellBox)((RowData)_grid.get(row)).getRow().get(col);
+        if (row >= _grid.size()) return null;
+        RowData rowData = (RowData)_grid.get(row);
+        if (col >= rowData.getRow().size()) return null;
+        return (TableCellBox)rowData.getRow().get(col);
     }
     
     private void setCellAt(int row, int col, TableCellBox cell) {
