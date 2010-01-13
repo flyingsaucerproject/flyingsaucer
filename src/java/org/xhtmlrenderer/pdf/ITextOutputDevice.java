@@ -77,6 +77,7 @@ import com.lowagie.text.Image;
 import com.lowagie.text.pdf.CMYKColor;
 import com.lowagie.text.pdf.PdfAction;
 import com.lowagie.text.pdf.PdfAnnotation;
+import com.lowagie.text.pdf.PdfBorderArray;
 import com.lowagie.text.pdf.PdfBorderDictionary;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfDestination;
@@ -266,7 +267,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         PdfAnnotation annot = PdfAnnotation.createLink(
                                 _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
                         annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                        
+                        annot.setBorder(new PdfBorderArray(0.0f,0.0f,0));
                         _writer.addAnnotation(annot);
                     }
             	} else if (uri.indexOf("://") != -1) {
@@ -280,7 +281,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             				_writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
             		
                     annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                    
+                    annot.setBorder(new PdfBorderArray(0.0f,0.0f,0));
                     _writer.addAnnotation(annot);
             	}
             }
