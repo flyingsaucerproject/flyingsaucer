@@ -58,7 +58,6 @@ public class ImageResourceLoader {
     }
 
     public static ImageResource loadImageResourceFromUri(final String uri) {
-        System.out.println(": " + uri);
         StreamResource sr = new StreamResource(uri);
         InputStream is;
         ImageResource ir = null;
