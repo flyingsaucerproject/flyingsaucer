@@ -748,6 +748,8 @@ public class BlockBox extends Box implements InlinePaintable {
         if (style.isFixedBackground()) {
             c.getRootLayer().setFixedBackground(true);
         }
+        
+        calcClearance(c);
 
         if (isRoot() || getStyle().establishesBFC() || isMarginAreaRoot()) {
             BlockFormattingContext bfc = new BlockFormattingContext(this, c);
@@ -764,7 +766,6 @@ public class BlockBox extends Box implements InlinePaintable {
         calcShrinkToFitWidthIfNeeded(c);
         collapseMargins(c);
 
-        calcClearance(c);
         calcExtraPageClearance(c);
 
         if (c.isPrint()) {
@@ -2109,6 +2110,9 @@ public class BlockBox extends Box implements InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.102  2010/01/13 00:42:11  peterbrant
+ * Calculate clearance before possibly establishing new BFC.  It needs to be calculated relative to the existing BFC and not the new one.
+ *
  * Revision 1.101  2010/01/12 14:33:27  peterbrant
  * Ignore auto margins when calculating table min/max width.  Also, when deciding whether or not to proceed with the auto margin calculation for a table,  make sure we compare consistently with how the table min width is actually set.
  *
