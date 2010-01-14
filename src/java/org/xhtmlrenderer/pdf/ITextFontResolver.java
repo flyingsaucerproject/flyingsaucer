@@ -159,11 +159,22 @@ public class ITextFontResolver implements FontResolver {
     
     public void addFont(String path, String encoding, boolean embedded, String pathToPFB) 
             throws DocumentException, IOException {
+        addFont(path, null, encoding, embedded, pathToPFB);
+    }
+    
+    public void addFont(String path, String fontFamilyNameOverride,
+                        String encoding, boolean embedded, String pathToPFB) 
+            throws DocumentException, IOException {
         String lower = path.toLowerCase();
         if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
             BaseFont font = BaseFont.createFont(path, encoding, embedded);
             
-            String fontFamilyName = TrueTypeUtil.getFamilyName(font);
+            String fontFamilyName;
+            if (fontFamilyNameOverride != null) {
+                fontFamilyName = fontFamilyNameOverride;
+            } else {
+                fontFamilyName = TrueTypeUtil.getFamilyName(font);
+            }
             FontFamily fontFamily = getFontFamily(fontFamilyName);
             
             FontDescription descr = new FontDescription(font);
@@ -177,7 +188,7 @@ public class ITextFontResolver implements FontResolver {
         } else if (lower.endsWith(".ttc")) {
             String[] names = BaseFont.enumerateTTCNames(path);
             for (int i = 0; i < names.length; i++) {
-                addFont(path + "," + i, encoding, embedded);
+                addFont(path + "," + i, fontFamilyNameOverride, encoding, embedded, null);
             }
         } else if (lower.endsWith(".afm") || lower.endsWith(".pfm")) {
             if (embedded && pathToPFB == null) {
@@ -187,7 +198,13 @@ public class ITextFontResolver implements FontResolver {
             BaseFont font = BaseFont.createFont(
                     path, encoding, embedded, false, null, readFile(pathToPFB));
             
-            String fontFamilyName = font.getFamilyFontName()[0][3];
+            String fontFamilyName;
+            if (fontFamilyNameOverride != null) {
+                fontFamilyName = fontFamilyNameOverride;
+            } else {
+                fontFamilyName = font.getFamilyFontName()[0][3];
+            }
+            
             FontFamily fontFamily = getFontFamily(fontFamilyName);
             
             FontDescription descr = new FontDescription(font);
