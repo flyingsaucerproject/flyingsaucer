@@ -202,6 +202,12 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         
         FSColor backgroundColor = style.getBackgroundColor();
         FSImage backgroundImage = getBackgroundImage(c, style);
+
+        // If the image width or height is zero, then there's nothing to draw.
+        // Also prevents infinte loop when trying to tile an image with zero size.
+        if (backgroundImage == null || backgroundImage.getHeight() == 0 || backgroundImage.getWidth() == 0) {
+            backgroundImage = null;
+        }
         
         if ( (backgroundColor == null || backgroundColor == FSRGBColor.TRANSPARENT) &&
                 backgroundImage == null) {

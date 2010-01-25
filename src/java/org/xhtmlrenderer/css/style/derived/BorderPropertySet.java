@@ -114,11 +114,10 @@ public class BorderPropertySet extends RectPropertySet {
      */
     public BorderPropertySet lighten(IdentValue style) {
         BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = _topColor.lightenColor();
-        bc._bottomColor = _bottomColor.lightenColor();
-        bc._leftColor = _leftColor.lightenColor();
-        bc._rightColor = _rightColor.lightenColor();
-
+        bc._topColor = _topColor == null ? null : _topColor.lightenColor();
+        bc._bottomColor = _bottomColor == null ? null : _bottomColor.lightenColor();
+        bc._leftColor = _leftColor == null ? null : _leftColor.lightenColor();
+        bc._rightColor = _rightColor == null ? null : _rightColor.lightenColor();
         return bc;
     }
 
@@ -130,10 +129,10 @@ public class BorderPropertySet extends RectPropertySet {
      */
     public BorderPropertySet darken(IdentValue style) {
         BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = _topColor.darkenColor();
-        bc._bottomColor = _bottomColor.darkenColor();
-        bc._leftColor = _leftColor.darkenColor();
-        bc._rightColor = _rightColor.darkenColor();
+        bc._topColor = _topColor == null ? null : _topColor.darkenColor();
+        bc._bottomColor = _bottomColor == null ? null : _bottomColor.darkenColor();
+        bc._leftColor = _leftColor == null ? null : _leftColor.darkenColor();
+        bc._rightColor = _rightColor == null ? null : _rightColor.darkenColor();
         return bc;
     }
 
