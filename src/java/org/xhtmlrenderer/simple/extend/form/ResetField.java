@@ -26,24 +26,32 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.XRLog;
 
-class ResetField extends InputField {
-    public ResetField(Element e, XhtmlForm form) {
-        super(e, form);
+class ResetField extends AbstractButtonField {
+    public ResetField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+        super(e, form, context, box);
     }
     
     public JComponent create() {
         JButton button = new JButton();
 
-        String label = getAttribute("value");
-
-        if (label.trim().length() == 0) {
-            button.setText("Reset");
-        } else {
-            button.setText(label);
+        String value;
+        if (hasAttribute("value")) {
+            value = getAttribute("value");
+            if (value.length() == 0)
+                value = " ";    //otherwise we get a very short button
         }
+        else {
+            value = "Reset";
+        }
+
+        applyComponentStyle(button);
+
+        button.setText(value);
         
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {

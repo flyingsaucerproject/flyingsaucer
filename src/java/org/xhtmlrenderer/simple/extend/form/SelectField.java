@@ -38,12 +38,14 @@ import javax.swing.event.ListSelectionListener;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.GeneralUtil;
 
 class SelectField extends FormField {
-    public SelectField(Element e, XhtmlForm form) {
-        super(e, form);
+    public SelectField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+        super(e, form, context, box);
     }
 
     public JComponent create() {
@@ -52,7 +54,8 @@ class SelectField extends FormField {
         // Either a select list or a drop down/combobox
         if (shouldRenderAsList()) {
             JList select = new JList(optionList.toArray());
-            
+            applyComponentStyle(select);
+
             select.setCellRenderer(new CellRenderer());
             select.addListSelectionListener(new HeadingItemListener());
 
@@ -78,6 +81,7 @@ class SelectField extends FormField {
             return new JScrollPane(select);
         } else {
             JComboBox select = new JComboBox(optionList.toArray());
+            applyComponentStyle(select);
 
             select.setEditable(false);
             select.setRenderer(new CellRenderer());

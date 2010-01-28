@@ -20,14 +20,18 @@
 package org.xhtmlrenderer.simple.extend.form;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 public class FormFieldFactory {
     private FormFieldFactory() {
     }
 
-    public static FormField create(Element e, XhtmlForm form) {
+    public static FormField create(XhtmlForm form, LayoutContext context, BlockBox box) {
         String typeKey = null;
+
+        Element e = box.getElement();
 
         if (e.getNodeName().equals("input")) {
             typeKey = e.getAttribute("type");  
@@ -40,29 +44,29 @@ public class FormFieldFactory {
         }
 
         if (typeKey.equals("submit")) {
-            return new SubmitField(e, form);
+            return new SubmitField(e, form, context, box);
         } else if (typeKey.equals("reset")) {
-            return new ResetField(e, form);
+            return new ResetField(e, form, context, box);
         } else if (typeKey.equals("button")) {
-            return new ButtonField(e, form);
+            return new ButtonField(e, form, context, box);
         } else if (typeKey.equals("image")) {
-            return new ImageField(e, form);
+            return new ImageField(e, form, context, box);
         } else if (typeKey.equals("hidden")) {
-            return new HiddenField(e, form);
+            return new HiddenField(e, form, context, box);
         } else if (typeKey.equals("password")) {
-            return new PasswordField(e, form);
+            return new PasswordField(e, form, context, box);
         } else if (typeKey.equals("checkbox")) {
-            return new CheckboxField(e, form);
+            return new CheckboxField(e, form, context, box);
         } else if (typeKey.equals("radio")) {
-            return new RadioButtonField(e, form);
+            return new RadioButtonField(e, form, context, box);
         } else if (typeKey.equals("file")) {
-            return new FileField(e, form);
+            return new FileField(e, form, context, box);
         } else if (typeKey.equals("textarea")) {
-            return new TextAreaField(e, form);
+            return new TextAreaField(e, form, context, box);
         } else if (typeKey.equals("select")) {
-            return new SelectField(e, form);
+            return new SelectField(e, form, context, box);
         } else {
-            return new TextField(e, form);
+            return new TextField(e, form, context, box);
         }
     }
 }

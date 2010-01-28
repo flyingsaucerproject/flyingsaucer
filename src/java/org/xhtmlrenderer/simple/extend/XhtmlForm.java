@@ -34,6 +34,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.form.FormField;
 import org.xhtmlrenderer.simple.extend.form.FormFieldFactory;
 import org.xhtmlrenderer.util.XRLog;
@@ -46,9 +48,6 @@ import org.xhtmlrenderer.util.XRLog;
  */
 public class XhtmlForm {
     private static final String FS_DEFAULT_GROUP = "__fs_default_group_";
-    public static final JComponent HIDDEN_FIELD = new JComponent() {
-        private static final long serialVersionUID = 1L;
-    };
 
     private static int _defaultGroupCount = 1;
 
@@ -104,7 +103,7 @@ public class XhtmlForm {
         return false;
     }
 
-    public JComponent addComponent(Element e) {
+    public FormField addComponent(Element e, LayoutContext context, BlockBox box) {
         FormField field = null;
 
         if (_componentCache.containsKey(e)) {
@@ -113,8 +112,8 @@ public class XhtmlForm {
             if (!isFormField(e)) {
                 return null;
             }
-            
-            field = FormFieldFactory.create(e, this);
+
+            field = FormFieldFactory.create(this, context, box);
     
             if (field == null) {
                 XRLog.layout("Unknown field type: " + e.getNodeName());
@@ -125,7 +124,7 @@ public class XhtmlForm {
             _componentCache.put(e, field);
         }
 
-        return field.getComponent();
+        return field;
     }
     
     public void reset() {

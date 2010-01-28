@@ -29,6 +29,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.DefaultFormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
+import org.xhtmlrenderer.simple.extend.form.FormField;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.resource.ImageResource;
@@ -87,8 +88,6 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     ) {
         Element e = box.getElement();
 
-        JComponent cc;
-
         if (e == null) {
             return null;
         }
@@ -104,14 +103,21 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
                 form = new XhtmlForm(uac, parentForm, formSubmissionListener);
                 addForm(parentForm, form);
             }
-            cc = form.addComponent(e);
-        }
-        if (cc == null) {
-            return null;
-        } else if (cc == XhtmlForm.HIDDEN_FIELD) {
-            return new EmptyReplacedElement(0, 0);
-        } else {
+
+            FormField formField = form.addComponent(e, context, box);
+            if (formField == null) {
+                return null;
+            }
+
+            JComponent cc = formField.getComponent();
+
+            if (cc == null) {
+                return new EmptyReplacedElement(0, 0);
+            }
+
             SwingReplacedElement result = new SwingReplacedElement(cc);
+            result.setIntrinsicSize(formField.getIntrinsicSize());
+            
             if (context.isInteractive()) {
                 ((Container) context.getCanvas()).add(cc);
             }

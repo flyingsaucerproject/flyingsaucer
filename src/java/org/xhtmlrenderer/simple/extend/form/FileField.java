@@ -32,14 +32,16 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 class FileField extends InputField implements ActionListener {
     private JTextField _pathTextField;
     private JButton _browseButton;
 
-    public FileField(Element e, XhtmlForm form) {
-        super(e, form);
+    public FileField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+        super(e, form, context, box);
     }
 
     public JComponent create() {

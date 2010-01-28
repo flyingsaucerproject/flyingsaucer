@@ -31,8 +31,7 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JComponent;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -181,10 +180,10 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         ReplacedElement replaced = box.getReplacedElement();
         if (replaced instanceof SwingReplacedElement) {
             Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
-            translate(contentBounds.x, contentBounds.y);
             JComponent component = ((SwingReplacedElement)box.getReplacedElement()).getJComponent();
-            component.print(_graphics);
-            translate(-contentBounds.x, -contentBounds.y);
+            RootPanel canvas = (RootPanel)c.getCanvas();
+            CellRendererPane pane = canvas.getCellRendererPane();
+            pane.paintComponent(_graphics, component, canvas, contentBounds.x,  contentBounds.y, contentBounds.width, contentBounds.height,true);
         } else if (replaced instanceof ImageReplacedElement) {
             Image image = ((ImageReplacedElement)replaced).getImage();
             

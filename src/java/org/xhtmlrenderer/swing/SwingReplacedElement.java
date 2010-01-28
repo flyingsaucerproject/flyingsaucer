@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Point;
+import java.awt.*;
 
 import javax.swing.JComponent;
 
@@ -28,6 +28,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 
 public class SwingReplacedElement implements ReplacedElement {
     private JComponent _component;
+    private Dimension intrinsicSize;
     
     public SwingReplacedElement(JComponent component) {
         _component = component;
@@ -36,13 +37,17 @@ public class SwingReplacedElement implements ReplacedElement {
     public JComponent getJComponent() {
         return _component;
     }
-    
-    public int getIntrinsicHeight() {
-        return _component.getBounds().height;
+
+    public void setIntrinsicSize(Dimension intrinsicSize){
+        this.intrinsicSize = intrinsicSize;
     }
     
+    public int getIntrinsicHeight() {
+        return intrinsicSize == null ? _component.getSize().height : intrinsicSize.height;
+    }
+
     public int getIntrinsicWidth() {
-        return _component.getBounds().width;
+        return intrinsicSize == null ? _component.getSize().width : intrinsicSize.width;
     }
     
     public void setLocation(int x, int y) {

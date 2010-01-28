@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -27,16 +27,23 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.plaf.basic.BasicButtonUI;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.FSDerivedValue;
+import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xhtmlrenderer.util.XRLog;
 
 class ImageField extends InputField {
-    public ImageField(Element e, XhtmlForm form) {
-        super(e, form);
+    public ImageField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+        super(e, form, context, box);
     }
 
     public JComponent create() {
@@ -54,16 +61,40 @@ class ImageField extends InputField {
         if (image == null) {
             button = new JButton("Image unreachable. " + getAttribute("alt"));
         } else {
-            button = new JButton(new ImageIcon(image, getAttribute("alt")));
+            final ImageIcon imgIcon = new ImageIcon(image, getAttribute("alt"));
+            final Image img = imgIcon.getImage();
+            button = new JButton() {
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
+                }
+
+                public Dimension getPreferredSize() {
+                    return new Dimension(imgIcon.getIconWidth(), imgIcon.getIconHeight());
+                }
+            };
         }
 
-        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setUI(new BasicButtonUI());
         button.setContentAreaFilled(false);
+
+
+        CalculatedStyle style = getStyle();
+
+        FSDerivedValue widthValue = style.valueByName(CSSName.WIDTH);
+        if (widthValue instanceof LengthValue) {
+            intrinsicWidth = new Integer(getBox().getContentWidth());
+        }
+
+        FSDerivedValue heightValue = style.valueByName(CSSName.HEIGHT);
+        if (heightValue instanceof LengthValue) {
+            intrinsicHeight = new Integer(getBox().getHeight());
+        }
 
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 XRLog.layout("Image pressed: Submit");
-                
+
                 getParentForm().submit(getComponent());
             }
         });

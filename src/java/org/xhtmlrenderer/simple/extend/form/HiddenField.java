@@ -22,15 +22,17 @@ package org.xhtmlrenderer.simple.extend.form;
 import javax.swing.JComponent;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 class HiddenField extends InputField {
     
-    public HiddenField(Element e, XhtmlForm form) {
-        super(e, form);
+    public HiddenField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+        super(e, form, context, box);
     }
 
     public JComponent create() {
-        return XhtmlForm.HIDDEN_FIELD;
+        return null;
     }
 }

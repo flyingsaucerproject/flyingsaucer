@@ -26,24 +26,32 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.XRLog;
 
-class SubmitField extends InputField {
-    public SubmitField(Element e, XhtmlForm form) {
-        super(e, form);
+class SubmitField extends AbstractButtonField {
+    public SubmitField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+        super(e, form, context, box);
     }
 
     public JComponent create() {
         JButton button = new JButton();
 
-        String label = getAttribute("value");
-
-        if (label.trim().length() == 0) {
-            button.setText("Submit");
+        String value;
+        if (hasAttribute("value")) {
+            value = getAttribute("value");
+            if (value.length() == 0) {
+                value = " ";    //otherwise we get a very short button
+            }
         } else {
-            button.setText(label);
+            value = "Submit";
         }
+
+        applyComponentStyle(button);
+
+        button.setText(value);
 
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {

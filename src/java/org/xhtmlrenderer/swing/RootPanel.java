@@ -56,6 +56,9 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 public class RootPanel extends JPanel implements ComponentListener, UserInterface, FSCanvas, RepaintListener {
     static final long serialVersionUID = 1L;
 
+
+    private CellRendererPane cellRendererPane;
+
     public RootPanel() {
     }
 
@@ -432,6 +435,18 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                 XRLog.load(Level.WARNING, "Document listener threw an exception; continuing processing", e);
             }
         }
+    }
+
+    /**
+     * @return a CellRendererPane suitable for drawing components in (with CellRendererPane.paintComponent)
+     */
+    public CellRendererPane getCellRendererPane() {
+        if (cellRendererPane == null || cellRendererPane.getParent() != this) {
+            cellRendererPane = new CellRendererPane();
+            this.add(cellRendererPane);
+        }
+
+        return cellRendererPane;
     }
 
 

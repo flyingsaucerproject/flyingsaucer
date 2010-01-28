@@ -24,11 +24,13 @@ import javax.swing.JComponent;
 import javax.swing.JToggleButton;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 class CheckboxField extends InputField {
-    public CheckboxField(Element e, XhtmlForm form) {
-        super(e, form);
+    public CheckboxField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+        super(e, form, context, box);
     }
 
     public JComponent create() {
