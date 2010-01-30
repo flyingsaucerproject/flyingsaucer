@@ -527,7 +527,7 @@ public class ITextFontResolver implements FontResolver {
                 } else if (style == IdentValue.OBLIQUE) {
                     return match(desiredWeight, IdentValue.NORMAL);
                 } else {
-                    return null;
+                    candidates.addAll(_fontDescriptions);
                 }
             }
             
