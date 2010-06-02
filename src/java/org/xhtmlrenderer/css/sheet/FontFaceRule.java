@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import java.util.Iterator;
+
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
@@ -28,11 +30,11 @@ public class FontFaceRule implements RulesetContainer {
     private int _origin;
     private Ruleset _ruleset;
     private CalculatedStyle _calculatedStyle;
-    
+
     public FontFaceRule(int origin) {
         _origin = origin;
     }
-    
+
     public void addContent(Ruleset ruleset) {
         if (_ruleset != null) {
             throw new XRRuntimeException("Ruleset can only be set once");
@@ -47,13 +49,24 @@ public class FontFaceRule implements RulesetContainer {
     public void setOrigin(int origin) {
         _origin = origin;
     }
-    
+
     public CalculatedStyle getCalculatedStyle() {
         if (_calculatedStyle == null) {
             _calculatedStyle = new EmptyStyle().deriveStyle(
                     CascadedStyle.createLayoutStyle(_ruleset.getPropertyDeclarations()));
         }
-        
+
         return _calculatedStyle;
+    }
+
+    public boolean hasFontFamily() {
+        for (Iterator i = _ruleset.getPropertyDeclarations().iterator(); i.hasNext(); ) {
+            PropertyDeclaration decl = (PropertyDeclaration)i.next();
+            if (decl.getPropertyName().equals("font-family")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
