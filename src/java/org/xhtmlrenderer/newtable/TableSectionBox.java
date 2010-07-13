@@ -157,17 +157,15 @@ public class TableSectionBox extends BlockBox {
         TableCellBox set = cell;
         while (cSpan > 0) {
             int currentSpan;
-            if (cCol >= nCols) {
-                getTable().appendColumn(cSpan);
-                currentSpan = cSpan;
-            } else {
-                ColumnData cData = (ColumnData)columns.get(cCol);
-                if (cSpan < cData.getSpan()) {
-                    getTable().splitColumn(cCol, cSpan);
-                }
-                cData = (ColumnData)columns.get(cCol);
-                currentSpan = cData.getSpan();
+            while ( cCol >= getTable().getColumns().size() ) {
+                getTable().appendColumn(1);
             }
+            ColumnData cData = (ColumnData)columns.get(cCol);
+            if (cSpan < cData.getSpan()) {
+                getTable().splitColumn(cCol, cSpan);
+            }
+            cData = (ColumnData)columns.get(cCol);
+            currentSpan = cData.getSpan();
             
             int r = 0;
             while (r < rSpan) {
