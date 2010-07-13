@@ -103,10 +103,16 @@ public class Breaker {
         }
         
         context.setEndsOnNL(false);
-
+        doBreakText(c, context, avail, style, false);
+    }
+    
+    private static void doBreakText(LayoutContext c,
+            LineBreakContext context, int avail, CalculatedStyle style,
+            boolean tryToBreakAnywhere) {
+        FSFont font = style.getFSFont(c);
         String currentString = context.getStartSubstring();
         int left = 0;
-        int right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+        int right = tryToBreakAnywhere ? 1 : currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
         int lastWrap = 0;
         int graphicsLength = 0;
         int lastGraphicsLength = 0;
@@ -117,7 +123,12 @@ public class Breaker {
                     c.getFontContext(), font, currentString.substring(left, right));
             lastWrap = left;
             left = right;
-            right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+            if ( tryToBreakAnywhere ) {
+                right = ( right + 1 ) % currentString.length();
+            }
+            else { // break only on whitespace
+                right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+            }
         }
 
         if (graphicsLength <= avail) {
@@ -136,6 +147,12 @@ public class Breaker {
         }
         
         context.setNeedsNewLine(true);
+        if ( lastWrap == 0 && style.getWordWrap() == IdentValue.BREAK_WORD ) {
+            if ( ! tryToBreakAnywhere ) {
+                doBreakText(c, context, avail, style, true);
+                return;
+            }
+        }
 
         if (lastWrap != 0) {//found a place to wrap
             context.setEnd(context.getStart() + lastWrap);

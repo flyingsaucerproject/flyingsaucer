@@ -1003,6 +1003,18 @@ public final class CSSName implements Comparable {
             );
 
     /**
+     * Unique CSSName instance for CSS3 property.
+     */
+    public final static CSSName WORD_WRAP =
+            addProperty(
+                    "word-wrap",
+                    PRIMITIVE,
+                    "normal",
+                    INHERITS,
+                    new PrimitivePropertyBuilders.WordWrap()
+            );
+
+    /**
      * Unique CSSName instance for CSS2 property.
      */
     public final static CSSName WIDOWS =

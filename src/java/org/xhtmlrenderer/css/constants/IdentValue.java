@@ -137,6 +137,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue NONE = addValue("none");
     public final static IdentValue NORMAL = addValue("normal");
     public final static IdentValue NOWRAP = addValue("nowrap");
+    public final static IdentValue BREAK_WORD = addValue("break-word");
     public final static IdentValue OBLIQUE = addValue("oblique");
     public final static IdentValue OPEN_QUOTE = addValue("open-quote");
     public final static IdentValue OUTSET = addValue("outset");

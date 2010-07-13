@@ -725,6 +725,10 @@ public class CalculatedStyle {
         return _FSFontMetrics;
     }
 
+    public IdentValue getWordWrap() {
+        return getIdent(CSSName.WORD_WRAP);
+    }
+
     public boolean isClearLeft() {
         IdentValue clear = getIdent(CSSName.CLEAR);
         return clear == IdentValue.LEFT || clear == IdentValue.BOTH;

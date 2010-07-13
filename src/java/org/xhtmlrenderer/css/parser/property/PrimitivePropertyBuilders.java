@@ -1380,7 +1380,18 @@ public class PrimitivePropertyBuilders {
             return ALLOWED;
         }         
     }
-    
+
+    public static class WordWrap extends SingleIdent {
+        // normal | break-word  
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] { 
+                        IdentValue.NORMAL, IdentValue.BREAK_WORD});
+        
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }         
+    }
+
     public static class Widows extends PlainInteger {
         protected boolean isNegativeValuesAllowed() {
             return false;
