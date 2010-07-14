@@ -30,6 +30,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.PageBox;
 
 /**
@@ -173,18 +174,12 @@ public class BlockBoxing {
             }
             if (mightNeedRelayout) {
                 int runStart = relayoutDataList.getRunStart(runEnd);
-                Box runEndChild = block.getChild(runEnd);
-                if (c.getRootLayer().crossesPageBreak(c,
-                        block.getChild(runStart).getAbsY(),
-                        runEndChild.getAbsY() + runEndChild.getHeight())) {
+                if ( isPageBreakBetweenChildBoxes(relayoutDataList, runStart, runEnd, c, block) ) {
                     result.setChanged(true);
                     block.resetChildren(c, runStart, offset);
                     result.setChildOffset(relayoutRun(c, localChildren, block,
                             relayoutDataList, runStart, offset, true));
-                    runEndChild = block.getChild(runEnd);
-                    if (c.getRootLayer().crossesPageBreak(c,
-                            block.getChild(runStart).getAbsY(),
-                            runEndChild.getAbsY() + runEndChild.getHeight())) {
+                    if ( isPageBreakBetweenChildBoxes(relayoutDataList, runStart, runEnd, c, block) ) {
                         block.resetChildren(c, runStart, offset);
                         result.setChildOffset(relayoutRun(c, localChildren, block,
                                 relayoutDataList, runStart, offset, false));
@@ -193,6 +188,32 @@ public class BlockBoxing {
             }
         }
         return result;
+    }
+
+    private static boolean isPageBreakBetweenChildBoxes(RelayoutDataList relayoutDataList,
+            int runStart, int runEnd, LayoutContext c, BlockBox block) {
+        for ( int i = runStart; i < runEnd; i++ ) {
+            Box prevChild = block.getChild(i);
+            Box nextChild = block.getChild(i+1);
+            // if nextChild is made of several lines, then only the first line
+            // is relevant for "page-break-before: avoid".
+            Box nextLine = getFirstLine(nextChild) == null ? nextChild : getFirstLine(nextChild);
+            int prevChildEnd = prevChild.getAbsY() + prevChild.getHeight();
+            int nextLineEnd = nextLine.getAbsY() + nextLine.getHeight();
+            if ( c.getRootLayer().crossesPageBreak(c, prevChildEnd, nextLineEnd) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static LineBox getFirstLine(Box box) {
+        for ( Box child = box; child.getChildCount()>0; child = child.getChild(0) ) {
+            if ( child instanceof LineBox ) {
+                return (LineBox) child;
+            }
+        }
+        return null;
     }
 
     private static int relayoutRun(
