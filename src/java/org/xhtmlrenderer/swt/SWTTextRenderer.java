@@ -38,17 +38,17 @@ import org.xhtmlrenderer.util.Configuration;
 public class SWTTextRenderer implements TextRenderer {
 
     private float _scale;
-    private int _antialiasing;
+    private boolean _antialiasing;
 
     public SWTTextRenderer() {
         _scale = Configuration.valueAsFloat("xr.text.scale", 1.0f);
-        setSmoothingLevel(Configuration.valueAsInt(
-            "xr.text.aa-smoothing-level", -1));
+        setSmoothingThreshold(Configuration.valueAsInt(
+            "xr.text.aa-fontsize-threshhold", 0));
     }
 
     public void setup(FontContext context) {
         GC gc = ((SWTFontContext) context).getGC();
-        gc.setTextAntialias(_antialiasing);
+        gc.setTextAntialias(_antialiasing ? SWT.ON : SWT.OFF);
     }
 
     public void drawString(OutputDevice outputDevice, String string, float x,
@@ -91,7 +91,7 @@ public class SWTTextRenderer implements TextRenderer {
     }
 
     public void setSmoothingThreshold(float fontsize) {
-        // ignore
+        _antialiasing = (fontsize >= 0);
     }
 
     public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
