@@ -962,7 +962,7 @@ public abstract class Box implements Styleable {
     }
 
     public void setContentWidth(int contentWidth) {
-        _contentWidth = contentWidth;
+        _contentWidth = contentWidth < 0 ? 0 : contentWidth;
     }
 
     public int getContentWidth() {
