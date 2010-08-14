@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import javax.swing.JOptionPane;
+
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -50,12 +52,12 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.simple.NoNamespaceHandler;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
-import org.xhtmlrenderer.simple.NoNamespaceHandler;
 
 
 
@@ -72,7 +74,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
     private boolean explicitlyOpaque;
 
-    private MouseTracker mouseTracker;
+    private final MouseTracker mouseTracker;
     private boolean centeredPagedView;
     protected FormSubmissionListener formSubmissionListener;
 
@@ -132,17 +134,17 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
         // if this is the first time painting this document, then calc layout
         Layer root = getRootLayer();
-        if (root == null || isPendingResize()) {
-            doDocumentLayout(getGraphics());
+        if (root == null || isNeedRelayout()) {
+            doDocumentLayout(g.create());
             root = getRootLayer();
         }
-        setPendingResize(false);
+        setNeedRelayout(false);
         if (root == null) {
             //Uu.p("dispatching an initial resize event");
             //queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
             XRLog.render(Level.FINE, "skipping the actual painting");
         } else {
-            RenderingContext c = newRenderingContext((Graphics2D) g);
+            RenderingContext c = newRenderingContext((Graphics2D) g.create());
             long start = System.currentTimeMillis();
             doRender(c, root);
             long end = System.currentTimeMillis();
@@ -155,7 +157,13 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
             // paint the normal swing background first
             // but only if we aren't printing.
             Graphics g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();
+
             paintDefaultBackground(g);
+
+            if (enclosingScrollPane == null) {
+                Insets insets = getInsets();
+                g.translate(insets.left, insets.top);
+            }
 
             long start = System.currentTimeMillis();
             if (!c.isPrint()) {

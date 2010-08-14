@@ -27,49 +27,53 @@ import org.xhtmlrenderer.css.style.CssContext;
  * A dummy box representing the viewport
  */
 public class ViewportBox extends BlockBox {
-    private Rectangle _viewport;
-    
+    private final Rectangle _viewport;
+
     public ViewportBox(Rectangle viewport) {
         _viewport = viewport;
     }
-    
+
     public int getWidth() {
         return _viewport.width;
     }
-    
+
     public int getHeight() {
         return _viewport.height;
     }
-    
+
     public int getContentWidth() {
         return _viewport.width;
     }
-    
+
     public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
         return new Rectangle(-_viewport.x, -_viewport.y, _viewport.width, _viewport.height);
     }
-    
+
     public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         return new Rectangle(-_viewport.x, -_viewport.y, _viewport.width, _viewport.height);
     }
-    
+
     protected int getPaddingWidth(CssContext cssCtx) {
         return _viewport.width;
     }
-    
+
     public BlockBox copyOf() {
         throw new IllegalArgumentException("cannot be copied");
     }
-    
+
     public boolean isAutoHeight() {
         return false;
     }
-    
+
     protected int getCSSHeight(CssContext c) {
         return _viewport.height;
     }
-    
+
     protected boolean isInitialContainingBlock() {
         return true;
+    }
+
+    public Rectangle getExtents() {
+        return _viewport;
     }
 }

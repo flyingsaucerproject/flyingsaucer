@@ -146,7 +146,7 @@ public class XHTMLPanel extends BasicPanel {
      */
     public void relayout() {
         sharedContext.flushFonts();
-        relayout(null);
+        super.relayout();
     }
 
     /**
