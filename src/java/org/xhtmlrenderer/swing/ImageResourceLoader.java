@@ -1,23 +1,22 @@
 package org.xhtmlrenderer.swing;
 
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.StreamResource;
-import org.xhtmlrenderer.util.ImageUtil;
-import org.xhtmlrenderer.resource.ImageResource;
-import org.xhtmlrenderer.extend.FSImage;
-
-import java.util.logging.Level;
+import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Iterator;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.awt.image.BufferedImage;
-
+import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
+
+import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.resource.ImageResource;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.ImageUtil;
+import org.xhtmlrenderer.util.StreamResource;
+import org.xhtmlrenderer.util.XRLog;
 
 
 /**
@@ -37,6 +36,7 @@ public class ImageResourceLoader {
 
     private RepaintListener _repaintListener = NO_OP_REPAINT_LISTENER;
 
+    private final boolean _useBackgroundImageLoading;
 
     public ImageResourceLoader() {
         // FIXME
@@ -45,11 +45,18 @@ public class ImageResourceLoader {
 
     public ImageResourceLoader(int cacheSize) {
         this._imageCacheCapacity = cacheSize;
-        this._loadQueue = new ImageLoadQueue();
-        final int workerCount = Configuration.valueAsInt("xr.image.background.workers", 5);
-        for (int i = 0; i < workerCount; i++) {
-            new ImageLoadWorker(_loadQueue).start();
+        this._useBackgroundImageLoading = Configuration.isTrue("xr.image.background.loading.enable", false);
+
+        if (_useBackgroundImageLoading) {
+            this._loadQueue = new ImageLoadQueue();
+            final int workerCount = Configuration.valueAsInt("xr.image.background.workers", 5);
+            for (int i = 0; i < workerCount; i++) {
+                new ImageLoadWorker(_loadQueue).start();
+            }
+        } else {
+            this._loadQueue = null;
         }
+
         this._repaintListener = NO_OP_REPAINT_LISTENER;
 
         // note we do *not* override removeEldestEntry() here--users of this class must call shrinkImageCache().
@@ -119,7 +126,7 @@ public class ImageResourceLoader {
                     XRLog.load(Level.FINE, "Load immediate: " + uri);
                     ir = loadImageResourceFromUri(uri);
                     FSImage awtfsImage = ir.getImage();
-                    BufferedImage newImg = (BufferedImage) ((AWTFSImage) awtfsImage).getImage();
+                    BufferedImage newImg = ((AWTFSImage) awtfsImage).getImage();
                     loaded(ir, -1, -1);
                     if (width > -1 && height > -1) {
                         XRLog.load(Level.FINE, this + ", scaling " + uri + " to " + width + ", " + height);
@@ -139,7 +146,7 @@ public class ImageResourceLoader {
                 // loaded at base size, need to scale
                 XRLog.load(Level.FINE, this + ", scaling " + uri + " to " + width + ", " + height);
                 FSImage awtfsImage = ir.getImage();
-                BufferedImage newImg = (BufferedImage) ((AWTFSImage) awtfsImage).getImage();
+                BufferedImage newImg = ((AWTFSImage) awtfsImage).getImage();
 
                 newImg = ImageUtil.getScaledInstance(newImg, width, height);
                 ir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
@@ -150,7 +157,7 @@ public class ImageResourceLoader {
     }
 
     public boolean isImmediateLoadUri(final String uri) {
-        return uri.startsWith("jar:file:") || uri.startsWith("file:");
+        return ! _useBackgroundImageLoading || uri.startsWith("jar:file:") || uri.startsWith("file:");
     }
 
     public synchronized void loaded(final ImageResource ir, final int width, final int height) {
@@ -171,7 +178,9 @@ public class ImageResourceLoader {
 
     public void stopLoading() {
         XRLog.load("By request, clearing pending items from load queue: " + _loadQueue.size());
-        _loadQueue.reset();
+        if (_loadQueue != null) {
+            _loadQueue.reset();
+        }
     }
 
     private static class CacheKey {
