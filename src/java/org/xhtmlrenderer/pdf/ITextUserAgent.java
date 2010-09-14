@@ -23,30 +23,28 @@ package org.xhtmlrenderer.pdf;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URISyntaxException;
 
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
 
-import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfReader;
 
 public class ITextUserAgent extends NaiveUserAgent {
     private static final int IMAGE_CACHE_CAPACITY = 32;
-    
+
     private SharedContext _sharedContext;
-    
-    private ITextOutputDevice _outputDevice;
-    
+
+    private final ITextOutputDevice _outputDevice;
+
     public ITextUserAgent(ITextOutputDevice outputDevice) {
 		super(IMAGE_CACHE_CAPACITY);
 		_outputDevice = outputDevice;
     }
-    
+
     public ImageResource getImageResource(String uri) {
         ImageResource resource = null;
         uri = resolveURI(uri);
@@ -56,7 +54,7 @@ public class ITextUserAgent extends NaiveUserAgent {
             if (is != null) {
                 try {
                     URL url = new URL(uri);
-                    if (url.getPath() != null && 
+                    if (url.getPath() != null &&
                             url.getPath().toLowerCase().endsWith(".pdf")) {
                         PdfReader reader = _outputDevice.getReader(url);
                         PDFAsImage image = new PDFAsImage(url);
@@ -70,11 +68,7 @@ public class ITextUserAgent extends NaiveUserAgent {
 	                    resource = new ImageResource(uri, new ITextFSImage(image));
                     }
                     _imageCache.put(uri, resource);
-                } catch (IOException e) {
-                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
-                } catch (BadElementException e) {
-                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
-                } catch (URISyntaxException e) {
+                } catch (Exception e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
                 } finally {
                     try {
@@ -90,7 +84,7 @@ public class ITextUserAgent extends NaiveUserAgent {
         }
         return resource;
     }
-    
+
     private void scaleToOutputResolution(Image image) {
         float factor = _sharedContext.getDotsPerPixel();
         image.scaleAbsolute(image.getPlainWidth() * factor, image.getPlainHeight() * factor);
