@@ -960,6 +960,10 @@ public class CalculatedStyle {
                 display == IdentValue.TABLE_CELL;
     }
 
+    public boolean isOverflowVisible() {
+        return valueByName(CSSName.OVERFLOW) == IdentValue.VISIBLE;
+    }
+
     public boolean isHorizontalBackgroundRepeat() {
         IdentValue value = getIdent(CSSName.BACKGROUND_REPEAT);
         return value == IdentValue.REPEAT_X || value == IdentValue.REPEAT;
