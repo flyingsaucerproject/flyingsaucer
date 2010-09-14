@@ -178,7 +178,7 @@ public class XHTMLPanel extends BasicPanel {
      */
     public void setDocument(Document doc, String url) {
         resetListeners();
-        super.setDocument(doc, url, new XhtmlNamespaceHandler());
+        setDocument(doc, url, new XhtmlNamespaceHandler());
     }
 
     /**
@@ -192,7 +192,7 @@ public class XHTMLPanel extends BasicPanel {
     public void setDocument(InputStream stream, String url)
             throws Exception {
         resetListeners();
-        super.setDocument(stream, url, new XhtmlNamespaceHandler());
+        setDocument(stream, url, new XhtmlNamespaceHandler());
     }
 
     /**
