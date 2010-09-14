@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.util;
 
 import java.io.File;
+import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,13 +38,13 @@ public class XMLUtil {
     public static Document documentFromString(final String documentContents)
         throws Exception {
 
-        return createDocumentBuilder().parse(new InputSource(documentContents));
+        return createDocumentBuilder().parse(new InputSource(new StringReader(documentContents)));
     }
 
     public static Document documentFromFile(final String filename)
         throws Exception {
 
-        return createDocumentBuilder().parse(new File(filename).toURL().openStream());
+        return createDocumentBuilder().parse(new File(filename).toURI().toURL().openStream());
     }
 
     private static DocumentBuilder createDocumentBuilder()
@@ -53,7 +54,7 @@ public class XMLUtil {
         DocumentBuilder builder = fact.newDocumentBuilder();
 
         builder.setErrorHandler( null );
-        
+
         return builder;
     }
 }
