@@ -19,20 +19,20 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.LineBox;
-
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.LineBox;
+
 /**
  * A class that manages all floated boxes in a given block formatting context.
- * It is responsible for positioning floats and calculating clearance for 
+ * It is responsible for positioning floats and calculating clearance for
  * non-floated (block) boxes.
  */
 public class FloatManager {
@@ -66,9 +66,8 @@ public class FloatManager {
     private void save(BlockBox current, Layer layer, BlockFormattingContext bfc, int direction) {
         Point p = bfc.getOffset();
         getFloats(direction).add(new BoxOffset(current, p.x, p.y));
-        layer.addFloat(current, bfc);
         current.getFloatedBoxData().setManager(this);
-        
+
         current.calcCanvasLocation();
         current.calcChildLocations();
     }
@@ -117,7 +116,7 @@ public class FloatManager {
         if (floats.size() > 0) {
             Point offset = bfc.getOffset();
             BoxOffset lastOffset = (BoxOffset) floats.get(floats.size() - 1);
-            BlockBox last = (BlockBox) lastOffset.getBox();
+            BlockBox last = lastOffset.getBox();
 
             Rectangle currentBounds = current.getMarginEdge(cssCtx, -offset.x, -offset.y);
 
@@ -200,13 +199,13 @@ public class FloatManager {
 
         return result;
     }
-    
+
     public int getClearDelta(CssContext cssCtx, int bfcRelativeY) {
         int lowestLeftY = findLowestY(cssCtx, getFloats(LEFT));
         int lowestRightY = findLowestY(cssCtx, getFloats(RIGHT));
-        
+
         int lowestY = Math.max(lowestLeftY, lowestRightY);
-        
+
         return lowestY - bfcRelativeY;
     }
 
@@ -227,17 +226,17 @@ public class FloatManager {
 
         return false;
     }
-    
+
     private void moveFloatBelow(CssContext cssCtx, BlockFormattingContext bfc,
                                    Box current, List floats) {
         if (floats.size() == 0) {
             return;
         }
-        
+
         Point offset = bfc.getOffset();
         int boxY = current.getY() - offset.y;
         int floatY = findLowestY(cssCtx, floats);
-        
+
         if (floatY - boxY > 0) {
             current.setY(current.getY() + (floatY - boxY));
         }
@@ -248,14 +247,14 @@ public class FloatManager {
         if (floats.size() == 0) {
             return;
         }
-        
+
         // Translate from box coords to BFC coords
         Point offset = bfc.getOffset();
         Rectangle bounds = current.getBorderEdge(
                 current.getX()-offset.x, current.getY()-offset.y, cssCtx);
-        
+
         int y = findLowestY(cssCtx, floats);
-        
+
         if (bounds.y < y) {
             // Translate bottom margin edge of lowest float back to box coords
             // and set the box's border edge to that value
@@ -271,7 +270,7 @@ public class FloatManager {
         removeFloat(floater, getFloats(LEFT));
         removeFloat(floater, getFloats(RIGHT));
     }
-    
+
     private void removeFloat(BlockBox floater, List floats) {
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
@@ -281,18 +280,18 @@ public class FloatManager {
             }
         }
     }
-    
+
     public void calcFloatLocations() {
         calcFloatLocations(getFloats(LEFT));
         calcFloatLocations(getFloats(RIGHT));
     }
-    
+
     private void calcFloatLocations(List floats) {
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
             boxOffset.getBox().calcCanvasLocation();
             boxOffset.getBox().calcChildLocations();
-        } 
+        }
     }
 
     private void applyLineHeightHack(CssContext cssCtx, Box line, Rectangle bounds) {
@@ -304,12 +303,12 @@ public class FloatManager {
         }
     }
 
-    public int getLeftFloatDistance(CssContext cssCtx, BlockFormattingContext bfc, 
+    public int getLeftFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
             LineBox line, int containingBlockContentWidth) {
         return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _leftFloats, LEFT);
     }
 
-    public int getRightFloatDistance(CssContext cssCtx, BlockFormattingContext bfc, 
+    public int getRightFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
             LineBox line, int containingBlockContentWidth) {
         return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _rightFloats, RIGHT);
     }
@@ -324,7 +323,7 @@ public class FloatManager {
         Point offset = bfc.getOffset();
         Rectangle lineBounds = line.getMarginEdge(cssCtx, -offset.x, -offset.y);
         lineBounds.width = containingBlockContentWidth;
-        
+
         int farthestOver = direction == LEFT ? lineBounds.x : lineBounds.x + lineBounds.width;
 
         applyLineHeightHack(cssCtx, line, lineBounds);
@@ -340,7 +339,7 @@ public class FloatManager {
                 }
             }
         }
-        
+
         if (direction == LEFT) {
             return farthestOver - lineBounds.x;
         } else {
@@ -355,13 +354,13 @@ public class FloatManager {
     public Box getMaster() {
         return _master;
     }
-    
+
     public Point getOffset(BlockBox floater) {
         // FIXME inefficient (but probably doesn't matter)
-        return getOffset(floater,  
+        return getOffset(floater,
                 floater.getStyle().isFloatedLeft() ? getFloats(LEFT) : getFloats(RIGHT));
     }
-    
+
     private Point getOffset(BlockBox floater, List floats) {
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
@@ -371,10 +370,10 @@ public class FloatManager {
                 return new Point(boxOffset.getX(), boxOffset.getY());
             }
         }
-        
+
         return null;
     }
-    
+
     private void performFloatOperation(FloatOperation op, List floats) {
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
@@ -382,7 +381,7 @@ public class FloatManager {
 
             box.setAbsX(box.getX() + getMaster().getAbsX() - boxOffset.getX());
             box.setAbsY(box.getY() + getMaster().getAbsY() - boxOffset.getY());
-            
+
             op.operate(box);
         }
     }
@@ -390,7 +389,7 @@ public class FloatManager {
     public void performFloatOperation(FloatOperation op) {
         performFloatOperation(op, getFloats(LEFT));
         performFloatOperation(op, getFloats(RIGHT));
-    }    
+    }
 
     private static class BoxOffset {
         private BlockBox _box;
@@ -415,7 +414,7 @@ public class FloatManager {
             return _y;
         }
     }
-    
+
     public interface FloatOperation {
         public void operate(Box floater);
     }

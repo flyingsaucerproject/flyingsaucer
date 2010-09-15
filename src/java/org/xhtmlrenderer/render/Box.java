@@ -792,9 +792,7 @@ public abstract class Box implements Styleable {
 
         result.setAggregateBounds(getPaintingClipEdge(c));
 
-        if (!getStyle().isOverflowApplies() || getStyle().isOverflowVisible()) {
-            calcChildPaintingInfo(c, result, useCache);
-        }
+        calcChildPaintingInfo(c, result, useCache);
 
         setPaintingInfo(result);
 
