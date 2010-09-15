@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -45,6 +46,17 @@ public class ITextUserAgent extends NaiveUserAgent {
 		_outputDevice = outputDevice;
     }
 
+    private byte[] readStream(InputStream is) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(is.available());
+        byte[] buf = new byte[10240];
+        int i;
+        while ( (i = is.read(buf)) != -1) {
+            out.write(buf, 0, i);
+        }
+        out.close();
+        return out.toByteArray();
+    }
+
     public ImageResource getImageResource(String uri) {
         ImageResource resource = null;
         uri = resolveURI(uri);
@@ -63,7 +75,7 @@ public class ITextUserAgent extends NaiveUserAgent {
                         image.setInitialHeight(rect.getHeight()*_outputDevice.getDotsPerPoint());
                         resource = new ImageResource(uri, image);
                     } else {
-	                    Image image = Image.getInstance(url);
+	                    Image image = Image.getInstance(readStream(is));
 	                    scaleToOutputResolution(image);
 	                    resource = new ImageResource(uri, new ITextFSImage(image));
                     }
