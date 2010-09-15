@@ -142,10 +142,10 @@ public class TableBox extends BlockBox {
         
         if (isMarginAreaRoot()) {
             _tableLayout = new MarginTableLayout(this);
-        } else if (getStyle().isIdent(CSSName.TABLE_LAYOUT, IdentValue.FIXED)) {
-            _tableLayout = new FixedTableLayout(this);
-        } else {
+        } else if (getStyle().isIdent(CSSName.TABLE_LAYOUT, IdentValue.AUTO) || getStyle().isAutoWidth()) {
             _tableLayout = new AutoTableLayout(this);
+        } else {
+            _tableLayout = new FixedTableLayout(this);
         }
     }
     
