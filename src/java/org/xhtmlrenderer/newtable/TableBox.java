@@ -41,29 +41,29 @@ import org.xhtmlrenderer.render.ContentLimit;
 import org.xhtmlrenderer.render.ContentLimitContainer;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.ArrayUtil;
+import org.xhtmlrenderer.util.XRLog;
 
-// Much of this code is directly inspired by (and even copied from) 
-// the equivalent code in KHTML (including the idea of "effective columns" to 
-// manage colspans and the details of the table layout algorithms).  Many kudos 
+// Much of this code is directly inspired by (and even copied from)
+// the equivalent code in KHTML (including the idea of "effective columns" to
+// manage colspans and the details of the table layout algorithms).  Many kudos
 // to the KHTML developers for making such an amazing piece of software!
 public class TableBox extends BlockBox {
-    private List _columns = new ArrayList();
+    private final List _columns = new ArrayList();
     private int[] _columnPos;
     private TableLayout _tableLayout;
-    
+
     private List _styleColumns;
-    
+
     private int _pageClearance;
-    
+
     private boolean _marginAreaRoot;
-    
+
     private ContentLimitContainer _contentLimitContainer;
-    
+
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
-    
+
     public boolean isMarginAreaRoot() {
         return _marginAreaRoot;
     }
@@ -76,37 +76,37 @@ public class TableBox extends BlockBox {
         TableBox result = new TableBox();
         result.setStyle(getStyle());
         result.setElement(getElement());
-        
+
         return result;
     }
-    
+
     public void addStyleColumn(TableColumn col) {
         if (_styleColumns == null) {
             _styleColumns = new ArrayList();
         }
         _styleColumns.add(col);
     }
-    
+
     public List getStyleColumns() {
         return _styleColumns == null ? Collections.EMPTY_LIST : _styleColumns;
     }
-    
+
     public int[] getColumnPos() {
         return ArrayUtil.cloneOrEmpty(_columnPos);
     }
-    
+
     private void setColumnPos(int[] columnPos) {
         _columnPos = columnPos;
     }
-    
+
     public int numEffCols() {
         return _columns.size();
     }
-    
+
     public int spanOfEffCol(int effCol) {
         return ((ColumnData)_columns.get(effCol)).getSpan();
     }
-    
+
     public int colToEffCol(int col) {
         int c = 0;
         int i = 0;
@@ -116,7 +116,7 @@ public class TableBox extends BlockBox {
         }
         return i;
     }
-    
+
     public int effColToCol(int effCol) {
         int c = 0;
         for (int i = 0; i < effCol; i++) {
@@ -124,22 +124,22 @@ public class TableBox extends BlockBox {
         }
         return c;
     }
-    
+
     public void appendColumn(int span) {
         ColumnData data = new ColumnData();
         data.setSpan(span);
-        
+
         _columns.add(data);
-        
+
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             TableSectionBox section = (TableSectionBox)i.next();
             section.extendGridToColumnCount(_columns.size());
         }
     }
-    
+
     public void setStyle(CalculatedStyle style) {
         super.setStyle(style);
-        
+
         if (isMarginAreaRoot()) {
             _tableLayout = new MarginTableLayout(this);
         } else if (getStyle().isIdent(CSSName.TABLE_LAYOUT, IdentValue.AUTO) || getStyle().isAutoWidth()) {
@@ -148,7 +148,7 @@ public class TableBox extends BlockBox {
             _tableLayout = new FixedTableLayout(this);
         }
     }
-    
+
     public void calcMinMaxWidth(LayoutContext c) {
         if (! isMinMaxCalculated()) {
             recalcSections(c);
@@ -159,21 +159,21 @@ public class TableBox extends BlockBox {
             setMinMaxCalculated(true);
         }
     }
-    
+
     public void splitColumn(int pos, int firstSpan) {
         ColumnData newColumn = new ColumnData();
         newColumn.setSpan(firstSpan);
         _columns.add(pos, newColumn);
-        
+
         ColumnData leftOver = (ColumnData)_columns.get(pos+1);
         leftOver.setSpan(leftOver.getSpan() - firstSpan);
-        
+
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             TableSectionBox section = (TableSectionBox)i.next();
             section.splitColumn(pos);
         }
     }
-    
+
     public int marginsBordersPaddingAndSpacing(CssContext c, boolean ignoreAutoMargins) {
         int result = 0;
         RectPropertySet margin = getMargin(c);
@@ -192,11 +192,11 @@ public class TableBox extends BlockBox {
         }
         return result;
     }
-    
+
     public List getColumns() {
         return _columns;
     }
-    
+
     private void recalcSections(LayoutContext c) {
         ensureChildren(c);
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
@@ -204,7 +204,7 @@ public class TableBox extends BlockBox {
             section.recalcCells(c);
         }
     }
-    
+
     private void calcBorders(LayoutContext c) {
         ensureChildren(c);
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
@@ -212,32 +212,32 @@ public class TableBox extends BlockBox {
             section.calcBorders(c);
         }
     }
-    
+
     protected boolean isAllowHeightToShrink() {
         return false;
     }
-    
+
     public void layout(LayoutContext c) {
         calcMinMaxWidth(c);
         calcDimensions(c);
         calcWidth();
         calcPageClearance(c);
-        
+
         // Recalc to pick up auto margins now that layout has been called on
         // containing block and the table has a content width
         if (! isAnonymous()) {
             setDimensionsCalculated(false);
             calcDimensions(c, getContentWidth());
         }
-            
+
         _tableLayout.layout(c);
-        
+
         setCellWidths(c);
-        
+
         layoutTable(c);
     }
-    
-    protected void resolveAutoMargins(LayoutContext c, int cssWidth, RectPropertySet padding, 
+
+    protected void resolveAutoMargins(LayoutContext c, int cssWidth, RectPropertySet padding,
             BorderPropertySet border) {
         // If our minimum width is greater than the calculated CSS width,
         // don't try to allocate any margin space to auto margins.  It
@@ -259,27 +259,27 @@ public class TableBox extends BlockBox {
         boolean running = c.isPrint() && getStyle().isPaginateTable();
         int prevExtraTop = 0;
         int prevExtraBottom = 0;
-        
+
         if (running) {
             prevExtraTop = c.getExtraSpaceTop();
             prevExtraBottom = c.getExtraSpaceBottom();
-            
-            c.setExtraSpaceTop(c.getExtraSpaceTop() + 
-                    (int)getPadding(c).top() + 
+
+            c.setExtraSpaceTop(c.getExtraSpaceTop() +
+                    (int)getPadding(c).top() +
                     (int)getBorder(c).top() +
                     getStyle().getBorderVSpacing(c));
-            c.setExtraSpaceBottom(c.getExtraSpaceBottom() + 
-                    (int)getPadding(c).bottom() + 
+            c.setExtraSpaceBottom(c.getExtraSpaceBottom() +
+                    (int)getPadding(c).bottom() +
                     (int)getBorder(c).bottom() +
                     getStyle().getBorderVSpacing(c));
         }
-        
+
         super.layout(c);
-        
+
         if (running) {
             if (isNeedAnalyzePageBreaks()) {
                 analyzePageBreaks(c);
-                
+
                 setExtraSpaceTop(0);
                 setExtraSpaceBottom(0);
             } else {
@@ -290,7 +290,7 @@ public class TableBox extends BlockBox {
             c.setExtraSpaceBottom(prevExtraBottom);
         }
     }
-    
+
     protected void layoutChildren(LayoutContext c, int contentStart) {
         ensureChildren(c);
         // If we have a running footer, we need its dimensions right away
@@ -299,40 +299,40 @@ public class TableBox extends BlockBox {
             int headerHeight = layoutRunningHeader(c);
             int footerHeight = layoutRunningFooter(c);
             int spacingHeight = footerHeight == 0 ? 0 : getStyle().getBorderVSpacing(c);
-            
+
             PageBox first = c.getRootLayer().getFirstPage(c, this);
             if (getAbsY() + getTy() + headerHeight + footerHeight + spacingHeight > first.getBottom()) {
                 // XXX Performance problem here.  This forces the table
                 // to move to the next page (which we want), but the initial
-                // table layout run still completes (which we don't)                   
+                // table layout run still completes (which we don't)
                 setNeedPageClear(true);
             }
         }
         super.layoutChildren(c, contentStart);
     }
-    
+
     private int layoutRunningHeader(LayoutContext c) {
         int result = 0;
         if (getChildCount() > 0) {
             TableSectionBox section = (TableSectionBox)getChild(0);
             if (section.isHeader()) {
                 c.setNoPageBreak(c.getNoPageBreak() + 1);
-                
+
                 section.initContainingLayer(c);
                 section.layout(c);
 
                 c.setExtraSpaceTop(c.getExtraSpaceTop() + section.getHeight());
-                
+
                 result = section.getHeight();
-                
+
                 section.reset(c);
 
                 c.setNoPageBreak(c.getNoPageBreak() - 1);
             }
         }
-        
+
         return result;
-    }    
+    }
 
     private int layoutRunningFooter(LayoutContext c) {
         int result = 0;
@@ -340,16 +340,16 @@ public class TableBox extends BlockBox {
             TableSectionBox section = (TableSectionBox)getChild(getChildCount()-1);
             if (section.isFooter()) {
                 c.setNoPageBreak(c.getNoPageBreak() + 1);
-                
+
                 section.initContainingLayer(c);
                 section.layout(c);
 
-                c.setExtraSpaceBottom(c.getExtraSpaceBottom() + 
-                        section.getHeight() + 
+                c.setExtraSpaceBottom(c.getExtraSpaceBottom() +
+                        section.getHeight() +
                         getStyle().getBorderVSpacing(c));
-                
+
                 result = section.getHeight();
-                
+
                 section.reset(c);
 
                 c.setNoPageBreak(c.getNoPageBreak() - 1);
@@ -357,44 +357,44 @@ public class TableBox extends BlockBox {
         }
         return result;
     }
-    
+
     private boolean isNeedAnalyzePageBreaks() {
         Box b = getParent();
         while (b != null) {
             if (b.getStyle().isTable() && b.getStyle().isPaginateTable()) {
                 return false;
             }
-            
+
             b = b.getParent();
         }
-        
+
         return true;
     }
-    
+
     private void analyzePageBreaks(LayoutContext c) {
         analyzePageBreaks(c, null);
     }
-    
+
     public void analyzePageBreaks(LayoutContext c, ContentLimitContainer container) {
         _contentLimitContainer = new ContentLimitContainer(c, getAbsY());
         _contentLimitContainer.setParent(container);
-        
+
         if (container != null) {
             container.updateTop(c, getAbsY());
             container.updateBottom(c, getAbsY() + getHeight());
         }
-        
+
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             Box b = (Box)i.next();
             b.analyzePageBreaks(c, _contentLimitContainer);
         }
-        
+
         if (container != null && _contentLimitContainer.isContainsMultiplePages() &&
                 (getExtraSpaceTop() > 0 || getExtraSpaceBottom() > 0)) {
             propagateExtraSpace(c, container, _contentLimitContainer, getExtraSpaceTop(), getExtraSpaceBottom());
         }
     }
-    
+
     public void paintBackground(RenderingContext c) {
         if (_contentLimitContainer == null) {
             super.paintBackground(c);
@@ -404,7 +404,7 @@ public class TableBox extends BlockBox {
                     getStyle().getBorder(c));
         }
     }
-    
+
     public void paintBorder(RenderingContext c) {
         if (_contentLimitContainer == null) {
             super.paintBorder(c);
@@ -412,29 +412,29 @@ public class TableBox extends BlockBox {
             c.getOutputDevice().paintBorder(c, getStyle(), getContentLimitedBorderEdge(c), getBorderSides());
         }
     }
-    
+
     private Rectangle getContentLimitedBorderEdge(RenderingContext c) {
         Rectangle result = getPaintingBorderEdge(c);
-        
+
         ContentLimit limit = _contentLimitContainer.getContentLimit(c.getPageNo());
-        
+
         if (limit == null) {
             XRLog.layout(Level.WARNING, "No content limit found");
             return result;
         } else {
-            if (limit.getTop() == ContentLimit.UNDEFINED || 
+            if (limit.getTop() == ContentLimit.UNDEFINED ||
                     limit.getBottom() == ContentLimit.UNDEFINED) {
                 return result;
             }
-            
+
             RectPropertySet padding = getPadding(c);
             BorderPropertySet border = getBorder(c);
-            
+
             int top;
             if (c.getPageNo() == _contentLimitContainer.getInitialPageNo()) {
                 top = result.y;
             } else {
-                top = limit.getTop() - (int)padding.top() - 
+                top = limit.getTop() - (int)padding.top() -
                     (int)border.top() - getStyle().getBorderVSpacing(c);
                 if (getChildCount() > 0) {
                     TableSectionBox section = (TableSectionBox)getChild(0);
@@ -443,12 +443,12 @@ public class TableBox extends BlockBox {
                     }
                 }
             }
-            
+
             int bottom;
             if (c.getPageNo() == _contentLimitContainer.getLastPageNo()) {
                 bottom = result.y + result.height;
             } else {
-                bottom = limit.getBottom() + (int)padding.bottom() + 
+                bottom = limit.getBottom() + (int)padding.bottom() +
                             (int)border.bottom() + getStyle().getBorderVSpacing(c);
                 if (getChildCount() > 0) {
                     TableSectionBox section = (TableSectionBox)getChild(getChildCount()-1);
@@ -457,17 +457,17 @@ public class TableBox extends BlockBox {
                     }
                 }
             }
-            
+
             result.y = top;
             result.height = bottom - top;
-            
+
             return result;
         }
-    }    
-    
+    }
+
     public void updateHeaderFooterPosition(RenderingContext c) {
         ContentLimit limit = _contentLimitContainer.getContentLimit(c.getPageNo());
-        
+
         if (limit != null) {
             updateHeaderPosition(c, limit);
             updateFooterPosition(c, limit);
@@ -475,7 +475,7 @@ public class TableBox extends BlockBox {
     }
 
     private void updateHeaderPosition(RenderingContext c, ContentLimit limit) {
-        if (limit.getTop() != ContentLimit.UNDEFINED || 
+        if (limit.getTop() != ContentLimit.UNDEFINED ||
                 c.getPageNo() == _contentLimitContainer.getInitialPageNo()) {
             if (getChildCount() > 0) {
                 TableSectionBox section = (TableSectionBox)getChild(0);
@@ -484,18 +484,18 @@ public class TableBox extends BlockBox {
                         section.setOriginalAbsY(section.getAbsY());
                         section.setCapturedOriginalAbsY(true);
                     }
-                    
+
                     int newAbsY;
                     if (c.getPageNo() == _contentLimitContainer.getInitialPageNo()) {
                         newAbsY = section.getOriginalAbsY();
                     } else {
-                        newAbsY = limit.getTop() - 
+                        newAbsY = limit.getTop() -
                             getStyle().getBorderVSpacing(c) -
                             section.getHeight();
                     }
-                    
+
                     int diff = newAbsY - section.getAbsY();
-                    
+
                     if (diff != 0) {
                         section.setY(section.getY() + diff);
                         section.calcCanvasLocation();
@@ -506,9 +506,9 @@ public class TableBox extends BlockBox {
             }
         }
     }
-    
+
     private void updateFooterPosition(RenderingContext c, ContentLimit limit) {
-        if (limit.getBottom() != ContentLimit.UNDEFINED || 
+        if (limit.getBottom() != ContentLimit.UNDEFINED ||
                 c.getPageNo() == _contentLimitContainer.getLastPageNo()) {
             if (getChildCount() > 0) {
                 TableSectionBox section = (TableSectionBox)getChild(getChildCount()-1);
@@ -517,16 +517,16 @@ public class TableBox extends BlockBox {
                         section.setOriginalAbsY(section.getAbsY());
                         section.setCapturedOriginalAbsY(true);
                     }
-                    
+
                     int newAbsY;
                     if (c.getPageNo() == _contentLimitContainer.getLastPageNo()) {
                         newAbsY = section.getOriginalAbsY();
                     } else {
                         newAbsY = limit.getBottom();
                     }
-                    
+
                     int diff = newAbsY - section.getAbsY();
-                    
+
                     if (diff != 0) {
                         section.setY(section.getY() + diff);
                         section.calcCanvasLocation();
@@ -536,35 +536,37 @@ public class TableBox extends BlockBox {
                 }
             }
         }
-    }    
+    }
 
     private void calcPageClearance(LayoutContext c) {
         if (c.isPrint() && getStyle().isCollapseBorders()) {
             PageBox page = c.getRootLayer().getFirstPage(c, this);
-            TableRowBox row = getFirstRow();
-            if (row != null) {
-                int spill = 0;
-                for (Iterator i = row.getChildIterator(); i.hasNext(); ) {
-                    TableCellBox cell = (TableCellBox)i.next();
-                    BorderPropertySet collapsed = cell.getCollapsedPaintingBorder();
-                    int tmp = (int)collapsed.top() / 2;
-                    if (tmp > spill) {
-                        spill = tmp;
+            if (page != null) {
+                TableRowBox row = getFirstRow();
+                if (row != null) {
+                    int spill = 0;
+                    for (Iterator i = row.getChildIterator(); i.hasNext(); ) {
+                        TableCellBox cell = (TableCellBox)i.next();
+                        BorderPropertySet collapsed = cell.getCollapsedPaintingBorder();
+                        int tmp = (int)collapsed.top() / 2;
+                        if (tmp > spill) {
+                            spill = tmp;
+                        }
                     }
-                }
-                
-                int borderTop = getAbsY() + (int)getMargin(c).top() - spill;
-                int delta = page.getTop() - borderTop;
-                if (delta > 0) {
-                    setY(getY() + delta);
-                    setPageClearance(delta);
-                    calcCanvasLocation();
-                    c.translate(0, delta);
+
+                    int borderTop = getAbsY() + (int)getMargin(c).top() - spill;
+                    int delta = page.getTop() - borderTop;
+                    if (delta > 0) {
+                        setY(getY() + delta);
+                        setPageClearance(delta);
+                        calcCanvasLocation();
+                        c.translate(0, delta);
+                    }
                 }
             }
         }
     }
-    
+
     private void calcWidth() {
         if (getMinWidth() > getWidth()) {
             setContentWidth(getContentWidth() + getMinWidth() - getWidth());
@@ -573,7 +575,7 @@ public class TableBox extends BlockBox {
             setContentWidth(getContentWidth() - (getWidth() - getMaxWidth()));
         }
     }
-    
+
     public TableRowBox getFirstRow() {
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             TableSectionBox section = (TableSectionBox)i.next();
@@ -581,10 +583,10 @@ public class TableBox extends BlockBox {
                 return (TableRowBox)section.getChild(0);
             }
         }
-        
+
         return null;
     }
-    
+
     public TableRowBox getFirstBodyRow() {
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             TableSectionBox section = (TableSectionBox)i.next();
@@ -595,10 +597,10 @@ public class TableBox extends BlockBox {
                 return (TableRowBox)section.getChild(0);
             }
         }
-        
+
         return null;
     }
-    
+
     private void setCellWidths(LayoutContext c) {
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             BlockBox box = (BlockBox)i.next();
@@ -607,24 +609,24 @@ public class TableBox extends BlockBox {
             }
         }
     }
-    
-    protected void calcLayoutHeight(LayoutContext c, BorderPropertySet border, 
+
+    protected void calcLayoutHeight(LayoutContext c, BorderPropertySet border,
             RectPropertySet margin, RectPropertySet padding) {
         super.calcLayoutHeight(c, border, margin, padding);
-        
+
         if (getChildCount() > 0) {
             setHeight(getHeight() + getStyle().getBorderVSpacing(c));
         }
     }
-    
+
     public void reset(LayoutContext c) {
         super.reset(c);
-        
+
         _contentLimitContainer = null;
-        
+
         _tableLayout.reset();
     }
-    
+
     protected int getCSSWidth(CssContext c) {
         if (getStyle().isAutoWidth()) {
             return -1;
@@ -634,18 +636,18 @@ public class TableBox extends BlockBox {
             // property.
             int result = (int)getStyle().getFloatPropertyProportionalWidth(
                     CSSName.WIDTH, getContainingBlock().getContentWidth(), c);
-            
+
             BorderPropertySet border = getBorder(c);
             result -= (int)border.left() + (int)border.right();
             if (! getStyle().isCollapseBorders()) {
                 RectPropertySet padding = getPadding(c);
                 result -= (int)padding.left() + (int)padding.right();
             }
-            
+
             return result >= 0 ? result : -1;
         }
     }
-    
+
     public TableColumn colElement(int col) {
         List styleColumns = getStyleColumns();
         if (styleColumns.size() == 0) {
@@ -661,24 +663,24 @@ public class TableBox extends BlockBox {
             }
         }
         return null;
-    } 
-    
+    }
+
     public Rectangle getColumnBounds(CssContext c, int col) {
         int effCol = colToEffCol(col);
-        
+
         int hspacing = getStyle().getBorderHSpacing(c);
         int vspacing = getStyle().getBorderVSpacing(c);
-        
+
         Rectangle result = getContentAreaEdge(getAbsX(), getAbsY(), c);
-        
+
         result.y += vspacing;
         result.height -= vspacing*2;
-        
+
         result.x += _columnPos[effCol] + hspacing;
-        
+
         return result;
     }
-    
+
     public BorderPropertySet getBorder(CssContext cssCtx) {
         if (getStyle().isCollapseBorders()) {
             return BorderPropertySet.EMPTY_BORDER;
@@ -686,60 +688,60 @@ public class TableBox extends BlockBox {
             return super.getBorder(cssCtx);
         }
     }
-    
+
     public int calcFixedHeightRowBottom(CssContext c) {
         if (! isAnonymous()) {
             int cssHeight = getCSSHeight(c);
             if (cssHeight != -1) {
-                return getAbsY() + cssHeight 
-                    - (int)getBorder(c).bottom() - (int)getPadding(c).bottom() 
+                return getAbsY() + cssHeight
+                    - (int)getBorder(c).bottom() - (int)getPadding(c).bottom()
                     - getStyle().getBorderVSpacing(c);
             }
         }
-        
+
         return -1;
     }
-    
+
     protected boolean isMayCollapseMarginsWithChildren() {
         return false;
     }
-    
+
     protected TableSectionBox sectionAbove(
             TableSectionBox section, boolean skipEmptySections) {
         TableSectionBox prevSection = (TableSectionBox)section.getPreviousSibling();
-        
+
         if (prevSection == null) {
             return null;
         }
-        
+
         while (prevSection != null) {
             if (prevSection.numRows() > 0 || !skipEmptySections) {
                 break;
             }
             prevSection = (TableSectionBox)prevSection.getPreviousSibling();
         }
-        
+
         return prevSection;
     }
-    
+
     protected TableSectionBox sectionBelow(
             TableSectionBox section, boolean skipEmptySections) {
         TableSectionBox nextSection = (TableSectionBox)section.getNextSibling();
-        
+
         if (nextSection == null) {
             return null;
         }
-        
+
         while (nextSection != null) {
             if (nextSection.numRows() > 0 || !skipEmptySections) {
                 break;
             }
             nextSection = (TableSectionBox)nextSection.getNextSibling();
         }
-        
+
         return nextSection;
     }
-    
+
     protected TableCellBox cellAbove(TableCellBox cell) {
         // Find the section and row to look in
         int r = cell.getRow();
@@ -772,7 +774,7 @@ public class TableBox extends BlockBox {
             return null;
         }
     }
-    
+
     protected TableCellBox cellBelow(TableCellBox cell) {
         // Find the section and row to look in
         int r = cell.getRow() + cell.getStyle().getRowSpan() - 1;
@@ -804,7 +806,7 @@ public class TableBox extends BlockBox {
             return null;
         }
     }
-    
+
     protected TableCellBox cellLeft(TableCellBox cell) {
         TableSectionBox section = cell.getSection();
         int effCol = colToEffCol(cell.getCol());
@@ -830,7 +832,7 @@ public class TableBox extends BlockBox {
         TableCellBox result = cell.getSection().cellAt(cell.getRow(), effCol);
         return (result == TableCellBox.SPANNING_CELL) ? null : result;
     }
-    
+
     public int calcInlineBaseline(CssContext c) {
         int result = 0;
         boolean found = false;
@@ -844,26 +846,26 @@ public class TableBox extends BlockBox {
                 break OUTER;
             }
         }
-        
+
         if (! found) {
             result = getHeight();
         }
-        
+
         return result;
     }
-    
+
     protected int getPageClearance() {
         return _pageClearance;
     }
 
     protected void setPageClearance(int pageClearance) {
         _pageClearance = pageClearance;
-    }  
-    
+    }
+
     public boolean hasContentLimitContainer() {
         return _contentLimitContainer != null;
     }
-    
+
     public int getExtraSpaceTop() {
         return _extraSpaceTop;
     }
@@ -878,14 +880,14 @@ public class TableBox extends BlockBox {
 
     public void setExtraSpaceBottom(int extraSpaceBottom) {
         _extraSpaceBottom = extraSpaceBottom;
-    }    
-    
+    }
+
     private interface TableLayout {
         public void calcMinMaxWidth(LayoutContext c);
         public void layout(LayoutContext c);
         public void reset();
     }
-    
+
     /**
      * A specialization of <code>AutoTableLayout</code> used for laying out the
      * tables used to approximate the margin box layout algorithm from CSS3
@@ -895,19 +897,19 @@ public class TableBox extends BlockBox {
         public MarginTableLayout(TableBox table) {
             super(table);
         }
-        
+
         protected int getMinColWidth() {
             return 0;
         }
-        
+
         public void calcMinMaxWidth(LayoutContext c) {
             super.calcMinMaxWidth(c);
-            
+
             Layout[] layoutStruct = getLayoutStruct();
-            
+
             if (layoutStruct.length == 3) {
                 Layout center = layoutStruct[1];
-                
+
                 if (! (center.width().isVariable() && center.maxWidth() == 0)) {
                     if (layoutStruct[0].minWidth() > layoutStruct[2].minWidth()) {
                         layoutStruct[2] = layoutStruct[0];
@@ -919,7 +921,7 @@ public class TableBox extends BlockBox {
                         l.setEffMinWidth(l.minWidth());
                         l.setMaxWidth(Math.max(layoutStruct[0].maxWidth(), layoutStruct[2].maxWidth()));
                         l.setEffMaxWidth(l.maxWidth());
-                        
+
                         layoutStruct[0] = l;
                         layoutStruct[2] = l;
                     }
@@ -927,26 +929,26 @@ public class TableBox extends BlockBox {
             }
         }
     }
-    
+
     private static class FixedTableLayout implements TableLayout {
-        private TableBox _table;
+        private final TableBox _table;
         private List _widths;
-        
+
         public FixedTableLayout(TableBox table) {
             _table = table;
         }
-        
+
         public void reset() {
             _widths = null;
         }
-        
+
         private void initWidths() {
             _widths = new ArrayList(_table.numEffCols());
             for (int i = 0; i < _table.numEffCols(); i++) {
                 _widths.add(new Length());
             }
         }
-        
+
         private int calcWidthArray(LayoutContext c) {
             initWidths();
 
@@ -1023,12 +1025,12 @@ public class TableBox extends BlockBox {
 
             return usedWidth;
         }
-        
+
         public void calcMinMaxWidth(LayoutContext c) {
             int bs = _table.marginsBordersPaddingAndSpacing(c, true);
-            
+
             _table.calcDimensions(c);
-            
+
             // Reset to allow layout to have another crack at this.  If we're
             // participating in a nested max/min-width calculation, the values
             // calculated above may be wrong and may need updating once our
@@ -1047,12 +1049,12 @@ public class TableBox extends BlockBox {
                     break;
                 }
             }
-            
+
             if (haveNonFixed) {
                 _table.setMaxWidth(Length.MAX_WIDTH);
             }
         }
-        
+
         public void layout(LayoutContext c) {
             int tableWidth = _table.getWidth() - _table.marginsBordersPaddingAndSpacing(c, false);
             int available = tableWidth;
@@ -1145,31 +1147,31 @@ public class TableBox extends BlockBox {
                 columnPos[i] = pos;
                 pos += calcWidth[i] + hspacing;
             }
-            
+
             columnPos[columnPos.length-1] = pos;
-            
+
             _table.setColumnPos(columnPos);
         }
-    } 
-    
+    }
+
     private static class AutoTableLayout implements TableLayout {
-        private TableBox _table;
+        private final TableBox _table;
         private Layout[] _layoutStruct;
         private List _spanCells;
-        
+
         public AutoTableLayout(TableBox table) {
             _table = table;
         }
-        
+
         public void reset() {
             _layoutStruct = null;
             _spanCells = null;
         }
-        
+
         protected Layout[] getLayoutStruct() {
             return _layoutStruct;
         }
-        
+
         private void fullRecalc(LayoutContext c) {
             _layoutStruct = new Layout[_table.numEffCols()];
             for (int i = 0; i < _layoutStruct.length; i++) {
@@ -1212,11 +1214,11 @@ public class TableBox extends BlockBox {
                 recalcColumn(c, i);
             }
         }
-        
+
         protected int getMinColWidth() {
             return 1;
         }
-        
+
         private void recalcColumn(LayoutContext c, int effCol) {
             Layout l = _layoutStruct[effCol];
 
@@ -1283,45 +1285,45 @@ public class TableBox extends BlockBox {
 
             l.setMaxWidth(Math.max(l.maxWidth(), l.minWidth()));
         }
-        
+
         /*
          * This method takes care of colspans. effWidth is the same as width for
          * cells without colspans. If we have colspans, they get modified.
          */
         private long calcEffectiveWidth(LayoutContext c) {
             long tMaxWidth = 0;
-            
+
             Layout[] layoutStruct = _layoutStruct;
-            
+
             int nEffCols = layoutStruct.length;
             int hspacing = _table.getStyle().getBorderHSpacing(c);
-            
+
             for (int i = 0; i < nEffCols; i++ ) {
                 layoutStruct[i].setEffWidth(layoutStruct[i].width());
                 layoutStruct[i].setEffMinWidth(layoutStruct[i].minWidth());
                 layoutStruct[i].setEffMaxWidth(layoutStruct[i].maxWidth());
             }
-            
+
             Collections.sort(_spanCells, new Comparator() {
                 public int compare(Object o1, Object o2) {
                     TableCellBox c1 = (TableCellBox)o1;
                     TableCellBox c2 = (TableCellBox)o2;
-                    
+
                     return c1.getStyle().getColSpan() - c2.getStyle().getColSpan();
                 }
             });
-            
+
             for (Iterator i = _spanCells.iterator(); i.hasNext(); ) {
                 TableCellBox cell = (TableCellBox)i.next();
-                
+
                 cell.calcMinMaxWidth(c);
-                
+
                 int span = cell.getStyle().getColSpan();
                 Length w = cell.getOuterStyleOrColWidth(c);
                 if (w.value() == 0) {
                     w =  new Length(); // make it Variable
                 }
-                
+
                 int col = _table.colToEffCol(cell.getCol());
                 int lastCol = col;
                 int cMinWidth = cell.getMinWidth() + hspacing;
@@ -1364,17 +1366,17 @@ public class TableBox extends BlockBox {
                         } else {
                             totalPercent += layoutStruct[lastCol].effWidth().value();
                         }
-                        allColsAreFixed = false;   
+                        allColsAreFixed = false;
                     }
-                    
+
                     span -= _table.spanOfEffCol(lastCol);
                     minWidth += layoutStruct[lastCol].effMinWidth();
                     maxWidth += layoutStruct[lastCol].effMaxWidth();
                     lastCol++;
                     cMinWidth -= hspacing;
-                    cMaxWidth -= hspacing;                    
+                    cMaxWidth -= hspacing;
                 }
-                
+
                 // adjust table max width if needed
                 if (w.isPercent()) {
                     if (totalPercent > w.value() || allColsArePercent) {
@@ -1410,7 +1412,7 @@ public class TableBox extends BlockBox {
                         }
                     }
                 }
-                
+
                 // make sure minWidth and maxWidth of the spanning cell are honoured
                 if (cMinWidth > minWidth) {
                     if (allColsAreFixed) {
@@ -1474,8 +1476,8 @@ public class TableBox extends BlockBox {
                             }
                         }
                     }
-                }  
-                
+                }
+
                 if (!w.isPercent()) {
                     if (cMaxWidth > maxWidth) {
                         for (int pos = col; maxWidth > 0 && pos < lastCol; pos++) {
@@ -1491,16 +1493,16 @@ public class TableBox extends BlockBox {
                         layoutStruct[pos].setMaxWidth(Math.max(layoutStruct[pos].maxWidth(),
                                 layoutStruct[pos].minWidth()));
                     }
-                }                
+                }
             }
-            
+
             return tMaxWidth;
         }
-        
+
         private boolean shouldScaleColumns(TableBox table) {
             return true;
         }
-        
+
         public void calcMinMaxWidth(LayoutContext c) {
             TableBox table = _table;
 
@@ -1533,7 +1535,7 @@ public class TableBox extends BlockBox {
                 maxWidth = Math.max(maxNonPercent, maxWidth);
                 maxWidth = Math.max(maxWidth, maxPercent);
             }
-             
+
             maxWidth = Math.max(maxWidth, spanMaxWidth);
 
             int bs = table.marginsBordersPaddingAndSpacing(c, true);
@@ -1790,7 +1792,7 @@ public class TableBox extends BlockBox {
 
             _table.setColumnPos(columnPos);
         }
-        
+
         protected static class Layout {
             private Length _width = new Length();
             private Length _effWidth = new Length();
@@ -1799,65 +1801,65 @@ public class TableBox extends BlockBox {
             private long _effMinWidth = 0;
             private long _effMaxWidth = 0;
             private long _calcWidth = 0;
-            
+
             public Layout() {
             }
-            
+
             public Length width() {
                 return _width;
             }
-            
+
             public void setWidth(Length l) {
                 _width = l;
             }
-            
+
             public Length effWidth() {
                 return _effWidth;
             }
-            
+
             public void setEffWidth(Length l) {
                 _effWidth = l;
             }
-            
+
             public long minWidth() {
                 return _minWidth;
             }
-            
+
             public void setMinWidth(long i) {
                 _minWidth = i;
             }
-            
+
             public long maxWidth() {
                 return _maxWidth;
             }
-            
+
             public void setMaxWidth(long i) {
                 _maxWidth = i;
             }
-            
+
             public long effMinWidth() {
                 return _effMinWidth;
             }
-            
+
             public void setEffMinWidth(long i) {
                 _effMinWidth = i;
             }
-            
+
             public long effMaxWidth() {
                 return _effMaxWidth;
             }
-            
+
             public void setEffMaxWidth(long i) {
                 _effMaxWidth = i;
             }
-            
+
             public long calcWidth() {
                 return _calcWidth;
             }
-            
+
             public void setCalcWidth(long i) {
                 _calcWidth = i;
-            }            
-        };        
+            }
+        };
     }
 }
