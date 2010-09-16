@@ -572,13 +572,14 @@ public class BlockBox extends Box implements InlinePaintable {
     private int calcPinnedContentWidth(CssContext c) {
         if (! getStyle().isIdent(CSSName.LEFT, IdentValue.AUTO) &&
                 ! getStyle().isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-            int left = (int) getStyle().getFloatPropertyProportionalTo(
-                    CSSName.LEFT, getContainingBlockWidth(), c);
-            int right = (int) getStyle().getFloatPropertyProportionalTo(
-                    CSSName.RIGHT, getContainingBlockWidth(), c);
+            Rectangle paddingEdge = getContainingBlock().getPaddingEdge(0, 0, c);
 
-            int result = getContainingBlock().getPaddingWidth(c) -
-                    left - right - getLeftMBP() - getRightMBP();
+            int left = (int) getStyle().getFloatPropertyProportionalTo(
+                    CSSName.LEFT, paddingEdge.width, c);
+            int right = (int) getStyle().getFloatPropertyProportionalTo(
+                    CSSName.RIGHT, paddingEdge.width, c);
+
+            int result = paddingEdge.width - left - right - getLeftMBP() - getRightMBP();
             return result < 0 ? 0 : result;
         }
 
@@ -588,12 +589,15 @@ public class BlockBox extends Box implements InlinePaintable {
     private int calcPinnedHeight(CssContext c) {
         if (! getStyle().isIdent(CSSName.TOP, IdentValue.AUTO) &&
                 ! getStyle().isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-            int top = (int) getStyle().getFloatPropertyProportionalTo(
-                    CSSName.TOP, getContainingBlockWidth(), c);
-            int bottom = (int) getStyle().getFloatPropertyProportionalTo(
-                    CSSName.BOTTOM, getContainingBlockWidth(), c);
+            Rectangle paddingEdge = getContainingBlock().getPaddingEdge(0, 0, c);
 
-            int result = getContainingBlock().getPaddingEdge(0, 0, c).height - top - bottom;
+            int top = (int) getStyle().getFloatPropertyProportionalTo(
+                    CSSName.TOP, paddingEdge.height, c);
+            int bottom = (int) getStyle().getFloatPropertyProportionalTo(
+                    CSSName.BOTTOM, paddingEdge.height, c);
+
+
+            int result = paddingEdge.height - top - bottom;
             return result < 0 ? 0 : result;
         }
 
