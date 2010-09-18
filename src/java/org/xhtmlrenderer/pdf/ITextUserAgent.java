@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
@@ -91,9 +92,13 @@ public class ITextUserAgent extends NaiveUserAgent {
                 }
             }
         }
-        if (resource == null) {
+
+        if (resource != null) {
+            resource = new ImageResource(resource.getImageUri(), (FSImage)((ITextFSImage)resource.getImage()).clone());
+        } else {
             resource = new ImageResource(uri, null);
         }
+
         return resource;
     }
 
