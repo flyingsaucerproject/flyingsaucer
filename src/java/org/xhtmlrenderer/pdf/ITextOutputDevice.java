@@ -70,6 +70,7 @@ import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import com.lowagie.text.DocumentException;
@@ -100,6 +101,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private static AffineTransform IDENTITY = new AffineTransform();
 
     private static final BasicStroke STROKE_ONE = new BasicStroke(1);
+
+    private static final boolean ROUND_RECT_DIMENSIONS_DOWN = Configuration.isTrue("xr.pdf.round.rect.dimensions.down", false);
 
     private PdfContentByte _currentPage;
     private float _pageHeight;
@@ -431,7 +434,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     public void fillRect(int x, int y, int width, int height) {
-        fill(new Rectangle(x,y,width-1,height-1));
+        if (ROUND_RECT_DIMENSIONS_DOWN) {
+            fill(new Rectangle(x,y,width-1,height-1));
+        } else {
+            fill(new Rectangle(x,y,width,height));
+        }
     }
 
     public void fillOval(int x, int y, int width, int height) {
