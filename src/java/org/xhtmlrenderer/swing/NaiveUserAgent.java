@@ -19,25 +19,26 @@
  */
 package org.xhtmlrenderer.swing;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+
+import javax.imageio.ImageIO;
+
+import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.event.DocumentListener;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
 
 
 /**
@@ -293,7 +294,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         try {
             return new URL(uri).toString();
         } catch (MalformedURLException e) {
-            XRLog.load("Could not read " + uri + " as a URL; may be relative. Testing using parent URL " + _baseURL);
+            XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
             try {
                 URL result = new URL(new URL(_baseURL), uri);
                 ret = result.toString();
