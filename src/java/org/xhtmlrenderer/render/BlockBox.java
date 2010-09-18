@@ -988,7 +988,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 List pages = c.getRootLayer().getPages();
                 PageBox lastPage = (PageBox)pages.get(firstPage.getPageNo()+1);
                 while (lastPage.getPageNo() != pages.size() - 1 &&
-                        lastPage.getTop() < lastLineBox.getAbsY()) {
+                        lastPage.getBottom() < lastLineBox.getAbsY()) {
                     lastPage = (PageBox)pages.get(lastPage.getPageNo()+1);
                 }
 
