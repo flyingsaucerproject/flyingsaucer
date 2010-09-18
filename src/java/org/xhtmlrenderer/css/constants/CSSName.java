@@ -94,11 +94,11 @@ public final class CSSName implements Comparable {
      * True if the property inherits by default, false if not inherited
      */
     private final boolean propertyInherits;
-    
+
     private FSDerivedValue initialDerivedValue;
-    
+
     private final boolean implemented;
-    
+
     private final PropertyBuilder builder;
 
     /**
@@ -194,6 +194,15 @@ public final class CSSName implements Comparable {
                     new PrimitivePropertyBuilders.BackgroundPosition()
             );
 
+    public final static CSSName BACKGROUND_SIZE =
+        addProperty(
+                "background-size",
+                PRIMITIVE,
+                "auto auto",
+                NOT_INHERITED,
+                new PrimitivePropertyBuilders.BackgroundSize()
+        );
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -229,7 +238,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSBorderSpacingVertical()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -240,8 +249,8 @@ public final class CSSName implements Comparable {
                     "none",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSFontMetricSrc()
-            );  
-    
+            );
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -252,7 +261,7 @@ public final class CSSName implements Comparable {
                     "auto",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSKeepWithInline()
-            );      
+            );
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -277,7 +286,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSPageHeight()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -288,7 +297,7 @@ public final class CSSName implements Comparable {
                     "auto",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSPageSequence()
-            );    
+            );
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -301,7 +310,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSPDFFontEmbed()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -312,8 +321,8 @@ public final class CSSName implements Comparable {
                     "Cp1252",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSPDFFontEncoding()
-            );    
-    
+            );
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -324,8 +333,8 @@ public final class CSSName implements Comparable {
                     "auto",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSPageOrientation()
-            );    
-    
+            );
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -336,7 +345,7 @@ public final class CSSName implements Comparable {
                     "auto",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSTablePaginate()
-            );    
+            );
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -781,7 +790,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.Overflow()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -792,7 +801,7 @@ public final class CSSName implements Comparable {
                     "auto",
                     INHERITS,
                     new PrimitivePropertyBuilders.Page()
-            );    
+            );
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -867,7 +876,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.Right()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -1605,15 +1614,15 @@ public final class CSSName implements Comparable {
     public static String initialValue(CSSName cssName) {
         return cssName.initialValue;
     }
-    
+
     public static FSDerivedValue initialDerivedValue(CSSName cssName) {
         return cssName.initialDerivedValue;
     }
-    
+
     public static boolean isImplemented(CSSName cssName) {
         return cssName.implemented;
     }
-    
+
     public static PropertyBuilder getPropertyBuilder(CSSName cssName) {
         return cssName.builder;
     }
@@ -1632,11 +1641,11 @@ public final class CSSName implements Comparable {
     public static CSSName getByID(int id) {
         return ALL_PROPERTIES[id];
     }
-    
+
     private static synchronized CSSName addProperty(
             String propName,
             Object type,
-            String initialValue, 
+            String initialValue,
             Object inherit,
             PropertyBuilder builder
     ) {
@@ -1657,7 +1666,7 @@ public final class CSSName implements Comparable {
     private static synchronized CSSName addProperty(
             String propName,
             Object type,
-            String initialValue, 
+            String initialValue,
             Object inherit,
             boolean implemented,
             PropertyBuilder builder
@@ -1682,7 +1691,7 @@ public final class CSSName implements Comparable {
             ALL_PROPERTIES[name.FS_ID] = name;
         }
     }
-    
+
     static {
         CSSParser parser = new CSSParser(new CSSErrorHandler() {
             public void error(String uri, String message) {
@@ -1696,7 +1705,7 @@ public final class CSSName implements Comparable {
                         cssName, StylesheetInfo.USER_AGENT, cssName.initialValue);
 
                 if (value == null) {
-                    XRLog.exception("Unable to derive initial value for " + cssName);   
+                    XRLog.exception("Unable to derive initial value for " + cssName);
                 } else {
                     cssName.initialDerivedValue = DerivedValueFactory.newDerivedValue(
                             null,

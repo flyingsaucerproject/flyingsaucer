@@ -961,8 +961,7 @@ public class BlockBox extends Box implements InlinePaintable {
         LineBox firstLineBox = (LineBox)getChild(0);
         PageBox firstPage = c.getRootLayer().getFirstPage(c, firstLineBox);
 
-        if (firstPage == null)
-        {
+        if (firstPage == null) {
             return;
         }
 

@@ -54,12 +54,12 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  */
 public class IdentValue implements FSDerivedValue {
     private static int maxAssigned = 0;
-    
+
     /**
      * Description of the Field
      */
     private final String ident;
-    
+
     public final int FS_ID;
 
     public final static IdentValue ABSOLUTE = addValue("absolute");
@@ -81,6 +81,8 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue CLOSE_QUOTE = addValue("close-quote");
     public final static IdentValue COLLAPSE = addValue("collapse");
     public final static IdentValue COMPACT = addValue("compact");
+    public final static IdentValue CONTAIN = addValue("contain");
+    public final static IdentValue COVER = addValue("cover");
     public final static IdentValue DASHED = addValue("dashed");
     public final static IdentValue DECIMAL = addValue("decimal");
     public final static IdentValue DECIMAL_LEADING_ZERO = addValue("decimal-leading-zero");
@@ -261,11 +263,11 @@ public class IdentValue implements FSDerivedValue {
     public static boolean looksLikeIdent(String ident) {
         return (IdentValue) ALL_IDENT_VALUES.get(ident) != null;
     }
-    
+
     public static IdentValue valueOf(String ident) {
         return (IdentValue)ALL_IDENT_VALUES.get(ident);
-    }    
-    
+    }
+
     public static int getIdentCount() {
         return ALL_IDENT_VALUES.size();
     }
@@ -285,7 +287,7 @@ public class IdentValue implements FSDerivedValue {
         return val;
     }
 
-    /* 
+    /*
      * METHODS USED TO SUPPORT IdentValue as an FSDerivedValue, used in CalculatedStyle.
      * Most of these throw exceptions--makes use of the interface easier in CS (avoids casting)
      */
@@ -333,7 +335,7 @@ public class IdentValue implements FSDerivedValue {
     public boolean isIdent() {
         return true;
     }
-    
+
     public boolean isDependentOnFontSize() {
         return false;
     }
