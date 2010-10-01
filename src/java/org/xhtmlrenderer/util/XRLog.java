@@ -20,9 +20,9 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.util.logging.Level;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 
 /**
@@ -149,7 +149,7 @@ public class XRLog {
     public static void junit(Level level, String msg, Throwable th) {
         log(JUNIT, level, msg, th);
     }
-    
+
     public static void load(String msg) {
         load(Level.INFO, msg);
     }
@@ -244,18 +244,18 @@ public class XRLog {
             if (!initPending) {
                 return;
             }
-            //now change this immediately, in case something fails
-            initPending = false;
 
             XRLog.setLoggingEnabled(Configuration.isTrue("xr.util-logging.loggingEnabled", true));
-            
+
             if (loggerImpl == null) {
                 loggerImpl = new JDKXRLogger();
             }
+
+            initPending = false;
         }
     }
 
-    public static void setLevel(String log, Level level) {
+    public static synchronized void setLevel(String log, Level level) {
         if (initPending) {
             init();
         }
@@ -268,7 +268,7 @@ public class XRLog {
      * to configuration file property xr.util-logging.loggingEnabled, or to
      * value passed to setLoggingEnabled(bool).
      */
-    public static boolean isLoggingEnabled() {
+    public static synchronized boolean isLoggingEnabled() {
         return loggingEnabled;
     }
 
@@ -279,15 +279,15 @@ public class XRLog {
      * if false, all logging calls fail silently. Corresponds
      * to configuration file property xr.util-logging.loggingEnabled
      */
-    public static void setLoggingEnabled(boolean loggingEnabled) {
+    public static synchronized void setLoggingEnabled(boolean loggingEnabled) {
         XRLog.loggingEnabled = loggingEnabled;
     }
 
-    public static XRLogger getLoggerImpl() {
+    public static synchronized XRLogger getLoggerImpl() {
         return loggerImpl;
     }
 
-    public static void setLoggerImpl(XRLogger loggerImpl) {
+    public static synchronized void setLoggerImpl(XRLogger loggerImpl) {
         XRLog.loggerImpl = loggerImpl;
     }
 }// end class
