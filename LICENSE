@@ -31,10 +31,10 @@ License: Apache Software License Version 2.0
 Not packaged with release; development using version 1.6.x
 
 iText (PDF generation)
-http://www.lowagie.com/iText/ and http://itextpdf.sourceforge.net/
-License: Mozilla Public License Version 1.1
-Using version 2.0.8.
-Included as lib/iText-2.0.8.jar
+http://www.itextpdf.com
+License: AGPL v3
+Using version 5.0.5.
+Not included.  Please obtain library from www.itextpdf.com and include as lib/iText-5.0.5.jar
 
 SVGSalamander (SVG rendering in demo)
 https://svgsalamander.dev.java.net/
