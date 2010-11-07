@@ -9,9 +9,9 @@ import java.util.Map;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.RandomAccessFileOrArray;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.RandomAccessFileOrArray;
 
 /**
  * Uses code from iText's DefaultFontMapper and TrueTypeFont classes.  See

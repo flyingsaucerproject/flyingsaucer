@@ -599,7 +599,7 @@ It's actually better, since the ${itext} library provides code to parse font fil
 That said, the default encoding is Latin-1; if your content is encoded differently, you may have problems where certain characters are not recognized and don't appear correctly in the output. You will need to specify a different encoding for a specific font, by registering the font with the @ITextRenderer@ instance you're using before you call @setDocument()@. For example, to support Unicode/UTF-8, you'd need  
 
 bcx. {{
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.BaseFont;
 
 ITextRenderer renderer = new ITextRenderer();
 FontResolver resolver = renderer.getFontResolver();

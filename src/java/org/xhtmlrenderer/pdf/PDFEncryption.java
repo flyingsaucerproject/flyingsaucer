@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.xhtmlrenderer.util.ArrayUtil;
 
 public class PDFEncryption {

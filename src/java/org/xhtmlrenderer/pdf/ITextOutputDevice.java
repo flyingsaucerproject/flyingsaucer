@@ -73,24 +73,25 @@ import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Image;
-import com.lowagie.text.pdf.CMYKColor;
-import com.lowagie.text.pdf.PdfAction;
-import com.lowagie.text.pdf.PdfAnnotation;
-import com.lowagie.text.pdf.PdfBorderArray;
-import com.lowagie.text.pdf.PdfBorderDictionary;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfDestination;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfName;
-import com.lowagie.text.pdf.PdfOutline;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfTextArray;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.CMYKColor;
+import com.itextpdf.text.pdf.PdfAction;
+import com.itextpdf.text.pdf.PdfAnnotation;
+import com.itextpdf.text.pdf.PdfBorderArray;
+import com.itextpdf.text.pdf.PdfBorderDictionary;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfDestination;
+import com.itextpdf.text.pdf.PdfImportedPage;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfOutline;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfTextArray;
+import com.itextpdf.text.pdf.PdfWriter;
 
 /**
- * This class is largely based on {@link com.lowagie.text.pdf.PdfGraphics2D}. See
+ * This class is largely based on {@link com.itextpdf.text.pdf.PdfGraphics2D}. See
  * <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/projects/itext/</a> for license information.
  */
 public class ITextOutputDevice extends AbstractOutputDevice implements OutputDevice {
@@ -111,10 +112,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private AffineTransform _transform = new AffineTransform();
 
-    private Color _color = Color.BLACK;
+    private BaseColor _color = BaseColor.BLACK;
 
-    private Color _fillColor;
-    private Color _strokeColor;
+    private BaseColor _fillColor;
+    private BaseColor _strokeColor;
 
     private Stroke _stroke = null;
     private Stroke _originalStroke = null;
@@ -195,7 +196,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         processLink(c, box);
     }
 
-    private com.lowagie.text.Rectangle calcTotalLinkArea(RenderingContext c, Box box) {
+    private com.itextpdf.text.Rectangle calcTotalLinkArea(RenderingContext c, Box box) {
         Box current = box;
         while (true) {
             Box prev = current.getPreviousSibling();
@@ -206,7 +207,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             current = prev;
         }
 
-        com.lowagie.text.Rectangle result = createLocalTargetArea(c, current, true);
+        com.itextpdf.text.Rectangle result = createLocalTargetArea(c, current, true);
 
         current = current.getNextSibling();
         while (current != null && current.getElement() == box.getElement()) {
@@ -218,21 +219,21 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return result;
     }
 
-    private com.lowagie.text.Rectangle add(com.lowagie.text.Rectangle r1, com.lowagie.text.Rectangle r2) {
+    private com.itextpdf.text.Rectangle add(com.itextpdf.text.Rectangle r1, com.itextpdf.text.Rectangle r2) {
         float llx = Math.min(r1.getLeft(), r2.getLeft());
         float urx = Math.max(r1.getRight(), r2.getRight());
         float lly = Math.min(r1.getBottom(), r2.getBottom());
         float ury = Math.max(r1.getTop(), r2.getTop());
 
-        return new com.lowagie.text.Rectangle(llx, lly, urx, ury);
+        return new com.itextpdf.text.Rectangle(llx, lly, urx, ury);
     }
 
-    private String createRectKey(com.lowagie.text.Rectangle rect) {
+    private String createRectKey(com.itextpdf.text.Rectangle rect) {
         return rect.getLeft() + ":" + rect.getBottom() + ":" + rect.getRight() + ":" + rect.getTop();
     }
 
-    private com.lowagie.text.Rectangle checkLinkArea(RenderingContext c, Box box) {
-        com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
+    private com.itextpdf.text.Rectangle checkLinkArea(RenderingContext c, Box box) {
+        com.itextpdf.text.Rectangle targetArea = calcTotalLinkArea(c, box);
         targetArea.setBorder(0);
         targetArea.setBorderWidth(0);
         String key = createRectKey(targetArea);
@@ -263,7 +264,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                             action.put(PdfName.D, dest);
                         }
 
-                        com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
+                        com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, box);
                         if (targetArea == null) {
                             return;
                         }
@@ -276,7 +277,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             	} else if (uri.indexOf("://") != -1) {
                     PdfAction action = new PdfAction(uri);
 
-            		com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
+            		com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, box);
                     if (targetArea == null) {
                         return;
                     }
@@ -291,11 +292,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
 
-    public com.lowagie.text.Rectangle createLocalTargetArea(RenderingContext c, Box box) {
+    public com.itextpdf.text.Rectangle createLocalTargetArea(RenderingContext c, Box box) {
         return createLocalTargetArea(c, box, false);
     }
 
-    private com.lowagie.text.Rectangle createLocalTargetArea(RenderingContext c, Box box, boolean useAggregateBounds) {
+    private com.itextpdf.text.Rectangle createLocalTargetArea(RenderingContext c, Box box, boolean useAggregateBounds) {
         Rectangle bounds;
         if (useAggregateBounds && box.getPaintingInfo() != null) {
             bounds = box.getPaintingInfo().getAggregateBounds();
@@ -308,14 +309,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _transform.transform(docCorner, pdfCorner);
         pdfCorner.setLocation(pdfCorner.getX(), normalizeY((float) pdfCorner.getY()));
 
-        com.lowagie.text.Rectangle result = new com.lowagie.text.Rectangle(
+        com.itextpdf.text.Rectangle result = new com.itextpdf.text.Rectangle(
                 (float) pdfCorner.getX(), (float) pdfCorner.getY(),
                 (float) pdfCorner.getX() + getDeviceLength(bounds.width),
                 (float) pdfCorner.getY() + getDeviceLength(bounds.height));
         return result;
     }
 
-    public com.lowagie.text.Rectangle createTargetArea(RenderingContext c, Box box) {
+    public com.itextpdf.text.Rectangle createTargetArea(RenderingContext c, Box box) {
         PageBox current = c.getPage();
         boolean inCurrentPage = box.getAbsY() > current.getTop() && box.getAbsY() < current.getBottom();
 
@@ -329,8 +330,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                                 page.getMarginBorderPadding(c, CalculatedStyle.BOTTOM));
             float left = getDeviceLength(page.getMarginBorderPadding(c, CalculatedStyle.LEFT) + bounds.x);
 
-            com.lowagie.text.Rectangle result =
-                    new com.lowagie.text.Rectangle(
+            com.itextpdf.text.Rectangle result =
+                    new com.itextpdf.text.Rectangle(
                             left,
                             bottom,
                             left + getDeviceLength(bounds.width),
@@ -402,7 +403,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
             FSRGBColor rgb = (FSRGBColor)color;
-            _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+            _color = new BaseColor(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
         } else if (color instanceof FSCMYKColor) {
             FSCMYKColor cmyk = (FSCMYKColor)color;
             _color = new CMYKColor(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getBlack());

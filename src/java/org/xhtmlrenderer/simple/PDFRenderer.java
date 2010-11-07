@@ -1,7 +1,7 @@
 package org.xhtmlrenderer.simple;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.File;
@@ -115,7 +115,7 @@ public class PDFRenderer {
      * Internal use, runs the render process
      * @param renderer
      * @param pdf
-     * @throws com.lowagie.text.DocumentException
+     * @throws com.itextpdf.text.DocumentException
      * @throws java.io.IOException
      */
     private static void doRenderToPDF(ITextRenderer renderer, String pdf)

@@ -112,7 +112,7 @@ public class BrowserActions {
         export_pdf.putValue(Action.NAME, "Export PDF...");
         //is iText in classpath? 
         try{
-            Class.forName("com.lowagie.text.DocumentException");
+            Class.forName("com.itextpdf.text.DocumentException");
         } catch( ClassNotFoundException e )
         {
             export_pdf.setEnabled(false);

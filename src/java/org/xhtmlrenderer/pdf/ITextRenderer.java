@@ -61,8 +61,8 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
 
 
 public class ITextRenderer {
@@ -78,7 +78,7 @@ public class ITextRenderer {
 
     private final float _dotsPerPoint;
 
-    private com.lowagie.text.Document _pdfDoc;
+    private com.itextpdf.text.Document _pdfDoc;
     private PdfWriter _writer;
 
     private PDFEncryption _pdfEncryption;
@@ -263,7 +263,7 @@ public class ITextRenderer {
         RenderingContext c = newRenderingContext();
         c.setInitialPageNo(initialPageNo);
         PageBox firstPage = (PageBox)pages.get(0);
-        com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(
+        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(
                 0, 0,
                 firstPage.getWidth(c) / _dotsPerPoint,
                 firstPage.getHeight(c) / _dotsPerPoint);
@@ -297,13 +297,13 @@ public class ITextRenderer {
         RenderingContext c = newRenderingContext();
         c.setInitialPageNo(initialPageNo);
         PageBox firstPage = (PageBox)pages.get(0);
-        com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(
+        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(
                 0, 0,
                 firstPage.getWidth(c) / _dotsPerPoint,
                 firstPage.getHeight(c) / _dotsPerPoint);
 
-        com.lowagie.text.Document doc =
-            new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
+        com.itextpdf.text.Document doc =
+            new com.itextpdf.text.Document(firstPageSize, 0, 0, 0, 0);
         PdfWriter writer = PdfWriter.getInstance(doc, os);
         if (_pdfVersion != null) {
             writer.setPdfVersion(_pdfVersion.charValue());
@@ -338,7 +338,7 @@ public class ITextRenderer {
         }
     }
 
-    private void writePDF(List pages, RenderingContext c, com.lowagie.text.Rectangle firstPageSize, com.lowagie.text.Document doc, PdfWriter writer) throws DocumentException {
+    private void writePDF(List pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc, PdfWriter writer) throws DocumentException {
         _outputDevice.setRoot(_root);
 
         _outputDevice.start(_doc);
@@ -356,7 +356,7 @@ public class ITextRenderer {
             _outputDevice.finishPage();
             if (i != pageCount - 1) {
                 PageBox nextPage = (PageBox)pages.get(i+1);
-                com.lowagie.text.Rectangle nextPageSize = new com.lowagie.text.Rectangle(
+                com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(
                         0, 0,
                         nextPage.getWidth(c) / _dotsPerPoint,
                         nextPage.getHeight(c) / _dotsPerPoint);
