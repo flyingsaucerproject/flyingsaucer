@@ -63,6 +63,17 @@ public class DOMTreeResolver implements TreeResolver {
         }
         return (nl.item(i) == element);
     }
+    
+    public boolean isLastChildElement(Object element) {
+        org.w3c.dom.Node parent = ((org.w3c.dom.Element) element).getParentNode();
+        NodeList nl = parent.getChildNodes();
+
+        int i = nl.getLength()-1;
+        while (i > 0 && nl.item(i).getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+            i--;
+        }
+        return (nl.item(i) == element);
+    }
 
     public boolean matchesElement(Object element, String namespaceURI, String name) {
         Element e = (Element)element;
