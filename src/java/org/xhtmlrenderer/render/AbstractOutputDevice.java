@@ -31,6 +31,7 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.BackgroundPosition;
+import org.xhtmlrenderer.css.style.BackgroundSize;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
@@ -46,7 +47,7 @@ import org.xhtmlrenderer.util.Uu;
  */
 public abstract class AbstractOutputDevice implements OutputDevice {
     protected abstract void drawLine(int x1, int y1, int x2, int y2);
-    
+
     public void drawText(RenderingContext c, InlineText inlineText) {
         InlineLayoutBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
@@ -66,7 +67,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                     c.getTextRenderer().drawString(
                             c.getOutputDevice(),
                             text,
-                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());                    
+                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());
                 }
             } else {
                 c.getTextRenderer().drawString(
@@ -84,36 +85,36 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     private void drawFontMetrics(RenderingContext c, InlineText inlineText) {
         InlineLayoutBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
-        
+
         setColor(new FSRGBColor(0xFF, 0x33, 0xFF));
-        
+
         FSFontMetrics fm = iB.getStyle().getFSFontMetrics(null);
         int width = c.getTextRenderer().getWidth(
-                c.getFontContext(), 
+                c.getFontContext(),
                 iB.getStyle().getFSFont(c), text);
         int x = iB.getAbsX() + inlineText.getX();
         int y = iB.getAbsY() + iB.getBaseline();
-        
+
         drawLine(x, y, x + width, y);
-        
+
         y += (int) Math.ceil(fm.getDescent());
         drawLine(x, y, x + width, y);
-        
+
         y -= (int) Math.ceil(fm.getDescent());
         y -= (int) Math.ceil(fm.getAscent());
         drawLine(x, y, x + width, y);
     }
-    
+
     public void drawTextDecoration(
             RenderingContext c, InlineLayoutBox iB, TextDecoration decoration) {
         setColor(iB.getStyle().getColor());
-        
+
         Rectangle edge = iB.getContentAreaEdge(iB.getAbsX(), iB.getAbsY(), c);
-        
+
         fillRect(edge.x, iB.getAbsY() + decoration.getOffset(),
                     edge.width, decoration.getThickness());
     }
-    
+
     public void drawTextDecoration(RenderingContext c, LineBox lineBox) {
         setColor(lineBox.getStyle().getColor());
         Box parent = lineBox.getParent();
@@ -123,9 +124,9 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             if (parent.getStyle().isIdent(
                     CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
                 fillRect(
-                    lineBox.getAbsX(), 
+                    lineBox.getAbsX(),
                     lineBox.getAbsY() + textDecoration.getOffset(),
-                    parent.getAbsX() + parent.getTx() + parent.getContentWidth() - lineBox.getAbsX(), 
+                    parent.getAbsX() + parent.getTx() + parent.getContentWidth() - lineBox.getAbsX(),
                     textDecoration.getThickness());
             } else {
                 fillRect(
@@ -135,7 +136,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             }
         }
     }
-    
+
     public void drawDebugOutline(RenderingContext c, Box box, FSColor color) {
         setColor(color);
         Rectangle rect = box.getMarginEdge(box.getAbsX(), box.getAbsY(), c, 0, 0);
@@ -143,26 +144,26 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         rect.width -= 1;
         drawRect(rect.x, rect.y, rect.width, rect.height);
     }
-    
+
     public void paintCollapsedBorder(
             RenderingContext c, BorderPropertySet border, Rectangle bounds, int side) {
         BorderPainter.paint(bounds, side, border, c, 0, false);
     }
-    
+
     public void paintBorder(RenderingContext c, Box box) {
         if (! box.getStyle().isVisible()) {
             return;
         }
-        
+
         Rectangle borderBounds = box.getPaintingBorderEdge(c);
-    
+
         BorderPainter.paint(borderBounds, box.getBorderSides(), box.getBorder(c), c, 0, true);
     }
-    
+
     public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
         BorderPainter.paint(edge, sides, style.getBorder(c), c, 0, true);
     }
-    
+
     private FSImage getBackgroundImage(RenderingContext c, CalculatedStyle style) {
         if (! style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
             String uri = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
@@ -175,31 +176,31 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
         return null;
     }
-    
+
     public void paintBackground(
-            RenderingContext c, CalculatedStyle style, 
+            RenderingContext c, CalculatedStyle style,
             Rectangle bounds, Rectangle bgImageContainer, BorderPropertySet border) {
         paintBackground0(c, style, bounds, bgImageContainer, border);
     }
-    
+
     public void paintBackground(RenderingContext c, Box box) {
         if (! box.getStyle().isVisible()) {
             return;
         }
-        
+
         Rectangle backgroundBounds = box.getPaintingBorderEdge(c);
         BorderPropertySet border = box.getStyle().getBorder(c);
         paintBackground0(c, box.getStyle(), backgroundBounds, backgroundBounds, border);
     }
 
     private void paintBackground0(
-            RenderingContext c, CalculatedStyle style, 
+            RenderingContext c, CalculatedStyle style,
             Rectangle backgroundBounds, Rectangle bgImageContainer,
             BorderPropertySet border) {
         if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
             return;
         }
-        
+
         FSColor backgroundColor = style.getBackgroundColor();
         FSImage backgroundImage = getBackgroundImage(c, style);
 
@@ -208,47 +209,49 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         if (backgroundImage == null || backgroundImage.getHeight() == 0 || backgroundImage.getWidth() == 0) {
             backgroundImage = null;
         }
-        
+
         if ( (backgroundColor == null || backgroundColor == FSRGBColor.TRANSPARENT) &&
                 backgroundImage == null) {
             return;
         }
-        
+
         if (backgroundColor != null && backgroundColor != FSRGBColor.TRANSPARENT) {
             setColor(backgroundColor);
             fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
         }
-                
+
         if (backgroundImage != null) {
             Rectangle localBGImageContainer = bgImageContainer;
             if (style.isFixedBackground()) {
                 localBGImageContainer = c.getViewportRectangle();
             }
-        
+
             int xoff = localBGImageContainer.x;
             int yoff = localBGImageContainer.y;
-            
+
             if (border != null) {
                 xoff += (int)border.left();
                 yoff += (int)border.top();
             }
-            
+
             Shape oldclip = getClip();
-    
+
             clip(backgroundBounds);
-    
+
+            scaleBackgroundImage(c, style, localBGImageContainer, backgroundImage);
+
             float imageWidth = backgroundImage.getWidth();
             float imageHeight = backgroundImage.getHeight();
-            
+
             BackgroundPosition position = style.getBackgroundPosition();
             xoff += calcOffset(
                     c, style, position.getHorizontal(), localBGImageContainer.width, imageWidth);
             yoff += calcOffset(
                     c, style, position.getVertical(), localBGImageContainer.height, imageHeight);
-    
+
             boolean hrepeat = style.isHorizontalBackgroundRepeat();
             boolean vrepeat = style.isVerticalBackgroundRepeat();
-            
+
             if (! hrepeat && ! vrepeat) {
                 Rectangle imageBounds = new Rectangle(xoff, yoff, (int)imageWidth, (int)imageHeight);
                 if (imageBounds.intersects(backgroundBounds)) {
@@ -282,11 +285,11 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                             backgroundBounds.y + backgroundBounds.height);
                 }
             }
-            
+
             setClip(oldclip);
         }
     }
-    
+
     private int adjustTo(int target, int current, int imageDim) {
         int result = current;
         if (result > target) {
@@ -303,34 +306,34 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
         return result;
     }
-    
+
     private void paintTiles(FSImage image, int left, int top, int right, int bottom) {
         int width = image.getWidth();
         int height = image.getHeight();
-        
+
         for (int x = left; x < right; x+= width) {
             for (int y = top; y < bottom; y+= height) {
                 drawImage(image, x, y);
             }
         }
     }
-    
+
     private void paintVerticalBand(FSImage image, int left, int top, int bottom) {
         int height = image.getHeight();
-        
+
         for (int y = top; y < bottom; y+= height) {
             drawImage(image, left, y);
         }
     }
-    
+
     private void paintHorizontalBand(FSImage image, int left, int top, int right) {
         int width = image.getWidth();
-        
+
         for (int x = left; x < right; x+= width) {
             drawImage(image, x, top);
         }
     }
-    
+
     private int calcOffset(CssContext c, CalculatedStyle style, PropertyValue value, float boundsDim, float imageDim) {
         if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_PERCENTAGE) {
             float percent = value.getFloatValue() / 100.0f;
@@ -339,6 +342,52 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             return (int)LengthValue.calcFloatProportionalValue(
                     style,
                     CSSName.BACKGROUND_POSITION,
+                    value.getCssText(),
+                    value.getFloatValue(),
+                    value.getPrimitiveType(),
+                    0,
+                    c);
+        }
+    }
+
+    private void scaleBackgroundImage(CssContext c, CalculatedStyle style, Rectangle backgroundContainer, FSImage image) {
+        BackgroundSize backgroundSize = style.getBackgroundSize();
+
+        if (! backgroundSize.isBothAuto()) {
+            if (backgroundSize.isCover() || backgroundSize.isContain()) {
+                int testHeight = (int)((double)image.getHeight() * backgroundContainer.width / image.getWidth());
+                if (backgroundSize.isContain()) {
+                    if (testHeight > backgroundContainer.height) {
+                        image.scale(-1, backgroundContainer.height);
+                    } else {
+                        image.scale(backgroundContainer.width, -1);
+                    }
+                } else if (backgroundSize.isCover()) {
+                    if (testHeight > backgroundContainer.height) {
+                        image.scale(backgroundContainer.width, -1);
+                    } else {
+                        image.scale(-1, backgroundContainer.height);
+                    }
+                }
+            } else {
+                int scaledWidth = calcBackgroundSizeLength(c, style, backgroundSize.getWidth(), backgroundContainer.width);
+                int scaledHeight = calcBackgroundSizeLength(c, style, backgroundSize.getHeight(), backgroundContainer.height);
+
+                image.scale(scaledWidth, scaledHeight);
+            }
+        }
+    }
+
+    private int calcBackgroundSizeLength(CssContext c, CalculatedStyle style, PropertyValue value, float boundsDim) {
+        if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) { // 'auto'
+            return -1;
+        } else if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_PERCENTAGE) {
+            float percent = value.getFloatValue() / 100.0f;
+            return Math.round(boundsDim*percent);
+        } else {
+            return (int)LengthValue.calcFloatProportionalValue(
+                    style,
+                    CSSName.BACKGROUND_SIZE,
                     value.getCssText(),
                     value.getFloatValue(),
                     value.getPrimitiveType(),

@@ -303,21 +303,51 @@ public class FloatManager {
         }
     }
 
+    public int getNextLineBoxDelta(CssContext cssCtx, BlockFormattingContext bfc,
+            LineBox line, int containingBlockContentWidth) {
+        BoxDistance left = getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _leftFloats, LEFT);
+        BoxDistance right = getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _rightFloats, RIGHT);
+
+        int leftDelta;
+        int rightDelta;
+
+        if (left.getBox() != null) {
+            leftDelta = calcDelta(cssCtx, line, left);
+        } else {
+            leftDelta = 0;
+        }
+
+        if (right.getBox() != null) {
+            rightDelta = calcDelta(cssCtx, line, right);
+        } else {
+            rightDelta = 0;
+        }
+
+        return Math.max(leftDelta, rightDelta);
+    }
+
+    private int calcDelta(CssContext cssCtx, LineBox line, BoxDistance boxDistance) {
+        BlockBox floated = boxDistance.getBox();
+        Rectangle rect = floated.getBorderEdge(floated.getAbsX(), floated.getAbsY(), cssCtx);
+        int bottom = rect.y + rect.height;
+        return bottom - line.getAbsY();
+    }
+
     public int getLeftFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
             LineBox line, int containingBlockContentWidth) {
-        return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _leftFloats, LEFT);
+        return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _leftFloats, LEFT).getDistance();
     }
 
     public int getRightFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
             LineBox line, int containingBlockContentWidth) {
-        return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _rightFloats, RIGHT);
+        return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _rightFloats, RIGHT).getDistance();
     }
 
-    private int getFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
+    private BoxDistance getFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
                                  LineBox line, int containingBlockContentWidth,
                                  List floatsList, int direction) {
         if (floatsList.size() == 0) {
-            return 0;
+            return new BoxDistance(null, 0);
         }
 
         Point offset = bfc.getOffset();
@@ -327,7 +357,7 @@ public class FloatManager {
         int farthestOver = direction == LEFT ? lineBounds.x : lineBounds.x + lineBounds.width;
 
         applyLineHeightHack(cssCtx, line, lineBounds);
-
+        BlockBox farthestOverBox = null;
         for (int i = 0; i < floatsList.size(); i++) {
             BoxOffset floater = (BoxOffset) floatsList.get(i);
             Rectangle fr = floater.getBox().getMarginEdge(cssCtx, -floater.getX(), -floater.getY());
@@ -337,13 +367,14 @@ public class FloatManager {
                 } else if (direction == RIGHT && fr.x < farthestOver) {
                     farthestOver = fr.x;
                 }
+                farthestOverBox = floater.getBox();
             }
         }
 
         if (direction == LEFT) {
-            return farthestOver - lineBounds.x;
+            return new BoxDistance(farthestOverBox, farthestOver - lineBounds.x);
         } else {
-            return lineBounds.x + lineBounds.width - farthestOver;
+            return new BoxDistance(farthestOverBox,lineBounds.x + lineBounds.width - farthestOver);
         }
     }
 
@@ -412,6 +443,24 @@ public class FloatManager {
 
         public int getY() {
             return _y;
+        }
+    }
+
+    private static class BoxDistance {
+        private BlockBox _box;
+        private int _distance;
+
+        public BoxDistance(BlockBox box, int distance) {
+            _box = box;
+            _distance = distance;
+        }
+
+        BlockBox getBox() {
+            return _box;
+        }
+
+        int getDistance() {
+            return _distance;
         }
     }
 

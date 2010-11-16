@@ -51,6 +51,11 @@ public interface TreeResolver {
     boolean isFirstChildElement(Object element);
     
     /**
+     * returns true if this element is the last child element of its parent
+     */
+    boolean isLastChildElement(Object element);
+    
+    /**
      * Returns <code>true</code> if <code>element</code> has the local name
      * <code>name</code> and namespace URI <code>namespaceURI</code>.
      * @param element

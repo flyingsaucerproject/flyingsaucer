@@ -86,6 +86,8 @@ public class CalculatedStyle {
     private boolean _paddingAllowed = true;
     private boolean _bordersAllowed = true;
 
+    private BackgroundSize _backgroundSize;
+
     /**
      * Cache child styles of this style that have the same cascaded properties
      */
@@ -296,6 +298,39 @@ public class CalculatedStyle {
         } else {
             return asColor(CSSName.BACKGROUND_COLOR);
         }
+    }
+
+    public BackgroundSize getBackgroundSize() {
+        if (_backgroundSize == null) {
+            _backgroundSize = createBackgroundSize();
+        }
+
+        return _backgroundSize;
+    }
+
+    private BackgroundSize createBackgroundSize() {
+        FSDerivedValue value = valueByName(CSSName.BACKGROUND_SIZE);
+        if (value instanceof IdentValue) {
+            IdentValue ident = (IdentValue)value;
+            if (ident == IdentValue.COVER) {
+                return new BackgroundSize(false, true, false);
+            } else if (ident == IdentValue.CONTAIN) {
+                return new BackgroundSize(true, false, false);
+            }
+        } else {
+            ListValue valueList = (ListValue)value;
+            List values = valueList.getValues();
+            boolean firstAuto = ((PropertyValue)values.get(0)).getIdentValue() == IdentValue.AUTO;
+            boolean secondAuto = ((PropertyValue)values.get(1)).getIdentValue() == IdentValue.AUTO;
+
+            if (firstAuto && secondAuto) {
+                return new BackgroundSize(false, false, true);
+            } else {
+                return new BackgroundSize((PropertyValue)values.get(0), (PropertyValue)values.get(1));
+            }
+        }
+
+        throw new RuntimeException("internal error");
     }
 
     public BackgroundPosition getBackgroundPosition() {

@@ -160,6 +160,14 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createFirstChildCondition());
     }
+    
+    /**
+     * the CSS condition that element has pseudo-class :last-child
+     */
+    public void addLastChildCondition() {
+        _specificityC++;
+        addCondition(Condition.createLastChildCondition());
+    }
 
     /**
      * the CSS condition :lang(Xx)
