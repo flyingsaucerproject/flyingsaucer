@@ -411,9 +411,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     private void initFontFromComponent(BlockBox root) {
         if (isDefaultFontFromComponent()) {
             CalculatedStyle style = root.getStyle();
-            style.setDefaultValue(CSSName.FONT_FAMILY, new StringValue(CSSName.FONT_FAMILY,
-                    new PropertyValue(CSSPrimitiveValue.CSS_STRING, getFont().getFamily(),
-                            getFont().getFamily())));
+            PropertyValue fontFamilyProp = new PropertyValue(CSSPrimitiveValue.CSS_STRING, getFont().getFamily(),
+                    getFont().getFamily());
+            fontFamilyProp.setStringArrayValue(new String[] { fontFamilyProp.getStringValue() });
+            style.setDefaultValue(CSSName.FONT_FAMILY, new StringValue(CSSName.FONT_FAMILY, fontFamilyProp));
             style.setDefaultValue(CSSName.FONT_SIZE, new LengthValue(style, CSSName.FONT_SIZE,
                     new PropertyValue(CSSPrimitiveValue.CSS_PX, getFont().getSize(), Integer
                             .toString(getFont().getSize()))));
