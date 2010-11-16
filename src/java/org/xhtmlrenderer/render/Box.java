@@ -787,12 +787,16 @@ public abstract class Box implements Styleable {
         final PaintingInfo result = new PaintingInfo();
 
         Rectangle bounds = getMarginEdge(getAbsX(), getAbsY(), c, 0, 0);
-        result.setOuterMarginCorner(
-            new Dimension(bounds.x + bounds.width, bounds.y + bounds.height));
+        Dimension outerMargin = new Dimension(bounds.x + bounds.width, bounds.y + bounds.height);
+        result.setOuterMarginCorner(new Dimension(outerMargin));
 
         result.setAggregateBounds(getPaintingClipEdge(c));
 
         calcChildPaintingInfo(c, result, useCache);
+
+        if (getStyle().isOverflowApplies() && !getStyle().isOverflowVisible()) {
+            result.setOuterMarginCorner(outerMargin);
+        }
 
         setPaintingInfo(result);
 
