@@ -133,6 +133,15 @@ abstract class Condition {
     static Condition createFirstChildCondition() {
         return new FirstChildCondition();
     }
+    
+    /**
+     * the CSS condition that element has pseudo-class :last-child
+     *
+     * @return Returns
+     */
+    static Condition createLastChildCondition() {
+        return new LastChildCondition();
+    }
 
     /**
      * the CSS condition that element has pseudo-class :link
@@ -338,6 +347,17 @@ abstract class Condition {
 
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             return treeRes.isFirstChildElement(e);
+        }
+
+    }
+    
+    private static class LastChildCondition extends Condition {
+
+        LastChildCondition() {
+        }
+
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            return treeRes.isLastChildElement(e);
         }
 
     }
