@@ -1,0 +1,82 @@
+#toc {
+    page-break-before: always;
+    font-size: 18pt;
+    text-align: center;
+}
+
+#footer {
+    display: block;
+    position: running(footer);
+}
+
+h2 {
+    margin-top: 18pt;
+    page-break-before: always;
+}
+
+h3, h4 {
+    margin-top: 18pt;
+    page-break-after: avoid;
+}
+
+.printOnly {
+    display: block;
+}
+
+body {
+    padding: 0;
+}
+
+a:link {
+    text-decoration: none;
+    color: black;
+}
+
+div #menu {
+    display: none;
+}
+
+#pagenumber:before {
+    content: counter(page);
+}
+
+#pagecount:before {
+    content: counter(pages);
+}
+
+.extensions td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.extensions td {
+    margin: 0;
+    padding: 3px 3px 10px;
+    vertical-align: top;
+}
+
+@page {
+    size: A4;
+    margin: 0.5in .5in 1in .5in;
+
+    @bottom-left {
+        content : element(footer);
+    }
+
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+    }
+}
+
+@page :first {
+    border: thin solid black;
+
+    @bottom-left {
+        content : "";
+    }
+
+    @bottom-right {
+        content: "";
+    }
+}
+
