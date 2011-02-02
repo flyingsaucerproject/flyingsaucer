@@ -1,0 +1,6 @@
+URI: packed/core-renderer.pack.gz
+Content-Type: x-java-archive
+Content-Encoding: pack200-gzip
+
+URI: unpacked/core-renderer
+Content-Type: x-java-archive

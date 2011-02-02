@@ -1,0 +1,18 @@
+# Return the right mime type for JARs
+AddType application/x-java-archive .jar
+# Enable type maps
+AddHandler application/x-type-map .var
+Options +MultiViews
+# Tweak MultiViews - this line is for
+# APACHE 2.0 ONLY!
+MultiViewsMatch Any
+
+<Files *.pack.gz>
+  # Enable the Content-Encoding header for .jar.pack.gz files
+  AddEncoding pack200-gzip .jar
+  # Stop mod_gzip from messing with the Content-Encoding
+  # response for these files
+  RemoveEncoding .gz
+</Files>
+
+

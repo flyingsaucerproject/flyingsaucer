@@ -1,0 +1,6 @@
+URI: packed/svg.jar.pack.gz
+Content-Type: x-java-archive
+Content-Encoding: pack200-gzip
+
+URI: unpacked/svg.jar
+Content-Type: x-java-archive
