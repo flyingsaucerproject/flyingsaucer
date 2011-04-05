@@ -349,8 +349,11 @@ abstract class Condition {
             if (lang == null) {
                 return false;
             }
+            if(_lang.equalsIgnoreCase(lang)) {
+                return true;
+            }
             String[] ca = split(lang, '-');
-            if (_lang.equals(ca[0])) {
+            if (_lang.equalsIgnoreCase(ca[0])) {
                 return true;
             }
             return false;
