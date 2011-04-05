@@ -1,6 +1,6 @@
 /*
  * Condition.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -331,8 +331,11 @@ abstract class Condition {
             if (lang == null) {
                 return false;
             }
+            if(_lang.equalsIgnoreCase(lang)) {
+                return true;
+            }
             String[] ca = split(lang, '-');
-            if (_lang.equals(ca[0])) {
+            if (_lang.equalsIgnoreCase(ca[0])) {
                 return true;
             }
             return false;
