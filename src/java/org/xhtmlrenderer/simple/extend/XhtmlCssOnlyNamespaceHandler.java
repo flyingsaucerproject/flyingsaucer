@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Torbjorn Gannholm
+ * Copyright (c) 2005 Torbj�rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -23,7 +23,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
@@ -33,7 +35,7 @@ import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.simple.NoNamespaceHandler;
+import org.xhtmlrenderer.swing.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -50,6 +52,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     
     private static StylesheetInfo _defaultStylesheet;
     private static boolean _defaultStylesheetError = false;
+    
+    private Map _metadata = null;
 
     /**
      * Gets the namespace attribute of the XhtmlNamespaceHandler object
@@ -98,18 +102,11 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         return true;
     }
-
-    /**
-     * Looks for attribute named attrName on the element, and returns null if not
-     * found, or the attribute value, trimmed, if found.
-     * @param e element to test for the given attribute
-     * @param attrName name of the attribute to look for
-     * @return returns null if not
-     * found, or the attribute value, trimmed, if found
-     */
+    
     protected String getAttribute(Element e, String attrName) {
         String result = e.getAttribute(attrName);
-        return result.length() == 0 ? null : result.trim();
+        result = result.trim();
+        return result.length() == 0 ? null : result;
     }
 
     /**
@@ -279,7 +276,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         
         String css = buf.toString().trim();
         if (css.length() > 0) {
-            info.setContent(css);
+            info.setContent(css.toString());
             
             return info;
         } else {
@@ -415,7 +412,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     private InputStream getDefaultStylesheetStream() {
         InputStream stream = null;
         String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
-        stream = XhtmlCssOnlyNamespaceHandler.class.getResourceAsStream(defaultStyleSheet);
+        stream = this.getClass().getResourceAsStream(defaultStyleSheet);
         if (stream == null) {
             XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
                     "This file must be on your CLASSPATH. Please check before continuing.");
@@ -423,5 +420,51 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         
         return stream;
+    }
+    
+    private Map getMetaInfo(org.w3c.dom.Document doc) {
+        if(this._metadata != null) {
+            return this._metadata;
+        }
+        
+        Map metadata = new HashMap();
+        
+        Element html = doc.getDocumentElement();
+        Element head = findFirstChild(html, "head");
+        if (head != null) {
+            Node current = head.getFirstChild();
+            while (current != null) {
+                if (current.getNodeType() == Node.ELEMENT_NODE) {
+                    Element elem = (Element)current;
+                    String elemName = elem.getLocalName();
+                    if (elemName == null)
+                    {
+                        elemName = elem.getTagName();
+                    }
+                    if (elemName.equals("meta")) {
+                        String http_equiv = elem.getAttribute("http-equiv");
+                        String content = elem.getAttribute("content");
+                        
+                        if(!http_equiv.equals("") && !content.equals("")) {
+                            metadata.put(http_equiv, content);
+                        }
+                    }
+                }
+                current = current.getNextSibling();
+            }
+        }
+        
+        return metadata;
+    }
+    
+    public String getLang(org.w3c.dom.Element e) {
+        String lang = e.getAttribute("lang");
+        if(lang.equals("")) {
+            lang = (String) this.getMetaInfo(e.getOwnerDocument()).get("Content-Language");
+            if(lang == null) {
+                lang = "";
+            }
+        }
+        return lang;
     }
 }
