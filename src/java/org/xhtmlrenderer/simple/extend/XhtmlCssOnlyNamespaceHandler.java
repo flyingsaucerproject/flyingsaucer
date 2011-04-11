@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Torbj�rn Gannholm
+ * Copyright (c) 2005 Torbjorn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -35,7 +35,7 @@ import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.swing.NoNamespaceHandler;
+import org.xhtmlrenderer.simple.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -103,10 +103,17 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return true;
     }
     
+    /**
+     * Looks for attribute named attrName on the element, and returns null if not
+     * found, or the attribute value, trimmed, if found.
+     * @param e element to test for the given attribute
+     * @param attrName name of the attribute to look for
+     * @return returns null if not
+     * found, or the attribute value, trimmed, if found
+     */
     protected String getAttribute(Element e, String attrName) {
         String result = e.getAttribute(attrName);
-        result = result.trim();
-        return result.length() == 0 ? null : result;
+        return result.length() == 0 ? null : result.trim();
     }
 
     /**
@@ -276,7 +283,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         
         String css = buf.toString().trim();
         if (css.length() > 0) {
-            info.setContent(css.toString());
+            info.setContent(css);
             
             return info;
         } else {
@@ -412,7 +419,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     private InputStream getDefaultStylesheetStream() {
         InputStream stream = null;
         String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
-        stream = this.getClass().getResourceAsStream(defaultStyleSheet);
+        stream = XhtmlCssOnlyNamespaceHandler.class.getResourceAsStream(defaultStyleSheet);
         if (stream == null) {
             XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
                     "This file must be on your CLASSPATH. Please check before continuing.");

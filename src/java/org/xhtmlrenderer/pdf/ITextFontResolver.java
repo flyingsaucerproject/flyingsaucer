@@ -52,7 +52,7 @@ public class ITextFontResolver implements FontResolver {
     private Map _fontFamilies = createInitialFontMap();
     private Map _fontCache = new HashMap();
     
-    private SharedContext _sharedContext;
+    private final SharedContext _sharedContext;
     
     public ITextFontResolver(SharedContext sharedContext) {
         _sharedContext = sharedContext;
@@ -120,8 +120,12 @@ public class ITextFontResolver implements FontResolver {
             
             String encoding = style.getStringProperty(CSSName.FS_PDF_FONT_ENCODING);
             
+            String fontFamily = null;
+            if (rule.hasFontFamily()) {
+                fontFamily = style.valueByName(CSSName.FONT_FAMILY).asString();
+            }
             try {
-                addFontFaceFont(src.asString(), encoding, embedded, font1, font2);
+                addFontFaceFont(fontFamily, src.asString(), encoding, embedded, font1, font2);
             } catch (DocumentException e) {
                 XRLog.exception("Could not load font " + src.asString(), e);
                 continue;
@@ -159,11 +163,25 @@ public class ITextFontResolver implements FontResolver {
     
     public void addFont(String path, String encoding, boolean embedded, String pathToPFB) 
             throws DocumentException, IOException {
+        addFont(path, null, encoding, embedded, pathToPFB);
+    }
+
+    public void addFont(String path, String fontFamilyNameOverride,
+                        String encoding, boolean embedded, String pathToPFB)
+            throws DocumentException, IOException {
         String lower = path.toLowerCase();
         if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
             BaseFont font = BaseFont.createFont(path, encoding, embedded);
             
-            String fontFamilyName = TrueTypeUtil.getFamilyName(font);
+            String[] fontFamilyNames;
+            if (fontFamilyNameOverride != null) {
+                fontFamilyNames = new String[] { fontFamilyNameOverride };
+            } else {
+                fontFamilyNames = TrueTypeUtil.getFamilyNames(font);
+            }
+
+            for (int i = 0; i < fontFamilyNames.length; i++) {
+                String fontFamilyName = fontFamilyNames[i];
             FontFamily fontFamily = getFontFamily(fontFamilyName);
             
             FontDescription descr = new FontDescription(font);
@@ -174,10 +192,11 @@ public class ITextFontResolver implements FontResolver {
             }
             
             fontFamily.addFontDescription(descr);
+            }
         } else if (lower.endsWith(".ttc")) {
             String[] names = BaseFont.enumerateTTCNames(path);
             for (int i = 0; i < names.length; i++) {
-                addFont(path + "," + i, encoding, embedded);
+                addFont(path + "," + i, fontFamilyNameOverride, encoding, embedded, null);
             }
         } else if (lower.endsWith(".afm") || lower.endsWith(".pfm")) {
             if (embedded && pathToPFB == null) {
@@ -187,7 +206,13 @@ public class ITextFontResolver implements FontResolver {
             BaseFont font = BaseFont.createFont(
                     path, encoding, embedded, false, null, readFile(pathToPFB));
             
-            String fontFamilyName = font.getFamilyFontName()[0][3];
+            String fontFamilyName;
+            if (fontFamilyNameOverride != null) {
+                fontFamilyName = fontFamilyNameOverride;
+            } else {
+                fontFamilyName = font.getFamilyFontName()[0][3];
+            }
+
             FontFamily fontFamily = getFontFamily(fontFamilyName);
             
             FontDescription descr = new FontDescription(font);
@@ -201,14 +226,21 @@ public class ITextFontResolver implements FontResolver {
     }
     
     private void addFontFaceFont(
-            String uri, String encoding, boolean embedded, byte[] afmttf, byte[] pfb) 
+            String fontFamilyNameOverride, String uri, String encoding, boolean embedded, byte[] afmttf, byte[] pfb)
             throws DocumentException, IOException {
         String lower = uri.toLowerCase();
         if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
             BaseFont font = BaseFont.createFont(uri, encoding, embedded, false, afmttf, pfb);
             
-            String fontFamilyName = TrueTypeUtil.getFamilyName(font);
-            FontFamily fontFamily = getFontFamily(fontFamilyName);
+            String[] fontFamilyNames;
+            if (fontFamilyNameOverride != null) {
+                fontFamilyNames = new String[] { fontFamilyNameOverride };
+            } else {
+                fontFamilyNames = TrueTypeUtil.getFamilyNames(font);
+            }
+
+            for (int i = 0; i < fontFamilyNames.length; i++) {
+                FontFamily fontFamily = getFontFamily(fontFamilyNames[i]);
             
             FontDescription descr = new FontDescription(font);
             try {
@@ -220,6 +252,7 @@ public class ITextFontResolver implements FontResolver {
             descr.setFromFontFace(true);
             
             fontFamily.addFontDescription(descr);
+            }
         } else if (lower.endsWith(".afm") || lower.endsWith(".pfm") || lower.endsWith(".pfb") || lower.endsWith(".pfa")) {
             if (embedded && pfb == null) {
                 throw new IOException("When embedding a font, path to PFB/PFA file must be specified");
@@ -588,7 +621,7 @@ public class ITextFontResolver implements FontResolver {
                 } else if (style == IdentValue.OBLIQUE) {
                     return match(desiredWeight, IdentValue.NORMAL);
                 } else {
-                    return null;
+                    candidates.addAll(_fontDescriptions);
                 }
             }
             
