@@ -23,9 +23,9 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints.Key;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -45,8 +45,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
@@ -71,6 +72,7 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import com.lowagie.text.DocumentException;
@@ -97,62 +99,62 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private static final int FILL = 1;
     private static final int STROKE = 2;
     private static final int CLIP = 3;
-
+    
     private static AffineTransform IDENTITY = new AffineTransform();
-
-    private static final BasicStroke STROKE_ONE = new BasicStroke(1);
-
+    
+    private static final BasicStroke STROKE_ONE = new BasicStroke(1);    
+    
     private static final boolean ROUND_RECT_DIMENSIONS_DOWN = Configuration.isTrue("xr.pdf.round.rect.dimensions.down", false);
 
     private PdfContentByte _currentPage;
     private float _pageHeight;
-
+    
     private ITextFSFont _font;
-
+    
     private AffineTransform _transform = new AffineTransform();
-
+    
     private Color _color = Color.BLACK;
-
+    
     private Color _fillColor;
     private Color _strokeColor;
-
+    
     private Stroke _stroke = null;
     private Stroke _originalStroke = null;
     private Stroke _oldStroke = null;
-
+    
     private Area _clip;
-
+    
     private SharedContext _sharedContext;
     private float _dotsPerPoint;
-
+    
     private PdfWriter _writer;
-
+    
     private Map _readerCache = new HashMap();
-
+    
     private PdfDestination _defaultDestination;
-
+    
     private List _bookmarks = new ArrayList();
-
+    
     private Box _root;
-
+    
     private int _startPageNo;
-
+    
     private int _nextFormFieldIndex;
-
+    
     private Set _linkTargetAreas;
-
+    
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
     }
-
+    
     public void setWriter(PdfWriter writer) {
         _writer = writer;
     }
-
+    
     public PdfWriter getWriter() {
         return _writer;
     }
-
+    
     public int getNextFormFieldIndex() {
         return ++_nextFormFieldIndex;
     }
@@ -160,41 +162,41 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public void initializePage(PdfContentByte currentPage, float height) {
         _currentPage = currentPage;
         _pageHeight = height;
-
+        
         _currentPage.saveState();
-
+        
         _transform = new AffineTransform();
         _transform.scale(1.0d / _dotsPerPoint, 1.0d / _dotsPerPoint);
-
+        
         _stroke = transformStroke(STROKE_ONE);
         _originalStroke = _stroke;
         _oldStroke = _stroke;
-
+        
         setStrokeDiff(_stroke, null);
-
+        
         if (_defaultDestination == null) {
             _defaultDestination = new PdfDestination(PdfDestination.FITH, height);
             _defaultDestination.addPage(_writer.getPageReference(1));
         }
-
+        
         _linkTargetAreas = new HashSet();
     }
-
+    
     public void finishPage() {
         _currentPage.restoreState();
     }
-
+    
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
         ITextReplacedElement element = (ITextReplacedElement)box.getReplacedElement();
         element.paint(c, this, box);
     }
-
+    
     public void paintBackground(RenderingContext c, Box box) {
         super.paintBackground(c, box);
-
+        
         processLink(c, box);
     }
-
+    
     private com.lowagie.text.Rectangle calcTotalLinkArea(RenderingContext c, Box box) {
         Box current = box;
         while (true) {
@@ -202,35 +204,35 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             if (prev == null || prev.getElement() != box.getElement()) {
                 break;
             }
-
+            
             current = prev;
         }
 
         com.lowagie.text.Rectangle result = createLocalTargetArea(c, current, true);
-
+        
         current = current.getNextSibling();
         while (current != null && current.getElement() == box.getElement()) {
             result = add(result, createLocalTargetArea(c, current, true));
-
+            
             current = current.getNextSibling();
         }
-
+        
         return result;
     }
-
+    
     private com.lowagie.text.Rectangle add(com.lowagie.text.Rectangle r1, com.lowagie.text.Rectangle r2) {
         float llx = Math.min(r1.getLeft(), r2.getLeft());
         float urx = Math.max(r1.getRight(), r2.getRight());
         float lly = Math.min(r1.getBottom(), r2.getBottom());
         float ury = Math.max(r1.getTop(), r2.getTop());
-
+        
         return new com.lowagie.text.Rectangle(llx, lly, urx, ury);
     }
-
+    
     private String createRectKey(com.lowagie.text.Rectangle rect) {
         return rect.getLeft() + ":" + rect.getBottom() + ":" + rect.getRight() + ":" + rect.getTop();
     }
-
+    
     private com.lowagie.text.Rectangle checkLinkArea(RenderingContext c, Box box) {
         com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
         targetArea.setBorder(0);
@@ -241,7 +243,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
         _linkTargetAreas.add(key);
         return targetArea;
-    }
+    }    
 
     private void processLink(RenderingContext c, Box box) {
         Element elem = box.getElement();
@@ -254,7 +256,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     Box target = _sharedContext.getBoxById(anchor);
                     if (target != null) {
                         PdfDestination dest = createDestination(c, target);
-
+                        
                         PdfAction action = new PdfAction();
                         if (!"".equals(handler.getAttributeValue(elem, "onclick"))) {
                             action = PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
@@ -275,14 +277,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     }
             	} else if (uri.indexOf("://") != -1) {
                     PdfAction action = new PdfAction(uri);
-
+                    
             		com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
                     if (targetArea == null) {
                         return;
                     }
             		PdfAnnotation annot = PdfAnnotation.createLink(
             				_writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
-
+            		
                     annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
                     annot.setBorder(new PdfBorderArray(0.0f,0.0f,0));
                     _writer.addAnnotation(annot);
@@ -290,7 +292,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             }
         }
     }
-
+    
     public com.lowagie.text.Rectangle createLocalTargetArea(RenderingContext c, Box box) {
         return createLocalTargetArea(c, box, false);
     }
@@ -314,38 +316,38 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 (float) pdfCorner.getY() + getDeviceLength(bounds.height));
         return result;
     }
-
+    
     public com.lowagie.text.Rectangle createTargetArea(RenderingContext c, Box box) {
         PageBox current = c.getPage();
         boolean inCurrentPage = box.getAbsY() > current.getTop() && box.getAbsY() < current.getBottom();
-
+        
         if (inCurrentPage || box.isContainedInMarginBox()) {
             return createLocalTargetArea(c, box);
         } else {
             Rectangle bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
             PageBox page = _root.getLayer().getPage(c, bounds.y);
-
+            
             float bottom = getDeviceLength(page.getBottom() - (bounds.y + bounds.height) +
                                 page.getMarginBorderPadding(c, CalculatedStyle.BOTTOM));
             float left = getDeviceLength(page.getMarginBorderPadding(c, CalculatedStyle.LEFT) + bounds.x);
-
-            com.lowagie.text.Rectangle result =
+            
+            com.lowagie.text.Rectangle result = 
                     new com.lowagie.text.Rectangle(
                             left,
                             bottom,
                             left + getDeviceLength(bounds.width),
                             bottom + getDeviceLength(bounds.height));
-            return result;
+            return result;          
         }
     }
-
+    
     public float getDeviceLength(float length) {
         return length / _dotsPerPoint;
     }
-
+    
     private PdfDestination createDestination(RenderingContext c, Box box) {
         PdfDestination result;
-
+        
         PageBox page = _root.getLayer().getPage(c, getPageRefY(box));
         int distanceFromTop =
             page.getMarginBorderPadding(c, CalculatedStyle.TOP);
@@ -356,29 +358,29 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         page.getHeight(c) / _dotsPerPoint - distanceFromTop / _dotsPerPoint,
                         0);
         result.addPage(_writer.getPageReference(_startPageNo + page.getPageNo()+1));
-
+        
         return result;
     }
-
+    
     public void drawBorderLine(
             Rectangle bounds, int side, int lineWidth, boolean solid) {
         float x = bounds.x;
         float y = bounds.y;
         float w = bounds.width;
         float h = bounds.height;
-
+        
         float adj = solid ? (float)lineWidth / 2 : 0;
         float adj2 = lineWidth % 2 != 0 ? 0.5f : 0f;
-
+        
         Line2D.Float line = null;
-
+        
         // FIXME: findbugs reports possible loss of precision, compare with width / (float)2
         if (side == BorderPainter.TOP) {
             line = new Line2D.Float(
                     x + adj, y + lineWidth / 2 + adj2, x + w - adj, y + lineWidth / 2 + adj2);
         } else if (side == BorderPainter.LEFT) {
             line = new Line2D.Float(
-                    x + lineWidth / 2 + adj2, y + adj,
+                    x + lineWidth / 2 + adj2, y + adj, 
                     x + lineWidth / 2 + adj2, y + h - adj);
         } else if (side == BorderPainter.RIGHT) {
             float offset = lineWidth / 2;
@@ -386,7 +388,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 offset += 1;
             }
             line = new Line2D.Float(
-                    x + w - offset + adj2, y + adj,
+                    x + w - offset + adj2, y + adj, 
                     x + w - offset + adj2, y + h - adj);
         } else if (side == BorderPainter.BOTTOM) {
             float offset = lineWidth / 2;
@@ -395,10 +397,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             }
             line = new Line2D.Float(x + adj, y + h - offset + adj2, x + w - adj, y + h - offset + adj2);
         }
-
+        
         draw(line);
     }
-
+    
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
             FSRGBColor rgb = (FSRGBColor)color;
@@ -410,42 +412,42 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
     }
-
+    
     private void draw(Shape s) {
         followPath(s, STROKE);
     }
-
+    
     protected void drawLine(int x1, int y1, int x2, int y2) {
         Line2D line = new Line2D.Double(x1, y1, x2, y2);
         draw(line);
     }
-
+    
     public void drawRect(int x, int y, int width, int height) {
         draw(new Rectangle(x, y, width, height));
     }
-
+    
     public void drawOval(int x, int y, int width, int height) {
         Ellipse2D oval = new Ellipse2D.Float(x, y, width, height);
         draw(oval);
-    }
-
+    }    
+    
     public void fill(Shape s) {
         followPath(s, FILL);
     }
-
+    
     public void fillRect(int x, int y, int width, int height) {
         if (ROUND_RECT_DIMENSIONS_DOWN) {
             fill(new Rectangle(x,y,width-1,height-1));
         } else {
-            fill(new Rectangle(x,y,width,height));
-        }
+        fill(new Rectangle(x,y,width,height));
     }
-
+    }
+    
     public void fillOval(int x, int y, int width, int height) {
         Ellipse2D oval = new Ellipse2D.Float(x, y, width, height);
         fill(oval);
     }
-
+    
     public void translate(double tx, double ty) {
         _transform.translate(tx, ty);
     }
@@ -456,11 +458,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     public void setRenderingHint(Key key, Object value) {
     }
-
+    
     public void setFont(FSFont font) {
         _font = ((ITextFSFont)font);
     }
-
+    
     private AffineTransform normalizeMatrix(AffineTransform current) {
         double[] mx = new double[6];
         AffineTransform result = new AffineTransform();
@@ -471,8 +473,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         result.concatenate(current);
         return result;
     }
-
+    
     public void drawString(String s, float x, float y, JustificationInfo info) {
+        if(Configuration.isTrue("xr.renderer.replace-missing-characters", false)) {
+            s = replaceMissingCharacters(s);
+        }
         if (s.length() == 0)
             return;
         PdfContentByte cb = _currentPage;
@@ -496,6 +501,20 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
         cb.endText();
     }
+    
+    private String replaceMissingCharacters(String string) {
+        char[] charArr = string.toCharArray();
+        char replacementCharacter = Configuration.valueAsChar("xr.renderer.missing-character-replacement", '#');
+        
+        for(int i = 0; i < charArr.length; i++) {
+            if(!(charArr[i] == ' ' || charArr[i] == '\u00a0' || charArr[i] == '\u3000' || _font.getFontDescription().getFont().charExists(charArr[i]))) {
+                XRLog.render(Level.INFO, "Missing character [" + charArr[i] + ":" + (int) charArr[i] + "] in string [" + string + "]. Replacing missing character with '" + replacementCharacter + "'");
+                charArr[i] = replacementCharacter;
+            }
+        }
+        
+        return String.valueOf(charArr);
+    }
 
     private PdfTextArray makeJustificationArray(String s, JustificationInfo info) {
         PdfTextArray array = new PdfTextArray();
@@ -510,7 +529,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 } else {
                     offset = info.getNonSpaceAdjust();
                 }
-                array.add((-offset / _dotsPerPoint) * 1000 /
+                array.add((-offset / _dotsPerPoint) * 1000 / 
                             (_font.getSize2D() / _dotsPerPoint));
             }
         }
@@ -520,29 +539,29 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private AffineTransform getTransform() {
         return _transform;
     }
-
+    
     private void ensureFillColor() {
         if (! (_color.equals(_fillColor))) {
             _fillColor = _color;
             _currentPage.setColorFill(_fillColor);
         }
     }
-
+    
     private void ensureStrokeColor() {
         if (! (_color.equals(_strokeColor))) {
             _strokeColor = _color;
             _currentPage.setColorStroke(_strokeColor);
         }
-    }
-
+    }    
+    
     public PdfContentByte getCurrentPage() {
         return _currentPage;
     }
-
+    
     private void followPath(Shape s, int drawType) {
         PdfContentByte cb = _currentPage;
         if (s==null) return;
-
+        
         if (drawType==STROKE) {
             if (!(_stroke instanceof BasicStroke)) {
                 s = _stroke.createStrokedShape(s);
@@ -557,7 +576,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         } else if (drawType==FILL) {
             ensureFillColor();
         }
-
+            
         PathIterator points;
         if (drawType == CLIP) {
             points = s.getPathIterator(IDENTITY);
@@ -574,26 +593,26 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 case PathIterator.SEG_CLOSE:
                     cb.closePath();
                     break;
-
+                    
                 case PathIterator.SEG_CUBICTO:
                     cb.curveTo(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5]);
                     break;
-
+                    
                 case PathIterator.SEG_LINETO:
                     cb.lineTo(coords[0], coords[1]);
                     break;
-
+                    
                 case PathIterator.SEG_MOVETO:
                     cb.moveTo(coords[0], coords[1]);
                     break;
-
+                    
                 case PathIterator.SEG_QUADTO:
                     cb.curveTo(coords[0], coords[1], coords[2], coords[3]);
                     break;
             }
             points.next();
         }
-
+        
         switch (drawType) {
         case FILL:
             if (traces > 0) {
@@ -617,17 +636,17 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             cb.newPath();
         }
     }
-
+    
     private float normalizeY(float y) {
         return _pageHeight - y;
     }
-
+    
     private void normalizeY(float[] coords) {
         coords[1] = normalizeY(coords[1]);
         coords[3] = normalizeY(coords[3]);
         coords[5] = normalizeY(coords[5]);
     }
-
+    
     private void setStrokeDiff(Stroke newStroke, Stroke oldStroke) {
         PdfContentByte cb = _currentPage;
         if (newStroke == oldStroke)
@@ -710,7 +729,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _originalStroke = s;
         this._stroke = transformStroke(s);
     }
-
+    
     private Stroke transformStroke(Stroke stroke) {
         if (!(stroke instanceof BasicStroke))
             return stroke;
@@ -722,21 +741,21 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 dash[k] *= scale;
         }
         return new BasicStroke(st.getLineWidth() * scale, st.getEndCap(), st.getLineJoin(), st.getMiterLimit(), dash, st.getDashPhase() * scale);
-    }
-
+    } 
+    
     public void clip(Shape s) {
         if (s != null) {
             s = _transform.createTransformedShape(s);
-            if (_clip == null)
-                _clip = new Area(s);
-            else
-                _clip.intersect(new Area(s));
-            followPath(s, CLIP);
+        if (_clip == null)
+            _clip = new Area(s);
+        else
+            _clip.intersect(new Area(s));
+        followPath(s, CLIP);
         } else {
             throw new XRRuntimeException("Shape is null, unexpected");
         }
     }
-
+    
     public Shape getClip() {
         try {
             return _transform.createInverse().createTransformedShape(_clip);
@@ -745,7 +764,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             return null;
         }
     }
-
+    
     public void setClip(Shape s) {
         PdfContentByte cb = _currentPage;
         cb.restoreState();
@@ -767,77 +786,77 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public Stroke getStroke() {
         return _originalStroke;
     }
-
+    
     public void drawImage(FSImage fsImage, int x, int y) {
         if (fsImage instanceof PDFAsImage) {
             drawPDFAsImage((PDFAsImage)fsImage, x, y);
         } else {
             Image image = ((ITextFSImage)fsImage).getImage();
-
+            
             if (fsImage.getHeight() <= 0 || fsImage.getWidth() <= 0) {
                 return;
             }
-
+            
             AffineTransform at = AffineTransform.getTranslateInstance(x,y);
             at.translate(0, fsImage.getHeight());
             at.scale(fsImage.getWidth(), fsImage.getHeight());
-
+            
             AffineTransform inverse = normalizeMatrix(_transform);
             AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
             inverse.concatenate(at);
             inverse.concatenate(flipper);
-
+            
             double[] mx = new double[6];
             inverse.getMatrix(mx);
-
+            
             try {
-                _currentPage.addImage(image,
-                        (float)mx[0], (float)mx[1], (float)mx[2],
+                _currentPage.addImage(image, 
+                        (float)mx[0], (float)mx[1], (float)mx[2], 
                         (float)mx[3], (float)mx[4], (float)mx[5]);
             } catch (DocumentException e) {
                 throw new XRRuntimeException(e.getMessage(), e);
             }
-        }
+        }    
     }
-
+    
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {
         URL url = image.getURL();
         PdfReader reader = null;
-
+        
         try {
             reader = getReader(url);
         } catch (IOException e) {
-            throw new XRRuntimeException("Could not load " + url + ": " +
+            throw new XRRuntimeException("Could not load " + url + ": " + 
                     e.getMessage(), e);
         } catch (URISyntaxException e) {
             throw new XRRuntimeException("Could not load " + url + ": " +
                     e.getMessage(), e);
         }
-
+        
         PdfImportedPage page = getWriter().getImportedPage(reader, 1);
-
+        
         AffineTransform at = AffineTransform.getTranslateInstance(x,y);
         at.translate(0, image.getHeightAsFloat());
         at.scale(image.getWidthAsFloat(), image.getHeightAsFloat());
-
+        
         AffineTransform inverse = normalizeMatrix(_transform);
         AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
         inverse.concatenate(at);
         inverse.concatenate(flipper);
-
+        
         double[] mx = new double[6];
         inverse.getMatrix(mx);
-
+        
         mx[0] = image.scaleWidth();
         mx[3] = image.scaleHeight();
-
+        
         _currentPage.restoreState();
         _currentPage.addTemplate(page,
                 (float)mx[0], (float)mx[1], (float)mx[2],
                 (float)mx[3], (float)mx[4], (float)mx[5]);
         _currentPage.saveState();
     }
-
+    
     public PdfReader getReader(URL url) throws IOException, URISyntaxException {
         URI uri = url.toURI();
         PdfReader result = (PdfReader) _readerCache.get(uri);
@@ -847,34 +866,34 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
         return result;
     }
-
+    
     public float getDotsPerPoint() {
         return _dotsPerPoint;
     }
-
+    
     public void start(Document doc) {
         loadBookmarks(doc);
     }
-
+    
     public void finish(RenderingContext c, Box root) {
         writeOutline(c, root);
     }
-
+    
     private void writeOutline(RenderingContext c, Box root) {
         if (_bookmarks.size() > 0) {
             _writer.setViewerPreferences(PdfWriter.PageModeUseOutlines);
             writeBookmarks(c, root, _writer.getRootOutline(), _bookmarks);
         }
     }
-
-    private void writeBookmarks(RenderingContext c,
+    
+    private void writeBookmarks(RenderingContext c, 
             Box root, PdfOutline parent, List bookmarks) {
         for (Iterator i = bookmarks.iterator(); i.hasNext(); ) {
             Bookmark bookmark = (Bookmark)i.next();
             writeBookmark(c, root, parent, bookmark);
         }
     }
-
+    
     private int getPageRefY(Box box) {
         if (box instanceof InlineLayoutBox) {
             InlineLayoutBox iB = (InlineLayoutBox)box;
@@ -883,7 +902,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             return box.getAbsY();
         }
     }
-
+    
     private void writeBookmark(RenderingContext c, Box root, PdfOutline parent, Bookmark bookmark) {
         String href = bookmark.getHRef();
         PdfDestination target = null;
@@ -894,7 +913,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 int distanceFromTop =
                     page.getMarginBorderPadding(c, CalculatedStyle.TOP);
                 distanceFromTop += box.getAbsY() - page.getTop();
-                target = new PdfDestination(PdfDestination.XYZ,
+                target = new PdfDestination(PdfDestination.XYZ, 
                         0, normalizeY(distanceFromTop / _dotsPerPoint), 0);
                 target.addPage(_writer.getPageReference(_startPageNo + page.getPageNo()+1));
             }
@@ -905,7 +924,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         PdfOutline outline = new PdfOutline(parent, target, bookmark.getName());
         writeBookmarks(c, root, outline, bookmark.getChildren());
     }
-
+    
     private void loadBookmarks(Document doc) {
         Element head = DOMUtil.getChild(doc.getDocumentElement(), "head");
         if (head != null) {
@@ -921,7 +940,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             }
         }
     }
-
+    
     private void loadBookmark(Bookmark parent, Element bookmark) {
         Bookmark us = new Bookmark(bookmark.getAttribute("name"),
                 bookmark.getAttribute("href"));
@@ -938,16 +957,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             }
         }
     }
-
+    
     private static class Bookmark {
         private String _name;
         private String _HRef;
-
+        
         private List _children;
-
+        
         public Bookmark() {
         }
-
+        
         public Bookmark(String name, String href) {
             _name = name;
             _HRef = href;
@@ -968,14 +987,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         public void setName(String name) {
             _name = name;
         }
-
+        
         public void addChild(Bookmark child) {
             if (_children == null) {
                 _children = new ArrayList();
             }
             _children.add(child);
         }
-
+        
         public List getChildren() {
             return _children == null ? Collections.EMPTY_LIST : _children;
         }
@@ -989,7 +1008,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _sharedContext = sharedContext;
         sharedContext.getCss().setSupportCMYKColors(true);
     }
-
+    
     public void setRoot(Box root) {
         _root = root;
     }
@@ -1005,22 +1024,22 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         throw new UnsupportedOperationException();
     }
-
+    
     public boolean isSupportsSelection() {
         return false;
     }
-
+    
     public boolean isSupportsCMYKColors() {
         return true;
     }
-
+    
     public List findPagePositionsByID(CssContext c, Pattern pattern)
     {
         Map idMap = _sharedContext.getIdMap();
         if (idMap == null) {
             return Collections.EMPTY_LIST;
         }
-
+        
         List result = new ArrayList();
         for (Iterator i = idMap.entrySet().iterator(); i.hasNext(); )
         {
@@ -1030,11 +1049,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 Box box = (Box)entry.getValue();
                 PagePosition pos = calcPDFPagePosition(c, id, box);
                 if (pos != null) {
-                    result.add(pos);
+                    result.add(pos);    
                 }
             }
         }
-
+        
         Collections.sort(result, new Comparator() {
             public int compare(Object arg0, Object arg1) {
                 PagePosition p1 = (PagePosition)arg0;
@@ -1042,21 +1061,21 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 return p1.getPageNo() - p2.getPageNo();
             }
         });
-
+        
         return result;
     }
-
+    
     private PagePosition calcPDFPagePosition(CssContext c, String id, Box box) {
         PageBox page = _root.getLayer().getLastPage(c, box);
         if (page == null) {
             return null;
         }
-
+        
         float x = box.getAbsX() + page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
         float y = (page.getBottom() - (box.getAbsY() + box.getHeight())) + page.getMarginBorderPadding(c, CalculatedStyle.BOTTOM);
         x /= _dotsPerPoint;
         y /= _dotsPerPoint;
-
+        
         PagePosition result = new PagePosition();
         result.setId(id);
         result.setPageNo(page.getPageNo());
@@ -1064,7 +1083,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         result.setY(y);
         result.setWidth(box.getEffectiveWidth() / _dotsPerPoint);
         result.setHeight(box.getHeight() / _dotsPerPoint);
-
+        
         return result;
     }
 }

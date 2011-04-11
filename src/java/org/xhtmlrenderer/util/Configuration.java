@@ -554,6 +554,31 @@ public class Configuration {
         }
         return ival;
     }
+    
+    /**
+     * Returns the value for key in the Configuration as a character, or a
+     * default value if not found. A warning is issued to the log if the
+     * property is not defined, or if the configuration value is too long
+     * to be a char. If the configuration value is longer than a single
+     * character, only the first character is returned.
+     * 
+     * @param key Name of the property
+     * @param defaultVal PARAM
+     * @returnValue assigned to the key, as a character
+     */
+    public static char valueAsChar(String key, char defaultVal) {
+        String val = valueFor(key);
+        if (val == null) {
+            return defaultVal;
+        }
+        
+        if(val.length() > 1) {
+            XRLog.exception("Property '" + key + "' was requested as a character. The value of '" + 
+                    val + "' is too long to be a char. Returning only the first character.");
+        }
+        
+        return val.charAt(0);
+    }
 
     /**
      * Returns the value for key in the Configurationas a long, or the default
@@ -843,6 +868,8 @@ public class Configuration {
         props.setProperty("xr.renderer.draw.backgrounds", "true");
         props.setProperty("xr.renderer.draw.borders", "true");
         props.setProperty("xr.renderer.debug.box-outlines", "false");
+        props.setProperty("xr.renderer.replace-missing-characters", "false");
+        props.setProperty("xr.renderer.missing-character-replacement", "false");
         props.setProperty("xr.text.scale", "1.0");
         props.setProperty("xr.text.aa-smoothing-level", "1");
         props.setProperty("xr.text.aa-fontsize-threshhold", "25");
