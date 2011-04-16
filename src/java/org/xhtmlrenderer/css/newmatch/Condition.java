@@ -1,6 +1,6 @@
 /*
  * Condition.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -141,6 +141,24 @@ abstract class Condition {
      */
     static Condition createLastChildCondition() {
         return new LastChildCondition();
+    }
+    
+    /**
+     * the CSS condition that element has pseudo-class :even
+     * 
+     * @return Returns
+     */
+    static Condition createEvenChildCondition() {
+        return new EvenChildCondition();
+    }
+    
+    /**
+     * the CSS condition that element has pseudo-class :odd
+     * 
+     * @return Returns
+     */
+    static Condition createOddChildCondition() {
+        return new OddChildCondition();
     }
 
     /**
@@ -360,6 +378,28 @@ abstract class Condition {
             return treeRes.isLastChildElement(e);
         }
 
+    }
+    
+    private static class EvenChildCondition extends Condition {
+
+        EvenChildCondition() {
+        }
+
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            int position = treeRes.getPositionOfElement(e);
+            return position >= 0 && position % 2 == 0;
+        }
+    }
+    
+    private static class OddChildCondition extends Condition {
+
+        OddChildCondition() {
+        }
+
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            int position = treeRes.getPositionOfElement(e);
+            return position >= 0 && position % 2 == 1;
+        }
     }
 
     private static class LinkCondition extends Condition {

@@ -21,6 +21,7 @@ package org.xhtmlrenderer.css.extend.lib;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 
 /**
@@ -88,5 +89,26 @@ public class DOMTreeResolver implements TreeResolver {
         } else /* if (namespaceURI == null) */ {
             return name.equals(eName);
         }
+    }
+    
+    public int getPositionOfElement(Object element) {
+        org.w3c.dom.Node parent = ((org.w3c.dom.Element) element).getParentNode();
+        NodeList nl = parent.getChildNodes();
+
+        int elt_count = 0;
+        int i = 0;
+        while (i < nl.getLength()) {
+            if (nl.item(i).getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                if(nl.item(i) == element) {
+                    return elt_count;
+                } else {
+                    elt_count++;
+                }
+            }
+            i++;
+        }
+        
+        //should not happen
+        return -1;
     }
 }
