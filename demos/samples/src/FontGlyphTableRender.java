@@ -44,6 +44,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Opens a frame and displays, for a selected font, the glyphs for a range of Unicode code points. Can be used to
@@ -65,7 +66,8 @@ public class FontGlyphTableRender {
     private JFrame frame;
     private XHTMLPanel xpanel;
     private JTextField fontPathTF;
-    private JTextField familyNameField;
+    private JTextField familyNameFieldAwt;
+    private JTextField familyNameFieldIText;
     private JButton prevBtn;
     private JButton nextBtn;
 
@@ -90,14 +92,20 @@ public class FontGlyphTableRender {
         JPanel optionsPanel = new JPanel(new BorderLayout());
 
         // TODO: don't know a good way to determine path where fonts are stored, per-os
+        // otherwise we could display a drop-down of installed fonts on the machine
         // "/usr/share/fonts/truetype/freefont/FreeMono.ttf"
         fontPathTF = new JTextField();
         fontPathTF.setColumns(40);
 
-        familyNameField = new JTextField();
-        familyNameField.setEnabled(true);
-        familyNameField.setEditable(false);
-        familyNameField.setColumns(40);
+        familyNameFieldAwt = new JTextField();
+        familyNameFieldAwt.setEnabled(true);
+        familyNameFieldAwt.setEditable(false);
+        familyNameFieldAwt.setColumns(20);
+        familyNameFieldIText = new JTextField();
+        familyNameFieldIText.setEnabled(true);
+        familyNameFieldIText.setEditable(false);
+        familyNameFieldIText.setColumns(20);
+
         JPanel top1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         top1.add(new JLabel("Enter font path: "));
         top1.add(fontPathTF);
@@ -124,9 +132,9 @@ public class FontGlyphTableRender {
                     JOptionPane.showMessageDialog(frame, "Can't load file--is it a valid Font file? " + msg);
                 } else {
                     fontPathTF.setText(selFile.getPath());
-                    familyNameField.setText(font.getFamily());
+                    familyNameFieldAwt.setText(font.getFamily());
+                    familyNameFieldIText.setText(getITextFontFamilyName(selFile));
                 }
-
             }
         });
         top1.add(chooseFontFileBtn);
@@ -153,9 +161,10 @@ public class FontGlyphTableRender {
         top1.add(jrbEntities);
 
         JPanel top2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        top2.add(new JLabel("Family: "));
-        top2.add(familyNameField);
-
+        top2.add(new JLabel("Family (AWT): "));
+        top2.add(familyNameFieldAwt);
+        top2.add(new JLabel("Family (iText): "));
+        top2.add(familyNameFieldIText);
 
         JPanel top = new JPanel(new BorderLayout());
         top.add(top1, BorderLayout.NORTH);
@@ -232,6 +241,15 @@ public class FontGlyphTableRender {
         frame.setVisible(true);
     }
 
+    private String getITextFontFamilyName(File selFile) {
+        Set set = ITextFontResolver.getDistinctFontFamilyNames(
+                selFile.getPath(),
+                BaseFont.IDENTITY_H,
+                BaseFont.EMBEDDED);
+        System.out.println("All family names reported by iText for " + selFile.getPath() + ": " + set.toString());
+        return (String) set.iterator().next();
+    }
+
     private void resetMouseListeners() {
         List l = xpanel.getMouseTrackingListeners();
         for (Iterator i = l.iterator(); i.hasNext();) {
@@ -272,7 +290,7 @@ public class FontGlyphTableRender {
         frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         new Thread(new Runnable() {
             public void run() {
-                final Document doc = loadDocument(startAt);
+                final Document doc = loadDocument(startAt, renderTo);
                 if (renderTo == TO_SWING) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -294,14 +312,15 @@ public class FontGlyphTableRender {
         }).start();
     }
 
-    private Document loadDocument(int startAt) {
+    private Document loadDocument(int startAt, int renderTo) {
         curFrom = startAt;
         String page;
+        String fontFamily = getFontFamily(renderTo);
         if (outputType.equals(OUTPUT_CODEPOINTS)) {
             Table table = buildGlyphTable(startAt, startAt + ENT_PER_PAGE);
-            page = new Page().toHtml(table.toHtml(getFontFamily(), curFrom), getFontFamily());
+            page = new Page().toHtml(table.toHtml(fontFamily, curFrom), fontFamily);
         } else {
-            page = parseEnt(new Page().toHtml("", getFontFamily()));
+            page = parseEnt(new Page().toHtml("", fontFamily));
         }
         // DEBUG
         //System.out.println(page);
@@ -391,7 +410,8 @@ public class FontGlyphTableRender {
         try {
             currentFont = loadFont(path);
             if (currentFont != null) {
-                familyNameField.setText(currentFont.getFamily());
+                familyNameFieldAwt.setText(currentFont.getFamily());
+                familyNameFieldIText.setText(getITextFontFamilyName(new File(fontPathTF.getText())));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -435,7 +455,7 @@ public class FontGlyphTableRender {
             };
             parser.setProperty("http://xml.org/sax/properties/declaration-handler", dh2);
             parser.parse(is);
-            return new Page().toHtml(table.toHtml(getFontFamily(), 0), getFontFamily());
+            return new Page().toHtml(table.toHtml(getFontFamily(TO_SWING), 0), getFontFamily(TO_SWING));
         }
         catch (SAXException e) {
             e.printStackTrace();
@@ -461,8 +481,12 @@ public class FontGlyphTableRender {
 
     }
 
-    private String getFontFamily() {
-        return currentFont.getFamily();
+    private String getFontFamily(int renderTo) {
+        if (renderTo == TO_SWING) {
+            return currentFont.getFamily();
+        } else {
+            return getITextFontFamilyName(new File(fontPathTF.getText()));
+        }
     }
 
     private static class Page {
@@ -494,7 +518,7 @@ public class FontGlyphTableRender {
                     "td {border: 1px solid black; }" +
                     "td .glyph {}";
 
-            return "<style type=\"text/css\">\n" + css + "\n</style>\n";
+            return "<style type=\"text/css\" media=\"all\">\n" + css + "\n</style>\n";
         }
     }
 
