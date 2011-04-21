@@ -46,6 +46,7 @@ import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
+import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.newtable.TableBox;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.newtable.TableColumn;
@@ -842,6 +843,20 @@ public class BoxBuilder {
                                 content = contentFunction.getLayoutReplacementText();
                             }
                         }
+                    }
+                }
+            } else if (type == CSSPrimitiveValue.CSS_IDENT) {
+                FSDerivedValue dv = style.valueByName(CSSName.QUOTES);
+                
+                if (dv != IdentValue.NONE) {
+                    IdentValue ident = value.getIdentValue();
+                    
+                    if (ident == IdentValue.OPEN_QUOTE) {
+                        String[] quotes = style.asStringArray(CSSName.QUOTES);
+                        content = quotes[0];
+                    } else if (ident == IdentValue.CLOSE_QUOTE) {
+                        String[] quotes = style.asStringArray(CSSName.QUOTES);
+                        content = quotes[1];
                     }
                 }
             }

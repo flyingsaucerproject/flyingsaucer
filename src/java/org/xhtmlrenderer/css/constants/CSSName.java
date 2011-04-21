@@ -37,6 +37,7 @@ import org.xhtmlrenderer.css.parser.property.ListStylePropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.OneToFourPropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.QuotesPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.SizePropertyBuilder;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
@@ -861,8 +862,7 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "none",
                     INHERITS,
-                    false,
-                    null
+                    new QuotesPropertyBuilder()
             );
 
     /**

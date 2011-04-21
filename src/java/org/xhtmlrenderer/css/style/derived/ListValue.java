@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.style.derived;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -36,5 +37,20 @@ public class ListValue extends DerivedValue {
     
     public List getValues() {
         return _values;
+    }
+    
+    public String[] asStringArray() {
+        if (_values == null || _values.isEmpty()) {
+            return new String[0];
+        }
+        
+        String[] arr = new String[_values.size()];
+        int i = 0;
+        
+        for (Iterator iter = _values.iterator(); iter.hasNext();) {
+            arr[i++] = iter.next().toString();
+        }
+        
+        return arr;
     }
 }
