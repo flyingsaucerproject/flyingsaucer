@@ -74,7 +74,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
                 IdentValue ident = checkIdent(CSSName.CONTENT, value);
                 if (ident == IdentValue.OPEN_QUOTE || ident == IdentValue.CLOSE_QUOTE ||
                         ident == IdentValue.NO_CLOSE_QUOTE || ident == IdentValue.NO_OPEN_QUOTE) {
-                    throw new CSSParseException("The quotes property is not implemented", -1);
+                    resultValues.add(value);
                 } else {
                     throw new CSSParseException(
                             "Identifier " + ident + " is not a valid value for the content property", -1);
