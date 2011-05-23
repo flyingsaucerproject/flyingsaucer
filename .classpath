@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="demos/browser/src/java"/>
 	<classpathentry excluding="compare/**|net/homelinux/tobe/**|utilities/**" kind="src" path="src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/iText-2.1.7.jar"/>
+	<classpathentry kind="lib" path="lib/iText-2.1.7.jar" sourcepath="/home/jens/.m2/repository/com/lowagie/itext/2.1.7/itext-2.1.7-sources.jar"/>
 	<classpathentry kind="lib" path="lib/swt/swt-3.6-linux.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
