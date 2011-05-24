@@ -44,6 +44,10 @@ public class FSRGBColor implements FSColor {
         _blue = blue;
     }
 
+    public FSRGBColor(int color) {
+        this(((color & 0xff0000) >> 16),((color & 0x00ff00) >> 8), color & 0xff); 
+    }
+
     public int getBlue() {
         return _blue;
     }

@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbj?rn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbj�rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -38,40 +38,43 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.LineMetricsAdapter;
 import org.xhtmlrenderer.util.Configuration;
 
-
 /**
- * Renders to a Graphics2D instance.
- *
  * @author   Joshua Marinacci
- * @author   Torbjoern Gannholm
+ * @author   Torbj�rn Gannholm
  */
 public class Java2DTextRenderer implements TextRenderer {
+
     protected float scale;
+
     protected float threshold;
+
+    protected int level;
+
     protected Object antiAliasRenderingHint;
 
     public Java2DTextRenderer() {
         scale = Configuration.valueAsFloat("xr.text.scale", 1.0f);
         threshold = Configuration.valueAsFloat("xr.text.aa-fontsize-threshhold", 25);
+        level = Configuration.valueAsInt("xr.text.aa-smoothing-level", HIGH);
 
         Object dummy = new Object();
 
         Object aaHint = Configuration.valueFromClassConstant("xr.text.aa-rendering-hint", dummy);
         if (aaHint == dummy) {
             try {
-                Map map;
+                Map map = null;
                 // we should be able to look up the "recommended" AA settings (that correspond to the user's
                 // desktop preferences and machine capabilities
                 // see: http://java.sun.com/javase/6/docs/api/java/awt/doc-files/DesktopProperties.html
                 Toolkit tk = Toolkit.getDefaultToolkit();
-                map = (Map) (tk.getDesktopProperty("awt.font.desktophints"));
+                map = (Map)(tk.getDesktopProperty("awt.font.desktophints"));
                 antiAliasRenderingHint = map.get(RenderingHints.KEY_TEXT_ANTIALIASING);
             } catch (Exception e) {
                 // conceivably could get an exception in a webstart environment? not sure
-                antiAliasRenderingHint = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
             }
-        } else {
-            antiAliasRenderingHint = aaHint;
+        }
+        if (antiAliasRenderingHint == null) {
+            antiAliasRenderingHint = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
         }
     }
 
@@ -79,12 +82,12 @@ public class Java2DTextRenderer implements TextRenderer {
     public void drawString(OutputDevice outputDevice, String string, float x, float y ) {
         Object prevHint = null;
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
-        if ( graphics.getFont().getSize() > threshold ) {
+        if ( graphics.getFont().getSize() > threshold && level > NONE ) {
             prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
         }
         graphics.drawString( string, (int)x, (int)y );
-        if ( graphics.getFont().getSize() > threshold ) {
+        if ( graphics.getFont().getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
         }
     }
@@ -93,7 +96,7 @@ public class Java2DTextRenderer implements TextRenderer {
             OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
         Object prevHint = null;
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
-        if ( graphics.getFont().getSize() > threshold ) {
+        if ( graphics.getFont().getSize() > threshold && level > NONE ) {
             prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
         }
@@ -105,7 +108,7 @@ public class Java2DTextRenderer implements TextRenderer {
         
         graphics.drawGlyphVector(vector, x, y);
         
-        if ( graphics.getFont().getSize() > threshold ) {
+        if ( graphics.getFont().getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
         }
     }
@@ -132,13 +135,13 @@ public class Java2DTextRenderer implements TextRenderer {
         Object prevHint = null;
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
         
-        if ( graphics.getFont().getSize() > threshold ) {
+        if ( graphics.getFont().getSize() > threshold && level > NONE ) {
             prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
         }
         GlyphVector vector = ((AWTFSGlyphVector)fsGlyphVector).getGlyphVector();
         graphics.drawGlyphVector(vector, (int)x, (int)y );
-        if ( graphics.getFont().getSize() > threshold ) {
+        if ( graphics.getFont().getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
         }
     }
@@ -158,7 +161,9 @@ public class Java2DTextRenderer implements TextRenderer {
         threshold = fontsize;
     }
 
-    public void setSmoothingLevel( int level ) { /* no-op */ }
+    public void setSmoothingLevel( int level ) {
+        this.level = level;
+    }
 
     public FSFontMetrics getFSFontMetrics(FontContext fc, FSFont font, String string ) {
         Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();
@@ -179,12 +184,12 @@ public class Java2DTextRenderer implements TextRenderer {
     }
 
     public int getSmoothingLevel() {
-        return 0;
+        return level;
     }
 
     /**
      * If anti-alias text is enabled, the value from RenderingHints to use for AA smoothing in Java2D. Defaults to
-     * {@link java.awt.RenderingHints#VALUE_TEXT_ANTIALIAS_ON}.
+     * {@link java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON}.
      *
      * @return Current AA rendering hint
      */
@@ -194,7 +199,7 @@ public class Java2DTextRenderer implements TextRenderer {
 
     /**
      * If anti-alias text is enabled, the value from RenderingHints to use for AA smoothing in Java2D. Defaults to
-     * {@link java.awt.RenderingHints#VALUE_TEXT_ANTIALIAS_ON}.
+     * {@link java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON}.
      *
      * @param renderingHints  rendering hint for AA smoothing in Java2D
      */
@@ -207,7 +212,7 @@ public class Java2DTextRenderer implements TextRenderer {
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
         Font awtFont = ((AWTFSFont)font).getAWTFont();
         
-        if (awtFont.getSize() > threshold ) {
+        if (awtFont.getSize() > threshold && level > NONE ) {
             prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
         }
@@ -217,7 +222,7 @@ public class Java2DTextRenderer implements TextRenderer {
                 text);
         float[] result = vector.getGlyphPositions(0, text.length() + 1, null);
         
-        if (awtFont.getSize() > threshold ) {
+        if (awtFont.getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
         }
         
@@ -229,7 +234,7 @@ public class Java2DTextRenderer implements TextRenderer {
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
         Font awtFont = ((AWTFSFont)font).getAWTFont();
         
-        if (awtFont.getSize() > threshold ) {
+        if (awtFont.getSize() > threshold && level > NONE ) {
             prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
         }
@@ -238,7 +243,7 @@ public class Java2DTextRenderer implements TextRenderer {
         
         Rectangle result = vector.getGlyphPixelBounds(index, graphics.getFontRenderContext(), x, y);
         
-        if (awtFont.getSize() > threshold ) {
+        if (awtFont.getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
         }
         
@@ -250,7 +255,7 @@ public class Java2DTextRenderer implements TextRenderer {
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
         Font awtFont = ((AWTFSFont)font).getAWTFont();
         
-        if (awtFont.getSize() > threshold ) {
+        if (awtFont.getSize() > threshold && level > NONE ) {
             prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
         }
@@ -259,7 +264,7 @@ public class Java2DTextRenderer implements TextRenderer {
         
         float[] result = vector.getGlyphPositions(0, vector.getNumGlyphs() + 1, null);
         
-        if (awtFont.getSize() > threshold ) {
+        if (awtFont.getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
         }
         
@@ -271,7 +276,7 @@ public class Java2DTextRenderer implements TextRenderer {
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
         Font awtFont = ((AWTFSFont)font).getAWTFont();
         
-        if (awtFont.getSize() > threshold ) {
+        if (awtFont.getSize() > threshold && level > NONE ) {
             prevHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
         }
@@ -280,7 +285,7 @@ public class Java2DTextRenderer implements TextRenderer {
                 graphics.getFontRenderContext(),
                 text);
         
-        if (awtFont.getSize() > threshold ) {
+        if (awtFont.getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, prevHint );
         }
         

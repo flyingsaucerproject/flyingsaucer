@@ -360,6 +360,18 @@ public final class CSSName implements Comparable {
             );
 
     /**
+     * Used for forcing images to scale to a certain width
+     */
+    public final static CSSName FS_FIT_IMAGES_TO_WIDTH = 
+        addProperty(
+                "-fs-fit-images-to-width",
+                PRIMITIVE,
+                "auto",
+                NOT_INHERITED,
+                new PrimitivePropertyBuilders.FSFitImagesToWidth()
+        );
+        
+    /**
      * Unique CSSName instance for CSS2 property.
      */
     public final static CSSName BOTTOM =

@@ -233,8 +233,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private com.lowagie.text.Rectangle checkLinkArea(RenderingContext c, Box box) {
         com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
-        targetArea.setBorder(0);
-        targetArea.setBorderWidth(0);
         String key = createRectKey(targetArea);
         if (_linkTargetAreas.contains(key)) {
             return null;
@@ -267,8 +265,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         if (targetArea == null) {
                             return;
                         }
-                        PdfAnnotation annot = PdfAnnotation.createLink(
-                                _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
+
+                        targetArea.setBorder(0);
+                        targetArea.setBorderWidth(0);
+
+                        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(),
+                                targetArea.getBottom(), targetArea.getRight(), targetArea.getTop(),
+                                action);
+                        annot.put(PdfName.SUBTYPE, PdfName.LINK);
                         annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
                         annot.setBorder(new PdfBorderArray(0.0f,0.0f,0));
                         _writer.addAnnotation(annot);
@@ -280,8 +284,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     if (targetArea == null) {
                         return;
                     }
-            		PdfAnnotation annot = PdfAnnotation.createLink(
-            				_writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
+                    PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(),
+                            targetArea.getBottom(), targetArea.getRight(), targetArea.getTop(),
+                            action);
+                    annot.put(PdfName.SUBTYPE, PdfName.LINK);
 
                     annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
                     annot.setBorder(new PdfBorderArray(0.0f,0.0f,0));

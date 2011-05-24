@@ -676,6 +676,9 @@ public class BlockBox extends Box implements InlinePaintable {
                 if (re == null) {
                     re = c.getReplacedElementFactory().createReplacedElement(
                             c, this, c.getUac(), cssWidth, cssHeight);
+                    if (re != null){
+                        re = fitReplacedElement(c, re);     
+                    }
                 }
                 if (re != null) {
                     setContentWidth(re.getIntrinsicWidth());
@@ -1287,6 +1290,19 @@ public class BlockBox extends Box implements InlinePaintable {
         return -1;
     }
 
+    protected int getCSSFitToWidth(CssContext c) {
+        if (! isAnonymous()) {         
+            if (! getStyle().isIdent(CSSName.FS_FIT_IMAGES_TO_WIDTH, IdentValue.AUTO))
+            {
+                int result = (int) getStyle().getFloatPropertyProportionalWidth(
+                        CSSName.FS_FIT_IMAGES_TO_WIDTH, getContainingBlock().getContentWidth(), c);
+                return result >= 0 ? result : -1;            
+            }
+        }
+
+        return -1;
+    }
+    
     protected int getCSSHeight(CssContext c) {
         if (! isAnonymous()) {
             if (! isAutoHeight()) {
@@ -1439,6 +1455,7 @@ public class BlockBox extends Box implements InlinePaintable {
                     ReplacedElement re = c.getReplacedElementFactory().createReplacedElement(
                             c, this, c.getUac(), width, height);
                     if (re != null) {
+                        re = fitReplacedElement(c, re);
                         setReplacedElement(re);
                         width = getReplacedElement().getIntrinsicWidth();
                     }
@@ -1498,6 +1515,20 @@ public class BlockBox extends Box implements InlinePaintable {
 
             setMinMaxCalculated(true);
         }
+    }
+
+    private ReplacedElement fitReplacedElement(LayoutContext c,
+            ReplacedElement re)
+    {
+        int maxImageWidth = getCSSFitToWidth(c);
+        if (maxImageWidth > -1 && re.getIntrinsicWidth() > maxImageWidth)
+        {
+            double oldWidth = (double)re.getIntrinsicWidth();
+            double scale = ((double)maxImageWidth)/oldWidth;
+            re = c.getReplacedElementFactory().createReplacedElement(
+                    c, this, c.getUac(), maxImageWidth, (int)Math.rint(scale * (double)re.getIntrinsicHeight()));
+        }
+        return re;
     }
 
     private void calcMinMaxCSSMinMaxWidth(
