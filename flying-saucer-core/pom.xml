@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>flying-saucer</groupId>
+        <artifactId>flying-saucer</artifactId>
+        <version>9.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>flying-saucer-core</artifactId>
+
+    <packaging>jar</packaging>
+
+    <name>Flying Saucer Core Renderer</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.lowagie</groupId>
+            <artifactId>itext</artifactId>
+            <version>2.1.7</version>
+        </dependency>
+    </dependencies>
+
+    <!-- Profiles are used to select the right SWT dependency for each OS -->
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse</groupId>
+                    <artifactId>swt</artifactId>
+                    <version>3.6</version>
+                    <type>jar</type>
+                    <scope>system</scope>
+                    <systemPath>${basedir}/lib/swt/swt-3.6-win32.jar</systemPath>
+                    <optional>true</optional>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <!-- TODO handle 32 bit and 64 bit procs differently -->
+                    <family>Mac</family>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse</groupId>
+                    <artifactId>swt</artifactId>
+                    <version>3.6</version>
+                    <type>jar</type>
+                    <scope>system</scope>
+                    <systemPath>${basedir}/lib/swt/swt-3.6-osx.jar</systemPath>
+                    <optional>true</optional>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <name>Linux</name>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse</groupId>
+                    <artifactId>swt</artifactId>
+                    <version>3.6</version>
+                    <type>jar</type>
+                    <scope>system</scope>
+                    <systemPath>${basedir}/lib/swt/swt-3.6-linux.jar</systemPath>
+                    <optional>true</optional>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
+</project>

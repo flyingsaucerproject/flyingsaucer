@@ -1,0 +1,5 @@
+These libraries are required as the maven repos no longer contain recent SWT builds.
+
+The SWT library variant suitable for your operating system is selected as dependency by a build 
+profile in pom.xml.
+ 
