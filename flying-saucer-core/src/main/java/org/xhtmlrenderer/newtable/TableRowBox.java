@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -558,5 +557,35 @@ public class TableRowBox extends BlockBox {
 
     public void setExtraSpaceBottom(int extraSpaceBottom) {
         _extraSpaceBottom = extraSpaceBottom;
+    }
+    
+    public int forcePageBreakBefore(LayoutContext c, IdentValue pageBreakValue,
+            boolean pendingPageName) {
+        int currentDelta = super.forcePageBreakBefore(c, pageBreakValue, pendingPageName);
+        
+        // additional calculations for collapsed borders.
+        if (c.isPrint() && getStyle().isCollapseBorders()) {
+            // get destination page for this row
+            PageBox page = c.getRootLayer().getPage(c, getAbsY() + currentDelta);
+            if (page!=null) {
+                
+                // calculate max spill from the collapsed top borders of each child
+                int spill = 0;
+                for (Iterator i = getChildIterator(); i.hasNext(); ) {
+                    TableCellBox cell = (TableCellBox)i.next();
+                    BorderPropertySet collapsed = cell.getCollapsedPaintingBorder();
+                    spill = Math.max(spill, (int)collapsed.top() / 2); 
+                }
+    
+                // be sure that the current start of the row is >= the start of the page
+                int borderTop = getAbsY() + currentDelta + (int)getMargin(c).top() - spill;
+                int rowDelta = page.getTop() - borderTop;
+                if (rowDelta > 0) {
+                    setY(getY() + rowDelta);
+                    currentDelta += rowDelta;
+                }
+            }
+        }
+        return currentDelta;
     }
 }
