@@ -162,6 +162,7 @@
     <path id="libraries.all">
         <fileset dir="${libraries.dir}">
             <include name="iText*.jar"/>
+            <include name="itext*.jar"/>
         </fileset>
         <fileset dir="${libraries.dir}/swt">
                 <selector if="isUnix">

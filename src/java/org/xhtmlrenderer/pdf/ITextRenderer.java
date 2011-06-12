@@ -249,15 +249,15 @@ public class ITextRenderer {
         return result;
     }
 
-    public void createPDF(OutputStream os) throws DocumentException {
+    public void createPDF(OutputStream os) throws DocumentException, IOException {
         createPDF(os, true, 0);
     }
 
-    public void writeNextDocument() throws DocumentException {
+    public void writeNextDocument() throws DocumentException, IOException {
         writeNextDocument(0);
     }
 
-    public void writeNextDocument(int initialPageNo) throws DocumentException {
+    public void writeNextDocument(int initialPageNo) throws DocumentException, IOException {
         List pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
@@ -283,15 +283,16 @@ public class ITextRenderer {
         }
     }
 
-    public void createPDF(OutputStream os, boolean finish) throws DocumentException {
+    public void createPDF(OutputStream os, boolean finish) throws DocumentException, IOException {
         createPDF(os, finish, 0);
     }
 
     /**
      * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream if something
      * goes wrong.
+     * @throws IOException 
      */
-    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException {
+    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, IOException {
         List pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
@@ -338,7 +339,7 @@ public class ITextRenderer {
         }
     }
 
-    private void writePDF(List pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc, PdfWriter writer) throws DocumentException {
+    private void writePDF(List pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc, PdfWriter writer) throws DocumentException, IOException {
         _outputDevice.setRoot(_root);
 
         _outputDevice.start(_doc);
@@ -370,7 +371,7 @@ public class ITextRenderer {
         _outputDevice.finish(c, _root);
     }
 
-    private void paintPage(RenderingContext c, PdfWriter writer, PageBox page) {
+    private void paintPage(RenderingContext c, PdfWriter writer, PageBox page) throws IOException {
         provideMetadataToPage(writer, page);
 
         page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
@@ -394,7 +395,7 @@ public class ITextRenderer {
         _outputDevice.setClip(working);
     }
 
-    private void provideMetadataToPage(PdfWriter writer, PageBox page) {
+    private void provideMetadataToPage(PdfWriter writer, PageBox page) throws IOException {
         byte[] metadata = null;
         if (page.getMetadata() != null) {
             try {
