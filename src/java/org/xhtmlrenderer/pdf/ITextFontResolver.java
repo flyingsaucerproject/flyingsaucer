@@ -19,20 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.BaseFont;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.sheet.FontFaceRule;
@@ -47,6 +35,8 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.BaseFont;
+import java.io.*;
+import java.util.*;
 
 public class ITextFontResolver implements FontResolver {
     private Map _fontFamilies = createInitialFontMap();
@@ -56,6 +46,35 @@ public class ITextFontResolver implements FontResolver {
 
     public ITextFontResolver(SharedContext sharedContext) {
         _sharedContext = sharedContext;
+    }
+
+    /**
+     * Utility method which uses iText libraries to determine the family name(s) for the font at the given path.
+     * The iText APIs seem to indicate there can be more than one name, but this method will return a set of them.
+     * Use a name from this list when referencing the font in CSS for PDF output. Note that family names as reported
+     * by iText may vary from those reported by the AWT Font class, e.g. "Arial Unicode MS" for iText and
+     * "ArialUnicodeMS" for AWT.
+     *
+     * @param path local path to the font file
+     * @param encoding same as what you would use for {@link #addFont(String, String, boolean)}
+     * @param embedded same as what you would use for {@link #addFont(String, String, boolean)}
+     * @return set of all family names for the font file, as reported by iText libraries
+     */
+    public static Set getDistinctFontFamilyNames(String path, String encoding, boolean embedded) {
+        BaseFont font = null;
+        try {
+            font = BaseFont.createFont(path, encoding, embedded);
+            String[] fontFamilyNames = TrueTypeUtil.getFamilyNames(font);
+            Set distinct = new HashSet();
+            for (int i = 0; i < fontFamilyNames.length; i++) {
+                distinct.add(fontFamilyNames[i]);
+            }
+            return distinct;
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {

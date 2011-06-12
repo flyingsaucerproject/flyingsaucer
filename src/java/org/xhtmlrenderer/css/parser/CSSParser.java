@@ -1167,6 +1167,10 @@ public class CSSParser {
             selector.setPseudoClass(Selector.ACTIVE_PSEUDOCLASS);
         } else if (value.equals("first-child")) {
             selector.addFirstChildCondition();
+        } else if (value.equals("even")) {
+            selector.addEvenChildCondition();
+        } else if (value.equals("odd")) {
+            selector.addOddChildCondition();
         } else if (value.equals("last-child")) {
             selector.addLastChildCondition();
         } else if (CSS21_PSEUDO_ELEMENTS.contains(value)){

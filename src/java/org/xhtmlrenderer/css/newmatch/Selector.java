@@ -1,6 +1,6 @@
 /*
  * Selector.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -31,7 +31,7 @@ import java.util.logging.Level;
  * A Selector is really a chain of CSS selectors that all need to be valid for
  * the selector to match.
  *
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  */
 public class Selector {
     private Ruleset _parent;
@@ -167,6 +167,22 @@ public class Selector {
     public void addLastChildCondition() {
         _specificityC++;
         addCondition(Condition.createLastChildCondition());
+    }
+    
+    /**
+     * the CSS condition that element has pseudo-class :even
+     */
+    public void addEvenChildCondition() {
+        _specificityC++;
+        addCondition(Condition.createEvenChildCondition());
+    }
+    
+    /**
+     * the CSS condition that element has pseudo-class :odd
+     */
+    public void addOddChildCondition() {
+        _specificityC++;
+        addCondition(Condition.createOddChildCondition());
     }
 
     /**

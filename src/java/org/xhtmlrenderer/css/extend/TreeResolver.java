@@ -56,6 +56,13 @@ public interface TreeResolver {
     boolean isLastChildElement(Object element);
     
     /**
+     * Returns the index of the position of the submitted element among its element node siblings.
+     * @param element
+     * @return -1 in case of error, 0 indexed position otherwise
+     */
+    int getPositionOfElement(Object element);
+    
+    /**
      * Returns <code>true</code> if <code>element</code> has the local name
      * <code>name</code> and namespace URI <code>namespaceURI</code>.
      * @param element
