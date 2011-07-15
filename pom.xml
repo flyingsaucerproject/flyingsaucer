@@ -16,6 +16,10 @@
         <module>flying-saucer-core</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:ssh://git@github.com/jensrutschmann/flyingsaucer.git</connection>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
