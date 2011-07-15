@@ -5,7 +5,7 @@
 
     <groupId>com.k15t.forks</groupId>
     <artifactId>flying-saucer-r8</artifactId>
-    <version>2-SNAPSHOT</version>
+    <version>1</version>
 
     <packaging>pom</packaging>
 
