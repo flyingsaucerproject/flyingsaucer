@@ -61,11 +61,12 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 				}
 				return new ITextImageElement(fsImage);
 			}
-		/*
+
 		} else if (nodeName.equals("input")) {
 			String type = e.getAttribute("type");
 			if (type.equals("hidden")) {
-			    return new EmptyReplacedElement(0, 0);
+			    //return new EmptyReplacedElement(0, 0);
+        return null;
 			} else if (type.equals("checkbox")) {
 				return new CheckboxFormField(c, box, cssWidth, cssHeight);
 			} else if (type.equals("radio")) {
@@ -76,6 +77,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 			} else {
 				return new TextFormField(c, box, cssWidth, cssHeight);
 			}
+      		/*
 		} else if (nodeName.equals("select")) {
 		    return new SelectFormField(c, box, cssWidth, cssHeight);
 		} else if (isTextarea(e)) {
