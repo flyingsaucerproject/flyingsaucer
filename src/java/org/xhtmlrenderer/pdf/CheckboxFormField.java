@@ -61,7 +61,8 @@ public class CheckboxFormField extends AbstractFormField {
 		float height = outputDevice.getDeviceLength(getHeight());
 
 		FSColor color = box.getStyle().getColor();
-		FSColor darker = box.getEffBackgroundColor(c).darkenColor();
+    FSColor darker = box.getStyle().getColor().darkenColor();
+		//FSColor darker = box.getEffBackgroundColor(c).darkenColor();
 		createAppearances(cb, field, onValue, width, height, true, color, darker);
 		createAppearances(cb, field, onValue, width, height, false, color, darker);
 
