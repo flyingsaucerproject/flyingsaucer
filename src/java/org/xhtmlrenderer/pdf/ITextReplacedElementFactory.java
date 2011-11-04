@@ -65,8 +65,8 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 		} else if (nodeName.equals("input")) {
 			String type = e.getAttribute("type");
 			if (type.equals("hidden")) {
-			    //return new EmptyReplacedElement(0, 0);
-        return null;
+			  return new EmptyReplacedElement(0, 0);
+        //return null;
 			} else if (type.equals("checkbox")) {
 				return new CheckboxFormField(c, box, cssWidth, cssHeight);
 			} else if (type.equals("radio")) {
