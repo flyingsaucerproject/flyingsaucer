@@ -70,7 +70,7 @@ public class CheckboxFormField extends AbstractFormField {
 				PdfAnnotation.HIGHLIGHT_INVERT);
 		field.setFieldName(getFieldName(outputDevice, e));
 
-		field.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+		field.setBorderStyle(new PdfBorderDictionary(1.0f, 0));
 
 		field.setValueAsName(checked ? onValue : OFF_STATE);
 		field.setAppearanceState(checked ? onValue : OFF_STATE);
@@ -105,11 +105,28 @@ public class CheckboxFormField extends AbstractFormField {
 			tpOn.fill();
 		}
 
+    //Create the box for checked items
+    tpOn.moveTo(0f,0f);
+    tpOn.lineTo(width,0f);
+    tpOn.lineTo(width,height);
+    tpOn.lineTo(0f,height);
+    tpOn.lineTo(0f,0f);
+
+    //create the X for the check.
 		tpOn.moveTo(width / 2 - sLen / 2, height / 2 - sLen / 2);
 		tpOn.lineTo(width / 2 + sLen / 2, height / 2 + sLen / 2);
 		tpOn.moveTo(width / 2 - sLen / 2, height / 2 + sLen / 2);
 		tpOn.lineTo(width / 2 + sLen / 2, height / 2 - sLen / 2);
 		tpOn.stroke();
+
+
+    //Create the box for unchecked
+    tpOff.moveTo(0f,0f);
+    tpOff.lineTo(width,0f);
+    tpOff.lineTo(width,height);
+    tpOff.lineTo(0f,height);
+    tpOff.lineTo(0f,0f);
+    tpOff.stroke();
 
 		if (normal) {
 			field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, OFF_STATE, tpOff);
