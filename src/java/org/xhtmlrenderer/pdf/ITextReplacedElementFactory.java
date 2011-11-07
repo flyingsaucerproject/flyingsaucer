@@ -66,14 +66,16 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 			String type = e.getAttribute("type");
 			if (type.equals("hidden")) {
 			  return new EmptyReplacedElement(0, 0);
-        //return null;
 			} else if (type.equals("checkbox")) {
 				return new CheckboxFormField(c, box, cssWidth, cssHeight);
 			} else if (type.equals("radio")) {
-				RadioButtonFormField result = new RadioButtonFormField(
-						this, c, box, cssWidth, cssHeight);
-				saveResult(e, result);
-				return result;
+        //TODO finish support for Radio button
+				//RadioButtonFormField result = new RadioButtonFormField(
+			  //			this, c, box, cssWidth, cssHeight);
+		    //		saveResult(e, result);
+				//return result;
+        return new EmptyReplacedElement(0, 0);
+
 			} else {
 				return new TextFormField(c, box, cssWidth, cssHeight);
 			}
