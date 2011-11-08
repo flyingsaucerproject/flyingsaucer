@@ -80,9 +80,9 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 				return new TextFormField(c, box, cssWidth, cssHeight);
 			}
       		/*
-		} else if (nodeName.equals("select")) {
+		} else if (nodeName.equals("select")) {//TODO Support select
 		    return new SelectFormField(c, box, cssWidth, cssHeight);
-		} else if (isTextarea(e)) {
+		} else if (isTextarea(e)) {//TODO Review if this is needed the textarea item prints fine currently
 		    return new TextAreaFormField(c, box, cssWidth, cssHeight);
 		*/
 		} else if (nodeName.equals("bookmark")) {
