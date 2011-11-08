@@ -34,8 +34,7 @@ public class CheckboxFormField extends AbstractFormField
 {
   private static final String FIELD_TYPE = "Checkbox";
 
-  public CheckboxFormField(LayoutContext c, BlockBox box, int cssWidth,
-                           int cssHeight)
+  public CheckboxFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
   {
     initDimensions(c, box, cssWidth, cssHeight);
   }
