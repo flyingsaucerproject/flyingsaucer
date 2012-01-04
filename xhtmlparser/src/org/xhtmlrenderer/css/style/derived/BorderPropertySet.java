@@ -5,7 +5,6 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 
 /**
  * Created by IntelliJ IDEA.

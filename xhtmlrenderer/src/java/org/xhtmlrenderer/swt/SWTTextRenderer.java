@@ -25,6 +25,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
+import org.xhtmlrenderer.css.style.FSFont;
+import org.xhtmlrenderer.css.style.FSFontMetrics;
 import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Configuration;

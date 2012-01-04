@@ -25,6 +25,7 @@ import java.awt.event.MouseEvent;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.StyleReference;
+import org.xhtmlrenderer.css.style.IStyleReference;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.render.Box;
@@ -117,7 +118,7 @@ public class HoverListener extends DefaultFSMouseListener {
     }
     
     // look up the Element that corresponds to the Box we are hovering over
-    private Element getHoveredElement(StyleReference style, Box ib) {
+    private Element getHoveredElement(IStyleReference style, Box ib) {
         if (ib == null) {
             return null;
         }

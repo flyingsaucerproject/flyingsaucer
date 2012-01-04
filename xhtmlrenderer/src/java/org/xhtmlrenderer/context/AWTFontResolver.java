@@ -20,10 +20,10 @@
 package org.xhtmlrenderer.context;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.FSFont;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.swing.AWTFSFont;
 
 import java.awt.Font;

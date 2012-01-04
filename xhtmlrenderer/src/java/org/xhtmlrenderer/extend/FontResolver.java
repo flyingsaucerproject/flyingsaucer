@@ -20,9 +20,9 @@
  */
 package org.xhtmlrenderer.extend;
 
+import org.xhtmlrenderer.css.style.FSFont;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.render.FSFont;
 
 public interface FontResolver {
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec);

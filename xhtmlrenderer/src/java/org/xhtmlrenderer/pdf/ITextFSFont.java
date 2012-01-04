@@ -19,8 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import org.xhtmlrenderer.css.style.FSFont;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
-import org.xhtmlrenderer.render.FSFont;
 
 public class ITextFSFont implements FSFont {
     private FontDescription _font;

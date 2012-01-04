@@ -37,6 +37,7 @@ import org.xhtmlrenderer.css.newmatch.PageInfo;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.css.style.IStyleReference;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -47,7 +48,7 @@ import org.xhtmlrenderer.util.XRLog;
 /**
  * @author Torbj�rn Gannholm
  */
-public class StyleReference {
+public class StyleReference implements IStyleReference{
     /**
      * The Context this StyleReference operates in; used for property
      * resolution.

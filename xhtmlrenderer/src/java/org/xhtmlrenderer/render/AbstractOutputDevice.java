@@ -34,6 +34,7 @@ import org.xhtmlrenderer.css.style.BackgroundPosition;
 import org.xhtmlrenderer.css.style.BackgroundSize;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.FSFontMetrics;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.extend.FSImage;

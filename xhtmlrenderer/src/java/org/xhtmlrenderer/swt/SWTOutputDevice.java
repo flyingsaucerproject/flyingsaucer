@@ -37,6 +37,7 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.simple.xhtml.swt.SWTFormControl;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
+import org.xhtmlrenderer.css.style.FSFont;
 
 /**
  * Implementation of {@link OutputDevice} for SWT.

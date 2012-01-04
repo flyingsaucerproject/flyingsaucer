@@ -21,7 +21,7 @@ package org.xhtmlrenderer.swt;
 
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
-import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.css.style.FSFontMetrics;
 
 /**
  * Adapt SWT's font metrics to Flying Saucer's ones.

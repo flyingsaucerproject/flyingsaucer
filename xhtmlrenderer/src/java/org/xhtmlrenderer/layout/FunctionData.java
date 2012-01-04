@@ -19,8 +19,8 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
+import org.xhtmlrenderer.extend.ContentFunction;
 
 /**
  * A bean which contains all the information necessary to invoke a 

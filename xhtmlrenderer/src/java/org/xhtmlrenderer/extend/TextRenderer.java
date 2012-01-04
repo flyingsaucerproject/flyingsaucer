@@ -22,8 +22,8 @@ package org.xhtmlrenderer.extend;
 
 import java.awt.Rectangle;
 
-import org.xhtmlrenderer.render.FSFont;
-import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.css.style.FSFont;
+import org.xhtmlrenderer.css.style.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 
 public interface TextRenderer {

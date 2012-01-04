@@ -23,6 +23,9 @@ import java.awt.Rectangle;
 
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.FSFont;
+import org.xhtmlrenderer.css.style.FSFontMetrics;
+import org.xhtmlrenderer.css.style.IStyleReference;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.layout.Layer;
@@ -203,7 +206,7 @@ public class RenderingContext implements CssContext {
         return pageNo;
     }
     
-    public StyleReference getCss() {
+    public IStyleReference getCss() {
         return sharedContext.getCss();
     }
     

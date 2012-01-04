@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.newtable.CollapsedBorderValue;
+import org.xhtmlrenderer.css.style.derived.CollapsedBorderValue;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BorderPainter;
 

@@ -20,7 +20,7 @@
 package org.xhtmlrenderer.swt;
 
 import org.eclipse.swt.graphics.Font;
-import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.css.style.FSFont;
 
 /**
  * 

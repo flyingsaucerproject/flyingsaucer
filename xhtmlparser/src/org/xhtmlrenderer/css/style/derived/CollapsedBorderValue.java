@@ -17,11 +17,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.newtable;
+package org.xhtmlrenderer.css.style.derived;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSColor;
-import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 
 /**
  * This class encapsulates all information related to a particular border side

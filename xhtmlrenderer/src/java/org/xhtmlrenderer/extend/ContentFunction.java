@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.css.extend;
+package org.xhtmlrenderer.extend;
 
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.layout.LayoutContext;
