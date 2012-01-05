@@ -11,6 +11,12 @@
                 <exclude name="**/demo/**"/>
                 <exclude name="**/test/**"/>
             </fileset>
+        	<fileset dir="${dest.commons.java.dir}">
+        	    <include name="**/*.class"/>
+        	</fileset>
+        	<fileset dir="${dest.parser.java.dir}">
+        	   <include name="**/*.class"/>        	             
+        	</fileset>
             <fileset dir="${dest.dir}">
                 <include name="resources/**"/>
             </fileset>
@@ -20,9 +26,9 @@
         </jar>
 	</target>
 
-    <!-- builds minmal version of core jar, excluding entity files -->
-    <target name="jar.core-minimal" depends="compile" description="build core jar">
-        <jar jarfile="${dest.dir}/core-renderer-minimal.jar" compress="true" index="true">
+    <!-- builds minimal version of renderer jar, excluding entity files -->
+    <target name="jar.ui-renderer" depends="compile" description="build renderer jar">
+        <jar jarfile="${dest.dir}/core-ui-renderer.jar" compress="true" index="true">
             <fileset dir="${dest.java.dir}">
                 <include name="**/*.class"/>
                 <exclude name="org/joshy/html/app"/>
@@ -32,6 +38,22 @@
         </jar>
 	</target>
 
+	 <target name="jar.commons" depends="compile" description="build commons jar">
+	    <jar jarfile="${dest.dir}/core-commons.jar" compress="true" index="true">
+	        <fileset dir="${dest.commons.java.dir}">
+	              <include name="**/*.class"/>
+            </fileset>
+        </jar>
+	</target>
+	
+	<target name="jar.parser" depends="compile" description="build parser jar">
+		<jar jarfile="${dest.dir}/core-parser.jar" compress="true" index="true">
+			<fileset dir="${dest.parser.java.dir}">
+	             <include name="**/*.class"/>
+			</fileset>
+	 	</jar>
+	</target>
+	
     <!-- Compiles browser and main codebase, and builds jar for browser -->
     <target name="jar.browser" depends="compile.browser, jar.core" description="build browser jar">
         <jar jarfile="${dest.dir}/browser.jar" compress="true"

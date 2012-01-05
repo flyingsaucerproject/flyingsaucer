@@ -90,6 +90,8 @@
     <property name="libraries.dir" location="lib"/>
     <property name="libraries.dev.dir" location="lib/dev"/>
     <property name="src.dir" location="src"/>
+	<property name="src.commons.dir" location="../xhtmlcommons/src/java"/>
+	<property name="src.parser.dir" location="../xhtmlparser/src/java"/>
     <property name="doc.dir" location="doc"/>
     <property name="src.junit-test.java.dir" location="${src.dir}/junit"/>
     <property name="src.browser.java.dir" location="demos/browser/src/java"/>
@@ -100,11 +102,15 @@
     <property name="src.about.java.dir" location="demos/about/src/java"/>
     <property name="src.samples.java.dir" location="demos/samples/src"/>
     <property name="dest.dir" location="build"/>
+	<property name="dest.parser.dir" location="../xhtmlparser/build"/>
+	<property name="dest.commons.dir" location="../xhtmlcommons/build"/>
     <property name="dest.javadoc.full.dir" location="${doc.dir}/full/api"/>
     <property name="dest.javadoc.user.dir" location="${doc.dir}/user/api"/>
     <property name="dest.java2html.dir" location="${doc.dir}/full/code"/>
     <property name="src.java.dir" location="${src.dir}/java"/>
     <property name="dest.java.dir" location="${dest.dir}/classes"/>
+	<property name="dest.parser.java.dir" location="${dest.parser.dir}/classes"/>
+	<property name="dest.commons.java.dir" location="${dest.commons.dir}/classes"/>
     <property name="src.resources.css.dir" location="${src.dir}/css"/>
     <property name="dest.resources.css.dir" location="${dest.java.dir}/resources/css"/>
     <property name="src.resources.conf.dir" location="${src.dir}/conf"/>

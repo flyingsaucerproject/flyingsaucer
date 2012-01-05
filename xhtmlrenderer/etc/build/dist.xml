@@ -15,7 +15,9 @@
         </copy>
         <zip basedir="${dest.dir}" zipfile="build/${app.name}-${app.version}.zip">
             <include name="core-renderer.jar"/>
-            <include name="core-renderer-minimal.jar"/>
+        	<include name="core-ui-renderer.jar"/>
+            <include name="core-parser.jar"/>
+            <include name="core-commons.jar"/>
             <include name="iText*.jar"/>
             <include name="xml*.jar"/>
             <include name="demos/**"/>
@@ -58,6 +60,8 @@
             <include name="doc/guide/**/*.png"/>
             <include name="doc/guide/**/*.css"/>
         </zip>
+    	<zip basedir="../xhtmlcommons/src" zipfile="${dest.dir}/${app.name}-${app.version}-src.zip" update="true"/>
+    	<zip basedir="../xhtmlparser/src" zipfile="${dest.dir}/${app.name}-${app.version}-src.zip" update="true"/>
         <checksum file="${dest.dir}/${app.name}-${app.version}-src.zip"
                   forceOverwrite="yes"
                   fileext=".md5.txt"

@@ -11,7 +11,7 @@
 	<target name="test" depends="compile" description="Test">
 		<java
 				classname="org.xhtmlrenderer.swing.HTMLTest"
-				classpath="${dest.java.dir};${dest.dir}"
+				classpath="${dest.java.dir};${dest.dir};${dest.parser.java.dir};${dest.commons.java.dir}"
 				fork="${java-exec.fork.tests}">
 			<arg value="${file}"/>
 			<sysproperty key="show-config" value="${show-config}"/>
@@ -37,6 +37,8 @@
 				<pathelement path="${basedir}"/>
 				<pathelement path="${dest.dir}"/>
 				<pathelement path="${dest.java.dir}"/>
+				<pathelement path="${dest.parser.java.dir}"/>
+				<pathelement path="${dest.commons.java.dir}"/>
 				<fileset dir="${libraries.dir}">
 					<include name="*.jar"/>
 				</fileset>
@@ -47,7 +49,7 @@
 	<!-- Runs a custom block test after a compile -->
 	<target name="test.customblock" depends="compile">
 		<java classname="org.xhtmlrenderer.test.CustomBlockTest"
-				classpath="${dest.java.dir}"
+				classpath="${dest.java.dir};${dest.parser.java.dir};${dest.commons.java.dir}"
 				fork="${java-exec.fork.tests}">
 			<sysproperty key="show-config" value="${show-config}"/>
 			<syspropertyset>
@@ -70,6 +72,8 @@
 				<pathelement path="${basedir}" />
 				<pathelement path="${dest.dir}" />
 				<pathelement path="${dest.java.dir}" />
+				<pathelement path="${dest.parser.java.dir}"/>
+				<pathelement path="${dest.commons.java.dir}"/>
 				<fileset dir="${libraries.dir}">
 					<include name="*.jar"/>
 				</fileset>
@@ -95,6 +99,8 @@
 				<pathelement path="${basedir}" />
 				<pathelement path="${dest.dir}" />
 				<pathelement path="${dest.java.dir}" />
+				<pathelement path="${dest.parser.java.dir}"/>
+				<pathelement path="${dest.commons.java.dir}"/>
 				<fileset dir="${libraries.dir}">
 					<include name="*.jar"/>
 				</fileset>
@@ -122,6 +128,8 @@
 				<pathelement path="${basedir}" />
 				<pathelement path="${dest.dir}" />
 				<pathelement path="${dest.java.dir}" />
+				<pathelement path="${dest.parser.java.dir}"/>
+				<pathelement path="${dest.commons.java.dir}"/>
 				<fileset dir="${libraries.dir}">
 					<include name="*.jar"/>
 				</fileset>
@@ -144,7 +152,7 @@
 	<target name="test.headless" depends="compile" description="Test">
 		<java
 				classname="org.xhtmlrenderer.test.Graphics2DRendererTest"
-				classpath="${dest.java.dir};${dest.dir}"
+				classpath="${dest.java.dir};${dest.dir};${dest.parser.java.dir};${dest.commons.java.dir}"
 				fork="${java-exec.fork.tests}">
 			<sysproperty key="show-config" value="${show-config}"/>
 			<syspropertyset>
@@ -212,6 +220,8 @@
                 <include name="*.jar"/>
               </fileset>
               <pathelement path="${dest.java.dir}" />
+              <pathelement path="${dest.parser.java.dir}"/>
+              <pathelement path="${dest.commons.java.dir}"/>
             </classpath>
             <sysproperty key="show-config" value="${show-config}"/>
             <syspropertyset>
@@ -247,6 +257,8 @@
                 <include name="*.jar"/>
               </fileset>
               <pathelement path="${dest.java.dir}" />
+              <pathelement path="${dest.parser.java.dir}"/>
+              <pathelement path="${dest.commons.java.dir}"/>
             </classpath>
             <sysproperty key="java.awt.headless" value="false"/>
             <sysproperty key="show-config" value="${show-config}"/>

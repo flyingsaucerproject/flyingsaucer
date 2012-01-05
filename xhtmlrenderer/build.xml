@@ -38,6 +38,10 @@
     <target name="init" depends="checkOS,properties">
         <mkdir dir="${dest.dir}"/>
         <mkdir dir="${dest.java.dir}"/>
+    	<mkdir dir="${dest.parser.dir}"/>
+    	<mkdir dir="${dest.parser.java.dir}"/>
+        <mkdir dir="${dest.commons.dir}"/>
+        <mkdir dir="${dest.commons.java.dir}"/>
         <mkdir dir="${dest.resources.css.dir}"/>
         <mkdir dir="${dest.resources.conf.dir}"/>
         <mkdir dir="${dest.resources.schema.dir}"/>
@@ -49,6 +53,8 @@
     <!-- Deletes all files from destination directory tree. -->
     <target name="clean" description="Cleans all build files." depends="properties">
         <delete dir="${dest.dir}"/>
+    	<delete dir="${dest.parser.dir}"/>
+    	<delete dir="${dest.commons.dir}"/>
         <delete>
             <fileset dir="${basedir}">
                 <include name="**/*~"/>
@@ -58,7 +64,13 @@
 
     <!-- Compiles application and copies resources to destination directory. -->
     <target name="compile" description="Compile core classes." depends="init,resources.core">
-        <javac-full>
+    	<javac-full srcdir="${src.commons.dir}" destdir="${dest.commons.java.dir}">
+    	     <include name="org/xhtmlrenderer/**"/>
+    	</javac-full>
+    	<javac-full srcdir="${src.parser.dir}" destdir="${dest.parser.java.dir}" classpath="${dest.commons.java.dir}">
+    	      <include name="org/xhtmlrenderer/**"/>
+    	 </javac-full>
+        <javac-full classpath="${dest.commons.java.dir};${dest.parser.java.dir}">
             <include name="org/xhtmlrenderer/**"/>
         </javac-full>
     </target>
@@ -66,7 +78,9 @@
     <!-- Builds core, browser and about box jars. -->
     <target name="jar" description="Builds all jars">
         <antcall target="jar.core"/>
-        <antcall target="jar.core-minimal"/>
+        <antcall target="jar.ui-renderer"/>
+    	<antcall target="jar.commons"/>
+       	<antcall target="jar.parser"/>
         <antcall target="jar.browser"/>
         <antcall target="jar.about"/>
         <antcall target="jar.svg"/>
@@ -80,7 +94,7 @@
 
     <!-- Builds a ZIP file of entire project from base directory. -->
     <target name="zip" description="Builds ZIP file of entire project." depends="jar">
-        <zip basedir="${basedir}" zipfile="../flyingsaucer.zip"/>
+        <zip basedir="../" zipfile="../flyingsaucer.zip"/>
     </target>
 
 
@@ -204,11 +218,17 @@
         <echo message="src.dir ${src.dir}"/>
         <echo message="doc.dir ${doc.dir}"/>
         <echo message="dest.dir ${dest.dir}"/>
+    	<echo message="dest.parser.dir ${dest.paser.dir}"/>
+        <echo message="dest.commons.dir ${dest.commons.dir}"/>
         <echo message="src.java.dir ${src.java.dir}"/>
+    	<echo message="src.commons.dir ${src.commons.dir}"/>
+        <echo message="src.parser.dir ${src.parser.dir}"/>
         <echo message="dest.javadoc.full.dir ${dest.javadoc.full.dir}"/>
         <echo message="dest.javadoc.user.dir ${dest.javadoc.user.dir}"/>
         <echo message="dest.java2html.dir ${dest.java2html.dir}"/>
         <echo message="dest.java.dir ${dest.java.dir}"/>
+    	<echo message="dest.parser.java.dir ${dest.parser.java.dir}"/>
+        <echo message="dest.commons.java.dir ${dest.commons.java.dir}"/>
         <echo message="src.about.java.dir ${src.about.java.dir}"/>
         <echo message="src.browser.java.dir ${src.browser.java.dir}"/>
         <echo message="src.resources.css.dir ${src.resources.css.dir}"/>

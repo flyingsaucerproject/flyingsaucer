@@ -5,7 +5,7 @@
 
 <!-- Compiles the Flying Saucer browser along with the main codebase -->
 	<target name="compile.browser" depends="compile,resources.browser">
-		<javac-full srcdir="${src.browser.java.dir}"/>
+		<javac-full srcdir="${src.browser.java.dir}" classpath="${dest.commons.java.dir}"/>
 	</target>
 
     <!-- Compile log4j support -->
@@ -16,22 +16,22 @@
 
     <!-- Compiles the Flying Saucer SVG sample along with the main codebase -->
     <target name="compile.svg" depends="compile,resources.svg">
-        <javac-full srcdir="${src.svg.java.dir}"/>
+        <javac-full srcdir="${src.svg.java.dir}" classpath="${dest.commons.java.dir}"/>
     </target>
 
     <!-- Compiles the Flying Saucer SVG sample along with the main codebase -->
     <target name="compile.docbook" depends="compile,resources.docbook">
-        <javac-full srcdir="${src.docbook.java.dir}"/>
+        <javac-full srcdir="${src.docbook.java.dir}" classpath="${dest.commons.java.dir}"/>
     </target>
 
     <!-- Compiles the eeze tool -->
 	<target name="compile.eeze" depends="init">
-		<javac-full srcdir="${src.java.dir}/eeze"/>
+		<javac-full srcdir="${src.java.dir}/eeze" classpath="${dest.commons.java.dir}"/>
 		<copy todir="build/classes/eeze" file="${src.java.dir}/eeze/eeze_help.html" />
 	</target>
 
 	<target name="compile.samples" depends="compile,resources.browser">
-		<javac-full srcdir="${src.samples.java.dir}"/>
+		<javac-full srcdir="${src.samples.java.dir}" classpath="${dest.commons.java.dir}"/>
 	</target>
 
     <!-- Cleans all build files, then recompiles. -->
@@ -44,12 +44,12 @@
     
     <!-- Compiles the Help/About Box demo along with the main codebase -->
 	<target name="compile.about" depends="compile">
-		<javac-full srcdir="${src.about.java.dir}"/>
+		<javac-full srcdir="${src.about.java.dir}" classpath="${dest.commons.java.dir}"/>
 	</target>
 
     <!-- Compiles the JUnit tests along with the main codebase -->
 	<target name="compile.junit" depends="compile">
-		<javac-full srcdir="${src.junit-test.java.dir}"/>
+		<javac-full srcdir="${src.junit-test.java.dir}" classpath="${dest.commons.java.dir}"/>
 	</target>
 
     <!-- Compiles main codebase, browser and about box -->

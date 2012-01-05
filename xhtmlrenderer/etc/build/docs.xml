@@ -4,6 +4,8 @@
     builds JavaDoc for all code. Meant to be used with antcall; set parameters
     for properties antcall.dest.javadoc.dir and antcall.javadoc.file 
     -->
+	<import file="properties.xml" />
+	
     <target name="_javadoc"
             description="internal use; use 'docs' instead. builds javadoc for all XR packages"
             depends="properties">
