@@ -113,7 +113,7 @@
 	<property name="dest.commons.java.dir" location="${dest.commons.dir}/classes"/>
     <property name="src.resources.css.dir" location="${src.dir}/css"/>
     <property name="dest.resources.css.dir" location="${dest.java.dir}/resources/css"/>
-    <property name="src.resources.conf.dir" location="${src.dir}/conf"/>
+    <property name="src.resources.conf.dir" location="../xhtmlcommons/src/conf"/>
     <property name="dest.resources.conf.dir" location="${dest.java.dir}/resources/conf"/>
     <property name="src.resources.schema.dir" location="${src.dir}/schema"/>
     <property name="dest.resources.schema.dir" location="${dest.java.dir}/resources/schema"/>

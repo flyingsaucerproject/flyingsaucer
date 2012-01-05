@@ -35,6 +35,9 @@
                 <exclude name="**/demo/**"/>
                 <exclude name="**/test/**"/>
             </fileset>
+        	<fileset dir="${dest.dir}">
+        	    <include name="resources/**"/>
+        	</fileset>
         </jar>
 	</target>
 
@@ -43,6 +46,9 @@
 	        <fileset dir="${dest.commons.java.dir}">
 	              <include name="**/*.class"/>
             </fileset>
+	    	 <fileset dir="${dest.java.dir}">
+	    	       <include name="resources/**"/>
+	    	 </fileset>
         </jar>
 	</target>
 	
