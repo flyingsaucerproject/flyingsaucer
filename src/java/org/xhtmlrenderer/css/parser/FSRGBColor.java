@@ -38,10 +38,14 @@ public class FSRGBColor implements FSColor {
         }
         if (blue < 0 || blue > 255) {
             throw new IllegalArgumentException();
-        }        
+        }
         _red = red;
         _green = green;
         _blue = blue;
+    }
+
+    public FSRGBColor(int color) {
+        this(((color & 0xff0000) >> 16),((color & 0x00ff00) >> 8), color & 0xff);
     }
 
     public int getBlue() {
