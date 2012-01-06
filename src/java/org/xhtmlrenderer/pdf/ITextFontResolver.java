@@ -440,6 +440,13 @@ public class ITextFontResolver implements FontResolver {
             addCourier(result);
             addTimes(result);
             addHelvetica(result);
+            addSymbol(result);
+            addZapfDingbats(result);
+
+            // Try and load the iTextAsian fonts
+            if(ITextFontResolver.class.getClassLoader().getResource("com/lowagie/text/pdf/fonts/cjkfonts.properties") != null) {
+                addCJKFonts(result);
+            }
         } catch (DocumentException e) {
             throw new RuntimeException(e.getMessage(), e);
         } catch (IOException e) {
@@ -450,7 +457,11 @@ public class ITextFontResolver implements FontResolver {
     }
 
     private static BaseFont createFont(String name) throws DocumentException, IOException {
-        return BaseFont.createFont(name, "winansi", true);
+        return ITextFontResolver.createFont(name, "winansi", true);
+    }
+
+    private static BaseFont createFont(String name, String encoding, boolean embedded) throws DocumentException, IOException {
+        return BaseFont.createFont(name, encoding, embedded);
     }
 
     private static void addCourier(HashMap result) throws DocumentException, IOException {
@@ -503,6 +514,73 @@ public class ITextFontResolver implements FontResolver {
 
         result.put("Dialog", helvetica);
         result.put("SansSerif", helvetica);
+        result.put("Helvetica", helvetica);
+    }
+
+    private static void addSymbol(Map result) throws DocumentException, IOException {
+        FontFamily fontFamily = new FontFamily();
+        fontFamily.setName("Symbol");
+
+        fontFamily.addFontDescription(new FontDescription(createFont(BaseFont.SYMBOL, BaseFont.CP1252, false), IdentValue.NORMAL, 400));
+
+        result.put("Symbol", fontFamily);
+    }
+
+    private static void addZapfDingbats(Map result) throws DocumentException, IOException {
+        FontFamily fontFamily = new FontFamily();
+        fontFamily.setName("ZapfDingbats");
+
+        fontFamily.addFontDescription(new FontDescription(createFont(BaseFont.ZAPFDINGBATS, BaseFont.CP1252, false), IdentValue.NORMAL, 400));
+
+        result.put("ZapfDingbats", fontFamily);
+    }
+
+    // fontFamilyName, fontName, encoding
+    private static final String[][] cjkFonts = {
+        {"STSong-Light-H", "STSong-Light", "UniGB-UCS2-H"},
+        {"STSong-Light-V", "STSong-Light", "UniGB-UCS2-V"},
+        {"STSongStd-Light-H", "STSongStd-Light", "UniGB-UCS2-H"},
+        {"STSongStd-Light-V", "STSongStd-Light", "UniGB-UCS2-V"},
+        {"MHei-Medium-H", "MHei-Medium", "UniCNS-UCS2-H"},
+        {"MHei-Medium-V", "MHei-Medium", "UniCNS-UCS2-V"},
+        {"MSung-Light-H", "MSung-Light", "UniCNS-UCS2-H"},
+        {"MSung-Light-V", "MSung-Light", "UniCNS-UCS2-V"},
+        {"MSungStd-Light-H", "MSungStd-Light", "UniCNS-UCS2-H"},
+        {"MSungStd-Light-V", "MSungStd-Light", "UniCNS-UCS2-V"},
+        {"HeiseiMin-W3-H", "HeiseiMin-W3", "UniJIS-UCS2-H"},
+        {"HeiseiMin-W3-V", "HeiseiMin-W3", "UniJIS-UCS2-V"},
+        {"HeiseiKakuGo-W5-H", "HeiseiKakuGo-W5", "UniJIS-UCS2-H"},
+        {"HeiseiKakuGo-W5-V", "HeiseiKakuGo-W5", "UniJIS-UCS2-V"},
+        {"KozMinPro-Regular-H", "KozMinPro-Regular", "UniJIS-UCS2-HW-H"},
+        {"KozMinPro-Regular-V", "KozMinPro-Regular", "UniJIS-UCS2-HW-V"},
+        {"HYGoThic-Medium-H", "HYGoThic-Medium", "UniKS-UCS2-H"},
+        {"HYGoThic-Medium-V", "HYGoThic-Medium", "UniKS-UCS2-V"},
+        {"HYSMyeongJo-Medium-H", "HYSMyeongJo-Medium", "UniKS-UCS2-H"},
+        {"HYSMyeongJo-Medium-V", "HYSMyeongJo-Medium", "UniKS-UCS2-V"},
+        {"HYSMyeongJoStd-Medium-H", "HYSMyeongJoStd-Medium", "UniKS-UCS2-H"},
+        {"HYSMyeongJoStd-Medium-V", "HYSMyeongJoStd-Medium", "UniKS-UCS2-V"}
+    };
+
+    private static void addCJKFonts(Map fontFamilyMap) throws DocumentException, IOException {
+        for(int i = 0; i < cjkFonts.length; i++) {
+            String fontFamilyName = cjkFonts[i][0];
+            String fontName = cjkFonts[i][1];
+            String encoding = cjkFonts[i][2];
+
+            addCJKFont(fontFamilyName, fontName, encoding, fontFamilyMap);
+        }
+    }
+
+    private static void addCJKFont(String fontFamilyName, String fontName, String encoding, Map fontFamilyMap) throws DocumentException, IOException {
+        FontFamily fontFamily = new FontFamily();
+        fontFamily.setName(fontFamilyName);
+
+        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",BoldItalic", encoding, false), IdentValue.OBLIQUE, 700));
+        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",Italic", encoding, false), IdentValue.OBLIQUE, 400));
+        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",Bold", encoding, false), IdentValue.NORMAL, 700));
+        fontFamily.addFontDescription(new FontDescription(createFont(fontName, encoding, false), IdentValue.NORMAL, 400));
+
+        fontFamilyMap.put(fontFamilyName, fontFamily);
     }
 
     private static class FontFamily {
