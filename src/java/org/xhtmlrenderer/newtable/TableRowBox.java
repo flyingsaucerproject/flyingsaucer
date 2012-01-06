@@ -163,9 +163,9 @@ public class TableRowBox extends BlockBox {
         int maxBorderAndPadding = 0;
         
         int cRow = getIndex();
-        int totalRows = getSection().getChildCount();
+        int totalRows = getSection().numRows();
         List grid = getSection().getGrid();
-        if (cRow < grid.size()) {
+        if ((grid.size() > 0) && (cRow < grid.size())) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
@@ -254,9 +254,9 @@ public class TableRowBox extends BlockBox {
         boolean needRowHeightRecalc = false;
         
         int cRow = getIndex();
-        int totalRows = getSection().getChildCount();
+        int totalRows = getSection().numRows();
         List grid = getSection().getGrid();
-        if (cRow < grid.size()) {
+        if ((grid.size() > 0) && (cRow < grid.size())) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
@@ -349,9 +349,9 @@ public class TableRowBox extends BlockBox {
         }
         
         int cRow = getIndex();
-        int totalRows = getSection().getChildCount();
+        int totalRows = getSection().numRows();
         List grid = getSection().getGrid();
-        if (cRow < grid.size()) {
+        if ((grid.size() > 0) && (cRow < grid.size())) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
@@ -386,9 +386,9 @@ public class TableRowBox extends BlockBox {
     private void calcDefaultBaseline(LayoutContext c) {
         int lowestCellEdge = 0;
         int cRow = getIndex();
-        int totalRows = getSection().getChildCount();
+        int totalRows = getSection().numRows();
         List grid = getSection().getGrid();
-        if (cRow < grid.size()) {
+        if ((grid.size() > 0) && (cRow < grid.size())) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
@@ -415,9 +415,9 @@ public class TableRowBox extends BlockBox {
     
     private void setCellHeights(LayoutContext c) {
         int cRow = getIndex();
-        int totalRows = getSection().getChildCount();
+        int totalRows = getSection().numRows();
         List grid = getSection().getGrid();
-        if (cRow < grid.size()) {
+        if ((grid.size() > 0) && (cRow < grid.size())) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
