@@ -506,9 +506,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         char[] charArr = string.toCharArray();
         char replacementCharacter = Configuration.valueAsChar("xr.renderer.missing-character-replacement", '#');
 
+        // first check to see if the replacement character even exists in the given font. If not, then do nothing.
+        if(!_font.getFontDescription().getFont().charExists(replacementCharacter)) {
+            XRLog.render(Level.INFO, "Missing replacement character [" + replacementCharacter + ":" + (int) replacementCharacter + "]. No replacement will occur.");
+            return string;
+        }
+
+        // iterate through each character in the string and make an appropriate replacement
         for(int i = 0; i < charArr.length; i++) {
             if(!(charArr[i] == ' ' || charArr[i] == '\u00a0' || charArr[i] == '\u3000' || _font.getFontDescription().getFont().charExists(charArr[i]))) {
-                XRLog.render(Level.INFO, "Missing character [" + charArr[i] + ":" + (int) charArr[i] + "] in string [" + string + "]. Replacing missing character with '" + replacementCharacter + "'");
+                XRLog.render(Level.INFO, "Missing character [" + charArr[i] + ":" + (int) charArr[i] + "] in string [" + string + "]. Replacing with '" + replacementCharacter + "'");
                 charArr[i] = replacementCharacter;
             }
         }
