@@ -28,7 +28,7 @@
 
     <!-- builds minimal version of renderer jar, excluding entity files -->
     <target name="jar.ui-renderer" depends="compile" description="build renderer jar">
-        <jar jarfile="${dest.dir}/core-ui-renderer.jar" compress="true" index="true">
+        <jar jarfile="${dest.dir}/fs-ui-renderer.jar" compress="true" index="true">
             <fileset dir="${dest.java.dir}">
                 <include name="**/*.class"/>
                 <exclude name="org/joshy/html/app"/>
@@ -42,7 +42,7 @@
 	</target>
 
 	 <target name="jar.commons" depends="compile" description="build commons jar">
-	    <jar jarfile="${dest.dir}/core-commons.jar" compress="true" index="true">
+	    <jar jarfile="${dest.dir}/fs-commons.jar" compress="true" index="true">
 	        <fileset dir="${dest.commons.java.dir}">
 	              <include name="**/*.class"/>
             </fileset>
@@ -53,7 +53,7 @@
 	</target>
 	
 	<target name="jar.parser" depends="compile" description="build parser jar">
-		<jar jarfile="${dest.dir}/core-parser.jar" compress="true" index="true">
+		<jar jarfile="${dest.dir}/fs-parser.jar" compress="true" index="true">
 			<fileset dir="${dest.parser.java.dir}">
 	             <include name="**/*.class"/>
 			</fileset>
