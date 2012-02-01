@@ -63,8 +63,8 @@ public class DOMUtil {
      * @return a String with the text content of an element (may be an empty string but will not be null).
      */
     public static String getText(Element parent) {
-	StringBuilder sb = new StringBuilder();
-	getText(parent, sb);
+    	StringBuilder sb = new StringBuilder();
+    	getText(parent, sb);
         return sb.toString();
     }
     
@@ -79,10 +79,10 @@ public class DOMUtil {
         for (int i = 0; i < children.getLength(); i++) {
             Node n = (Node)children.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE) {
-		getText((Element)n, sb);
+            	getText((Element)n, sb);
             } else if (n.getNodeType() == Node.TEXT_NODE) {
                 sb.append(n.getNodeValue());
-	    }
+            }
         }
     }
 }

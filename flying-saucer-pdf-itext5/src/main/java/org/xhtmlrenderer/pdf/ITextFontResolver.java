@@ -33,8 +33,6 @@ import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.BaseFont;
 import java.io.*;
 import java.util.*;
 
@@ -397,7 +395,7 @@ public class ITextFontResolver implements FontResolver {
         return null;
     }
 
-    private int convertWeightToInt(IdentValue weight) {
+    public static int convertWeightToInt(IdentValue weight) {
         if (weight == IdentValue.NORMAL) {
             return 400;
         } else if (weight == IdentValue.BOLD) {

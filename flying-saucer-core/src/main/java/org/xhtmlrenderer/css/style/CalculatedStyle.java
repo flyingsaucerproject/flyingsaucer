@@ -400,6 +400,10 @@ public class CalculatedStyle {
         return _font;
     }
 
+    public FontSpecification getFontSpecification() {
+	return _font;
+    }
+
     private IdentValue resolveAbsoluteFontSize() {
         FSDerivedValue fontSize = valueByName(CSSName.FONT_SIZE);
         if (! (fontSize instanceof IdentValue)) {
@@ -453,7 +457,7 @@ public class CalculatedStyle {
                 // Make sure rasterized characters will (probably) fit inside
                 // the line box
                 FSFontMetrics metrics = getFSFontMetrics(ctx);
-                float lineHeight2 = (float)Math.ceil(metrics.getDescent() + Math.round(metrics.getAscent()));
+                float lineHeight2 = (float)Math.ceil(metrics.getDescent() + metrics.getAscent());
                 _lineHeight = Math.max(lineHeight1, lineHeight2);
             } else if (isLength(CSSName.LINE_HEIGHT)) {
                 //could be more elegant, I suppose

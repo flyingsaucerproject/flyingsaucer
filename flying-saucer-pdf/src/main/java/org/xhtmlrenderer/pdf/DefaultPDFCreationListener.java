@@ -12,5 +12,10 @@ public class DefaultPDFCreationListener implements PDFCreationListener {
     /**
      * {@inheritDoc}
      */
+    public void preWrite(ITextRenderer iTextRenderer, int pageCount) {}
+
+    /**
+     * {@inheritDoc}
+     */
     public void onClose(ITextRenderer renderer) { }
 }

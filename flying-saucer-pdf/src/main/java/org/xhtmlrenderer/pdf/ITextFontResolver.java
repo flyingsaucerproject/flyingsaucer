@@ -395,7 +395,7 @@ public class ITextFontResolver implements FontResolver {
         return null;
     }
 
-    private int convertWeightToInt(IdentValue weight) {
+    public static int convertWeightToInt(IdentValue weight) {
         if (weight == IdentValue.NORMAL) {
             return 400;
         } else if (weight == IdentValue.BOLD) {
