@@ -55,4 +55,34 @@ public class DOMUtil {
         }
         return result.size() == 0 ? null : result;
     }
+    
+    /**
+     * Loads all of the text content in all offspring of an element.
+     * Ignores all attributes, comments and processing instructions.
+     *
+     * @return a String with the text content of an element (may be an empty string but will not be null).
+     */
+    public static String getText(Element parent) {
+	StringBuilder sb = new StringBuilder();
+	getText(parent, sb);
+        return sb.toString();
+    }
+    
+    /**
+     * Appends all text content in all offspring of an element to a StringBuffer.
+     * Ignores all attributes, comments and processing instructions.
+     *
+     * @return a String with the text content of an element (may be an empty string but will not be null).
+     */
+    public static void getText(Element parent, StringBuilder sb) {
+        NodeList children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node n = (Node)children.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+		getText((Element)n, sb);
+            } else if (n.getNodeType() == Node.TEXT_NODE) {
+                sb.append(n.getNodeValue());
+	    }
+        }
+    }
 }
