@@ -578,12 +578,16 @@ public class InlineBoxing {
         CalculatedStyle style = iB.getStyle();
         float lineHeight = style.getLineHeight(c);
 
-        int halfLeading = Math.round((lineHeight - iB.getStyle().getFont(c).size) / 2);
-        if (halfLeading > 0) {
-            halfLeading = Math.round((lineHeight -
-                    (fm.getDescent() + fm.getAscent())) / 2);
-        }
-
+	//
+	// Floating the text up (negative halfLeading value) will cause text on the
+	// first line of a page to appear a second time (clipped, and therefore hidden)
+	// on the previous page. In Acrobat Reader the cursor can land on this hidden text
+	// and the text can be found when searching (displays as a blue background).
+	//
+	// For time being not centering a positive float value either.
+	// Should probably honor CSS vertical alignment.
+	//
+        
         iB.setBaseline(Math.round(fm.getAscent()));
 
         alignInlineContent(c, iB, fm.getAscent(), fm.getDescent(), vaContext);
@@ -594,7 +598,7 @@ public class InlineBoxing {
 
         InlineBoxMeasurements result = new InlineBoxMeasurements();
         result.setBaseline(iB.getY() + iB.getBaseline());
-        result.setInlineTop(iB.getY() - halfLeading);
+        result.setInlineTop(iB.getY());
         result.setInlineBottom(Math.round(result.getInlineTop() + lineHeight));
         result.setTextTop(iB.getY());
         result.setTextBottom((int) (result.getBaseline() + fm.getDescent()));
@@ -699,19 +703,16 @@ public class InlineBoxing {
             LayoutContext c, Box container, FSFontMetrics strutM) {
         float lineHeight = container.getStyle().getLineHeight(c);
 
-        int halfLeading = Math.round((lineHeight -
-                container.getStyle().getFont(c).size) / 2);
-        if (halfLeading > 0) {
-            halfLeading = Math.round((lineHeight -
-                    (strutM.getDescent() + strutM.getAscent())) / 2);
-        }
-
+	//
+	// See comments above (in calculateInlineMeasurements) as to why 
+	// the halfLeading code has been removed.
+	//
         InlineBoxMeasurements measurements = new InlineBoxMeasurements();
-        measurements.setBaseline((int) (halfLeading + strutM.getAscent()));
-        measurements.setTextTop(halfLeading);
+        measurements.setBaseline((int) strutM.getAscent());
+        measurements.setTextTop(0);
         measurements.setTextBottom((int) (measurements.getBaseline() + strutM.getDescent()));
-        measurements.setInlineTop(halfLeading);
-        measurements.setInlineBottom((int) (halfLeading + lineHeight));
+        measurements.setInlineTop(0);
+        measurements.setInlineBottom((int) lineHeight);
 
         return measurements;
     }
