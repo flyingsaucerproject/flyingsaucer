@@ -39,6 +39,17 @@ public interface PDFCreationListener {
     void preOpen(ITextRenderer iTextRenderer);
 
     /**
+     * Called immediately before the pages of the PDF file are about to be written out.
+     * This is an opportunity to modify any document metadata that will be used to generate
+     * the PDF header fields (the document information dictionary). Document metadata may be accessed
+     * through the {@link ITextOutputDevice} that is returned by {@link ITextRenderer#getOutputDevice()}.
+     *
+     * @param iTextRenderer the renderer preparing the document
+     * @param pageCount the number of pages that will be written to the PDF document
+     */
+    void preWrite(ITextRenderer iTextRenderer, int pageCount);
+
+    /**
      * Called immediately before the iText Document instance is closed, e.g. before
      * {@link com.lowagie.text.Document#close()} is called.
      *

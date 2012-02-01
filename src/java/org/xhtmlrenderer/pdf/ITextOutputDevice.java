@@ -52,15 +52,19 @@ import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.pdf.ITextFontResolver;
+import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;
@@ -135,6 +139,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private List _bookmarks = new ArrayList();
 
+    private List _metadata = new ArrayList();
+    
     private Box _root;
 
     private int _startPageNo;
@@ -497,14 +503,40 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         double[] mx = new double[6];
         inverse.getMatrix(mx);
         cb.beginText();
-        cb.setFontAndSize(_font.getFontDescription().getFont(), _font.getSize2D() / _dotsPerPoint);
-        cb.setTextMatrix((float)mx[0], (float)mx[1], (float)mx[2], (float)mx[3], (float)mx[4], (float)mx[5]);
+	// Check if bold or italic need to be emulated
+	boolean resetMode = false;
+	FontDescription desc = _font.getFontDescription();
+	float fontSize = _font.getSize2D() / _dotsPerPoint;
+        cb.setFontAndSize(desc.getFont(), fontSize);
+	float b = (float) mx[1];
+	float c = (float) mx[2];
+	FontSpecification fontSpec = getFontSpecification();
+	if (fontSpec != null) {
+	    int need = ITextFontResolver.convertWeightToInt(fontSpec.fontWeight);
+	    int have = desc.getWeight();
+	    if (need > have) {
+		cb.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_STROKE);
+		float lineWidth  = fontSize * 0.04f;	// 4% of font size
+		cb.setLineWidth(lineWidth);
+		resetMode = true;
+	    }
+	    if ((fontSpec.fontStyle == IdentValue.ITALIC)
+	    	&& (desc.getStyle() != IdentValue.ITALIC)) {
+		b = 0f;
+		c = 0.21256f;
+	    }
+	}
+        cb.setTextMatrix((float)mx[0], b, c, (float)mx[3], (float)mx[4], (float)mx[5]);
         if (info == null) {
             cb.showText(s);
         } else {
             PdfTextArray array = makeJustificationArray(s, info);
             cb.showText(array);
         }
+	if (resetMode) {
+	    cb.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL);
+	    cb.setLineWidth(1);
+	}
         cb.endText();
     }
 
@@ -886,6 +918,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     public void start(Document doc) {
         loadBookmarks(doc);
+	loadMetadata(doc);
     }
 
     public void finish(RenderingContext c, Box root) {
@@ -1012,6 +1045,167 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             return _children == null ? Collections.EMPTY_LIST : _children;
         }
     }
+
+    // Metadata methods
+
+    // Methods to load and search a document's metadata
+
+    /**
+     * Appends a name/content metadata pair to this output device.
+     * A name or content value of null will be ignored.
+     *
+     * @param name the name of the metadata element to add.
+     * @return the content value for this metadata.
+     */
+    public void addMetadata(String name, String value) {
+	if ((name != null) && (value != null)) {
+	    Metadata m = new Metadata(name, value);
+	    _metadata.add(m);
+	}
+    }
+
+    /**
+     * Searches the metadata name/content pairs of the current document and returns
+     * the content value from the first pair with a matching name. The search is
+     * case insensitive.
+     *
+     * @param name the metadata element name to locate.
+     * @return the content value of the first found metadata element; otherwise null.
+     */
+    public String getMetadataByName(String name) {
+	if (name != null) {
+	    for (int i = 0, len = _metadata.size(); i < len; i++) {
+		Metadata m = (Metadata) _metadata.get(i);
+		if ((m != null) && m.getName().equalsIgnoreCase(name)) {
+		    return m.getContent();
+		}
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * Searches the metadata name/content pairs of the current document and returns
+     * any content values with a matching name in an ArrayList. The search is
+     * case insensitive.
+     *
+     * @param name the metadata element name to locate.
+     * @return an ArrayList with matching content values; otherwise an empty list.
+     */
+    public ArrayList getMetadataListByName(String name) {
+        ArrayList result = new ArrayList();
+	if (name != null) {
+	    for (int i = 0, len = _metadata.size(); i < len; i++) {
+		Metadata m = (Metadata) _metadata.get(i);
+		if ((m != null) && m.getName().equalsIgnoreCase(name)) {
+		    result.add(m.getContent());
+		}
+	    }
+	}
+	return result;
+    }
+
+    /**
+     * Locates and stores all metadata values in the document head that contain name/content pairs.
+     * If there is no pair with a name of "title", any content in the title element
+     * is saved as a "title" metadata item.
+     *
+     * @param doc the Document level node of the parsed xhtml file.
+     */
+    private void loadMetadata(Document doc) {
+        Element head = DOMUtil.getChild(doc.getDocumentElement(), "head");
+        if (head != null) {
+	    List l = DOMUtil.getChildren(head, "meta");
+	    if (l != null) {
+		for (Iterator i = l.iterator(); i.hasNext(); ) {
+		    Element e = (Element)i.next();
+		    String name = e.getAttribute("name");
+		    if (name != null) {				// ignore non-name metadata data
+			String content = e.getAttribute("content");
+			Metadata m = new Metadata(name, content);
+			_metadata.add(m);
+		    }
+                }
+            }
+	    // If there is no title meta data attribute, use the document title.
+	    String title = getMetadataByName("title");
+	    if (title == null) {
+		Element t = DOMUtil.getChild(head, "title");
+		if (t != null) {
+		    title = DOMUtil.getText(t).trim();
+		    Metadata m = new Metadata("title", title);
+		    _metadata.add(m);
+		}
+	    }
+        }
+    }
+
+    /**
+     * Replaces all copies of the named metadata with a single value.
+     * A a new value of null will result in the removal of all copies
+     * of the named metadata. Use <code>addMetadata</code> to append
+     * additional values with the same name.
+     *
+     * @param name the metadata element name to locate.
+     * @return the new content value for this metadata (null to remove all instances).
+     */
+    public void setMetadata(String name, String value) {
+	if (name != null) {
+	    boolean remove = (value == null);			// removing all instances of name?
+	    int free = -1;					// first open slot in array
+	    for (int i = 0, len = _metadata.size(); i < len; i++) {
+		Metadata m = (Metadata) _metadata.get(i);
+		if (m != null) {
+		    if (m.getName().equalsIgnoreCase(name)) {
+			if (!remove) {
+			    remove = true;			// remove all other instances
+			    m.setContent(value);
+			} else {
+			    _metadata.set(i, null);
+			}
+		    }
+		} else if (free == -1) {
+		    free = i;
+		}
+	    }
+	    if (!remove) {					// not found?
+		Metadata m = new Metadata(name, value);
+		if (free == -1) {				// no open slots?
+		    _metadata.add(m);
+		} else {
+		    _metadata.set(free, m);
+		}
+	    }
+	}
+    }
+
+    // Class for storing metadata element name/content pairs from the head section of an xhtml document.
+    private static class Metadata {
+        private String _name;
+        private String _content;
+        
+        public Metadata(String name, String content) {
+            _name = name;
+            _content = content;
+        }
+
+        public String getContent() {
+            return _content;
+        }
+
+        public void setContent(String content) {
+            _content = content;
+        }
+
+        public String getName() {
+            return _name;
+        }
+
+        public void setName(String name) {
+            _name = name;
+        }
+    }
+    // Metadata end
 
     public SharedContext getSharedContext() {
         return _sharedContext;

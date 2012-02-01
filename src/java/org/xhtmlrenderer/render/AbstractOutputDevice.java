@@ -36,6 +36,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
+import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.util.Configuration;
@@ -46,8 +47,11 @@ import org.xhtmlrenderer.util.Uu;
  * implementations for many <code>OutputDevice</code> methods.
  */
 public abstract class AbstractOutputDevice implements OutputDevice {
-    protected abstract void drawLine(int x1, int y1, int x2, int y2);
 
+    private FontSpecification _fontSpec;
+
+    protected abstract void drawLine(int x1, int y1, int x2, int y2);
+    
     public void drawText(RenderingContext c, InlineText inlineText) {
         InlineLayoutBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
@@ -55,6 +59,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         if (text != null && text.length() > 0) {
             setColor(iB.getStyle().getColor());
             setFont(iB.getStyle().getFSFont(c));
+            setFontSpecification(iB.getStyle().getFontSpecification());
             if (inlineText.getParent().getStyle().isTextJustify()) {
                 JustificationInfo info = inlineText.getParent().getLineBox().getJustificationInfo();
                 if (info != null) {
@@ -394,5 +399,23 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                     0,
                     c);
         }
+    }
+
+    /**
+     * Gets the FontSpecification for this AbstractOutputDevice.
+     *
+     * @return current FontSpecification.
+     */
+    public FontSpecification getFontSpecification() {
+	return _fontSpec;
+    }
+
+    /**
+     * Sets the FontSpecification for this AbstractOutputDevice.
+     *
+     * @param fs current FontSpecification.
+     */
+    public void setFontSpecification(FontSpecification fs) {
+	_fontSpec = fs;
     }
 }
