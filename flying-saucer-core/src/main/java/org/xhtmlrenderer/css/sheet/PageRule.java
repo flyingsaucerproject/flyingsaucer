@@ -116,7 +116,7 @@ public class PageRule implements RulesetContainer {
             return true;
         } else if (_name == null && _pseudoPage != null && 
                 (_pseudoPage.equals(pseudoPage) || 
-                        (_pseudoPage.equals("left") && pseudoPage != null && pseudoPage.equals("first")))) { // assume first page is a left page
+                        (_pseudoPage.equals("right") && pseudoPage != null && pseudoPage.equals("first")))) { // assume first page is a right page
             return true;
         } else if (_name != null && _name.equals(pageName) && _pseudoPage == null) {
             return true;
