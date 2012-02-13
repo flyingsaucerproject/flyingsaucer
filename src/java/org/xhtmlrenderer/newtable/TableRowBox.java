@@ -574,7 +574,9 @@ public class TableRowBox extends BlockBox {
                 for (Iterator i = getChildIterator(); i.hasNext(); ) {
                     TableCellBox cell = (TableCellBox)i.next();
                     BorderPropertySet collapsed = cell.getCollapsedPaintingBorder();
-                    spill = Math.max(spill, (int)collapsed.top() / 2); 
+                    if (collapsed != null) {
+                        spill = Math.max(spill, (int)collapsed.top() / 2);
+                    }
                 }
     
                 // be sure that the current start of the row is >= the start of the page
