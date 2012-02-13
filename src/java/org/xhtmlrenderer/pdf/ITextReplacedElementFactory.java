@@ -61,24 +61,28 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 				}
 				return new ITextImageElement(fsImage);
 			}
-		/*
+
 		} else if (nodeName.equals("input")) {
 			String type = e.getAttribute("type");
 			if (type.equals("hidden")) {
-			    return new EmptyReplacedElement(0, 0);
+			  return new EmptyReplacedElement(1, 1);
 			} else if (type.equals("checkbox")) {
 				return new CheckboxFormField(c, box, cssWidth, cssHeight);
 			} else if (type.equals("radio")) {
-				RadioButtonFormField result = new RadioButtonFormField(
-						this, c, box, cssWidth, cssHeight);
-				saveResult(e, result);
-				return result;
+        //TODO finish support for Radio button
+				//RadioButtonFormField result = new RadioButtonFormField(
+			  //			this, c, box, cssWidth, cssHeight);
+		    //		saveResult(e, result);
+				//return result;
+        return new EmptyReplacedElement(0, 0);
+
 			} else {
 				return new TextFormField(c, box, cssWidth, cssHeight);
 			}
-		} else if (nodeName.equals("select")) {
+      		/*
+		} else if (nodeName.equals("select")) {//TODO Support select
 		    return new SelectFormField(c, box, cssWidth, cssHeight);
-		} else if (isTextarea(e)) {
+		} else if (isTextarea(e)) {//TODO Review if this is needed the textarea item prints fine currently
 		    return new TextAreaFormField(c, box, cssWidth, cssHeight);
 		*/
 		} else if (nodeName.equals("bookmark")) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Torbjorn Gannholm
+ * Copyright (c) 2005 Torbj�rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -23,7 +23,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
@@ -47,9 +49,11 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * Description of the Field
      */
     final static String _namespace = "http://www.w3.org/1999/xhtml";
-    
+
     private static StylesheetInfo _defaultStylesheet;
     private static boolean _defaultStylesheetError = false;
+
+    private final Map _metadata = null;
 
     /**
      * Gets the namespace attribute of the XhtmlNamespaceHandler object
@@ -80,7 +84,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         String result = e.getAttribute("id").trim();
         return result.length() == 0 ? null : result;
     }
-    
+
     protected String convertToLength(String value) {
         if (isInteger(value)) {
             return value + "px";
@@ -88,7 +92,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             return value;
         }
     }
-    
+
     protected boolean isInteger(String value) {
         for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
@@ -99,17 +103,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return true;
     }
 
-    /**
-     * Looks for attribute named attrName on the element, and returns null if not
-     * found, or the attribute value, trimmed, if found.
-     * @param e element to test for the given attribute
-     * @param attrName name of the attribute to look for
-     * @return returns null if not
-     * found, or the attribute value, trimmed, if found
-     */
     protected String getAttribute(Element e, String attrName) {
         String result = e.getAttribute(attrName);
-        return result.length() == 0 ? null : result.trim();
+        result = result.trim();
+        return result.length() == 0 ? null : result;
     }
 
     /**
@@ -161,7 +158,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 style.append("width: ");
                 style.append(convertToLength(s));
                 style.append(";");
-            }            
+            }
         }
         style.append(e.getAttribute("style"));
         return style.toString();
@@ -180,7 +177,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         return href;
     }
-    
+
     public String getAnchorName(Element e) {
         if (e != null && e.getNodeName().equalsIgnoreCase("a") &&
                 e.hasAttribute("name")) {
@@ -188,7 +185,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         return null;
     }
-    
+
     private static String readTextContent(Element element) {
         StringBuffer result = new StringBuffer();
         Node current = element.getFirstChild();
@@ -202,7 +199,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         return result.toString();
     }
-    
+
     private static String collapseWhiteSpace(String text) {
         StringBuffer result = new StringBuffer();
         int l = text.length();
@@ -232,7 +229,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      */
     public String getDocumentTitle(org.w3c.dom.Document doc) {
         String title = "";
-        
+
         Element html = doc.getDocumentElement();
         Element head = findFirstChild(html, "head");
         if (head != null) {
@@ -241,22 +238,22 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 title = collapseWhiteSpace(readTextContent(titleElem).trim());
             }
         }
-        
+
         return title;
     }
-    
+
     private Element findFirstChild(Element parent, String targetName) {
         NodeList children = parent.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
-            Node n = (Node)children.item(i);
+            Node n = children.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(targetName)) {
                 return (Element)n;
             }
         }
-        
+
         return null;
     }
-    
+
     protected StylesheetInfo readStyleElement(Element style) {
         String media = style.getAttribute("media");
         if ("".equals(media)) {
@@ -267,7 +264,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         info.setType(style.getAttribute("type"));
         info.setTitle(style.getAttribute("title"));
         info.setOrigin(StylesheetInfo.AUTHOR);
-        
+
         StringBuffer buf = new StringBuffer();
         Node current = style.getFirstChild();
         while (current != null) {
@@ -276,17 +273,17 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             }
             current = current.getNextSibling();
         }
-        
+
         String css = buf.toString().trim();
         if (css.length() > 0) {
-            info.setContent(css);
-            
+            info.setContent(css.toString());
+
             return info;
         } else {
             return null;
         }
     }
-    
+
     protected StylesheetInfo readLinkElement(Element link) {
         String rel = link.getAttribute("rel").toLowerCase();
         if (rel.indexOf("alternate") != -1) {
@@ -295,28 +292,28 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         if (rel.indexOf("stylesheet") == -1) {
             return null;
         }
-        
+
         String type = link.getAttribute("type");
         if (! (type.equals("") || type.equals("text/css"))) {
             return null;
         }
-        
+
         StylesheetInfo info = new StylesheetInfo();
-        
+
         if (type.equals("")) {
             type = "text/css";
         } // HACK is not entirely correct because default may be set by META tag or HTTP headers
         info.setType(type);
-        
+
         info.setOrigin(StylesheetInfo.AUTHOR);
-        
+
         info.setUri(link.getAttribute("href"));
         String media = link.getAttribute("media");
         if ("".equals(media)) {
             media = "all";
         }
         info.setMedia(media);
-        
+
         String title = link.getAttribute("title");
         info.setTitle(title);
 
@@ -333,7 +330,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         List result = new ArrayList();
         //get the processing-instructions (actually for XmlDocuments)
         result.addAll(Arrays.asList(super.getStylesheets(doc)));
-        
+
         //get the link elements
         Element html = doc.getDocumentElement();
         Element head = findFirstChild(html, "head");
@@ -363,23 +360,23 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
         return (StylesheetInfo[])result.toArray(new StylesheetInfo[result.size()]);
     }
-    
+
     public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
         synchronized (XhtmlCssOnlyNamespaceHandler.class) {
             if (_defaultStylesheet != null) {
                 return _defaultStylesheet;
             }
-            
+
             if (_defaultStylesheetError) {
                 return null;
             }
-            
+
             StylesheetInfo info = new StylesheetInfo();
             info.setUri(getNamespace());
             info.setOrigin(StylesheetInfo.USER_AGENT);
             info.setMedia("all");
             info.setType("text/css");
-            
+
             InputStream is = null;
             try {
                 is = getDefaultStylesheetStream();
@@ -387,10 +384,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 if (_defaultStylesheetError) {
                     return null;
                 }
-                
+
                 Stylesheet sheet = factory.parse(new InputStreamReader(is), info);
                 info.setStylesheet(sheet);
-                
+
                 is.close();
                 is = null;
             } catch (Exception e) {
@@ -398,16 +395,16 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 XRLog.exception("Could not parse default stylesheet", e);
             } finally {
                 if (is != null) {
-                    try { 
+                    try {
                         is.close();
                     } catch (IOException e) {
                         //  ignore
                     }
                 }
             }
-            
+
             _defaultStylesheet = info;
-            
+
             return _defaultStylesheet;
         }
     }
@@ -415,13 +412,59 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     private InputStream getDefaultStylesheetStream() {
         InputStream stream = null;
         String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
-        stream = XhtmlCssOnlyNamespaceHandler.class.getResourceAsStream(defaultStyleSheet);
+        stream = this.getClass().getResourceAsStream(defaultStyleSheet);
         if (stream == null) {
             XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
                     "This file must be on your CLASSPATH. Please check before continuing.");
             _defaultStylesheetError = true;
         }
-        
+
         return stream;
+    }
+
+    private Map getMetaInfo(org.w3c.dom.Document doc) {
+        if(this._metadata != null) {
+            return this._metadata;
+        }
+
+        Map metadata = new HashMap();
+
+        Element html = doc.getDocumentElement();
+        Element head = findFirstChild(html, "head");
+        if (head != null) {
+            Node current = head.getFirstChild();
+            while (current != null) {
+                if (current.getNodeType() == Node.ELEMENT_NODE) {
+                    Element elem = (Element)current;
+                    String elemName = elem.getLocalName();
+                    if (elemName == null)
+                    {
+                        elemName = elem.getTagName();
+                    }
+                    if (elemName.equals("meta")) {
+                        String http_equiv = elem.getAttribute("http-equiv");
+                        String content = elem.getAttribute("content");
+
+                        if(!http_equiv.equals("") && !content.equals("")) {
+                            metadata.put(http_equiv, content);
+                        }
+                    }
+                }
+                current = current.getNextSibling();
+            }
+        }
+
+        return metadata;
+    }
+
+    public String getLang(org.w3c.dom.Element e) {
+        String lang = e.getAttribute("lang");
+        if(lang.equals("")) {
+            lang = (String) this.getMetaInfo(e.getOwnerDocument()).get("Content-Language");
+            if(lang == null) {
+                lang = "";
+            }
+        }
+        return lang;
     }
 }

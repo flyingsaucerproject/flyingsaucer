@@ -37,6 +37,7 @@ import org.xhtmlrenderer.css.parser.property.ListStylePropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.OneToFourPropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.QuotesPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.SizePropertyBuilder;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
@@ -358,6 +359,18 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.FSTextDecorationExtent()
             );
+
+    /**
+     * Used for forcing images to scale to a certain width
+     */
+    public final static CSSName FS_FIT_IMAGES_TO_WIDTH =
+        addProperty(
+                "-fs-fit-images-to-width",
+                PRIMITIVE,
+                "auto",
+                NOT_INHERITED,
+                new PrimitivePropertyBuilders.FSFitImagesToWidth()
+        );
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -861,8 +874,7 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "none",
                     INHERITS,
-                    false,
-                    null
+                    new QuotesPropertyBuilder()
             );
 
     /**

@@ -110,7 +110,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     }
 
     protected boolean isReadOnly(Element e) {
-        return Util.isNullOrEmpty(e.getAttribute("readonly"));
+        return !Util.isNullOrEmpty(e.getAttribute("readonly"));
     }
     
     protected boolean isSelected(Element e) {

@@ -23,9 +23,9 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints.Key;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -45,8 +45,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
@@ -71,6 +72,7 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import com.itextpdf.text.BaseColor;
@@ -234,8 +236,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private com.itextpdf.text.Rectangle checkLinkArea(RenderingContext c, Box box) {
         com.itextpdf.text.Rectangle targetArea = calcTotalLinkArea(c, box);
-        targetArea.setBorder(0);
-        targetArea.setBorderWidth(0);
         String key = createRectKey(targetArea);
         if (_linkTargetAreas.contains(key)) {
             return null;
@@ -268,8 +268,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         if (targetArea == null) {
                             return;
                         }
-                        PdfAnnotation annot = PdfAnnotation.createLink(
-                                _writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
+
+                        targetArea.setBorder(0);
+                        targetArea.setBorderWidth(0);
+
+                        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(),
+                                targetArea.getBottom(), targetArea.getRight(), targetArea.getTop(),
+                                action);
+                        annot.put(PdfName.SUBTYPE, PdfName.LINK);
                         annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
                         annot.setBorder(new PdfBorderArray(0.0f,0.0f,0));
                         _writer.addAnnotation(annot);
@@ -281,8 +287,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     if (targetArea == null) {
                         return;
                     }
-            		PdfAnnotation annot = PdfAnnotation.createLink(
-            				_writer, targetArea, PdfAnnotation.HIGHLIGHT_INVERT, action);
+                    PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(),
+                            targetArea.getBottom(), targetArea.getRight(), targetArea.getTop(),
+                            action);
+                    annot.put(PdfName.SUBTYPE, PdfName.LINK);
 
                     annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
                     annot.setBorder(new PdfBorderArray(0.0f,0.0f,0));
@@ -474,6 +482,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     public void drawString(String s, float x, float y, JustificationInfo info) {
+        if(Configuration.isTrue("xr.renderer.replace-missing-characters", false)) {
+            s = replaceMissingCharacters(s);
+        }
         if (s.length() == 0)
             return;
         PdfContentByte cb = _currentPage;
@@ -496,6 +507,27 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             cb.showText(array);
         }
         cb.endText();
+    }
+
+    private String replaceMissingCharacters(String string) {
+        char[] charArr = string.toCharArray();
+        char replacementCharacter = Configuration.valueAsChar("xr.renderer.missing-character-replacement", '#');
+
+        // first check to see if the replacement character even exists in the given font. If not, then do nothing.
+        if(!_font.getFontDescription().getFont().charExists(replacementCharacter)) {
+            XRLog.render(Level.INFO, "Missing replacement character [" + replacementCharacter + ":" + (int) replacementCharacter + "]. No replacement will occur.");
+            return string;
+        }
+
+        // iterate through each character in the string and make an appropriate replacement
+        for(int i = 0; i < charArr.length; i++) {
+            if(!(charArr[i] == ' ' || charArr[i] == '\u00a0' || charArr[i] == '\u3000' || _font.getFontDescription().getFont().charExists(charArr[i]))) {
+                XRLog.render(Level.INFO, "Missing character [" + charArr[i] + ":" + (int) charArr[i] + "] in string [" + string + "]. Replacing with '" + replacementCharacter + "'");
+                charArr[i] = replacementCharacter;
+            }
+        }
+
+        return String.valueOf(charArr);
     }
 
     private PdfTextArray makeJustificationArray(String s, JustificationInfo info) {

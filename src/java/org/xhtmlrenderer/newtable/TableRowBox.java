@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -164,9 +163,9 @@ public class TableRowBox extends BlockBox {
         int maxBorderAndPadding = 0;
         
         int cRow = getIndex();
-        int totalRows = getSection().getChildCount();
+        int totalRows = getSection().numRows();
         List grid = getSection().getGrid();
-        if (cRow < grid.size()) {
+        if ((grid.size() > 0) && (cRow < grid.size())) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
@@ -255,9 +254,9 @@ public class TableRowBox extends BlockBox {
         boolean needRowHeightRecalc = false;
         
         int cRow = getIndex();
-        int totalRows = getSection().getChildCount();
+        int totalRows = getSection().numRows();
         List grid = getSection().getGrid();
-        if (cRow < grid.size()) {
+        if ((grid.size() > 0) && (cRow < grid.size())) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
@@ -350,9 +349,9 @@ public class TableRowBox extends BlockBox {
         }
         
         int cRow = getIndex();
-        int totalRows = getSection().getChildCount();
+        int totalRows = getSection().numRows();
         List grid = getSection().getGrid();
-        if (cRow < grid.size()) {
+        if ((grid.size() > 0) && (cRow < grid.size())) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
@@ -387,9 +386,9 @@ public class TableRowBox extends BlockBox {
     private void calcDefaultBaseline(LayoutContext c) {
         int lowestCellEdge = 0;
         int cRow = getIndex();
-        int totalRows = getSection().getChildCount();
+        int totalRows = getSection().numRows();
         List grid = getSection().getGrid();
-        if (cRow < grid.size()) {
+        if ((grid.size() > 0) && (cRow < grid.size())) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
@@ -416,9 +415,9 @@ public class TableRowBox extends BlockBox {
     
     private void setCellHeights(LayoutContext c) {
         int cRow = getIndex();
-        int totalRows = getSection().getChildCount();
+        int totalRows = getSection().numRows();
         List grid = getSection().getGrid();
-        if (cRow < grid.size()) {
+        if ((grid.size() > 0) && (cRow < grid.size())) {
             List row = ((RowData)grid.get(cRow)).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = (TableCellBox)row.get(cCol);
@@ -558,5 +557,37 @@ public class TableRowBox extends BlockBox {
 
     public void setExtraSpaceBottom(int extraSpaceBottom) {
         _extraSpaceBottom = extraSpaceBottom;
+    }
+    
+    public int forcePageBreakBefore(LayoutContext c, IdentValue pageBreakValue,
+            boolean pendingPageName) {
+        int currentDelta = super.forcePageBreakBefore(c, pageBreakValue, pendingPageName);
+        
+        // additional calculations for collapsed borders.
+        if (c.isPrint() && getStyle().isCollapseBorders()) {
+            // get destination page for this row
+            PageBox page = c.getRootLayer().getPage(c, getAbsY() + currentDelta);
+            if (page!=null) {
+                
+                // calculate max spill from the collapsed top borders of each child
+                int spill = 0;
+                for (Iterator i = getChildIterator(); i.hasNext(); ) {
+                    TableCellBox cell = (TableCellBox)i.next();
+                    BorderPropertySet collapsed = cell.getCollapsedPaintingBorder();
+                    if (collapsed != null) {
+                        spill = Math.max(spill, (int)collapsed.top() / 2);
+                    }
+                }
+    
+                // be sure that the current start of the row is >= the start of the page
+                int borderTop = getAbsY() + currentDelta + (int)getMargin(c).top() - spill;
+                int rowDelta = page.getTop() - borderTop;
+                if (rowDelta > 0) {
+                    setY(getY() + rowDelta);
+                    currentDelta += rowDelta;
+                }
+            }
+        }
+        return currentDelta;
     }
 }

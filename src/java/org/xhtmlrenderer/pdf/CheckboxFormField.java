@@ -20,114 +20,77 @@
 package org.xhtmlrenderer.pdf;
 
 import java.awt.Color;
+import java.io.IOException;
 
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.*;
+import com.itextpdf.text.BaseColor;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import com.itextpdf.text.pdf.PdfAnnotation;
-import com.itextpdf.text.pdf.PdfAppearance;
-import com.itextpdf.text.pdf.PdfBorderDictionary;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfFormField;
-import com.itextpdf.text.pdf.PdfWriter;
+public class CheckboxFormField extends AbstractFormField
+{
+  private static final String FIELD_TYPE = "Checkbox";
 
-public class CheckboxFormField extends AbstractFormField {
-	private static final String FIELD_TYPE = "Checkbox";
+  public CheckboxFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
+  {
+    initDimensions(c, box, cssWidth, cssHeight);
+  }
 
-	public CheckboxFormField(LayoutContext c, BlockBox box, int cssWidth,
-			int cssHeight) {
-		initDimensions(c, box, cssWidth, cssHeight);
-	}
+  protected String getFieldType()
+  {
+    return FIELD_TYPE;
+  }
 
-	protected String getFieldType() {
-		return FIELD_TYPE;
-	}
+  public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box)
+  {
+    PdfContentByte cb = outputDevice.getCurrentPage();
 
-	public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
-		PdfContentByte cb = outputDevice.getCurrentPage();
+    PdfWriter writer = outputDevice.getWriter();
+    Element elm = box.getElement();
 
-		PdfWriter writer = outputDevice.getWriter();
+    Rectangle targetArea = outputDevice.createLocalTargetArea(c, box);
+    String onValue = getValue(elm);
 
-		PdfFormField field = PdfFormField.createCheckBox(writer);
+    RadioCheckField field = new RadioCheckField(writer, targetArea, getFieldName(outputDevice, elm), onValue);
 
-		Element e = box.getElement();
-		String onValue = getValue(e);
-		boolean checked = isChecked(e);
 
-		float width = outputDevice.getDeviceLength(getWidth());
-		float height = outputDevice.getDeviceLength(getHeight());
+    field.setChecked(isChecked(elm));
+    field.setCheckType(RadioCheckField.TYPE_CHECK);
+    field.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
+    //TODO Consider if we can get some more correct color
+    field.setBorderColor(BaseColor.BLACK);
 
-		FSColor color = box.getStyle().getColor();
-		FSColor darker = box.getEffBackgroundColor(c).darkenColor();
-		createAppearances(cb, field, onValue, width, height, true, color, darker);
-		createAppearances(cb, field, onValue, width, height, false, color, darker);
+    field.setBorderWidth(BaseField.BORDER_WIDTH_THIN);
 
-		field.setWidget(outputDevice.createLocalTargetArea(c, box),
-				PdfAnnotation.HIGHLIGHT_INVERT);
-		field.setFieldName(getFieldName(outputDevice, e));
+    try
+    {
+      PdfFormField formField = field.getCheckField();
+      if (isReadOnly(elm))
+      {
+        formField.setFieldFlags(PdfFormField.FF_READ_ONLY);
+      }
+      writer.addAnnotation(formField);
+    } catch (IOException ioe)
+    {
+      System.out.println(ioe);
+    } catch (DocumentException de)
+    {
+      System.out.println(de);
+    }
 
-		field.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+  }
 
-		field.setValueAsName(checked ? onValue : OFF_STATE);
-		field.setAppearanceState(checked ? onValue : OFF_STATE);
+  public int getBaseline()
+  {
+    return 0;
+  }
 
-		if (isReadOnly(e)) {
-			field.setFieldFlags(PdfFormField.FF_READ_ONLY);
-		}
-
-		writer.addAnnotation(field);
-	}
-
-	private void createAppearances(PdfContentByte cb, PdfFormField field,
-			String onValue, float width, float height, boolean normal,
-			FSColor color, FSColor darker) {
-		// XXX Should cache this by width and height, but they're small so
-		// don't bother for now...
-		PdfAppearance tpOff = cb.createAppearance(width, height);
-		PdfAppearance tpOn = cb.createAppearance(width, height);
-
-		setStrokeColor(tpOn, color);
-		setStrokeColor(tpOff, color);
-
-		float sLen = Math.min(width - reduce(width), height - reduce(height));
-
-		if (!normal) {
-		    setFillColor(tpOff, darker);
-			tpOff.rectangle(0, 0, width, height);
-			tpOff.fill();
-
-			setFillColor(tpOn, darker);
-			tpOn.rectangle(0, 0, width, height);
-			tpOn.fill();
-		}
-
-		tpOn.moveTo(width / 2 - sLen / 2, height / 2 - sLen / 2);
-		tpOn.lineTo(width / 2 + sLen / 2, height / 2 + sLen / 2);
-		tpOn.moveTo(width / 2 - sLen / 2, height / 2 + sLen / 2);
-		tpOn.lineTo(width / 2 + sLen / 2, height / 2 - sLen / 2);
-		tpOn.stroke();
-
-		if (normal) {
-			field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, OFF_STATE, tpOff);
-			field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, onValue, tpOn);
-		} else {
-			field.setAppearance(PdfAnnotation.APPEARANCE_DOWN, OFF_STATE, tpOff);
-			field.setAppearance(PdfAnnotation.APPEARANCE_DOWN, onValue, tpOn);
-		}
-	}
-
-	private float reduce(float value) {
-		return Math.min(value, Math.max(2.0f, 0.08f * value));
-	}
-
-	public int getBaseline() {
-		return 0;
-	}
-
-	public boolean hasBaseline() {
-		return false;
-	}
+  public boolean hasBaseline()
+  {
+    return false;
+  }
 }
