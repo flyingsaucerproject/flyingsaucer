@@ -45,7 +45,10 @@ public class FSFunction {
         result.append('(');
         for (Iterator i = _parameters.iterator(); i.hasNext(); ) {
             result.append(i.next());  // HACK
-            result.append(',');
+            if (i.hasNext())
+            {
+            	result.append(',');
+            }
         }
         result.append(')');
         return result.toString();

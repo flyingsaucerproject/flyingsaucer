@@ -210,7 +210,7 @@ public class PropertyValue implements CSSPrimitiveValue {
     }
     
     public List getValues() {
-        return new ArrayList(_values);
+        return (_values != null) ? new ArrayList(_values):null;
     }
     
     public FSFunction getFunction() {

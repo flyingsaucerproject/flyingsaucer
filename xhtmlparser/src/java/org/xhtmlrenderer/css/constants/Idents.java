@@ -352,7 +352,7 @@ public final class Idents {
         }
         String retval = (String) COLOR_MAP.get(value.toLowerCase());
         if (retval == null) {
-            if (value.trim().startsWith("rgb(")) {
+            if (value.trim().startsWith("rgb")) {
                 retval = value;
             } else {
                 Matcher m = COLOR_HEX_PATTERN.matcher(value);

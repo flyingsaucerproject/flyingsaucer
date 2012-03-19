@@ -739,6 +739,16 @@ public final class CSSName implements Comparable {
                     true,
                     new PrimitivePropertyBuilders.Orphans()
             );
+    
+    public final static CSSName OPACITY =
+            addProperty(
+                    "opacity",
+                    PRIMITIVE,
+                    "0",
+                    INHERITS,
+                    true,
+                    new PrimitivePropertyBuilders.Opacity()
+            );
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1208,6 +1218,42 @@ public final class CSSName implements Comparable {
                     new PrimitivePropertyBuilders.BorderLeftWidth()
             );
 
+    public final static CSSName BORDER_TOP_LEFT_RADIUS =
+            addProperty(
+                    "border-top-left-radius",
+                    PRIMITIVE,
+                    "0px",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderTopLeftRadius()
+            );
+    
+    public final static CSSName BORDER_TOP_RIGHT_RADIUS =
+            addProperty(
+                    "border-top-right-radius",
+                    PRIMITIVE,
+                    "0px",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderTopRightRadius()
+            );
+
+    public final static CSSName BORDER_BOTTOM_RIGHT_RADIUS =
+            addProperty(
+                    "border-bottom-right-radius",
+                    PRIMITIVE,
+                    "0px",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderBottomRightRadius()
+            );
+    
+    public final static CSSName BORDER_BOTTOM_LEFT_RADIUS =
+            addProperty(
+                    "border-bottom-left-radius",
+                    PRIMITIVE,
+                    "0px",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderBottomLeftRadius()
+            );
+    
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -1310,6 +1356,14 @@ public final class CSSName implements Comparable {
                     new BackgroundPropertyBuilder()
             );
 
+    public final static CSSName BORDER_RADIUS_SHORTHAND =
+            addProperty(
+                    "border-radius",
+                    SHORTHAND,
+                    "0px",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderRadius()
+            );
     /**
      * Unique CSSName instance for CSS2 property.
      */

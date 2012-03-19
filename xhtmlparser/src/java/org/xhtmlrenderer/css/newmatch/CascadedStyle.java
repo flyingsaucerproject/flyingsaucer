@@ -61,6 +61,11 @@ public class CascadedStyle {
      */
     private Map cascadedProperties;
     
+    /**
+     * Map of PropertyDeclarations, keyed by {@link CSSName}, contains a list for each key.
+     */
+    private Map nestedProperties;
+    
     private String fingerprint;
     
     /**
@@ -152,12 +157,24 @@ public class CascadedStyle {
             for (java.util.Iterator it = buckets[i].iterator(); it.hasNext();) {
                 PropertyDeclaration prop = (PropertyDeclaration) it.next();
                 cascadedProperties.put(prop.getCSSName(), prop);
+                List properties = (List)nestedProperties.get(prop.getCSSName());
+                if (properties == null)
+                {
+                	properties = new ArrayList();
+                	nestedProperties.put(prop.getCSSName(), properties);
+                }
+                properties.add(prop);
             }
         }
     }
     
+    public List propertiesByName(CSSName cssName) {
+       return (List)nestedProperties.get(cssName);
+    }
+    		
     private CascadedStyle(CascadedStyle startingPoint, Iterator props) {
         cascadedProperties = new TreeMap(startingPoint.cascadedProperties);
+        nestedProperties = new TreeMap();
         
         addProperties(props);
     }
@@ -170,6 +187,7 @@ public class CascadedStyle {
      */
     private CascadedStyle() {
         cascadedProperties = new TreeMap();
+        nestedProperties = new TreeMap();
     }
 
     /**
