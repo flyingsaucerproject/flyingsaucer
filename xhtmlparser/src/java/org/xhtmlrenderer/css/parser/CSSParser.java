@@ -787,9 +787,7 @@ public class CSSParser {
                         t, new Token[] { Token.TK_COMMA, Token.TK_LBRACE }, getCurrentLine());
             }
 
-            if (ruleset.getPropertyDeclarations().size() > 0) {
-                container.addContent(ruleset);
-            }
+            container.addContent(ruleset);
         } catch (CSSParseException e) {
             error(e, "ruleset", true);
             recover(true, false);
