@@ -23,9 +23,9 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints.Key;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -45,8 +45,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -125,15 +125,15 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private Area _clip;
 
     private SharedContext _sharedContext;
-    private float _dotsPerPoint;
+    private final float _dotsPerPoint;
 
     private PdfWriter _writer;
 
-    private Map _readerCache = new HashMap();
+    private final Map _readerCache = new HashMap();
 
     private PdfDestination _defaultDestination;
 
-    private List _bookmarks = new ArrayList();
+    private final List _bookmarks = new ArrayList();
 
     private Box _root;
 
@@ -321,6 +321,17 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 (float) pdfCorner.getX() + getDeviceLength(bounds.width),
                 (float) pdfCorner.getY() + getDeviceLength(bounds.height));
         return result;
+    }
+
+    public Point2D calcPdfPageRelativePoint(Point docPoint) {
+        Point2D docPointCopy = new Point2D.Double(docPoint.x, docPoint.y);
+        Point2D pdfPoint = new Point.Double();
+
+        _transform.transform(docPointCopy, pdfPoint);
+
+        pdfPoint.setLocation(pdfPoint.getX(), normalizeY((float) pdfPoint.getY()));
+
+        return pdfPoint;
     }
 
     public com.lowagie.text.Rectangle createTargetArea(RenderingContext c, Box box) {
