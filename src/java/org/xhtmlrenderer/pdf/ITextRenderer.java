@@ -129,6 +129,10 @@ public class ITextRenderer {
         _sharedContext.setInteractive(false);
     }
 
+    public Document getDocument() {
+	return _doc;
+    }
+    
     public ITextFontResolver getFontResolver() {
         return (ITextFontResolver)_sharedContext.getFontResolver();
     }
@@ -332,6 +336,11 @@ public class ITextRenderer {
             _listener.preOpen(this);
         }
     }
+    private void firePreWrite(int pageCount) {
+        if (_listener != null) {
+            _listener.preWrite(this, pageCount);
+        }
+    }
     private void fireOnClose() {
         if (_listener != null) {
             _listener.onClose(this);
@@ -349,6 +358,8 @@ public class ITextRenderer {
 
         int pageCount = _root.getLayer().getPages().size();
         c.setPageCount(pageCount);
+        firePreWrite(pageCount);				// opportunity to adjust meta data
+	setDidValues(doc);					// set PDF header fields from meta data
         for (int i = 0; i < pageCount; i++) {
             PageBox currentPage = (PageBox)pages.get(i);
             c.setPage(i, currentPage);
@@ -370,6 +381,26 @@ public class ITextRenderer {
         _outputDevice.finish(c, _root);
     }
 
+    // Sets the document information dictionary values from html metadata
+    private void setDidValues(com.lowagie.text.Document doc) {
+	String v = _outputDevice.getMetadataByName("title");
+	if (v != null) {
+	    doc.addTitle(v);
+	}
+	v = _outputDevice.getMetadataByName("author");
+	if (v != null) {
+	    doc.addAuthor(v);
+	}
+	v = _outputDevice.getMetadataByName("subject");
+	if (v != null) {
+	    doc.addSubject(v);
+	}
+	v = _outputDevice.getMetadataByName("keywords");
+	if (v != null) {
+	    doc.addKeywords(v);
+	}
+    }
+    
     private void paintPage(RenderingContext c, PdfWriter writer, PageBox page) {
         provideMetadataToPage(writer, page);
 

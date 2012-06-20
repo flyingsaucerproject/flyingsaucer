@@ -87,7 +87,7 @@
     <!-- =================================================
    Documentation
    ================================================= -->
-    <target name="docs" description="Creates JavaDocs" depends="clean.java2html, clean.javadoc">
+    <target name="docs" description="Creates JavaDocs" depends="check.app.version, clean.java2html, clean.javadoc">
         <antcall target="_javadoc">
             <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.full.dir}"/>
             <param name="antcall.javadoc.file" value=""/>

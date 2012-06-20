@@ -760,9 +760,9 @@ public class Layer {
         if (pages.size() == 0) {
             pseudoPage = "first";
         } else if (pages.size() % 2 == 0) {
-            pseudoPage = "left";
-        } else {
             pseudoPage = "right";
+        } else {
+            pseudoPage = "left";
         }
         PageBox pageBox = createPageBox(c, pseudoPage);
         if (pages.size() == 0) {
