@@ -66,17 +66,31 @@ public class ImageUtil {
 		clearImage(image, Color.WHITE);
 	}
 
-    public static BufferedImage makeCompatible(BufferedImage bimg) {
-        GraphicsConfiguration gc = getGraphicsConfiguration();
-        if (bimg.getColorModel().equals(gc.getColorModel())) {
-            return bimg;
-        }
-        BufferedImage cimg = gc.createCompatibleImage(bimg.getWidth(), bimg.getHeight(), bimg.getTransparency());
-        Graphics cg = cimg.getGraphics();
-        cg.drawImage(bimg, 0, 0, null);
-        cg.dispose();
-        return cimg;
+/**
+* @hawshy - 21 June 2012
+* Notice this library run into issue when is in headless environment, when you call Graphics2DRenderer.renderToImage();
+* Exception throw: headless at getGraphicsConfiguration();
+**/
+/*
+public static BufferedImage makeCompatible(BufferedImage bimg) {
+    GraphicsConfiguration gc = getGraphicsConfiguration();
+    if (bimg.getColorModel().equals(gc.getColorModel())) {
+        return bimg;
     }
+    BufferedImage cimg = gc.createCompatibleImage(bimg.getWidth(), bimg.getHeight(), bimg.getTransparency());
+    Graphics cg = cimg.getGraphics();
+    cg.drawImage(bimg, 0, 0, null);
+    cg.dispose();
+    return cimg;
+}*/
+
+public static BufferedImage makeCompatible(BufferedImage bimg) {
+    BufferedImage cimg = createCompatibleBufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getTransparency());
+    Graphics cg = cimg.getGraphics();
+    cg.drawImage(bimg, 0, 0, null);
+    cg.dispose();
+    return cimg;
+}
 
 	/**
 	 * Helper method to instantiate new BufferedImages; if the graphics environment is actually connected to real
