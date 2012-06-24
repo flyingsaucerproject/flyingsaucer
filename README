@@ -45,11 +45,11 @@ GETTING STARTED
 There is a large amount of sample code under the flying-saucer-demos directory.
 A pre-configured Eclipse project is provided to run a few of them.  
 
-For users of other ideas, make sure the src/java and resources under the about,
-docbook, svg, and browser directories are available on the build path.
-samples/src and splash should also be in the build path.
+For users of other IDEs, make sure the src/java and resources directories under
+the about, docbook, svg, and browser directories are available on the build
+path.  samples/src and splash should also be in the build path.
 
-flying-saucer-core, flying-saucer-pdf, and flying-saucer-swt must also be in the
+flying-saucer-core, flying-saucer-pdf, and flying-saucer-swt must also be on the
 build path as well as the an SWT JAR for your OS.
 
 The Eclipse config files as committed with flying-saucer-swt use a Linux SWT
