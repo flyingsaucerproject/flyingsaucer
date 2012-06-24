@@ -1,22 +1,42 @@
 package org.xhtmlrenderer.demo.docbook;
 
-import org.xhtmlrenderer.extend.TextRenderer;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.io.InputStream;
+import java.net.URL;
+
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.swing.Java2DTextRenderer;
+import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.net.URL;
 
 /**
  *
  */
 public class ShowDocBookPage {
     public JFrame frame;
+    
+    private static class ResourceLoadingUserAgent extends NaiveUserAgent {
+        protected InputStream resolveAndOpenStream(String uri) {
+        	InputStream result = super.resolveAndOpenStream(uri);
+        	if (result == null && uri != null && uri.startsWith("file:")) {
+        		return ShowDocBookPage.class.getResourceAsStream(uri.substring("file:".length()));
+        	} else {
+        		return result;
+        	}
+        }
+    }
 
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -49,6 +69,7 @@ public class ShowDocBookPage {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         final XHTMLPanel panel = new XHTMLPanel();
+        panel.getSharedContext().setUserAgentCallback(new ResourceLoadingUserAgent());
         setAntiAlias(panel);
 
         FSScrollPane fsp = new FSScrollPane(panel);
