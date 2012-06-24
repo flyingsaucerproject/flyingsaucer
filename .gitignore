@@ -4,3 +4,7 @@ build
 *.ipr
 .idea
 dist
+target
+**/*.releaseBackup
+*.releaseBackup
+release.properties
