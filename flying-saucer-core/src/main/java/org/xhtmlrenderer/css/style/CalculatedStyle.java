@@ -1,6 +1,6 @@
 /*
  * CalculatedStyle.java
- * Copyright (c) 2004, 2005 Patrick Wright, Torbj�rn Gannholm
+ * Copyright (c) 2004, 2005 Patrick Wright, Torbjoern Gannholm
  * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -63,7 +63,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * will retrieve properties using a {@link org.xhtmlrenderer.context.StyleReference}
  * implementation.
  *
- * @author Torbj�rn Gannholm
+ * @author Torbjoern Gannholm
  * @author Patrick Wright
  */
 public class CalculatedStyle {

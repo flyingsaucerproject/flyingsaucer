@@ -1,6 +1,6 @@
 /*
  * StyleReference.java
- * Copyright (c) 2004, 2005 Torbj�rn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -45,7 +45,7 @@ import org.xhtmlrenderer.util.XRLog;
 
 
 /**
- * @author Torbj�rn Gannholm
+ * @author Torbjoern Gannholm
  */
 public class StyleReference {
     /**

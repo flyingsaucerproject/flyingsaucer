@@ -1,6 +1,6 @@
 /*
  * Selector.java
- * Copyright (c) 2004, 2005 Torbj�rn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -31,7 +31,7 @@ import java.util.logging.Level;
  * A Selector is really a chain of CSS selectors that all need to be valid for
  * the selector to match.
  *
- * @author Torbj�rn Gannholm
+ * @author Torbjoern Gannholm
  */
 public class Selector {
     private Ruleset _parent;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Torbj�rn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
 
 /**
- * @author Torbj�rn Gannholm
+ * @author Torbjoern Gannholm
  */
 public class WhitespaceStripper {
     public final static String SPACE = " ";

@@ -8,7 +8,7 @@ package org.xhtmlrenderer.simple.extend;
  * characters are first encoded as sequences of two or three bytes, using the
  * UTF-8 algorithm, before being encoded as %HH escapes.
  *
- * @author   Torbjörn Gannholm
+ * @author   Torbjoern Gannholm
  */
 public class URLUTF8Encoder {
 

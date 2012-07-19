@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -27,7 +27,7 @@ import org.w3c.dom.Node;
  * In this class ONLY handling (css equivalents) of presentational properties
  * (according to css 2.1 spec, section 6.4.4) should be specified.
  *
- * @author Torbjörn Gannholm
+ * @author Torbjoern Gannholm
  */
 public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     /**

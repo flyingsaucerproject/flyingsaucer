@@ -1,6 +1,6 @@
 /*
  * Breaker.java
- * Copyright (c) 2004, 2005 Torbj�rn Gannholm, 
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm, 
  * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ import org.xhtmlrenderer.render.FSFont;
 /**
  * A utility class that scans the text of a single inline box, looking for the 
  * next break point.
- * @author Torbj�rn Gannholm
+ * @author Torbjoern Gannholm
  */
 public class Breaker {
 

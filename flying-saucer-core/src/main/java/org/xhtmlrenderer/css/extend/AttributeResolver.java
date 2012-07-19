@@ -1,6 +1,6 @@
 /*
  * AttributeResolver.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -32,7 +32,7 @@ package org.xhtmlrenderer.css.extend;
  * default attribute values, but the application is not required to use its
  * built-in knowledge of a namespace or look in the external subset.
  *
- * @author Torbjörn Gannholm
+ * @author Torbjoern Gannholm
  */
 public interface AttributeResolver {
 

@@ -1,6 +1,6 @@
 /*
  * NaiveUserAgent.java
- * Copyright (c) 2004, 2005 Torbj�rn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -56,7 +56,7 @@ import org.xhtmlrenderer.util.XRLog;
  * <p>This class is meant as a starting point--it will work out of the box, but you should really implement your
  * own, tuned to your application's needs.
  *
- * @author Torbjorn Gannholm
+ * @author Torbjoern Gannholm
  */
 public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 	private static final int DEFAULT_IMAGE_CACHE_SIZE = 16;

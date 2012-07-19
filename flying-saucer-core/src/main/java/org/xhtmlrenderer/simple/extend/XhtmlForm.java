@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Torbj�rn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  * Copyright (c) 2007 Sean Bright
  *
  * This program is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ import org.xhtmlrenderer.util.XRLog;
 /**
  * Represents a form object
  *
- * @author Torbj�rn Gannholm
+ * @author Torbjoern Gannholm
  * @author Sean Bright
  */
 public class XhtmlForm {

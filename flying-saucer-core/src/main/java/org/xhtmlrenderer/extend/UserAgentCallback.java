@@ -1,6 +1,6 @@
 /*
  * UserAgentCallback.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -45,7 +45,7 @@ import org.xhtmlrenderer.resource.XMLResource;
  * implemetations shipped with the library, like the {@link org.xhtmlrenderer.swing.NaiveUserAgent}.
  * </p>
  *
- * @author Torbjörn Gannholm
+ * @author Torbjoern Gannholm
  */
 public interface UserAgentCallback {
     /**

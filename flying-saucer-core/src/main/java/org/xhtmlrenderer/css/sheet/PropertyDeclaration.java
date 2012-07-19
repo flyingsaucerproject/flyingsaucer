@@ -1,6 +1,6 @@
 /*
  * PropertyDeclaration.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm, Patrick Wright
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm, Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -33,7 +33,7 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
  * group, for the CSS cascade, into a {@link
  * org.xhtmlrenderer.css.newmatch.CascadedStyle}.
  *
- * @author Torbjörn Gannholm
+ * @author Torbjoern Gannholm
  * @author Patrick Wright
  */
 public class PropertyDeclaration {
