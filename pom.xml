@@ -30,8 +30,11 @@
   <modules>
     <module>flying-saucer-core</module>
     <module>flying-saucer-pdf</module>
+    <module>flying-saucer-pdf-itext5</module>
     <module>flying-saucer-log4j</module>
     <module>flying-saucer-swt</module>
+    <module>flying-saucer-swt-examples</module>
+    <module>flying-saucer-examples</module>
   </modules>
 
   <scm>
