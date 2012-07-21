@@ -408,7 +408,9 @@ public class ITextRenderer {
             }
         }
 
-        writer.setPageXmpMetadata(metadata);
+        if (metadata != null) {
+            writer.setPageXmpMetadata(metadata);
+        }
     }
 
     private String stringfyMetadata(Element element) {
