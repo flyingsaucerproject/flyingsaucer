@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.0.1</version>
+    <version>9.0.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>flying-saucer-pdf</artifactId>
