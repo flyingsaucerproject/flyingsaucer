@@ -20,12 +20,14 @@
 package org.xhtmlrenderer.swing;
 
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
 import org.xhtmlrenderer.extend.FSGlyphVector;
@@ -198,13 +200,19 @@ public class Java2DTextRenderer implements TextRenderer {
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fractionalFontMetricsHint);
         Font awtFont = ((AWTFSFont)font).getAWTFont();
         int width = 0;
-        if(fractionalFontMetricsHint == RenderingHints.VALUE_FRACTIONALMETRICS_ON) {
-            width = (int)Math.round(
-                    graphics.getFontMetrics(awtFont).getStringBounds(string, graphics).getWidth());            
-        } else {
-            width = (int)Math.ceil(
-                    graphics.getFontMetrics(awtFont).getStringBounds(string, graphics).getWidth());
-        }
+		FontMetrics fontMetrics = graphics.getFontMetrics(awtFont);
+		Rectangle2D stringBounds = fontMetrics.getStringBounds(string, graphics);
+		GlyphVector vector = awtFont.createGlyphVector(graphics.getFontRenderContext(), string);
+		Rectangle2D visualBounds = vector.getVisualBounds();
+		double minX = Math.min(visualBounds.getMinX(), stringBounds.getMinX());
+		double maxX = Math.max(visualBounds.getMaxX(), stringBounds.getMaxX());
+		double fullWidth = maxX - minX;				
+		if (fractionalFontMetricsHint == RenderingHints.VALUE_FRACTIONALMETRICS_ON) {
+			width = (int) Math.round(fullWidth);
+		} else {
+			width = (int) Math.ceil(fullWidth);
+		}
+
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fracHint);
         return width;
     }
