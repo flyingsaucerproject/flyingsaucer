@@ -118,9 +118,9 @@ public class Breaker {
         int lastGraphicsLength = 0;
 
         while (right > 0 && graphicsLength <= avail) {
-            lastGraphicsLength = graphicsLength;
-            graphicsLength += c.getTextRenderer().getWidth(
-                    c.getFontContext(), font, currentString.substring(left, right));
+            lastGraphicsLength = graphicsLength;            
+            graphicsLength = c.getTextRenderer().getWidth(
+                    c.getFontContext(), font, currentString.substring(0, right));
             lastWrap = left;
             left = right;
             if ( tryToBreakAnywhere ) {
@@ -135,8 +135,8 @@ public class Breaker {
             //try for the last bit too!
             lastWrap = left;
             lastGraphicsLength = graphicsLength;
-            graphicsLength += c.getTextRenderer().getWidth(
-                    c.getFontContext(), font, currentString.substring(left));
+            graphicsLength = c.getTextRenderer().getWidth(
+                    c.getFontContext(), font, currentString);
         }
 
         if (graphicsLength <= avail) {
