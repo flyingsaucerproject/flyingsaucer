@@ -23,7 +23,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 
-import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Configuration;

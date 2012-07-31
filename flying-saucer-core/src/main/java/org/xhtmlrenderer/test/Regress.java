@@ -23,9 +23,6 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BoxRenderer;
 import org.xhtmlrenderer.swing.Java2DRenderer;
 import org.xhtmlrenderer.util.FSImageWriter;
-import org.xhtmlrenderer.util.IOUtil;
-import org.xhtmlrenderer.util.Zipper;
-
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Arrays;

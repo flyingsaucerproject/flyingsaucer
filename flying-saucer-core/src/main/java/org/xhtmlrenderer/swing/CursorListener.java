@@ -20,8 +20,6 @@
 package org.xhtmlrenderer.swing;
 
 import java.awt.Cursor;
-import java.awt.event.MouseEvent;
-
 import org.xhtmlrenderer.render.Box;
 
 
