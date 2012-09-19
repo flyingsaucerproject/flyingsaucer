@@ -1337,6 +1337,12 @@ public class PrimitivePropertyBuilders {
     public static class Src extends GenericURIWithNone {
     }
 
+    public static class TabSize extends PlainInteger {
+        protected boolean isNegativeValuesAllowed() {
+            return false;
+        }
+    }
+
     public static class Top extends LengthLikeWithAuto {
     }
 

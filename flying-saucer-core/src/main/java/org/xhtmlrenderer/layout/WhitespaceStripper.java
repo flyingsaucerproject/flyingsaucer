@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -127,7 +128,7 @@ public class WhitespaceStripper {
         
         String text = iB.getText();
 
-        text = collapseWhitespace(whitespace, text, collapseLeading);
+        text = collapseWhitespace(iB, whitespace, text, collapseLeading);
 
         boolean collapseNext = (text.endsWith(SPACE) &&
                 (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE));
@@ -145,7 +146,7 @@ public class WhitespaceStripper {
         return text.equals("") ? collapseLeading : collapseNext;
     }
 
-    private static String collapseWhitespace(IdentValue whitespace, String text, boolean collapseLeading) {
+    private static String collapseWhitespace(InlineBox iB, IdentValue whitespace, String text, boolean collapseLeading) {
         if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
             text = linefeed_space_collapse.matcher(text).replaceAll(EOL);
         } else if (whitespace == IdentValue.PRE) {
@@ -156,8 +157,11 @@ public class WhitespaceStripper {
             text = linefeed_to_space.matcher(text).replaceAll(SPACE);
             text = tab_to_space.matcher(text).replaceAll(SPACE);
             text = space_collapse.matcher(text).replaceAll(SPACE);
-        } else if (whitespace == IdentValue.PRE || whitespace == IdentValue.PRE_WRAP) { // not correct, should treat as 8 space tab stops
-            text = tab_to_space.matcher(text).replaceAll(SPACE);
+        } else if (whitespace == IdentValue.PRE || whitespace == IdentValue.PRE_WRAP) {
+            int tabSize = (int) iB.getStyle().asFloat(CSSName.TAB_SIZE);
+            char[] tabs = new char[tabSize];
+            Arrays.fill(tabs, ' ');
+            text = tab_to_space.matcher(text).replaceAll(new String(tabs));
         } else if (whitespace == IdentValue.PRE_LINE) {
             text = tab_to_space.matcher(text).replaceAll(SPACE);
             text = space_collapse.matcher(text).replaceAll(SPACE);
