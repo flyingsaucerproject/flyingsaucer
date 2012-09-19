@@ -902,6 +902,18 @@ public final class CSSName implements Comparable {
             );
 
     /**
+     * Used for controlling tab size in pre tags. See http://dev.w3.org/csswg/css3-text/#tab-size
+     */
+    public final static CSSName TAB_SIZE =
+            addProperty(
+                    "tab-size",
+                    PRIMITIVE,
+                    "8",
+                    INHERITS,
+                    new PrimitivePropertyBuilders.TabSize()
+                    );
+
+    /**
      * Unique CSSName instance for CSS2 property.
      */
     public final static CSSName TABLE_LAYOUT =
