@@ -776,6 +776,16 @@ public final class CSSName implements Comparable {
                     true,
                     new PrimitivePropertyBuilders.Orphans()
             );
+    
+    public final static CSSName OPACITY =
+    		addProperty(
+    				"opacity",
+    				PRIMITIVE,
+    				"0",
+    				INHERITS,
+    				true,
+    				new PrimitivePropertyBuilders.Opacity()
+    		);
 
     public final static CSSName OPACITY =
     		addProperty(
@@ -1277,6 +1287,42 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.BorderLeftWidth()
             );
+    
+    public final static CSSName BORDER_TOP_LEFT_RADIUS =
+            addProperty(
+                    "border-top-left-radius",
+                    PRIMITIVE,
+                    "0px",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderTopLeftRadius()
+            );
+    
+    public final static CSSName BORDER_TOP_RIGHT_RADIUS =
+            addProperty(
+                    "border-top-right-radius",
+                    PRIMITIVE,
+                    "0px",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderTopRightRadius()
+            );
+
+    public final static CSSName BORDER_BOTTOM_RIGHT_RADIUS =
+            addProperty(
+                    "border-bottom-right-radius",
+                    PRIMITIVE,
+                    "0px",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderBottomRightRadius()
+            );
+    
+    public final static CSSName BORDER_BOTTOM_LEFT_RADIUS =
+            addProperty(
+                    "border-bottom-left-radius",
+                    PRIMITIVE,
+                    "0px",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderBottomLeftRadius()
+            );
 
     public final static CSSName BORDER_TOP_LEFT_RADIUS =
             addProperty(
@@ -1418,6 +1464,15 @@ public final class CSSName implements Comparable {
                     "transparent none repeat scroll 0% 0%",
                     NOT_INHERITED,
                     new BackgroundPropertyBuilder()
+            );
+    
+    public final static CSSName BORDER_RADIUS_SHORTHAND =
+            addProperty(
+                    "border-radius",
+                    SHORTHAND,
+                    "0px",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BorderRadius()
             );
 
     /**
