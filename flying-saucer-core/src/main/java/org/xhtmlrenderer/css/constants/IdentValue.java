@@ -127,6 +127,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue LEFT = addValue("left");
     public final static IdentValue LIGHTER = addValue("lighter");
     public final static IdentValue LINE = addValue("line");
+    public final static IdentValue LINEAR_GRADIENT = addValue("linear-gradient");
     public final static IdentValue LINE_THROUGH = addValue("line-through");
     public final static IdentValue LIST_ITEM = addValue("list-item");
     public final static IdentValue LOWER_ALPHA = addValue("lower-alpha");

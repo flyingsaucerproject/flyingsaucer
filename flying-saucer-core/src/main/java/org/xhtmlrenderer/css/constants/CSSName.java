@@ -777,6 +777,16 @@ public final class CSSName implements Comparable {
                     new PrimitivePropertyBuilders.Orphans()
             );
 
+    public final static CSSName OPACITY =
+    		addProperty(
+    				"opacity",
+    				PRIMITIVE,
+    				"0",
+    				INHERITS,
+    				true,
+    				new PrimitivePropertyBuilders.Opacity()
+    		);
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -1070,7 +1080,7 @@ public final class CSSName implements Comparable {
                     INHERITS,
                     new PrimitivePropertyBuilders.WordWrap()
             );
-    
+
     /**
      * Unique CSSName instance for CSS3 property.
      */
@@ -1268,58 +1278,42 @@ public final class CSSName implements Comparable {
                     new PrimitivePropertyBuilders.BorderLeftWidth()
             );
 
-    /**
-     * Unique CSSName instance for CSS3 property.
-     */
     public final static CSSName BORDER_TOP_LEFT_RADIUS =
             addProperty(
                     "border-top-left-radius",
                     PRIMITIVE,
-                    "0 0",
+                    "0px",
                     NOT_INHERITED,
-                    true,
                     new PrimitivePropertyBuilders.BorderTopLeftRadius()
             );
 
-    /**
-     * Unique CSSName instance for CSS3 property.
-     */
     public final static CSSName BORDER_TOP_RIGHT_RADIUS =
             addProperty(
                     "border-top-right-radius",
                     PRIMITIVE,
-                    "0 0",
+                    "0px",
                     NOT_INHERITED,
-                    true,
                     new PrimitivePropertyBuilders.BorderTopRightRadius()
             );
 
-    /**
-     * Unique CSSName instance for CSS3 property.
-     */
     public final static CSSName BORDER_BOTTOM_RIGHT_RADIUS =
             addProperty(
                     "border-bottom-right-radius",
                     PRIMITIVE,
-                    "0 0",
+                    "0px",
                     NOT_INHERITED,
-                    true,
                     new PrimitivePropertyBuilders.BorderBottomRightRadius()
             );
 
-    /**
-     * Unique CSSName instance for CSS3 property.
-     */
     public final static CSSName BORDER_BOTTOM_LEFT_RADIUS =
             addProperty(
                     "border-bottom-left-radius",
                     PRIMITIVE,
-                    "0 0",
+                    "0px",
                     NOT_INHERITED,
-                    true,
                     new PrimitivePropertyBuilders.BorderBottomLeftRadius()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -1421,7 +1415,6 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new BackgroundPropertyBuilder()
             );
-    
 
     /**
      * Unique CSSName instance for CSS3 property.
@@ -1600,7 +1593,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new OneToFourPropertyBuilders.Padding()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
