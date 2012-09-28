@@ -776,13 +776,13 @@ public final class CSSName implements Comparable {
                     true,
                     new PrimitivePropertyBuilders.Orphans()
             );
-    
+
     public final static CSSName OPACITY =
     		addProperty(
     				"opacity",
     				PRIMITIVE,
     				"1",
-    				NOT_INHERITED,
+    				NOT_INHERITED, // PR22 - INHERITS
     				true,
     				new PrimitivePropertyBuilders.Opacity()
     		);
@@ -1287,7 +1287,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.BorderLeftWidth()
             );
-    
+
     public final static CSSName BORDER_TOP_LEFT_RADIUS =
             addProperty(
                     "border-top-left-radius",
@@ -1297,7 +1297,7 @@ public final class CSSName implements Comparable {
                     false,
                     new PrimitivePropertyBuilders.BorderTopLeftRadius()
             );
-    
+
     public final static CSSName BORDER_TOP_RIGHT_RADIUS =
             addProperty(
                     "border-top-right-radius",
@@ -1317,7 +1317,7 @@ public final class CSSName implements Comparable {
                     false,
                     new PrimitivePropertyBuilders.BorderBottomRightRadius()
             );
-    
+
     public final static CSSName BORDER_BOTTOM_LEFT_RADIUS =
             addProperty(
                     "border-bottom-left-radius",
@@ -1469,7 +1469,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new BackgroundPropertyBuilder()
             );
-    
+
     public final static CSSName BORDER_RADIUS_SHORTHAND =
             addProperty(
                     "border-radius",

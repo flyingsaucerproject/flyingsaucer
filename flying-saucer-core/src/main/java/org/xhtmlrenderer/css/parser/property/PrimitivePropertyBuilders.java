@@ -951,6 +951,81 @@ public class PrimitivePropertyBuilders {
         }
     }
 
+    public static class BorderTopLeftRadius extends GenericBorderCornerRadius {
+    }
+
+    public static class BorderTopRightRadius extends GenericBorderCornerRadius {
+    }
+
+    public static class BorderBottomRightRadius extends GenericBorderCornerRadius {
+    }
+
+    public static class BorderBottomLeftRadius extends GenericBorderCornerRadius {
+    }
+
+    public static class BorderRadius extends AbstractPropertyBuilder {
+
+        public List buildDeclarations(CSSName cssName, List values, int origin,
+                boolean important, boolean inheritAllowed)
+                {
+                List declarations = new ArrayList();
+                List leftValues = new ArrayList();
+                List rightValues = new ArrayList();
+                boolean addToLeft = true;
+                ListIterator i = values.listIterator();
+                while (i.hasNext()) {
+                    PropertyValue value = (PropertyValue)i.next();
+
+                    if (value.getOperator() == Token.TK_VIRGULE) {
+                        addToLeft = false;
+                    }
+
+                    if (addToLeft) {
+                        leftValues.add(value);
+                    } else {
+                        rightValues.add(value);
+                    }
+                }
+                declarations.addAll(CSSName.getPropertyBuilder(CSSName.BORDER_TOP_LEFT_RADIUS).buildDeclarations(CSSName.BORDER_TOP_LEFT_RADIUS, getValues(leftValues, rightValues, 0), origin, important));
+                declarations.addAll(CSSName.getPropertyBuilder(CSSName.BORDER_TOP_RIGHT_RADIUS).buildDeclarations(CSSName.BORDER_TOP_RIGHT_RADIUS, getValues(leftValues, rightValues, 1), origin, important));
+                declarations.addAll(CSSName.getPropertyBuilder(CSSName.BORDER_BOTTOM_RIGHT_RADIUS).buildDeclarations(CSSName.BORDER_BOTTOM_RIGHT_RADIUS, getValues(leftValues, rightValues, 2), origin, important));
+                declarations.addAll(CSSName.getPropertyBuilder(CSSName.BORDER_BOTTOM_LEFT_RADIUS).buildDeclarations(CSSName.BORDER_BOTTOM_LEFT_RADIUS, getValues(leftValues, rightValues, 3), origin, important));
+            return declarations;
+        }
+
+        private List getValues(List leftValues,List rightValues,int index)
+        {
+            List values = new ArrayList();
+            values.add(getValue(leftValues,index));
+            if (rightValues.size()>0)
+            {
+                values.add(getValue(rightValues,index));
+            }
+            return values;
+        }
+
+        private Object getValue(List list,int index)
+        {
+            if (index<list.size())
+            {
+                return list.get(index);
+            }
+            else
+            {
+                if (index == 3)
+                {
+                    return getValue(list,1);
+                }
+                if (index == 2 || index == 1)
+                {
+                    return getValue(list,0);
+                }
+            }
+            // shouldn't happen
+            return null;
+        }
+    }
+
     public static class Bottom extends LengthLikeWithAuto {
     }
 
@@ -1428,12 +1503,13 @@ public class PrimitivePropertyBuilders {
             checkNumberType(cssName, value);
 
             if (value.getFloatValue() > 1 || value.getFloatValue() <0) {
-            	throw new CSSParseException("Opacity must be between 0 and 1.", -1);
+                throw new CSSParseException("Opacity must be between 0 and 1.", -1);
             }
 
             return Collections.singletonList(new PropertyDeclaration(cssName, value, important, origin));
         }
     }
+
 
     public static class Overflow extends SingleIdent {
         // visible | hidden | scroll | auto | inherit
