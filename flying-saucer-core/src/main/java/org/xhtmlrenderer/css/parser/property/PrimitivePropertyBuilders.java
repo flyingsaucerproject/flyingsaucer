@@ -1324,7 +1324,7 @@ public class PrimitivePropertyBuilders {
             checkInheritAllowed(value, inheritAllowed);
             checkNumberType(cssName, value);
             
-            if (value.getFloatValue() > 1 || value.getFloatValue() <0) {
+            if (value.getFloatValue() > 1 || value.getFloatValue() < 0) {
             	throw new CSSParseException("Opacity must be between 0 and 1.", -1);
             }
             
