@@ -1607,7 +1607,7 @@ public class CSSParser {
                 throw new CSSParseException(t, Token.TK_RPAREN, getCurrentLine());
             }
 
-            if (f.equals("rgb(")) {
+            if (f.equals("rgb(") || f.equals("rgba(")) {
                 result = new PropertyValue(createRGBColorFromFunction(params));
             } else if (f.equals("cmyk(")) {
                 if (! isSupportCMYKColors()) {
