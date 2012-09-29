@@ -272,6 +272,17 @@ public class CalculatedStyle {
     public IdentValue getIdent(CSSName cssName) {
         return valueByName(cssName).asIdentValue();
     }
+    
+    /**
+     * Convenience property accessor; returns a Opacity
+     * Uses the actual value (computed actual value) for this
+     * element.
+     *
+     * @return The opacity value
+     */
+    public float getOpacity() {
+    	return asFloat(CSSName.OPACITY);
+    }
 
     /**
      * Convenience property accessor; returns a Color initialized with the

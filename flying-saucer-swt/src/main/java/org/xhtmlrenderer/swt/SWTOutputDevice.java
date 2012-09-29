@@ -213,6 +213,10 @@ public class SWTOutputDevice extends AbstractOutputDevice {
             swtControl.getSWTControl().setVisible(true);
         }
     }
+    
+    public void setOpacity(float opacity) {
+    	// TODO: implement opacity settings
+    }
 
     public void setColor(java.awt.Color color) {
         if (color.equals(_awt_color)) {

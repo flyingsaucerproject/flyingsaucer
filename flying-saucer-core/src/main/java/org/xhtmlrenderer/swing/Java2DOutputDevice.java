@@ -194,6 +194,10 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         }
     }
     
+    public void setOpacity(float opacity) {
+    	// TODO: implement opacity
+	}
+    
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
             FSRGBColor rgb = (FSRGBColor)color;

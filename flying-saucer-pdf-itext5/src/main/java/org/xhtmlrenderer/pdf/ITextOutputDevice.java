@@ -90,6 +90,7 @@ import com.itextpdf.text.pdf.PdfOutline;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfTextArray;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfGState;
 
 /**
  * This class is largely based on {@link com.itextpdf.text.pdf.PdfGraphics2D}.
@@ -398,6 +399,15 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
         draw(bounds);
     }
+    
+    public void setOpacity(float opacity) {
+    	PdfGState gs = new PdfGState();
+
+    	System.out.println("Setting opacity to " + opacity);
+    	
+    	gs.setFillOpacity(opacity);
+    	_currentPage.setGState(gs);
+	}
 
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
@@ -579,6 +589,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (!(_color.equals(_fillColor))) {
             _fillColor = _color;
             _currentPage.setColorFill(_fillColor);
+            
+            if (_fillColor.getAlpha() < 255) {
+            	setOpacity(_fillColor.getAlpha()/255.0f);
+            }
         }
     }
 

@@ -95,6 +95,7 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfString;
 import com.lowagie.text.pdf.PdfTextArray;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.PdfGState;
 
 /**
  * This class is largely based on {@link com.lowagie.text.pdf.PdfGraphics2D}.
@@ -199,7 +200,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         element.paint(c, this, box);
     }
 
-    public void paintBackground(RenderingContext c, Box box) {
+    public void paintBackground(RenderingContext c, Box box) {    	
         super.paintBackground(c, box);
 
         processLink(c, box);
@@ -400,11 +401,20 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
         draw(bounds);
     }
+    
+    public void setOpacity(float opacity) {
+    	PdfGState gs = new PdfGState();
+    	
+    	gs.setBlendMode(PdfGState.BM_NORMAL);
+    	gs.setFillOpacity(opacity);
+    	
+    	_currentPage.setGState(gs);
+	}
 
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
             FSRGBColor rgb = (FSRGBColor) color;
-            _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+            _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), (int) (rgb.getAlpha()*255));
         } else if (color instanceof FSCMYKColor) {
             FSCMYKColor cmyk = (FSCMYKColor) color;
             _color = new CMYKColor(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getBlack());
@@ -582,6 +592,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (!(_color.equals(_fillColor))) {
             _fillColor = _color;
             _currentPage.setColorFill(_fillColor);
+            
+            if (_fillColor.getAlpha() < 255) {
+            	setOpacity(_fillColor.getAlpha()/255.0f);
+            }
         }
     }
 
