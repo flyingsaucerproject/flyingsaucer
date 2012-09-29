@@ -272,7 +272,7 @@ public class CalculatedStyle {
     public IdentValue getIdent(CSSName cssName) {
         return valueByName(cssName).asIdentValue();
     }
-    
+
     /**
      * Convenience property accessor; returns a Opacity
      * Uses the actual value (computed actual value) for this
@@ -283,12 +283,12 @@ public class CalculatedStyle {
     public float getOpacity() {
     	CalculatedStyle parentStyle = getParent();
     	float opacity = asFloat(CSSName.OPACITY);
-    	
+
     	while(parentStyle != null) {
     		opacity = opacity * parentStyle.asFloat(CSSName.OPACITY);
     		parentStyle = parentStyle.getParent();
     	}
-    	
+
     	return opacity;
     }
 
@@ -792,7 +792,7 @@ public class CalculatedStyle {
     public IdentValue getWordWrap() {
         return getIdent(CSSName.WORD_WRAP);
     }
-    
+
     public IdentValue getHyphens() {
         return getIdent(CSSName.HYPHENS);
     }

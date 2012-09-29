@@ -31,7 +31,7 @@ public class FSRGBColor implements FSColor {
     private float _alpha;
 
     public FSRGBColor(int red, int green, int blue) {
-    	this(red, green, blue, 1);
+    	this(red, green, blue, 1.0f);
     }
 
     public FSRGBColor(int red, int green, int blue, float alpha) {
