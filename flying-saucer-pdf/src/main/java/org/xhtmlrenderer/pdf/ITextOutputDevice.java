@@ -128,7 +128,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private Stroke _stroke = null;
     private Stroke _originalStroke = null;
     private Stroke _oldStroke = null;
-    
+
     private float _opacity = 1f;
 
     private Area _clip;
@@ -202,7 +202,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         element.paint(c, this, box);
     }
 
-    public void paintBackground(RenderingContext c, Box box) {    	
+    public void paintBackground(RenderingContext c, Box box) {
         super.paintBackground(c, box);
 
         processLink(c, box);
@@ -403,17 +403,26 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
         draw(bounds);
     }
-    
+
     public void setOpacity(float opacity) {
     	if (opacity != _opacity) {
     		PdfGState gs = new PdfGState();
-        	
+
         	gs.setBlendMode(PdfGState.BM_NORMAL);
         	gs.setFillOpacity(opacity);
-        	
+
         	_currentPage.setGState(gs);
         	_opacity = opacity;
     	}
+	}
+
+    public void setOpacity(float opacity) {
+    	PdfGState gs = new PdfGState();
+
+    	gs.setBlendMode(PdfGState.BM_NORMAL);
+    	gs.setFillOpacity(opacity);
+
+    	_currentPage.setGState(gs);
 	}
 
     public void setColor(FSColor color) {
@@ -597,7 +606,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (!(_color.equals(_fillColor))) {
             _fillColor = _color;
             _currentPage.setColorFill(_fillColor);
-            
+
             if (_fillColor.getAlpha() < 255) {
             	setOpacity(_fillColor.getAlpha()/255.0f);
             }
