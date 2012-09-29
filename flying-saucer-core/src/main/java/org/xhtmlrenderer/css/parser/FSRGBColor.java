@@ -31,7 +31,7 @@ public class FSRGBColor implements FSColor {
     private float _alpha;
     
     public FSRGBColor(int red, int green, int blue) {
-    	this(red, green, blue, 1);
+    	this(red, green, blue, 1.0f);
     }
     
     public FSRGBColor(int red, int green, int blue, float alpha) {
@@ -69,6 +69,10 @@ public class FSRGBColor implements FSColor {
         return _red;
     }
     
+    public float getAlpha() {
+    	return _alpha;
+    }
+    
     public String toString() {
     	if (_alpha != 1) {
     		return "rgba("+_red+","+_green+","+_blue+","+_alpha+")";
@@ -95,6 +99,7 @@ public class FSRGBColor implements FSColor {
         if (_blue != that._blue) return false;
         if (_green != that._green) return false;
         if (_red != that._red) return false;
+        if (_alpha != that._alpha) return false;
 
         return true;
     }
