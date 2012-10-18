@@ -147,11 +147,11 @@ public class ITextFontResolver implements FontResolver {
             }
 
             if (rule.hasFontWeight()) {
-                fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
+            	fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
             }
 
             if (rule.hasFontStyle()) {
-                fontStyle = style.getIdent(CSSName.FONT_STYLE);
+            	fontStyle = style.getIdent(CSSName.FONT_STYLE);
             }
 
             try {
@@ -292,6 +292,14 @@ public class ITextFontResolver implements FontResolver {
                 }
 
                 descr.setFromFontFace(true);
+
+                if (fontWeightOverride != null) {
+                	descr.setWeight(convertWeightToInt(fontWeightOverride));
+                }
+
+                if (fontStyleOverride != null) {
+                	descr.setStyle(fontStyleOverride);
+                }
 
                 if (fontWeightOverride != null) {
                     descr.setWeight(convertWeightToInt(fontWeightOverride));
