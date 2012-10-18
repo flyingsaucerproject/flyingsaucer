@@ -302,6 +302,14 @@ public class ITextFontResolver implements FontResolver {
                 }
 
                 if (fontWeightOverride != null) {
+                	descr.setWeight(convertWeightToInt(fontWeightOverride));
+                }
+
+                if (fontStyleOverride != null) {
+                	descr.setStyle(fontStyleOverride);
+                }
+
+                if (fontWeightOverride != null) {
                     descr.setWeight(convertWeightToInt(fontWeightOverride));
                 }
 
