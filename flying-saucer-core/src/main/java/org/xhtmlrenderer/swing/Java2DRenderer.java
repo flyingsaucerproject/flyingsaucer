@@ -270,7 +270,7 @@ public class Java2DRenderer {
 			outputDevice = new Java2DOutputDevice(outputImage);
 			Graphics2D newG = (Graphics2D) outputImage.getGraphics();
 			if ( renderingHints != null ) {
-				newG.getRenderingHints().putAll(renderingHints);
+				newG.addRenderingHints(renderingHints);
 			}
 
 			RenderingContext rc = sharedContext.newRenderingContextInstance();
