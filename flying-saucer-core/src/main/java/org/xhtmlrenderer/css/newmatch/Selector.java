@@ -168,7 +168,15 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createLastChildCondition());
     }
-    
+
+    /**
+     * the CSS condition that element has pseudo-class :nth-child(an+b)
+     */
+    public void addNthChildCondition(String number) {
+        _specificityC++;
+        addCondition(Condition.createNthChildCondition(number));
+    }
+
     /**
      * the CSS condition that element has pseudo-class :even
      */
