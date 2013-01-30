@@ -561,6 +561,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
         if (isFloated()) {
             _floatedBoxData.getManager().removeFloat(this);
+            _floatedBoxData.getDrawingLayer().removeFloat(this);
         }
 
         if (getStyle().isRunning()) {
