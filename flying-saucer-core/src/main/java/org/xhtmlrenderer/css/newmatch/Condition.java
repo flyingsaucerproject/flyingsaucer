@@ -21,9 +21,12 @@ package org.xhtmlrenderer.css.newmatch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.TreeResolver;
+import org.xhtmlrenderer.css.parser.CSSParseException;
 
 
 /**
@@ -143,6 +146,16 @@ abstract class Condition {
         return new LastChildCondition();
     }
     
+    /**
+     * the CSS condition that element has pseudo-class :nth-child(an+b)
+     *
+     * @param number PARAM
+     * @return Returns
+     */
+    static Condition createNthChildCondition(String number) {
+        return NthChildCondition.fromString(number);
+    }
+
     /**
      * the CSS condition that element has pseudo-class :even
      * 
@@ -382,7 +395,66 @@ abstract class Condition {
         }
 
     }
-    
+
+    private static class NthChildCondition extends Condition {
+
+        private static final Pattern pattern = Pattern.compile("([-+]?)(\\d*)n(\\s*([-+])\\s*(\\d+))?");
+
+        private final int a;
+        private final int b;
+
+        NthChildCondition(int a, int b) {
+            this.a = a;
+            this.b = b;
+        }
+
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            // getPositionOfElement() starts at 0, CSS spec starts at 1
+            int position = treeRes.getPositionOfElement(e)+1;
+
+            position -= b;
+
+            if (a == 0) {
+                return position == 0;
+            } else if ((a < 0) && (position > 0)) {
+                return false; // n is negative
+            } else {
+                return position % a == 0;
+            }
+        }
+
+        static NthChildCondition fromString(String number) {
+            number = number.trim().toLowerCase();
+
+            if ("even".equals(number)) {
+                return new NthChildCondition(2, 0);
+            } else if ("odd".equals(number)) {
+                return new NthChildCondition(2, 1);
+            } else {
+                try {
+                    return new NthChildCondition(0, Integer.parseInt(number));
+                } catch (NumberFormatException e) {
+                    Matcher m = pattern.matcher(number);
+
+                    if (!m.matches()) {
+                        throw new CSSParseException("Invalid nth-child selector: " + number, -1);
+                    } else {
+                        int a = m.group(2).equals("") ? 1 : Integer.parseInt(m.group(2));
+                        int b = (m.group(5) == null) ? 0 : Integer.parseInt(m.group(5));
+                        if ("-".equals(m.group(1))) {
+                            a *= -1;
+                        }
+                        if ("-".equals(m.group(4))) {
+                            b *= -1;
+                        }
+
+                        return new NthChildCondition(a, b);
+                    }
+                }
+            }
+        }
+    }
+
     private static class EvenChildCondition extends Condition {
 
         EvenChildCondition() {
