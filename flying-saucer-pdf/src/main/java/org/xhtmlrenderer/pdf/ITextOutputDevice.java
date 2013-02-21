@@ -84,14 +84,18 @@ import com.lowagie.text.Image;
 import com.lowagie.text.pdf.CMYKColor;
 import com.lowagie.text.pdf.PdfAction;
 import com.lowagie.text.pdf.PdfAnnotation;
+import com.lowagie.text.pdf.PdfArray;
 import com.lowagie.text.pdf.PdfBorderArray;
 import com.lowagie.text.pdf.PdfBorderDictionary;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfDestination;
+import com.lowagie.text.pdf.PdfDictionary;
 import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfIndirectReference;
 import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfOutline;
 import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfString;
 import com.lowagie.text.pdf.PdfTextArray;
 import com.lowagie.text.pdf.PdfWriter;
 
@@ -898,6 +902,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     public void finish(RenderingContext c, Box root) {
         writeOutline(c, root);
+        writeNamedDestinations(c);
     }
 
     private void writeOutline(RenderingContext c, Box root) {
@@ -911,6 +916,39 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         for (Iterator i = bookmarks.iterator(); i.hasNext();) {
             Bookmark bookmark = (Bookmark) i.next();
             writeBookmark(c, root, parent, bookmark);
+        }
+    }
+
+    private void writeNamedDestinations(RenderingContext c) {
+        Map idMap = getSharedContext().getIdMap();
+        if ((idMap != null) && (!idMap.isEmpty())) {
+            PdfArray dests = new PdfArray();
+            try {
+                Iterator it = idMap.entrySet().iterator();
+                while (it.hasNext()) {
+                    Entry entry = (Entry) it.next();
+
+                    String anchorName = (String) entry.getKey();
+                    dests.add(new PdfString(anchorName, PdfString.TEXT_UNICODE));
+
+                    Box targetBox = (Box) entry.getValue();
+                    PdfDestination dest = createDestination(c, targetBox);
+                    PdfIndirectReference ref = _writer.addToBody(dest).getIndirectReference();
+                    dests.add(ref);
+                }
+
+                PdfDictionary nametree = new PdfDictionary();
+                nametree.put(PdfName.NAMES, dests);
+                PdfIndirectReference nameTreeRef = _writer.addToBody(nametree).getIndirectReference();
+
+                PdfDictionary names = new PdfDictionary();
+                names.put(PdfName.DESTS, nameTreeRef);
+                PdfIndirectReference destinationsRef = _writer.addToBody(names).getIndirectReference();
+
+                _writer.getExtraCatalog().put(PdfName.NAMES, destinationsRef);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
