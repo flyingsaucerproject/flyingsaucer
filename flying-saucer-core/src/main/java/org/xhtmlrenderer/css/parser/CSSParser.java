@@ -1180,6 +1180,46 @@ public class CSSParser {
         }
     }
 
+    private void addPseudoClassOrElementFunction(Token t, Selector selector) throws IOException {
+        String f = getTokenValue(t);
+        f = f.substring(0, f.length()-1);
+
+        if (f.equals("lang")) {
+            skip_whitespace();
+            t = next();
+            if (t == Token.TK_IDENT) {
+                String lang = getTokenValue(t);
+                selector.addLangCondition(lang);
+                skip_whitespace();
+                t = next();
+            } else {
+                push(t);
+                throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
+            }
+        } else if (f.equals("nth-child")) {
+            StringBuilder number = new StringBuilder();
+            while ((t = next()) != null && (t == Token.TK_IDENT || t == Token.TK_S || t == Token.TK_NUMBER || t == Token.TK_DIMENSION || t == Token.TK_PLUS || t == Token.TK_MINUS)) {
+                number.append(getTokenValue(t));
+            }
+
+            try {
+                selector.addNthChildCondition(number.toString());
+            } catch (CSSParseException e) {
+                e.setLine(getCurrentLine());
+                push(t);
+                throw e;
+            }
+        } else {
+            push(t);
+            throw new CSSParseException(f + " is not a valid function in this context", getCurrentLine());
+        }
+
+        if (t != Token.TK_RPAREN) {
+            push(t);
+            throw new CSSParseException(t, Token.TK_RPAREN, getCurrentLine());
+        }
+    }
+
     private void addPseudoElement(Token t, Selector selector) {
         String value = getTokenValue(t);
         if (SUPPORTED_PSEUDO_ELEMENTS.contains(value)) {
@@ -1206,30 +1246,7 @@ public class CSSParser {
                     addPseudoClassOrElement(t, selector);
                     break;
                 case Token.FUNCTION:
-                    String f = getTokenValue(t);
-                    f = f.substring(0, f.length()-1);
-
-                    if (! f.equals("lang")) {
-                        push(t);
-                        throw new CSSParseException(
-                                f + " is not a valid function in this context", getCurrentLine());
-                    }
-
-                    skip_whitespace();
-                    t = next();
-                    if (t == Token.TK_IDENT) {
-                        String lang = getTokenValue(t);
-                        selector.addLangCondition(lang);
-                        skip_whitespace();
-                        t = next();
-                    } else {
-                        push(t);
-                        throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
-                    }
-                    if (t != Token.TK_RPAREN) {
-                        push(t);
-                        throw new CSSParseException(t, Token.TK_RPAREN, getCurrentLine());
-                    }
+                    addPseudoClassOrElementFunction(t, selector);
                     break;
                 default:
                     push(t);
