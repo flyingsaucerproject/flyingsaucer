@@ -8,3 +8,7 @@ target
 **/*.releaseBackup
 *.releaseBackup
 release.properties
+*/.classpath
+*/.project
+*/.settings
+*/bin

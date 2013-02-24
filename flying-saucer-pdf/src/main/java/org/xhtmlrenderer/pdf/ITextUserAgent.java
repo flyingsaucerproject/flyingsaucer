@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Torbj�rn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or

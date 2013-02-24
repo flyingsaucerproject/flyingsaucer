@@ -1,6 +1,6 @@
 /*
  * Document.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -28,7 +28,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
  * Provides knowledge specific to a certain document type, like resolving
  * style-sheets
  *
- * @author Torbjörn Gannholm
+ * @author Torbjoern Gannholm
  */
 public interface NamespaceHandler {
 

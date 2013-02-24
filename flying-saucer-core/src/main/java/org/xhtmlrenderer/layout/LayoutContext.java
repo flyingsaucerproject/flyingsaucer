@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbj�rn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License

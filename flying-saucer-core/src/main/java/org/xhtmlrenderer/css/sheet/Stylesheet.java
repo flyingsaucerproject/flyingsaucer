@@ -1,6 +1,6 @@
 /*
  * Stylesheet.java
- * Copyright (c) 2004, 2005 Patrick Wright, Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Patrick Wright, Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -31,7 +31,7 @@ import java.util.List;
  * source. A Stylesheet is immutable; after instantiation, you can query the
  * origin and the {@link Ruleset}, but not modify either of them.
  *
- * @author Torbjörn Gannholm
+ * @author Torbjoern Gannholm
  * @author Patrick Wright
  */
 public class Stylesheet implements RulesetContainer {

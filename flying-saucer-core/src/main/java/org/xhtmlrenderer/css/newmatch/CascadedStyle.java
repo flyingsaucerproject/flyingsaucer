@@ -1,6 +1,6 @@
 /*
  * CascadedStyle.java
- * Copyright (c) 2004, 2005 Patrick Wright, Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Patrick Wright, Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -52,7 +52,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
  * using {@link #hasProperty(CSSName)}. A CascadedStyle is immutable, as
  * properties can not be added or removed from it once instantiated.
  *
- * @author Torbjörn Gannholm
+ * @author Torbjoern Gannholm
  * @author Patrick Wright
  */
 public class CascadedStyle {

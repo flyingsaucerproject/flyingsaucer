@@ -1,6 +1,6 @@
 /*
  * Matcher.java
- * Copyright (c) 2004, 2005 Torbj�rn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ import org.xhtmlrenderer.util.Util;
 
 
 /**
- * @author Torbjorn Gannholm
+ * @author Torbjoern Gannholm
  */
 public class Matcher {
 
@@ -316,7 +316,7 @@ public class Matcher {
      * Mapper represents a local CSS for a Node that is used to match the Node's
      * children.
      *
-     * @author Torbjorn Gannholm
+     * @author Torbjoern Gannholm
      */
     class Mapper {
         java.util.List axes;

@@ -1,6 +1,6 @@
 /*
  * StylesheetFactory.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -31,7 +31,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
  * parser instance for all sheets. Sheets are cached by URI using a LRU test,
  * but timestamp of file is not checked.
  *
- * @author Torbjörn Gannholm
+ * @author Torbjoern Gannholm
  */
 public interface StylesheetFactory {
     Stylesheet parse(Reader reader, StylesheetInfo info);

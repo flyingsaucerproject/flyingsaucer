@@ -67,11 +67,17 @@ public class ImageUtil {
 	}
 
     public static BufferedImage makeCompatible(BufferedImage bimg) {
-        GraphicsConfiguration gc = getGraphicsConfiguration();
-        if (bimg.getColorModel().equals(gc.getColorModel())) {
-            return bimg;
+        BufferedImage cimg = null;
+        if (GraphicsEnvironment.isHeadless()) {
+            cimg = createCompatibleBufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getTransparency());
+        } else {
+            GraphicsConfiguration gc = getGraphicsConfiguration();
+            if (bimg.getColorModel().equals(gc.getColorModel())) {
+                return bimg;
+            }
+            cimg = gc.createCompatibleImage(bimg.getWidth(), bimg.getHeight(), bimg.getTransparency());
         }
-        BufferedImage cimg = gc.createCompatibleImage(bimg.getWidth(), bimg.getHeight(), bimg.getTransparency());
+            
         Graphics cg = cimg.getGraphics();
         cg.drawImage(bimg, 0, 0, null);
         cg.dispose();

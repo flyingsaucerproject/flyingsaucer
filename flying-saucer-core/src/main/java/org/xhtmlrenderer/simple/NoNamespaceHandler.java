@@ -1,7 +1,7 @@
 /*
  *
  * XhtmlDocument.java
- * Copyright (c) 2004, 2005 Torbjorn Gannholm
+ * Copyright (c) 2004, 2005 Torbjoern Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -40,7 +40,7 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 /**
  * Handles a general XML document
  *
- * @author Torbjorn Gannholm
+ * @author Torbjoern Gannholm
  */
 public class NoNamespaceHandler implements NamespaceHandler {
 
