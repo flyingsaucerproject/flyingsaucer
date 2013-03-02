@@ -102,7 +102,8 @@ public class Layer {
         _parent = parent;
         _master = master;
         setStackingContext(
-                master.getStyle().isPositioned() && ! master.getStyle().isAutoZIndex());
+                (master.getStyle().isPositioned() && !master.getStyle().isAutoZIndex())
+                || master.getStyle().getOpacity() < 1.0);
         master.setLayer(this);
         master.setContainingLayer(this);
     }
@@ -122,6 +123,10 @@ public class Layer {
     public int getZIndex() {
         return (int) _master.getStyle().asFloat(CSSName.Z_INDEX);
     }
+    
+    public float getOpacity() {
+    	return _master.getStyle().asFloat(CSSName.OPACITY);
+	}
     
     public Box getMaster() {
         return _master;
@@ -174,7 +179,7 @@ public class Layer {
     private List collectLayers(int which) {
         List result = new ArrayList();
         
-        if (which != AUTO) {
+        if (which != AUTO || getOpacity() < 1.0) {
             result.addAll(getStackingContextLayers(which));
         }
         
@@ -183,7 +188,7 @@ public class Layer {
             Layer child = (Layer)children.get(i);
             
             if (! child.isStackingContext()) {
-                if (which == AUTO) {
+                if (which == AUTO && getOpacity() == 1.0) {
                     result.add(child);
                 } 
                 result.addAll(child.collectLayers(which));
@@ -208,14 +213,16 @@ public class Layer {
                     result.add(target);
                 } else if (which == ZERO && zIndex == 0) {
                     result.add(target);
+                } else if (target.getOpacity() < 1.0) {
+                	result.add(target);
                 }
             }
         }
         
         return result;
     }
-    
-    private List getSortedLayers(int which) {
+
+	private List getSortedLayers(int which) {
         List result = collectLayers(which);
         
         Collections.sort(result, new ZIndexComparator());
