@@ -127,7 +127,7 @@ public class Layer {
     public float getOpacity() {
     	return _master.getStyle().getOpacity();
 	}
-    
+
     public Box getMaster() {
         return _master;
     }
@@ -1122,20 +1122,20 @@ public class Layer {
             return absoluteRequiredPageNo - sequenceStartAbsolutePageNo;
         }
     }
-    
+
     private BlockBox findPageSequence(List sequences, int absY) {
         BlockBox result = null;
-        
+
         for (int i = 0; i < sequences.size(); i++) {
             result = (BlockBox) sequences.get(i);
             if ((i < sequences.size() - 1) && (((BlockBox) sequences.get(i + 1)).getAbsY() > absY)) {
                 break;
             }
         }
-        
+
         return result;
     }
-    
+
     public int getRelativePageNo(RenderingContext c) {
         List sequences = getSortedPageSequences();
         int initial = 0;
