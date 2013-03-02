@@ -101,7 +101,8 @@ public class Layer {
     public Layer(Layer parent, Box master) {
         _parent = parent;
         _master = master;
-        setStackingContext(master.getStyle().isPositioned() && !master.getStyle().isAutoZIndex());
+        setStackingContext((master.getStyle().isPositioned() && !master.getStyle().isAutoZIndex())
+                || master.getStyle().getOpacity() < 1.0);
         master.setLayer(this);
         master.setContainingLayer(this);
     }
@@ -177,7 +178,7 @@ public class Layer {
     private List collectLayers(int which) {
         List result = new ArrayList();
         
-        if (which != AUTO) {
+        if (which != AUTO || getOpacity() < 1.0) {
             result.addAll(getStackingContextLayers(which));
         }
         
@@ -186,7 +187,7 @@ public class Layer {
             Layer child = (Layer)children.get(i);
             
             if (! child.isStackingContext()) {
-                if (which == AUTO) {
+                if (which == AUTO && getOpacity() == 1.0) {
                     result.add(child);
                 } 
                 result.addAll(child.collectLayers(which));
@@ -211,6 +212,8 @@ public class Layer {
                     result.add(target);
                 } else if (which == ZERO && zIndex == 0) {
                     result.add(target);
+                } else if (target.getOpacity() < 1.0) {
+                	result.add(target);
                 }
             }
         }

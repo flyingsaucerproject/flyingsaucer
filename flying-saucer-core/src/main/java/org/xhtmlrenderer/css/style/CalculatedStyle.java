@@ -281,15 +281,7 @@ public class CalculatedStyle {
      * @return The opacity value
      */
     public float getOpacity() {
-    	CalculatedStyle parentStyle = getParent();
-    	float opacity = asFloat(CSSName.OPACITY);
-    	
-    	while(parentStyle != null) {
-    		opacity = opacity * parentStyle.asFloat(CSSName.OPACITY);
-    		parentStyle = parentStyle.getParent();
-    	}
-    	
-    	return opacity;
+    	return asFloat(CSSName.OPACITY);
     }
 
     /**
