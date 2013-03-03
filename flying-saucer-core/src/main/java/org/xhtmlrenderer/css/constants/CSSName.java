@@ -1248,6 +1248,7 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "0px",
                     NOT_INHERITED,
+                    false,
                     new PrimitivePropertyBuilders.BorderTopLeftRadius()
             );
     
@@ -1257,6 +1258,7 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "0px",
                     NOT_INHERITED,
+                    false,
                     new PrimitivePropertyBuilders.BorderTopRightRadius()
             );
 
@@ -1266,6 +1268,7 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "0px",
                     NOT_INHERITED,
+                    false,
                     new PrimitivePropertyBuilders.BorderBottomRightRadius()
             );
     
@@ -1275,6 +1278,7 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "0px",
                     NOT_INHERITED,
+                    false,
                     new PrimitivePropertyBuilders.BorderBottomLeftRadius()
             );
 
@@ -1386,6 +1390,7 @@ public final class CSSName implements Comparable {
                     SHORTHAND,
                     "0px",
                     NOT_INHERITED,
+                    false,
                     new PrimitivePropertyBuilders.BorderRadius()
             );
 
