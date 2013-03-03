@@ -1303,14 +1303,13 @@ public class PrimitivePropertyBuilders {
             checkValueCount(cssName, 1, values.size());
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-                checkNumberType(cssName, value);
-
-                if (value.getFloatValue() > 1 || value.getFloatValue() <0) {
-                    throw new CSSParseException("Opacity must be between 0 and 1.", -1);
-                }
-
-            return Collections.singletonList(
-                    new PropertyDeclaration(cssName, value, important, origin));
+            checkNumberType(cssName, value);
+            
+            if (value.getFloatValue() > 1 || value.getFloatValue() <0) {
+            	throw new CSSParseException("Opacity must be between 0 and 1.", -1);
+            }
+            
+            return Collections.singletonList(new PropertyDeclaration(cssName, value, important, origin));
         }
     }
 
