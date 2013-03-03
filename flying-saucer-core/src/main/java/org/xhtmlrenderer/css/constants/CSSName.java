@@ -1284,6 +1284,7 @@ public final class CSSName implements Comparable {
                     PRIMITIVE,
                     "0px",
                     NOT_INHERITED,
+                    false,
                     new PrimitivePropertyBuilders.BorderTopLeftRadius()
             );
 
