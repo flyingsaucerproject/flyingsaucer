@@ -1503,7 +1503,7 @@ public class PrimitivePropertyBuilders {
             checkNumberType(cssName, value);
 
             if (value.getFloatValue() > 1 || value.getFloatValue() <0) {
-                throw new CSSParseException("Opacity must be between 0 and 1.", -1);
+            	throw new CSSParseException("Opacity must be between 0 and 1.", -1);
             }
 
             return Collections.singletonList(new PropertyDeclaration(cssName, value, important, origin));
