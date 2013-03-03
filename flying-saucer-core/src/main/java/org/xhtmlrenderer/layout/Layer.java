@@ -125,7 +125,7 @@ public class Layer {
     }
     
     public float getOpacity() {
-    	return _master.getStyle().asFloat(CSSName.OPACITY);
+    	return _master.getStyle().getOpacity();
 	}
     
     public Box getMaster() {

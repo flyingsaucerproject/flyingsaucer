@@ -758,7 +758,7 @@ public final class CSSName implements Comparable {
     				"opacity",
     				PRIMITIVE,
     				"1",
-    				INHERITS,
+    				NOT_INHERITED,
     				true,
     				new PrimitivePropertyBuilders.Opacity()
     		);
