@@ -957,7 +957,7 @@ public class BoxBuilder {
                 iB.applyTextTransform();
                 iB.setElement(null);
             }
-            
+
             if (style.isTable() || style.isInlineTable() || style.isTableCell() || style.isTableRow() || style.isTableSection()) {
                 // make sure generated content uses a BlockBox
                 style = style.deriveStyle(
@@ -969,7 +969,7 @@ public class BoxBuilder {
                             StylesheetInfo.USER),
                 }));
             }
-            
+
             BlockBox result = createBlockBox(style, info, true);
             result.setStyle(style);
             result.setInlineContent(inlineBoxes);
