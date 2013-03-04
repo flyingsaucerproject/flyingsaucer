@@ -955,7 +955,19 @@ public class BoxBuilder {
                 iB.applyTextTransform();
                 iB.setElement(null);
             }
-
+            
+            if (style.isTable()) {
+            	// make sure generated content uses a BlockBox
+            	style = style.deriveStyle(
+                		CascadedStyle.createLayoutStyle(new PropertyDeclaration[] {
+                				new PropertyDeclaration(
+                                        CSSName.DISPLAY,
+                                        new PropertyValue(IdentValue.BLOCK),
+                                        true,
+                                        StylesheetInfo.USER),
+                }));
+            }
+            
             BlockBox result = createBlockBox(style, info, true);
             result.setStyle(style);
             result.setInlineContent(inlineBoxes);
