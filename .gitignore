@@ -12,7 +12,7 @@ release.properties
 */.project
 */.settings
 */bin
-.DS_Store
 .project
 .settings
+.DS_Store
 tags
