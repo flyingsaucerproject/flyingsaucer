@@ -12,3 +12,4 @@ release.properties
 */.project
 */.settings
 */bin
+.DS_Store
