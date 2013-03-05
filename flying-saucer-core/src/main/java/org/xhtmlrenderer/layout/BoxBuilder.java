@@ -908,6 +908,16 @@ public class BoxBuilder {
                 if (calculatedStyle.isIdent(CSSName.CONTENT, IdentValue.NONE)) return;
                 if (calculatedStyle.isIdent(CSSName.CONTENT, IdentValue.NORMAL) && (peName.equals("before") || peName.equals("after")))
                     return;
+
+                if (calculatedStyle.isTable() || calculatedStyle.isTableRow() || calculatedStyle.isTableSection()) {
+                    CascadedStyle newPeStyle =
+                        CascadedStyle.createLayoutStyle(peStyle, new PropertyDeclaration[] {
+                            CascadedStyle.createLayoutPropertyDeclaration(
+                                CSSName.DISPLAY,
+                                IdentValue.BLOCK),
+                        });
+                    calculatedStyle = parentStyle.deriveStyle(newPeStyle);
+                }
                 c.resolveCounters(calculatedStyle);
             }
 
