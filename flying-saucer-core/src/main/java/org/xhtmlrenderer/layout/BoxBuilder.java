@@ -958,15 +958,15 @@ public class BoxBuilder {
                 iB.setElement(null);
             }
             
-            if (style.isTable()) {
-            	// make sure generated content uses a BlockBox
-            	style = style.deriveStyle(
-                		CascadedStyle.createLayoutStyle(new PropertyDeclaration[] {
-                				new PropertyDeclaration(
-                                        CSSName.DISPLAY,
-                                        new PropertyValue(IdentValue.BLOCK),
-                                        true,
-                                        StylesheetInfo.USER),
+            if (style.isTable() || style.isInlineTable() || style.isTableCell() || style.isTableRow() || style.isTableSection()) {
+                // make sure generated content uses a BlockBox
+                style = style.deriveStyle(
+                    CascadedStyle.createLayoutStyle(new PropertyDeclaration[] {
+                        new PropertyDeclaration(
+                            CSSName.DISPLAY,
+                            new PropertyValue(IdentValue.BLOCK),
+                            true,
+                            StylesheetInfo.USER),
                 }));
             }
             
