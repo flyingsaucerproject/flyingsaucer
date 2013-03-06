@@ -57,6 +57,27 @@ public class TextUtil {
         return text;
     }
 
+    /**
+     * Description of the Method
+     *
+     * @param text   PARAM
+     * @param style
+     * @return       Returns
+     */
+    public static String transformFirstLetterText( String text, CalculatedStyle style ) {
+        if (text.length() > 0) {
+            IdentValue transform = style.getIdent( CSSName.TEXT_TRANSFORM );
+            IdentValue fontVariant = style.getIdent( CSSName.FONT_VARIANT );
+            String firstLetter = text.substring( 0, 1 );
+            if ( transform == IdentValue.LOWERCASE ) {
+                text = firstLetter.toLowerCase() + text.substring( 1 );
+            } else if ( transform == IdentValue.UPPERCASE || transform == IdentValue.CAPITALIZE || fontVariant == IdentValue.SMALL_CAPS ) {
+                text = firstLetter.toUpperCase() + text.substring( 1 );
+            }
+        }
+        return text;
+    }
+
 
     /**
      * Description of the Method
