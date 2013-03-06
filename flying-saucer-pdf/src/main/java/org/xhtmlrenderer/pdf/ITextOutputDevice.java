@@ -131,6 +131,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private Stroke _stroke = null;
     private Stroke _originalStroke = null;
     private Stroke _oldStroke = null;
+    
+    private float _opacity = 1f;
 
     private Area _clip;
 
@@ -406,12 +408,15 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
     
     public void setOpacity(float opacity) {
-    	PdfGState gs = new PdfGState();
-    	
-    	gs.setBlendMode(PdfGState.BM_NORMAL);
-    	gs.setFillOpacity(opacity);
-    	
-    	_currentPage.setGState(gs);
+    	if (opacity != _opacity) {
+    		PdfGState gs = new PdfGState();
+        	
+        	gs.setBlendMode(PdfGState.BM_NORMAL);
+        	gs.setFillOpacity(opacity);
+        	
+        	_currentPage.setGState(gs);
+        	_opacity = opacity;
+    	}
 	}
 
     public void setColor(FSColor color) {
