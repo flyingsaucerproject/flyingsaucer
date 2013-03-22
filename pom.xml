@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
+  <groupId>org.xhtmlrenderer</groupId>
+  <artifactId>flying-saucer-parent</artifactId>
+  <version>9.0.2-SNAPSHOT</version>
+
+  <packaging>pom</packaging>
+
+  <name>Flying Saucer</name>
+  <description>Flying Saucer is a CSS 2.1 renderer written in Java.  It supports Java2D, PDF, and SWT output.</description>
+
+  <url>http://code.google.com/p/flying-saucer/</url>
+
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License (LGPL), version 2.1</name>
+      <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+    </license>
+  </licenses>
+
+  <modules>
+    <module>flying-saucer-core</module>
+    <module>flying-saucer-pdf</module>
+    <module>flying-saucer-pdf-itext5</module>
+    <module>flying-saucer-log4j</module>
+    <module>flying-saucer-swt</module>
+    <module>flying-saucer-swt-examples</module>
+    <module>flying-saucer-examples</module>
+  </modules>
+
+  <scm>
+    <connection>scm:git:git://github.com/flyingsaucerproject/flyingsaucer.git</connection>
+    <developerConnection>scm:git:git@github.com:flyingsaucerproject/flyingsaucer.git</developerConnection>
+    <url>git://github.com/flyingsaucerproject/flyingsaucer.git</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>pdoubleya</id>
+      <name>Patrick Wright</name>
+      <email>pdoubleya@gmail.com</email>
+    </developer>
+    <developer>
+      <id>peter.brant</id>
+      <name>Peter Brant</name>
+      <email>peter.brant@gmail.com</email>
+    </developer>
+  </developers>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.4</source>
+          <target>1.4</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+</project>

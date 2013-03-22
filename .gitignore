@@ -4,3 +4,11 @@ build
 *.ipr
 .idea
 dist
+target
+**/*.releaseBackup
+*.releaseBackup
+release.properties
+*/.classpath
+*/.project
+*/.settings
+*/bin

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.xhtmlrenderer</groupId>
+    <artifactId>flying-saucer-parent</artifactId>
+    <version>9.0.2-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>flying-saucer-pdf</artifactId>
+
+  <packaging>jar</packaging>
+
+  <name>Flying Saucer PDF Rendering</name>
+  <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
+      <version>2.1.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xhtmlrenderer</groupId>
+      <artifactId>flying-saucer-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+</project>
