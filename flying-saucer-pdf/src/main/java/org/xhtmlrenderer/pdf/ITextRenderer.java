@@ -106,13 +106,15 @@ public class ITextRenderer {
     	this(dotsPerPoint, dotsPerPixel, "", null);
     }
     
-    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, String cookies, String baseURL) {
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, String cookie, String baseURL) {
         _dotsPerPoint = dotsPerPoint;
 
         _outputDevice = new ITextOutputDevice(_dotsPerPoint);
 
-        ITextCookieUserAgent userAgent = new ITextCookieUserAgent(_outputDevice, cookies, baseURL);
-        _sharedContext = new SharedContext(userAgent);
+        ITextUserAgent userAgent = (null != cookie && cookie.trim().length() > 0) ? new ITextCookieUserAgent(_outputDevice, cookie, baseURL) : new ITextUserAgent(_outputDevice);
+        _sharedContext = new SharedContext();
+        _sharedContext.setUserAgentCallback(userAgent);
+        _sharedContext.setCss(new StyleReference(userAgent));
         _sharedContext.setBaseURL(baseURL);
         userAgent.setSharedContext(_sharedContext);
         _outputDevice.setSharedContext(_sharedContext);

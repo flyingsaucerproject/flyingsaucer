@@ -28,4 +28,30 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <finalName>${project.artifactId}-${project.version}-shaded</finalName>
+                    <artifactSet>
+                        <includes>
+                            <include>org.xhtmlrenderer:flying-saucer-core</include>
+                            <include>org.xhtmlrenderer:flying-saucer-log4j</include>
+                        </includes>
+                    </artifactSet>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
