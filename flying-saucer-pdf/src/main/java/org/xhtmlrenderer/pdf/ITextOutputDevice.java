@@ -269,28 +269,30 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     if (target != null) {
                         PdfDestination dest = createDestination(c, target);
 
-                        PdfAction action = new PdfAction();
-                        if (!"".equals(handler.getAttributeValue(elem, "onclick"))) {
-                            action = PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
-                        } else {
-                            action.put(PdfName.S, PdfName.GOTO);
-                            action.put(PdfName.D, dest);
+                        if (dest != null) {
+                            PdfAction action = new PdfAction();
+                            if (!"".equals(handler.getAttributeValue(elem, "onclick"))) {
+                                action = PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
+                            } else {
+                                action.put(PdfName.S, PdfName.GOTO);
+                                action.put(PdfName.D, dest);
+                            }
+
+                            com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
+                            if (targetArea == null) {
+                                return;
+                            }
+
+                            targetArea.setBorder(0);
+                            targetArea.setBorderWidth(0);
+
+                            PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(),
+                                    targetArea.getRight(), targetArea.getTop(), action);
+                            annot.put(PdfName.SUBTYPE, PdfName.LINK);
+                            annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+                            annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
+                            _writer.addAnnotation(annot);
                         }
-
-                        com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
-                        if (targetArea == null) {
-                            return;
-                        }
-
-                        targetArea.setBorder(0);
-                        targetArea.setBorderWidth(0);
-
-                        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(),
-                                targetArea.getRight(), targetArea.getTop(), action);
-                        annot.put(PdfName.SUBTYPE, PdfName.LINK);
-                        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                        annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
-                        _writer.addAnnotation(annot);
                     }
                 } else if (uri.indexOf("://") != -1) {
                     PdfAction action = new PdfAction(uri);
@@ -358,13 +360,15 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     private PdfDestination createDestination(RenderingContext c, Box box) {
-        PdfDestination result;
+        PdfDestination result = null;
 
         PageBox page = _root.getLayer().getPage(c, getPageRefY(box));
-        int distanceFromTop = page.getMarginBorderPadding(c, CalculatedStyle.TOP);
-        distanceFromTop += box.getAbsY() + box.getMargin(c).top() - page.getTop();
-        result = new PdfDestination(PdfDestination.XYZ, 0, page.getHeight(c) / _dotsPerPoint - distanceFromTop / _dotsPerPoint, 0);
-        result.addPage(_writer.getPageReference(_startPageNo + page.getPageNo() + 1));
+        if (page != null) {
+            int distanceFromTop = page.getMarginBorderPadding(c, CalculatedStyle.TOP);
+            distanceFromTop += box.getAbsY() + box.getMargin(c).top() - page.getTop();
+            result = new PdfDestination(PdfDestination.XYZ, 0, page.getHeight(c) / _dotsPerPoint - distanceFromTop / _dotsPerPoint, 0);
+            result.addPage(_writer.getPageReference(_startPageNo + page.getPageNo() + 1));
+        }
 
         return result;
     }
@@ -953,8 +957,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
                     Box targetBox = (Box) entry.getValue();
                     PdfDestination dest = createDestination(c, targetBox);
-                    PdfIndirectReference ref = _writer.addToBody(dest).getIndirectReference();
-                    dests.add(ref);
+                    if (dest != null) {
+                        PdfIndirectReference ref = _writer.addToBody(dest).getIndirectReference();
+                        dests.add(ref);
+                    }
                 }
 
                 PdfDictionary nametree = new PdfDictionary();
