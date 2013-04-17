@@ -18,6 +18,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.text.BreakIterator;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -214,7 +216,10 @@ public class InlineBox implements Styleable {
         
         String text = getText(trimLeadingSpace);
         
-        while ( (current = text.indexOf(WhitespaceStripper.SPACE, last)) != -1) {
+        BreakIterator iterator = BreakIterator.getLineInstance();
+        iterator.setText(text);
+        
+        while ( (current = iterator.next()) != -1) {
             int length = getTextWidth(c, text.substring(last, current));
             if (spaceCount > 0) {
                 if (includeWS) {
