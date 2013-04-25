@@ -831,17 +831,18 @@ public class InlineBoxing {
 
     private static InlineText layoutText(LayoutContext c, CalculatedStyle style, int remainingWidth,
                                          LineBreakContext lbContext, boolean needFirstLetter) {
-        InlineText result = null;
-
-        result = new InlineText();
-        result.setMasterText(lbContext.getMaster());
-        result.setTextNode(lbContext.getTextNode());
+        InlineText result = new InlineText();
+        String masterText = lbContext.getMaster();
         if (needFirstLetter) {
+            masterText = TextUtil.transformFirstLetterText(masterText, style);
+            lbContext.setMaster(masterText);
             Breaker.breakFirstLetter(c, lbContext, remainingWidth, style);
         } else {
             Breaker.breakText(c, lbContext, remainingWidth, style);
         }
 
+        result.setMasterText(masterText);
+        result.setTextNode(lbContext.getTextNode());
         result.setSubstring(lbContext.getStart(), lbContext.getEnd());
         result.setWidth(lbContext.getWidth());
 
