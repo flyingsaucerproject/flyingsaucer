@@ -57,6 +57,75 @@ public class TextUtil {
         return text;
     }
 
+    /**
+     * Description of the Method
+     *
+     * @param text   PARAM
+     * @param style
+     * @return       Returns
+     */
+    public static String transformFirstLetterText( String text, CalculatedStyle style ) {
+        if (text.length() > 0) {
+            IdentValue transform = style.getIdent( CSSName.TEXT_TRANSFORM );
+            IdentValue fontVariant = style.getIdent( CSSName.FONT_VARIANT );
+            char currentChar;
+            for ( int i = 0, end = text.length(); i < end; i++ ) {
+                currentChar = text.charAt(i);
+                if ( !isFirstLetterSeparatorChar( currentChar ) ) {
+                    if ( transform == IdentValue.LOWERCASE ) {
+                        currentChar = Character.toLowerCase( currentChar );
+                        text = replaceChar( text, currentChar, i );
+                    } else if ( transform == IdentValue.UPPERCASE || transform == IdentValue.CAPITALIZE || fontVariant == IdentValue.SMALL_CAPS ) {
+                        currentChar = Character.toUpperCase( currentChar );
+                        text = replaceChar( text, currentChar, i );
+                    }
+                    break;
+                }
+            }
+        }
+        return text;
+    }
+
+    /**
+     * Replace character at the specified index by another.
+     *
+     * @param text    Source text
+     * @param newChar Replacement character
+     * @return        Returns the new text
+     */
+    public static String replaceChar( String text, char newChar, int index ) {
+        int textLength = text.length();
+        StringBuilder b = new StringBuilder(textLength);
+        for (int i = 0; i < textLength; i++) {
+            if (i == index) {
+                b.append(newChar);
+            } else {
+                b.append(text.charAt(i));
+            }
+        }
+        return b.toString();
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param c     PARAM
+     * @return      Returns
+     */
+    public static boolean isFirstLetterSeparatorChar( char c ) {
+        switch (Character.getType(c)) {
+            case Character.START_PUNCTUATION:
+            case Character.END_PUNCTUATION:
+            case Character.INITIAL_QUOTE_PUNCTUATION:
+            case Character.FINAL_QUOTE_PUNCTUATION:
+            case Character.OTHER_PUNCTUATION:
+            case Character.SPACE_SEPARATOR:
+                return true;
+            default:
+                return false;
+        }
+    }
+
 
     /**
      * Description of the Method
