@@ -1088,7 +1088,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     /**
      * Appends a name/content metadata pair to this output device. A name or
      * content value of null will be ignored.
-     * 
+     *
      * @param name
      *            the name of the metadata element to add.
      * @return the content value for this metadata.
@@ -1104,7 +1104,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
      * Searches the metadata name/content pairs of the current document and
      * returns the content value from the first pair with a matching name. The
      * search is case insensitive.
-     * 
+     *
      * @param name
      *            the metadata element name to locate.
      * @return the content value of the first found metadata element; otherwise
@@ -1126,7 +1126,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
      * Searches the metadata name/content pairs of the current document and
      * returns any content values with a matching name in an ArrayList. The
      * search is case insensitive.
-     * 
+     *
      * @param name
      *            the metadata element name to locate.
      * @return an ArrayList with matching content values; otherwise an empty
@@ -1149,7 +1149,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
      * Locates and stores all metadata values in the document head that contain
      * name/content pairs. If there is no pair with a name of "title", any
      * content in the title element is saved as a "title" metadata item.
-     * 
+     *
      * @param doc
      *            the Document level node of the parsed xhtml file.
      */
@@ -1186,7 +1186,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
      * value of null will result in the removal of all copies of the named
      * metadata. Use <code>addMetadata</code> to append additional values with
      * the same name.
-     * 
+     *
      * @param name
      *            the metadata element name to locate.
      * @return the new content value for this metadata (null to remove all
