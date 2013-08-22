@@ -219,10 +219,15 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                 backgroundImage == null) {
             return;
         }
+        
+        Shape borderBounds = BorderPainter.generateBorderBounds(backgroundBounds, border, false);
 
+        Shape oldclip = getClip();
+        setClip(borderBounds);
+        
         if (backgroundColor != null && backgroundColor != FSRGBColor.TRANSPARENT) {
             setColor(backgroundColor);
-            fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
+            fill(borderBounds);
         }
 
         if (backgroundImage != null) {
@@ -238,10 +243,6 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                 xoff += (int)border.left();
                 yoff += (int)border.top();
             }
-
-            Shape oldclip = getClip();
-
-            clip(backgroundBounds);
 
             scaleBackgroundImage(c, style, localBGImageContainer, backgroundImage);
 
@@ -291,8 +292,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                 }
             }
 
-            setClip(oldclip);
         }
+        setClip(oldclip);
     }
 
     private int adjustTo(int target, int current, int imageDim) {

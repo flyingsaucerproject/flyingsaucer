@@ -362,8 +362,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return result;
     }
 
-    public void drawBorderLine(Rectangle bounds, int side, int lineWidth, boolean solid) {
-        float x = bounds.x;
+    public void drawBorderLine(Shape bounds, int side, int lineWidth, boolean solid) {
+        /*float x = bounds.x;
         float y = bounds.y;
         float w = bounds.width;
         float h = bounds.height;
@@ -391,9 +391,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 offset += 1;
             }
             line = new Line2D.Float(x + adj, y + h - offset + adj2, x + w - adj, y + h - offset + adj2);
-        }
+        }*/
 
-        draw(line);
+        draw(bounds);
     }
 
     public void setColor(FSColor color) {
@@ -408,7 +408,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
 
-    private void draw(Shape s) {
+    public void draw(Shape s) {
         followPath(s, STROKE);
     }
 
