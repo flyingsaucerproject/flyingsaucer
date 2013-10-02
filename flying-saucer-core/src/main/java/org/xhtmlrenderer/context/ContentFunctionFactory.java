@@ -152,8 +152,8 @@ public class ContentFunctionFactory {
                 String anchor = uri.substring(1);
                 Box target = c.getBoxById(anchor);
                 if (target != null) {
-                    PageBox targetPage = c.getRootLayer().getPage(c, target.getAbsY());
-                    return CounterFunction.createCounterText(IdentValue.DECIMAL, targetPage.getPageNo()+1);
+                    int pageNo = c.getRootLayer().getRelativePageNo(c, target.getAbsY());
+                    return CounterFunction.createCounterText(IdentValue.DECIMAL, pageNo + 1);
                 }
             }
             return "";

@@ -1100,6 +1100,35 @@ public class Layer {
         return _sortedPageSequences;
     }
     
+    public int getRelativePageNo(RenderingContext c, int absY) {
+        List sequences = getSortedPageSequences();
+        int initial = 0;
+        if (c.getInitialPageNo() > 0) {
+            initial = c.getInitialPageNo() - 1;
+        }
+        if ((sequences == null) || sequences.isEmpty()) {
+            return initial + getPage(c, absY).getPageNo();
+        } else {
+            BlockBox pageSequence = findPageSequence(sequences, absY);
+            int sequenceStartAbsolutePageNo = getPage(c, pageSequence.getAbsY()).getPageNo();
+            int absoluteRequiredPageNo = getPage(c, absY).getPageNo();
+            return absoluteRequiredPageNo - sequenceStartAbsolutePageNo;
+        }
+    }
+    
+    private BlockBox findPageSequence(List sequences, int absY) {
+        BlockBox result = null;
+        
+        for (int i = 0; i < sequences.size(); i++) {
+            result = (BlockBox) sequences.get(i);
+            if ((i < sequences.size() - 1) && (((BlockBox) sequences.get(i + 1)).getAbsY() > absY)) {
+                break;
+            }
+        }
+        
+        return result;
+    }
+    
     public int getRelativePageNo(RenderingContext c) {
         List sequences = getSortedPageSequences();
         int initial = 0;
