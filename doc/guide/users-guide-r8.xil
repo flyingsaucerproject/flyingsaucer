@@ -604,15 +604,15 @@ import com.lowagie.text.pdf.BaseFont;
 ITextRenderer renderer = new ITextRenderer();
 FontResolver resolver = renderer.getFontResolver();
 resolver.addFont (
-    "C:\\WINNT\\Fonts\\ARIALUNI.TTF", 
+    "C:\\WINNT\\Fonts\\ARIALUNI.TTF", // or "/my/absolute/path/ARIALUNI.TTF" for linux etc.
     BaseFont.IDENTITY_H,
-    BaseFont.NOT_EMBEDDED
+    BaseFont.EMBEDDED // embedding the font ensures proper display on any user's machine 
 );
 }}
 
 where the font supports Unicode characters (in this example). The @BaseFont@ class in the example comes from the iText library, which you'll of course need in your classpath when compiling.
 
-_Thanks for Manos Bastis for contributing this info and patches._
+_Thanks to "Manos Batsis":http://github.com/manosbatsis for contributing this info and patches._
 
 
 h4(fs_heading). How do you control page size? 
