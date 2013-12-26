@@ -149,20 +149,35 @@ public class Java2DRenderer {
 	}
    
    
-    /**
-     * Creates a new instance pointing to the given Document. Does not render until {@link #getImage(int)} is called for
-     * the first time.
-     *
-     * @param doc The document to be rendered.
-     * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-     * @param height Target height, in pixels, for the image.
-     */
-    public Java2DRenderer(Document doc, int width, int height) {
-        this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
-        this.doc = doc;
-        this.width = width;
-        this.height = height;
-    }
+        /**
+         * Creates a new instance pointing to the given Document. Does not render until {@link #getImage(int)} is called for
+         * the first time.
+         *
+         * @param doc The document to be rendered.
+         * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+         * @param height Target height, in pixels, for the image.
+         */
+        public Java2DRenderer(Document doc, int width, int height) {
+            this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
+            this.doc = doc;
+            this.width = width;
+            this.height = height;
+        }
+
+
+        /**
+         * Creates a new instance pointing to the given Document. Does not render until {@link #getImage(int)} is called for
+         * the first time.
+         *
+         * @param doc The document to be rendered.
+         * @param baseUrl The base url for the document, against which  relative paths are resolved.
+         * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+         * @param height Target height, in pixels, for the image.
+         */
+        public Java2DRenderer(Document doc, String baseUrl, int width, int height) {
+            this(doc, width, height);
+            this.sourceDocumentBase = baseUrl;
+        }
 
 	/**
 	 * Creates a new instance for a given File. Does not render until {@link #getImage(int)} is called for

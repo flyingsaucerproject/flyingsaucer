@@ -69,7 +69,18 @@ public abstract class AWTFSImage implements FSImage {
         }
 
         public void scale(int width, int height) {
-            ImageUtil.getScaledInstance(img, width, height);
+            int targetWidth = width;
+            int targetHeight = height;
+
+            if (targetWidth == -1) {
+                targetWidth = (int)(getWidth() * ((double)targetHeight / getHeight()));
+            }
+
+            if (targetHeight == -1) {
+                targetHeight = (int)(getHeight() * ((double)targetWidth / getWidth()));
+            }
+
+            img = ImageUtil.getScaledInstance(img, targetWidth, targetHeight);
         }
     }
 
