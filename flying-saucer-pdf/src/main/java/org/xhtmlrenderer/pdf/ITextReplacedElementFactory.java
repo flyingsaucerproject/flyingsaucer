@@ -58,11 +58,11 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 
 		String nodeName = e.getNodeName();
 		if (nodeName.equals("img")) {
-                    String attribute = e.getAttribute("src");
-                    FSImage fsImage = buildImage(attribute, uac, cssWidth, cssHeight, c.getDotsPerPixel());
-                    if (fsImage != null) {
-                        return new ITextImageElement(fsImage);
-                    }
+			String attribute = e.getAttribute("src");
+			FSImage fsImage = buildImage(attribute, uac, cssWidth, cssHeight, c.getDotsPerPixel());
+			if (fsImage != null) {
+				return new ITextImageElement(fsImage);
+			}
                     
 		} else if (nodeName.equals("input")) {
 			String type = e.getAttribute("type");
@@ -101,37 +101,37 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
 		return null;
 	}
 	
-        private FSImage buildImage(String srcAttr, UserAgentCallback uac, int cssWidth, int cssHeight, int dotsPerPixel) {
-            FSImage fsImage = null;
-            if (srcAttr != null && srcAttr.length() > 0) {
-                try {
-                    int targetWidth = cssWidth;
-                    int targetHeight = cssHeight;
-                    if (srcAttr.startsWith("data:image/")) {
-                        int b64Index = srcAttr.indexOf("base64,");
-                        if (b64Index != -1) {
-                            String b64encoded = srcAttr.substring(b64Index + "base64,".length(), srcAttr.length());
-                            byte[] decodedBytes = DatatypeConverter.parseBase64Binary(b64encoded);
-                            fsImage = new ITextFSImage(Image.getInstance(decodedBytes));
-                            if (targetWidth == -1 && targetHeight == -1) {
-                                targetWidth = fsImage.getWidth() * dotsPerPixel;
-                                targetHeight = fsImage.getHeight() * dotsPerPixel;
-                            }
-                        } else {
-                            XRLog.load(Level.SEVERE, "Embedded XHTML images must be encoded in base 64.");
-                            return null;
-                        }
-                    } else {
-                        fsImage = uac.getImageResource(srcAttr).getImage();
-                    }
-                    if (targetWidth != -1 || targetHeight != -1) {
-                        fsImage.scale(targetWidth, targetHeight);
-                    }
-                } catch (Exception e) {
-                    XRLog.exception("Can't read XHTML embedded image", e);
-                }
-            }
-            return fsImage;
+	private FSImage buildImage(String srcAttr, UserAgentCallback uac, int cssWidth, int cssHeight, int dotsPerPixel) {
+		FSImage fsImage = null;
+		if (srcAttr != null && srcAttr.length() > 0) {
+			try {
+				int targetWidth = cssWidth;
+				int targetHeight = cssHeight;
+				if (srcAttr.startsWith("data:image/")) {
+					int b64Index = srcAttr.indexOf("base64,");
+					if (b64Index != -1) {
+						String b64encoded = srcAttr.substring(b64Index + "base64,".length(), srcAttr.length());
+						byte[] decodedBytes = DatatypeConverter.parseBase64Binary(b64encoded);
+						fsImage = new ITextFSImage(Image.getInstance(decodedBytes));
+						if (targetWidth == -1 && targetHeight == -1) {
+							targetWidth = fsImage.getWidth() * dotsPerPixel;
+							targetHeight = fsImage.getHeight() * dotsPerPixel;
+						}
+					} else {
+						XRLog.load(Level.SEVERE, "Embedded XHTML images must be encoded in base 64.");
+						return null;
+					}
+				} else {
+					fsImage = uac.getImageResource(srcAttr).getImage();
+				}
+				if (targetWidth != -1 || targetHeight != -1) {
+					fsImage.scale(targetWidth, targetHeight);
+				}
+			} catch (Exception e) {
+				XRLog.exception("Can't read XHTML embedded image.", e);
+			}
+		}
+		return fsImage;
         }
 
 	private boolean isTextarea(Element e) {
