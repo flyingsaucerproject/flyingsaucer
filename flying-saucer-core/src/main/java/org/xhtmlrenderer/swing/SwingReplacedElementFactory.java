@@ -37,10 +37,14 @@ import org.xhtmlrenderer.resource.ImageResource;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * A ReplacedElementFactory where Elements are replaced by Swing components.
@@ -138,17 +142,39 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * @return
      */
     protected ReplacedElement replaceImage(UserAgentCallback uac, LayoutContext context, Element elem, int cssWidth, int cssHeight) {
-        ReplacedElement re;
+        ReplacedElement re = null;
 
         // lookup in cache, or instantiate
         String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
-        String ruri = uac.resolveURI(imageSrc);
-        re = lookupImageReplacedElement(elem, ruri, cssWidth, cssHeight);
-        if (re == null) {
-            if (imageSrc == null || imageSrc.length() == 0) {
-                XRLog.layout(Level.WARNING, "No source provided for img element.");
-                re = newIrreplaceableImageElement(cssWidth, cssHeight);
-            } else {
+        
+        if (imageSrc == null || imageSrc.length() == 0) {
+            XRLog.layout(Level.WARNING, "No source provided for img element.");
+            re = newIrreplaceableImageElement(cssWidth, cssHeight);
+        } else if (imageSrc.startsWith("data:image/")) {
+            try {
+                int b64Index = imageSrc.indexOf("base64,");
+                if (b64Index != -1) {
+                    int targetWidth = cssWidth;
+                    int targetHeight = cssHeight;
+                    String b64encoded = imageSrc.substring(b64Index + "base64,".length(), imageSrc.length());
+                    byte[] decodedBytes = DatatypeConverter.parseBase64Binary(b64encoded);
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(decodedBytes));
+                    if (targetWidth == -1 && targetHeight == -1) {
+                        int dotsPerPixel = context.getDotsPerPixel();
+                        targetWidth = image.getWidth() * dotsPerPixel;
+                        targetHeight = image.getHeight() * dotsPerPixel;
+                    }
+                    re = new ImageReplacedElement(image, targetWidth, targetHeight);
+                } else {
+                    XRLog.load(Level.SEVERE, "Embedded XHTML images must be encoded in base 64.");
+                }
+            } catch (IOException ex) {
+                XRLog.exception("Can't read XHTML embedded image", ex);
+            }
+        } else {
+            String ruri = uac.resolveURI(imageSrc);
+            re = lookupImageReplacedElement(elem, ruri, cssWidth, cssHeight);
+            if (re == null) {
                 XRLog.load(Level.FINE, "Swing: Image " + ruri + " requested at "+ " to " + cssWidth + ", " + cssHeight);
                 ImageResource imageResource = imageResourceLoader.get(ruri, cssWidth, cssHeight);
                 if (imageResource.isLoaded()) {
@@ -156,8 +182,8 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
                 } else {
                     re = new DeferredImageReplacedElement(imageResource, repaintListener, cssWidth, cssHeight);
                 }
+                storeImageReplacedElement(elem, re, ruri, cssWidth, cssHeight);
             }
-            storeImageReplacedElement(elem, re, ruri, cssWidth, cssHeight);
         }
         return re;
     }
