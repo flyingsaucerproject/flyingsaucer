@@ -33,6 +33,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.DefaultFormSubmissionListener;
+import org.xhtmlrenderer.util.ImageUtil;
 
 /**
  * 
@@ -90,18 +91,20 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
     protected ReplacedElement replaceImage(UserAgentCallback uac,
             LayoutContext context, Element elem, int cssWidth, int cssHeight) {
         ReplacedElement re = null;
-
-        // lookup in cache, or instantiate
-        re = lookupImageReplacedElement(elem);
-        if (re == null) {
-            String imageSrc = context.getNamespaceHandler().getImageSourceURI(
-                elem);
-            if (imageSrc == null || imageSrc.length() == 0) {
-                XRLog.layout(Level.WARNING,
-                    "No source provided for img element.");
-                re = new ImageReplacedElement(new SWTFSImage(), cssWidth,
-                    cssHeight);
-            } else {
+        String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
+        
+        if (imageSrc == null || imageSrc.length() == 0) {
+            XRLog.layout(Level.WARNING, "No source provided for img element.");
+            re = new ImageReplacedElement(new SWTFSImage(), cssWidth, cssHeight);
+        } else if (ImageUtil.isEmbeddedBase64Image(imageSrc)) {
+            SWTFSImage fsImage = (SWTFSImage) uac.getImageResource(imageSrc).getImage();
+            if (fsImage != null) {
+                re = new ImageReplacedElement(fsImage, cssWidth, cssHeight);
+            }
+        } else {
+            // lookup in cache, or instantiate
+            re = lookupImageReplacedElement(elem);
+            if (re == null) {
                 FSImage fsImage = uac.getImageResource(imageSrc).getImage();
                 if (fsImage != null) {
                     re = new ImageReplacedElement(new SWTFSImage(
@@ -111,8 +114,8 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
                     re = new ImageReplacedElement(new SWTFSImage(), cssWidth,
                         cssHeight);
                 }
+                storeImageReplacedElement(elem, re);
             }
-            storeImageReplacedElement(elem, re);
         }
         return re;
     }
