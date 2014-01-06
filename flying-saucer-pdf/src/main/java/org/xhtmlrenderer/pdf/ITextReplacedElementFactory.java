@@ -19,14 +19,11 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.Image;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import javax.xml.bind.DatatypeConverter;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,165 +34,136 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
-import org.xhtmlrenderer.util.XRLog;
 
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
-	private ITextOutputDevice _outputDevice;
+    private ITextOutputDevice _outputDevice;
 
-	private Map _radioButtonsByElem = new HashMap();
-	private Map _radioButtonsByName = new HashMap();
+    private Map _radioButtonsByElem = new HashMap();
+    private Map _radioButtonsByName = new HashMap();
 
-	public ITextReplacedElementFactory(ITextOutputDevice outputDevice) {
-		_outputDevice = outputDevice;
-	}
+    public ITextReplacedElementFactory(ITextOutputDevice outputDevice) {
+        _outputDevice = outputDevice;
+    }
 
-	public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
-			UserAgentCallback uac, int cssWidth, int cssHeight) {
-		Element e = box.getElement();
-		if (e == null) {
-			return null;
-		}
-
-		String nodeName = e.getNodeName();
-		if (nodeName.equals("img")) {
-			String attribute = e.getAttribute("src");
-			FSImage fsImage = buildImage(attribute, uac, cssWidth, cssHeight, c.getDotsPerPixel());
-			if (fsImage != null) {
-				return new ITextImageElement(fsImage);
-			}
-                    
-		} else if (nodeName.equals("input")) {
-			String type = e.getAttribute("type");
-			if (type.equals("hidden")) {
-			  return new EmptyReplacedElement(1, 1);
-			} else if (type.equals("checkbox")) {
-				return new CheckboxFormField(c, box, cssWidth, cssHeight);
-			} else if (type.equals("radio")) {
-        //TODO finish support for Radio button
-				//RadioButtonFormField result = new RadioButtonFormField(
-			  //			this, c, box, cssWidth, cssHeight);
-		    //		saveResult(e, result);
-				//return result;
-        return new EmptyReplacedElement(0, 0);
-
-			} else {
-				return new TextFormField(c, box, cssWidth, cssHeight);
-			}
-      		/*
-		} else if (nodeName.equals("select")) {//TODO Support select
-		    return new SelectFormField(c, box, cssWidth, cssHeight);
-		} else if (isTextarea(e)) {//TODO Review if this is needed the textarea item prints fine currently
-		    return new TextAreaFormField(c, box, cssWidth, cssHeight);
-		*/
-		} else if (nodeName.equals("bookmark")) {
-			// HACK Add box as named anchor and return placeholder
-			BookmarkElement result = new BookmarkElement();
-			if (e.hasAttribute("name")) {
-				String name = e.getAttribute("name");
-				c.addBoxId(name, box);
-				result.setAnchorName(name);
-			}
-			return result;
-		}
-
-		return null;
-	}
-	
-	private FSImage buildImage(String srcAttr, UserAgentCallback uac, int cssWidth, int cssHeight, int dotsPerPixel) {
-		FSImage fsImage = null;
-		if (srcAttr != null && srcAttr.length() > 0) {
-			try {
-				int targetWidth = cssWidth;
-				int targetHeight = cssHeight;
-				if (srcAttr.startsWith("data:image/")) {
-					int b64Index = srcAttr.indexOf("base64,");
-					if (b64Index != -1) {
-						String b64encoded = srcAttr.substring(b64Index + "base64,".length(), srcAttr.length());
-						byte[] decodedBytes = DatatypeConverter.parseBase64Binary(b64encoded);
-						fsImage = new ITextFSImage(Image.getInstance(decodedBytes));
-						if (targetWidth == -1 && targetHeight == -1) {
-							targetWidth = fsImage.getWidth() * dotsPerPixel;
-							targetHeight = fsImage.getHeight() * dotsPerPixel;
-						}
-					} else {
-						XRLog.load(Level.SEVERE, "Embedded XHTML images must be encoded in base 64.");
-						return null;
-					}
-				} else {
-					fsImage = uac.getImageResource(srcAttr).getImage();
-				}
-				if (targetWidth != -1 || targetHeight != -1) {
-					fsImage.scale(targetWidth, targetHeight);
-				}
-			} catch (Exception e) {
-				XRLog.exception("Can't read XHTML embedded image.", e);
-			}
-		}
-		return fsImage;
+    public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
+            UserAgentCallback uac, int cssWidth, int cssHeight) {
+        Element e = box.getElement();
+        if (e == null) {
+            return null;
         }
 
-	private boolean isTextarea(Element e) {
-	    if (! e.getNodeName().equals("textarea")) {
-	        return false;
-	    }
-	    
-	    Node n = e.getFirstChild();
-	    while (n != null) {
-	        short nodeType = n.getNodeType();
-	        if (nodeType != Node.TEXT_NODE && nodeType != Node.CDATA_SECTION_NODE) {
-	            return false;
-	        }
-	    }
-	    
-	    return true;
-	}
+        String nodeName = e.getNodeName();
+        if (nodeName.equals("img")) {
+            String srcAttr = e.getAttribute("src");
+            if (srcAttr != null && srcAttr.length() > 0) {
+                FSImage fsImage = uac.getImageResource(srcAttr).getImage();
+                if (fsImage != null) {
+                    if (cssWidth != -1 || cssHeight != -1) {
+                        fsImage.scale(cssWidth, cssHeight);
+                    }
+                    return new ITextImageElement(fsImage);
+                }                    
+            }
 
-	private void saveResult(Element e, RadioButtonFormField result) {
-		_radioButtonsByElem.put(e, result);
+        } else if (nodeName.equals("input")) {
+            String type = e.getAttribute("type");
+            if (type.equals("hidden")) {
+                return new EmptyReplacedElement(1, 1);
+            } else if (type.equals("checkbox")) {
+                return new CheckboxFormField(c, box, cssWidth, cssHeight);
+            } else if (type.equals("radio")) {
+                //TODO finish support for Radio button
+                //RadioButtonFormField result = new RadioButtonFormField(
+                //			this, c, box, cssWidth, cssHeight);
+                //		saveResult(e, result);
+                //return result;
+                return new EmptyReplacedElement(0, 0);
 
-		String fieldName = result.getFieldName(_outputDevice, e);
-		List fields = (List)_radioButtonsByName.get(fieldName);
-		if (fields == null) {
-			fields = new ArrayList();
-			_radioButtonsByName.put(fieldName, fields);
-		}
-		fields.add(result);
-	}
+            } else {
+                return new TextFormField(c, box, cssWidth, cssHeight);
+            }
+            /*
+             } else if (nodeName.equals("select")) {//TODO Support select
+             return new SelectFormField(c, box, cssWidth, cssHeight);
+             } else if (isTextarea(e)) {//TODO Review if this is needed the textarea item prints fine currently
+             return new TextAreaFormField(c, box, cssWidth, cssHeight);
+             */
+        } else if (nodeName.equals("bookmark")) {
+            // HACK Add box as named anchor and return placeholder
+            BookmarkElement result = new BookmarkElement();
+            if (e.hasAttribute("name")) {
+                String name = e.getAttribute("name");
+                c.addBoxId(name, box);
+                result.setAnchorName(name);
+            }
+            return result;
+        }
 
-	public void reset() {
-		_radioButtonsByElem = new HashMap();
-		_radioButtonsByName = new HashMap();
-	}
+        return null;
+    }
 
-	public void remove(Element e) {
-		RadioButtonFormField field = (RadioButtonFormField)_radioButtonsByElem.remove(e);
-		if (field != null) {
-			String fieldName = field.getFieldName(_outputDevice, e);
-			List values = (List)_radioButtonsByName.get(fieldName);
-			if (values != null) {
-				values.remove(field);
-				if (values.size() == 0) {
-					_radioButtonsByName.remove(fieldName);
-				}
-			}
-		}
-	}
+    private boolean isTextarea(Element e) {
+        if (!e.getNodeName().equals("textarea")) {
+            return false;
+        }
 
-	public void remove(String fieldName) {
-		List values = (List)_radioButtonsByName.get(fieldName);
-		if (values != null) {
-			for (Iterator i = values.iterator(); i.hasNext();) {
-				RadioButtonFormField field = (RadioButtonFormField)i.next();
-				_radioButtonsByElem.remove(field.getBox().getElement());
-			}
-		}
+        Node n = e.getFirstChild();
+        while (n != null) {
+            short nodeType = n.getNodeType();
+            if (nodeType != Node.TEXT_NODE && nodeType != Node.CDATA_SECTION_NODE) {
+                return false;
+            }
+        }
 
-		_radioButtonsByName.remove(fieldName);
-	}
+        return true;
+    }
 
-	public List getRadioButtons(String name) {
-		return (List)_radioButtonsByName.get(name);
-	}
+    private void saveResult(Element e, RadioButtonFormField result) {
+        _radioButtonsByElem.put(e, result);
+
+        String fieldName = result.getFieldName(_outputDevice, e);
+        List fields = (List) _radioButtonsByName.get(fieldName);
+        if (fields == null) {
+            fields = new ArrayList();
+            _radioButtonsByName.put(fieldName, fields);
+        }
+        fields.add(result);
+    }
+
+    public void reset() {
+        _radioButtonsByElem = new HashMap();
+        _radioButtonsByName = new HashMap();
+    }
+
+    public void remove(Element e) {
+        RadioButtonFormField field = (RadioButtonFormField) _radioButtonsByElem.remove(e);
+        if (field != null) {
+            String fieldName = field.getFieldName(_outputDevice, e);
+            List values = (List) _radioButtonsByName.get(fieldName);
+            if (values != null) {
+                values.remove(field);
+                if (values.size() == 0) {
+                    _radioButtonsByName.remove(fieldName);
+                }
+            }
+        }
+    }
+
+    public void remove(String fieldName) {
+        List values = (List) _radioButtonsByName.get(fieldName);
+        if (values != null) {
+            for (Iterator i = values.iterator(); i.hasNext();) {
+                RadioButtonFormField field = (RadioButtonFormField) i.next();
+                _radioButtonsByElem.remove(field.getBox().getElement());
+            }
+        }
+
+        _radioButtonsByName.remove(fieldName);
+    }
+
+    public List getRadioButtons(String name) {
+        return (List) _radioButtonsByName.get(name);
+    }
 
     public void setFormSubmissionListener(FormSubmissionListener listener) {
         // nothing to do, form submission is handled by pdf readers

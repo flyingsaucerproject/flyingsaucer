@@ -34,6 +34,7 @@ import org.xhtmlrenderer.util.XRLog;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfReader;
+import org.xhtmlrenderer.util.ImageUtil;
 
 public class ITextUserAgent extends NaiveUserAgent {
     private static final int IMAGE_CACHE_CAPACITY = 32;
@@ -60,51 +61,67 @@ public class ITextUserAgent extends NaiveUserAgent {
 
     public ImageResource getImageResource(String uri) {
         ImageResource resource = null;
-        uri = resolveURI(uri);
-        resource = (ImageResource) _imageCache.get(uri);
-        if (resource == null) {
-            InputStream is = resolveAndOpenStream(uri);
-            if (is != null) {
-                try {
-                    URL url = new URL(uri);
-                    if (url.getPath() != null &&
-                            url.getPath().toLowerCase().endsWith(".pdf")) {
-                        PdfReader reader = _outputDevice.getReader(url);
-                        PDFAsImage image = new PDFAsImage(url);
-                        Rectangle rect = reader.getPageSizeWithRotation(1);
-                        image.setInitialWidth(rect.getWidth()*_outputDevice.getDotsPerPoint());
-                        image.setInitialHeight(rect.getHeight()*_outputDevice.getDotsPerPoint());
-                        resource = new ImageResource(uri, image);
-                    } else {
-	                    Image image = Image.getInstance(readStream(is));
-	                    scaleToOutputResolution(image);
-	                    resource = new ImageResource(uri, new ITextFSImage(image));
-                    }
-                    _imageCache.put(uri, resource);
-                } catch (Exception e) {
-                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
-                } finally {
+        if (ImageUtil.isEmbeddedBase64Image(uri)) {
+            resource = loadEmbeddedBase64ImageResource(uri);
+        } else {
+            uri = resolveURI(uri);
+            resource = (ImageResource) _imageCache.get(uri);
+            if (resource == null) {
+                InputStream is = resolveAndOpenStream(uri);
+                if (is != null) {
                     try {
-                        is.close();
-                    } catch (IOException e) {
-                        // ignore
+                        URL url = new URL(uri);
+                        if (url.getPath() != null && url.getPath().toLowerCase().endsWith(".pdf")) {
+                            PdfReader reader = _outputDevice.getReader(url);
+                            PDFAsImage image = new PDFAsImage(url);
+                            Rectangle rect = reader.getPageSizeWithRotation(1);
+                            image.setInitialWidth(rect.getWidth() * _outputDevice.getDotsPerPoint());
+                            image.setInitialHeight(rect.getHeight() * _outputDevice.getDotsPerPoint());
+                            resource = new ImageResource(uri, image);
+                        } else {
+                            Image image = Image.getInstance(readStream(is));
+                            scaleToOutputResolution(image);
+                            resource = new ImageResource(uri, new ITextFSImage(image));
+                        }
+                        _imageCache.put(uri, resource);
+                    } catch (Exception e) {
+                        XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
+                    } finally {
+                        try {
+                            is.close();
+                        } catch (IOException e) {
+                            // ignore
+                        }
                     }
                 }
             }
-        }
 
-        if (resource != null) {
-            resource = new ImageResource(resource.getImageUri(), (FSImage)((ITextFSImage)resource.getImage()).clone());
-        } else {
-            resource = new ImageResource(uri, null);
+            if (resource != null) {
+                resource = new ImageResource(resource.getImageUri(), (FSImage) ((ITextFSImage) resource.getImage()).clone());
+            } else {
+                resource = new ImageResource(uri, null);
+            }
         }
-
         return resource;
+    }
+    
+    private ImageResource loadEmbeddedBase64ImageResource(final String uri) {
+        try {
+            byte[] buffer = ImageUtil.getEmbeddedBase64Image(uri);
+            Image image = Image.getInstance(buffer);
+            scaleToOutputResolution(image);
+            return new ImageResource(null, new ITextFSImage(image));
+        } catch (Exception e) {
+            XRLog.exception("Can't read XHTML embedded image.", e);
+        }
+        return new ImageResource(null, null);
     }
 
     private void scaleToOutputResolution(Image image) {
         float factor = _sharedContext.getDotsPerPixel();
-        image.scaleAbsolute(image.getPlainWidth() * factor, image.getPlainHeight() * factor);
+        if (factor != 1.0f) {
+            image.scaleAbsolute(image.getPlainWidth() * factor, image.getPlainHeight() * factor);
+        }
     }
 
     public SharedContext getSharedContext() {

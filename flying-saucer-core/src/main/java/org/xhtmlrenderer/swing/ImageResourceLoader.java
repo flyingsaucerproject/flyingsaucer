@@ -65,33 +65,47 @@ public class ImageResourceLoader {
     }
 
     public static ImageResource loadImageResourceFromUri(final String uri) {
-        StreamResource sr = new StreamResource(uri);
-        InputStream is;
-        ImageResource ir = null;
-        try {
-            sr.connect();
-            is = sr.bufferedStream();
+        if (ImageUtil.isEmbeddedBase64Image(uri)) {
+            return loadEmbeddedBase64ImageResource(uri);
+        } else {
+            StreamResource sr = new StreamResource(uri);
+            InputStream is;
+            ImageResource ir = null;
             try {
-                BufferedImage img = ImageIO.read(is);
-                if (img == null) {
-                    throw new IOException("ImageIO.read() returned null");
+                sr.connect();
+                is = sr.bufferedStream();
+                try {
+                    BufferedImage img = ImageIO.read(is);
+                    if (img == null) {
+                        throw new IOException("ImageIO.read() returned null");
+                    }
+                    ir = createImageResource(uri, img);
+                } catch (FileNotFoundException e) {
+                    XRLog.exception("Can't read image file; image at URI '" + uri + "' not found");
+                } catch (IOException e) {
+                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
+                } finally {
+                    sr.close();
                 }
-                ir = createImageResource(uri, img);
-            } catch (FileNotFoundException e) {
-                XRLog.exception("Can't read image file; image at URI '" + uri + "' not found");
             } catch (IOException e) {
-                XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
-            } finally {
-                sr.close();
+                // couldnt open stream at URI...
+                XRLog.exception("Can't open stream for URI '" + uri + "': " + e.getMessage());
             }
-        } catch (IOException e) {
-            // couldnt open stream at URI...
-            XRLog.exception("Can't open stream for URI '" + uri + "': " + e.getMessage());
+            if (ir == null) {
+                ir = createImageResource(uri, null);
+            }
+            return ir;
         }
-        if (ir == null) {
-            ir = createImageResource(uri, null);
+    }
+    
+    public static ImageResource loadEmbeddedBase64ImageResource(final String uri) {
+        BufferedImage bufferedImage = ImageUtil.loadEmbeddedBase64Image(uri);
+        if (bufferedImage != null) {
+            FSImage image = AWTFSImage.createImage(bufferedImage);
+            return new ImageResource(null, image);
+        } else {
+            return new ImageResource(null, null);
         }
-        return ir;
     }
 
     public synchronized void shrink() {
@@ -112,48 +126,54 @@ public class ImageResourceLoader {
     }
 
     public synchronized ImageResource get(final String uri, final int width, final int height) {
-        CacheKey key = new CacheKey(uri, width, height);
-        ImageResource ir = (ImageResource) _imageCache.get(key);
-        if (ir == null) {
-            // not loaded, or not loaded at target size
-
-            // loaded a base size?
-            ir = (ImageResource) _imageCache.get(new CacheKey(uri, -1, -1));
-
-            // no: loaded
+        if (ImageUtil.isEmbeddedBase64Image(uri)) {
+            ImageResource resource = loadEmbeddedBase64ImageResource(uri);
+            resource.getImage().scale(width, height);
+            return resource;
+        } else {
+            CacheKey key = new CacheKey(uri, width, height);
+            ImageResource ir = (ImageResource) _imageCache.get(key);
             if (ir == null) {
-                if (isImmediateLoadUri(uri)) {
-                    XRLog.load(Level.FINE, "Load immediate: " + uri);
-                    ir = loadImageResourceFromUri(uri);
+                // not loaded, or not loaded at target size
+
+                // loaded a base size?
+                ir = (ImageResource) _imageCache.get(new CacheKey(uri, -1, -1));
+
+                // no: loaded
+                if (ir == null) {
+                    if (isImmediateLoadUri(uri)) {
+                        XRLog.load(Level.FINE, "Load immediate: " + uri);
+                        ir = loadImageResourceFromUri(uri);
+                        FSImage awtfsImage = ir.getImage();
+                        BufferedImage newImg = ((AWTFSImage) awtfsImage).getImage();
+                        loaded(ir, -1, -1);
+                        if (width > -1 && height > -1) {
+                            XRLog.load(Level.FINE, this + ", scaling " + uri + " to " + width + ", " + height);
+                            newImg = ImageUtil.getScaledInstance(newImg, width, height);
+                            ir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
+                            loaded(ir, width, height);
+                        }
+                    } else {
+                        XRLog.load(Level.FINE, "Image cache miss, URI not yet loaded, queueing: " + uri);
+                        MutableFSImage mfsi = new MutableFSImage(_repaintListener);
+                        ir = new ImageResource(uri, mfsi);
+                        _loadQueue.addToQueue(this, uri, mfsi, width, height);
+                    }
+
+                    _imageCache.put(key, ir);
+                } else {
+                    // loaded at base size, need to scale
+                    XRLog.load(Level.FINE, this + ", scaling " + uri + " to " + width + ", " + height);
                     FSImage awtfsImage = ir.getImage();
                     BufferedImage newImg = ((AWTFSImage) awtfsImage).getImage();
-                    loaded(ir, -1, -1);
-                    if (width > -1 && height > -1) {
-                        XRLog.load(Level.FINE, this + ", scaling " + uri + " to " + width + ", " + height);
-                        newImg = ImageUtil.getScaledInstance(newImg, width, height);
-                        ir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
-                        loaded(ir, width, height);
-                    }
-                } else {
-                    XRLog.load(Level.FINE, "Image cache miss, URI not yet loaded, queueing: " + uri);
-                    MutableFSImage mfsi = new MutableFSImage(_repaintListener);
-                    ir = new ImageResource(uri, mfsi);
-                    _loadQueue.addToQueue(this, uri, mfsi, width, height);
+
+                    newImg = ImageUtil.getScaledInstance(newImg, width, height);
+                    ir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
+                    loaded(ir, width, height);
                 }
-
-                _imageCache.put(key, ir);
-            } else {
-                // loaded at base size, need to scale
-                XRLog.load(Level.FINE, this + ", scaling " + uri + " to " + width + ", " + height);
-                FSImage awtfsImage = ir.getImage();
-                BufferedImage newImg = ((AWTFSImage) awtfsImage).getImage();
-
-                newImg = ImageUtil.getScaledInstance(newImg, width, height);
-                ir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
-                loaded(ir, width, height);
             }
+            return ir;
         }
-        return ir;
     }
 
     public boolean isImmediateLoadUri(final String uri) {
@@ -161,7 +181,10 @@ public class ImageResourceLoader {
     }
 
     public synchronized void loaded(final ImageResource ir, final int width, final int height) {
-        _imageCache.put(new CacheKey(ir.getImageUri(), width, height), ir);
+        String imageUri = ir.getImageUri();
+        if (imageUri != null) {
+            _imageCache.put(new CacheKey(imageUri, width, height), ir);
+        }
     }
 
     public static ImageResource createImageResource(final String uri, final BufferedImage img) {

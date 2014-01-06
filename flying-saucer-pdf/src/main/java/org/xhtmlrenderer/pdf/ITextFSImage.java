@@ -39,18 +39,24 @@ public class ITextFSImage implements FSImage, Cloneable {
     }
 
     public void scale(int width, int height) {
-        int targetWidth = width;
-        int targetHeight = height;
+        if (width > 0 || height > 0) {
+            int currentWith = getWidth();
+            int currentHeight = getHeight();
+            int targetWidth = width;
+            int targetHeight = height;
 
-        if (targetWidth == -1) {
-            targetWidth = (int)(getWidth() * ((double)targetHeight / getHeight()));
+            if (targetWidth == -1) {
+                targetWidth = (int)(currentWith * ((double)targetHeight / currentHeight));
+            }
+
+            if (targetHeight == -1) {
+                targetHeight = (int)(currentHeight * ((double)targetWidth / currentWith));
+            }
+
+            if (currentWith != targetWidth || currentHeight != targetHeight) {
+                _image.scaleAbsolute(targetWidth, targetHeight);
+            }
         }
-
-        if (targetHeight == -1) {
-            targetHeight = (int)(getHeight() * ((double)targetWidth / getWidth()));
-        }
-
-        _image.scaleAbsolute(targetWidth, targetHeight);
     }
 
     public Image getImage() {
