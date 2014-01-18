@@ -200,8 +200,8 @@ public class ImageResourceLoader {
     }
 
     public void stopLoading() {
-        XRLog.load("By request, clearing pending items from load queue: " + _loadQueue.size());
         if (_loadQueue != null) {
+            XRLog.load("By request, clearing pending items from load queue: " + _loadQueue.size());
             _loadQueue.reset();
         }
     }
