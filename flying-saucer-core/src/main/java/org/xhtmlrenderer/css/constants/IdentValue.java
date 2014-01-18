@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -89,6 +89,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue DISC = addValue("disc");
     public final static IdentValue DOTTED = addValue("dotted");
     public final static IdentValue DOUBLE = addValue("double");
+    public final static IdentValue DYNAMIC = addValue("dynamic");
     public final static IdentValue FIXED = addValue("fixed");
     public final static IdentValue FONT_WEIGHT_100 = addValue("100");
     public final static IdentValue FONT_WEIGHT_200 = addValue("200");
