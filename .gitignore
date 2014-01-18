@@ -12,3 +12,5 @@ release.properties
 */.project
 */.settings
 */bin
+.project
+.settings
