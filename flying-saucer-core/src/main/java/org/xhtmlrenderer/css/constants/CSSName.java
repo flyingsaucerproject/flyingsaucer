@@ -243,6 +243,18 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
+    public final static CSSName FS_DYNAMIC_AUTO_WIDTH =
+            addProperty(
+                    "-fs-dynamic-auto-width",
+                    PRIMITIVE,
+                    "static",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSDynamicAutoWidth()
+            );
+
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
     public final static CSSName FS_FONT_METRIC_SRC =
             addProperty(
                     "-fs-font-metric-src",

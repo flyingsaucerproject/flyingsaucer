@@ -1077,47 +1077,51 @@ public abstract class Box implements Styleable {
     }
 
     public FSColor getEffBackgroundColor(RenderingContext c) {
-		FSColor result = null;
-		Box current = this;
-		while (current != null) {
-			result = current.getStyle().getBackgroundColor();
-			if (result != null) {
-				return result;
-			}
+        FSColor result = null;
+        Box current = this;
+        while (current != null) {
+            result = current.getStyle().getBackgroundColor();
+            if (result != null) {
+                return result;
+            }
 
-			current = current.getContainingBlock();
-		}
+            current = current.getContainingBlock();
+        }
 
-		PageBox page = c.getPage();
-		result = page.getStyle().getBackgroundColor();
-		if (result == null) {
-			return new FSRGBColor(255, 255, 255);
-		} else {
-			return result;
-		}
-	}
+        PageBox page = c.getPage();
+        result = page.getStyle().getBackgroundColor();
+        if (result == null) {
+            return new FSRGBColor(255, 255, 255);
+        } else {
+            return result;
+        }
+    }
 
-	protected boolean isMarginAreaRoot() {
-		return false;
-	}
+    protected boolean isMarginAreaRoot() {
+        return false;
+    }
 
-	public boolean isContainedInMarginBox() {
-		Box current = this;
-		while (true) {
-			Box parent = current.getParent();
-			if (parent == null) {
-				break;
-			} else {
-				current = parent;
-			}
-		}
+    public boolean isContainedInMarginBox() {
+        Box current = this;
+        while (true) {
+            Box parent = current.getParent();
+            if (parent == null) {
+                break;
+            } else {
+                current = parent;
+            }
+        }
 
-		return current.isMarginAreaRoot();
-	}
+        return current.isMarginAreaRoot();
+    }
 
-	public int getEffectiveWidth() {
-	    return getWidth();
-	}
+    public int getEffectiveWidth() {
+        return getWidth();
+    }
+
+    protected boolean isInitialContainingBlock() {
+        return false;
+    }
 }
 
 /*
