@@ -83,6 +83,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue COMPACT = addValue("compact");
     public final static IdentValue CONTAIN = addValue("contain");
     public final static IdentValue COVER = addValue("cover");
+    public final static IdentValue CREATE = addValue("create");
     public final static IdentValue DASHED = addValue("dashed");
     public final static IdentValue DECIMAL = addValue("decimal");
     public final static IdentValue DECIMAL_LEADING_ZERO = addValue("decimal-leading-zero");

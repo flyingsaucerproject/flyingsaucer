@@ -45,13 +45,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -63,7 +64,6 @@ import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
@@ -932,26 +932,31 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 while (it.hasNext()) {
                     Entry entry = (Entry) it.next();
 
-                    String anchorName = (String) entry.getKey();
-                    dests.add(new PdfString(anchorName, PdfString.TEXT_UNICODE));
-
                     Box targetBox = (Box) entry.getValue();
-                    PdfDestination dest = createDestination(c, targetBox);
-                    if (dest != null) {
-                        PdfIndirectReference ref = _writer.addToBody(dest).getIndirectReference();
-                        dests.add(ref);
+
+                    if (targetBox.getStyle().isIdent(CSSName.FS_NAMED_DESTINATION, IdentValue.CREATE)) {
+                        String anchorName = (String) entry.getKey();
+                        dests.add(new PdfString(anchorName, PdfString.TEXT_UNICODE));
+
+                        PdfDestination dest = createDestination(c, targetBox);
+                        if (dest != null) {
+                            PdfIndirectReference ref = _writer.addToBody(dest).getIndirectReference();
+                            dests.add(ref);
+                        }
                     }
                 }
 
-                PdfDictionary nametree = new PdfDictionary();
-                nametree.put(PdfName.NAMES, dests);
-                PdfIndirectReference nameTreeRef = _writer.addToBody(nametree).getIndirectReference();
+                if (!dests.isEmpty()) {
+                    PdfDictionary nametree = new PdfDictionary();
+                    nametree.put(PdfName.NAMES, dests);
+                    PdfIndirectReference nameTreeRef = _writer.addToBody(nametree).getIndirectReference();
 
-                PdfDictionary names = new PdfDictionary();
-                names.put(PdfName.DESTS, nameTreeRef);
-                PdfIndirectReference destinationsRef = _writer.addToBody(names).getIndirectReference();
+                    PdfDictionary names = new PdfDictionary();
+                    names.put(PdfName.DESTS, nameTreeRef);
+                    PdfIndirectReference destinationsRef = _writer.addToBody(names).getIndirectReference();
 
-                _writer.getExtraCatalog().put(PdfName.NAMES, destinationsRef);
+                    _writer.getExtraCatalog().put(PdfName.NAMES, destinationsRef);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

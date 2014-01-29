@@ -1124,6 +1124,16 @@ public class PrimitivePropertyBuilders {
         }
     }
 
+    public static class FSNamedDestination extends SingleIdent {
+        // none | create
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] { IdentValue.NONE, IdentValue.CREATE });
+
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+    }
+
     public static class Left extends LengthLikeWithAuto {
     }
 
