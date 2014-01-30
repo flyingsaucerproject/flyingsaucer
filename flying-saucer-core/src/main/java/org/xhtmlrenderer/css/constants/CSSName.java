@@ -385,6 +385,18 @@ public final class CSSName implements Comparable {
         );
 
     /**
+     * Used to control creation of named destinations for boxes having the id attribute set.
+     */
+    public final static CSSName FS_NAMED_DESTINATION =
+            addProperty(
+                    "-fs-named-destination",
+                    PRIMITIVE,
+                    "none",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.FSNamedDestination()
+            );
+
+    /**
      * Unique CSSName instance for CSS2 property.
      */
     public final static CSSName BOTTOM =
