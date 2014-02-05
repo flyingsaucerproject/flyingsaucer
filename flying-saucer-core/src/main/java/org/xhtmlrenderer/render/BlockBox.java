@@ -409,9 +409,11 @@ public class BlockBox extends Box implements InlinePaintable {
     public void calcCanvasLocation() {
         if (isFloated()) {
             FloatManager manager = _floatedBoxData.getManager();
-            Point offset = manager.getOffset(this);
-            setAbsX(manager.getMaster().getAbsX() + getX() - offset.x);
-            setAbsY(manager.getMaster().getAbsY() + getY() - offset.y);
+            if(manager !=null){
+	            Point offset = manager.getOffset(this);
+	            setAbsX(manager.getMaster().getAbsX() + getX() - offset.x);
+	            setAbsY(manager.getMaster().getAbsY() + getY() - offset.y);
+            }
         }
 
         LineBox lineBox = getLineBox();
