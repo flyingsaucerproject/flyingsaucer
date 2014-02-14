@@ -626,28 +626,30 @@ public abstract class Box implements Styleable {
         boolean needSecondPageBreak = false;
         PageBox page = c.getRootLayer().getLastPage(c, this);
 
-        if ((page.isLeftPage() && pageBreakValue == IdentValue.LEFT) ||
-                (page.isRightPage() && pageBreakValue == IdentValue.RIGHT)) {
-            needSecondPageBreak = true;
-        }
+        if (page != null) {
+            if ((page.isLeftPage() && pageBreakValue == IdentValue.LEFT) ||
+                    (page.isRightPage() && pageBreakValue == IdentValue.RIGHT)) {
+                needSecondPageBreak = true;
+            }
 
-        int delta = page.getBottom() + c.getExtraSpaceTop() - (getAbsY() +
-                getMarginBorderPadding(c, CalculatedStyle.TOP) + getHeight());
-
-        if (page == c.getRootLayer().getLastPage()) {
-            c.getRootLayer().addPage(c);
-        }
-
-        if (needSecondPageBreak) {
-            page = (PageBox)c.getRootLayer().getPages().get(page.getPageNo()+1);
-            delta += page.getContentHeight(c);
+            int delta = page.getBottom() + c.getExtraSpaceTop() - (getAbsY() +
+                    getMarginBorderPadding(c, CalculatedStyle.TOP) + getHeight());
 
             if (page == c.getRootLayer().getLastPage()) {
                 c.getRootLayer().addPage(c);
             }
-        }
 
-        setHeight(getHeight() + delta);
+            if (needSecondPageBreak) {
+                page = (PageBox)c.getRootLayer().getPages().get(page.getPageNo()+1);
+                delta += page.getContentHeight(c);
+
+                if (page == c.getRootLayer().getLastPage()) {
+                    c.getRootLayer().addPage(c);
+                }
+            }
+
+            setHeight(getHeight() + delta);
+        }
     }
 
     public boolean crossesPageBreak(LayoutContext c) {
