@@ -1,48 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-  <head>
-    <link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen" />
-    <link rel="stylesheet" type="text/css" href="print.css" title="Style" media="print" />
-    <title>Flying Saucer: CSS gradient support</title>
-    <style type="text/css">
-      div {
-          margin: 5px;
-          border: 1px solid black;
-          width: 500px; }
-      div.test3 {
-          background-image: linear-gradient(to left, red, green);
-          border-width: 20px;
-          border-style: solid;
-          border-color: #000000;
-          padding: 20px;
-          margin: 20px;
-          }
-      div.test4 {
-          height: 75px;
-          background-image: linear-gradient(to top right, red, green);
-          background-repeat: no-repeat;
-          }
-      div.test7 {
-          height: 75px;
-          background-image: linear-gradient(to bottom right, red, green, blue);
-          background-repeat: repeat;
-          }
-      div.test8 {
-          height: 75px;
-          background-image: linear-gradient(to top right, orange, green, yellow, blue, purple);;
-          background-repeat: repeat;
-          background-attachment: fixed;
-          }
-    </style>
-  </head>
-  <body>
-    <p class="link left-link"><a href="demoNav:back">Previous Page</a></p>
-    <p class="link right-link"><a href="demoNav:forward">Next Page</a></p>
+<head>
+	<link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen" />
+	<link rel="stylesheet" type="text/css" href="print.css" title="Style" media="print" />
+	<title>Flying Saucer: CSS gradient &amp; opacity support</title>
+	<style type="text/css">
+		* {
+			margin: 0;
+		}
+		html {
+			padding: 20px;
+			font: 12px/20px Arial, sans-serif;
+		}
+		div {
+			opacity: 0.7;
+			position: relative;
+		}
+		h1 {
+			font: inherit;
+			font-weight: bold;
+		}
+		#div1, #div2 {
+			border: 1px dashed #696;
+			padding: 10px;
+			background-color: #cfc;
+		}
+		#div1 {
+			z-index: 5;
+			margin-bottom: 190px;
+		}
+		#div2 {
+			z-index: 2;
+		}
+		#div3 {
+			z-index: 4;
+			opacity: 1;
+			position: absolute;
+			top: 840px;
+			left: 180px;
+			width: 330px;
+			border: 1px dashed #900;
+			background-color: #fdd;
+			padding: 40px 20px 20px;
+		}
+		#div4, #div5 {
+			border: 1px dashed #996;
+			background-color: #ffc;
+		}
+		#div4 {
+			z-index: 6;
+			margin-bottom: 15px;
+			padding: 25px 10px 5px;
+		}
+		#div5 {
+			z-index: 1;
+			margin-top: 15px;
+			padding: 5px 10px;
+		}
+		#div6 {
+			z-index: 3;
+			position: absolute;
+			top: 20px;
+			left: 180px;
+			width: 150px;
+			height: 125px;
+			border: 1px dashed #009;
+			padding-top: 125px;
+			background-color: #ddf;
+			text-align: center;
+		}
+	</style>
+	<style type="text/css">
+		div {
+			margin: 5px;
+			border: 1px solid black;
+			width: 500px; }
+		div.test3 {
+			background-image: linear-gradient(to left, red, blue);
+			border-width: 20px;
+			border-style: solid;
+			border-color: rgba(255, 0, 0, 0.2);
+			padding: 20px;
+			margin: 20px;
+		}
+		div.test4 {
+			height: 75px;
+			background-image: linear-gradient(to top right, red, green);
+		}
+		div.test7 {
+			height: 75px;
+			background-image: linear-gradient(to bottom right, red, green, blue);
+		}
+		div.test8 {
+			height: 75px;
+			background-image: linear-gradient(to top left, orange, green, yellow, blue, purple);
+			border-radius: 15px;
+		}
 
-    <div style="width: 100%; border: 0px; ">
+		div.test9 {
+			height: 175px;
+			background-image: linear-gradient(45deg, orange, green, yellow, blue, purple);
+			border-radius: 25px;
+		}
 
-    <h3>Backgrounds</h3>
-    <div class="test3" style="width: 75%">
+		div.test10 {
+			height: 75px;
+			background-image: linear-gradient(2rad, orange, #00ff00, yellow, rgba(0, 0, 100, 0.5) 99%, purple);
+			border-radius: 0;
+		}
+	</style>
+</head>
+<body>
+<p class="link left-link"><a href="demoNav:back">Previous Page</a></p>
+<p class="link right-link"><a href="demoNav:forward">Next Page</a></p>
+
+<div style="width: 100%; border: 0px; ">
+
+	<h3>Backgrounds, Gradients &amp; Opacity</h3>
+	<div class="test3" style="width: 75%">
 <pre>
 {
           background-color:#ccffcc;
@@ -51,14 +126,81 @@
           border-color: #000000;
           padding: 20px;
           margin: 20px;
-}	
+}
 </pre>
 
+	</div>
+	<div class="test4"></div>
+	<div class="test7"></div>
+	<div class="test8"></div>
+	<div class="test9"></div>
+	<div class="test10"></div>
+
+	<div id="div1">
+		<h1>Division Element #1</h1>
+		<code>position: relative;<br/>
+			z-index: 5;</code>
+	</div>
+
+	<div id="div2">
+		<h1>Division Element #2</h1>
+		<code>position: relative;<br/>
+			z-index: 2;</code>
+	</div>
+
+	<div id="div3">
+
+		<div id="div4">
+			<h1>Division Element #4</h1>
+			<code>position: relative;<br/>
+				z-index: 6;</code>
 		</div>
-    <div class="test4"></div>
-    <div class="test7"></div>
-    <div class="test8"></div>
-    </div>
-  </body>
+
+		<h1>Division Element #3</h1>
+		<code>position: absolute;<br/>
+			z-index: 4;</code>
+
+		<div id="div5">
+			<h1>Division Element #5</h1>
+			<code>position: relative;<br/>
+				z-index: 1;</code>
+		</div>
+
+		<div id="div6">
+			<h1>Division Element #6</h1>
+			<code>position: absolute;<br/>
+				z-index: 3;</code>
+		</div>
+
+	</div>
+
+</div>
+
+<div style="opacity: 0.05; border:10px solid black;">
+	This should be almost invisible.
+
+	<div style="background-image: url(image.png);">So should this.</div>
+	<div style="background-image: linear-gradient(to left, red, green);">And this</div>
+	<div style="text-decoration:underline;">And even this</div>
+	<div style="border: 2px double yellow;border-radius: 15px;">Finally this</div>
+
+	<ul>
+		<li>Invisible list item.</li>
+	</ul>
+</div>
+
+<div>
+	This should show with an invisible div above.
+</div>
+
+<div style="opacity: 1;color: rgba(255, 0, 0, 0.5);">
+	This should show writing half transparent in red.
+</div>
+
+<div style="opacity: 1;color: rgba(255, 0, 0, 1.0);">
+	And this should show writing opaque red for comparison.
+</div>
+</body>
+
 </html>
 

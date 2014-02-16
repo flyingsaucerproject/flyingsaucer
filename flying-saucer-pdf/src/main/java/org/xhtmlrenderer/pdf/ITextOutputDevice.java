@@ -57,6 +57,7 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -868,6 +869,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 throw new XRRuntimeException(e.getMessage(), e);
             }
         }
+    }
+
+    @Override
+    public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height) {
     }
 
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {

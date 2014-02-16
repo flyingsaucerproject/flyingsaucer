@@ -27,6 +27,7 @@ import java.awt.RenderingHints.Key;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
@@ -64,13 +65,14 @@ public interface OutputDevice {
     
     public void setColor(FSColor color);
     public void setOpacity(float opacity);
-    
+
     public void drawRect(int x, int y, int width, int height);
     public void drawOval(int x, int y, int width, int height);
-    
+
     public void drawBorderLine(Shape bounds, int side, int width, boolean solid);
     
     public void drawImage(FSImage image, int x, int y);
+    public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height);
 
     public void draw(Shape s);
     public void fill(Shape s);

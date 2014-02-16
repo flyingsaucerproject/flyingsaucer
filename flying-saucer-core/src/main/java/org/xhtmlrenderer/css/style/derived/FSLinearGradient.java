@@ -22,7 +22,8 @@ import org.xhtmlrenderer.util.GeneralUtil;
 public class FSLinearGradient
 {
 	private final float angle;
-	
+	private final List<StopValue> stopPoints = new ArrayList<StopValue>(2);
+
 	public static class StopValue
 	{
 		private final FSColor color;
@@ -66,7 +67,10 @@ public class FSLinearGradient
 		return angle;
 	}
 	
-	private final List<StopValue> stopPoints = new ArrayList<StopValue>(2);
+	public List<StopValue> getStopPoints()
+	{
+		return stopPoints;
+	}
 	
 	public FSLinearGradient(FSFunction func, CalculatedStyle style, float width, CssContext ctx)
 	{
