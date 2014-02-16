@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen" />
+    <link rel="stylesheet" type="text/css" href="print.css" title="Style" media="print" />
+    <title>Flying Saucer: CSS gradient support</title>
+    <style type="text/css">
+      div {
+          margin: 5px;
+          border: 1px solid black;
+          width: 500px; }
+      div.test3 {
+          background-image: linear-gradient(to left, red, green);
+          border-width: 20px;
+          border-style: solid;
+          border-color: #000000;
+          padding: 20px;
+          margin: 20px;
+          }
+      div.test4 {
+          height: 75px;
+          background-image: linear-gradient(to top right, red, green);
+          background-repeat: no-repeat;
+          }
+      div.test7 {
+          height: 75px;
+          background-image: linear-gradient(to bottom right, red, green, blue);
+          background-repeat: repeat;
+          }
+      div.test8 {
+          height: 75px;
+          background-image: linear-gradient(to top right, orange, green, yellow, blue, purple);;
+          background-repeat: repeat;
+          background-attachment: fixed;
+          }
+    </style>
+  </head>
+  <body>
+    <p class="link left-link"><a href="demoNav:back">Previous Page</a></p>
+    <p class="link right-link"><a href="demoNav:forward">Next Page</a></p>
+
+    <div style="width: 100%; border: 0px; ">
+
+    <h3>Backgrounds</h3>
+    <div class="test3" style="width: 75%">
+<pre>
+{
+          background-color:#ccffcc;
+          border-width: 20px;
+          border-style: solid;
+          border-color: #000000;
+          padding: 20px;
+          margin: 20px;
+}	
+</pre>
+
+		</div>
+    <div class="test4"></div>
+    <div class="test7"></div>
+    <div class="test8"></div>
+    </div>
+  </body>
+</html>
+

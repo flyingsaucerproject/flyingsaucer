@@ -37,6 +37,7 @@ import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.style.derived.FunctionValue;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.ListValue;
@@ -45,6 +46,7 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -1006,6 +1008,20 @@ public class CalculatedStyle {
         return value instanceof FunctionValue;
     }
 
+    public boolean isLinearGradient() {
+        FSDerivedValue value = valueByName(CSSName.BACKGROUND_IMAGE);    	
+        return value instanceof FunctionValue &&
+        		GeneralUtil.ciEquals(((FunctionValue) value).getFunction().getName(), "linear-gradient");
+    }
+    
+    public FSLinearGradient getLinearGradient(CssContext cssContext, float baseWidth)
+    {
+    	assert(isLinearGradient());
+
+    	FunctionValue value = (FunctionValue) valueByName(CSSName.BACKGROUND_IMAGE);
+    	return new FSLinearGradient(value.getFunction(), this, baseWidth, cssContext);
+    }
+    
     public String getRunningName() {
         FunctionValue value = (FunctionValue)valueByName(CSSName.POSITION);
         FSFunction function = value.getFunction();

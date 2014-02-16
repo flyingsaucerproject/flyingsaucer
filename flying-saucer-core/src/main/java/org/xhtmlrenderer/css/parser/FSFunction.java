@@ -39,8 +39,9 @@ public class FSFunction {
         return _parameters;
     }
     
+    @Override
     public String toString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append(_name);
         result.append('(');
         for (Iterator i = _parameters.iterator(); i.hasNext(); ) {

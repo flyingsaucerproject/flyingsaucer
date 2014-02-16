@@ -36,6 +36,7 @@ import org.xhtmlrenderer.css.style.BackgroundSize;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
@@ -171,7 +172,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     }
 
     private FSImage getBackgroundImage(RenderingContext c, CalculatedStyle style) {
-        if (! style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
+    	if (! style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
             String uri = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
             try {
                 return c.getUac().getImageResource(uri).getImage();
@@ -209,7 +210,20 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         setOpacity(style.getOpacity());
         
         FSColor backgroundColor = style.getBackgroundColor();
-        FSImage backgroundImage = getBackgroundImage(c, style);
+
+        FSLinearGradient backgroundLinearGradient = null;
+        FSImage backgroundImage = null;
+        
+        if (style.isLinearGradient())
+        {
+        	// TODO: Is this the correct width to use?
+        	backgroundLinearGradient = style.getLinearGradient(c, bgImageContainer.width);
+        	System.err.println(backgroundLinearGradient.toString());
+        }
+        else
+        {
+        	backgroundImage = getBackgroundImage(c, style);
+        }
 
         // If the image width or height is zero, then there's nothing to draw.
         // Also prevents infinte loop when trying to tile an image with zero size.
