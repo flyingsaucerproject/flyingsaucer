@@ -1485,6 +1485,33 @@ public class CSSParser {
         PropertyValue result = null;
         switch (t.getType()) {
             case Token.ANGLE:
+            {
+                String unit = extractUnit(t);
+                short type;
+
+                if ("deg".equals(unit))
+                {
+                    type = CSSPrimitiveValue.CSS_DEG;
+                }
+                else if ("rad".equals(unit))
+                {
+                    type = CSSPrimitiveValue.CSS_RAD;
+                }
+                else
+                {
+                    throw new CSSParseException("Unsupported CSS unit " + unit, getCurrentLine());
+                }
+
+                result = new PropertyValue(type,
+                        sign * Float.parseFloat(extractNumber(t)),
+                        sign(sign) + getTokenValue(t));
+
+                next();
+                skip_whitespace();
+                break;
+            }
+
+
             case Token.TIME:
             case Token.FREQ:
             case Token.DIMENSION:

@@ -217,7 +217,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         if (style.isLinearGradient())
         {
         	// TODO: Is this the correct width to use?
-        	backgroundLinearGradient = style.getLinearGradient(c, bgImageContainer.width);
+        	backgroundLinearGradient = style.getLinearGradient(c, bgImageContainer.width, bgImageContainer.height);
         }
         else
         {

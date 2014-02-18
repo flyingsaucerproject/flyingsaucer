@@ -19,12 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -506,16 +501,24 @@ public class PrimitivePropertyBuilders {
     }
 
     public static class BackgroundImage extends GenericURIWithNone {
-    	public List buildDeclarations(CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-    	    checkValueCount(cssName, 1, values.size());
-    	    CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+        @Override
+        public List buildDeclarations(CSSName cssName,
+                                                           List values, int origin,
+                                                           boolean important, boolean inheritAllowed) {
 
-    	    if (!value.toString().startsWith(IdentValue.LINEAR_GRADIENT.asString())) {
-    	      return super.buildDeclarations(cssName, values, origin, important, inheritAllowed);
-    	    }
+            checkValueCount(cssName, 1, values.size());
+            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
 
-    	    return Collections.singletonList(new PropertyDeclaration(cssName, value, important, origin));
-    	}
+            if (!value.toString().startsWith(
+                    IdentValue.LINEAR_GRADIENT.asString())) {
+
+                return super.buildDeclarations(cssName, values, origin,
+                        important, inheritAllowed);
+            }
+
+            return Collections.singletonList(new PropertyDeclaration(cssName,
+                    value, important, origin));
+        }
     }
 
     public static class BackgroundSize extends AbstractPropertyBuilder {
@@ -1681,15 +1684,15 @@ public class PrimitivePropertyBuilders {
         }
     }
 
-    private static List createTwoValueResponse(CSSName cssName, CSSPrimitiveValue value1, CSSPrimitiveValue value2,
-            int origin, boolean important) {
-        List values = new ArrayList(2);
-        values.add(value1);
-        values.add(value2);
+	private static List<PropertyDeclaration> createTwoValueResponse(
+			CSSName cssName, CSSPrimitiveValue value1,
+			CSSPrimitiveValue value2,
+			int origin, boolean important) {
 
-        PropertyDeclaration result = new PropertyDeclaration(
-                cssName,
-                new PropertyValue(values), important, origin);
+		List<CSSPrimitiveValue> values = Arrays.asList(value1, value2);
+
+		PropertyDeclaration result = new PropertyDeclaration(cssName,
+				new PropertyValue(values), important, origin);
 
         return Collections.singletonList(result);
     }

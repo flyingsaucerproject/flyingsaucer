@@ -1013,15 +1013,15 @@ public class CalculatedStyle {
         return value instanceof FunctionValue &&
         		GeneralUtil.ciEquals(((FunctionValue) value).getFunction().getName(), "linear-gradient");
     }
-    
-    public FSLinearGradient getLinearGradient(CssContext cssContext, float baseWidth)
-    {
-    	assert(isLinearGradient());
 
-    	FunctionValue value = (FunctionValue) valueByName(CSSName.BACKGROUND_IMAGE);
-    	return new FSLinearGradient(value.getFunction(), this, baseWidth, cssContext);
+    public FSLinearGradient getLinearGradient(final CssContext cssContext, final int w, final int h)
+    {
+        assert(isLinearGradient());
+
+        final FunctionValue value = (FunctionValue) valueByName(CSSName.BACKGROUND_IMAGE);
+        return new FSLinearGradient(value.getFunction(), this, w, h, cssContext);
     }
-    
+
     public String getRunningName() {
         FunctionValue value = (FunctionValue)valueByName(CSSName.POSITION);
         FSFunction function = value.getFunction();

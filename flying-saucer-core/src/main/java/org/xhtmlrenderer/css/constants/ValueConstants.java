@@ -97,6 +97,10 @@ public final class ValueConstants {
             return CSSPrimitiveValue.CSS_PT;
         } else if ("pc".equals(type)) {
             return CSSPrimitiveValue.CSS_PC;
+        } else if ("deg".equals(type)) {
+            return CSSPrimitiveValue.CSS_DEG;
+        } else if ("rad".equals(type)) {
+            return CSSPrimitiveValue.CSS_RAD;
         } else if (type == null) {
             //this is only valid if length is 0
             return CSSPrimitiveValue.CSS_PX;

@@ -326,7 +326,9 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
 	        i++;
 		}
 
-		LinearGradientPaint paint = new LinearGradientPaint(x, y, x + width, y, fractions, colors);
+        LinearGradientPaint paint = new LinearGradientPaint(
+                gradient.getStartX() + x, gradient.getStartY() + y,
+                gradient.getEndX() + x, gradient.getEndY() + y, fractions, colors);
 		_graphics.setPaint(paint);
 		_graphics.fillRect(x, y, width, height);
 	}
