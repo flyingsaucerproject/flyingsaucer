@@ -105,32 +105,30 @@ public class LayoutUtil {
     private static void positionFloatOnPage(
             final LayoutContext c, LineBox currentLine, BlockBox block,
             boolean movedVertically) {
-        boolean clearedPage = false;
-        int clearDelta = 0;
-
-        if (block.getStyle().isForcePageBreakBefore() ||
-                (block.getStyle().isAvoidPageBreakInside() &&
-                        block.crossesPageBreak(c))) {
-            clearDelta = block.forcePageBreakBefore(c, block.getStyle().getIdent(CSSName.PAGE_BREAK_BEFORE), false);
-            clearedPage = true;
+        if (block.getStyle().isForcePageBreakBefore()) {
+            block.forcePageBreakBefore(c, block.getStyle().getIdent(CSSName.PAGE_BREAK_BEFORE), false);
             block.calcCanvasLocation();
-            block.reset(c);
-            block.setContainingLayer(currentLine.getContainingLayer());
-            block.layout(c);
-            c.getBlockFormattingContext().floatBox(c, block);
-        }
+            resetAndFloatBlock(c, currentLine, block);
+        } else if (block.getStyle().isAvoidPageBreakInside() && block.crossesPageBreak(c)) {
+            int clearDelta = block.forcePageBreakBefore(c, block.getStyle().getIdent(CSSName.PAGE_BREAK_BEFORE), false);
 
-        if ((movedVertically ||
-                    (block.getStyle().isAvoidPageBreakInside() && block.crossesPageBreak(c))) &&
-                ! block.getStyle().isForcePageBreakBefore()) {
-            if (clearedPage) {
+            block.calcCanvasLocation();
+            resetAndFloatBlock(c, currentLine, block);
+
+            if (block.crossesPageBreak(c)) {
                 block.setY(block.getY() - clearDelta);
                 block.calcCanvasLocation();
+                resetAndFloatBlock(c, currentLine, block);
             }
-            block.reset(c);
-            block.setContainingLayer(currentLine.getContainingLayer());
-            block.layout(c);
-            c.getBlockFormattingContext().floatBox(c, block);
+        } else if (movedVertically) {
+            resetAndFloatBlock(c, currentLine, block);
         }
+    }
+
+    private static void resetAndFloatBlock(final LayoutContext c, LineBox currentLine, BlockBox block) {
+        block.reset(c);
+        block.setContainingLayer(currentLine.getContainingLayer());
+        block.layout(c);
+        c.getBlockFormattingContext().floatBox(c, block);
     }
 }
