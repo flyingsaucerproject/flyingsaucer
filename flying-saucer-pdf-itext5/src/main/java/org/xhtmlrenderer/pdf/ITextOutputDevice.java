@@ -286,19 +286,26 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         _writer.addAnnotation(annot);
                     }
                 } else if (uri.indexOf("://") != -1) {
-                    PdfAction action = new PdfAction(uri);
+                    int boxTop = box.getAbsY();
+                    int boxBottom = boxTop + box.getHeight();
+                    int pageTop = c.getPage().getTop();
+                    int pageBottom = c.getPage().getBottom();
 
-                    com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, box);
-                    if (targetArea == null) {
-                        return;
-                    }
-                    PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(), targetArea.getRight(),
+                    if (boxTop < pageBottom && boxBottom > pageTop) {
+                        PdfAction action = new PdfAction(uri);
+
+                        com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, box);
+                        if (targetArea == null) {
+                            return;
+                        }
+                        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(), targetArea.getRight(),
                             targetArea.getTop(), action);
-                    annot.put(PdfName.SUBTYPE, PdfName.LINK);
+                        annot.put(PdfName.SUBTYPE, PdfName.LINK);
 
-                    annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                    annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
-                    _writer.addAnnotation(annot);
+                        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+                        annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
+                        _writer.addAnnotation(annot);
+                    }
                 }
             }
         }
