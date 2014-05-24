@@ -303,7 +303,8 @@ abstract class Condition {
                 return false;
             }
 
-            // NOTE: In jQuery, for example, the attribute value first has owther whitespace normalized to spaces. But
+            // This is much faster than calling `split()` and comparing individual values in a loop.
+            // NOTE: In jQuery, for example, the attribute value first has whitespace normalized to spaces. But
             // in an XML DOM, space normalization in attributes is supposed to have happened already.
             return (" " + c + " ").indexOf(_paddedClassName) != -1;
         }
