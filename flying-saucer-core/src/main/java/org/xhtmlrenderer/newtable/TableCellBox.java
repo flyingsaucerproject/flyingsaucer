@@ -236,8 +236,8 @@ public class TableCellBox extends BlockBox {
         
         int bottomEdge = getAbsY() + getChildrenHeight();
         
-        return bottomEdge >= page.getBottom() - c.getExtraSpaceBottom() || 
-                    bottomEdge + posDeltaY >= page.getBottom() - c.getExtraSpaceBottom();
+        return page != null && (bottomEdge >= page.getBottom() - c.getExtraSpaceBottom() ||
+                    bottomEdge + posDeltaY >= page.getBottom() - c.getExtraSpaceBottom());
     }
     
     public IdentValue getVerticalAlign() {
