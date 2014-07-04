@@ -202,6 +202,7 @@ public class NaiveUserAgent implements UserAgentCallback {
                 URI result = new URI(uri);
                 if (result.isAbsolute()) setBaseURL(result.toString());
             } catch (URISyntaxException e) {
+                XRLog.exception("The default NaiveUserAgent could not use the URL as base url: " + uri, e);
             }
             if (_baseURL == null) { // still not set -> fallback to current working directory
                 try {
