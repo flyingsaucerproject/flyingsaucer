@@ -244,6 +244,7 @@ public class NaiveUserAgent implements UserAgentCallback {
 
     public byte[] getBinaryResource(String uri) {
         InputStream is = getInputStream(uri);
+        if (is==null) return null;
         try {
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             byte[] buf = new byte[10240];

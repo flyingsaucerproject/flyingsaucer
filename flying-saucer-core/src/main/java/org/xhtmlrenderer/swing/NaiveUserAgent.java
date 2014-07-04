@@ -230,6 +230,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     public byte[] getBinaryResource(String uri) {
         InputStream is = resolveAndOpenStream(uri);
+        if (is==null) return null;
         try {
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             byte[] buf = new byte[10240];
