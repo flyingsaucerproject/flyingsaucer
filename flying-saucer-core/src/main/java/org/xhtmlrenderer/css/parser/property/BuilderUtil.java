@@ -1,6 +1,8 @@
 package org.xhtmlrenderer.css.parser.property;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
+import org.xhtmlrenderer.css.parser.CSSParseException;
+import org.xhtmlrenderer.css.parser.FSFunction;
 
 /**
  * Static utility functions to check types, etc for builders to use.
@@ -23,4 +25,17 @@ public class BuilderUtil {
 				|| (unit == CSSPrimitiveValue.CSS_NUMBER && value
 						.getFloatValue(CSSPrimitiveValue.CSS_IN) == 0.0f);
 	}
+
+    public static void checkFunctionsAllowed(final FSFunction func, String... allowed)
+    {
+        for (String allow : allowed)
+        {
+            if (allow.equals(func.getName()))
+                return;
+        }
+
+        throw new CSSParseException(String.format("Function ({0}) not supported here", func.getName()), -1);
+
+    }
+
 }

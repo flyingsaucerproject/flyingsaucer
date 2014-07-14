@@ -507,7 +507,7 @@ public class PrimitivePropertyBuilders {
                                                            boolean important, boolean inheritAllowed) {
 
             checkValueCount(cssName, 1, values.size());
-            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+            PropertyValue value = (PropertyValue)values.get(0);
 
             if (!value.toString().startsWith(
                     IdentValue.LINEAR_GRADIENT.asString())) {
@@ -516,6 +516,7 @@ public class PrimitivePropertyBuilders {
                         important, inheritAllowed);
             }
 
+            BuilderUtil.checkFunctionsAllowed(value.getFunction(), "linear-gradient");
             return Collections.singletonList(new PropertyDeclaration(cssName,
                     value, important, origin));
         }
