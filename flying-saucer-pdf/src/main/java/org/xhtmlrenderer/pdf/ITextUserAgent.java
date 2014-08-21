@@ -38,6 +38,8 @@ import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfReader;
 
+import org.xhtmlrenderer.util.ImageUtil;
+
 public class ITextUserAgent extends NaiveUserAgent {
     private static final int IMAGE_CACHE_CAPACITY = 32;
 
@@ -62,16 +64,17 @@ public class ITextUserAgent extends NaiveUserAgent {
     }
 
     public ImageResource getImageResource(String uriStr) {
+        String unresolvedUri = uriStr;
         ImageResource resource;
         if (!ImageUtil.isEmbeddedBase64Image(uriStr)) {
             uriStr = resolveURI(uriStr);
         }
-        resource = (ImageResource) _imageCache.get(uriStr);
+        resource = (ImageResource) _imageCache.get(unresolvedUri);
 
         if (resource == null) {
             if (ImageUtil.isEmbeddedBase64Image(uriStr)) {
                 resource = loadEmbeddedBase64ImageResource(uriStr);
-                _imageCache.put(uriStr, resource);
+                _imageCache.put(unresolvedUri, resource);
             } else {
                 InputStream is = resolveAndOpenStream(uriStr);
                 if (is != null) {
@@ -91,7 +94,7 @@ public class ITextUserAgent extends NaiveUserAgent {
                             scaleToOutputResolution(image);
                             resource = new ImageResource(uriStr, new ITextFSImage(image));
                         }
-                        _imageCache.put(uriStr, resource);
+                        _imageCache.put(unresolvedUri, resource);
                     } catch (Exception e) {
                         XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
                     } finally {
