@@ -85,7 +85,7 @@ public class Configuration {
     /**
      * The Singleton instance of the class.
      */
-    private static Configuration sInstance;
+    private static Configuration sInstance = new Configuration();
 
     /**
      * List of LogRecords for messages from Configuration startup; used to hold these
@@ -762,10 +762,7 @@ public class Configuration {
     /**
      * @return The singleton instance of the class.
      */
-    private static synchronized Configuration instance() {
-        if (Configuration.sInstance == null) {
-            Configuration.sInstance = new Configuration();
-        }
+    private static Configuration instance() {
         return Configuration.sInstance;
     }// end main()
 
