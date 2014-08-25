@@ -24,6 +24,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.Breaker;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.layout.TextUtil;
@@ -226,7 +227,8 @@ public class InlineBox implements Styleable {
 
         String text = getText(trimLeadingSpace);
 
-        while ( (current = text.indexOf(WhitespaceStripper.SPACE, last)) != -1) {
+        // Breaker should be used
+        while ( (current = Breaker.getNextBreakableChar(text, last)) != -1) {
             String currentWord = text.substring(last, current);
             int wordWidth = getTextWidth(c, currentWord);
             int minWordWidth;

@@ -108,7 +108,8 @@ public class Breaker {
         FSFont font = style.getFSFont(c);
         String currentString = context.getStartSubstring();
         int left = 0;
-        int right = tryToBreakAnywhere ? 1 : currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+        int right = tryToBreakAnywhere ? 1 : getNextBreakableChar(
+                currentString, left + 1);
         int lastWrap = 0;
         int graphicsLength = 0;
         int lastGraphicsLength = 0;
@@ -122,8 +123,8 @@ public class Breaker {
             if ( tryToBreakAnywhere ) {
                 right = ( right + 1 ) % currentString.length();
             }
-            else { // break only on whitespace
-                right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+            else { // break only on whitespace or CJK character
+                right = getNextBreakableChar(currentString, left + 1);
             }
         }
 
@@ -170,6 +171,34 @@ public class Breaker {
         }
         return;
     }
+
+	/**
+	 * Detect the next breakable character (a white-space or the next character
+	 * after a CJK character)
+	 */
+	public static int getNextBreakableChar(String s, int left) {
+		if (left >= s.length())
+			return -1;
+		char[] ch = s.toCharArray();
+		for (int i = left; i < ch.length; i++) {
+			if (isCJKCharacter(ch[i])) {
+				return (i + 1);
+			} else if (' ' == ch[i]) {
+				return i == 0 ? i + 1 : i;
+			}
+		}
+		return -1;
+	}
+
+	private static boolean isCJKCharacter(char c) {
+		Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+		if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+				|| ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+				|| ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A) {
+			return true;
+		}
+		return false;
+	}
 
 }
 
