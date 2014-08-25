@@ -45,7 +45,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     public AbstractResource(InputStream is) {
-        this(new InputSource(new BufferedInputStream(is)));
+        this(is==null?(InputSource)null:new InputSource(new BufferedInputStream(is)));
     }
 
     public InputSource getResourceInputSource() {

@@ -852,15 +852,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {
-        URL url = image.getURL();
+        URI uri = image.getURI();
         PdfReader reader = null;
 
         try {
-            reader = getReader(url);
+            reader = getReader(uri);
         } catch (IOException e) {
-            throw new XRRuntimeException("Could not load " + url + ": " + e.getMessage(), e);
-        } catch (URISyntaxException e) {
-            throw new XRRuntimeException("Could not load " + url + ": " + e.getMessage(), e);
+            throw new XRRuntimeException("Could not load " + uri + ": " + e.getMessage(), e);
         }
 
         PdfImportedPage page = getWriter().getImportedPage(reader, 1);
@@ -885,11 +883,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _currentPage.saveState();
     }
 
-    public PdfReader getReader(URL url) throws IOException, URISyntaxException {
-        URI uri = url.toURI();
+    public PdfReader getReader(URI uri) throws IOException {
         PdfReader result = (PdfReader) _readerCache.get(uri);
         if (result == null) {
-            result = new PdfReader(url);
+            result = new PdfReader(getSharedContext().getUserAgentCallback().getBinaryResource(uri.toString()));
             _readerCache.put(uri, result);
         }
         return result;

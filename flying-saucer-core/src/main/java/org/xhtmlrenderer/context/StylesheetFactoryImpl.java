@@ -35,6 +35,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.XRLog;
+import org.xml.sax.InputSource;
 
 /**
  * A Factory class for Cascading Style Sheets. Sheets are parsed using a single
@@ -88,9 +89,13 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      */
     private Stylesheet parse(StylesheetInfo info) {
         CSSResource cr = _userAgentCallback.getCSSResource(info.getUri());
+        if (cr==null) return null;  
         // Whether by accident or design, InputStream will never be null
         // since the null resource stream is wrapped in a BufferedInputStream
-        InputStream is = cr.getResourceInputSource().getByteStream();
+        InputSource inputSource=cr.getResourceInputSource();
+        if (inputSource==null) return null;
+        InputStream is = inputSource.getByteStream();
+        if (is==null) return null;
         try {
             return parse(new InputStreamReader(is, "UTF-8"), info);
         } catch (UnsupportedEncodingException e) {

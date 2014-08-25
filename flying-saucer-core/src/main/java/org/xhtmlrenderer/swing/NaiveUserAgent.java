@@ -27,6 +27,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -228,6 +230,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     public byte[] getBinaryResource(String uri) {
         InputStream is = resolveAndOpenStream(uri);
+        if (is==null) return null;
         try {
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             byte[] buf = new byte[10240];
@@ -284,9 +287,12 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         String ret = null;
         if (_baseURL == null) {//first try to set a base URL
             try {
-                URL result = new URL(uri);
-                setBaseURL(result.toExternalForm());
-            } catch (MalformedURLException e) {
+                URI result = new URI(uri);
+                if (result.isAbsolute()) setBaseURL(result.toString());
+            } catch (URISyntaxException e) {
+                XRLog.exception("The default NaiveUserAgent could not use the URL as base url: " + uri, e);
+            }
+            if (_baseURL == null) { // still not set -> fallback to current working directory
                 try {
                     setBaseURL(new File(".").toURI().toURL().toExternalForm());
                 } catch (Exception e1) {
@@ -297,15 +303,14 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         }
         // test if the URI is valid; if not, try to assign the base url as its parent
         try {
-            return new URL(uri).toString();
-        } catch (MalformedURLException e) {
-            XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
-            try {
-                URL result = new URL(new URL(_baseURL), uri);
-                ret = result.toString();
-            } catch (MalformedURLException e1) {
-                XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
+            URI result = new URI(uri);
+            if (!result.isAbsolute()) {
+                XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
+                result=new URI(_baseURL).resolve(result);
             }
+            ret = result.toString();
+        } catch (URISyntaxException e) {
+            XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
         }
         return ret;
     }
