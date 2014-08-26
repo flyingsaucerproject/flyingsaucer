@@ -18,6 +18,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.text.BreakIterator;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -226,9 +228,10 @@ public class InlineBox implements Styleable {
         int lastWord = 0;
 
         String text = getText(trimLeadingSpace);
+        BreakIterator breakIterator = Breaker.getWordStream(text);
 
         // Breaker should be used
-        while ( (current = Breaker.getNextBreakableChar(text, last)) != -1) {
+        while ( (current = breakIterator.next()) != BreakIterator.DONE) {
             String currentWord = text.substring(last, current);
             int wordWidth = getTextWidth(c, currentWord);
             int minWordWidth;
