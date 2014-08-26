@@ -30,6 +30,7 @@ import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
+import org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -71,8 +72,10 @@ public class ITextUserAgent extends NaiveUserAgent {
                 InputStream is = resolveAndOpenStream(uriStr);
                 if (is != null) {
                     try {
-                        URI uri = new URI(uriStr);
-                        if (uri.getPath() != null && uri.getPath().toLowerCase().endsWith(".pdf")) {
+                        ContentTypeDetectingInputStreamWrapper cis=new ContentTypeDetectingInputStreamWrapper(is);
+                        is=cis;
+                        if (cis.isPdf()) {
+                            URI uri = new URI(uriStr);
                             PdfReader reader = _outputDevice.getReader(uri);
                             PDFAsImage image = new PDFAsImage(uri);
                             Rectangle rect = reader.getPageSizeWithRotation(1);
