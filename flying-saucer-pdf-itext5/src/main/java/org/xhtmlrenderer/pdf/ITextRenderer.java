@@ -46,6 +46,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
@@ -88,6 +89,8 @@ public class ITextRenderer {
     // check for null before calling writer.setPdfVersion()
     // use one of the values in PDFWriter.VERSION...
     private Character _pdfVersion;
+    private Dimension _dim;
+    private boolean scaleToFit;
 
     private final char[] validPdfVersions = new char[] { PdfWriter.VERSION_1_2, PdfWriter.VERSION_1_3, PdfWriter.VERSION_1_4,
             PdfWriter.VERSION_1_5, PdfWriter.VERSION_1_6, PdfWriter.VERSION_1_7 };
@@ -205,8 +208,8 @@ public class ITextRenderer {
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
-        Dimension dim = root.getLayer().getPaintingDimension(c);
-        root.getLayer().trimEmptyPages(c, dim.height);
+        _dim = root.getLayer().getPaintingDimension(c);
+        root.getLayer().trimEmptyPages(c, _dim.height);
         root.getLayer().layoutPages(c);
         _root = root;
     }
@@ -287,9 +290,11 @@ public class ITextRenderer {
         RenderingContext c = newRenderingContext();
         c.setInitialPageNo(initialPageNo);
         PageBox firstPage = (PageBox) pages.get(0);
-        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
-                firstPage.getHeight(c) / _dotsPerPoint);
-
+        int pageWidth = calculateWidth(c, firstPage);
+        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
+        		firstPage.getHeight(c) / _dotsPerPoint);
+//        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
+//                firstPage.getHeight(c) / _dotsPerPoint);
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document(firstPageSize, 0, 0, 0, 0);
         PdfWriter writer = PdfWriter.getInstance(doc, os);
         if (_pdfVersion != null) {
@@ -311,6 +316,20 @@ public class ITextRenderer {
             fireOnClose();
             doc.close();
         }
+    }
+    
+    private int calculateWidth(RenderingContext c, PageBox firstPage) {
+    	if (isScaleToFit()) {
+	    	int pageWidth = firstPage.getWidth(c);
+	        Rectangle pageRec = firstPage.getPrintClippingBounds(c);
+	        if(_dim.getWidth() > pageRec.getWidth()) {
+	            RectPropertySet margin = firstPage.getMargin(c);
+	            pageWidth = (int) (_dim.getWidth() + margin.left() + margin.right());
+	        }
+	        return pageWidth;
+    	} else {
+    		return firstPage.getWidth(c);
+    	}
     }
 
     private void firePreOpen() {
@@ -352,8 +371,12 @@ public class ITextRenderer {
             _outputDevice.finishPage();
             if (i != pageCount - 1) {
                 PageBox nextPage = (PageBox) pages.get(i + 1);
-                com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
-                        nextPage.getHeight(c) / _dotsPerPoint);
+                int pageWidth = calculateWidth(c, nextPage);
+                
+                com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
+                		nextPage.getHeight(c) / _dotsPerPoint);
+//              com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
+//                        nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
                 doc.newPage();
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());
@@ -391,8 +414,12 @@ public class ITextRenderer {
         page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
 
         Shape working = _outputDevice.getClip();
-
+        
         Rectangle content = page.getPrintClippingBounds(c);
+        if (isScaleToFit()) {
+        	int pageWidth = calculateWidth(c, page);
+        	content.setSize(pageWidth, (int) content.getSize().getHeight());//RTD - to change
+        }
         _outputDevice.clip(content);
 
         int top = -page.getPaintingTop() + page.getMarginBorderPadding(c, CalculatedStyle.TOP);
@@ -518,5 +545,13 @@ public class ITextRenderer {
 
     public PdfWriter getWriter() {
         return _writer;
+    }
+    
+    public boolean isScaleToFit() {
+    	return scaleToFit;
+    }
+    
+    public boolean setScaleToFit(boolean scaleToFit) {
+    	return this.scaleToFit = scaleToFit;
     }
 }
