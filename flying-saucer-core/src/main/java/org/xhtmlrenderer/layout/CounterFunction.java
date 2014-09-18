@@ -19,10 +19,10 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.constants.IdentValue;
-
 import java.util.Iterator;
 import java.util.List;
+
+import org.xhtmlrenderer.css.constants.IdentValue;
 
 public class CounterFunction {
     private IdentValue _listStyleType;
@@ -75,10 +75,11 @@ public class CounterFunction {
 
     private static String toLatin(int val) {
         String result = "";
-        while (val > 0) {
+        val -= 1;
+        while (val >= 0) {
             int letter = val % 26;
-            val = val / 26;
-            result = ((char) (letter + 64)) + result;
+            val = val / 26 - 1;
+            result = ((char) (letter + 65)) + result;
         }
         return result;
     }
