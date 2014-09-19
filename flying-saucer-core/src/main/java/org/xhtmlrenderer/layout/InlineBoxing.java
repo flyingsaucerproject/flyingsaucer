@@ -880,9 +880,13 @@ public class InlineBoxing {
         if ((! line.isContainsContent() || zeroWidthInlineBlock) &&
                 lbContext.getStartSubstring().startsWith(WhitespaceStripper.SPACE)) {
             IdentValue whitespace = style.getWhitespace();
-            if ( (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP
-                        || whitespace == IdentValue.PRE_LINE) ||
-                    ( whitespace == IdentValue.PRE_WRAP && ! lbContext.isEndsOnNL())) {
+            if (whitespace == IdentValue.NORMAL
+                    || whitespace == IdentValue.NOWRAP
+                    || whitespace == IdentValue.PRE_LINE
+                    || (whitespace == IdentValue.PRE_WRAP
+                        && lbContext.getStart() > 0
+                        && (lbContext.getMaster().length() > lbContext.getStart() - 1)
+                        && lbContext.getMaster().charAt(lbContext.getStart() - 1) != WhitespaceStripper.EOLC)) {
                 return true;
             }
         }
