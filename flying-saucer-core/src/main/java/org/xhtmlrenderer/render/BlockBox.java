@@ -770,6 +770,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 c.addBoxId(id, this);
             }
         }
+        c.getSharedContext().setRealContentWidth(getMinWidth());
     }
 
     public void layout(LayoutContext c) {

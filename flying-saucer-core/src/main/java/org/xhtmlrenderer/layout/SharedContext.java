@@ -94,6 +94,8 @@ public class SharedContext {
 
     private ReplacedElementFactory replacedElementFactory;
     private Rectangle temp_canvas;
+    
+    private int _realContentWidth = 0;
 
     public SharedContext() {
     }
@@ -617,6 +619,16 @@ public class SharedContext {
                 }
             }
         }
+    }
+    
+    public int getRealContentWidth(){
+        return _realContentWidth;
+    }
+
+    
+    public int setRealContentWidth(int newContentWidth){
+        _realContentWidth = newContentWidth > _realContentWidth ? newContentWidth : _realContentWidth; 
+        return _realContentWidth;
     }
 }
 
