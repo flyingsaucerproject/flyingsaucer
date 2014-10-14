@@ -175,7 +175,7 @@ public class Breaker {
     }
 
 	public static BreakIterator getWordStream(String s) {
-		BreakIterator i = BreakIterator.getLineInstance();
+		BreakIterator i = BreakIterator.getWordInstance();
 		i.setText(s);
 		return i;
 	}
