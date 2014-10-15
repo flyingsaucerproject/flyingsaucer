@@ -339,10 +339,10 @@ public final class Idents {
     }
 
     /**
-     * Given a String, returns either the rgb declaration for the color, or the
+     * Given a String, returns either the rgb/rgba declaration for the color, or the
      * hex declaration; used to cleanup assignments like "red" or "green".
      *
-     * @param value A String which contains a Color identifier, an rgb
+     * @param value A String which contains a Color identifier, an rgb/rgba
      *              assignment or a Color hex value.
      * @return The colorHex value
      */
@@ -352,7 +352,7 @@ public final class Idents {
         }
         String retval = (String) COLOR_MAP.get(value.toLowerCase());
         if (retval == null) {
-            if (value.trim().startsWith("rgb(")) {
+            if (value.trim().startsWith("rgb(") || value.trim().startsWith("rgba(")) {
                 retval = value;
             } else {
                 Matcher m = COLOR_HEX_PATTERN.matcher(value);

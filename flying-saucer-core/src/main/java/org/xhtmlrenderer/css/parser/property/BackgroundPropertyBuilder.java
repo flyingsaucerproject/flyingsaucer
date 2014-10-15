@@ -132,7 +132,7 @@ public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
                 
                 backgroundColor = new PropertyDeclaration(
                         CSSName.BACKGROUND_COLOR, value, important, origin);
-            } else if (type == CSSPrimitiveValue.CSS_URI) {
+            } else if (type == CSSPrimitiveValue.CSS_URI || value.toString().startsWith(IdentValue.LINEAR_GRADIENT.asString())) {
                 if (backgroundImage != null) {
                     throw new CSSParseException("A background-image value cannot be set twice", -1);
                 }

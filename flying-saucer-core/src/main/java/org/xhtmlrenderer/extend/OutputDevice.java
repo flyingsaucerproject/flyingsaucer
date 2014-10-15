@@ -63,6 +63,7 @@ public interface OutputDevice {
     public void setFont(FSFont font);
     
     public void setColor(FSColor color);
+    public void setOpacity(float opacity);
     
     public void drawRect(int x, int y, int width, int height);
     public void drawOval(int x, int y, int width, int height);

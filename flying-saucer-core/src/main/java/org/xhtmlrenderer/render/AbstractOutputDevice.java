@@ -205,7 +205,9 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
             return;
         }
-
+        
+        setOpacity(style.getOpacity());
+        
         FSColor backgroundColor = style.getBackgroundColor();
         FSImage backgroundImage = getBackgroundImage(c, style);
 

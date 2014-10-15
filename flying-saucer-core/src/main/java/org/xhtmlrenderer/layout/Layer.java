@@ -101,8 +101,7 @@ public class Layer {
     public Layer(Layer parent, Box master) {
         _parent = parent;
         _master = master;
-        setStackingContext(
-                master.getStyle().isPositioned() && ! master.getStyle().isAutoZIndex());
+        setStackingContext(master.getStyle().isPositioned() && !master.getStyle().isAutoZIndex());
         master.setLayer(this);
         master.setContainingLayer(this);
     }
@@ -122,6 +121,10 @@ public class Layer {
     public int getZIndex() {
         return (int) _master.getStyle().asFloat(CSSName.Z_INDEX);
     }
+    
+    public float getOpacity() {
+    	return _master.getStyle().getOpacity();
+	}
     
     public Box getMaster() {
         return _master;
@@ -214,8 +217,8 @@ public class Layer {
         
         return result;
     }
-    
-    private List getSortedLayers(int which) {
+
+	private List getSortedLayers(int which) {
         List result = collectLayers(which);
         
         Collections.sort(result, new ZIndexComparator());
