@@ -152,6 +152,21 @@ public abstract class OneToFourPropertyBuilders {
         }
     } 
     
+
+    public static class BorderRadius extends OneToFourPropertyBuilder {
+        protected CSSName[] getProperties() {
+            return new CSSName[] { 
+                    CSSName.BORDER_TOP_LEFT_RADIUS,
+                    CSSName.BORDER_TOP_RIGHT_RADIUS,
+                    CSSName.BORDER_BOTTOM_RIGHT_RADIUS,
+                    CSSName.BORDER_BOTTOM_LEFT_RADIUS };
+        }
+
+        protected PropertyBuilder getPropertyBuilder() {
+            return PrimitivePropertyBuilders.BORDER_RADIUS;
+        }
+    }
+    
     public static class Margin extends OneToFourPropertyBuilder {
         protected CSSName[] getProperties() {
             return new CSSName[] { 
