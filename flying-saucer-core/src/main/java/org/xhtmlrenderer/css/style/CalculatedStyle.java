@@ -713,7 +713,7 @@ public class CalculatedStyle {
             BorderPropertySet result = BorderPropertySet.newInstance(style, ctx);
 
             boolean allZeros = result.isAllZeros();
-            if (allZeros && ! result.hasHidden()) {
+            if (allZeros && ! result.hasHidden() && !result.hasBorderRadius()) {
                 result = BorderPropertySet.EMPTY_BORDER;
             }
 

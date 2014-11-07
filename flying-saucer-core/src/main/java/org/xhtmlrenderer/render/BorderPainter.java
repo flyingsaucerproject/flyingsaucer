@@ -86,10 +86,26 @@ public class BorderPainter {
     }
     
 
-    // 2 helper functions to reduce the number of params you have to see as the last 2 are very option and rarely used
+    /**
+     * Generates one side of a border
+     * @param bounds bounds of the container
+     * @param side what side you want
+     * @param border border props
+     * @param drawInterior if you want it to be 2d or not, if false it will be just a line
+     * @return a path for the side chosen!
+     */
     public static Path2D generateBorderShape(Rectangle bounds, int side, BorderPropertySet border, boolean drawInterior) {
         return generateBorderShape(bounds, side, border, drawInterior, 0, 1);
     }
+    /**
+     * Generates one side of a border
+     * @param bounds bounds of the container
+     * @param side what side you want
+     * @param border border props
+     * @param drawInterior if you want it to be 2d or not, if false it will be just a line
+     * @param scaledOffset insets the border by multipling border widths by this variable, best use would be 1 or .5, cant see it for much other than that
+     * @return a path for the side chosen!
+     */
     public static Path2D generateBorderShape(Rectangle bounds, int side, BorderPropertySet border, boolean drawInterior, float scaledOffset) {
         return generateBorderShape(bounds, side, border, drawInterior, scaledOffset, 1);
     }
@@ -104,7 +120,11 @@ public class BorderPainter {
      * @return a path for the side chosen!
      */
     public static Path2D generateBorderShape(Rectangle bounds, int side, BorderPropertySet border, boolean drawInterior, float scaledOffset, float widthScale) {
-        
+        /**
+         * Function overview: Prior to creating the path we check what side were building this on. All the coordinates in this function assume its building a top border
+         * the border is then rotated and translated to its appropriate side. Uses of "left" and "right" are assuming a perspective of inside the shape looking out.
+         */
+    	
         float sideWidth = -1, topWidth = widthScale, leftWidth = widthScale, rightWidth = widthScale;
         double rotation = 0;
         float interiorWidth = 0, interiorHeight = 0,
@@ -112,6 +132,8 @@ public class BorderPainter {
         BorderRadiusCorner leftRadius = null, rightRadius = null;
         int xOffset = 0, yOffset = 0;
         
+        // check what side of the border we are using, then set local variables to the appropriate values. 
+        // EG: if were doing bottom border then left would be bottom right corner of the rectangle and right would be bottom left...
         if ((side & BorderPainter.TOP) == BorderPainter.TOP) {
             sideWidth = bounds.width;
             
@@ -188,27 +210,35 @@ public class BorderPainter {
         float lco = scaledOffset*leftWidth;
         float rco = scaledOffset*rightWidth;
         
-        float curveConstant = .45f;
+        // a magic number that represents the curvature of the radius. 0 would be a square corner with no arc at all (0 border radius) and 1 would be a straight angled corner like a /
+        // somewhere in the middle is an arc. This number is arbitrary. We need this because i used a bezier function because I couldnt figure out the equation for the "perfect" border radius
+        // so instead I use this silly hack with a bezier curve.
+        float curveConstant = .44f;
 
         // top left corner % of side space
         float lp = 1;
-        if(leftWidth != 0)
-            lp = leftWidth / (topWidth + leftWidth);
-        else
+        if(leftWidth != 0) {
+        	// subtracting 1 percent causes the borders to overlap slightly, reducing the integer roundoff error in painting. This removes the tiny white line
+        	// between the 2 different borders. The better way would be to calculate the end location of the other border side and use that instead.
+            lp = leftWidth / (topWidth + leftWidth)-.01f; 
+        } else {
             lp = 0;
+        }
 
         // top right corner % of side space
         float rp = 1;
-        if(rightWidth != 0)
-            rp = rightWidth / (topWidth + rightWidth);
-        else
+        if(rightWidth != 0) {
+        	// subtracting 1 percent causes the borders to overlap slightly, reducing the integer roundoff error in painting. This removes the tiny white line
+        	// between the 2 different borders. The better way would be to calculate the end location of the other border side and use that instead.
+            rp = rightWidth / (topWidth + rightWidth)-.01f;
+        } else {
             rp = 0;
-
-        
+        }
         
         
         Path2D path = new Path2D.Float();
         
+        // top left outside, check that theres a radius to be had
         if(leftRadius.getMaxRight(exteriorWidth) > 0) {
             
             Point2D [][] leftCurvePoints = getSubCurve(1-lp, 
@@ -217,7 +247,7 @@ public class BorderPainter {
                 new Point2D.Double(    lco,                                                             tco+curveConstant*(leftRadius.getMaxLeft(exteriorHeight))),
                 new Point2D.Double(    lco,                                                             tco+leftRadius.getMaxLeft(exteriorHeight)));
             
-            path.moveTo(    leftCurvePoints[0][3].getX(),         leftCurvePoints[0][3].getY());
+            path.moveTo(    (leftCurvePoints[0][3].getX()),         (leftCurvePoints[0][3].getY()));
             path.curveTo(    leftCurvePoints[0][2].getX(),         leftCurvePoints[0][2].getY(), 
                             leftCurvePoints[0][1].getX(),        leftCurvePoints[0][1].getY(), 
                             leftCurvePoints[0][0].getX(),        leftCurvePoints[0][0].getY());
@@ -225,7 +255,7 @@ public class BorderPainter {
             path.moveTo(    lco,                 tco);
         }
         
-        
+        // top right outside
         if(rightRadius.getMaxLeft(exteriorWidth) > 0) {
             
             Point2D [][] rightCurvePoints = getSubCurve(1-rp, 
@@ -237,18 +267,20 @@ public class BorderPainter {
             path.lineTo(     rightCurvePoints[0][0].getX(), rightCurvePoints[0][0].getY());
             path.curveTo(    rightCurvePoints[0][1].getX(), rightCurvePoints[0][1].getY(), 
                             rightCurvePoints[0][2].getX(), rightCurvePoints[0][2].getY(), 
-                            rightCurvePoints[0][3].getX(), rightCurvePoints[0][3].getY());
+                            (rightCurvePoints[0][3].getX()), (rightCurvePoints[0][3].getY()));
         } else {
             path.lineTo(sideWidth - rightRadius.getMaxLeft(exteriorWidth/2) - rco,         tco);
         }
 
         
+        // check if we draw the interior
         if(drawInterior) {
             // start drawing interior
             tco = (1+scaledOffset)*topWidth;
             lco = (1+scaledOffset)*leftWidth;
             rco = (1+scaledOffset)*rightWidth;
 
+            // top right interior, check we have a radius
             if(rightRadius.getMaxLeft(interiorWidth) > 0) {
                 
                 Point2D [][] rightCurvePoints = getSubCurve(1-rp, 
@@ -257,7 +289,7 @@ public class BorderPainter {
                         new Point2D.Double(    sideWidth - rco,                                                                     tco + curveConstant*(rightRadius.getMaxRight(interiorHeight))),
                         new Point2D.Double(    sideWidth - rco,                                                                     tco + rightRadius.getMaxRight(interiorHeight)));
                 
-                path.lineTo(rightCurvePoints[0][3].getX(), rightCurvePoints[0][3].getY());
+                path.lineTo((rightCurvePoints[0][3].getX()), (rightCurvePoints[0][3].getY()));
                 path.curveTo(    rightCurvePoints[0][2].getX(), rightCurvePoints[0][2].getY(), 
                                 rightCurvePoints[0][1].getX(), rightCurvePoints[0][1].getY(), 
                                 rightCurvePoints[0][0].getX(), rightCurvePoints[0][0].getY());
@@ -265,6 +297,7 @@ public class BorderPainter {
                 path.lineTo(sideWidth - rco,                 tco);
             }
             
+            // top left interior, check we have a radius
             if(leftRadius.getMaxRight(interiorWidth) > 0) {
                 
                 Point2D [][] leftCurvePoints = getSubCurve(1-lp, 
@@ -276,15 +309,16 @@ public class BorderPainter {
                 path.lineTo(leftCurvePoints[0][0].getX(), leftCurvePoints[0][0].getY());
                 path.curveTo(    leftCurvePoints[0][1].getX(), leftCurvePoints[0][1].getY(), 
                         leftCurvePoints[0][2].getX(), leftCurvePoints[0][2].getY(), 
-                        leftCurvePoints[0][3].getX(), leftCurvePoints[0][3].getY());
+                        (leftCurvePoints[0][3].getX()), (leftCurvePoints[0][3].getY()));
             } else {
                 path.lineTo(leftRadius.getMaxRight(interiorHeight) +  lco,                 tco);
             }
             
+            // only close the path if its a full 2d path. If its just the exterior line we leave it open
             path.closePath();
         }
         
-        
+        // rotate and translate our border to the correct side.
         path.transform(AffineTransform.getRotateInstance(rotation, 0, 0));
         path.transform(AffineTransform.getTranslateInstance(bounds.x + xOffset, bounds.y + yOffset));
         
@@ -329,6 +363,9 @@ public class BorderPainter {
         }
     }
 
+    /**
+     * Unused, remove?
+     */
     private static Rectangle shrinkRect(final Rectangle rect, final BorderPropertySet border, int sides) {
         Rectangle r2 = new Rectangle();
         r2.x = rect.x + ((sides & BorderPainter.LEFT) == 0 ? 0 : (int) border.left());
@@ -454,64 +491,6 @@ public class BorderPainter {
         // draw inner border
         paintSolid(outputDevice, bounds, border, 2, .5f, sides, currentSide, bevel);
     }
-
-    /**
-     * Gets the polygon to be filled for the border
-     *//*
-    private static Polygon getBorderSidePolygon(
-            final Rectangle bounds, final BorderPropertySet border, final int sides, 
-            int currentSide, boolean bevel) {
-        int rightCorner = 0;
-        int leftCorner = 0;
-        int topCorner = 0;
-        int bottomCorner = 0;
-        if (bevel) {
-            rightCorner = (((sides & BorderPainter.RIGHT) == BorderPainter.RIGHT) ? (int) border.right() : 0);
-            leftCorner = (((sides & BorderPainter.LEFT) == BorderPainter.LEFT) ? (int) border.left() : 0);
-            topCorner = (((sides & BorderPainter.TOP) == BorderPainter.TOP) ? (int) border.top() : 0);
-            bottomCorner = (((sides & BorderPainter.BOTTOM) == BorderPainter.BOTTOM) ? (int) border.bottom() : 0);
-        }
-        Polygon poly = null;
-        if (currentSide == BorderPainter.TOP) {
-            if ((int) border.top() != 1) {
-                // use polygons for borders over 1px wide
-                poly = new Polygon();
-                poly.addPoint(bounds.x, bounds.y);
-                poly.addPoint(bounds.x + bounds.width, bounds.y);
-                poly.addPoint(bounds.x + bounds.width - rightCorner, bounds.y + (int) border.top() - 0);
-                poly.addPoint(bounds.x + leftCorner, bounds.y + (int) border.top() - 0);
-            }
-        } else if (currentSide == BorderPainter.BOTTOM) {
-            if ((int) border.bottom() != 1) {
-                poly = new Polygon();
-                // upper right
-                poly.addPoint(bounds.x + bounds.width - rightCorner, bounds.y + bounds.height - (int) border.bottom());
-                // upper left
-                poly.addPoint(bounds.x + leftCorner, bounds.y + bounds.height - (int) border.bottom());
-                // lower left
-                poly.addPoint(bounds.x, bounds.y + bounds.height);
-                // lower right
-                poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height - 0);
-            }
-        } else if (currentSide == BorderPainter.RIGHT) {
-            if ((int) border.right() != 1) {
-                poly = new Polygon();
-                poly.addPoint(bounds.x + bounds.width, bounds.y);
-                poly.addPoint(bounds.x + bounds.width - (int) border.right(), bounds.y + topCorner);
-                poly.addPoint(bounds.x + bounds.width - (int) border.right(), bounds.y + bounds.height - bottomCorner);
-                poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
-            }
-        } else if (currentSide == BorderPainter.LEFT) {
-            if ((int) border.left() != 1) {
-                poly = new Polygon();
-                poly.addPoint(bounds.x, bounds.y);
-                poly.addPoint(bounds.x + (int) border.left(), bounds.y + topCorner);
-                poly.addPoint(bounds.x + (int) border.left(), bounds.y + bounds.height - bottomCorner);
-                poly.addPoint(bounds.x, bounds.y + bounds.height);
-            }
-        }
-        return poly;
-    }*/
 
     /**
      * @param xOffset     for inline borders, to determine dash_phase of top and bottom

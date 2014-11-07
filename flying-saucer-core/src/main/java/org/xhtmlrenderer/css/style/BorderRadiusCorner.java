@@ -46,14 +46,7 @@ public class BorderRadiusCorner {
 				_leftPercent = _rightPercent = true;
 				_left = _right = value.asFloat() / 100.0f;
 			} else {
-				_left = _right = (int)LengthValue.calcFloatProportionalValue(
-	                    style,
-	                    fromVal,
-	                    lv.getStringValue(),
-	                    value.asFloat(),
-	                    CSSPrimitiveValue.CSS_NUMBER,
-	                    0,
-	                    ctx);
+				_left = _right = (int) lv.getFloatProportionalTo(fromVal, 0, ctx);
 			}
 			//first = second = (LengthValue)value;
 		}
