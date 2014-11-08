@@ -17,6 +17,12 @@ public class BorderRadiusCorner {
 
 	public BorderRadiusCorner() {
 	}
+	public BorderRadiusCorner(float left, float right) {
+		this._left = left;
+		this._right = right;
+		this._rightPercent = false;
+		this._rightPercent = false;
+	}
 	public BorderRadiusCorner(CSSName fromVal, CalculatedStyle style, CssContext ctx) {
 		FSDerivedValue value = style.valueByName(fromVal);
 		PropertyValue first = null, second = null;
@@ -98,16 +104,16 @@ public class BorderRadiusCorner {
 	public float getMaxLeft(float max) {
 		if(_leftPercent)
 			return max*_left;
-		//if(_left > max)
-		//	return max;
+		if(_left > max)
+			return max;
 		return _left;
 	}
 
 	public float getMaxRight(float max) {
 		if(_rightPercent)
 			return max*_right;
-		//i//f(_right > max)
-		//	return max;
+		if(_right > max)
+			return max;
 		return _right;
 	}
 
