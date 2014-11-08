@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.css.style.derived;
 
+import java.awt.Rectangle;
 import java.util.List;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -71,6 +72,26 @@ public class BorderPropertySet extends RectPropertySet {
         this._topRight = new BorderRadiusCorner();
         this._bottomLeft = new BorderRadiusCorner();
         this._bottomRight = new BorderRadiusCorner();
+    }
+    public BorderPropertySet(
+            float top,
+            float right,
+            float bottom,
+            float left,
+    		BorderRadiusCorner topLeft,
+    		BorderRadiusCorner topRight,
+    		BorderRadiusCorner bottomRight,
+    		BorderRadiusCorner bottomLeft
+    ) {
+        this._top = top;
+        this._right = right;
+        this._bottom = bottom;
+        this._left = left;
+        
+        this._topLeft = topLeft;
+        this._topRight = topRight;
+        this._bottomLeft = bottomLeft;
+        this._bottomRight = bottomRight;
     }
     
     public BorderPropertySet(
@@ -271,6 +292,59 @@ public class BorderPropertySet extends RectPropertySet {
 	public void setTopLeft(BorderRadiusCorner topLeft) {
 		this._topLeft = topLeft;
 	}
+	
+	/**
+	 * Returns a new BorderPropertySet whos border radius's are set in px values and fit inside the given bounds.
+	 * This should be called prior to using the border radius for painting.
+	 * @param bounds
+	 * @return
+	 */
+	public BorderPropertySet normalizeBorderRadius(Rectangle bounds) {
+		float factor = 1;
+		
+		// top
+		factor = Math.min(factor, bounds.width / getSideWidth(_topLeft, _topRight, bounds.width));
+		// bottom
+		factor = Math.min(factor, bounds.width / getSideWidth(_bottomRight, _bottomLeft, bounds.width));
+		// right
+		factor = Math.min(factor, bounds.height / getSideWidth(_topRight, _bottomRight, bounds.height));
+		// left
+		factor = Math.min(factor, bounds.height / getSideWidth(_bottomLeft, _bottomRight, bounds.height));
+		
+		BorderPropertySet newPropSet = new BorderPropertySet(_top, _right, _bottom, _left, 
+				new BorderRadiusCorner(factor*_topLeft.getMaxLeft(bounds.height), factor*_topLeft.getMaxRight(bounds.width)), 
+				new BorderRadiusCorner(factor*_topRight.getMaxLeft(bounds.width), factor*_topRight.getMaxRight(bounds.height)), 
+				new BorderRadiusCorner(factor*_bottomRight.getMaxLeft(bounds.height), factor*_bottomRight.getMaxRight(bounds.width)), 
+				new BorderRadiusCorner(factor*_bottomLeft.getMaxLeft(bounds.width), factor*_bottomLeft.getMaxRight(bounds.height)));
+		
+		newPropSet._topColor = _topColor;
+		newPropSet._rightColor = _rightColor;
+		newPropSet._bottomColor = _bottomColor;
+		newPropSet._leftColor = _leftColor;
+		
+		newPropSet._topStyle = _topStyle;
+		newPropSet._rightStyle = _rightStyle;
+		newPropSet._bottomStyle = _bottomStyle;
+		newPropSet._leftStyle = _leftStyle;
+	    
+		return newPropSet;
+	}
 
+	/**
+	 * helper function for normalizeBorderRadius. Gets the max side width for each of the corners or the side width whichever is larger
+	 * @param left
+	 * @param right
+	 * @param sideWidth
+	 * @return
+	 */
+	private float getSideWidth(BorderRadiusCorner left, BorderRadiusCorner right, float sideWidth) {
+		return Math.max(sideWidth, left.getMaxRight(sideWidth) + right.getMaxLeft(sideWidth));
+	}
 }
+
+
+
+
+
+
 
