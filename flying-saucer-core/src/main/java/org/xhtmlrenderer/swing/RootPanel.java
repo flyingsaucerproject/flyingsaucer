@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import javax.swing.CellRendererPane;
-import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
@@ -679,19 +678,10 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     }
 
     public boolean getScrollableTracksViewportHeight() {
-        // We find the JViewport, and if the last layout height of this
-        // component is <= the viewport height then we make the viewport
-        // height match the component size.
-        
-        // Track back until we find a parent that isn't a JLayer,
-        Container parent = getParent();
-        while (parent instanceof JLayer) {
-            parent = parent.getParent();
-        }
-        if (parent instanceof JViewport) {
-            return getPreferredSize().height <= parent.getHeight();
-        }
-        return false;
+        // If the last layout height of this component is <= the viewport
+        // height then we make the viewport height match the component size.
+        int viewportHeight = enclosingScrollPane.getViewport().getHeight();
+        return getPreferredSize().height <= viewportHeight;
     }
 
 }
