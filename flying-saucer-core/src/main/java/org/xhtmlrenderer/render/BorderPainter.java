@@ -109,6 +109,7 @@ public class BorderPainter {
     public static Path2D generateBorderShape(Rectangle bounds, int side, BorderPropertySet border, boolean drawInterior, float scaledOffset) {
         return generateBorderShape(bounds, side, border, drawInterior, scaledOffset, 1);
     }
+    
     /**
      * Generates one side of a border
      * @param bounds bounds of the container
@@ -125,12 +126,16 @@ public class BorderPainter {
          * the border is then rotated and translated to its appropriate side. Uses of "left" and "right" are assuming a perspective of inside the shape looking out.
          */
     	
+    	border = border.normalizeBorderRadius(bounds);
+    	
         float sideWidth = -1, topWidth = widthScale, leftWidth = widthScale, rightWidth = widthScale;
         double rotation = 0;
         float interiorWidth = 0, interiorHeight = 0,
                 exteriorWidth = 0, exteriorHeight = 0;
-        BorderRadiusCorner leftRadius = null, rightRadius = null;
+        BorderRadiusCorner leftCorner = null, 
+        		rightCorner = null;
         int xOffset = 0, yOffset = 0;
+        
         
         // check what side of the border we are using, then set local variables to the appropriate values. 
         // EG: if were doing bottom border then left would be bottom right corner of the rectangle and right would be bottom left...
@@ -141,8 +146,8 @@ public class BorderPainter {
             leftWidth = widthScale*border.left();
             rightWidth = widthScale*border.right();
             
-            leftRadius = border.getTopLeft();
-            rightRadius = border.getTopRight();
+            leftCorner = border.getTopLeft();
+            rightCorner = border.getTopRight();
 
             interiorWidth = bounds.width - (1+scaledOffset)*widthScale*border.left() - (1+scaledOffset)*widthScale*border.right();
             interiorHeight = bounds.height - (1+scaledOffset)*widthScale*border.top() - (1+scaledOffset)*widthScale*border.bottom();
@@ -157,13 +162,13 @@ public class BorderPainter {
             leftWidth = widthScale*border.top();
             rightWidth = widthScale*border.bottom();
             
-            leftRadius = border.getTopRight();
-            rightRadius = border.getBottomRight();
+            leftCorner = border.getTopRight();
+            rightCorner = border.getBottomRight();
 
-            interiorHeight = bounds.width - (1+scaledOffset)*widthScale*border.left() - (1+scaledOffset)*widthScale*border.right();
             interiorWidth = bounds.height - (1+scaledOffset)*widthScale*border.top() - (1+scaledOffset)*widthScale*border.bottom();
+            interiorHeight = bounds.width - (1+scaledOffset)*widthScale*border.left() - (1+scaledOffset)*widthScale*border.right();
+            exteriorWidth = bounds.height - scaledOffset*widthScale*border.top() - scaledOffset*widthScale*border.bottom();
             exteriorHeight = bounds.width - scaledOffset*widthScale*border.left() - scaledOffset*widthScale*border.right();
-             exteriorWidth = bounds.height - scaledOffset*widthScale*border.top() - scaledOffset*widthScale*border.bottom();
 
             xOffset = bounds.width;
             yOffset = 0;
@@ -175,8 +180,8 @@ public class BorderPainter {
             leftWidth = widthScale*border.right();
             rightWidth = widthScale*border.left();
             
-            leftRadius = border.getBottomRight();
-            rightRadius = border.getBottomLeft();
+            leftCorner = border.getBottomRight();
+            rightCorner = border.getBottomLeft();
 
             interiorWidth = bounds.width - (1+scaledOffset)*widthScale*border.left() - (1+scaledOffset)*widthScale*border.right();
             interiorHeight = bounds.height - (1+scaledOffset)*widthScale*border.top() - (1+scaledOffset)*widthScale*border.bottom();
@@ -193,17 +198,19 @@ public class BorderPainter {
             leftWidth = widthScale*border.bottom();
             rightWidth = widthScale*border.top();
             
-            leftRadius = border.getBottomLeft();
-            rightRadius = border.getTopLeft();
+            leftCorner = border.getBottomLeft();
+            rightCorner = border.getTopLeft();
             
-            interiorHeight = bounds.width - (1+scaledOffset)*widthScale*border.left() - (1+scaledOffset)*widthScale*border.right();
-            interiorWidth = bounds.height - (1+scaledOffset)*widthScale*border.top() - (1+scaledOffset)*widthScale*border.bottom();
-            exteriorHeight = (bounds.width - scaledOffset*widthScale*border.left() - scaledOffset*widthScale*border.right());
-             exteriorWidth = bounds.height - scaledOffset*widthScale*border.top() - scaledOffset*widthScale*border.bottom();
+            interiorWidth = 	bounds.height - (1+scaledOffset)*widthScale*border.top() - (1+scaledOffset)*widthScale*border.bottom();
+            interiorHeight = 	bounds.width - (1+scaledOffset)*widthScale*border.left() - (1+scaledOffset)*widthScale*border.right();
+            exteriorWidth = 	bounds.height - scaledOffset*widthScale*border.top() - scaledOffset*widthScale*border.bottom();
+            exteriorHeight = 	bounds.width - scaledOffset*widthScale*border.left() - scaledOffset*widthScale*border.right();
             
             xOffset = 0;
             yOffset = bounds.height;
             rotation = 3 * Math.PI / 2;
+        } else {
+        	throw new IllegalArgumentException("There is no side to generate border bounds for.");
         }
         
         float tco = scaledOffset*topWidth;
@@ -239,13 +246,13 @@ public class BorderPainter {
         Path2D path = new Path2D.Float();
         
         // top left outside, check that theres a radius to be had
-        if(leftRadius.getMaxRight(exteriorWidth) > 0) {
+        if(leftCorner.getMaxRight(exteriorWidth) > 0) {
             
             Point2D [][] leftCurvePoints = getSubCurve(1-lp, 
-                new Point2D.Double(    leftRadius.getMaxRight(exteriorWidth) + lco,                     tco), 
-                new Point2D.Double(    curveConstant*(leftRadius.getMaxRight(exteriorWidth)) + lco,     tco), 
-                new Point2D.Double(    lco,                                                             tco+curveConstant*(leftRadius.getMaxLeft(exteriorHeight))),
-                new Point2D.Double(    lco,                                                             tco+leftRadius.getMaxLeft(exteriorHeight)));
+                new Point2D.Double(    leftCorner.getMaxRight(exteriorWidth) + lco,                     tco), 
+                new Point2D.Double(    curveConstant*leftCorner.getMaxRight(exteriorWidth) + lco,     tco), 
+                new Point2D.Double(    lco,                                                             tco + curveConstant*leftCorner.getMaxLeft(exteriorHeight)),
+                new Point2D.Double(    lco,                                                             tco + leftCorner.getMaxLeft(exteriorHeight)));
             
             path.moveTo(    (leftCurvePoints[0][3].getX()),         (leftCurvePoints[0][3].getY()));
             path.curveTo(    leftCurvePoints[0][2].getX(),         leftCurvePoints[0][2].getY(), 
@@ -256,20 +263,20 @@ public class BorderPainter {
         }
         
         // top right outside
-        if(rightRadius.getMaxLeft(exteriorWidth) > 0) {
+        if(rightCorner.getMaxLeft(exteriorWidth) > 0) {
             
             Point2D [][] rightCurvePoints = getSubCurve(1-rp, 
-                    new Point2D.Double(    sideWidth - rightRadius.getMaxLeft(exteriorWidth) - rco,                         tco), 
-                    new Point2D.Double(    sideWidth - curveConstant*(rightRadius.getMaxLeft(exteriorWidth)) - rco,         tco), 
-                    new Point2D.Double(    sideWidth - rco,                                                                 tco + curveConstant*(rightRadius.getMaxRight(exteriorHeight))),
-                    new Point2D.Double(    sideWidth - rco,                                                                 tco + rightRadius.getMaxRight(exteriorHeight)));
+                    new Point2D.Double(    sideWidth - rightCorner.getMaxLeft(exteriorWidth) - rco,                         tco), 
+                    new Point2D.Double(    sideWidth - curveConstant*rightCorner.getMaxLeft(exteriorWidth) - rco,         tco), 
+                    new Point2D.Double(    sideWidth - rco,                                                                 tco + curveConstant*rightCorner.getMaxRight(exteriorHeight)),
+                    new Point2D.Double(    sideWidth - rco,                                                                 tco + rightCorner.getMaxRight(exteriorHeight)));
             
             path.lineTo(     rightCurvePoints[0][0].getX(), rightCurvePoints[0][0].getY());
             path.curveTo(    rightCurvePoints[0][1].getX(), rightCurvePoints[0][1].getY(), 
                             rightCurvePoints[0][2].getX(), rightCurvePoints[0][2].getY(), 
                             (rightCurvePoints[0][3].getX()), (rightCurvePoints[0][3].getY()));
         } else {
-            path.lineTo(sideWidth - rightRadius.getMaxLeft(exteriorWidth/2) - rco,         tco);
+            path.lineTo(sideWidth - rightCorner.getMaxLeft(exteriorWidth/2) - rco,         tco);
         }
 
         
@@ -281,13 +288,13 @@ public class BorderPainter {
             rco = (1+scaledOffset)*rightWidth;
 
             // top right interior, check we have a radius
-            if(rightRadius.getMaxLeft(interiorWidth) > 0) {
+            if(rightCorner.getMaxLeft(interiorWidth) > 0) {
                 
                 Point2D [][] rightCurvePoints = getSubCurve(1-rp, 
-                        new Point2D.Double(    sideWidth - rightRadius.getMaxLeft(interiorWidth) - rco,                             tco), 
-                        new Point2D.Double(    sideWidth - curveConstant*(rightRadius.getMaxLeft(interiorWidth)) - rco,             tco), 
-                        new Point2D.Double(    sideWidth - rco,                                                                     tco + curveConstant*(rightRadius.getMaxRight(interiorHeight))),
-                        new Point2D.Double(    sideWidth - rco,                                                                     tco + rightRadius.getMaxRight(interiorHeight)));
+                        new Point2D.Double(    sideWidth - rightCorner.getMaxLeft(interiorWidth) - rco,                             tco), 
+                        new Point2D.Double(    sideWidth - curveConstant*rightCorner.getMaxLeft(interiorWidth) - rco,             tco), 
+                        new Point2D.Double(    sideWidth - rco,                                                                     tco + curveConstant*rightCorner.getMaxRight(interiorHeight)),
+                        new Point2D.Double(    sideWidth - rco,                                                                     tco + rightCorner.getMaxRight(interiorHeight)));
                 
                 path.lineTo((rightCurvePoints[0][3].getX()), (rightCurvePoints[0][3].getY()));
                 path.curveTo(    rightCurvePoints[0][2].getX(), rightCurvePoints[0][2].getY(), 
@@ -298,20 +305,20 @@ public class BorderPainter {
             }
             
             // top left interior, check we have a radius
-            if(leftRadius.getMaxRight(interiorWidth) > 0) {
+            if(leftCorner.getMaxRight(interiorWidth) > 0) {
                 
                 Point2D [][] leftCurvePoints = getSubCurve(1-lp, 
-                    new Point2D.Double(    leftRadius.getMaxRight(interiorWidth) + lco,                         tco), 
-                    new Point2D.Double(    curveConstant*(leftRadius.getMaxRight(interiorWidth)) + lco,         tco), 
-                    new Point2D.Double(    lco,                                                                 tco + curveConstant*(leftRadius.getMaxLeft(interiorHeight))),
-                    new Point2D.Double(    lco,                                                                 tco + leftRadius.getMaxLeft(interiorHeight)));
+                    new Point2D.Double(    leftCorner.getMaxRight(interiorWidth) + lco,                         tco), 
+                    new Point2D.Double(    curveConstant*leftCorner.getMaxRight(interiorWidth) + lco,         tco), 
+                    new Point2D.Double(    lco,                                                                 tco + curveConstant*(leftCorner.getMaxLeft(interiorHeight))),
+                    new Point2D.Double(    lco,                                                                 tco + leftCorner.getMaxLeft(interiorHeight)));
                 
                 path.lineTo(leftCurvePoints[0][0].getX(), leftCurvePoints[0][0].getY());
                 path.curveTo(    leftCurvePoints[0][1].getX(), leftCurvePoints[0][1].getY(), 
                         leftCurvePoints[0][2].getX(), leftCurvePoints[0][2].getY(), 
                         (leftCurvePoints[0][3].getX()), (leftCurvePoints[0][3].getY()));
             } else {
-                path.lineTo(leftRadius.getMaxRight(interiorHeight) +  lco,                 tco);
+                path.lineTo(leftCorner.getMaxRight(interiorHeight) +  lco,                 tco);
             }
             
             // only close the path if its a full 2d path. If its just the exterior line we leave it open
