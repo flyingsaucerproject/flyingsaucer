@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.Area;
 import java.util.Iterator;
 import java.util.List;
 
@@ -220,9 +221,14 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             return;
         }
         
-        Shape borderBounds = BorderPainter.generateBorderBounds(backgroundBounds, border, false);
+        Area borderBounds = new Area(BorderPainter.generateBorderBounds(backgroundBounds, border, false));
 
         Shape oldclip = getClip();
+        if(oldclip != null) {
+            // we need to respect the clip sent to us, get the intersection between the old and the new
+        	borderBounds.intersect(new Area(oldclip));
+        }
+        
         setClip(borderBounds);
         
         if (backgroundColor != null && backgroundColor != FSRGBColor.TRANSPARENT) {

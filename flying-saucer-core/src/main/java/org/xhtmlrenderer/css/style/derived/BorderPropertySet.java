@@ -73,8 +73,8 @@ public class BorderPropertySet extends RectPropertySet {
         
         this._topLeft = topLeftCorner;
         this._topRight = topRightCorner;
-        this._bottomLeft = bottomRightCorner;
-        this._bottomRight = bottomLeftCorner;
+        this._bottomLeft = bottomLeftCorner;
+        this._bottomRight = bottomRightCorner;
     }
 
     public BorderPropertySet(
