@@ -1,6 +1,5 @@
 package org.xhtmlrenderer.css.style.derived;
 
-import java.awt.Rectangle;
 import java.util.List;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -55,26 +54,6 @@ public class BorderPropertySet extends RectPropertySet {
         this._topRight = border._topRight;
         this._bottomLeft = border._bottomLeft;
         this._bottomRight = border._bottomRight;
-    }
-    public BorderPropertySet(
-            float top,
-            float right,
-            float bottom,
-            float left,
-            BorderRadiusCorner topLeftCorner,
-            BorderRadiusCorner topRightCorner,
-            BorderRadiusCorner bottomRightCorner,
-            BorderRadiusCorner bottomLeftCorner
-    ) {
-        this._top = top;
-        this._right = right;
-        this._bottom = bottom;
-        this._left = left;
-        
-        this._topLeft = topLeftCorner;
-        this._topRight = topRightCorner;
-        this._bottomLeft = bottomRightCorner;
-        this._bottomRight = bottomLeftCorner;
     }
 
     public BorderPropertySet(
@@ -258,82 +237,40 @@ public class BorderPropertySet extends RectPropertySet {
     }    
     
     public boolean hasBorderRadius() {
-        return getTopLeft().hasRadius() || getTopRight().hasRadius() || getBottomLeft().hasRadius() || getBottomRight().hasRadius();
+    	return getTopLeft().hasRadius() || getTopRight().hasRadius() || getBottomLeft().hasRadius() || getBottomRight().hasRadius();
     }
     
     public BorderRadiusCorner getBottomRight() {
-        return _bottomRight;
-    }
+		return _bottomRight;
+	}
 
-    public void setBottomRight(BorderRadiusCorner bottomRight) {
-        this._bottomRight = bottomRight;
-    }
+	public void setBottomRight(BorderRadiusCorner bottomRight) {
+		this._bottomRight = bottomRight;
+	}
 
-    public BorderRadiusCorner getBottomLeft() {
-        return _bottomLeft;
-    }
+	public BorderRadiusCorner getBottomLeft() {
+		return _bottomLeft;
+	}
 
-    public void setBottomLeft(BorderRadiusCorner bottomLeft) {
-        this._bottomLeft = bottomLeft;
-    }
+	public void setBottomLeft(BorderRadiusCorner bottomLeft) {
+		this._bottomLeft = bottomLeft;
+	}
 
-    public BorderRadiusCorner getTopRight() {
-        return _topRight;
-    }
+	public BorderRadiusCorner getTopRight() {
+		return _topRight;
+	}
 
-    public void setTopRight(BorderRadiusCorner topRight) {
-        this._topRight = topRight;
-    }
+	public void setTopRight(BorderRadiusCorner topRight) {
+		this._topRight = topRight;
+	}
 
-    public BorderRadiusCorner getTopLeft() {
-        return _topLeft;
-    }
+	public BorderRadiusCorner getTopLeft() {
+		return _topLeft;
+	}
 
-    public void setTopLeft(BorderRadiusCorner topLeft) {
-        this._topLeft = topLeft;
-    }
-    
-    public BorderPropertySet normalizedInstance(Rectangle bounds) {
-        float factor = 1;
-        
-        // top
-        factor = Math.min(factor, bounds.width / getSideWidth(_topLeft, _topRight, bounds.width));
-        // bottom
-        factor = Math.min(factor, bounds.width / getSideWidth(_bottomRight, _bottomLeft, bounds.width));
-        // right
-        factor = Math.min(factor, bounds.height / getSideWidth(_topRight, _bottomRight, bounds.height));
-        // left
-        factor = Math.min(factor, bounds.height / getSideWidth(_bottomLeft, _bottomRight, bounds.height));
-        
-        BorderPropertySet newPropSet = new BorderPropertySet(_top, _right, _bottom, _left, 
-                new BorderRadiusCorner(factor*_topLeft.getMaxLeft(bounds.height), factor*_topLeft.getMaxRight(bounds.width)), 
-                new BorderRadiusCorner(factor*_topRight.getMaxLeft(bounds.width), factor*_topRight.getMaxRight(bounds.height)), 
-                new BorderRadiusCorner(factor*_bottomRight.getMaxLeft(bounds.height), factor*_bottomRight.getMaxRight(bounds.width)), 
-                new BorderRadiusCorner(factor*_bottomLeft.getMaxLeft(bounds.width), factor*_bottomLeft.getMaxRight(bounds.height)));
-        
-        newPropSet._topColor = _topColor;
-        newPropSet._rightColor = _rightColor;
-        newPropSet._bottomColor = _bottomColor;
-        newPropSet._leftColor = _leftColor;
-        
-        newPropSet._topStyle = _topStyle;
-        newPropSet._rightStyle = _rightStyle;
-        newPropSet._bottomStyle = _bottomStyle;
-        newPropSet._leftStyle = _leftStyle;
-        
-        return newPropSet;
-    }
-
-    /**
-     * helper function for normalizeBorderRadius. Gets the max side width for each of the corners or the side width whichever is larger
-     * @param left
-     * @param right
-     * @param sideWidth
-     * @return
-     */
-    private float getSideWidth(BorderRadiusCorner left, BorderRadiusCorner right, float sideWidth) {
-        return Math.max(sideWidth, left.getMaxRight(sideWidth) + right.getMaxLeft(sideWidth));
-    }
+	public void setTopLeft(BorderRadiusCorner topLeft) {
+		this._topLeft = topLeft;
+	}
 
 }
 
