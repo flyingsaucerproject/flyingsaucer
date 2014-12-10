@@ -221,7 +221,8 @@ public class ITextFontResolver implements FontResolver {
             // unfortunately it isn't exposed to the caller.
             fontFamily.addFontDescription(descr);
         } else {
-            throw new IOException("Unsupported font type");
+            throw new IOException("Unsupported font type on file: "+lower+
+				  ".  Supported types are .otf, .ttf, .ttc, .afm, and .pfm.");
         }
     }
 
@@ -272,7 +273,8 @@ public class ITextFontResolver implements FontResolver {
             // unfortunately it isn't exposed to the caller.
             fontFamily.addFontDescription(descr);
         } else {
-            throw new IOException("Unsupported font type");
+            throw new IOException("Unsupported font type on file: "+lower+
+				  ".  Supported types are .otf, .ttf, .ttc, .afm, .pfm, .pfb and .pfa.");
         }
     }
 
