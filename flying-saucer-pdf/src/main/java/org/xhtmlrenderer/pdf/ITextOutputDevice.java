@@ -505,6 +505,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (fontSpec != null) {
             int need = ITextFontResolver.convertWeightToInt(fontSpec.fontWeight);
             int have = desc.getWeight();
+
             if (need > have) {
                 cb.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_STROKE);
                 float lineWidth = fontSize * 0.04f; // 4% of font size
