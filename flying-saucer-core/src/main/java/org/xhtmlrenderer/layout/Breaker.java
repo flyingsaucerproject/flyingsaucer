@@ -177,7 +177,7 @@ public class Breaker {
     }
 
 	public static BreakIterator getWordStream(String s) {
-		BreakIterator i = BreakIterator.getWordInstance();
+		BreakIterator i = new UrlAwareLineBreakIterator();
 		i.setText(s);
 		return i;
 	}
