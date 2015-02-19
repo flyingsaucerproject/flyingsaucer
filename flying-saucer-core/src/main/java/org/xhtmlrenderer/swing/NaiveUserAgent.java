@@ -173,9 +173,14 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 		if (needsRedirect(status)) {
 			// get redirect url from "location" header field
 			String newUrl = origin.getHeaderField("Location");
-			XRLog.load("Connection is redirected to: " + newUrl);
-			// open the new connnection again
-			connection = new URL(newUrl).openConnection();
+			
+			if (origin.getInstanceFollowRedirects()) {
+				XRLog.load("Connection is redirected to: " + newUrl);
+				// open the new connnection again
+				connection = new URL(newUrl).openConnection();
+			} else {
+				XRLog.load("Redirect is required but not allowed to: " + newUrl);
+			}
 		}
 		return connection;
 	}
