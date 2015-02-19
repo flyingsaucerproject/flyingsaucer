@@ -117,17 +117,17 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @return The stylesheet value
      */
     //TOdO:implement this with nio.
-    protected InputStream resolveAndOpenStream(String uri) {
+    protected InputStream resolveAndOpenStream(final String uri) {
         java.io.InputStream is = null;
-        uri = resolveURI(uri);
+        String resolvedUri = resolveURI(uri);
         try {
-            is = new URL(uri).openStream();
+            is = new URL(resolvedUri).openStream();
         } catch (java.net.MalformedURLException e) {
-            XRLog.exception("bad URL given: " + uri, e);
+            XRLog.exception("bad URL given: " + resolvedUri, e);
         } catch (java.io.FileNotFoundException e) {
-            XRLog.exception("item at URI " + uri + " not found");
+            XRLog.exception("item at URI " + resolvedUri + " not found");
         } catch (java.io.IOException e) {
-            XRLog.exception("IO problem for " + uri, e);
+            XRLog.exception("IO problem for " + resolvedUri, e);
         }
         return is;
     }
