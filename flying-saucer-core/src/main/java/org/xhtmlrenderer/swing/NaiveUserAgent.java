@@ -121,7 +121,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         java.io.InputStream is = null;
         String resolvedUri = resolveURI(uri);
         try {
-            is = new URL(resolvedUri).openStream();
+            is = openStream(resolvedUri);
         } catch (java.net.MalformedURLException e) {
             XRLog.exception("bad URL given: " + resolvedUri, e);
         } catch (java.io.FileNotFoundException e) {
@@ -131,6 +131,10 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         }
         return is;
     }
+	
+	protected InputStream openStream(String uri) throws MalformedURLException, IOException {
+		return new URL(uri).openStream();
+	}
 
     /**
      * Retrieves the CSS located at the given URI.  It's assumed the URI does point to a CSS file--the URI will
