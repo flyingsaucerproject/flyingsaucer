@@ -134,15 +134,25 @@ public class ITextFontResolver implements FontResolver {
             }
 
             boolean embedded = style.isIdent(CSSName.FS_PDF_FONT_EMBED, IdentValue.EMBED);
-
             String encoding = style.getStringProperty(CSSName.FS_PDF_FONT_ENCODING);
-
             String fontFamily = null;
+            IdentValue fontWeight = null;
+            IdentValue fontStyle = null;
+
             if (rule.hasFontFamily()) {
                 fontFamily = style.valueByName(CSSName.FONT_FAMILY).asString();
             }
+
+            if (rule.hasFontWeight()) {
+                fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
+            }
+
+            if (rule.hasFontStyle()) {
+                fontStyle = style.getIdent(CSSName.FONT_STYLE);
+            }
+
             try {
-                addFontFaceFont(fontFamily, src.asString(), encoding, embedded, font1, font2);
+                addFontFaceFont(fontFamily, fontWeight, fontStyle, src.asString(), encoding, embedded, font1, font2);
             } catch (DocumentException e) {
                 XRLog.exception("Could not load font " + src.asString(), e);
                 continue;
@@ -243,7 +253,7 @@ public class ITextFontResolver implements FontResolver {
     }
 
     private void addFontFaceFont(
-            String fontFamilyNameOverride, String uri, String encoding, boolean embedded, byte[] afmttf, byte[] pfb)
+            String fontFamilyNameOverride, IdentValue fontWeightOverride, IdentValue fontStyleOverride, String uri, String encoding, boolean embedded, byte[] afmttf, byte[] pfb)
             throws DocumentException, IOException {
         String lower = uri.toLowerCase();
         if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
@@ -267,6 +277,14 @@ public class ITextFontResolver implements FontResolver {
                 }
 
                 descr.setFromFontFace(true);
+
+                if (fontWeightOverride != null) {
+                    descr.setWeight(convertWeightToInt(fontWeightOverride));
+                }
+
+                if (fontStyleOverride != null) {
+                    descr.setStyle(fontStyleOverride);
+                }
 
                 fontFamily.addFontDescription(descr);
             }
