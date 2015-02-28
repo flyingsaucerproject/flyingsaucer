@@ -106,6 +106,29 @@
           </execution>
         </executions>
       </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <configuration>
+                <finalName>${project.artifactId}-shaded</finalName>
+                <artifactSet>
+                    <includes>
+                        <include>flying-saucer-core</include>
+                        <include>flying-saucer-pdf</include>
+                        <include>flying-saucer-log4j</include>
+                    </includes>
+                </artifactSet>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
   </build>
 
