@@ -65,6 +65,7 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
+import org.xhtmlrenderer.pdf.util.TextUtilPDF;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;
@@ -520,7 +521,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
         cb.setTextMatrix((float) mx[0], b, c, (float) mx[3], (float) mx[4], (float) mx[5]);
         if (info == null) {
-            cb.showText(s);
+            cb.showText(TextUtilPDF.bidifyString(s));
         } else {
             PdfTextArray array = makeJustificationArray(s, info);
             cb.showText(array);
