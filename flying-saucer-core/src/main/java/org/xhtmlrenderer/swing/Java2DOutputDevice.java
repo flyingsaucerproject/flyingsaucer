@@ -66,7 +66,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         this(outputImage.createGraphics());
     }
     
-    
+
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         if (inlineText.isSelected()) {
             InlineLayoutBox iB = inlineText.getParent();
@@ -200,7 +200,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                     image, (int)location.getX(), (int)location.getY(), null);
         }
     }
-    
+
     public void setOpacity(float opacity) {
         if (opacity == 1)
         {
@@ -236,11 +236,11 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void setClip(Shape s) {
         _graphics.setClip(s);
     }
-    
+
     public Shape getClip() {
         return _graphics.getClip();
     }
-    
+
     public void clip(Shape s) {
         _graphics.clip(s);
     }
@@ -284,7 +284,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void fill(Shape s) {
         _graphics.fill(s);
     }
-    
+
     public void draw(Shape s) {
         _graphics.draw(s);
     }
@@ -292,11 +292,11 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void drawImage(FSImage image, int x, int y) {
         _graphics.drawImage(((AWTFSImage)image).getImage(), x, y, null);
     }
-    
+
     public boolean isSupportsSelection() {
         return true;
     }
-    
+
     public boolean isSupportsCMYKColors() {
         return true;
     }
@@ -331,5 +331,6 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                 gradient.getEndX() + x, gradient.getEndY() + y, fractions, colors);
 		_graphics.setPaint(paint);
 		_graphics.fillRect(x, y, width, height);
+		_graphics.setPaint(null);
 	}
 }
