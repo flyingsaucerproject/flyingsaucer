@@ -476,7 +476,7 @@ public class CSSParser {
 //      '{' S* declaration [ ';' S* declaration ]* '}' S*
 //    ;
     private void font_face(Stylesheet stylesheet) throws IOException {
-        //System.out.println("font_face()");
+//        System.out.println(font_face()");
         Token t = next();
         try {
             FontFaceRule fontFaceRule = new FontFaceRule(stylesheet.getOrigin());
@@ -488,8 +488,13 @@ public class CSSParser {
                 skip_whitespace();
                 t = next();
                 if (t == Token.TK_LBRACE) {
+                    // Prevent runaway threads with a max loop/counter
+                    int maxLoops = 1 * 1024 * 1024; // 1M is too much, 1K is probably too...
+                    int i = 0;
                     LOOP:
                     while (true) {
+                        if (++i >= maxLoops)
+                            throw new CSSParseException(t, Token.TK_RBRACE, getCurrentLine());
                         skip_whitespace();
                         t = la();
                         if (t == Token.TK_RBRACE) {
