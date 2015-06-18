@@ -12,7 +12,6 @@ public class TextUtilPDF {
 	 * @return String
 	 */
 	public static String bidifyString(String s){
-		System.out.println("Entered bidifyString method");
 		Bidi bidi = new Bidi(s, Bidi.DIRECTION_LEFT_TO_RIGHT);
 
 		int count = bidi.getRunCount();
