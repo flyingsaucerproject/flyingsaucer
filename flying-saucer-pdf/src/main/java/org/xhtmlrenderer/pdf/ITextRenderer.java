@@ -273,6 +273,9 @@ public class ITextRenderer {
         renderingContext.setPageCount(pageCount);
         firePreWrite(pageCount); // opportunity to adjust meta data
         setDidValues(doc); // set PDF header fields from meta data
+        if(docListener != null) {
+            docListener.setPageCount(pageCount);
+        }
 
         for (int i = 0; i < pageCount; i++) {
             PageBox currentPage = (PageBox) pages.get(i);
@@ -291,6 +294,8 @@ public class ITextRenderer {
                 doc.newPage();
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());
             }
+
+            currentPage.clear();
         }
 
         _outputDevice.finish(renderingContext, _root);
