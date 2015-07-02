@@ -368,7 +368,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
         int w = c.getTextRenderer().getWidth(
                 c.getFontContext(),
-                getStyle().getFSFont(c),
+                getStyle().getFSFonts(c),
                 text);
 
         MarkerData.TextMarker result = new MarkerData.TextMarker();

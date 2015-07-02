@@ -61,7 +61,7 @@ public class InlineText {
         if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
             setWidth(c.getTextRenderer().getWidth(c.getFontContext(), 
-                    getParent().getStyle().getFSFont(c),
+                    getParent().getStyle().getFSFonts(c),
                     getSubstring()));
             setTrimmedTrailingSpace(true);
         } 
@@ -160,7 +160,7 @@ public class InlineText {
         _end = value.length();
         _masterText = value;
         _width = c.getTextRenderer().getWidth(
-                c.getFontContext(), getParent().getStyle().getFSFont(c),
+                c.getFontContext(), getParent().getStyle().getFSFonts(c),
                 value);
     }
     
@@ -220,11 +220,11 @@ public class InlineText {
         if (_glyphPositions == null) {
             FSGlyphVector glyphVector = c.getTextRenderer().getGlyphVector(
                     c.getOutputDevice(),
-                    getParent().getStyle().getFSFont(c),
+                    getParent().getStyle().getFSFonts(c).get(0),
                     getSubstring());
             _glyphPositions = c.getTextRenderer().getGlyphPositions(
                     c.getOutputDevice(), 
-                    getParent().getStyle().getFSFont(c),
+                    getParent().getStyle().getFSFonts(c).get(0),
                     glyphVector);
         } 
     }

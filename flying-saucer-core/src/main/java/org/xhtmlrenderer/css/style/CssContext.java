@@ -5,6 +5,8 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
@@ -21,12 +23,12 @@ public interface CssContext {
 
     float getXHeight(FontSpecification parentFont);
 
-    FSFont getFont(FontSpecification font);
+    List<FSFont> getFonts(FontSpecification font);
     
     // FIXME Doesn't really belong here, but this is
     // the only common interface of LayoutContext
     // and RenderingContext
     StyleReference getCss();
     
-    FSFontMetrics getFSFontMetrics(FSFont font);
+    List<FSFontMetrics> getFSFontMetricses(List<FSFont> fsFonts);
 }

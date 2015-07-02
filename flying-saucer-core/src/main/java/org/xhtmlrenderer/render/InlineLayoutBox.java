@@ -20,15 +20,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -42,6 +33,13 @@ import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PaintingInfo;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A {@link Box} which contains the portion of an inline element layed out on a
@@ -101,11 +99,13 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     public void calculateHeight(LayoutContext c) {
         BorderPropertySet border = getBorder(c);
         RectPropertySet padding = getPadding(c);
-        
-        FSFontMetrics metrics = getStyle().getFSFontMetrics(c);
-        
-        setHeight((int)Math.ceil(border.top() + padding.top() + metrics.getAscent() + 
-                metrics.getDescent() + padding.bottom() + border.bottom()));
+
+        float maxHeight = -1f;
+        for (final FSFontMetrics metrics : getStyle().getFSFontMetrics(c)) {
+            maxHeight = Math.max(metrics.getAscent() + metrics.getDescent(), maxHeight);
+        }
+
+        setHeight((int) Math.ceil(border.top() + padding.top() + maxHeight + padding.bottom() + border.bottom()));
     }
 
     public int getBaseline() {
@@ -760,7 +760,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     public void calculateTextDecoration(LayoutContext c) {
         List decorations = 
             InlineBoxing.calculateTextDecorations(this, getBaseline(), 
-                    getStyle().getFSFontMetrics(c));
+                    getStyle().getFSFontMetrics(c).get(0));
         setTextDecorations(decorations);
     }
     

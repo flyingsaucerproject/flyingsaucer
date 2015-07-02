@@ -28,7 +28,9 @@ import org.xhtmlrenderer.swing.AWTFSFont;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -88,13 +90,14 @@ public class AWTFontResolver implements FontResolver {
      * @param variant  PARAM
      * @return Returns
      */
-    public FSFont resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    public List<FSFont> resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         // for each font family
+        final List<FSFont> fonts = new ArrayList<>();
         if (families != null) {
             for (int i = 0; i < families.length; i++) {
                 Font font = resolveFont(ctx, families[i], size, weight, style, variant);
                 if (font != null) {
-                    return new AWTFSFont(font);
+                    fonts.add(new AWTFSFont(font));
                 }
             }
         }
@@ -107,7 +110,8 @@ public class AWTFontResolver implements FontResolver {
 
         Font fnt = createFont(ctx, (Font) available_fonts_hash.get(family), size, weight, style, variant);
         instance_hash.put(getFontInstanceHashName(ctx, family, size, weight, style, variant), fnt);
-        return new AWTFSFont(fnt);
+        fonts.add(new AWTFSFont(fnt));
+        return fonts;
     }
 
     /**
@@ -239,7 +243,7 @@ public class AWTFontResolver implements FontResolver {
         return name + "-" + (size * ctx.getTextRenderer().getFontScale()) + "-" + weight + "-" + style + "-" + variant;
     }
 
-    public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
+    public List<FSFont> resolveFont(SharedContext renderingContext, FontSpecification spec) {
         return resolveFont(renderingContext, spec.families, spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
     }
 }
@@ -339,4 +343,5 @@ public class AWTFontResolver implements FontResolver {
  *
  *
  */
+
 

@@ -36,7 +36,12 @@ import org.xhtmlrenderer.simple.extend.URLUTF8Encoder;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.swing.AWTFSFont;
 
-import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Color;
+
 
 public abstract class FormField {
     private XhtmlForm _parentForm;
@@ -47,25 +52,25 @@ public abstract class FormField {
     private BlockBox box;
     protected Integer intrinsicWidth;
     protected Integer intrinsicHeight;
-    
+
 
     public FormField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         _element = e;
         _parentForm = form;
         this.context = context;
         this.box = box;
-        
+
         initialize();
     }
 
     protected Element getElement() {
         return _element;
     }
-    
+
     public JComponent getComponent() {
         return _component;
     }
-    
+
     public XhtmlForm getParentForm() {
         return _parentForm;
     }
@@ -78,7 +83,7 @@ public abstract class FormField {
         return new Dimension(width, height);
     }
 
-    
+
     public void reset() {
         applyOriginalState();
     }
@@ -94,7 +99,7 @@ public abstract class FormField {
 
         return _originalState;
     }
-    
+
     protected boolean hasAttribute(String attributeName) {
         return getElement().getAttribute(attributeName).length() > 0;
     }
@@ -102,10 +107,10 @@ public abstract class FormField {
     protected String getAttribute(String attributeName) {
         return getElement().getAttribute(attributeName);
     }
-    
+
     private void initialize() {
         _component = create();
-        
+
         if (_component != null) {
             if (intrinsicWidth == null)
                 intrinsicWidth = new Integer(_component.getPreferredSize().width);
@@ -128,17 +133,17 @@ public abstract class FormField {
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromString("");
     }
-    
+
     protected void applyOriginalState() {
         // Do nothing
     }
-    
+
     /**
      * Returns true if the value of the current FormField should be
      * sent along with the current submission.  This is used so that
      * only the value of the submit button that is used to trigger the
      * form's submission is sent.
-     * 
+     *
      * @param source The JComponent that caused the submission
      * @return true if it should
      */
@@ -181,7 +186,7 @@ public abstract class FormField {
     }
 
     protected void applyComponentStyle(JComponent comp) {
-        Font font = getFont();
+        Font font = getFonts().get(0);
         if (font != null) {
             comp.setFont(font);
         }
@@ -208,12 +213,15 @@ public abstract class FormField {
         throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
     }
 
-    public Font getFont() {
-        FSFont font = getStyle().getFSFont(getContext());
-        if (font instanceof AWTFSFont) {
-            return ((AWTFSFont) font).getAWTFont();
+    public List<Font> getFonts() {
+        List<FSFont> fonts = getStyle().getFSFonts(getContext());
+        final List<Font> fsFonts = new ArrayList<>();
+        for (final FSFont fsFont:fonts) {
+            if (fsFont instanceof AWTFSFont) {
+                fsFonts.add(((AWTFSFont) fsFont).getAWTFont());
+            }
         }
-        return null;
+        return fsFonts;
     }
 
     protected static Integer getLengthValue(CalculatedStyle style, CSSName cssName) {

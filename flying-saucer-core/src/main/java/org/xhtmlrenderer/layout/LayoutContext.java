@@ -263,15 +263,15 @@ public class LayoutContext implements CssContext {
     }
 
     public float getFontSize2D(FontSpecification font) {
-        return _sharedContext.getFont(font).getSize2D();
+        return _sharedContext.getFonts(font).get(0).getSize2D();
     }
 
     public float getXHeight(FontSpecification parentFont) {
         return _sharedContext.getXHeight(getFontContext(), parentFont);
     }
 
-    public FSFont getFont(FontSpecification font) {
-        return _sharedContext.getFont(font);
+    public List<FSFont> getFonts(FontSpecification font) {
+        return _sharedContext.getFonts(font);
     }
 
     public UserAgentCallback getUac() {
@@ -344,8 +344,12 @@ public class LayoutContext implements CssContext {
         return (CounterContext) _counterContextMap.get(style);
     }
 
-    public FSFontMetrics getFSFontMetrics(FSFont font) {
-        return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
+    public List<FSFontMetrics> getFSFontMetricses(List<FSFont> fsFonts) {
+        final List<FSFontMetrics> fsFontMetricsList = new ArrayList<>(fsFonts.size());
+        for (final FSFont fsFont : fsFonts) {
+            fsFontMetricsList.add(getTextRenderer().getFSFontMetrics(getFontContext(), fsFont, ""));
+        }
+        return fsFontMetricsList;
     }
 
     public class CounterContext {

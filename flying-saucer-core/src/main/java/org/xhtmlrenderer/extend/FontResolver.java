@@ -24,7 +24,9 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
 
+import java.util.List;
+
 public interface FontResolver {
-    public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec);
+    public List<FSFont> resolveFont(SharedContext renderingContext, FontSpecification spec);
     public void flushCache();
 }

@@ -59,7 +59,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
 
         if (text != null && text.length() > 0) {
             setColor(iB.getStyle().getColor());
-            setFont(iB.getStyle().getFSFont(c));
+            setFonts(iB.getStyle().getFSFonts(c));
             setFontSpecification(iB.getStyle().getFontSpecification());
             if (inlineText.getParent().getStyle().isTextJustify()) {
                 JustificationInfo info = inlineText.getParent().getLineBox().getJustificationInfo();
@@ -94,10 +94,10 @@ public abstract class AbstractOutputDevice implements OutputDevice {
 
         setColor(new FSRGBColor(0xFF, 0x33, 0xFF));
 
-        FSFontMetrics fm = iB.getStyle().getFSFontMetrics(null);
+        FSFontMetrics fm = iB.getStyle().getFSFontMetrics(null).get(0);
         int width = c.getTextRenderer().getWidth(
                 c.getFontContext(),
-                iB.getStyle().getFSFont(c), text);
+                iB.getStyle().getFSFonts(c), text);
         int x = iB.getAbsX() + inlineText.getX();
         int y = iB.getAbsY() + iB.getBaseline();
 

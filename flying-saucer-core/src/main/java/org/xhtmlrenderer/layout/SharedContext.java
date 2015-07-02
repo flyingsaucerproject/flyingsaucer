@@ -24,13 +24,14 @@ import java.awt.HeadlessException;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xhtmlrenderer.context.AWTFontResolver;
+import org.xhtmlrenderer.swing.AWTFontResolver;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
@@ -414,15 +415,15 @@ public class SharedContext {
         return this.mm_per_dot;
     }
 
-    public FSFont getFont(FontSpecification spec) {
+    public List<FSFont> getFonts(FontSpecification spec) {
         return getFontResolver().resolveFont(this, spec);
     }
 
     //strike-through offset should always be half of the height of lowercase x...
     //and it is defined even for fonts without 'x'!
     public float getXHeight(FontContext fontContext, FontSpecification fs) {
-        FSFont font = getFontResolver().resolveFont(this, fs);
-        FSFontMetrics fm = getTextRenderer().getFSFontMetrics(fontContext, font, " ");
+        List<FSFont> fsFonts = getFontResolver().resolveFont(this, fs);
+        FSFontMetrics fm = getTextRenderer().getFSFontMetrics(fontContext, fsFonts.get(0), " ");
         float sto = fm.getStrikethroughOffset();
         return fm.getAscent() - 2 * Math.abs(sto) + fm.getStrikethroughThickness();
     }

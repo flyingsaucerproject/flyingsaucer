@@ -19,15 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.font.GlyphVector;
-import java.awt.geom.Point2D;
-import java.util.Map;
-
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -38,12 +29,21 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.LineMetricsAdapter;
 import org.xhtmlrenderer.util.Configuration;
 
+import java.awt.*;
+import java.awt.font.GlyphVector;
+import java.awt.font.TextAttribute;
+import java.awt.geom.Point2D;
+import java.text.AttributedString;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * Renders to a Graphics2D instance.
  *
  * @author   Joshua Marinacci
  * @author   Torbjoern Gannholm
+ * @author   Chen Yang
  */
 public class Java2DTextRenderer implements TextRenderer {
     protected float scale;
@@ -92,7 +92,27 @@ public class Java2DTextRenderer implements TextRenderer {
         }
         fracHint = graphics.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fractionalFontMetricsHint);
-        graphics.drawString( string, (int)x, (int)y );
+        AttributedString astr = new AttributedString(string);
+
+        int start = 0;
+        final int length = string.length();
+        for (int offset = 0; offset < length; ) {
+            final int codePoint = string.codePointAt(offset);
+            boolean useDefaultFont = true;
+            for (final FSFont fsFont : ((Java2DOutputDevice) outputDevice).getFsFonts()) {
+                if (((AWTFSFont) fsFont).getAWTFont().canDisplay(codePoint)) {
+                    astr.addAttribute(TextAttribute.FONT, ((AWTFSFont) fsFont).getAWTFont(), start, start + 1);
+                    useDefaultFont = false;
+                    break;
+                }
+            }
+            if (useDefaultFont) {
+                astr.addAttribute(TextAttribute.FONT, ((AWTFSFont) ((Java2DOutputDevice) outputDevice).getFsFonts().get(0)).getAWTFont(), start, start + 1);
+            }
+            offset += Character.charCount(codePoint);
+            start++;
+        }
+        graphics.drawString( astr.getIterator(), (int)x, (int)y );
         if ( graphics.getFont().getSize() > threshold ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, aaHint );
         }
@@ -191,22 +211,41 @@ public class Java2DTextRenderer implements TextRenderer {
         return adapter;
     }
     
-    public int getWidth(FontContext fc, FSFont font, String string) {
+    public int getWidth(FontContext fc, List<FSFont> fsFonts, String string) {
         Object fracHint = null;
         Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();
         fracHint = graphics.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fractionalFontMetricsHint);
-        Font awtFont = ((AWTFSFont)font).getAWTFont();
         int width = 0;
-        if(fractionalFontMetricsHint == RenderingHints.VALUE_FRACTIONALMETRICS_ON) {
-            width = (int)Math.round(
-                    graphics.getFontMetrics(awtFont).getStringBounds(string, graphics).getWidth());            
-        } else {
-            width = (int)Math.ceil(
-                    graphics.getFontMetrics(awtFont).getStringBounds(string, graphics).getWidth());
+        final int length = string.length();
+        for (int offset = 0; offset < length; ) {
+            int codePoint = string.codePointAt(offset);
+            int defaultCharWidth = getWidth(fc, fsFonts.get(0), codePoint);
+            int charWidth = -1;
+            for (final FSFont fsFont : fsFonts) {
+                if (((AWTFSFont) fsFont).getAWTFont().canDisplay(codePoint)) {
+                    charWidth = getWidth(fc, fsFont, codePoint);
+                    break;
+                }
+            }
+            width += (charWidth > 0 ? charWidth : defaultCharWidth);
+            offset += Character.charCount(codePoint);
         }
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fracHint);
         return width;
+    }
+
+    private int getWidth(FontContext fc, FSFont fsFont, int codePoint) {
+        Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();
+        Font awtFont = ((AWTFSFont) fsFont).getAWTFont();
+        final char[] chars = Character.toChars(codePoint);
+        if (fractionalFontMetricsHint == RenderingHints.VALUE_FRACTIONALMETRICS_ON) {
+            return (int) Math.round(
+                    graphics.getFontMetrics(awtFont).getStringBounds(String.valueOf(chars), graphics).getWidth());
+        } else {
+            return (int) Math.ceil(
+                    graphics.getFontMetrics(awtFont).getStringBounds(String.valueOf(chars), graphics).getWidth());
+        }
     }
 
     public float getFontScale() {

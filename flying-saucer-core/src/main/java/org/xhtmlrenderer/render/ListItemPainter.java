@@ -128,7 +128,7 @@ public class ListItemPainter {
         int y = getReferenceBaseline(c, box);
         
         c.getOutputDevice().setColor(box.getStyle().getColor());
-        c.getOutputDevice().setFont(box.getStyle().getFSFont(c));
+        c.getOutputDevice().setFonts(box.getStyle().getFSFonts(c));
         c.getTextRenderer().drawString(
                 c.getOutputDevice(), text.getText(), x, y);
     }

@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.layout;
 
 import java.text.BreakIterator;
+import java.util.List;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -35,7 +36,7 @@ public class Breaker {
 
     public static void breakFirstLetter(LayoutContext c, LineBreakContext context,
             int avail, CalculatedStyle style) {
-        FSFont font = style.getFSFont(c);
+        List<FSFont> font = style.getFSFonts(c);
         context.setEnd(getFirstLetterEnd(context.getMaster(), context.getStart()));
         context.setWidth(c.getTextRenderer().getWidth(
                 c.getFontContext(), font, context.getCalculatedSubstring()));
@@ -65,16 +66,14 @@ public class Breaker {
 
     public static void breakText(LayoutContext c,
             LineBreakContext context, int avail, CalculatedStyle style) {
-        FSFont font = style.getFSFont(c);
+        List<FSFont> fonts = style.getFSFonts(c);
         IdentValue whitespace = style.getWhitespace();
-        IdentValue wordwrap = style.getWordWrap();
-        boolean breakWord = (wordwrap == IdentValue.BREAK_WORD);
 
         // ====== handle nowrap
         if (whitespace == IdentValue.NOWRAP) {
         	context.setEnd(context.getLast());
         	context.setWidth(c.getTextRenderer().getWidth(
-                    c.getFontContext(), font, context.getCalculatedSubstring()));
+                    c.getFontContext(), fonts, context.getCalculatedSubstring()));
             return;
         }
 
@@ -86,13 +85,13 @@ public class Breaker {
             if (n > -1) {
                 context.setEnd(context.getStart() + n + 1);
                 context.setWidth(c.getTextRenderer().getWidth(
-                        c.getFontContext(), font, context.getCalculatedSubstring()));
+                        c.getFontContext(), fonts, context.getCalculatedSubstring()));
                 context.setNeedsNewLine(true);
                 context.setEndsOnNL(true);
             } else if (whitespace == IdentValue.PRE) {
             	context.setEnd(context.getLast());
                 context.setWidth(c.getTextRenderer().getWidth(
-                        c.getFontContext(), font, context.getCalculatedSubstring()));
+                        c.getFontContext(), fonts, context.getCalculatedSubstring()));
             }
         }
 
@@ -103,13 +102,13 @@ public class Breaker {
         }
 
         context.setEndsOnNL(false);
-        doBreakText(c, context, avail, style, breakWord);
+        doBreakText(c, context, avail, style, true);
     }
 
     private static void doBreakText(LayoutContext c,
             LineBreakContext context, int avail, CalculatedStyle style,
             boolean tryToBreakAnywhere) {
-        FSFont font = style.getFSFont(c);
+        List<FSFont> font = style.getFSFonts(c);
         String currentString = context.getStartSubstring();
         BreakIterator iterator = getWordStream(currentString);
         int left = 0;

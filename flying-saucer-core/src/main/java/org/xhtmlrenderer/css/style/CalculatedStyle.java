@@ -79,8 +79,8 @@ public class CalculatedStyle {
     private float _lineHeight;
     private boolean _lineHeightResolved;
 
-    private FSFont _FSFont;
-    private FSFontMetrics _FSFontMetrics;
+    private List<FSFont> _FSFontList;
+    private List<FSFontMetrics> _FSFontMetricsList;
 
     private boolean _marginsAllowed = true;
     private boolean _paddingAllowed = true;
@@ -109,7 +109,7 @@ public class CalculatedStyle {
     /**
      * The derived Font for this style
      */
-    private FontSpecification _font;
+    private FontSpecification _fontSpec;
 
 
     /**
@@ -370,38 +370,38 @@ public class CalculatedStyle {
         }
     }
 
-    public FontSpecification getFont(CssContext ctx) {
-        if (_font == null) {
-            _font = new FontSpecification();
+    public FontSpecification getFontSpec(CssContext ctx) {
+        if (_fontSpec == null) {
+            _fontSpec = new FontSpecification();
 
-            _font.families = valueByName(CSSName.FONT_FAMILY).asStringArray();
+            _fontSpec.families = valueByName(CSSName.FONT_FAMILY).asStringArray();
 
             FSDerivedValue fontSize = valueByName(CSSName.FONT_SIZE);
             if (fontSize instanceof IdentValue) {
                 PropertyValue replacement;
                 IdentValue resolved = resolveAbsoluteFontSize();
                 if (resolved != null) {
-                    replacement = FontSizeHelper.resolveAbsoluteFontSize(resolved, _font.families);
+                    replacement = FontSizeHelper.resolveAbsoluteFontSize(resolved, _fontSpec.families);
                 } else {
                     replacement = FontSizeHelper.getDefaultRelativeFontSize((IdentValue) fontSize);
                 }
-                _font.size = LengthValue.calcFloatProportionalValue(
+                _fontSpec.size = LengthValue.calcFloatProportionalValue(
                         this, CSSName.FONT_SIZE, replacement.getCssText(),
                         replacement.getFloatValue(), replacement.getPrimitiveType(), 0, ctx);
             } else {
-                _font.size = getFloatPropertyProportionalTo(CSSName.FONT_SIZE, 0, ctx);
+                _fontSpec.size = getFloatPropertyProportionalTo(CSSName.FONT_SIZE, 0, ctx);
             }
 
-            _font.fontWeight = getIdent(CSSName.FONT_WEIGHT);
+            _fontSpec.fontWeight = getIdent(CSSName.FONT_WEIGHT);
 
-            _font.fontStyle = getIdent(CSSName.FONT_STYLE);
-            _font.variant = getIdent(CSSName.FONT_VARIANT);
+            _fontSpec.fontStyle = getIdent(CSSName.FONT_STYLE);
+            _fontSpec.variant = getIdent(CSSName.FONT_VARIANT);
         }
-        return _font;
+        return _fontSpec;
     }
 
     public FontSpecification getFontSpecification() {
-    return _font;
+    return _fontSpec;
     }
 
     private IdentValue resolveAbsoluteFontSize() {
@@ -453,18 +453,19 @@ public class CalculatedStyle {
     public float getLineHeight(CssContext ctx) {
         if (! _lineHeightResolved) {
             if (isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
-                float lineHeight1 = getFont(ctx).size * 1.1f;
+                _lineHeight = getFontSpec(ctx).size * 1.1f;
                 // Make sure rasterized characters will (probably) fit inside
                 // the line box
-                FSFontMetrics metrics = getFSFontMetrics(ctx);
-                float lineHeight2 = (float)Math.ceil(metrics.getDescent() + metrics.getAscent());
-                _lineHeight = Math.max(lineHeight1, lineHeight2);
+                for (final FSFontMetrics metrics: getFSFontMetrics(ctx)) {
+                    float lineHeightForFont = (float)Math.ceil(metrics.getDescent() + metrics.getAscent());
+                    _lineHeight = Math.max(_lineHeight, lineHeightForFont);
+                }
             } else if (isLength(CSSName.LINE_HEIGHT)) {
                 //could be more elegant, I suppose
                 _lineHeight = getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, 0, ctx);
             } else {
                 //must be a number
-                _lineHeight = getFont(ctx).size * valueByName(CSSName.LINE_HEIGHT).asFloat();
+                _lineHeight = getFontSpec(ctx).size * valueByName(CSSName.LINE_HEIGHT).asFloat();
             }
             _lineHeightResolved = true;
         }
@@ -756,18 +757,18 @@ public class CalculatedStyle {
         return getIdent(CSSName.WHITE_SPACE);
     }
 
-    public FSFont getFSFont(CssContext cssContext) {
-        if (_FSFont == null) {
-            _FSFont = cssContext.getFont(getFont(cssContext));
+    public List<FSFont> getFSFonts(CssContext cssContext) {
+        if (_FSFontList == null || _FSFontList.isEmpty()) {
+            _FSFontList = cssContext.getFonts(getFontSpec(cssContext));
         }
-        return _FSFont;
+        return _FSFontList;
     }
 
-    public FSFontMetrics getFSFontMetrics(CssContext c) {
-        if (_FSFontMetrics == null) {
-            _FSFontMetrics = c.getFSFontMetrics(getFSFont(c));
+    public List<FSFontMetrics> getFSFontMetrics(CssContext c) {
+        if (_FSFontMetricsList == null) {
+            _FSFontMetricsList = c.getFSFontMetricses(getFSFonts(c));
         }
-        return _FSFontMetrics;
+        return _FSFontMetricsList;
     }
 
     public IdentValue getWordWrap() {

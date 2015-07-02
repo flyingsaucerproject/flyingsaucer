@@ -35,7 +35,6 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
 public class ContentFunctionFactory {
@@ -245,9 +244,9 @@ public class ContentFunctionFactory {
                 tmp.append(value);
             }
             float valueWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), tmp.toString()) / 100f;
+                    iB.getStyle().getFSFonts(c), tmp.toString()) / 100f;
             int spaceWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), " ");
+                    iB.getStyle().getFSFonts(c), " ");
 
             // compute leader width and necessary count of values
             int leaderWidth = iB.getContainingBlockWidth() - iB.getLineBox().getWidth() + text.getWidth();
@@ -264,7 +263,7 @@ public class ContentFunctionFactory {
 
             // set left margin to ensure that the leader is right aligned (for TOC)
             int leaderStringWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), leaderString);
+                    iB.getStyle().getFSFonts(c), leaderString);
             iB.setMarginLeft(c, leaderWidth - leaderStringWidth);
 
             return leaderString;
