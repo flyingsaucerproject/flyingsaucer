@@ -511,6 +511,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 float lineWidth = fontSize * 0.04f; // 4% of font size
                 cb.setLineWidth(lineWidth);
                 resetMode = true;
+                ensureStrokeColor();
             }
             if ((fontSpec.fontStyle == IdentValue.ITALIC) && (desc.getStyle() != IdentValue.ITALIC)) {
                 b = 0f;
