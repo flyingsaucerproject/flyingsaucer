@@ -15,7 +15,14 @@
 
   <name>Flying Saucer PDF Rendering (iText 5.x)</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output with iText 5.x.</description>
-
+  
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License (LGPL), version 3</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
+    </license>
+  </licenses>
+  
   <dependencies>
     <dependency>
       <groupId>com.itextpdf</groupId>
@@ -28,4 +35,18 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+  
+  <build>
+	  <resources>
+	    <resource>
+	      <directory>../</directory>
+	      <targetPath>/META-INF</targetPath>
+	      <includes>
+	        <include>LICENSE-GPL-3.txt</include>
+	        <include>LICENSE-LGPL-3.txt</include>
+	        <include>LICENSE</include>
+	      </includes>
+	    </resource>
+	  </resources>
+  </build>
 </project>
