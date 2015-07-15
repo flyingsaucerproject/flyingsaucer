@@ -15,6 +15,13 @@
 
   <name>Flying Saucer SWT Examples</name>
   <description>Examples that use SWT.  It is not deployed with a release.</description>
+  
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License (LGPL), version 3</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
+    </license>
+  </licenses>
 
   <dependencies>
     <dependency>
@@ -106,5 +113,16 @@
         </configuration>
       </plugin>
     </plugins>
+	<resources>
+	    <resource>
+	      <directory>../</directory>
+	      <targetPath>/META-INF</targetPath>
+	      <includes>
+	        <include>LICENSE-GPL-3.txt</include>
+	        <include>LICENSE-LGPL-3.txt</include>
+	        <include>LICENSE</include>
+	      </includes>
+	    </resource>
+	 </resources>
   </build>
 </project>
