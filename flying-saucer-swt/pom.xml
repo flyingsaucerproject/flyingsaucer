@@ -18,7 +18,7 @@
   
   <licenses>
     <license>
-      <name>GNU Lesser General Public License (LGPL), version 3</name>
+      <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
       <url>http://www.gnu.org/licenses/lgpl.html</url>
     </license>
   </licenses>
@@ -99,9 +99,7 @@
 	      <directory>../</directory>
 	      <targetPath>/META-INF</targetPath>
 	      <includes>
-	        <include>LICENSE-GPL-3.txt</include>
-	        <include>LICENSE-LGPL-3.txt</include>
-	        <include>LICENSE</include>
+	        <include>LICENSE*</include>
 	      </includes>
 	    </resource>
 	  </resources>
