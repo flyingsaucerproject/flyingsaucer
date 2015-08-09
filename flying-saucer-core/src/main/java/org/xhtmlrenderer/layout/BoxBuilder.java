@@ -107,7 +107,8 @@ public class BoxBuilder {
     }
 
     public static void createChildren(LayoutContext c, BlockBox parent) {
-        List children = new ArrayList();
+
+		List children = new ArrayList();
 
         ChildBoxInfo info = new ChildBoxInfo();
 
@@ -847,10 +848,10 @@ public class BoxBuilder {
                 }
             } else if (type == CSSPrimitiveValue.CSS_IDENT) {
                 FSDerivedValue dv = style.valueByName(CSSName.QUOTES);
-                
+
                 if (dv != IdentValue.NONE) {
                     IdentValue ident = value.getIdentValue();
-                    
+
                     if (ident == IdentValue.OPEN_QUOTE) {
                         String[] quotes = style.asStringArray(CSSName.QUOTES);
                         content = quotes[0];
@@ -1097,7 +1098,28 @@ public class BoxBuilder {
                         continue;
                     }
 
-                    c.resolveCounters(style);
+                    Integer start = null;
+					if ("ol".equals(working.getNodeName())) {
+						Node startAttribute = working.getAttributes().getNamedItem("start");
+						if (startAttribute != null) {
+							try {
+								start = new Integer(Integer.parseInt(startAttribute.getNodeValue()) - 1);
+							} catch (NumberFormatException e) {
+								// ignore
+							}
+						}
+					} else if ("li".equals(working.getNodeName())) {
+						Node valueAttribute = working.getAttributes().getNamedItem("value");
+						if (valueAttribute != null) {
+							try {
+								start = new Integer(Integer.parseInt(valueAttribute.getNodeValue()) - 1);
+							} catch (NumberFormatException e) {
+								// ignore
+							}
+						}
+					}
+
+	                c.resolveCounters(style, start);
 
                     if (style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN)
                             || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN_GROUP)) {
