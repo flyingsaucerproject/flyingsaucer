@@ -138,7 +138,7 @@ public class BorderPainter {
         path.transform(AffineTransform.getRotateInstance(
                 props.getRotation()));
         path.transform(AffineTransform.getTranslateInstance( 
-                bounds.width/2+bounds.x, bounds.height/2+bounds.y));
+                bounds.width/2f+bounds.x, bounds.height/2f+bounds.y));
         
         return path;
     }
