@@ -15,7 +15,14 @@
 
   <name>Flying Saucer SWT Support</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports SWT output.</description>
-
+  
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
+    </license>
+  </licenses>
+  
   <dependencies>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
@@ -85,4 +92,16 @@
         </dependencies>
     </profile>
   </profiles>
+  
+  <build>
+	  <resources>
+	    <resource>
+	      <directory>../</directory>
+	      <targetPath>/META-INF</targetPath>
+	      <includes>
+	        <include>LICENSE*</include>
+	      </includes>
+	    </resource>
+	  </resources>
+  </build>
 </project>

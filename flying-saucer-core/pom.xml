@@ -11,6 +11,13 @@
 
   <artifactId>flying-saucer-core</artifactId>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact contains the core rendering and layout code as well as Java2D output.</description>
+  
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
+    </license>
+  </licenses>
 
   <packaging>jar</packaging>
 
@@ -23,4 +30,16 @@
   		<scope>test</scope>
   	</dependency>
   </dependencies>
+  
+  <build>
+	  <resources>
+	    <resource>
+	      <directory>../</directory>
+	      <targetPath>/META-INF</targetPath>
+	      <includes>
+	        <include>LICENSE*</include>
+	      </includes>
+	    </resource>
+	  </resources>
+  </build>
 </project>
