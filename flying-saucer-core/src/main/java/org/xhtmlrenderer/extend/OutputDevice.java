@@ -23,6 +23,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.RenderingHints.Key;
+import java.util.List;
 
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -60,7 +61,7 @@ public interface OutputDevice {
     
     public void drawDebugOutline(RenderingContext c, Box box, FSColor color);
     
-    public void setFont(FSFont font);
+    public void setFonts(List<FSFont> fsFonts);
     
     public void setColor(FSColor color);
     

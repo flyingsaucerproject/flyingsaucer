@@ -465,7 +465,7 @@ public class InlineBoxing {
     }
 
     public static StrutMetrics createDefaultStrutMetrics(LayoutContext c, Box container) {
-        FSFontMetrics strutM = container.getStyle().getFSFontMetrics(c);
+        FSFontMetrics strutM = container.getStyle().getFSFontMetrics(c).get(0);
         InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutM);
 
         return new StrutMetrics(
@@ -477,7 +477,7 @@ public class InlineBoxing {
         if (current.getChildCount() == 0 || ! current.isContainsVisibleContent()) {
             current.setHeight(0);
         } else {
-            FSFontMetrics strutM = container.getStyle().getFSFontMetrics(c);
+            FSFontMetrics strutM = container.getStyle().getFSFontMetrics(c).get(0);
             VerticalAlignContext vaContext = new VerticalAlignContext();
             InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutM);
             vaContext.setInitialMeasurements(measurements);
@@ -573,12 +573,12 @@ public class InlineBoxing {
 
     private static InlineBoxMeasurements calculateInlineMeasurements(LayoutContext c, InlineLayoutBox iB,
                                                                      VerticalAlignContext vaContext) {
-        FSFontMetrics fm = iB.getStyle().getFSFontMetrics(c);
+        FSFontMetrics fm = iB.getStyle().getFSFontMetrics(c).get(0);
 
         CalculatedStyle style = iB.getStyle();
         float lineHeight = style.getLineHeight(c);
 
-        int halfLeading = Math.round((lineHeight - iB.getStyle().getFont(c).size) / 2);
+        int halfLeading = Math.round((lineHeight - iB.getStyle().getFontSpec(c).size) / 2);
         if (halfLeading > 0) {
             halfLeading = Math.round((lineHeight -
                     (fm.getDescent() + fm.getAscent())) / 2);
@@ -700,7 +700,7 @@ public class InlineBoxing {
         float lineHeight = container.getStyle().getLineHeight(c);
 
         int halfLeading = Math.round((lineHeight -
-                container.getStyle().getFont(c).size) / 2);
+                container.getStyle().getFontSpec(c).size) / 2);
         if (halfLeading > 0) {
             halfLeading = Math.round((lineHeight -
                     (strutM.getDescent() + strutM.getAscent())) / 2);

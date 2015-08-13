@@ -132,11 +132,11 @@ public class LengthValue extends DerivedValue {
                 // to the calculated font size of the parent element
                 // http://www.w3.org/TR/CSS21/fonts.html#font-size-props
                 if (cssName == CSSName.FONT_SIZE) {
-                    FontSpecification parentFont = style.getParent().getFont(ctx);
+                    FontSpecification parentFont = style.getParent().getFontSpec(ctx);
                     //font size and FontSize2D should be identical
                     absVal = relVal * parentFont.size;//ctx.getFontSize2D(parentFont);
                 } else {
-                    absVal = relVal * style.getFont(ctx).size;//ctx.getFontSize2D(style.getFont(ctx));
+                    absVal = relVal * style.getFontSpec(ctx).size;//ctx.getFontSize2D(style.getFontSpec(ctx));
                 }
 
                 break;
@@ -146,10 +146,10 @@ public class LengthValue extends DerivedValue {
                 // to the font size of the parent element (spec: 4.3.2)
                 float xHeight;
                 if (cssName == CSSName.FONT_SIZE) {
-                    FontSpecification parentFont = style.getParent().getFont(ctx);
+                    FontSpecification parentFont = style.getParent().getFontSpec(ctx);
                     xHeight = ctx.getXHeight(parentFont);
                 } else {
-                    FontSpecification font = style.getFont(ctx);
+                    FontSpecification font = style.getFontSpec(ctx);
                     xHeight = ctx.getXHeight(font);
                 }
                 absVal = relVal * xHeight;
@@ -161,10 +161,10 @@ public class LengthValue extends DerivedValue {
                     baseValue = style.getParent().getLineHeight(ctx);
                 } else if (cssName == CSSName.FONT_SIZE) {
                     // same as with EM
-                    FontSpecification parentFont = style.getParent().getFont(ctx);
+                    FontSpecification parentFont = style.getParent().getFontSpec(ctx);
                     baseValue = ctx.getFontSize2D(parentFont);
                 } else if (cssName == CSSName.LINE_HEIGHT) {
-                    FontSpecification font = style.getFont(ctx);
+                    FontSpecification font = style.getFontSpec(ctx);
                     baseValue = ctx.getFontSize2D(font);
                 }
                 absVal = (relVal / 100F) * baseValue;

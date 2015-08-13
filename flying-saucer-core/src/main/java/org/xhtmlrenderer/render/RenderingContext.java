@@ -20,6 +20,8 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -27,7 +29,6 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.swing.RootPanel;
 
 /**
  * Supplies information about the context in which rendering will take place
@@ -86,7 +87,7 @@ public class RenderingContext implements CssContext {
     }    
     
     public float getFontSize2D(FontSpecification font) {
-        return sharedContext.getFont(font).getSize2D();
+        return sharedContext.getFonts(font).get(0).getSize2D();
     }
 
     public float getXHeight(FontSpecification parentFont) {
@@ -114,8 +115,8 @@ public class RenderingContext implements CssContext {
         return sharedContext.getFontResolver();
     }
     
-    public FSFont getFont(FontSpecification font) {
-        return sharedContext.getFont(font);
+    public List<FSFont> getFonts(FontSpecification font) {
+        return sharedContext.getFonts(font);
     }
 
     public FSCanvas getCanvas() {
@@ -207,8 +208,12 @@ public class RenderingContext implements CssContext {
         return sharedContext.getCss();
     }
     
-    public FSFontMetrics getFSFontMetrics(FSFont font) {
-        return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
+    public List<FSFontMetrics> getFSFontMetricses(List<FSFont> fsFonts) {
+        final List<FSFontMetrics> fsFontMetricsList = new ArrayList<>(fsFonts.size());
+        for (final FSFont fsFont : fsFonts) {
+            fsFontMetricsList.add(getTextRenderer().getFSFontMetrics(getFontContext(), fsFont, ""));
+        }
+        return fsFontMetricsList;
     }
     
     public Layer getRootLayer() {

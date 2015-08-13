@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.extend;
 
 import java.awt.Rectangle;
+import java.util.List;
 
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
@@ -43,7 +44,7 @@ public interface TextRenderer {
     public FSFontMetrics getFSFontMetrics(
             FontContext context, FSFont font, String string );
 
-    public int getWidth(FontContext context, FSFont font, String string);
+    public int getWidth(FontContext context, List<FSFont> fsFonts, String string);
 
     public void setFontScale(float scale);
 

@@ -30,6 +30,7 @@ import java.awt.RenderingHints.Key;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -41,7 +42,6 @@ import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.BorderPainter;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
@@ -50,6 +50,7 @@ import org.xhtmlrenderer.render.RenderingContext;
 
 public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDevice {
     private Graphics2D _graphics;
+    private List<FSFont> _fsFonts;
 
     public Java2DOutputDevice(Graphics2D graphics) {
         _graphics = graphics;
@@ -58,14 +59,17 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public Java2DOutputDevice(BufferedImage outputImage) {
         this(outputImage.createGraphics());
     }
-    
-    
+
+    public List<FSFont> getFsFonts() {
+        return _fsFonts;
+    }
+
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         if (inlineText.isSelected()) {
             InlineLayoutBox iB = inlineText.getParent();
             String text = inlineText.getSubstring();
             if (text != null && text.length() > 0) {
-                FSFont font = iB.getStyle().getFSFont(c);
+                FSFont font = iB.getStyle().getFSFonts(c).get(0);
                 FSGlyphVector glyphVector = c.getTextRenderer().getGlyphVector(
                         c.getOutputDevice(),
                         font,
@@ -99,7 +103,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                         iB.getHeight());
                 
                 _graphics.setColor(Color.WHITE); // FIXME
-                setFont(iB.getStyle().getFSFont(c));                
+                setFonts(iB.getStyle().getFSFonts(c));
                 
                 drawSelectedText(c, inlineText, iB, glyphVector);
             }
@@ -251,8 +255,9 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         _graphics.setRenderingHint(key, value);
     }
     
-    public void setFont(FSFont font) {
-        _graphics.setFont(((AWTFSFont)font).getAWTFont());
+    public void setFonts(List<FSFont> fsFonts) {
+        _graphics.setFont(((AWTFSFont) fsFonts.get(0)).getAWTFont());
+        this._fsFonts = fsFonts;
     }
 
     public void setStroke(Stroke s) {

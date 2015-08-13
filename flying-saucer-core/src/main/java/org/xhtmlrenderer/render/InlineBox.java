@@ -146,7 +146,7 @@ public class InlineBox implements Styleable {
     private int getTextWidth(LayoutContext c, String s) {
         return c.getTextRenderer().getWidth(
                 c.getFontContext(),
-                c.getFont(getStyle().getFont(c)),
+                c.getFonts(getStyle().getFontSpec(c)),
                 s);
     }
 
@@ -201,7 +201,7 @@ public class InlineBox implements Styleable {
     public int getSpaceWidth(LayoutContext c) {
         return c.getTextRenderer().getWidth(
                 c.getFontContext(),
-                getStyle().getFSFont(c),
+                getStyle().getFSFonts(c),
                 WhitespaceStripper.SPACE);
 
     }
