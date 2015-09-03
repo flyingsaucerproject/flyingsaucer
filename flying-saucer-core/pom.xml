@@ -11,7 +11,7 @@
 
   <artifactId>flying-saucer-core</artifactId>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact contains the core rendering and layout code as well as Java2D output.</description>
-  
+
   <licenses>
     <license>
       <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
@@ -19,18 +19,25 @@
     </license>
   </licenses>
 
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer-core</url>
+    </repository>
+  </distributionManagement>
+
   <packaging>jar</packaging>
 
   <name>Flying Saucer Core Renderer</name>
   <dependencies>
-  	<dependency>
-  		<groupId>junit</groupId>
-  		<artifactId>junit</artifactId>
-  		<version>4.10</version>
-  		<scope>test</scope>
-  	</dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-  
+
   <build>
     <resources>
       <resource>

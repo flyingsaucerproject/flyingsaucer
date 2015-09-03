@@ -3,12 +3,6 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>7</version>
-  </parent>
-
   <groupId>org.xhtmlrenderer</groupId>
   <artifactId>flying-saucer-parent</artifactId>
   <version>9.0.8-SNAPSHOT</version>
@@ -43,6 +37,13 @@
     <url>git://github.com/flyingsaucerproject/flyingsaucer.git</url>
   </scm>
 
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer-parent</url>
+    </repository>
+  </distributionManagement>
+
   <developers>
     <developer>
       <id>pdoubleya</id>
@@ -71,16 +72,27 @@
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.2</version>
         <configuration>
-          <source>1.4</source>
-          <target>1.4</target>
+          <useReleaseProfile>false</useReleaseProfile>
+          <releaseProfiles>release</releaseProfiles>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
+        <version>2.4</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -94,6 +106,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.3</version>
         <configuration>
           <additionalparam>${javadoc.opts}</additionalparam>
         </configuration>
