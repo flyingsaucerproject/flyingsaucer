@@ -40,7 +40,7 @@
 	  <resources>
 	    <resource>
 	      <directory>../</directory>
-	      <targetPath>/META-INF</targetPath>
+	      <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
 	      <includes>
 	        <include>LICENSE*</include>
 	      </includes>
