@@ -5,7 +5,7 @@
 
   <groupId>org.xhtmlrenderer</groupId>
   <artifactId>flying-saucer-parent</artifactId>
-  <version>9.0.8-SNAPSHOT</version>
+  <version>9.0.8</version>
 
   <packaging>pom</packaging>
 
@@ -35,6 +35,7 @@
     <connection>scm:git:git://github.com/flyingsaucerproject/flyingsaucer.git</connection>
     <developerConnection>scm:git:git@github.com:flyingsaucerproject/flyingsaucer.git</developerConnection>
     <url>git://github.com/flyingsaucerproject/flyingsaucer.git</url>
+    <tag>flying-saucer-parent-9.0.8</tag>
   </scm>
 
   <distributionManagement>
