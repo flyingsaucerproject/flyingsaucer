@@ -59,13 +59,16 @@
       </plugin>
     </plugins>
     <resources>
-	    <resource>
-	      <directory>../</directory>
-	      <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
-	      <includes>
-	        <include>LICENSE*</include>
-	      </includes>
-	    </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>../</directory>
+        <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+        <includes>
+          <include>LICENSE*</include>
+        </includes>
+      </resource>
 	</resources>
   </build>
 </project>
