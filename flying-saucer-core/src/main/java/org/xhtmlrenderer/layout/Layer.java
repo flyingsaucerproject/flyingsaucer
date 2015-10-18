@@ -41,7 +41,6 @@ import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.BoxDimensions;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -724,15 +723,10 @@ public class Layer {
             // so just guess for now
             c.reInit(true);
             master.layout(c);
-            
-            BoxDimensions before = master.getBoxDimensions();
-            master.reset(c);
-            BoxDimensions after = master.getBoxDimensions();
-            master.setBoxDimensions(before);
+
             master.positionAbsolute(c, BlockBox.POSITION_BOTH);
             master.positionAbsoluteOnPage(c);
-            master.setBoxDimensions(after);
-            
+
             c.reInit(true);
             ((BlockBox)child.getMaster()).layout(c);
         }

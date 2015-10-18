@@ -989,24 +989,6 @@ public abstract class Box implements Styleable {
         _anonymous = anonymous;
     }
 
-    public BoxDimensions getBoxDimensions() {
-        BoxDimensions result = new BoxDimensions();
-
-        result.setLeftMBP(getLeftMBP());
-        result.setRightMBP(getRightMBP());
-        result.setContentWidth(getContentWidth());
-        result.setHeight(getHeight());
-
-        return result;
-    }
-
-    public void setBoxDimensions(BoxDimensions dimensions) {
-        setLeftMBP(dimensions.getLeftMBP());
-        setRightMBP(dimensions.getRightMBP());
-        setContentWidth(dimensions.getContentWidth());
-        setHeight(dimensions.getHeight());
-    }
-
     public void collectText(RenderingContext c, StringBuffer buffer) throws IOException {
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             Box b = (Box)i.next();
