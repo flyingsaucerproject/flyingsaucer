@@ -2000,9 +2000,13 @@ public class CSSParser {
                     i += 2;
                     continue;
                 } else {
-                    if ((ch[i+1] == '\n' || ch[i+1] == '\r' || ch[i+1] == '\f')) {
+                    if ((i+1) < ch.length && (ch[i+1] == '\n' || ch[i+1] == '\r' || ch[i+1] == '\f')) {
                         i++;
                         continue;
+                    } else if ((i+1) >= ch.length) {
+                       // process \ escaped (\\)
+                       result.append(c);
+                       continue;
                     } else if (! isHexChar(ch[i+1])) {
                         continue;
                     }
