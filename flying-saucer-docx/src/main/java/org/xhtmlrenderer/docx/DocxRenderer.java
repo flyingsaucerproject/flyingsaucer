@@ -85,6 +85,10 @@ public class DocxRenderer {
         this(new Docx4jUserAgent(), readCSS(extraCSS), DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
     }
     
+    public DocxRenderer(String extraCSS, float dotsPerPoint) {
+       this(new Docx4jUserAgent(), extraCSS == null ? null : readCSS(extraCSS), dotsPerPoint, DEFAULT_DOTS_PER_PIXEL);
+    }
+    
     private static StylesheetInfo[] readCSS(String css) {
         // adapted from org.xhtmlrenderer.simple.extend.XhtmlCssOnlyNamespaceHandler
         
