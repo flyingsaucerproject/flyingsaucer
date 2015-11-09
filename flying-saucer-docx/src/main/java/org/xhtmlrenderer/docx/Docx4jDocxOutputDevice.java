@@ -34,6 +34,18 @@ import org.xhtmlrenderer.render.RenderingContext;
 
 public class Docx4jDocxOutputDevice extends AbstractOutputDevice {
 
+   @Override
+   public void draw(Shape s) {
+      // TODO Auto-generated method stub
+      
+   }
+
+   @Override
+   public void drawBorderLine(Shape bounds, int side, int width, boolean solid) {
+      // TODO Auto-generated method stub
+      
+   }
+
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         // TODO Auto-generated method stub
         
