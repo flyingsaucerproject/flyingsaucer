@@ -776,6 +776,11 @@ public class BlockBox extends Box implements InlinePaintable {
         layout(c, 0);
     }
 
+    private RectPropertySet margin;
+    public RectPropertySet getMargin() {
+        return margin;
+    }
+
     public void layout(LayoutContext c, int contentStart) {
         CalculatedStyle style = getStyle();
 
@@ -820,7 +825,7 @@ public class BlockBox extends Box implements InlinePaintable {
         }
 
         BorderPropertySet border = getBorder(c);
-        RectPropertySet margin = getMargin(c);
+        margin = getMargin(c);
         RectPropertySet padding = getPadding(c);
 
         // save height in case fixed height

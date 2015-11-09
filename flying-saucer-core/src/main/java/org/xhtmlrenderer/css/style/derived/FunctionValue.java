@@ -28,7 +28,7 @@ public class FunctionValue extends DerivedValue {
     private FSFunction _function;
     
     public FunctionValue(CSSName name, PropertyValue value) {
-        super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
+        super(name, value, value.getPrimitiveType(), value.getCssText(), value.getCssText());
         
         _function = value.getFunction();
     }

@@ -29,7 +29,7 @@ public class ColorValue extends DerivedValue {
     private FSColor _color;
 
     public ColorValue(CSSName name, PropertyValue value) {
-        super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
+        super(name, value, value.getPrimitiveType(), value.getCssText(), value.getCssText());
         
         _color = value.getFSColor();
     }

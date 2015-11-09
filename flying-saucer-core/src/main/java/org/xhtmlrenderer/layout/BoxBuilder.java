@@ -1211,16 +1211,22 @@ public class BoxBuilder {
                     child = createInlineBox(text.toString(), parent, parentStyle, textNode);
                     */
 
-                    child = createInlineBox(textNode.getData(), parent, parentStyle, textNode);
-
-                    InlineBox iB = (InlineBox) child;
-                    iB.setEndsHere(true);
-                    if (previousIB == null) {
-                        iB.setStartsHere(true);
+                    if ("script".equals(parent.getLocalName()))  {
+                       // This is an important change, for us. It gets rid of a lot of extra unwanted parents inserted
+                       //System.out.println("Skipping empty text");
                     } else {
-                        previousIB.setEndsHere(false);
+                       child = createInlineBox(textNode.getData(), parent, parentStyle, textNode);
+   
+                       InlineBox iB = (InlineBox) child;
+                       iB.setEndsHere(true);
+                       if (previousIB == null) {
+                           iB.setStartsHere(true);
+                       } else {
+                           previousIB.setEndsHere(false);
+                       }
+                       previousIB = iB;
                     }
-                    previousIB = iB;
+
                 }
 
                 if (child != null) {
@@ -1228,7 +1234,12 @@ public class BoxBuilder {
                 }
             } while ((working = working.getNextSibling()) != null);
         }
-        if (needStartText || needEndText) {
+        if ("br".equals(parent.getNodeName())
+              //|| "a".equals(parent.getNodeName())
+              ) {
+            // avoid double node being inserted for br!
+            // TODO: understand needStartText/needEndText so this isn't necessary
+        } else if (needStartText || needEndText) {
             InlineBox iB = createInlineBox("", parent, parentStyle, null);
             iB.setStartsHere(needStartText);
             iB.setEndsHere(needEndText);
