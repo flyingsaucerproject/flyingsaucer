@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.0.7-SNAPSHOT</version>
+    <version>9.0.9-SNAPSHOT</version>
   </parent>
 
   <artifactId>flying-saucer-log4j</artifactId>
@@ -15,6 +15,20 @@
 
   <name>Flying Saucer log4j Support</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports sending Flying Output log output to log4j.</description>
+
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
+    </license>
+  </licenses>
+
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer-log4j</url>
+    </repository>
+  </distributionManagement>
 
   <dependencies>
     <dependency>
@@ -28,4 +42,16 @@
         <version>${project.version}</version>
     </dependency>
   </dependencies>
+
+  <build>
+	  <resources>
+	    <resource>
+	      <directory>../</directory>
+	      <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+	      <includes>
+	        <include>LICENSE*</include>
+	      </includes>
+	    </resource>
+	  </resources>
+  </build>
 </project>

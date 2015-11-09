@@ -453,7 +453,7 @@ public abstract class Box implements Styleable {
         Dimension marginCorner = pI.getOuterMarginCorner();
         Rectangle canvasBounds = new Rectangle(0, 0, marginCorner.width, marginCorner.height);
         canvasBounds.add(c.getViewportRectangle());
-        c.getOutputDevice().paintBackground(c, getStyle(), canvasBounds, canvasBounds, null);
+        c.getOutputDevice().paintBackground(c, getStyle(), canvasBounds, canvasBounds, BorderPropertySet.EMPTY_BORDER);
     }
 
     public Layer getContainingLayer() {

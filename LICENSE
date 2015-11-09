@@ -1,5 +1,6 @@
 FLYING SAUCER XML/CSS RENDERER LICENSE COMMENTS
-https://xhtmlrenderer.dev.java.net/
+Copyright (C) 2015 Patrick Wright 
+https://code.google.com/p/flying-saucer/
 
 All source code to Flying Saucer itself is licensed under the GNU Lesser General
 Public License (LGPL); you can redistribute it and/or modify it under the terms
@@ -8,7 +9,7 @@ Foundation, either version 2.1 of the License, or (at your option) any later ver
 A copy of the LGPL can be found
 on the website of the Free Software Foundation, at 
 http://www.gnu.org/copyleft/lesser.html, and in our distributions under
-LICENSE-LGPL-2.1.txt.
+LICENSE-LGPL-2.1.txt or LICENSE-LGPL-3.txt.
 
 Flying Saucer relies on several other free or open source projects in 
 order to build and run. Where binary Java JAR files are included, we include
@@ -20,7 +21,7 @@ Java projects that are used for building and running Flying Saucer are:
 
 
 JUnit (for testing)
-http://www.junit.org/index.htm
+http://junit.org
 License: Common Public License Version 1.0
 Using version 3.8.1
 Included as lib/junit.jar
@@ -31,13 +32,18 @@ License: Apache Software License Version 2.0
 Not packaged with release; development using version 1.6.x
 
 iText (PDF generation)
-http://www.lowagie.com/iText/ and http://itextpdf.sourceforge.net/
+http://itextpdf.com/
 License: Mozilla Public License Version 1.1
-Using version 2.0.8.
-Included as lib/iText-2.0.8.jar
+Using version 2.1.7.
+Included as lib/iText-2.1.7.jar
+
+iText 5 (PDF generation only used in flying-saucer-pdf-itext5)
+http://itextpdf.com/
+License: Affero General Public License
+Using version 5.3.0.
 
 SVGSalamander (SVG rendering in demo)
-https://svgsalamander.dev.java.net/
+https://svgsalamander.java.net/
 License: LGPL
 Using version 1, released on the project website
 

@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.0.7-SNAPSHOT</version>
+    <version>9.0.9-SNAPSHOT</version>
   </parent>
 
   <artifactId>flying-saucer-swt</artifactId>
@@ -15,6 +15,20 @@
 
   <name>Flying Saucer SWT Support</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports SWT output.</description>
+
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
+    </license>
+  </licenses>
+
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer-swt</url>
+    </repository>
+  </distributionManagement>
 
   <dependencies>
     <dependency>
@@ -85,4 +99,16 @@
         </dependencies>
     </profile>
   </profiles>
+
+  <build>
+	  <resources>
+	    <resource>
+	      <directory>../</directory>
+	      <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+	      <includes>
+	        <include>LICENSE*</include>
+	      </includes>
+	    </resource>
+	  </resources>
+  </build>
 </project>

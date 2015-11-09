@@ -107,6 +107,7 @@ public class PrimitivePropertyBuilders {
     public static final PropertyBuilder COLOR = new GenericColor();
     public static final PropertyBuilder BORDER_STYLE = new GenericBorderStyle();
     public static final PropertyBuilder BORDER_WIDTH = new GenericBorderWidth();
+    public static final PropertyBuilder BORDER_RADIUS = new NonNegativeLengthLike();
     public static final PropertyBuilder MARGIN = new LengthLikeWithAuto();
     public static final PropertyBuilder PADDING = new NonNegativeLengthLike();
 
@@ -204,6 +205,33 @@ public class PrimitivePropertyBuilders {
 
             return Collections.singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
+        }
+    }
+    
+    private static class GenericBorderCornerRadius extends AbstractPropertyBuilder  {
+    	public List buildDeclarations(CSSName cssName, List values, int origin,
+                boolean important, boolean inheritAllowed) {
+            checkValueCount(cssName, 1, 2, values.size());
+            
+            PropertyValue first = (PropertyValue)values.get(0);
+            PropertyValue second = null;
+            if (values.size() == 2) {
+                second = (PropertyValue)values.get(1);
+            }
+
+            checkInheritAllowed(first, inheritAllowed);
+
+            if (second != null) {
+                checkInheritAllowed(second, false);
+            }
+
+            checkLengthOrPercentType(cssName, first);
+             if (second == null) {
+                 return createTwoValueResponse(cssName, first, first, origin, important);
+             } else {
+                 checkLengthOrPercentType(cssName, second);
+                 return createTwoValueResponse(cssName, first, second, origin, important);
+             }
         }
     }
 
@@ -514,10 +542,10 @@ public class PrimitivePropertyBuilders {
                         return Collections.singletonList(
                                 new PropertyDeclaration(cssName, first, important, origin));
                     } else {
-                        return createTwoValueResponse(first, first, origin, important);
+                        return createTwoValueResponse(CSSName.BACKGROUND_SIZE, first, first, origin, important);
                     }
                 } else {
-                    return createTwoValueResponse(first, new PropertyValue(IdentValue.AUTO), origin, important);
+                    return createTwoValueResponse(CSSName.BACKGROUND_SIZE, first, new PropertyValue(IdentValue.AUTO), origin, important);
                 }
             } else {
                 checkIdentLengthOrPercentType(cssName, second);
@@ -539,23 +567,11 @@ public class PrimitivePropertyBuilders {
                 } else if (((PropertyValue)second).getFloatValue() < 0.0f) {
                     throw new CSSParseException(cssName + " values cannot be negative", -1);
                 }
-
-                return createTwoValueResponse(first, second, origin, important);
+                
+                return createTwoValueResponse(CSSName.BACKGROUND_SIZE, first, second, origin, important);
             }
         }
 
-        private List createTwoValueResponse(CSSPrimitiveValue value1, CSSPrimitiveValue value2,
-                int origin, boolean important) {
-            List values = new ArrayList(2);
-            values.add(value1);
-            values.add(value2);
-
-            PropertyDeclaration result = new PropertyDeclaration(
-                    CSSName.BACKGROUND_SIZE,
-                    new PropertyValue(values), important, origin);
-
-            return Collections.singletonList(result);
-        }
     }
 
     public static class BackgroundPosition extends AbstractPropertyBuilder {
@@ -745,6 +761,18 @@ public class PrimitivePropertyBuilders {
     }
 
     public static class BorderLeftWidth extends GenericBorderWidth {
+    }
+    
+    public static class BorderTopLeftRadius extends GenericBorderCornerRadius {
+    }
+    
+    public static class BorderTopRightRadius extends GenericBorderCornerRadius {
+    }
+    
+    public static class BorderBottomRightRadius extends GenericBorderCornerRadius {
+    }
+    
+    public static class BorderBottomLeftRadius extends GenericBorderCornerRadius {
     }
 
     public static class Bottom extends LengthLikeWithAuto {
@@ -1540,5 +1568,19 @@ public class PrimitivePropertyBuilders {
             return Collections.singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
         }
+    }
+    
+
+    private static List createTwoValueResponse(CSSName cssName, CSSPrimitiveValue value1, CSSPrimitiveValue value2,
+            int origin, boolean important) {
+        List values = new ArrayList(2);
+        values.add(value1);
+        values.add(value2);
+
+        PropertyDeclaration result = new PropertyDeclaration(
+                cssName,
+                new PropertyValue(values), important, origin);
+
+        return Collections.singletonList(result);
     }
 }

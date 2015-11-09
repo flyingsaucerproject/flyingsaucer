@@ -120,9 +120,9 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         _gc.drawLine(x1, y1, x2, y2);
     }
 
-    public void drawBorderLine(java.awt.Rectangle bounds, int side,
+    public void drawBorderLine(Shape bounds, int side,
             int lineWidth, boolean solid) {
-        int x = bounds.x;
+        /*int x = bounds.x;
         int y = bounds.y;
         int w = bounds.width;
         int h = bounds.height;
@@ -145,7 +145,8 @@ public class SWTOutputDevice extends AbstractOutputDevice {
                 offset += 1;
             }
             drawLine(x, y + h - offset, x + w - adj, y + h - offset);
-        }
+        }*/
+    	draw(bounds);
     }
 
     public void drawImage(FSImage image, int x, int y) {
@@ -178,6 +179,14 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         _gc.drawRectangle(x, y, width, height);
     }
 
+
+
+	public void draw(Shape s) {
+        Path p = convertToPath(s);
+        _gc.drawPath(p);
+        p.dispose();
+	}
+	
     public void fill(Shape s) {
         Path p = convertToPath(s);
         _gc.fillPath(p);
