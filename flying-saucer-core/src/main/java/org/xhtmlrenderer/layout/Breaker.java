@@ -115,11 +115,15 @@ public class Breaker {
         int lastWrap = 0;
         int graphicsLength = 0;
         int lastGraphicsLength = 0;
-
+        int lastTokenLength = 0;
+        String currentToken = "";
         while (right > 0 && graphicsLength <= avail) {
             lastGraphicsLength = graphicsLength;
-            graphicsLength += c.getTextRenderer().getWidth(
-                    c.getFontContext(), font, currentString.substring(left, right));
+            currentToken = currentString.substring(left, right);
+            lastTokenLength = c.getTextRenderer().getWidth(
+                    c.getFontContext(), font, currentToken);
+            graphicsLength += lastTokenLength;
+            //System.out.println(String.format("Current string -%s-", currentString.substring(left, right)));
             lastWrap = left;
             left = right;
             if ( tryToBreakAnywhere ) {
@@ -127,6 +131,15 @@ public class Breaker {
             }
             else { // break relies on BreakIterator
                 right = iterator.next();
+            }
+        }
+        
+        //try to see if trimming last spaces pushes content inside, browsers trim last spaces to flow the content
+        if (graphicsLength > avail) {
+            int allowanceOnTokenLength = c.getTextRenderer().getWidth(
+                    c.getFontContext(), font, currentToken.replaceFirst("\\s+$", ""));
+            if((graphicsLength - lastTokenLength + allowanceOnTokenLength) < avail) {
+                graphicsLength = graphicsLength - lastTokenLength + allowanceOnTokenLength;
             }
         }
 
@@ -175,10 +188,9 @@ public class Breaker {
     }
 
 	public static BreakIterator getWordStream(String s) {
-		BreakIterator i = new UrlAwareLineBreakIterator();
+	    BreakIterator i = new UrlAwareLineBreakIterator();
 		i.setText(s);
 		return i;
 	}
 
 }
-
