@@ -20,19 +20,15 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.BasicStroke;
-import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.BorderRadiusCorner;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
@@ -112,10 +108,18 @@ public class BorderPainter {
         }
         Path2D path = new Path2D.Float();
         
-        float angle = 90 * props.getTop() / (props.getTop() + props.getLeft());
+        float angle = 90;
+        float widthSum = props.getTop() + props.getLeft();
+        if (widthSum != 0.0f) { // Avoid NaN
+        	angle = angle * props.getTop() / widthSum;
+        }
         appendPath(path, 0-props.getLeft(), 0-props.getTop(), props.getLeftCorner().left(), props.getLeftCorner().right(), 90+angle, -angle-1, props.getTop(), props.getLeft(), scaledOffset, true, widthScale);
-        
-        angle = 90 * props.getTop() / (props.getTop() + props.getRight());
+
+        angle = 90;
+        widthSum = props.getTop() + props.getRight();
+        if (widthSum != 0.0f) { // Avoid NaN
+        	angle = angle * props.getTop() / widthSum;
+        }
         appendPath(path, sideWidth+props.getRight(), 0-props.getTop(), props.getRightCorner().right(), props.getRightCorner().left(), 90, -angle-1, props.getTop(), props.getRight(), scaledOffset, false, widthScale);
         
         
@@ -124,8 +128,12 @@ public class BorderPainter {
             //props = new RelativeBorderProperties(bounds, border, 0f, side, 1+scaledOffset, 1);
             
             appendPath(path, sideWidth, 0, props.getRightCorner().right(), props.getRightCorner().left(), 90-angle, angle+1, props.getTop(), props.getRight(), scaledOffset+1, false, widthScale);
-            
-            angle = 90 * props.getTop() / (props.getTop() + props.getLeft());
+
+            angle = 90;
+            widthSum = props.getTop() + props.getLeft();
+            if (widthSum != 0.0f) { // Avoid NaN
+            	angle = angle * props.getTop() / widthSum;
+            }
             appendPath(path, 0, 0, props.getLeftCorner().left(), props.getLeftCorner().right(), 90, angle+1, props.getTop(), props.getLeft(), scaledOffset+1, true, widthScale);
             
             path.closePath();
