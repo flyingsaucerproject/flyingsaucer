@@ -21,16 +21,21 @@ package org.xhtmlrenderer.resource;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.util.Configuration;
@@ -158,12 +163,33 @@ public class XMLResource extends AbstractResource {
         return xmlReader;
     }
 
+
+    // an identity copy stylesheet
+    private static final String IDENTITY_XSLT =
+      "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"
+      + " version='1.0'>"
+      + "<xsl:template match='/'><xsl:copy-of select='.'/>"
+      + "</xsl:template></xsl:stylesheet>";
+
+    private static final Templates idTtransformTemplate = makeIdTransformTemplate();
+    private static final Templates makeIdTransformTemplate(){
+    	try{
+			return TransformerFactory.newInstance().newTemplates(new StreamSource(new StringReader(IDENTITY_XSLT)));
+		}
+		catch (TransformerConfigurationException e){
+            throw new XRRuntimeException(
+                    "Failed on configuring SAX to DOM transformer.", e);
+		}
+		catch (TransformerFactoryConfigurationError e){
+            throw new XRRuntimeException(
+                    "Failed on configuring SAX to DOM transformer.", e);
+		}
+    }
+
     private static class XMLResourceBuilder {
         XMLResource createXMLResource(XMLResource target) {
             Source input = null;
             DOMResult output = null;
-            TransformerFactory xformFactory = null;
-            Transformer idTransform = null;
             XMLReader xmlReader = null;
             long st = 0L;
 
@@ -178,15 +204,13 @@ public class XMLResource extends AbstractResource {
                 dbf.setNamespaceAware(true);
                 dbf.setValidating(false);//validation is the root of all evil in xml - tobe
                 output = new DOMResult(dbf.newDocumentBuilder().newDocument());
-                xformFactory = TransformerFactory.newInstance();
-                idTransform = xformFactory.newTransformer();
             } catch (Exception ex) {
                 throw new XRRuntimeException(
                         "Failed on configuring SAX to DOM transformer.", ex);
             }
 
             try {
-                idTransform.transform(input, output);
+                idTtransformTemplate.newTransformer().transform(input, output);
             } catch (Exception ex) {
                 throw new XRRuntimeException(
                         "Can't load the XML resource (using TRaX transformer). " + ex.getMessage(), ex);
