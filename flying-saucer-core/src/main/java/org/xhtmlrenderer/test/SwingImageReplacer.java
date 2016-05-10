@@ -16,7 +16,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.*;
-import java.util.List;
 
 /**
  * @author patrick

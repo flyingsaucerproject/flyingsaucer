@@ -1,6 +1,5 @@
 package org.xhtmlrenderer.simple;
 
-import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Graphics;

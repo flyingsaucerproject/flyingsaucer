@@ -27,7 +27,6 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.swing.RootPanel;
 
 /**
  * Supplies information about the context in which rendering will take place

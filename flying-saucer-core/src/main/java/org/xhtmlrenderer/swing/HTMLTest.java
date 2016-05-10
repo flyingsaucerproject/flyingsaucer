@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;

@@ -2,7 +2,6 @@ package org.xhtmlrenderer.pdf;
 
 import com.lowagie.text.pdf.PdfAcroForm;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfFormField;
 import com.lowagie.text.pdf.PdfWriter;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
