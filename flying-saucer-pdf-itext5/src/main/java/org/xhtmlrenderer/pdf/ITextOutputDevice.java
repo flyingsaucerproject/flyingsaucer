@@ -20,12 +20,11 @@
 package org.xhtmlrenderer.pdf;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints.Key;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -35,8 +34,6 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,8 +42,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -62,13 +59,14 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.OutputDevice;
+import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.BorderPainter;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.JustificationInfo;
@@ -92,15 +90,20 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfOutline;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStructureElement;
+import com.itextpdf.text.pdf.PdfStructureTreeRoot;
 import com.itextpdf.text.pdf.PdfTextArray;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
+ * Rewrites Flyin Saurcer class gorg.xhtmlrenderer.pdf.ITextOutputDevice for supporting PDF/A generation
+ * Delegates PDF/A operations on org.xhtmlrenderer.pdf.ITextOutputDeviceAccessible
+ *  
  * This class is largely based on {@link com.itextpdf.text.pdf.PdfGraphics2D}.
  * See <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/
  * projects/itext/</a> for license information.
  */
-public class ITextOutputDevice extends AbstractOutputDevice implements OutputDevice {
+public class ITextOutputDevice extends AbstractOutputDevice implements OutputDevice {	
     private static final int FILL = 1;
     private static final int STROKE = 2;
     private static final int CLIP = 3;
@@ -111,7 +114,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private static final boolean ROUND_RECT_DIMENSIONS_DOWN = Configuration.isTrue("xr.pdf.round.rect.dimensions.down", false);
 
-    private PdfContentByte _currentPage;
+    private PdfContentByte _currentPage;    
     private float _pageHeight;
 
     private ITextFSFont _font;
@@ -148,13 +151,19 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private int _nextFormFieldIndex;
 
-    private Set _linkTargetAreas;
+    private Set _linkTargetAreas;      
+    
+    // PDF/A: The structure tree root corresponds to the highest hierarchy level in a tagged PDF
+    private PdfStructureTreeRoot root;
+    // PDF/A: File structure logical principal node
+    private PdfStructureElement tagDocument;
 
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
     }
 
-    public void setWriter(PdfWriter writer) {
+   
+	public void setWriter(PdfWriter writer) {
         _writer = writer;
     }
 
@@ -165,9 +174,15 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public int getNextFormFieldIndex() {
         return ++_nextFormFieldIndex;
     }
-
+   
     public void initializePage(PdfContentByte currentPage, float height) {
         _currentPage = currentPage;
+        //PDF/A       
+        root = ITextOutputDeviceAccessible.getRoot(_writer);        
+        root.mapRole(new PdfName("Artifact"), PdfName.ARTIFACT);
+        tagDocument = ITextOutputDeviceAccessible.createTagDocument(root);        
+        //PDF/A End
+        
         _pageHeight = height;
 
         _currentPage.saveState();
@@ -186,18 +201,26 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             _defaultDestination.addPage(_writer.getPageReference(1));
         }
 
-        _linkTargetAreas = new HashSet();
+        _linkTargetAreas = new HashSet();        
     }
 
     public void finishPage() {
         _currentPage.restoreState();
     }
 
+    //PDF/A
+//    public void paintReplacedElement(RenderingContext c, BlockBox box) {
+//        ITextReplacedElement element = (ITextReplacedElement) box.getReplacedElement();
+//        element.paint(c, this, box);
+//    }
+    
+  //PDF/A
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
-        ITextReplacedElement element = (ITextReplacedElement) box.getReplacedElement();
-        element.paint(c, this, box);
+    	Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+        ReplacedElement element = box.getReplacedElement();
+        this.drawImage(box, ((ITextImageElement)element).getImage(), contentBounds.x, contentBounds.y);
     }
-
+    
     public void paintBackground(RenderingContext c, Box box) {
         super.paintBackground(c, box);
 
@@ -470,13 +493,19 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     public void drawString(String s, float x, float y, JustificationInfo info) {
+        //NOT used in this implmentation: use drawStringAccessible(InlineText inlineText, String s, float x, float y, JustificationInfo info)           
+    }
+    
+    public void drawStringAccessible(InlineText inlineText, String s, float x, float y, JustificationInfo info) {
+    	BlockBox parentBlockBox = getParentBlockBox(inlineText.getParent());
         if (Configuration.isTrue("xr.renderer.replace-missing-characters", false)) {
             s = replaceMissingCharacters(s);
         }
         if (s.length() == 0)
             return;
-        PdfContentByte cb = _currentPage;
-        ensureFillColor();
+        PdfContentByte cb = _currentPage;               
+		
+		ensureFillColor();
         AffineTransform at = (AffineTransform) getTransform().clone();
         at.translate(x, y);
         AffineTransform inverse = normalizeMatrix(at);
@@ -485,11 +514,21 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         inverse.scale(_dotsPerPoint, _dotsPerPoint);
         double[] mx = new double[6];
         inverse.getMatrix(mx);
-        cb.beginText();
+        
+        
+        //PDF/UA: get Font size to determine the tagged element 
+        FontDescription desc = _font.getFontDescription();
+        float fontSize = _font.getSize2D() / _dotsPerPoint;        
+        
+        String nodeName = parentBlockBox.getElement().getNodeName();
+        //PDF/UA ******       
+        ITextOutputDeviceAccessible.beginMarkedContentSequenceDrawingString(nodeName, s, desc, fontSize, tagDocument, cb);
+        //END PDF/UA ******
+               
+        cb.beginText();           
+        
         // Check if bold or italic need to be emulated
         boolean resetMode = false;
-        FontDescription desc = _font.getFontDescription();
-        float fontSize = _font.getSize2D() / _dotsPerPoint;
         cb.setFontAndSize(desc.getFont(), fontSize);
         float b = (float) mx[1];
         float c = (float) mx[2];
@@ -520,9 +559,28 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             cb.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL);
             cb.setLineWidth(1);
         }
-        cb.endText();
+               
+        cb.endText(); 
+        
+        //PDF/UA ******
+        ITextOutputDeviceAccessible.endMarkedContentSequenceDrawingString(cb);
+        //End PDF/UA ******
+            
     }
-
+    
+    private BlockBox getParentBlockBox(Box lBox){
+    	if(lBox != null){
+	    	Box parent = lBox.getParent();
+	    	if(parent instanceof BlockBox){
+	    		return (BlockBox) parent;
+	    	}else{
+	    		return getParentBlockBox(parent);
+	    	}
+    	}else{
+    		return null;
+    	}
+    }
+    
     private String replaceMissingCharacters(String string) {
         char[] charArr = string.toCharArray();
         char replacementCharacter = Configuration.valueAsChar("xr.renderer.missing-character-replacement", '#');
@@ -815,6 +873,39 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     public void drawImage(FSImage fsImage, int x, int y) {
+    	if (fsImage instanceof PDFAsImage) {
+            drawPDFAsImage((PDFAsImage) fsImage, x, y);
+        } else {
+            Image image = ((ITextFSImage) fsImage).getImage();
+
+            if (fsImage.getHeight() <= 0 || fsImage.getWidth() <= 0) {
+                return;
+            }
+
+            AffineTransform at = AffineTransform.getTranslateInstance(x, y);
+            at.translate(0, fsImage.getHeight());
+            at.scale(fsImage.getWidth(), fsImage.getHeight());
+
+            AffineTransform inverse = normalizeMatrix(_transform);
+            AffineTransform flipper = AffineTransform.getScaleInstance(1, -1);
+            inverse.concatenate(at);
+            inverse.concatenate(flipper);
+
+            double[] mx = new double[6];
+            inverse.getMatrix(mx);
+
+            try {
+            	//PDF/A
+            	ITextOutputDeviceAccessible.addTaggedImage(null, tagDocument, _currentPage, image, mx);
+                //PDF/A End
+            } catch (DocumentException e) {
+                throw new XRRuntimeException(e.getMessage(), e);
+            }
+        }
+    }  
+    
+    //PDF/A, new input param BlockBox
+    public void drawImage(BlockBox box, FSImage fsImage, int x, int y) {
         if (fsImage instanceof PDFAsImage) {
             drawPDFAsImage((PDFAsImage) fsImage, x, y);
         } else {
@@ -837,12 +928,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             inverse.getMatrix(mx);
 
             try {
-                _currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5]);
+            	//PDF/A
+            	ITextOutputDeviceAccessible.addTaggedImage(box, tagDocument, _currentPage, image, mx);
+                //PDF/A End
             } catch (DocumentException e) {
                 throw new XRRuntimeException(e.getMessage(), e);
             }
         }
-    }
+    }           
 
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {
         URI uri = image.getURI();
@@ -1269,5 +1362,63 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         result.setHeight(box.getHeight() / _dotsPerPoint);
 
         return result;
+    }
+  
+    @Override
+    public void drawText(RenderingContext c, InlineText inlineText) {
+        InlineLayoutBox iB = inlineText.getParent();
+        String text = inlineText.getSubstring();
+
+        if (text != null && text.length() > 0) {
+            setColor(iB.getStyle().getColor());
+            setFont(iB.getStyle().getFSFont(c));
+            setFontSpecification(iB.getStyle().getFontSpecification());
+            if (inlineText.getParent().getStyle().isTextJustify()) {
+                JustificationInfo info = inlineText.getParent().getLineBox().getJustificationInfo();
+                if (info != null) {
+                	ITextTextRendererAccessible.drawStringAccessible(c.getOutputDevice(), inlineText,
+                            text,
+                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline(),
+                            info);
+                } else {
+                	ITextTextRendererAccessible.drawStringAccessible(
+                            c.getOutputDevice(), inlineText,
+                            text,
+                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());
+                }
+            } else {
+            	ITextTextRendererAccessible.drawStringAccessible(
+                        c.getOutputDevice(), inlineText,
+                        text,
+                        iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());
+            }
+        }
+
+        if (c.debugDrawFontMetrics()) {
+            drawFontMetrics(c, inlineText);
+        }
+    }   
+    
+    private void drawFontMetrics(RenderingContext c, InlineText inlineText) {
+        InlineLayoutBox iB = inlineText.getParent();
+        String text = inlineText.getSubstring();
+
+        setColor(new FSRGBColor(0xFF, 0x33, 0xFF));
+
+        FSFontMetrics fm = iB.getStyle().getFSFontMetrics(null);
+        int width = c.getTextRenderer().getWidth(
+                c.getFontContext(),
+                iB.getStyle().getFSFont(c), text);
+        int x = iB.getAbsX() + inlineText.getX();
+        int y = iB.getAbsY() + iB.getBaseline();
+
+        drawLine(x, y, x + width, y);
+
+        y += (int) Math.ceil(fm.getDescent());
+        drawLine(x, y, x + width, y);
+
+        y -= (int) Math.ceil(fm.getDescent());
+        y -= (int) Math.ceil(fm.getAscent());
+        drawLine(x, y, x + width, y);
     }
 }

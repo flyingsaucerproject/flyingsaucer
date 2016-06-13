@@ -28,16 +28,30 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.JustificationInfo;
 
 import com.itextpdf.text.pdf.BaseFont;
 
+/**
+ * Rewrites Flyin Saurcer class org.xhtmlrenderer.pdf.ITextTextRenderer for supporting PDF/A generation
+ * Delegates PDF/A operations on org.xhtmlrenderer.pdf.ITextTextRendererAccessible
+ *
+ */
 public class ITextTextRenderer implements TextRenderer {
     private static float TEXT_MEASURING_DELTA = 0.01f;
     
     public void setup(FontContext context) {
     }
 
+    public void drawString(OutputDevice outputDevice, InlineText inlineText, String string, float x, float y) {
+    	ITextTextRendererAccessible.drawStringAccessible(outputDevice, inlineText, string, x, y);
+    }
+    
+    public void drawString(OutputDevice outputDevice, InlineText inlineText, String string, float x, float y, JustificationInfo info) {
+    	ITextTextRendererAccessible.drawStringAccessible(outputDevice, inlineText, string, x, y, info);
+    }
+    
     public void drawString(OutputDevice outputDevice, String string, float x, float y) {
         ((ITextOutputDevice)outputDevice).drawString(string, x, y, null);
     }

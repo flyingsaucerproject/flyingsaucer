@@ -64,6 +64,11 @@ import org.xml.sax.InputSource;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
+/**
+ * Rewrites Flyin Saurcer class org.xhtmlrenderer.pdf.ITextRenderer for supporting PDF/A generation
+ * Delegates PDF/A operations on org.xhtmlrenderer.pdf.ITextRendererAccessible
+ *
+ */
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to
     // the inch
@@ -238,9 +243,13 @@ public class ITextRenderer {
 
         return result;
     }
-
+   
     public void createPDF(OutputStream os) throws DocumentException, IOException {
-        createPDF(os, true, 0);
+        createPDF(os, true, 0, "", "");
+    }
+
+    public void createPDF(OutputStream os, String language, String title) throws DocumentException, IOException {
+        createPDF(os, true, 0, language, title);
     }
 
     public void writeNextDocument() throws DocumentException, IOException {
@@ -272,7 +281,7 @@ public class ITextRenderer {
     }
 
     public void createPDF(OutputStream os, boolean finish) throws DocumentException, IOException {
-        createPDF(os, finish, 0);
+        createPDF(os, finish, 0, "", "");
     }
 
     /**
@@ -281,7 +290,7 @@ public class ITextRenderer {
      * 
      * @throws IOException
      */
-    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, IOException {
+    public void createPDF(OutputStream os, boolean finish, int initialPageNo, String language, String title) throws DocumentException, IOException {
         List pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
@@ -291,6 +300,8 @@ public class ITextRenderer {
                 firstPage.getHeight(c) / _dotsPerPoint);
 
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document(firstPageSize, 0, 0, 0, 0);
+        //PDF/A
+//        PdfAWriter writer = PdfAWriter.getInstance(doc, os, PdfAConformanceLevel.PDF_A_1A);      
         PdfWriter writer = PdfWriter.getInstance(doc, os);
         if (_pdfVersion != null) {
             writer.setPdfVersion(_pdfVersion.charValue());
@@ -299,6 +310,11 @@ public class ITextRenderer {
             writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
                     _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
         }
+        
+        //PDF/A
+        ITextRendererAccessible.addAccessibilityMetaData(writer, doc, language, title);
+        //PDF/A End
+        
         _pdfDoc = doc;
         _writer = writer;
 
