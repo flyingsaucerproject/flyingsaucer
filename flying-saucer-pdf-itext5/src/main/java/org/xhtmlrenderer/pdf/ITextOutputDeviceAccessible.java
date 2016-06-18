@@ -58,8 +58,10 @@ public class ITextOutputDeviceAccessible {
         		  htmlNodeName.equalsIgnoreCase("TH") || htmlNodeName.equalsIgnoreCase("TR") || 
         		  htmlNodeName.equalsIgnoreCase("TD") || htmlNodeName.equalsIgnoreCase("LI") ||
         		  htmlNodeName.equalsIgnoreCase("H4") || htmlNodeName.equalsIgnoreCase("H5") ||
-        		  htmlNodeName.equalsIgnoreCase("H6") || htmlNodeName.equalsIgnoreCase("BUTTON")){
+        		  htmlNodeName.equalsIgnoreCase("H6")){
         	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
+        }else if (htmlNodeName.equalsIgnoreCase("BUTTON")|| htmlNodeName.equalsIgnoreCase("OBJECT")){
+          	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
         //H1, H2, H3, etc.
         }else{
         	PdfName tag = new PdfName(htmlNodeName.toUpperCase());
