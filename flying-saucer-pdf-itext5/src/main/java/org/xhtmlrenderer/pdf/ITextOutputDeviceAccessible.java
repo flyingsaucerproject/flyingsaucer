@@ -62,6 +62,8 @@ public class ITextOutputDeviceAccessible {
         	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
         }else if (htmlNodeName.equalsIgnoreCase("BUTTON")|| htmlNodeName.equalsIgnoreCase("OBJECT")){
           	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
+        }else if (htmlNodeName.equalsIgnoreCase("A")){
+          	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
         //H1, H2, H3, etc.
         }else{
         	PdfName tag = new PdfName(htmlNodeName.toUpperCase());

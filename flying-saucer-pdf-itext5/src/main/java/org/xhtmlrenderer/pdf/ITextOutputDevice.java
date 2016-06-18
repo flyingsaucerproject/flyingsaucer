@@ -209,16 +209,20 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     //PDF/A
-//    public void paintReplacedElement(RenderingContext c, BlockBox box) {
-//        ITextReplacedElement element = (ITextReplacedElement) box.getReplacedElement();
-//        element.paint(c, this, box);
-//    }
+    public void paintReplacedElementOri(RenderingContext c, BlockBox box) {
+        ITextReplacedElement element = (ITextReplacedElement) box.getReplacedElement();
+        element.paint(c, this, box);
+    }
     
-  //PDF/A
+    //PDF/A
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
     	Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
         ReplacedElement element = box.getReplacedElement();
-        this.drawImage(box, ((ITextImageElement)element).getImage(), contentBounds.x, contentBounds.y);
+        if(element instanceof ITextImageElement){
+        	this.drawImage(box, ((ITextImageElement)element).getImage(), contentBounds.x, contentBounds.y);
+        }else{
+        	paintReplacedElementOri(c, box);
+        }
     }
     
     public void paintBackground(RenderingContext c, Box box) {
