@@ -107,13 +107,20 @@ public class ITextFontResolver implements FontResolver {
             CalculatedStyle style = rule.getCalculatedStyle();
 
             FSDerivedValue src = style.valueByName(CSSName.SRC);
+	    	//PDFA Try load to supported ttf font, eot is not suported
+			Map<String, String> fileNameAndExtension = ITextFontResolverAccessible.getFileNameAndExtension(src.asString());
+			String fileName = fileNameAndExtension.keySet().toArray(new String[0])[0];
+			String extension = fileNameAndExtension.get(fileName);
+			String uri = ITextFontResolverAccessible.getSupportedFontUri(src.asString(), extension);
+			//End PDFA
+			
             if (src == IdentValue.NONE) {
                 continue;
             }
 
-            byte[] font1 = _sharedContext.getUac().getBinaryResource(src.asString());
+            byte[] font1 = _sharedContext.getUac().getBinaryResource(uri);
             if (font1 == null) {
-                XRLog.exception("Could not load font " + src.asString());
+                XRLog.exception("Could not load font " + uri + " original uri:" + src.asString());
                 continue;
             }
 
@@ -122,7 +129,7 @@ public class ITextFontResolver implements FontResolver {
             if (metricsSrc != IdentValue.NONE) {
                 font2 = _sharedContext.getUac().getBinaryResource(metricsSrc.asString());
                 if (font2 == null) {
-                    XRLog.exception("Could not load font metric data " + src.asString());
+                    XRLog.exception("Could not load font metric data " + uri + " original uri:" + src.asString());
                     continue;
                 }
             }
@@ -152,12 +159,14 @@ public class ITextFontResolver implements FontResolver {
             }
 
             try {
-                addFontFaceFont(fontFamily, fontWeight, fontStyle, src.asString(), encoding, embedded, font1, font2);
+            	//PDFA embed all fonts
+                //addFontFaceFont(fontFamily, fontWeight, fontStyle, src.asString(), encoding, embedded, font1, font2);
+                addFontFaceFont(fontFamily, fontWeight, fontStyle, uri, encoding, true, font1, font2);
             } catch (DocumentException e) {
-                XRLog.exception("Could not load font " + src.asString(), e);
+                XRLog.exception("Could not load font " + uri + " original uri:" + src.asString(), e);
                 continue;
             } catch (IOException e) {
-                XRLog.exception("Could not load font " + src.asString(), e);
+                XRLog.exception("Could not load font " + uri + " original uri:" + src.asString(), e);
             }
         }
     }
