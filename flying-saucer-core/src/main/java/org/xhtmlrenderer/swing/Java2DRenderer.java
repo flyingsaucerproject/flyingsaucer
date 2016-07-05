@@ -164,6 +164,9 @@ public class Java2DRenderer {
             this.height = height;
         }
 
+	public Java2DRenderer(Document doc, int width) {
+		this(doc, width, NO_HEIGHT);
+	}
 
         /**
          * Creates a new instance pointing to the given Document. Does not render until {@link #getImage(int)} is called for
