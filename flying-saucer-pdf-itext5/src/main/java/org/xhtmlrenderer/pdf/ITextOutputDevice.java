@@ -526,7 +526,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         
         String nodeName = parentBlockBox.getElement().getNodeName();
         //PDF/UA ******       
-        ITextOutputDeviceAccessible.beginMarkedContentSequenceDrawingString(nodeName, s, desc, fontSize, tagDocument, cb);
+        ITextOutputDeviceAccessible.beginMarkedContentSequenceDrawingString(nodeName, s, desc, fontSize, tagDocument, cb, root);
         //END PDF/UA ******
                
         cb.beginText();           

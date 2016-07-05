@@ -45,7 +45,7 @@ public class ITextOutputDeviceAccessible {
         currentPage.endMarkedContentSequence();
 	}
 	
-	static void beginMarkedContentSequenceDrawingString(String htmlNodeName, String s, FontDescription fontDesc, float fontSize, PdfStructureElement tagDocument, PdfContentByte cb) {		        
+	static void beginMarkedContentSequenceDrawingString(String htmlNodeName, String s, FontDescription fontDesc, float fontSize, PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root) {		        
         PdfStructureElement struc;
         //White spaces, commas and dots
         if(s.trim().length() == 0 || s.trim().equalsIgnoreCase(",") || s.trim().equalsIgnoreCase(".")){
@@ -66,10 +66,19 @@ public class ITextOutputDeviceAccessible {
           	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
         //H1, H2, H3, etc.
         }else{
-        	PdfName tag = new PdfName(htmlNodeName.toUpperCase());
-        	struc = new PdfStructureElement(tagDocument, tag);
+        	try{ 
+        		PdfName tag = new PdfName(htmlNodeName.toUpperCase());
+        		struc = new PdfStructureElement(tagDocument, tag);
+        		cb.beginMarkedContentSequence(struc);
+        	}catch(Exception e){
+        		//Creating new element in the dictiorary
+        		PdfStructureElement eTop = new PdfStructureElement(root, new PdfName(htmlNodeName.toUpperCase()));
+        		root.mapRole(new PdfName(htmlNodeName.toUpperCase()), new PdfName("Sect"));
+        		PdfStructureElement struc1 = new PdfStructureElement(eTop, PdfName.P);
+        		cb.beginMarkedContentSequence(struc1);
+        	}
         }
-        cb.beginMarkedContentSequence(struc);
+        
     }
 	
 	static void endMarkedContentSequenceDrawingString(PdfContentByte cb) {
