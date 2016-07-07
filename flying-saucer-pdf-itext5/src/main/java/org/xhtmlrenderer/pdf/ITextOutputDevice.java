@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -62,6 +63,7 @@ import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
+import org.xhtmlrenderer.pdf.util.DomUtilsAccessible;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -157,6 +159,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private PdfStructureTreeRoot root;
     // PDF/A: File structure logical principal node
     private PdfStructureElement tagDocument;
+    // PDFA/A List of LI previosly tagged. avoid repeat tag
+    private List<Node> liTagged = new ArrayList<Node>();
+    // PDFA/A List of UL/OL previosly tagged. avoid repeat tag
+    private List<Node> ulTagged = new ArrayList<Node>();
+    // PDFA/A parent list element
+    private PdfStructureElement parentListElement;
 
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
@@ -522,13 +530,44 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         
         //PDF/UA: get Font size to determine the tagged element 
         FontDescription desc = _font.getFontDescription();
-        float fontSize = _font.getSize2D() / _dotsPerPoint;        
+        float fontSize = _font.getSize2D() / _dotsPerPoint;   
         
-        String nodeName = parentBlockBox.getElement().getNodeName();
-        //PDF/UA ******       
-        ITextOutputDeviceAccessible.beginMarkedContentSequenceDrawingString(nodeName, s, desc, fontSize, tagDocument, cb, root);
-        //END PDF/UA ******
-               
+        //PDF/UA ****** 
+        String htmlNodeName = DomUtilsAccessible.getNodeName(parentBlockBox);
+        String parentNodeName = DomUtilsAccessible.getParentNodeName(parentBlockBox);
+        boolean parentEndMarkedSecuence = false;
+        boolean endMarkedSecuence = false;
+        
+        if (htmlNodeName.equalsIgnoreCase("LI") && (parentNodeName.equalsIgnoreCase("OL") || parentNodeName.equalsIgnoreCase("UL"))){
+       	
+        	//TODO los LI vienen a trocitos, es decir, FS trocea el contenido de un LI en varios :-S, no podemos controlar cuando abrir y cerrar la UL o OL
+        	Node parentNode = parentBlockBox.getElement().getParentNode();
+        	Element htmlElement = parentBlockBox.getElement();
+        	int numChildren = DomUtilsAccessible.getNumChildren(parentNode, "li");
+        	int currentElementPosition = DomUtilsAccessible.getChildPosition(parentNode, htmlElement, "li");
+        	if(currentElementPosition == 1 && !ulTagged.contains(parentNode)){
+        		PdfStructureElement rootListStruc = new PdfStructureElement(tagDocument, PdfName.L);
+        		cb.beginMarkedContentSequence(rootListStruc); 
+        		ulTagged.add(parentNode);
+        		parentListElement = rootListStruc;
+        	} 
+        	if(currentElementPosition == numChildren && !liTagged.contains(htmlElement)){
+        		parentEndMarkedSecuence = true;    		
+        	}
+        	if(!liTagged.contains(htmlElement)){    
+        		PdfStructureElement li = new PdfStructureElement(parentListElement, PdfName.LI);
+        		//TODO Segun la especificacion de adobe hay crear tambien dentro de los LI elementos Lbl y LBody
+        		cb.beginMarkedContentSequence(li); 
+                liTagged.add(htmlElement);
+                endMarkedSecuence = true;
+        	}
+        }else{
+	        //PDF/UA ******       
+	        ITextOutputDeviceAccessible.beginMarkedContentSequenceDrawingString(parentBlockBox, s, desc, fontSize, tagDocument, cb, root);
+	        endMarkedSecuence = true;
+	        //END PDF/UA ******
+        }
+             
         cb.beginText();           
         
         // Check if bold or italic need to be emulated
@@ -567,8 +606,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         cb.endText(); 
         
         //PDF/UA ******
-        ITextOutputDeviceAccessible.endMarkedContentSequenceDrawingString(cb);
+        if(endMarkedSecuence){
+        	ITextOutputDeviceAccessible.endMarkedContentSequenceDrawingString(cb);
+        }
+        if(parentEndMarkedSecuence){ 
+        	ITextOutputDeviceAccessible.endMarkedContentSequenceDrawingString(cb);
+        }
         //End PDF/UA ******
+        
             
     }
     

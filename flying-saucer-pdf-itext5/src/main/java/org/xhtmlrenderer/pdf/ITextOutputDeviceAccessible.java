@@ -2,8 +2,13 @@ package org.xhtmlrenderer.pdf;
 
 import java.awt.Rectangle;
 
+import org.apache.commons.lang.WordUtils;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
+import org.xhtmlrenderer.pdf.util.DomUtilsAccessible;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
@@ -45,41 +50,37 @@ public class ITextOutputDeviceAccessible {
         currentPage.endMarkedContentSequence();
 	}
 	
-	static void beginMarkedContentSequenceDrawingString(String htmlNodeName, String s, FontDescription fontDesc, float fontSize, PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root) {		        
+	static void beginMarkedContentSequenceDrawingString(BlockBox parentBlockBox, String s, FontDescription fontDesc, float fontSize, PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root) {		        
         PdfStructureElement struc;
+        String htmlNodeName = DomUtilsAccessible.getNodeName(parentBlockBox);
         //White spaces, commas and dots
         if(s.trim().length() == 0 || s.trim().equalsIgnoreCase(",") || s.trim().equalsIgnoreCase(".")){
         	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
         //So far icons fonts
         }else if(s.length() <= 2){        	
         	struc = new PdfStructureElement(tagDocument, PdfName.ARTIFACT);
-        //Span and others HTML elements treated as Span on PDF
-        }else if (htmlNodeName.equalsIgnoreCase("SPAN") || htmlNodeName.equalsIgnoreCase("DIV") || 
-        		  htmlNodeName.equalsIgnoreCase("TH") || htmlNodeName.equalsIgnoreCase("TR") || 
-        		  htmlNodeName.equalsIgnoreCase("TD") || htmlNodeName.equalsIgnoreCase("LI") ||
-        		  htmlNodeName.equalsIgnoreCase("H4") || htmlNodeName.equalsIgnoreCase("H5") ||
-        		  htmlNodeName.equalsIgnoreCase("H6")){
-        	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
-        }else if (htmlNodeName.equalsIgnoreCase("BUTTON")|| htmlNodeName.equalsIgnoreCase("OBJECT")){
+        // others HTML elements treated as Span on PDF
+        }else if (htmlNodeName.equalsIgnoreCase("HTML") || htmlNodeName.equalsIgnoreCase("BODY")){
           	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
-        }else if (htmlNodeName.equalsIgnoreCase("A") || htmlNodeName.equalsIgnoreCase("HTML") || htmlNodeName.equalsIgnoreCase("BODY")){
-          	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
-        //H1, H2, H3, etc.
         }else{
         	try{ 
-        		PdfName tag = new PdfName(htmlNodeName.toUpperCase());
+        		String pdfName = htmlNodeName.toUpperCase();
+        		if(pdfName.length() > 2){
+        			pdfName = WordUtils.capitalizeFully(pdfName);
+        		}
+        		PdfName tag = new PdfName(pdfName);
         		struc = new PdfStructureElement(tagDocument, tag);
-        		cb.beginMarkedContentSequence(struc);
         	}catch(Exception e){
+        		System.out.println("Crating a new element in the dictionary");
         		//Creating new element in the dictiorary
-        		PdfStructureElement eTop = new PdfStructureElement(root, new PdfName(htmlNodeName.toUpperCase()));
-        		root.mapRole(new PdfName(htmlNodeName.toUpperCase()), new PdfName("Sect"));
-        		PdfStructureElement struc1 = new PdfStructureElement(eTop, PdfName.P);
-        		cb.beginMarkedContentSequence(struc1);
+        		root.mapRole(new PdfName(htmlNodeName.toUpperCase()), PdfName.P);
+        		struc = new PdfStructureElement(tagDocument, new PdfName(htmlNodeName.toUpperCase()));
         	}
         }
-        
+        cb.beginMarkedContentSequence(struc);
     }
+	
+
 	
 	static void endMarkedContentSequenceDrawingString(PdfContentByte cb) {
         cb.endMarkedContentSequence();
