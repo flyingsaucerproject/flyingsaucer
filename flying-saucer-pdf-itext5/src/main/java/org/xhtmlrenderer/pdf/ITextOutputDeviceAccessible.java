@@ -1,16 +1,14 @@
 package org.xhtmlrenderer.pdf;
 
 import java.awt.Rectangle;
+import java.util.logging.Level;
 
 import org.apache.commons.lang.WordUtils;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.extend.ReplacedElement;
-import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
-import org.xhtmlrenderer.pdf.util.DomUtilsAccessible;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.XRLog;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
@@ -38,58 +36,47 @@ public class ITextOutputDeviceAccessible {
 		return new PdfStructureElement(root, PdfName.DOCUMENT);
 	}
 	
-	static void addTaggedImage(BlockBox box, PdfStructureElement tagDocument, PdfContentByte currentPage, Image image, double[] mx ) throws DocumentException{
-		PdfStructureElement imageTag = new PdfStructureElement(tagDocument, PdfName.FIGURE);
-		String altText = DEFAUL_IMG_ALT;
-		if(box != null && box.getElement() != null && box.getElement().getAttribute("alt") != null){
-			altText = box.getElement().getAttribute("alt");
-		}
-    	imageTag.put(new PdfName("Alt"), new PdfString(altText));
-    	currentPage.beginMarkedContentSequence(imageTag);
-        currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5], true);
-        currentPage.endMarkedContentSequence();
-	}
-	
-	static void beginMarkedContentSequenceDrawingString(BlockBox parentBlockBox, String s, FontDescription fontDesc, float fontSize, PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root) {		        
+	static void beginMarkedContentSequenceDrawingString(Node parentNode, String s, PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root) {		        
         PdfStructureElement struc;
-        String htmlNodeName = DomUtilsAccessible.getNodeName(parentBlockBox);
+        String htmlNodeName = parentNode.getNodeName();
         //White spaces, commas and dots
         if(s.trim().length() == 0 || s.trim().equalsIgnoreCase(",") || s.trim().equalsIgnoreCase(".")){
         	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
         //So far icons fonts
         }else if(s.length() <= 2){        	
-        	struc = new PdfStructureElement(tagDocument, PdfName.ARTIFACT);
+        	struc = new PdfStructureElement(tagDocument, PdfName.ART);
         // others HTML elements treated as Span on PDF
         }else if (htmlNodeName.equalsIgnoreCase("HTML") || htmlNodeName.equalsIgnoreCase("BODY")){
           	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
-        }else{
-        	try{ 
-        		String pdfName = htmlNodeName.toUpperCase();
-        		if(pdfName.length() > 2){
-        			pdfName = WordUtils.capitalizeFully(pdfName);
-        		}
-        		PdfName tag = new PdfName(pdfName);
-        		struc = new PdfStructureElement(tagDocument, tag);
-        	}catch(Exception e){
-        		System.out.println("Crating a new element in the dictionary");
-        		//Creating new element in the dictiorary
-        		root.mapRole(new PdfName(htmlNodeName.toUpperCase()), PdfName.P);
-        		struc = new PdfStructureElement(tagDocument, new PdfName(htmlNodeName.toUpperCase()));
-        	}
+        }else if (htmlNodeName.equalsIgnoreCase("A")){
+        	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
         }
-        cb.beginMarkedContentSequence(struc);
+        else{
+        	struc = getStructElement(tagDocument, htmlNodeName, root);
+        }
+        cb.beginMarkedContentSequence(struc);  
     }
 	
-
+	public static PdfStructureElement getStructElement(PdfStructureElement parentStruct, String htmlNodeName, PdfStructureTreeRoot root){
+		PdfStructureElement struc;
+    	try{ 
+    		String pdfName = htmlNodeName.toUpperCase();
+    		if(pdfName.length() > 2){
+    			pdfName = WordUtils.capitalizeFully(pdfName);
+    		}
+    		PdfName tag = new PdfName(pdfName);
+    		struc = new PdfStructureElement(parentStruct, tag);
+    	}catch(Exception e){
+    		XRLog.log("ITextOutputDeviceAccessible.getStructElement", Level.INFO, "Creating a new element in the dictionary:" + htmlNodeName.toUpperCase());
+    		//Mapping new structure element
+    		root.mapRole(new PdfName(htmlNodeName.toUpperCase()), PdfName.P);
+    		struc = new PdfStructureElement(parentStruct, new PdfName(htmlNodeName.toUpperCase()));
+    	}
+    	return struc;
+	}
 	
 	static void endMarkedContentSequenceDrawingString(PdfContentByte cb) {
         cb.endMarkedContentSequence();
-    }
-	
-	static void paintReplacedElement(ITextOutputDevice outputDevice, RenderingContext c, BlockBox box) {
-    	Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
-        ReplacedElement element = box.getReplacedElement();
-        outputDevice.drawImage(box, ((ITextImageElement)element).getImage(), contentBounds.x, contentBounds.y);
     }
 	
 }

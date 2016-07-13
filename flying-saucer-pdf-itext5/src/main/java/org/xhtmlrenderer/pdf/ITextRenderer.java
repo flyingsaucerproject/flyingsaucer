@@ -321,6 +321,7 @@ public class ITextRenderer {
         firePreOpen();
         doc.open();
 
+        // PDF/A asociar a esta clase un PDFCreationListener para controlar cuando se crear una nueva pagina
         writePDF(pages, c, firstPageSize, doc, writer);
 
         if (finish) {
@@ -352,6 +353,8 @@ public class ITextRenderer {
         _outputDevice.setRoot(_root);
 
         _outputDevice.start(_doc);
+        _outputDevice.setPdfDocument(_pdfDoc);
+        _outputDevice.setRenderingContext(c);
         _outputDevice.setWriter(writer);
         _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.getHeight());
 
@@ -371,6 +374,7 @@ public class ITextRenderer {
                 com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
                         nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
+                // PDF/A usar un PDFACreationListener para controlar cuando se crea una nueva pagina, ya que hay cerrar
                 doc.newPage();
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());
             }
