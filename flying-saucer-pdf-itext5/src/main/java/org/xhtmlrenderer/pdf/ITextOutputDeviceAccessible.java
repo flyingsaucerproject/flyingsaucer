@@ -1,20 +1,13 @@
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Rectangle;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.WordUtils;
 import org.w3c.dom.Node;
-import org.xhtmlrenderer.extend.ReplacedElement;
-import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.XRLog;
 
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfName;
-import com.itextpdf.text.pdf.PdfString;
 import com.itextpdf.text.pdf.PdfStructureElement;
 import com.itextpdf.text.pdf.PdfStructureTreeRoot;
 import com.itextpdf.text.pdf.PdfWriter;
