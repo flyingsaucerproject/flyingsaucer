@@ -100,6 +100,10 @@ public class NoNamespaceHandler implements NamespaceHandler {
     public String getLinkUri(org.w3c.dom.Element e) {
         return null;
     }
+    
+    public String getLinkTitle(org.w3c.dom.Element e) {
+        return null;
+    }
 
     public String getDocumentTitle(org.w3c.dom.Document doc) {
         return null;
