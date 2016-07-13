@@ -18,8 +18,6 @@ import com.itextpdf.text.pdf.PdfWriter;
  *
  */
 public class ITextOutputDeviceAccessible {
-	
-	private static final String DEFAUL_IMG_ALT = "image"; 
 		
 	static PdfStructureTreeRoot getRoot(PdfWriter writer){
 		return writer.getStructureTreeRoot();
