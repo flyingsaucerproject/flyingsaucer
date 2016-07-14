@@ -6,7 +6,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
- * Contains accessibility PDF/A generation methods.
+ * Contains accessibility PDF/UA generation methods.
  * Rewriten class delegates on this class 
  *
  */

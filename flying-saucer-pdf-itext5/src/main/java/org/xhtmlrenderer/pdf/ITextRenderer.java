@@ -65,8 +65,8 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
- * Rewrites Flyin Saurcer class org.xhtmlrenderer.pdf.ITextRenderer for supporting PDF/A generation
- * Delegates PDF/A operations on org.xhtmlrenderer.pdf.ITextRendererAccessible
+ * Rewrites Flyin Saurcer class org.xhtmlrenderer.pdf.ITextRenderer for supporting PDF/UA generation
+ * Delegates PDF/UA operations on org.xhtmlrenderer.pdf.ITextRendererAccessible
  *
  */
 public class ITextRenderer {
@@ -300,7 +300,7 @@ public class ITextRenderer {
                 firstPage.getHeight(c) / _dotsPerPoint);
 
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document(firstPageSize, 0, 0, 0, 0);
-        //PDF/A
+        //PDF/UA
 //        PdfAWriter writer = PdfAWriter.getInstance(doc, os, PdfAConformanceLevel.PDF_A_1A);      
         PdfWriter writer = PdfWriter.getInstance(doc, os);
         if (_pdfVersion != null) {
@@ -311,9 +311,9 @@ public class ITextRenderer {
                     _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
         }
         
-        //PDF/A
+        //PDF/UA
         ITextRendererAccessible.addAccessibilityMetaData(writer, doc, language, title);
-        //PDF/A End
+        //PDF/UA End
         
         _pdfDoc = doc;
         _writer = writer;
@@ -321,7 +321,7 @@ public class ITextRenderer {
         firePreOpen();
         doc.open();
 
-        // PDF/A asociar a esta clase un PDFCreationListener para controlar cuando se crear una nueva pagina
+        // PDF/UA asociar a esta clase un PDFCreationListener para controlar cuando se crear una nueva pagina
         writePDF(pages, c, firstPageSize, doc, writer);
 
         if (finish) {
@@ -353,7 +353,6 @@ public class ITextRenderer {
         _outputDevice.setRoot(_root);
 
         _outputDevice.start(_doc);
-        _outputDevice.setPdfDocument(_pdfDoc);
         _outputDevice.setRenderingContext(c);
         _outputDevice.setWriter(writer);
         _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.getHeight());
@@ -374,7 +373,7 @@ public class ITextRenderer {
                 com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
                         nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
-                // PDF/A usar un PDFACreationListener para controlar cuando se crea una nueva pagina, ya que hay cerrar
+                // PDF/UA usar un PDFACreationListener para controlar cuando se crea una nueva pagina, ya que hay cerrar
                 doc.newPage();
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());
             }

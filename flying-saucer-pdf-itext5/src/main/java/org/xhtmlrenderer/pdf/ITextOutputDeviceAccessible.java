@@ -13,7 +13,7 @@ import com.itextpdf.text.pdf.PdfStructureTreeRoot;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
- * Contains accessibility PDF/A generation methods.
+ * Contains accessibility PDF/UA generation methods.
  * Rewriten class delegates on this class 
  *
  */
@@ -27,36 +27,26 @@ public class ITextOutputDeviceAccessible {
 		return new PdfStructureElement(root, PdfName.DOCUMENT);
 	}
 	
-	static void beginMarkedContentSequenceDrawingString(Node parentNode, String s, PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root) {		        
-        PdfStructureElement struc;
+	static void beginMarkedContentSequenceDrawingString(Node parentNode, String text, PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root) {		        
         String htmlNodeName = parentNode.getNodeName();
-        //White spaces, commas and dots
-        if(s.trim().length() == 0 || s.trim().equalsIgnoreCase(",") || s.trim().equalsIgnoreCase(".")){
-        	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
-        //So far icons fonts
-        }else if(s.length() <= 2){        	
-        	struc = new PdfStructureElement(tagDocument, PdfName.ART);
-        // others HTML elements treated as Span on PDF
-        }else if (htmlNodeName.equalsIgnoreCase("HTML") || htmlNodeName.equalsIgnoreCase("BODY")){
-          	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
-        }else if (htmlNodeName.equalsIgnoreCase("A")){
-        	struc = new PdfStructureElement(tagDocument, PdfName.SPAN);
-        }
-        else{
-        	struc = getStructElement(tagDocument, htmlNodeName, root);
+        PdfStructureElement struc = getStrucElementByHtmlElement(tagDocument, htmlNodeName, text);
+        if(struc == null){
+        	struc = getStructElement(tagDocument, htmlNodeName, root, text);
         }
         cb.beginMarkedContentSequence(struc);  
     }
 	
-	public static PdfStructureElement getStructElement(PdfStructureElement parentStruct, String htmlNodeName, PdfStructureTreeRoot root){
-		PdfStructureElement struc;
+	public static PdfStructureElement getStructElement(PdfStructureElement parentStruct, String htmlNodeName, PdfStructureTreeRoot root, String text){
+		PdfStructureElement struc = getStrucElementByHtmlElement(parentStruct, htmlNodeName, text);
     	try{ 
-    		String pdfName = htmlNodeName.toUpperCase();
-    		if(pdfName.length() > 2){
-    			pdfName = WordUtils.capitalizeFully(pdfName);
+    		if(struc == null){
+	    		String pdfName = htmlNodeName.toUpperCase();
+	    		if(pdfName.length() > 2){
+	    			pdfName = WordUtils.capitalizeFully(pdfName);
+	    		}
+	    		PdfName tag = new PdfName(pdfName);
+	    		struc = new PdfStructureElement(parentStruct, tag);
     		}
-    		PdfName tag = new PdfName(pdfName);
-    		struc = new PdfStructureElement(parentStruct, tag);
     	}catch(Exception e){
     		XRLog.log("ITextOutputDeviceAccessible.getStructElement", Level.INFO, "Creating a new element in the dictionary:" + htmlNodeName.toUpperCase());
     		//Mapping new structure element
@@ -64,6 +54,25 @@ public class ITextOutputDeviceAccessible {
     		struc = new PdfStructureElement(parentStruct, new PdfName(htmlNodeName.toUpperCase()));
     	}
     	return struc;
+	}
+	
+	private static PdfStructureElement getStrucElementByHtmlElement(PdfStructureElement parentStruct, String htmlNodeName, String text){
+		PdfStructureElement struc = null;
+		//White spaces, commas and dots
+        if(text != null && (text.trim().length() == 0 || text.trim().equalsIgnoreCase(",") || text.trim().equalsIgnoreCase("."))){
+        	struc = new PdfStructureElement(parentStruct, PdfName.SPAN);
+        //So far icons fonts
+        }else if(text != null && text.length() <= 2){        	
+        	struc = new PdfStructureElement(parentStruct, PdfName.ARTIFACT);
+        // others HTML elements treated as Span on PDF
+        }else if (htmlNodeName.equalsIgnoreCase("HTML") || htmlNodeName.equalsIgnoreCase("BODY")){
+          	struc = new PdfStructureElement(parentStruct, PdfName.SPAN);
+        }else if (htmlNodeName.equalsIgnoreCase("A") || htmlNodeName.equalsIgnoreCase("LI")){
+        	struc = new PdfStructureElement(parentStruct, PdfName.SPAN);
+        }else if (htmlNodeName.equalsIgnoreCase("TD")){
+        	struc = new PdfStructureElement(parentStruct, PdfName.P);
+        }
+        return struc;
 	}
 	
 	static void endMarkedContentSequenceDrawingString(PdfContentByte cb) {

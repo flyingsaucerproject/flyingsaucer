@@ -34,8 +34,8 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import com.itextpdf.text.pdf.BaseFont;
 
 /**
- * Rewrites Flyin Saurcer class org.xhtmlrenderer.pdf.ITextTextRenderer for supporting PDF/A generation
- * Delegates PDF/A operations on org.xhtmlrenderer.pdf.ITextTextRendererAccessible
+ * Rewrites Flyin Saurcer class org.xhtmlrenderer.pdf.ITextTextRenderer for supporting PDF/UA generation
+ * Delegates PDF/UA operations on org.xhtmlrenderer.pdf.ITextTextRendererAccessible
  *
  */
 public class ITextTextRenderer implements TextRenderer {

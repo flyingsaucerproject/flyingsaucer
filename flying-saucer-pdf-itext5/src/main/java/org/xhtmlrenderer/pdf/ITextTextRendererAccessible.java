@@ -5,7 +5,7 @@ import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.JustificationInfo;
 
 /**
- * Contains accessibility PDF/A generation methods.
+ * Contains accessibility PDF/UA generation methods.
  * Rewriten class delegates on this class 
  *
  */

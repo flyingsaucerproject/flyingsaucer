@@ -156,7 +156,7 @@ public class Layer {
 //                BlockBox floater = (BlockBox) _floats.get(i);
 //                paintAsLayer(c, floater);
 //            }
-        	//PDF/A: Rading order: Change order iteration
+        	//PDF/UA: Rading order: Change order iteration
             for (int i = 0; i < _floats.size(); i++) {
                 BlockBox floater = (BlockBox) _floats.get(i);
                 paintAsLayer(c, floater);
@@ -333,8 +333,10 @@ public class Layer {
             
             paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
                 
-            //PDF/A: Reading Order: change the order of paint methods, first paint inline and then floats 
+            //PDF/UA: Reading Order: change the order of paint methods, first paint inline and then floats 
             paintInlineContent(c, lines, rangeLists);
+            //PDF/UA: Calling static method that process the lines in occurrence order traversing recursively the child elements
+//            LayerAccessible.paintInlineContentAccessible(c, lines, rangeLists);
             paintFloats(c);
             paintListMarkers(c, blocks, rangeLists);
             //paintInlineContent(c, lines, rangeLists);
@@ -474,7 +476,11 @@ public class Layer {
         
         paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
         paintListMarkers(c, blocks, rangeLists);
-        paintInlineContent(c, lines, rangeLists);
+        
+        //paintInlineContent(c, lines, rangeLists);
+        //PDF/UA: Calling static method that process the lines in occurrence order traversing recursively the child elements
+        LayerAccessible.paintInlineContentAccessible(c, lines, rangeLists);
+        
         paintSelection(c, lines); // XXX only do when there is a selection
         paintReplacedElements(c, blocks, rangeLists);
     }    

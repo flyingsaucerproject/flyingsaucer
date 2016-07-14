@@ -103,8 +103,8 @@ import com.itextpdf.text.pdf.PdfTextArray;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
- * Rewrites Flyin Saurcer class gorg.xhtmlrenderer.pdf.ITextOutputDevice for supporting PDF/A generation
- * Delegates PDF/A operations on org.xhtmlrenderer.pdf.ITextOutputDeviceAccessible
+ * Rewrites Flyin Saurcer class gorg.xhtmlrenderer.pdf.ITextOutputDevice for supporting PDF/UA generation
+ * Delegates PDF/UA operations on org.xhtmlrenderer.pdf.ITextOutputDeviceAccessible
  *  
  * This class is largely based on {@link com.itextpdf.text.pdf.PdfGraphics2D}.
  * See <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/
@@ -160,31 +160,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private Set _linkTargetAreas;      
     
-    // PDF/A: The structure tree root corresponds to the highest hierarchy level in a tagged PDF
-    private PdfStructureTreeRoot root;
-    // PDF/A: File structure logical principal node
-    private PdfStructureElement tagDocument;
-    // PDF/A List of LI previosly tagged. avoid repeat tag
-    private List<Node> liTagged = new ArrayList<Node>();
-    // PDF/A List of UL/OL previosly tagged. avoid repeat tag
-    private List<Node> ulTagged = new ArrayList<Node>();
-    // PDF/A parent list element
-    private PdfStructureElement parentListElement;
-    // PDF/A parent block struc element
-    private PdfStructureElement currentBlockStrucElement;
-    // PDF/A parent block xml element
-    private Element currentBlockElement;
-    //PDF/A Document
-    private com.itextpdf.text.Document _pdfDocument;
-    //PDF/A Rendering Context
-    private RenderingContext _renderingContext;
-    
-    public void setPdfDocument(com.itextpdf.text.Document pdfDocument){
-    	_pdfDocument = pdfDocument;
-    }
+    // PDF/UA Creeating bean to save accessibility information
+    private ITextOutputDeviceAccessibleBean pdfaBean = new ITextOutputDeviceAccessibleBean();
     
     public void setRenderingContext(RenderingContext renderingContext){
-    	_renderingContext = renderingContext;
+    	pdfaBean.setRenderingContext(renderingContext);
     }
 
     public ITextOutputDevice(float dotsPerPoint) {
@@ -206,11 +186,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
    
     public void initializePage(PdfContentByte currentPage, float height) {
         _currentPage = currentPage;
-        //PDF/A       
-        root = ITextOutputDeviceAccessible.getRoot(_writer);        
-        root.mapRole(new PdfName("Artifact"), PdfName.ARTIFACT);
-        tagDocument = ITextOutputDeviceAccessible.createTagDocument(root);        
-        //PDF/A End
+        //PDF/UA       
+        pdfaBean.setRoot(ITextOutputDeviceAccessible.getRoot(_writer));        
+        pdfaBean.getRoot().mapRole(new PdfName("Artifact"), PdfName.ARTIFACT);
+        pdfaBean.setTagDocument(ITextOutputDeviceAccessible.createTagDocument(pdfaBean.getRoot()));        
+        //PDF/UA End
         
         _pageHeight = height;
 
@@ -237,13 +217,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _currentPage.restoreState();
     }
 
-    //PDF/A
+    //PDF/UA
     public void paintReplacedElementOri(RenderingContext c, BlockBox box) {
         ITextReplacedElement element = (ITextReplacedElement) box.getReplacedElement();
         element.paint(c, this, box);
     }
     
-    //PDF/A
+    //PDF/UA
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
     	Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
         ReplacedElement element = box.getReplacedElement();
@@ -256,7 +236,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     public void paintBackground(RenderingContext c, Box box) {
         super.paintBackground(c, box);
-        //PDF/A
+        //PDF/UA
 //        processLinkAsAnnotationAccessible(c, box);
     }
 
@@ -306,7 +286,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return targetArea;
     }
     
-    //PDF/A
+    //PDF/UA
     private void processLinkAccessible(RenderingContext c, InlineLayoutBox parentBox, BlockBox parentBlockBox) {
     	PdfContentByte cb = _currentPage; 
     	
@@ -314,6 +294,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (elem != null) {
             NamespaceHandler handler = _sharedContext.getNamespaceHandler();
             String uri = handler.getLinkUri(elem);
+            String title = handler.getLinkTitle(elem);
             if (uri != null) {
                 com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, parentBox);
                 if (targetArea == null) {
@@ -324,6 +305,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 Chunk chunk = new Chunk(elem.getTextContent(), font);
                 Anchor anchor = new Anchor(chunk);
                 anchor.setReference(uri);
+                if(title != null){
+                	// title is Not supported by iText
+                }
                 float yPos = targetArea.getBottom() + (((targetArea.getTop() - targetArea.getBottom())/2) * 0.4f); // 40% of font size 
                 float xPos = targetArea.getLeft();
                 ColumnText.showTextAligned(cb, com.itextpdf.text.Element.ALIGN_LEFT, anchor, xPos, yPos, 0);
@@ -338,8 +322,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 		}
 		// If no alt text found create image as an artifact
 		if(altText == null || altText.trim().length() < 1){
-			PdfStructureElement struc = new PdfStructureElement(tagDocument, PdfName.ART);
+			PdfStructureElement struc = new PdfStructureElement(tagDocument, PdfName.ARTIFACT);
 			currentPage.beginMarkedContentSequence(struc);
+			currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5]);
 			currentPage.endMarkedContentSequence();		
 		}else{
 			//Si la imagen esta dentro de un enlace generamos el link como un anchor (ya se genera accesible)
@@ -349,12 +334,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 	            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
 	            String uri = handler.getLinkUri(anchorElement);
 	            if (uri != null) {
-	                com.itextpdf.text.Rectangle targetArea = checkLinkArea(_renderingContext, box);
+	                com.itextpdf.text.Rectangle targetArea = checkLinkArea(pdfaBean.getRenderingContext(), box);
 	                if (targetArea == null) {
 	                    return;
 	                }
-	                float yPos = targetArea.getBottom() + (((targetArea.getTop() - targetArea.getBottom())/2) * 0.4f); // 40% of font size 
-	                float xPos = targetArea.getLeft();
 	                Chunk anchorChunk = new Chunk(image, (float) mx[0], (float) mx[3]);
 	                Anchor anchor = new Anchor(anchorChunk);
 	                anchor.setReference(uri);
@@ -367,7 +350,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 				PdfStructureElement imageTag = new PdfStructureElement(tagDocument, PdfName.FIGURE);
 		    	imageTag.put(new PdfName("Alt"), new PdfString(altText));
 		    	currentPage.beginMarkedContentSequence(imageTag);
-		        currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5], true);
+		        currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5]);
 		        currentPage.endMarkedContentSequence();
 	    	}
 		}
@@ -620,39 +603,39 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         boolean paintText = true;
         
         // Checking if the current element is contained by the previous parent element, if not updating it
-		if(parentBlockBox.getElement() != currentBlockElement){
-			currentBlockStrucElement = ITextOutputDeviceAccessible.getStructElement(tagDocument, parentBlockBoxNodeName, root);
-			currentBlockElement = parentBlockBox.getElement();
+		if(parentBlockBox.getElement() != pdfaBean.getCurrentBlockElement()){
+			pdfaBean.setCurrentBlockStrucElement(ITextOutputDeviceAccessible.getStructElement(pdfaBean.getTagDocument(), parentBlockBoxNodeName, pdfaBean.getRoot(), null));
+			pdfaBean.setCurrentBlockElement(parentBlockBox.getElement());
 		}
         
 		// Processing lists
         if (parentBlockBoxNodeName.equalsIgnoreCase("LI") && (grandFatherBlockBoxNodeName.equalsIgnoreCase("OL") || grandFatherBlockBoxNodeName.equalsIgnoreCase("UL"))){
        	
-        	//TODO los LI vienen a trocitos, es decir, FS trocea el contenido de un LI en varios :-S, no podemos controlar cuando abrir y cerrar la UL o OL
+        	//TODO controlar DL, DD y DT
         	Element htmlElement = parentBlockBox.getElement();
         	int numChildren = DomUtilsAccessible.getNumChildren(grandFatherBlockBoxNode, "li");
         	int currentElementPosition = DomUtilsAccessible.getChildPosition(grandFatherBlockBoxNode, htmlElement, "li");
         	// Es el primer elemento de la lista por lo que primero abrimos el tag L
-        	if(currentElementPosition == 1 && !ulTagged.contains(grandFatherBlockBoxNode)){
-        		PdfStructureElement rootListStruc = new PdfStructureElement(tagDocument, PdfName.L);
+        	if(currentElementPosition == 1 && !pdfaBean.getUlTagged().contains(grandFatherBlockBoxNode)){
+        		PdfStructureElement rootListStruc = new PdfStructureElement(pdfaBean.getTagDocument(), PdfName.L);
         		cb.beginMarkedContentSequence(rootListStruc); 
-        		ulTagged.add(grandFatherBlockBoxNode);
-        		parentListElement = rootListStruc;
-        		currentBlockStrucElement = parentListElement;
+        		pdfaBean.getUlTagged().add(grandFatherBlockBoxNode);
+        		pdfaBean.setParentListElement(rootListStruc);
+        		pdfaBean.setCurrentBlockStrucElement(pdfaBean.getParentListElement());
         	} 
  
         	// Si el tag LI aun no esta abierto lo abrimos y marcamos que hay que cerrarlo
-        	if(!liTagged.contains(htmlElement)){    
-        		PdfStructureElement li = new PdfStructureElement(parentListElement, PdfName.LI);
+        	if(!pdfaBean.getLiTagged().contains(htmlElement)){    
+        		PdfStructureElement li = new PdfStructureElement(pdfaBean.getParentListElement(), PdfName.LI);
         		//TODO Segun la especificacion de adobe hay crear tambien dentro de los LI elementos Lbl y LBody
         		// en la listas oredenadas OL se podria estabecer el campo Lbl con numeros de la lista 1. 2. etc.
         		cb.beginMarkedContentSequence(li); 
-                liTagged.add(htmlElement);
+        		pdfaBean.getLiTagged().add(htmlElement);
         	}
         	
         	//Controlamos si el texto esta dentro de un anchor para pintarlo como LINK
             if(parentNodeName!= null && parentNodeName.equalsIgnoreCase("A")){
-            	processLinkAccessible(_renderingContext, inlineText.getParent(), parentBlockBox);
+            	processLinkAccessible(pdfaBean.getRenderingContext(), inlineText.getParent(), parentBlockBox);
             	paintText = false;
             }
             
@@ -670,16 +653,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         		endMarkedSecuence = false;
         	}
         }else if (parentNodeName!= null && parentNodeName.equalsIgnoreCase("A")){
-    		processLinkAccessible(_renderingContext, inlineText.getParent(), parentBlockBox);
+    		processLinkAccessible(pdfaBean.getRenderingContext(), inlineText.getParent(), parentBlockBox);
     		endMarkedSecuence = false;
     		paintText = false;
     	}else{
     		//Si el texto que se va a pintar pertenece al mismo padre anterior lo pintamos dentro de este
-    		if(currentBlockElement != parentBlockBox.getElement()){
-    			ITextOutputDeviceAccessible.beginMarkedContentSequenceDrawingString(parentBlockBox.getElement(), s, currentBlockStrucElement, cb, root);
+    		if(pdfaBean.getCurrentBlockElement() != parentBlockBox.getElement()){
+    			ITextOutputDeviceAccessible.beginMarkedContentSequenceDrawingString(parentBlockBox.getElement(), s, pdfaBean.getCurrentBlockStrucElement(), cb, pdfaBean.getRoot());
     			endMarkedSecuence = true;
     		}else{
-    			PdfStructureElement struc = new PdfStructureElement(currentBlockStrucElement, PdfName.SPAN);
+    			PdfStructureElement struc = new PdfStructureElement(pdfaBean.getCurrentBlockStrucElement(), PdfName.SPAN);
     			cb.beginMarkedContentSequence(struc); 
     			endMarkedSecuence = true;
     		}
@@ -1049,38 +1032,38 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     public void drawImage(FSImage fsImage, int x, int y) {
-    	if (fsImage instanceof PDFAsImage) {
-            drawPDFAsImage((PDFAsImage) fsImage, x, y);
+        if (fsImage instanceof PDFAsImage) {
+            drawPDFAsImage((PDFAsImage)fsImage, x, y);
         } else {
-            Image image = ((ITextFSImage) fsImage).getImage();
-
+            Image image = ((ITextFSImage)fsImage).getImage();
+            
             if (fsImage.getHeight() <= 0 || fsImage.getWidth() <= 0) {
                 return;
             }
-
-            AffineTransform at = AffineTransform.getTranslateInstance(x, y);
+            
+            AffineTransform at = AffineTransform.getTranslateInstance(x,y);
             at.translate(0, fsImage.getHeight());
             at.scale(fsImage.getWidth(), fsImage.getHeight());
-
+            
             AffineTransform inverse = normalizeMatrix(_transform);
-            AffineTransform flipper = AffineTransform.getScaleInstance(1, -1);
+            AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
             inverse.concatenate(at);
             inverse.concatenate(flipper);
-
+            
             double[] mx = new double[6];
             inverse.getMatrix(mx);
-
+            
             try {
-            	//PDF/A
-            	addTaggedImage(null, tagDocument, _currentPage, image, mx);
-                //PDF/A End
+                _currentPage.addImage(image, 
+                        (float)mx[0], (float)mx[1], (float)mx[2], 
+                        (float)mx[3], (float)mx[4], (float)mx[5]);
             } catch (DocumentException e) {
                 throw new XRRuntimeException(e.getMessage(), e);
             }
         }
     }  
     
-    //PDF/A, new input param BlockBox
+    //PDF/UA, new input param BlockBox
     public void drawImage(BlockBox box, FSImage fsImage, int x, int y) {
         if (fsImage instanceof PDFAsImage) {
             drawPDFAsImage((PDFAsImage) fsImage, x, y);
@@ -1104,9 +1087,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             inverse.getMatrix(mx);
 
             try {
-            	//PDF/A
-            	addTaggedImage(box, tagDocument, _currentPage, image, mx);
-                //PDF/A End
+            	//PDF/UA
+//                _currentPage.addImage(image, 
+//                        (float)mx[0], (float)mx[1], (float)mx[2], 
+//                        (float)mx[3], (float)mx[4], (float)mx[5]);
+            	
+            	addTaggedImage(box, pdfaBean.getTagDocument(), _currentPage, image, mx);
+                //PDF/UA End
             } catch (DocumentException e) {
                 throw new XRRuntimeException(e.getMessage(), e);
             }

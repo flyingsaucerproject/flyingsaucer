@@ -1,16 +1,13 @@
 package org.xhtmlrenderer.pdf.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.LineBox;
@@ -118,16 +115,10 @@ public class DomUtilsAccessible {
 	}
 	
     public static BlockBox getParentBlockBox(Box box){
-    	Box lBox = box.getParent();
-    	if(lBox != null){
-	    	Box parent = lBox.getParent();
-	    	if(parent instanceof BlockBox){
-	    		return (BlockBox) parent;
-	    	}else{
-	    		return getParentBlockBox(parent);
-	    	}
+    	if(box instanceof BlockBox){
+    		return (BlockBox) box;
     	}else{
-    		return null;
+	    	return getParentBlockBox(box.getParent());
     	}
     }
     
@@ -189,7 +180,12 @@ public class DomUtilsAccessible {
 				InlineLayoutBox lineBox = (InlineLayoutBox)child;
 				getNumInlineTextChildren(lineBox, cont);
 			}else if(child instanceof InlineText){
-				cont.set(0, cont.get(0) + 1);
+				InlineText inlineText = (InlineText)child;
+				String text = inlineText.getMasterText();
+				// Controlling return carriage char, not count it as text
+				if(!text.equals("\n")){
+					cont.set(0, cont.get(0) + 1);
+				}
 			}
 		}
 	}
@@ -201,8 +197,8 @@ public class DomUtilsAccessible {
 		return cont.get(0);
 	}
 	
-	private static void getChildTextPosition(Box box, InlineText text, Vector<Integer> cont){
-		// Firstly check found element (vector with more than one element)
+	private static void getChildTextPosition(Box box, InlineText inlineText, Vector<Integer> cont){
+		// Firstly check if element has been found (vector with more than one element)
 		if(cont.size() < 2){
 			List children = box.getChildren();
 			if(box instanceof InlineLayoutBox){
@@ -212,16 +208,24 @@ public class DomUtilsAccessible {
 			for (Object child : children) {
 				if(child instanceof LineBox){
 					LineBox lineBox = (LineBox)child;
-					getChildTextPosition(lineBox, text, cont);
+					getChildTextPosition(lineBox, inlineText, cont);
 				}else if(child instanceof InlineLayoutBox){
 					InlineLayoutBox lineBox = (InlineLayoutBox)child;
-					getChildTextPosition(lineBox, text, cont);
+					getChildTextPosition(lineBox, inlineText, cont);
 				}else if(child instanceof InlineText){
-					cont.set(0, cont.get(0) + 1);
-					if(text.equals(child)){
-						//Adding found element marker (vector with more than one element)
-						cont.add(666);
-						break;
+					// check if element has been found (vector with more than one element)
+					if(cont.size() < 2){
+						InlineText inlineTextChild = (InlineText)child;
+						String sText = inlineTextChild.getMasterText();
+						// Controlling return carriage char, not count it as text
+						if(!sText.equals("\n")){
+							cont.set(0, cont.get(0) + 1);
+							if(inlineText.equals(inlineTextChild)){
+								//Adding found element marker (vector with more than one element)
+								cont.add(666);
+								break;
+							}
+						}
 					}
 				}
 			}
