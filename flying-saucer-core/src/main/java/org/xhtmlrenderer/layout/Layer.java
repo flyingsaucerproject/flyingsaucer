@@ -477,9 +477,9 @@ public class Layer {
         paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
         paintListMarkers(c, blocks, rangeLists);
         
-        //paintInlineContent(c, lines, rangeLists);
+        paintInlineContent(c, lines, rangeLists);
         //PDF/UA: Calling static method that process the lines in occurrence order traversing recursively the child elements
-        LayerAccessible.paintInlineContentAccessible(c, lines, rangeLists);
+//        LayerAccessible.paintInlineContentAccessible(c, lines, rangeLists);
         
         paintSelection(c, lines); // XXX only do when there is a selection
         paintReplacedElements(c, blocks, rangeLists);
