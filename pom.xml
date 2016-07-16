@@ -29,6 +29,7 @@
     <module>flying-saucer-swt</module>
     <module>flying-saucer-swt-examples</module>
     <module>flying-saucer-examples</module>
+    <module>flying-saucer-pdf-itext5-accessible</module>
   </modules>
 
   <scm>

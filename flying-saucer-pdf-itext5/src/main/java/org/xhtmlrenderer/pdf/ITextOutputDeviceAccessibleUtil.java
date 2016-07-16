@@ -3,9 +3,12 @@ package org.xhtmlrenderer.pdf;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.WordUtils;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.event.DocTagListenerAccessible;
 import org.xhtmlrenderer.util.XRLog;
 
+import com.itextpdf.text.DocListener;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfStructureElement;
@@ -17,7 +20,7 @@ import com.itextpdf.text.pdf.PdfWriter;
  * Rewriten class delegates on this class 
  *
  */
-public class ITextOutputDeviceAccessible {
+public class ITextOutputDeviceAccessibleUtil {
 		
 	static PdfStructureTreeRoot getRoot(PdfWriter writer){
 		return writer.getStructureTreeRoot();
@@ -27,13 +30,13 @@ public class ITextOutputDeviceAccessible {
 		return new PdfStructureElement(root, PdfName.DOCUMENT);
 	}
 	
-	static void beginMarkedContentSequenceDrawingString(Node parentNode, String text, PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root) {		        
+	static void beginMarkedContentSequenceDrawingString(Element parentNode, String text, PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root, DocListener listener) {		        
         String htmlNodeName = parentNode.getNodeName();
         PdfStructureElement struc = getStrucElementByHtmlElement(tagDocument, htmlNodeName, text);
         if(struc == null){
         	struc = getStructElement(tagDocument, htmlNodeName, root, text);
         }
-        cb.beginMarkedContentSequence(struc);  
+        beginMarkedContentSequence(cb, struc, listener);  
     }
 	
 	public static PdfStructureElement getStructElement(PdfStructureElement parentStruct, String htmlNodeName, PdfStructureTreeRoot root, String text){
@@ -75,8 +78,42 @@ public class ITextOutputDeviceAccessible {
         return struc;
 	}
 	
-	static void endMarkedContentSequenceDrawingString(PdfContentByte cb) {
+	static void endMarkedContentSequence(PdfContentByte cb, PdfStructureElement struc, DocListener listener) {
+		if(listener != null){
+			if(listener instanceof DocTagListenerAccessible){
+				((DocTagListenerAccessible)listener).preCloseTag(struc);
+			}
+		}
         cb.endMarkedContentSequence();
     }
 	
+	static void beginMarkedContentSequence(PdfContentByte cb, PdfStructureElement struc, DocListener listener) {
+		if(listener != null){
+			if(listener instanceof DocTagListenerAccessible){
+				//Check if struc is orphan (new page creation forces to close all tags)
+				PdfStructureElement parentStruc = ((DocTagListenerAccessible)listener).preOpenTag(struc, cb);
+				if(parentStruc != null){
+					cb.beginMarkedContentSequence(parentStruc);
+					struc = new PdfStructureElement(parentStruc, struc.getStructureType());
+				}
+			}
+		}
+        cb.beginMarkedContentSequence(struc);
+    }
+	
+    static void createRootListTag(Node grandFatherBlockBoxNode, PdfContentByte cb, ITextOutputDeviceAccessibleBean pdfUABean){
+    	PdfStructureElement rootListStruc = new PdfStructureElement(pdfUABean.getTagDocument(), PdfName.L);
+    	ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, rootListStruc, pdfUABean.getListener()); 
+    	pdfUABean.getUlTagged().add(grandFatherBlockBoxNode);
+    	pdfUABean.setParentListElement(rootListStruc);
+    	pdfUABean.setCurrentBlockStrucElement(rootListStruc);
+    }
+    
+    static void createListItemTag(Node htmlElement, PdfContentByte cb, ITextOutputDeviceAccessibleBean pdfUABean){
+    	PdfStructureElement li = new PdfStructureElement(pdfUABean.getParentListElement(), PdfName.LI);
+		//TODO Segun la especificacion de adobe hay crear tambien dentro de los LI elementos Lbl y LBody
+		// en la listas oredenadas OL se podria estabecer el campo Lbl con numeros de la lista 1. 2. etc.
+		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, li, pdfUABean.getListener());
+		pdfUABean.getLiTagged().add(htmlElement);
+    }
 }

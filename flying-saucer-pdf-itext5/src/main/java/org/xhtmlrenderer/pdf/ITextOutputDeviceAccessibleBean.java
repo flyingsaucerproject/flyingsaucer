@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.RenderingContext;
 
+import com.itextpdf.text.DocListener;
 import com.itextpdf.text.pdf.PdfStructureElement;
 import com.itextpdf.text.pdf.PdfStructureTreeRoot;
 
@@ -18,9 +19,9 @@ public class ITextOutputDeviceAccessibleBean {
     private PdfStructureTreeRoot root;
     // PDF/UA: File structure logical principal node
     private PdfStructureElement tagDocument;
-    // PDF/UA List of LI previosly tagged. avoid repeat tag
+    // PDF/UA List of LI previously tagged. avoid repeat tag
     private List<Node> liTagged = new ArrayList<Node>();
-    // PDF/UA List of UL/OL previosly tagged. avoid repeat tag
+    // PDF/UA List of UL/OL previously tagged. avoid repeat tag
     private List<Node> ulTagged = new ArrayList<Node>();
     // PDF/UA parent list element
     private PdfStructureElement parentListElement;
@@ -30,8 +31,8 @@ public class ITextOutputDeviceAccessibleBean {
     private Element currentBlockElement;
     //PDF/UA Rendering Context
     private RenderingContext renderingContext;
-    
-    
+    //PDF/UA DocListener implementation to close/open tag when a new document is created
+    private DocListener listener;
     
 	public boolean isEndMarkedSecuence() {
 		return endMarkedSecuence;
@@ -98,6 +99,12 @@ public class ITextOutputDeviceAccessibleBean {
 	}
 	public void setRenderingContext(RenderingContext renderingContext) {
 		this.renderingContext = renderingContext;
+	}
+	public DocListener getListener() {
+		return listener;
+	}
+	public void setListener(DocListener listener) {
+		this.listener = listener;
 	}
 
 }

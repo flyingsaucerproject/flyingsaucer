@@ -46,6 +46,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.event.DocTagListenerAccessibleImpl;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
@@ -61,6 +62,7 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
+import com.itextpdf.text.DocListener;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -302,7 +304,10 @@ public class ITextRenderer {
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document(firstPageSize, 0, 0, 0, 0);
         //PDF/UA
 //        PdfAWriter writer = PdfAWriter.getInstance(doc, os, PdfAConformanceLevel.PDF_A_1A);      
-        PdfWriter writer = PdfWriter.getInstance(doc, os);
+//        PdfWriter writer = PdfWriter.getInstance(doc, os);
+        DocListener docTaggedListener = new DocTagListenerAccessibleImpl();
+        // PDF/UA the listener is setted in PDFWriter and will be called on newPage
+        PdfWriter writer = PdfWriter.getInstance(doc, os, docTaggedListener);
         if (_pdfVersion != null) {
             writer.setPdfVersion(_pdfVersion.charValue());
         }
@@ -321,8 +326,8 @@ public class ITextRenderer {
         firePreOpen();
         doc.open();
 
-        // PDF/UA asociar a esta clase un PDFCreationListener para controlar cuando se crear una nueva pagina
-        writePDF(pages, c, firstPageSize, doc, writer);
+        //PDF/UA The listener is setted on ITextOutputDevice and will be called on begin tag and entag method of PDFContentByte
+        writePDF(pages, c, firstPageSize, doc, writer, docTaggedListener);
 
         if (finish) {
             fireOnClose();
@@ -347,13 +352,21 @@ public class ITextRenderer {
             _listener.onClose(this);
         }
     }
-
+    
     private void writePDF(List pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc,
             PdfWriter writer) throws DocumentException, IOException {
+    	writePDF(pages, c, firstPageSize, doc, writer, null);
+    }
+
+  //PDF/UA: New param PDFCreationListener for setting it on ITextOuputDevice 
+    private void writePDF(List pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc,
+            PdfWriter writer, DocListener listener) throws DocumentException, IOException {
         _outputDevice.setRoot(_root);
 
         _outputDevice.start(_doc);
+        //PDF/UA: setting rendering context and DocTagListener on begin Tag and end tag of PDFContentByte
         _outputDevice.setRenderingContext(c);
+        _outputDevice.setListener(listener);
         _outputDevice.setWriter(writer);
         _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.getHeight());
 
