@@ -247,7 +247,11 @@ public class ITextRenderer {
     }
    
     public void createPDF(OutputStream os) throws DocumentException, IOException {
-        createPDF(os, true, 0);
+        createPDF(os, true, 0, null);
+    }
+    
+    public void createPDF(OutputStream os, String language) throws DocumentException, IOException {
+        createPDF(os, true, 0, language);
     }
 
     public void writeNextDocument() throws DocumentException, IOException {
@@ -279,7 +283,7 @@ public class ITextRenderer {
     }
 
     public void createPDF(OutputStream os, boolean finish) throws DocumentException, IOException {
-        createPDF(os, finish, 0);
+        createPDF(os, finish, 0, null);
     }
 
     /**
@@ -288,7 +292,7 @@ public class ITextRenderer {
      * 
      * @throws IOException
      */
-    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, IOException {
+    public void createPDF(OutputStream os, boolean finish, int initialPageNo, String language) throws DocumentException, IOException {
         List pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
@@ -313,7 +317,7 @@ public class ITextRenderer {
         }
         
         //PDF/UA
-        ITextRendererAccessible.addAccessibilityMetaData(writer, doc);
+        ITextRendererAccessible.addAccessibilityMetaData(writer, doc, language, null);
         //PDF/UA End
         
         _pdfDoc = doc;

@@ -41,7 +41,7 @@ public class ITextOutputDeviceAccessibleUtil {
 	
 	public static PdfStructureElement getStructElement(PdfStructureElement parentStruct, String htmlNodeName, PdfStructureTreeRoot root, String text){
 		PdfStructureElement struc = getStrucElementByHtmlElement(parentStruct, htmlNodeName, text);
-    	try{ 
+		try{ 
     		if(struc == null){
 	    		String pdfName = htmlNodeName.toUpperCase();
 	    		if(pdfName.length() > 2){

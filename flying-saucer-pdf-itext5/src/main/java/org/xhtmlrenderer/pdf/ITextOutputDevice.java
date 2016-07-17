@@ -608,12 +608,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         
         checkNewPageCreated();
         
-        // Checking if the current element is contained by the previous parent element, if not updating it
-		if(parentBlockBox.getElement() != pdfUABean.getCurrentBlockElement()){
-//			pdfaBean.setCurrentBlockStrucElement(ITextOutputDeviceAccessible.getStructElement(pdfaBean.getTagDocument(), parentBlockBoxNodeName, pdfaBean.getRoot(), null));
-			pdfUABean.setCurrentBlockElement(parentBlockBox.getElement());
-		}
-        
 		// Processing lists
         if ("LI".equalsIgnoreCase(parentBlockBoxNodeName) && ("OL".equalsIgnoreCase(grandFatherBlockBoxNodeName) || "UL".equalsIgnoreCase(grandFatherBlockBoxNodeName))){
        	
@@ -660,18 +654,21 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     		paintText = false;
     	}else{
     		//Si el texto que se va a pintar pertenece al mismo padre anterior lo pintamos dentro de este
-    		if(pdfUABean.getCurrentBlockElement() != parentBlockBox.getElement()){
-    			ITextOutputDeviceAccessibleUtil.beginMarkedContentSequenceDrawingString(parentBlockBox.getElement(), s, pdfUABean.getCurrentBlockStrucElement(), cb, pdfUABean.getRoot(), pdfUABean.getListener());
-    			endMarkedSecuence = true;
+    		if(pdfUABean.getCurrentBlockElement() != null && pdfUABean.getCurrentBlockElement().isSameNode(parentBlockBox.getElement())){
+//    			ITextOutputDeviceAccessibleUtil.beginMarkedContentSequenceDrawingString(parentBlockBox.getElement(), s, pdfUABean.getCurrentBlockStrucElement(), cb, pdfUABean.getRoot(), pdfUABean.getListener());
+    			endMarkedSecuence = false;
     		}else{
-    			PdfStructureElement parentStruc = pdfUABean.getTagDocument();
-    			if(pdfUABean.getCurrentBlockStrucElement() != null){
-    				parentStruc = pdfUABean.getCurrentBlockStrucElement();
+    			// Si pertenece a otro blockBox cerramos el que estaba abierto y abrimos uno nuevo.
+    			if(pdfUABean.getCurrentBlockElement() != null){
+    				ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getCurrentBlockStrucElement(), pdfUABean.getListener());
     			}
-    			PdfStructureElement struc = new PdfStructureElement(parentStruc, PdfName.SPAN);
+   				pdfUABean.setCurrentBlockElement(parentBlockBox.getElement());
+    			pdfUABean.setCurrentBlockStrucElement(ITextOutputDeviceAccessibleUtil.getStructElement(pdfUABean.getTagDocument(), parentBlockBoxNodeName, pdfUABean.getRoot(), null));
+    			PdfStructureElement struc =  pdfUABean.getCurrentBlockStrucElement();
     			ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, struc, pdfUABean.getListener());
-    			endMarkedSecuence = true;
+    			endMarkedSecuence = false;
     		}
+    		
 	        //END PDF/UA ******
         }
         
