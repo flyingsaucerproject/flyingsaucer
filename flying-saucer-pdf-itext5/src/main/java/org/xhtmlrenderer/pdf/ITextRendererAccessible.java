@@ -12,6 +12,17 @@ import com.itextpdf.text.pdf.PdfWriter;
  */
 public class ITextRendererAccessible {
 	
+	/** 
+	 * Marks writer as tagged and adds accessibility metadata
+	 * XMP metadata. Title and language are processed by Flying Saucer, HTML title and HTML lang information.
+	 * @param writer
+	 * @param doc
+	 * @throws IOException
+	 */
+	static void addAccessibilityMetaData(PdfWriter writer, Document doc) throws IOException{
+		addAccessibilityMetaData(writer, doc, null, null);
+	}
+	
 	
 	/** 
 	 * Marks writer as tagged and adds accessibility metadata, title, language and
@@ -27,9 +38,15 @@ public class ITextRendererAccessible {
         writer.setTagged();
         //Set document metadata
         writer.setViewerPreferences(PdfWriter.DisplayDocTitle);
-        doc.addLanguage(language);
-        doc.addTitle(title);
+        if(language != null){
+        	doc.addLanguage(language);
+        }
+        if(title != null){
+        	doc.addTitle(title);
+        }
         writer.createXmpMetadata();
 	}
+	
+	
 
 }
