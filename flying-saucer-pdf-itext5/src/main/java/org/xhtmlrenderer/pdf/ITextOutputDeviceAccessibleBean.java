@@ -1,8 +1,5 @@
 package org.xhtmlrenderer.pdf;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -19,12 +16,10 @@ public class ITextOutputDeviceAccessibleBean {
     private PdfStructureTreeRoot root;
     // PDF/UA: File structure logical principal node
     private PdfStructureElement tagDocument;
-    // PDF/UA List of LI previously tagged. avoid repeat tag
-    private List<Node> liTagged = new ArrayList<Node>();
-    // PDF/UA List of UL/OL previously tagged. avoid repeat tag
-    private List<Node> ulTagged = new ArrayList<Node>();
-    // PDF/UA parent list element
-    private PdfStructureElement parentListElement;
+    // PDF/UA Current LI previously tagged. 
+    private Node liTagged;
+    // PDF/UA Current UL/OL/DL previously tagged.
+    private Node ulTagged;
     // PDF/UA parent block struc element
     private PdfStructureElement currentBlockStrucElement;
     // PDF/UA parent block xml element
@@ -64,24 +59,6 @@ public class ITextOutputDeviceAccessibleBean {
 	public void setTagDocument(PdfStructureElement tagDocument) {
 		this.tagDocument = tagDocument;
 	}
-	public List<Node> getLiTagged() {
-		return liTagged;
-	}
-	public void setLiTagged(List<Node> liTagged) {
-		this.liTagged = liTagged;
-	}
-	public List<Node> getUlTagged() {
-		return ulTagged;
-	}
-	public void setUlTagged(List<Node> ulTagged) {
-		this.ulTagged = ulTagged;
-	}
-	public PdfStructureElement getParentListElement() {
-		return parentListElement;
-	}
-	public void setParentListElement(PdfStructureElement parentListElement) {
-		this.parentListElement = parentListElement;
-	}
 	public PdfStructureElement getCurrentBlockStrucElement() {
 		return currentBlockStrucElement;
 	}
@@ -105,6 +82,18 @@ public class ITextOutputDeviceAccessibleBean {
 	}
 	public void setListener(DocListener listener) {
 		this.listener = listener;
+	}
+	public Node getLiTagged() {
+		return liTagged;
+	}
+	public void setLiTagged(Node liTagged) {
+		this.liTagged = liTagged;
+	}
+	public Node getUlTagged() {
+		return ulTagged;
+	}
+	public void setUlTagged(Node ulTagged) {
+		this.ulTagged = ulTagged;
 	}
 
 }
