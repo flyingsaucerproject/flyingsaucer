@@ -76,6 +76,13 @@ public class LineBreakContext {
     }
     
     public String getCalculatedSubstring() {
+        // mimic the calculation in InlineText.setSubstring to strip newlines for our width calculations
+        // the original text width calculation in InlineBox.calcMaxWidthFromLineLength() excludes the newline character
+        // so if we include them here we get spurious newlines
+        // apparently newlines do take up some width in most fonts
+        if (_end > 0 && _master.charAt(_end-1) == WhitespaceStripper.EOLC) {
+            return _master.substring(_start, _end-1);
+        }
         return _master.substring(_start, _end);
     }
 

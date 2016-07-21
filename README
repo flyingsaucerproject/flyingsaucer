@@ -24,7 +24,7 @@ Flying Saucer is distributed under the LGPL.  Flying Saucer itself is licensed
 under the GNU Lesser General Public License, version 2.1 or later, available at
 http://www.gnu.org/copyleft/lesser.html. You can use Flying Saucer in any
 way and for any purpose you want as long as you respect the terms of the 
-license. A copy of the LGPL license is included as license-lgpl-2.1.txt
+license. A copy of the LGPL license is included as license-lgpl-2.1.txt or license-lgpl-3.txt
 in our distributions and in our source tree.
 
 Flying Saucer uses a couple of FOSS packages to get the job done. A list

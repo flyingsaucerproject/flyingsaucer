@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -123,11 +124,15 @@ public class StyleReference {
                     sheet = _stylesheetFactory.getStylesheet(info);
                 }
                 
-                if (sheet.getImportRules().size() > 0) {
-                    result.addAll(readAndParseAll(sheet.getImportRules(), medium));
+                if (sheet!=null) {
+                    if (sheet.getImportRules().size() > 0) {
+                        result.addAll(readAndParseAll(sheet.getImportRules(), medium));
+                    }
+                    
+                    result.add(sheet);
+                } else {
+                    XRLog.load(Level.WARNING, "Unable to load CSS from "+info.getUri());
                 }
-                
-                result.add(sheet);
             }
         }
         

@@ -27,8 +27,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,6 +37,8 @@ import javax.swing.CellRendererPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -65,11 +65,10 @@ import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 
-public class RootPanel extends JPanel implements ComponentListener, UserInterface, FSCanvas, RepaintListener {
+public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCanvas, RepaintListener {
     static final long serialVersionUID = 1L;
 
     private Box rootBox = null;
@@ -138,6 +137,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     }
 
     protected JScrollPane enclosingScrollPane;
+    private boolean viewportMatchWidth = true;
     public void resetScrollPosition() {
         if (this.enclosingScrollPane != null) {
             this.enclosingScrollPane.getVerticalScrollBar().setValue(0);
@@ -153,16 +153,11 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      *                   the panel is no longer enclosed in a {@link JScrollPane}.
      */
     protected void setEnclosingScrollPane(JScrollPane scrollPane) {
-        // if a scrollpane is already installed we remove it.
-        if (enclosingScrollPane != null) {
-            enclosingScrollPane.removeComponentListener(this);
-        }
 
         enclosingScrollPane = scrollPane;
 
         if (enclosingScrollPane != null) {
-            Uu.p("added root panel as a component listener to the scroll pane");
-            enclosingScrollPane.addComponentListener(this);
+//            Uu.p("added root panel as a component listener to the scroll pane");
             default_scroll_mode = enclosingScrollPane.getViewport().getScrollMode();
         }
     }
@@ -318,7 +313,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
             initFontFromComponent(root);
 
-            root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
+            Rectangle initialExtents = getInitialExtents(c);
+            root.setContainingBlock(new ViewportBox(initialExtents));
 
             root.layout(c);
 
@@ -348,27 +344,18 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                 root.getLayer().layoutPages(c);
             }
 
+            // If the initial size we fed into the layout matches the width
+            // of the layout generated then we can set the scrollable property
+            // that matches width of the view pane to the width of this panel.
+            // Otherwise, if the intrinsic width is different then we can't
+            // couple the width of the view pane to the width of this panel
+            // (we hit the minimum size threshold).
+            viewportMatchWidth = (initialExtents.width == intrinsic_size.width);
+
             setPreferredSize(intrinsic_size);
             revalidate();
 
-            // if doc is shorter than viewport
-            // then stretch canvas to fill viewport exactly
-            // then adjust the body element accordingly
             if (enclosingScrollPane != null) {
-                if (intrinsic_size.height < enclosingScrollPane.getViewport().getHeight()) {
-                    //Uu.p("int height is less than viewport height");
-                    // XXX Not threadsafe
-                    if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
-                        this.setPreferredSize(new Dimension(
-                                intrinsic_size.width, enclosingScrollPane.getViewport().getHeight()));
-                        this.revalidate();
-                    }
-                    //Uu.p("need to do the body hack");
-                    if (root != null && ! c.isPrint()) {
-                        intrinsic_size.height = root.getHeight();
-                    }
-                }
-
                 // turn on simple scrolling mode if there's any fixed elements
                 if (root.getLayer().containsFixedContent()) {
                     // Uu.p("is fixed");
@@ -523,28 +510,11 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return false;
     }
 
-    public void componentHidden(ComponentEvent e) {
-    }
-
-    public void componentMoved(ComponentEvent e) {
-    }
-
-    public void componentResized(ComponentEvent e) {
-        Uu.p("componentResized() " + this.getSize());
-        Uu.p("viewport = " + enclosingScrollPane.getViewport().getSize());
-        if (! getSharedContext().isPrint() && isExtentsHaveChanged()) {
-            relayout();
-        }
-    }
-
     protected void relayout() {
         if (doc != null) {
             setNeedRelayout(true);
             repaint();
         }
-    }
-
-    public void componentShown(ComponentEvent e) {
     }
 
     public double getLayoutWidth() {
@@ -581,6 +551,13 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             return l.find(layoutContext, x, y, false);
         }
         return null;
+    }
+
+    public void doLayout() {
+        if (isExtentsHaveChanged()) {
+            setNeedRelayout(true);
+        }
+        super.doLayout();
     }
 
     public void validate() {
@@ -665,4 +642,46 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     public void setDefaultFontFromComponent(boolean defaultFontFromComponent) {
         this.defaultFontFromComponent = defaultFontFromComponent;
     }
+
+    // ----- Scrollable interface -----
+
+    public Dimension getPreferredScrollableViewportSize() {
+      return getPreferredSize();
+    }
+
+    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+      int dif = 1;
+      if (orientation == SwingConstants.VERTICAL) {
+        dif = visibleRect.height;
+      }
+      else if (orientation == SwingConstants.HORIZONTAL) {
+        dif = visibleRect.width;
+      }
+      return Math.min(35, dif);
+    }
+
+    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+      int dif = 1;
+      if (orientation == SwingConstants.VERTICAL) {
+        dif = Math.max(visibleRect.height - 10, dif);
+      }
+      else if (orientation == SwingConstants.HORIZONTAL) {
+        dif = Math.max(visibleRect.width, dif);
+      }
+      return dif;
+    }
+
+    public boolean getScrollableTracksViewportWidth() {
+        // If the last layout successfully filled the desired width then
+        // viewport should match the component size.
+        return viewportMatchWidth;
+    }
+
+    public boolean getScrollableTracksViewportHeight() {
+        // If the last layout height of this component is <= the viewport
+        // height then we make the viewport height match the component size.
+        int viewportHeight = enclosingScrollPane.getViewport().getHeight();
+        return getPreferredSize().height <= viewportHeight;
+    }
+
 }

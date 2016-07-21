@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -20,15 +20,20 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.BasicStroke;
-import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
+import java.awt.geom.Path2D;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
+import org.xhtmlrenderer.css.style.BorderRadiusCorner;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.extend.OutputDevice;
+
 
 public class BorderPainter {
     public static final int TOP = 1;
@@ -36,6 +41,211 @@ public class BorderPainter {
     public static final int BOTTOM = 4;
     public static final int RIGHT = 8;
     public static final int ALL = TOP + LEFT + BOTTOM + RIGHT;
+    
+    /**
+     * Generates a full round rectangle that is made of bounds and border
+     * @param bounds Dimmensions of the rect
+     * @param border The border specs
+     * @param Set true if you want the inner bounds of borders
+     * @return A Path that is all sides of the round rectangle
+     */
+    public static Path2D generateBorderBounds(Rectangle bounds, BorderPropertySet border, boolean inside) {
+        Path2D path = generateBorderShape(bounds, TOP, border, false, inside ? 1 : 0, 1);
+        path.append(generateBorderShape(bounds, RIGHT, border, false, inside ? 1 : 0, 1), true);
+        path.append(generateBorderShape(bounds, BOTTOM, border, false, inside ? 1 : 0, 1), true);
+        path.append(generateBorderShape(bounds, LEFT, border, false, inside ? 1 : 0, 1), true);
+        return path;
+    }
+    
+
+    /**
+     * Generates one side of a border
+     * @param bounds bounds of the container
+     * @param side what side you want
+     * @param border border props
+     * @param drawInterior if you want it to be 2d or not, if false it will be just a line
+     * @return a path for the side chosen!
+     */
+    public static Path2D generateBorderShape(Rectangle bounds, int side, BorderPropertySet border, boolean drawInterior) {
+        return generateBorderShape(bounds, side, border, drawInterior, 0, 1);
+    }
+    /**
+     * Generates one side of a border
+     * @param bounds bounds of the container
+     * @param side what side you want
+     * @param border border props
+     * @param drawInterior if you want it to be 2d or not, if false it will be just a line
+     * @param scaledOffset insets the border by multipling border widths by this variable, best use would be 1 or .5, cant see it for much other than that
+     * @return a path for the side chosen!
+     */
+    public static Path2D generateBorderShape(Rectangle bounds, int side, BorderPropertySet border, boolean drawInterior, float scaledOffset) {
+        return generateBorderShape(bounds, side, border, drawInterior, scaledOffset, 1);
+    }
+    
+    /**
+     * Generates one side of a border
+     * @param bounds bounds of the container
+     * @param side what side you want
+     * @param border border props
+     * @param drawInterior if you want it to be 2d or not, if false it will be just a line
+     * @param scaledOffset insets the border by multipling border widths by this variable, best use would be 1 or .5, cant see it for much other than that
+     * @param widthScale scales the border widths by this factor, useful for drawing half borders for border types like groove or double
+     * @return a path for the side chosen!
+     */
+    public static Path2D generateBorderShape(Rectangle bounds, int side, BorderPropertySet border, boolean drawInterior, float scaledOffset, float widthScale) {
+        /**
+         * Function overview: Prior to creating the path we check what side were building this on. All the coordinates in this function assume its building a top border
+         * the border is then rotated and translated to its appropriate side. Uses of "left" and "right" are assuming a perspective of inside the shape looking out.
+         */
+        border = border.normalizedInstance(new Rectangle((int)(bounds.width), (int)(bounds.height)));
+        
+        RelativeBorderProperties props = new RelativeBorderProperties(bounds, border, 0f, side, 1+scaledOffset, widthScale);
+        float sideWidth;
+        if(props.isDimmensionsSwapped()) {
+            sideWidth = bounds.height-(1+scaledOffset)*(widthScale)*(border.top()+border.bottom());
+        } else {
+            sideWidth = bounds.width-(1+scaledOffset)*(widthScale)*(border.left()+border.right());
+        }
+        Path2D path = new Path2D.Float();
+        
+        float angle = 90;
+        float widthSum = props.getTop() + props.getLeft();
+        if (widthSum != 0.0f) { // Avoid NaN
+        	angle = angle * props.getTop() / widthSum;
+        }
+        appendPath(path, 0-props.getLeft(), 0-props.getTop(), props.getLeftCorner().left(), props.getLeftCorner().right(), 90+angle, -angle-1, props.getTop(), props.getLeft(), scaledOffset, true, widthScale);
+
+        angle = 90;
+        widthSum = props.getTop() + props.getRight();
+        if (widthSum != 0.0f) { // Avoid NaN
+        	angle = angle * props.getTop() / widthSum;
+        }
+        appendPath(path, sideWidth+props.getRight(), 0-props.getTop(), props.getRightCorner().right(), props.getRightCorner().left(), 90, -angle-1, props.getTop(), props.getRight(), scaledOffset, false, widthScale);
+        
+        
+        if(drawInterior) {
+            //border = border.normalizeBorderRadius(new Rectangle((int)(bounds.width), (int)(bounds.height)));
+            //props = new RelativeBorderProperties(bounds, border, 0f, side, 1+scaledOffset, 1);
+            
+            appendPath(path, sideWidth, 0, props.getRightCorner().right(), props.getRightCorner().left(), 90-angle, angle+1, props.getTop(), props.getRight(), scaledOffset+1, false, widthScale);
+
+            angle = 90;
+            widthSum = props.getTop() + props.getLeft();
+            if (widthSum != 0.0f) { // Avoid NaN
+            	angle = angle * props.getTop() / widthSum;
+            }
+            appendPath(path, 0, 0, props.getLeftCorner().left(), props.getLeftCorner().right(), 90, angle+1, props.getTop(), props.getLeft(), scaledOffset+1, true, widthScale);
+            
+            path.closePath();
+        }
+        
+
+        path.transform(AffineTransform.getTranslateInstance( 
+                (!props.isDimmensionsSwapped() ? -bounds.width/2f : -bounds.height/2f) + (scaledOffset+1)*props.getLeft(),
+                (props.isDimmensionsSwapped() ? -bounds.width/2f : -bounds.height/2f) + (scaledOffset+1)*props.getTop()));
+        path.transform(AffineTransform.getRotateInstance(
+                props.getRotation()));
+        path.transform(AffineTransform.getTranslateInstance( 
+                bounds.width/2f+bounds.x, bounds.height/2f+bounds.y));
+        
+        return path;
+    }
+    
+    private static void appendPath(Path2D path, float xOffset, float yOffset, float radiusVert, float radiusHoriz, float startAngle, float distance, float topWidth, float sideWidth, float scaleOffset, boolean left, float widthScale) {
+        float innerWidth = 2*radiusHoriz - scaleOffset*sideWidth - scaleOffset*sideWidth;
+        float innerHeight = 2*radiusVert - scaleOffset*topWidth - scaleOffset*topWidth;
+        
+        if(innerWidth > 0 && innerHeight > 0) {
+            // do arc
+            Arc2D arc = new Arc2D.Float(
+                    xOffset-(left?0:(innerWidth)), 
+                    yOffset, 
+                    innerWidth, 
+                    innerHeight, startAngle, distance, Arc2D.OPEN);
+            path.append(arc, true);
+        } else {
+            // do line
+            if(path.getCurrentPoint() == null) {
+                path.moveTo(xOffset, yOffset);
+            } else {
+                path.lineTo(xOffset, yOffset);
+            }
+        }
+    }
+
+    private static class RelativeBorderProperties {
+        private final float _top;
+        private final float _left;
+        private final float _right;
+        private final BorderRadiusCorner _leftCorner;
+        private final BorderRadiusCorner _rightCorner;
+        
+        private final double _rotation;
+        private final boolean _dimmensionsSwapped;
+        
+        public RelativeBorderProperties(Rectangle bounds, BorderPropertySet props, float borderScaleOffset,  int side, float scaledOffset, float widthScale) {
+
+            if ((side & BorderPainter.TOP) == BorderPainter.TOP) {
+                _top = props.top()*widthScale;
+                _left = props.left()*widthScale;
+                _right = props.right()*widthScale;
+                _leftCorner = props.getTopLeft();
+                _rightCorner = props.getTopRight();
+                _rotation = 0;
+                _dimmensionsSwapped = false;
+            } else if ((side & BorderPainter.RIGHT) == BorderPainter.RIGHT) {
+                _top = props.right()*widthScale;
+                _left = props.top()*widthScale;
+                _right = props.bottom()*widthScale;
+                _leftCorner = props.getTopRight();
+                _rightCorner = props.getBottomRight();
+                _rotation = Math.PI/2;
+                _dimmensionsSwapped = true;
+            } else if ((side & BorderPainter.BOTTOM) == BorderPainter.BOTTOM) {
+                _top = props.bottom()*widthScale;
+                _left = props.right()*widthScale;
+                _right = props.left()*widthScale;
+                _leftCorner = props.getBottomRight();
+                _rightCorner = props.getBottomLeft();
+                _rotation = Math.PI;
+                _dimmensionsSwapped = false;
+            } else if ((side & BorderPainter.LEFT) == BorderPainter.LEFT) {
+                _top = props.left()*widthScale;
+                _left = props.bottom()*widthScale;
+                _right = props.top()*widthScale;
+                _leftCorner = props.getBottomLeft();
+                _rightCorner = props.getTopLeft();
+                _rotation = 3*Math.PI/2;
+                _dimmensionsSwapped = true;
+            } else {
+                throw new IllegalArgumentException("No side found");
+            }
+        }
+        
+        public BorderRadiusCorner getRightCorner() {
+            return _rightCorner;
+        }
+        public BorderRadiusCorner getLeftCorner() {
+            return _leftCorner;
+        }
+        public float getTop() {
+            return _top;
+        }
+        public float getLeft() {
+            return _left;
+        }
+        public float getRight() {
+            return _right;
+        }
+
+        private double getRotation() {
+            return _rotation;
+        }
+
+        private boolean isDimmensionsSwapped() {
+            return _dimmensionsSwapped;
+        }
+    }
     
     /**
      * @param xOffset for determining starting point for patterns
@@ -61,27 +271,18 @@ public class BorderPainter {
             paintBorderSide(ctx.getOutputDevice(), 
                     border, bounds, sides, BorderPainter.TOP, border.topStyle(), xOffset, bevel);
         }
-        if ((sides & BorderPainter.LEFT) == BorderPainter.LEFT && border.leftColor() != FSRGBColor.TRANSPARENT) {
-            paintBorderSide(ctx.getOutputDevice(), 
-                    border, bounds, sides, BorderPainter.LEFT, border.leftStyle(), xOffset, bevel);
-        }
         if ((sides & BorderPainter.BOTTOM) == BorderPainter.BOTTOM && border.bottomColor() != FSRGBColor.TRANSPARENT) {
             paintBorderSide(ctx.getOutputDevice(), 
                     border, bounds, sides, BorderPainter.BOTTOM, border.bottomStyle(), xOffset, bevel);
+        }
+        if ((sides & BorderPainter.LEFT) == BorderPainter.LEFT && border.leftColor() != FSRGBColor.TRANSPARENT) {
+            paintBorderSide(ctx.getOutputDevice(), 
+                    border, bounds, sides, BorderPainter.LEFT, border.leftStyle(), xOffset, bevel);
         }
         if ((sides & BorderPainter.RIGHT) == BorderPainter.RIGHT && border.rightColor() != FSRGBColor.TRANSPARENT) {
             paintBorderSide(ctx.getOutputDevice(), 
                     border, bounds, sides, BorderPainter.RIGHT, border.rightStyle(), xOffset, bevel);
         }
-    }
-
-    private static Rectangle shrinkRect(final Rectangle rect, final BorderPropertySet border, int sides) {
-        Rectangle r2 = new Rectangle();
-        r2.x = rect.x + ((sides & BorderPainter.LEFT) == 0 ? 0 : (int) border.left());
-        r2.width = rect.width - ((sides & BorderPainter.LEFT) == 0 ? 0 : (int) border.left()) - ((sides & BorderPainter.RIGHT) == 0 ? 0 : (int) border.right());
-        r2.y = rect.y + ((sides & BorderPainter.TOP) == 0 ? 0 : (int) border.top());
-        r2.height = rect.height - ((sides & BorderPainter.TOP) == 0 ? 0 : (int) border.top()) - ((sides & BorderPainter.BOTTOM) == 0 ? 0 : (int) border.bottom());
-        return r2;
     }
 
     private static void paintBorderSide(OutputDevice outputDevice, 
@@ -92,31 +293,52 @@ public class BorderPainter {
                     (int) (border.right() / 2),
                     (int) (border.bottom() / 2),
                     (int) (border.left() / 2));
-            if (borderSideStyle == IdentValue.RIDGE) {
-                paintBorderSidePolygon(
-                        outputDevice, bounds, border, border.darken(borderSideStyle), 
-                        border.lighten(borderSideStyle), sides, currentSide, bevel);
-                paintBorderSidePolygon(
-                        outputDevice, bounds, bd2, border.lighten(borderSideStyle), 
-                        border.darken(borderSideStyle), sides, currentSide, bevel);
+           BorderPropertySet borderA = null,
+                   borderB = null;
+           if (borderSideStyle == IdentValue.RIDGE) {
+                borderA = border;
+                borderB =  border.darken(borderSideStyle);
             } else {
-                paintBorderSidePolygon(
-                        outputDevice, bounds, border, border.lighten(borderSideStyle),
-                        border.darken(borderSideStyle), sides, currentSide, bevel);
-                paintBorderSidePolygon(
-                        outputDevice, bounds, bd2, border.darken(borderSideStyle),
-                        border.lighten(borderSideStyle), sides, currentSide, bevel);
+                borderA =  border.darken(borderSideStyle);
+                borderB = border;
             }
+           paintBorderSideShape(
+                   outputDevice, bounds, bd2, borderA,
+                   borderB,
+                   0, 1, sides, currentSide, bevel);
+           paintBorderSideShape(
+                   outputDevice, bounds, border, borderB,
+                   borderA,
+                   1, .5f, sides, currentSide, bevel);
         } else if (borderSideStyle == IdentValue.OUTSET) {
-            paintBorderSidePolygon(outputDevice, bounds, border,
-                    border.lighten(borderSideStyle),
-                    border.darken(borderSideStyle), sides, currentSide, bevel);
+            paintBorderSideShape(outputDevice, bounds, border,
+                    border,
+                    border.darken(borderSideStyle), 
+                    0, 1, sides, currentSide, bevel);
         } else if (borderSideStyle == IdentValue.INSET) {
-            paintBorderSidePolygon(outputDevice, bounds, border,
+            paintBorderSideShape(outputDevice, bounds, border,
                     border.darken(borderSideStyle),
-                    border.lighten(borderSideStyle), sides, currentSide, bevel);
+                    border,
+                    0, 1, sides, currentSide, bevel);
         } else if (borderSideStyle == IdentValue.SOLID) {
-            paintSolid(outputDevice, bounds, border, border, sides, currentSide, bevel);
+            outputDevice.setStroke(new BasicStroke(1f));
+            if(currentSide == TOP) {
+                outputDevice.setColor(border.topColor());
+                outputDevice.fill(generateBorderShape(bounds, TOP, border, true, 0, 1));
+            }
+            if(currentSide == RIGHT) {
+                outputDevice.setColor(border.rightColor());
+                outputDevice.fill(generateBorderShape(bounds, RIGHT, border, true, 0, 1));
+            }
+            if(currentSide == BOTTOM) {
+                outputDevice.setColor(border.bottomColor());
+                outputDevice.fill(generateBorderShape(bounds, BOTTOM, border, true, 0, 1));
+            }
+            if(currentSide == LEFT) {
+                outputDevice.setColor(border.leftColor());
+                outputDevice.fill(generateBorderShape(bounds, LEFT, border, true, 0, 1));
+            }
+            
         } else if (borderSideStyle == IdentValue.DOUBLE) {
             paintDoubleBorder(outputDevice, border, bounds, sides, currentSide, bevel);
         } else {
@@ -126,133 +348,27 @@ public class BorderPainter {
             if (currentSide == BorderPainter.RIGHT) thickness = (int) border.right();
             if (currentSide == BorderPainter.LEFT) thickness = (int) border.left();
             if (borderSideStyle == IdentValue.DASHED) {
-                outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                //outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 paintPatternedRect(outputDevice, bounds, border, border, new float[]{8.0f + thickness * 2, 4.0f + thickness}, sides, currentSide, xOffset);
-                outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                //outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             }
             if (borderSideStyle == IdentValue.DOTTED) {
                 // turn off anti-aliasing or the dots will be all blurry
-                outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                //outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 paintPatternedRect(outputDevice, bounds, border, border, new float[]{thickness, thickness}, sides, currentSide, xOffset);
-                outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                //outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             }
         }
-    }
-    
-    private static DoubleBorderInfo calcDoubleBorderInfo(int width) {
-        DoubleBorderInfo result = new DoubleBorderInfo();
-        if (width == 1) {
-            result.setOuter(1);
-        } else if (width == 2) {
-            result.setOuter(1);
-            result.setInner(1);
-        } else {
-            int extra = width % 3;
-            switch (extra) {
-                case 0:
-                    result.setOuter(width / 3);
-                    result.setCenter(width / 3);
-                    result.setInner(width / 3);
-                    break;
-                case 1:
-                    result.setOuter((width + 2) / 3 - 1);
-                    result.setCenter((width + 2) / 3);
-                    result.setInner((width + 2) / 3 - 1);
-                    break;                    
-                case 2:
-                    result.setOuter((width + 1) / 3);
-                    result.setCenter((width + 1) / 3 - 1);
-                    result.setInner((width + 1) / 3);
-                    break;
-            }
-        }
-        return result;
     }
 
     private static void paintDoubleBorder(
             OutputDevice outputDevice, BorderPropertySet border, 
             Rectangle bounds, int sides, int currentSide, boolean bevel) {
-        DoubleBorderInfo topBorderInfo = calcDoubleBorderInfo((int)border.top());
-        DoubleBorderInfo rightBorderInfo = calcDoubleBorderInfo((int)border.right());
-        DoubleBorderInfo bottomBorderInfo = calcDoubleBorderInfo((int)border.bottom());
-        DoubleBorderInfo leftBorderInfo = calcDoubleBorderInfo((int)border.left());
-        
-        BorderPropertySet outer = new BorderPropertySet(
-                topBorderInfo.getOuter(), rightBorderInfo.getOuter(), 
-                bottomBorderInfo.getOuter(), leftBorderInfo.getOuter());
-        
-        BorderPropertySet center = new BorderPropertySet(
-                topBorderInfo.getCenter(), rightBorderInfo.getCenter(), 
-                bottomBorderInfo.getCenter(), leftBorderInfo.getCenter());
-        
-        BorderPropertySet inner = new BorderPropertySet(
-                topBorderInfo.getInner(), rightBorderInfo.getInner(), 
-                bottomBorderInfo.getInner(), leftBorderInfo.getInner());
-
-        Rectangle b2 = shrinkRect(bounds, outer, bevel ? sides : currentSide);
-        b2 = shrinkRect(b2, center, bevel ? sides : currentSide);
         // draw outer border
-        paintSolid(outputDevice, bounds, outer, border, sides, currentSide, bevel);
+        paintSolid(outputDevice, bounds, border, 0, 1/3f, sides, currentSide, bevel);
         // draw inner border
-        paintSolid(outputDevice, b2, inner, border, sides, currentSide, bevel);
-    }
-
-    /**
-     * Gets the polygon to be filled for the border
-     */
-    private static Polygon getBorderSidePolygon(
-            final Rectangle bounds, final BorderPropertySet border, final int sides, 
-            int currentSide, boolean bevel) {
-        int rightCorner = 0;
-        int leftCorner = 0;
-        int topCorner = 0;
-        int bottomCorner = 0;
-        if (bevel) {
-            rightCorner = (((sides & BorderPainter.RIGHT) == BorderPainter.RIGHT) ? (int) border.right() : 0);
-            leftCorner = (((sides & BorderPainter.LEFT) == BorderPainter.LEFT) ? (int) border.left() : 0);
-            topCorner = (((sides & BorderPainter.TOP) == BorderPainter.TOP) ? (int) border.top() : 0);
-            bottomCorner = (((sides & BorderPainter.BOTTOM) == BorderPainter.BOTTOM) ? (int) border.bottom() : 0);
-        }
-        Polygon poly = null;
-        if (currentSide == BorderPainter.TOP) {
-            if ((int) border.top() != 1) {
-                // use polygons for borders over 1px wide
-                poly = new Polygon();
-                poly.addPoint(bounds.x, bounds.y);
-                poly.addPoint(bounds.x + bounds.width, bounds.y);
-                poly.addPoint(bounds.x + bounds.width - rightCorner, bounds.y + (int) border.top() - 0);
-                poly.addPoint(bounds.x + leftCorner, bounds.y + (int) border.top() - 0);
-            }
-        } else if (currentSide == BorderPainter.BOTTOM) {
-            if ((int) border.bottom() != 1) {
-                poly = new Polygon();
-                // upper right
-                poly.addPoint(bounds.x + bounds.width - rightCorner, bounds.y + bounds.height - (int) border.bottom());
-                // upper left
-                poly.addPoint(bounds.x + leftCorner, bounds.y + bounds.height - (int) border.bottom());
-                // lower left
-                poly.addPoint(bounds.x, bounds.y + bounds.height);
-                // lower right
-                poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height - 0);
-            }
-        } else if (currentSide == BorderPainter.RIGHT) {
-            if ((int) border.right() != 1) {
-                poly = new Polygon();
-                poly.addPoint(bounds.x + bounds.width, bounds.y);
-                poly.addPoint(bounds.x + bounds.width - (int) border.right(), bounds.y + topCorner);
-                poly.addPoint(bounds.x + bounds.width - (int) border.right(), bounds.y + bounds.height - bottomCorner);
-                poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
-            }
-        } else if (currentSide == BorderPainter.LEFT) {
-            if ((int) border.left() != 1) {
-                poly = new Polygon();
-                poly.addPoint(bounds.x, bounds.y);
-                poly.addPoint(bounds.x + (int) border.left(), bounds.y + topCorner);
-                poly.addPoint(bounds.x + (int) border.left(), bounds.y + bounds.height - bottomCorner);
-                poly.addPoint(bounds.x, bounds.y + bounds.height);
-            }
-        }
-        return poly;
+        //paintSolid(outputDevice, bounds, border, 1, 1/3f, sides, currentSide, bevel);
+        paintSolid(outputDevice, bounds, border, 2, 1/3f, sides, currentSide, bevel);
     }
 
     /**
@@ -264,117 +380,103 @@ public class BorderPainter {
             final int sides, final int currentSide, int xOffset) {
         Stroke old_stroke = outputDevice.getStroke();
 
+        Path2D path = generateBorderShape(bounds, currentSide, border, false, .5f, 1);
+        Area clip = new Area(generateBorderShape(bounds, currentSide, border, true, 0, 1));
+        
+        Shape old_clip = outputDevice.getClip();
+        if(old_clip != null) {
+            // we need to respect the clip sent to us, get the intersection between the old and the new
+            clip.intersect(new Area(old_clip));
+        }
+        outputDevice.setClip(clip);
         if (currentSide == BorderPainter.TOP) {
             outputDevice.setColor(color.topColor());
-            outputDevice.setStroke(new BasicStroke((int) border.top(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, xOffset));
+            outputDevice.setStroke(new BasicStroke(2*(int) border.top(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, xOffset));
             outputDevice.drawBorderLine(
-                    bounds, BorderPainter.TOP, (int)border.top(), false);
+                    path, BorderPainter.TOP, (int)border.top(), false);
         } else if (currentSide == BorderPainter.LEFT) {
             outputDevice.setColor(color.leftColor());
-            outputDevice.setStroke(new BasicStroke((int) border.left(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0));
+            outputDevice.setStroke(new BasicStroke(2*(int) border.left(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0));
             outputDevice.drawBorderLine(
-                    bounds, BorderPainter.LEFT, (int)border.left(), false);
+                    path, BorderPainter.LEFT, (int)border.left(), false);
         } else if (currentSide == BorderPainter.RIGHT) {
             outputDevice.setColor(color.rightColor());
-            outputDevice.setStroke(new BasicStroke((int) border.right(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0));
+            outputDevice.setStroke(new BasicStroke(2*(int) border.right(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0));
             outputDevice.drawBorderLine(
-                    bounds, BorderPainter.RIGHT, (int)border.right(), false);
+                    path, BorderPainter.RIGHT, (int)border.right(), false);
         } else if (currentSide == BorderPainter.BOTTOM) {
             outputDevice.setColor(color.bottomColor());
-            outputDevice.setStroke(new BasicStroke((int) border.bottom(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, xOffset));
+            outputDevice.setStroke(new BasicStroke(2*(int) border.bottom(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, xOffset));
             outputDevice.drawBorderLine(
-                    bounds, BorderPainter.BOTTOM, (int)border.bottom(), false);
+                    path, BorderPainter.BOTTOM, (int)border.bottom(), false);
         }
 
+        outputDevice.setClip(old_clip);
         outputDevice.setStroke(old_stroke);
     }
 
-    private static void paintBorderSidePolygon(OutputDevice outputDevice, 
+    private static void paintBorderSideShape(OutputDevice outputDevice, 
             final Rectangle bounds, final BorderPropertySet border, 
             final BorderPropertySet high, final BorderPropertySet low, 
+            final float offset, final float scale,
             final int sides, int currentSide, boolean bevel) {
         if (currentSide == BorderPainter.TOP) {
-            paintSolid(outputDevice, bounds, border, high, sides, currentSide, bevel);
+            paintSolid(outputDevice, bounds, high, offset, scale, sides, currentSide, bevel);
         } else if (currentSide == BorderPainter.BOTTOM) {
-            paintSolid(outputDevice, bounds, border, low, sides, currentSide, bevel);
+            paintSolid(outputDevice, bounds, low, offset, scale, sides, currentSide, bevel);
         } else if (currentSide == BorderPainter.RIGHT) {
-            paintSolid(outputDevice, bounds, border, low, sides, currentSide, bevel);
+            paintSolid(outputDevice, bounds, low, offset, scale, sides, currentSide, bevel);
         } else if (currentSide == BorderPainter.LEFT) {
-            paintSolid(outputDevice, bounds, border, high, sides, currentSide, bevel);
+            paintSolid(outputDevice, bounds, high, offset, scale, sides, currentSide, bevel);
         }
     }
 
     private static void paintSolid(OutputDevice outputDevice, 
             final Rectangle bounds, final BorderPropertySet border, 
-            final BorderPropertySet bcolor, final int sides, int currentSide,
+            final float offset, final float scale, final int sides, int currentSide,
             boolean bevel) {
-        Polygon poly = getBorderSidePolygon(bounds, border, sides, currentSide, bevel);
-
+        
         if (currentSide == BorderPainter.TOP) {
-            outputDevice.setColor(bcolor.topColor());
-
+            outputDevice.setColor(border.topColor());
             // draw a 1px border with a line instead of a polygon
             if ((int) border.top() == 1) {
-                outputDevice.drawBorderLine(bounds, BorderPainter.TOP, 
-                        (int)border.top(), true);
+                Shape line = generateBorderShape(bounds, currentSide, border, false, offset, scale);
+                outputDevice.draw(line);
             } else {
+                Shape line = generateBorderShape(bounds, currentSide, border, true, offset, scale);
                 // use polygons for borders over 1px wide
-                outputDevice.fill(poly);
+                outputDevice.fill(line);
             }
         } else if (currentSide == BorderPainter.BOTTOM) {
-            outputDevice.setColor(bcolor.bottomColor());
+            outputDevice.setColor(border.bottomColor());
             if ((int) border.bottom() == 1) {
-                outputDevice.drawBorderLine(bounds, BorderPainter.BOTTOM, 
-                        (int)border.bottom(), true);
+                Shape line = generateBorderShape(bounds, currentSide, border, false, offset, scale);
+                outputDevice.draw(line);
             } else {
-                outputDevice.fill(poly);
+                Shape line = generateBorderShape(bounds, currentSide, border, true, offset, scale);
+                // use polygons for borders over 1px wide
+                outputDevice.fill(line);
             }
         } else if (currentSide == BorderPainter.RIGHT) {
-            outputDevice.setColor(bcolor.rightColor());
+            outputDevice.setColor(border.rightColor());
             if ((int) border.right() == 1) {
-                outputDevice.drawBorderLine(bounds, BorderPainter.RIGHT, 
-                        (int)border.right(), true);
+                Shape line = generateBorderShape(bounds, currentSide, border, false, offset, scale);
+                outputDevice.draw(line);
             } else {
-                outputDevice.fill(poly);
+                Shape line = generateBorderShape(bounds, currentSide, border, true, offset, scale);
+                // use polygons for borders over 1px wide
+                outputDevice.fill(line);
             }
         } else if (currentSide == BorderPainter.LEFT) {
-            outputDevice.setColor(bcolor.leftColor());
+            outputDevice.setColor(border.leftColor());
             if ((int) border.left() == 1) {
-                outputDevice.drawBorderLine(bounds, BorderPainter.LEFT, 
-                        (int)border.left(), true);
+                Shape line = generateBorderShape(bounds, currentSide, border, false, offset, scale);
+                outputDevice.draw(line);
             } else {
-                outputDevice.fill(poly);
+                Shape line = generateBorderShape(bounds, currentSide, border, true, offset, scale);
+                // use polygons for borders over 1px wide
+                outputDevice.fill(line);
             }
-        }
-    }
-    
-    private static class DoubleBorderInfo {
-        private int _outer;
-        private int _center;
-        private int _inner;
-        
-        public int getCenter() {
-            return _center;
-        }
-        
-        public void setCenter(int center) {
-            _center = center;
-        }
-        
-        public int getInner() {
-            return _inner;
-        }
-        
-        public void setInner(int inner) {
-            _inner = inner;
-        }
-        
-        public int getOuter() {
-            return _outer;
-        }
-        
-        public void setOuter(int outer) {
-            _outer = outer;
         }
     }
 }

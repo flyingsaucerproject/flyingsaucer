@@ -453,7 +453,7 @@ public abstract class Box implements Styleable {
         Dimension marginCorner = pI.getOuterMarginCorner();
         Rectangle canvasBounds = new Rectangle(0, 0, marginCorner.width, marginCorner.height);
         canvasBounds.add(c.getViewportRectangle());
-        c.getOutputDevice().paintBackground(c, getStyle(), canvasBounds, canvasBounds, null);
+        c.getOutputDevice().paintBackground(c, getStyle(), canvasBounds, canvasBounds, BorderPropertySet.EMPTY_BORDER);
     }
 
     public Layer getContainingLayer() {
@@ -626,28 +626,30 @@ public abstract class Box implements Styleable {
         boolean needSecondPageBreak = false;
         PageBox page = c.getRootLayer().getLastPage(c, this);
 
-        if ((page.isLeftPage() && pageBreakValue == IdentValue.LEFT) ||
-                (page.isRightPage() && pageBreakValue == IdentValue.RIGHT)) {
-            needSecondPageBreak = true;
-        }
+        if (page != null) {
+            if ((page.isLeftPage() && pageBreakValue == IdentValue.LEFT) ||
+                    (page.isRightPage() && pageBreakValue == IdentValue.RIGHT)) {
+                needSecondPageBreak = true;
+            }
 
-        int delta = page.getBottom() + c.getExtraSpaceTop() - (getAbsY() +
-                getMarginBorderPadding(c, CalculatedStyle.TOP) + getHeight());
-
-        if (page == c.getRootLayer().getLastPage()) {
-            c.getRootLayer().addPage(c);
-        }
-
-        if (needSecondPageBreak) {
-            page = (PageBox)c.getRootLayer().getPages().get(page.getPageNo()+1);
-            delta += page.getContentHeight(c);
+            int delta = page.getBottom() + c.getExtraSpaceTop() - (getAbsY() +
+                    getMarginBorderPadding(c, CalculatedStyle.TOP) + getHeight());
 
             if (page == c.getRootLayer().getLastPage()) {
                 c.getRootLayer().addPage(c);
             }
-        }
 
-        setHeight(getHeight() + delta);
+            if (needSecondPageBreak) {
+                page = (PageBox)c.getRootLayer().getPages().get(page.getPageNo()+1);
+                delta += page.getContentHeight(c);
+
+                if (page == c.getRootLayer().getLastPage()) {
+                    c.getRootLayer().addPage(c);
+                }
+            }
+
+            setHeight(getHeight() + delta);
+        }
     }
 
     public boolean crossesPageBreak(LayoutContext c) {
@@ -1077,47 +1079,51 @@ public abstract class Box implements Styleable {
     }
 
     public FSColor getEffBackgroundColor(RenderingContext c) {
-		FSColor result = null;
-		Box current = this;
-		while (current != null) {
-			result = current.getStyle().getBackgroundColor();
-			if (result != null) {
-				return result;
-			}
+        FSColor result = null;
+        Box current = this;
+        while (current != null) {
+            result = current.getStyle().getBackgroundColor();
+            if (result != null) {
+                return result;
+            }
 
-			current = current.getContainingBlock();
-		}
+            current = current.getContainingBlock();
+        }
 
-		PageBox page = c.getPage();
-		result = page.getStyle().getBackgroundColor();
-		if (result == null) {
-			return new FSRGBColor(255, 255, 255);
-		} else {
-			return result;
-		}
-	}
+        PageBox page = c.getPage();
+        result = page.getStyle().getBackgroundColor();
+        if (result == null) {
+            return new FSRGBColor(255, 255, 255);
+        } else {
+            return result;
+        }
+    }
 
-	protected boolean isMarginAreaRoot() {
-		return false;
-	}
+    protected boolean isMarginAreaRoot() {
+        return false;
+    }
 
-	public boolean isContainedInMarginBox() {
-		Box current = this;
-		while (true) {
-			Box parent = current.getParent();
-			if (parent == null) {
-				break;
-			} else {
-				current = parent;
-			}
-		}
+    public boolean isContainedInMarginBox() {
+        Box current = this;
+        while (true) {
+            Box parent = current.getParent();
+            if (parent == null) {
+                break;
+            } else {
+                current = parent;
+            }
+        }
 
-		return current.isMarginAreaRoot();
-	}
+        return current.isMarginAreaRoot();
+    }
 
-	public int getEffectiveWidth() {
-	    return getWidth();
-	}
+    public int getEffectiveWidth() {
+        return getWidth();
+    }
+
+    protected boolean isInitialContainingBlock() {
+        return false;
+    }
 }
 
 /*
