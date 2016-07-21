@@ -299,7 +299,7 @@ public class TableCellBox extends BlockBox {
         imageContainer.x += tableStyle.getBorderHSpacing(c);
         imageContainer.width -= 2*tableStyle.getBorderHSpacing(c);
         
-        c.getOutputDevice().paintBackground(c, sectionStyle, bounds, imageContainer, border);
+        c.getOutputDevice().paintBackground(c, sectionStyle, bounds, imageContainer, sectionStyle.getBorder(c));
         
         CalculatedStyle rowStyle = row.getStyle();
         
@@ -307,8 +307,7 @@ public class TableCellBox extends BlockBox {
         imageContainer.x += tableStyle.getBorderHSpacing(c);
         imageContainer.width -= 2*tableStyle.getBorderHSpacing(c);
         
-        c.getOutputDevice().paintBackground(c, rowStyle, bounds, imageContainer, border);
-        
+        c.getOutputDevice().paintBackground(c, rowStyle, bounds, imageContainer, rowStyle.getBorder(c));
         c.getOutputDevice().paintBackground(c, getStyle(), bounds, getPaintingBorderEdge(c), border);
     }
     
