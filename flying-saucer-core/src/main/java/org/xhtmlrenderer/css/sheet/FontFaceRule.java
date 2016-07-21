@@ -69,4 +69,26 @@ public class FontFaceRule implements RulesetContainer {
 
         return false;
     }
+
+    public boolean hasFontWeight() {
+        for (Iterator i = _ruleset.getPropertyDeclarations().iterator(); i.hasNext(); ) {
+            PropertyDeclaration decl = (PropertyDeclaration)i.next();
+            if (decl.getPropertyName().equals("font-weight")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean hasFontStyle() {
+        for (Iterator i = _ruleset.getPropertyDeclarations().iterator(); i.hasNext(); ) {
+            PropertyDeclaration decl = (PropertyDeclaration)i.next();
+            if (decl.getPropertyName().equals("font-style")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

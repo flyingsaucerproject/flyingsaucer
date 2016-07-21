@@ -19,12 +19,13 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import java.net.URI;
 import java.net.URL;
 
 import org.xhtmlrenderer.extend.FSImage;
 
 public class PDFAsImage implements FSImage {
-    private URL _source;
+    private URI _source;
     
     private float _width;
     private float _height;
@@ -32,7 +33,7 @@ public class PDFAsImage implements FSImage {
     private float _unscaledWidth;
     private float _unscaledHeight;
     
-    public PDFAsImage(URL source) {
+    public PDFAsImage(URI source) {
         _source = source;
     }
     
@@ -60,7 +61,7 @@ public class PDFAsImage implements FSImage {
         _height = targetHeight;
     }
     
-    public URL getURL() {
+    public URI getURI() {
         return _source;
     }
     

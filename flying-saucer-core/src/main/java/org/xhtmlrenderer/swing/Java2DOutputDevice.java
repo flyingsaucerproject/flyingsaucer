@@ -149,8 +149,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     }    
 
     public void drawBorderLine(
-            Rectangle bounds, int side, int lineWidth, boolean solid) {
-        int x = bounds.x;
+            Shape bounds, int side, int lineWidth, boolean solid) {
+       /* int x = bounds.x;
         int y = bounds.y;
         int w = bounds.width;
         int h = bounds.height;
@@ -173,7 +173,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                 offset += 1;
             }
             drawLine(x, y + h - offset, x + w - adj, y + h - offset);
-        }
+        }*/
+    	draw(bounds);
     }
 
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
@@ -264,6 +265,10 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
 
     public void fill(Shape s) {
         _graphics.fill(s);
+    }
+    
+    public void draw(Shape s) {
+        _graphics.draw(s);
     }
     
     public void drawImage(FSImage image, int x, int y) {

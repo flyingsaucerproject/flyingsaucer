@@ -187,16 +187,25 @@ public class PageBox {
     }    
 
     public int getContentHeight(CssContext cssCtx) {
-        return getHeight(cssCtx) 
-            - getMarginBorderPadding(cssCtx, CalculatedStyle.TOP)
-            - getMarginBorderPadding(cssCtx, CalculatedStyle.BOTTOM);
+        int retval = getHeight(cssCtx) - getMarginBorderPadding(cssCtx, CalculatedStyle.TOP)
+                - getMarginBorderPadding(cssCtx, CalculatedStyle.BOTTOM);
+        if (retval <= 0) {
+            throw new IllegalArgumentException(
+                    "The content height cannot be zero or less.  Check your document margin definition.");
+        }
+        return retval;
     }
-    
+
     public int getContentWidth(CssContext cssCtx) {
-        return getWidth(cssCtx) 
-            - getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT)
-            - getMarginBorderPadding(cssCtx, CalculatedStyle.RIGHT);
+        int retval = getWidth(cssCtx) - getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT)
+                - getMarginBorderPadding(cssCtx, CalculatedStyle.RIGHT);
+        if (retval <= 0) {
+            throw new IllegalArgumentException(
+                    "The content width cannot be zero or less.  Check your document margin definition.");
+        }
+        return retval;
     }
+
     
     public CalculatedStyle getStyle() {
         return _style;

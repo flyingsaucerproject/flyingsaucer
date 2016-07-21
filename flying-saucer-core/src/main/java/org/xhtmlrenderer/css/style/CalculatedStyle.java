@@ -401,7 +401,7 @@ public class CalculatedStyle {
     }
 
     public FontSpecification getFontSpecification() {
-	return _font;
+    return _font;
     }
 
     private IdentValue resolveAbsoluteFontSize() {
@@ -713,7 +713,7 @@ public class CalculatedStyle {
             BorderPropertySet result = BorderPropertySet.newInstance(style, ctx);
 
             boolean allZeros = result.isAllZeros();
-            if (allZeros && ! result.hasHidden()) {
+            if (allZeros && ! result.hasHidden() && !result.hasBorderRadius()) {
                 result = BorderPropertySet.EMPTY_BORDER;
             }
 
@@ -1230,6 +1230,18 @@ public class CalculatedStyle {
 
     public boolean isKeepWithInline() {
         return isIdent(CSSName.FS_KEEP_WITH_INLINE, IdentValue.KEEP);
+    }
+
+    public boolean isDynamicAutoWidth() {
+        return isIdent(CSSName.FS_DYNAMIC_AUTO_WIDTH, IdentValue.DYNAMIC);
+    }
+
+    public boolean isDynamicAutoWidthApplicable() {
+        return isDynamicAutoWidth() && isAutoWidth() && ! isCanBeShrunkToFit();
+    }
+
+    public boolean isCanBeShrunkToFit() {
+        return isInlineBlock() || isFloated() || isAbsolute() || isFixed();
     }
 
 }// end class

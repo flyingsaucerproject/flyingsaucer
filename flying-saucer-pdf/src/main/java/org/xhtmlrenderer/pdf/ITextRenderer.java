@@ -99,11 +99,18 @@ public class ITextRenderer {
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel) {
+        this(dotsPerPoint, dotsPerPixel, new ITextOutputDevice(dotsPerPoint));
+    }
+
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice) {
+        this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice));
+    }
+
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
         _dotsPerPoint = dotsPerPoint;
 
-        _outputDevice = new ITextOutputDevice(_dotsPerPoint);
+        _outputDevice = outputDevice;
 
-        ITextUserAgent userAgent = new ITextUserAgent(_outputDevice);
         _sharedContext = new SharedContext();
         _sharedContext.setUserAgentCallback(userAgent);
         _sharedContext.setCss(new StyleReference(userAgent));

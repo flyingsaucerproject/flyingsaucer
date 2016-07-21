@@ -301,10 +301,10 @@ abstract class Condition {
 
     private static class ClassCondition extends Condition {
 
-        private String _className;
+        private String _paddedClassName;
 
         ClassCondition(String className) {
-            _className = className;
+            _paddedClassName = " " + className + " ";
         }
 
         boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
@@ -315,14 +315,11 @@ abstract class Condition {
             if (c == null) {
                 return false;
             }
-            String[] ca = split(c, ' ');
-            boolean matched = false;
-            for (int j = 0; j < ca.length; j++) {
-                if (_className.equals(ca[j])) {
-                    matched = true;
-                }
-            }
-            return matched;
+
+            // This is much faster than calling `split()` and comparing individual values in a loop.
+            // NOTE: In jQuery, for example, the attribute value first has whitespace normalized to spaces. But
+            // in an XML DOM, space normalization in attributes is supposed to have happened already.
+            return (" " + c + " ").indexOf(_paddedClassName) != -1;
         }
 
     }

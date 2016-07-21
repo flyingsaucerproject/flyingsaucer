@@ -35,13 +35,17 @@ import org.xhtmlrenderer.css.parser.CounterData;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.extend.*;
+import org.xhtmlrenderer.extend.FSCanvas;
+import org.xhtmlrenderer.extend.FontContext;
+import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.ReplacedElementFactory;
+import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.PageBox;
-
 
 /**
  * This class tracks state which changes over the course of a layout run.
@@ -67,21 +71,21 @@ public class LayoutContext implements CssContext {
 
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
-    
+
     private Map _counterContextMap = new HashMap();
-    
+
     private String _pendingPageName;
     private String _pageName;
-    
+
     private int _noPageBreak = 0;
-    
+
     private Layer _rootDocumentLayer;
     private PageBox _page;
-    
+
     private boolean _mayCheckKeepTogether = true;
-    
+
     private BreakAtLineContext _breakAtLineContext;
-    
+
     public TextRenderer getTextRenderer() {
         return _sharedContext.getTextRenderer();
     }
@@ -118,7 +122,7 @@ public class LayoutContext implements CssContext {
         _currentMarkerData = null;
 
         _bfcs = new LinkedList();
-        
+
         if (! keepLayers) {
             _rootLayer = null;
             _layers = new LinkedList();
@@ -136,7 +140,7 @@ public class LayoutContext implements CssContext {
         result.setCurrentMarkerData(_currentMarkerData);
 
         result.setBFCs(_bfcs);
-        
+
         if (isPrint()) {
             result.setPageName(getPageName());
             result.setExtraSpaceBottom(getExtraSpaceBottom());
@@ -154,7 +158,7 @@ public class LayoutContext implements CssContext {
         _currentMarkerData = layoutState.getCurrentMarkerData();
 
         _bfcs = layoutState.getBFCs();
-        
+
         if (isPrint()) {
             setPageName(layoutState.getPageName());
             setExtraSpaceBottom(layoutState.getExtraSpaceBottom());
@@ -169,7 +173,7 @@ public class LayoutContext implements CssContext {
         result.setFirstLetters(_firstLetters.copyOf());
         result.setFirstLines(_firstLines.copyOf());
         result.setCurrentMarkerData(_currentMarkerData);
-        
+
         if (isPrint()) {
             result.setPageName(getPageName());
         }
@@ -182,7 +186,7 @@ public class LayoutContext implements CssContext {
         _firstLetters = layoutState.getFirstLetters();
 
         _currentMarkerData = layoutState.getCurrentMarkerData();
-        
+
         if (isPrint()) {
             setPageName(layoutState.getPageName());
         }
@@ -334,10 +338,14 @@ public class LayoutContext implements CssContext {
         _extraSpaceTop = extraSpaceTop;
     }
 
-    public void resolveCounters(CalculatedStyle style) {
+    public void resolveCounters(CalculatedStyle style, Integer startIndex) {
         //new context for child elements
-        CounterContext cc = new CounterContext(style);
+        CounterContext cc = new CounterContext(style, startIndex);
         _counterContextMap.put(style, cc);
+    }
+
+    public void resolveCounters(CalculatedStyle style) {
+    	resolveCounters(style, null);
     }
 
     public CounterContext getCounterContext(CalculatedStyle style) {
@@ -362,7 +370,11 @@ public class LayoutContext implements CssContext {
          *
          * @param style
          */
-        CounterContext(CalculatedStyle style) {
+        CounterContext(CalculatedStyle style, Integer startIndex) {
+        	// Numbering restarted via <ol start="x">
+			if (startIndex != null) {
+				_counters.put("list-item", startIndex);
+			}
             _parent = (LayoutContext.CounterContext) _counterContextMap.get(style.getParent());
             if (_parent == null) _parent = new CounterContext();//top-level context, above root element
             //first the explicitly named counters
@@ -381,10 +393,14 @@ public class LayoutContext implements CssContext {
                 }
             }
 
-            //then the implicit list-item counter
-            if (style.isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM)) {
-                _parent.incrementListItemCounter(1);
-            }
+            // then the implicit list-item counter
+			if (style.isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM)) {
+				// Numbering restarted via <li value="x">
+				if (startIndex != null) {
+					_parent._counters.put("list-item", startIndex);
+				}
+				_parent.incrementListItemCounter(1);
+			}
         }
 
         private CounterContext() {
@@ -468,7 +484,7 @@ public class LayoutContext implements CssContext {
     public void setPageName(String currentPageName) {
         _pageName = currentPageName;
     }
-    
+
     public int getNoPageBreak() {
         return _noPageBreak;
     }
@@ -476,7 +492,7 @@ public class LayoutContext implements CssContext {
     public void setNoPageBreak(int noPageBreak) {
         _noPageBreak = noPageBreak;
     }
-    
+
     public boolean isPageBreaksAllowed() {
         return _noPageBreak == 0;
     }

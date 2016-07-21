@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.text.BreakIterator;
+
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.FSFont;
@@ -107,8 +109,9 @@ public class Breaker {
             boolean tryToBreakAnywhere) {
         FSFont font = style.getFSFont(c);
         String currentString = context.getStartSubstring();
+        BreakIterator iterator = getWordStream(currentString);
         int left = 0;
-        int right = tryToBreakAnywhere ? 1 : currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+        int right = tryToBreakAnywhere ? 1 : iterator.next();
         int lastWrap = 0;
         int graphicsLength = 0;
         int lastGraphicsLength = 0;
@@ -122,8 +125,8 @@ public class Breaker {
             if ( tryToBreakAnywhere ) {
                 right = ( right + 1 ) % currentString.length();
             }
-            else { // break only on whitespace
-                right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+            else { // break relies on BreakIterator
+                right = iterator.next();
             }
         }
 
@@ -170,6 +173,12 @@ public class Breaker {
         }
         return;
     }
+
+	public static BreakIterator getWordStream(String s) {
+		BreakIterator i = new UrlAwareLineBreakIterator();
+		i.setText(s);
+		return i;
+	}
 
 }
 
