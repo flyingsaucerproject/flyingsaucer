@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -53,6 +52,7 @@ public class LineBox extends Box implements InlinePaintable {
     private static final float JUSTIFY_NON_SPACE_SHARE = 0.20f;
     private static final float JUSTIFY_SPACE_SHARE = 1 - JUSTIFY_NON_SPACE_SHARE;
     
+    private boolean _endsOnNL;
     private boolean _containsContent;
     private boolean _containsBlockLevelContent;
     
@@ -169,6 +169,14 @@ public class LineBox extends Box implements InlinePaintable {
         _containsContent = containsContent;
     }
     
+    public boolean isEndsOnNL() {
+        return _endsOnNL;
+    }
+
+    public void setEndsOnNL(boolean endsOnNL) {
+        _endsOnNL = endsOnNL;
+    }
+
     public void align(boolean dynamic) {
         IdentValue align = getParent().getStyle().getIdent(CSSName.TEXT_ALIGN);
         
@@ -254,14 +262,15 @@ public class LineBox extends Box implements InlinePaintable {
     
     private boolean isLastLineWithContent() {
         LineBox current = (LineBox)getNextSibling();
-        while (current != null) {
-            if (current.isContainsContent()) {
-                return false;
-            } else {
-                current = (LineBox)current.getNextSibling();
+        if (!_endsOnNL) {
+            while (current != null) {
+                if (current.isContainsContent()) {
+                    return false;
+                } else {
+                    current = (LineBox)current.getNextSibling();
+                }
             }
         }
-        
         return true;
     }
     
