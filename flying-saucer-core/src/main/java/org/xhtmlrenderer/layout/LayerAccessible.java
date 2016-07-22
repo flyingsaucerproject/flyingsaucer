@@ -31,23 +31,27 @@ public class LayerAccessible {
 			Vector<Object> processedElements) {
 		 if (paintable instanceof BlockBox) {
 			BlockBox blockBox = (BlockBox) paintable;
+			if (!processedElements.contains(blockBox)) {
+				processedElements.addElement(blockBox);
+				paintable.paintInline(c);
+			}
 			List children = blockBox.getChildren();
-			for (Object child : children) {
-				paintChildrenInline(c, (InlinePaintable) child, processedElements);
+			for (int i = 0; i < children.size(); i++) {
+				paintChildrenInline(c, (InlinePaintable) children.get(i), processedElements);
 			}
 		} else if (paintable instanceof LineBox) {
 			LineBox lineBox = (LineBox) paintable;
 			List children = lineBox.getChildren();
-			for (Object child : children) {
-				paintChildrenInline(c, (InlinePaintable) child, processedElements);
+			for (int i = 0; i < children.size(); i++) {
+				paintChildrenInline(c, (InlinePaintable) children.get(i), processedElements);
 			}
 		} else if (paintable instanceof InlineLayoutBox) {
 			InlineLayoutBox inlineLB = (InlineLayoutBox) paintable;
 			List children = inlineLB.getInlineChildren();
-			for (Object child : children) {
-				if (child instanceof InlineLayoutBox) {
-					paintChildrenInline(c, (InlinePaintable) child, processedElements);
-				} else if (child instanceof InlineText) {
+			for (int i = 0; i < children.size(); i++){
+				if (children.get(i) instanceof InlineLayoutBox) {
+					paintChildrenInline(c, (InlinePaintable) children.get(i), processedElements);
+				} else if (children.get(i) instanceof InlineText) {
 					if (!processedElements.contains(paintable)) {
 						processedElements.addElement(inlineLB);
 						paintable.paintInline(c);

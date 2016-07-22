@@ -241,7 +241,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public void paintBackground(RenderingContext c, Box box) {
         super.paintBackground(c, box);
         //PDF/UA
-//        processLinkAsAnnotationAccessible(c, box);
+        processLink(c, box);
     }
 
     private com.itextpdf.text.Rectangle calcTotalLinkArea(RenderingContext c, Box box) {
@@ -288,6 +288,60 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
         _linkTargetAreas.add(key);
         return targetArea;
+    }
+    
+    private void processLink(RenderingContext c, Box box) {
+        Element elem = box.getElement();
+        if (elem != null) {
+            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
+            String uri = handler.getLinkUri(elem);
+            if (uri != null) {       		
+                if (uri.length() > 1 && uri.charAt(0) == '#') {
+                    String anchor = uri.substring(1);
+                    Box target = _sharedContext.getBoxById(anchor);
+                    if (target != null) {
+                        PdfDestination dest = createDestination(c, target);
+
+                        PdfAction action = new PdfAction();
+                        if (!"".equals(handler.getAttributeValue(elem, "onclick"))) {
+                            action = PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
+                        } else {
+                            action.put(PdfName.S, PdfName.GOTO);
+                            action.put(PdfName.D, dest);
+                        }
+
+                        com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, box);
+                        if (targetArea == null) {
+                            return;
+                        }
+
+                        targetArea.setBorder(0);
+                        targetArea.setBorderWidth(0);
+
+                        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(),
+                                targetArea.getRight(), targetArea.getTop(), action);
+                        annot.put(PdfName.SUBTYPE, PdfName.LINK);
+                        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+                        annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
+                        _writer.addAnnotation(annot);
+                    }
+                } else if (uri.indexOf("://") != -1) {
+                    PdfAction action = new PdfAction(uri);
+
+                    com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, box);
+                    if (targetArea == null) {
+                        return;
+                    }
+                    PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(), targetArea.getRight(),
+                            targetArea.getTop(), action);
+                    annot.put(PdfName.SUBTYPE, PdfName.LINK);
+
+                    annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+                    annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
+                    _writer.addAnnotation(annot);
+                }
+            }
+        }
     }
     
     //PDF/UA
@@ -360,59 +414,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 		}
 	}
     
-    private void processLink(RenderingContext c, Box box) {
-        Element elem = box.getElement();
-        if (elem != null) {
-            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
-            String uri = handler.getLinkUri(elem);
-            if (uri != null) {       		
-                if (uri.length() > 1 && uri.charAt(0) == '#') {
-                    String anchor = uri.substring(1);
-                    Box target = _sharedContext.getBoxById(anchor);
-                    if (target != null) {
-                        PdfDestination dest = createDestination(c, target);
-
-                        PdfAction action = new PdfAction();
-                        if (!"".equals(handler.getAttributeValue(elem, "onclick"))) {
-                            action = PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
-                        } else {
-                            action.put(PdfName.S, PdfName.GOTO);
-                            action.put(PdfName.D, dest);
-                        }
-
-                        com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, box);
-                        if (targetArea == null) {
-                            return;
-                        }
-
-                        targetArea.setBorder(0);
-                        targetArea.setBorderWidth(0);
-
-                        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(),
-                                targetArea.getRight(), targetArea.getTop(), action);
-                        annot.put(PdfName.SUBTYPE, PdfName.LINK);
-                        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                        annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
-                        _writer.addAnnotation(annot);
-                    }
-                } else if (uri.indexOf("://") != -1) {
-                    PdfAction action = new PdfAction(uri);
-
-                    com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, box);
-                    if (targetArea == null) {
-                        return;
-                    }
-                    PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(), targetArea.getRight(),
-                            targetArea.getTop(), action);
-                    annot.put(PdfName.SUBTYPE, PdfName.LINK);
-
-                    annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                    annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
-                    _writer.addAnnotation(annot);
-                }
-            }
-        }
-    }
+    
 
     public com.itextpdf.text.Rectangle createLocalTargetArea(RenderingContext c, Box box) {
         return createLocalTargetArea(c, box, false);
@@ -613,10 +615,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }// Processing description lists
         else if (isDescriptionList(parentBlockBox)){
         	processDescriptionList(inlineText, parentBlockBox, cb);
-        // Process anchors
-        }else if (isAnchor(parentNodeName)){
-    		processAnchor(inlineText, parentBlockBox, cb);
-    	}else{
+        }else{
     		//Si el texto que se va a pintar pertenece al mismo padre anterior lo pintamos dentro de este
     		if(pdfUABean.getCurrentBlockElement() != null && pdfUABean.getCurrentBlockElement().isSameNode(parentBlockBox.getElement())){
 //    			ITextOutputDeviceAccessibleUtil.beginMarkedContentSequenceDrawingString(parentBlockBox.getElement(), s, pdfUABean.getCurrentBlockStrucElement(), cb, pdfUABean.getRoot(), pdfUABean.getListener());
@@ -632,7 +631,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     			ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, struc, pdfUABean.getListener());
     			pdfUABean.setEndMarkedSecuence(false);
     		}
-    		
+    		// Process anchors
+    		if (isAnchor(parentNodeName)){
+        		processAnchor(inlineText, parentBlockBox, cb);
+        	}
 	        //END PDF/UA ******
         }
         
@@ -689,9 +691,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
     
     private void processAnchor(InlineText inlineText, BlockBox parentBlockBox, PdfContentByte cb){
-    	processLinkAccessible(pdfUABean.getRenderingContext(), inlineText.getParent(), parentBlockBox);
-		pdfUABean.setEndMarkedSecuence(false);
-		pdfUABean.setPaintText(false);
+//    	processLinkAccessible(pdfUABean.getRenderingContext(), inlineText.getParent(), parentBlockBox);
+//		pdfUABean.setEndMarkedSecuence(false);
+//		pdfUABean.setPaintText(false);
     }
     
     private void processList(InlineText inlineText, BlockBox parentBlockBox, PdfContentByte cb){

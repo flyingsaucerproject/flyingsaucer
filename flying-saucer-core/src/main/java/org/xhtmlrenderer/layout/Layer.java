@@ -334,9 +334,9 @@ public class Layer {
             paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
                 
             //PDF/UA: Reading Order: change the order of paint methods, first paint inline and then floats 
-            paintInlineContent(c, lines, rangeLists);
+//            paintInlineContent(c, lines, rangeLists);
             //PDF/UA: Calling static method that process the lines in occurrence order traversing recursively the child elements
-//            LayerAccessible.paintInlineContentAccessible(c, lines, rangeLists);
+            LayerAccessible.paintInlineContentAccessible(c, lines, rangeLists);
             paintFloats(c);
             paintListMarkers(c, blocks, rangeLists);
             //paintInlineContent(c, lines, rangeLists);

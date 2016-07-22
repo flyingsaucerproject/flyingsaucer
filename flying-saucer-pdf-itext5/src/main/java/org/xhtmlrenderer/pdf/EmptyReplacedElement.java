@@ -33,6 +33,21 @@ public class EmptyReplacedElement extends AbstractFormField
     _height = height;
   }
 
+  public void paintOri(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box)
+  {
+    PdfContentByte cb = outputDevice.getCurrentPage();
+
+    PdfWriter writer = outputDevice.getWriter();
+
+    PdfAcroForm acroForm = writer.getAcroForm();
+    Element elem = box.getElement();
+    String name = getFieldName(outputDevice, elem);
+    String value = getValue(elem);
+    acroForm.addHiddenField(name, value);
+
+
+  }
+  
   public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box)
   {
     PdfContentByte cb = outputDevice.getCurrentPage();
@@ -43,6 +58,12 @@ public class EmptyReplacedElement extends AbstractFormField
     Element elem = box.getElement();
     String name = getFieldName(outputDevice, elem);
     String value = getValue(elem);
+    //PDF/UA: cut to max lenght
+    // The minimum number of characters in a name is 0, the maximum is 127 (the '/' not included)
+    int length = value.length();
+	if (length > 127){
+		value = value.substring(0, 127);
+	}
     acroForm.addHiddenField(name, value);
 
 
