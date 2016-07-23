@@ -43,7 +43,7 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
 		}
 		currentOpenTags.add(struc);
 
-		System.out.println("Added struc in preOpenTag operation:" + struc.getStructureType() + " parentStruc: " + parentStruc);
+		System.out.println("Added struc in preOpenTag operation:" + struc.getStructureType());
 		return parentStruc;
 	}
 
