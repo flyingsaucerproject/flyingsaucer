@@ -138,19 +138,21 @@ public class DomUtilsAccessible {
     	}
     }
     
-    public static Element getParentAnchorElement(Box lBox){
-    	if(lBox != null){
-    		String name = lBox.getElement().getNodeName();
-    		if(lBox instanceof Box && "A".equalsIgnoreCase(name)){
-    			return lBox.getElement();
+    public static Element getParentAnchorElement(Element element){
+    	if(element != null){
+    		String name = element.getNodeName();
+    		if(element instanceof Box && "A".equalsIgnoreCase(name)){
+    			return element;
     		}
-	    	Box parent = lBox.getParent();
-	    	if(parent != null && parent.getElement() != null){
-		    	String parentName = parent.getElement().getNodeName();
-	    		if("A".equalsIgnoreCase(parentName)){
-		    		return parent.getElement();
+	    	Node parent = element.getParentNode();
+	    	if(parent != null){
+	    		if(parent.getNodeType() == Node.ELEMENT_NODE){
+			    	String parentName = parent.getNodeName();
+		    		if("A".equalsIgnoreCase(parentName)){
+			    		return (Element)parent;
+		    		}
 		    	}else{
-		    		return getParentAnchorElement(parent);
+		    		return getParentAnchorElement((Element)parent);
 		    	}
 	    	}else{
 	    		return null;

@@ -64,6 +64,7 @@ import org.xml.sax.InputSource;
 
 import com.itextpdf.text.DocListener;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.exceptions.IllegalPdfSyntaxException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
@@ -387,7 +388,13 @@ public class ITextRenderer {
                         nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
                 // PDF/UA usar un PDFACreationListener para controlar cuando se crea una nueva pagina, ya que hay cerrar
-                doc.newPage();
+                try{
+                	doc.newPage();
+                }catch(IllegalPdfSyntaxException e){
+                	//PDF/UA iText bug counting opening and closed tags, try avoid unbalanced document exceptions closing one tag.
+                	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(writer.getDirectContent(), null, listener);
+                	System.out.println("IllegalPdfSyntaxException: endedMArkedContentSecuence");
+                }
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());
             }
         }

@@ -125,4 +125,18 @@ public class ITextOutputDeviceAccessibleUtil {
 		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, li, pdfUABean.getListener());
 		pdfUABean.setLiTagged(htmlElement);
 	}
+	
+	static String getAbsoluteUrlIfNecessary(String uri, String basePath){
+		if (uri != null) {       		
+            if (uri.length() > 1 && uri.charAt(0) == '#') {
+                return uri;
+            } else if (uri.indexOf("://") != -1) {
+            	return uri;
+            } else{
+            	return basePath + uri;
+            }
+        }else{
+        	return null;
+        }
+	}
 }
