@@ -126,7 +126,7 @@ public class ITextOutputDeviceAccessibleUtil {
 		pdfUABean.setLiTagged(htmlElement);
 	}
 	
-	static String getAbsoluteUrlIfNecessary(String uri, String basePath){
+	static String getAbsoluteUrlIfIsRelative(String uri, String basePath){
 		if (uri != null) {       		
             if (uri.length() > 1 && uri.charAt(0) == '#') {
                 return uri;

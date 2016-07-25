@@ -86,7 +86,6 @@ import com.itextpdf.text.DocListener;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
-import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.CMYKColor;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfAction;
@@ -298,7 +297,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             NamespaceHandler handler = _sharedContext.getNamespaceHandler();
             String uri = handler.getLinkUri(elem);
             if (uri != null) {   
-            	uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfNecessary(uri, _sharedContext.getBaseURL());
+            	uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
                 if (uri.length() > 1 && uri.charAt(0) == '#') {
                     String anchor = uri.substring(1);
                     Box target = _sharedContext.getBoxById(anchor);
@@ -354,7 +353,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             String uri = handler.getLinkUri(elem);
             String title = handler.getLinkTitle(elem);
             if (uri != null) {       		
-            	uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfNecessary(uri, _sharedContext.getBaseURL());
+            	uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
                 if (uri.length() > 1 && uri.charAt(0) == '#') {
                     String anchor = uri.substring(1);
                     Box target = _sharedContext.getBoxById(anchor);
@@ -425,7 +424,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 if (targetArea == null) {
                     return;
                 }
-                uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfNecessary(uri, _sharedContext.getBaseURL());
+                uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
                 Font font = new Font(_font.getFontDescription().getFont());
                 Chunk chunk = new Chunk(elem.getTextContent(), font);
                 Anchor anchor = new Anchor(chunk);
@@ -452,7 +451,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 if (targetArea == null) {
                     return;
                 }
-                uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfNecessary(uri, _sharedContext.getBaseURL());
+                uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
                 cb.rectangle(targetArea);
                 Font font = new Font(_font.getFontDescription().getFont());
                 Chunk chunk = new Chunk(elem.getTextContent(), font);
@@ -482,7 +481,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             String uri = handler.getLinkUri(elem);
             String title = handler.getLinkTitle(elem);
             if (uri != null) {
-            	uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfNecessary(uri, _sharedContext.getBaseURL());
+            	uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
                 com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, parentBox);
                 if (targetArea == null) {
                     return;
@@ -562,15 +561,17 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 	    	if (anchorElement != null) {
 	            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
 	            String uri = handler.getLinkUri(anchorElement);
-	            uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfNecessary(uri, _sharedContext.getBaseURL());
+	            uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
 	            if (uri != null) {
 	                com.itextpdf.text.Rectangle targetArea = checkLinkArea(pdfUABean.getRenderingContext(), box);
 	                if (targetArea == null) {
 	                    return;
 	                }
+	                image.setRotationDegrees(180);
 	                Chunk anchorChunk = new Chunk(image, 0, (float) mx[3], true);
 	                Anchor anchor = new Anchor(anchorChunk);
 	                anchor.setReference(uri);
+	                anchor.setName(altText);
 	                ColumnText.showTextAligned(currentPage, com.itextpdf.text.Element.ALIGN_RIGHT, anchor, (float) mx[4], (float) mx[5], 0);
 //	                currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5], true);
 	                embededInAnchor = true;
@@ -586,8 +587,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 		}
 	}
     
-    
-
     public com.itextpdf.text.Rectangle createLocalTargetArea(RenderingContext c, Box box) {
         return createLocalTargetArea(c, box, false);
     }
