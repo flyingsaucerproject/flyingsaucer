@@ -16,10 +16,10 @@ import com.itextpdf.text.pdf.PdfStructureElement;
  */
 public class DocTagListenerAccessibleImpl implements DocListener, DocTagListenerAccessible {
 	
-	LinkedList<PdfStructureElement> currentOpenTags = new LinkedList<PdfStructureElement>();
-	LinkedList<PdfStructureElement> currentForcedClodedTags = new LinkedList<PdfStructureElement>();
-	PdfContentByte cb;
-	boolean newPageCreated;
+	private LinkedList<PdfStructureElement> currentOpenTags = new LinkedList<PdfStructureElement>();
+	private LinkedList<PdfStructureElement> currentForcedClodedTags = new LinkedList<PdfStructureElement>();
+	private PdfContentByte cb;
+	private boolean newPageCreated;
 
 
     /**
@@ -87,6 +87,11 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
      */
 	@Override
 	public boolean newPage() {
+		closeOpenTags();
+		return false;
+	}
+	
+	public void closeOpenTags(){
 		setNewPageCreated(true);
 		currentForcedClodedTags = new LinkedList<PdfStructureElement>();
 		addAll(currentOpenTags, currentForcedClodedTags);
@@ -95,7 +100,6 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
 			currentOpenTags.removeLast();
 			System.out.println("struct closed and removed for new page creation." + pdfStructureElement.getStructureType());
 		}
-		return false;
 	}
 	
 	private void addAll(LinkedList<PdfStructureElement> ori, LinkedList<PdfStructureElement> des){
@@ -167,4 +171,13 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
 	public void setNewPageCreated(boolean newPageCreated) {
 		this.newPageCreated = newPageCreated;
 	}
+	
+    /**
+     * 
+     * Gets current open tags
+     * @return
+     */
+    public int getCurrentOpenTags(){
+    	return this.currentOpenTags.size();
+    }
 }

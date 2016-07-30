@@ -282,4 +282,10 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public boolean isSupportsCMYKColors() {
         return true;
     }
+
+	@Override
+	public void closeOpenTags() {
+		// TODO Auto-generated method stub
+		
+	}
 }

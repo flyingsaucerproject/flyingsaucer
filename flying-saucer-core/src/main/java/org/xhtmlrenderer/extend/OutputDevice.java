@@ -91,4 +91,7 @@ public interface OutputDevice {
     public boolean isSupportsSelection();
     
     public boolean isSupportsCMYKColors();
+    
+    //PDF/UA
+    public void closeOpenTags();
 }

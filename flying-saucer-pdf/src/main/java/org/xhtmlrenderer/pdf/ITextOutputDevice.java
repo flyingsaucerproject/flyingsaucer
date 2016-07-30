@@ -1321,4 +1321,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
         return result;
     }
+
+	@Override
+	public void closeOpenTags() {
+		// TODO Auto-generated method stub
+		
+	}
 }

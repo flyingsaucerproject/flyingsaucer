@@ -399,4 +399,10 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+	@Override
+	public void closeOpenTags() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

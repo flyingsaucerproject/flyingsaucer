@@ -23,7 +23,8 @@ public class LayerAccessible {
 			InlinePaintable paintable = (InlinePaintable) lines.get(i);
 			paintChildrenInline(c, paintable, processedElements);
 		}
-
+		//PDF/UA close open tags after inlinecontent painted
+		c.getOutputDevice().closeOpenTags();
 		helper.popClipRegions(c, lines.size());
 	}
 

@@ -82,7 +82,6 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 import com.itextpdf.text.Anchor;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
-import com.itextpdf.text.DocListener;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
@@ -167,7 +166,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public void setRenderingContext(RenderingContext renderingContext){
     	pdfUABean.setRenderingContext(renderingContext);
     }
-    public void setListener(DocListener listener){
+    public void setListener(DocTagListenerAccessible listener){
     	pdfUABean.setListener(listener);
     }
 
@@ -767,11 +766,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         //PDF/UA ****** 
         //A parent block box node of an inline text could be a <p>
     	BlockBox parentBlockBox = DomUtilsAccessible.getParentBlockBox(inlineText.getParent());
+        //Usually a blockbox is a <p>, it can contains more html elements like <a>
+        String parentBlockBoxNodeName = parentBlockBox.getElement().getNodeName();  
     	
     	//A parent node of an inline text could be an <a>
         String parentNodeName = DomUtilsAccessible.getParentNodeName(inlineText.getParent());
-        //Usually a blockbox is a <p>, it can contains more html elements like <a>
-        String parentBlockBoxNodeName = parentBlockBox.getElement().getNodeName();      
+    
         
         pdfUABean.setParentEndMarkedSecuence(false);
         pdfUABean.setEndMarkedSecuence(false);
@@ -781,27 +781,33 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         resetPdfUABeanIfNewPageCreated();
         
         // Processing lists
-        if (isList(parentBlockBox)){
+        if (isListItem(parentBlockBox)){
         	processList(inlineText, parentBlockBox, cb);
         }// Processing description lists
-        else if (isDescriptionList(parentBlockBox)){
+        else if (isDescriptionListItem(parentBlockBox)){
         	processDescriptionList(inlineText, parentBlockBox, cb);
         }else{
-    		//Si el texto que se va a pintar pertenece al mismo padre anterior lo pintamos dentro de este
-    		if(pdfUABean.getCurrentBlockElement() != null && pdfUABean.getCurrentBlockElement().isSameNode(parentBlockBox.getElement())){
-//    			ITextOutputDeviceAccessibleUtil.beginMarkedContentSequenceDrawingString(parentBlockBox.getElement(), s, pdfUABean.getCurrentBlockStrucElement(), cb, pdfUABean.getRoot(), pdfUABean.getListener());
-    			pdfUABean.setEndMarkedSecuence(false);
-    		}else{
-    			// Si pertenece a otro blockBox cerramos el que estaba abierto y abrimos uno nuevo.
-    			if(pdfUABean.getCurrentBlockElement() != null){
-    				ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getCurrentBlockStrucElement(), pdfUABean.getListener());
-    			}
+        	//Recuperamos el numero de LI que hay en la lista y la posicion del LI que se esta procesando actualmente
+        	int numChildren = DomUtilsAccessible.getNumInlineTextChildren(parentBlockBox);
+        	int currentElementPosition = DomUtilsAccessible.getChildTextPosition(parentBlockBox, inlineText);
+        	PdfStructureElement parentStruc = pdfUABean.getCurrentBlockStrucElement();
+
+        	// Si es el primer elemento abrimos el bloque
+        	if(parentStruc == null || currentElementPosition == 1){
+        		parentStruc = ITextOutputDeviceAccessibleUtil.getStructElement(pdfUABean.getTagDocument(), parentBlockBoxNodeName, pdfUABean.getRoot(), null);
    				pdfUABean.setCurrentBlockElement(parentBlockBox.getElement());
-    			pdfUABean.setCurrentBlockStrucElement(ITextOutputDeviceAccessibleUtil.getStructElement(pdfUABean.getTagDocument(), parentBlockBoxNodeName, pdfUABean.getRoot(), null));
-    			PdfStructureElement struc =  pdfUABean.getCurrentBlockStrucElement();
-    			ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, struc, pdfUABean.getListener());
-    			pdfUABean.setEndMarkedSecuence(false);
-    		}
+    			pdfUABean.setCurrentBlockStrucElement(parentStruc);
+        	}
+        	
+        	ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, parentStruc, pdfUABean.getListener());
+        	
+        	//Si es el utlimo elemento cerramos el bloque, si no lo dejamos abierto para el siguiente inlineText
+        	if(currentElementPosition == numChildren){
+        		pdfUABean.setEndMarkedSecuence(true);
+        	}else{
+        		pdfUABean.setEndMarkedSecuence(false);
+        	}
+
     		// Process anchors
     		if (isAnchor(parentNodeName)){
         		processAnchor(inlineText, parentBlockBox, cb);
@@ -839,22 +845,40 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     	}
     }
     
-    private boolean isList(BlockBox parentBlockBox){
+    private boolean isListItem(BlockBox parentBlockBox){
+        return isListItem(parentBlockBox.getElement());
+    }
+    
+    private boolean isListItem(Element parentBlockBoxElement){
         //Usually a blockbox is a <p>, it can contains more html elements like <a>
-        String parentBlockBoxNodeName = parentBlockBox.getElement().getNodeName();      
+        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
         //A grandfather node could be a <ul> or <ol>, we need them to tag lists
-        Node grandFatherBlockBoxNode = parentBlockBox.getElement().getParentNode();
+        Node grandFatherBlockBoxNode = parentBlockBoxElement.getParentNode();
         String grandFatherBlockBoxNodeName = grandFatherBlockBoxNode.getNodeName();
     	return "LI".equalsIgnoreCase(parentBlockBoxNodeName) && ("OL".equalsIgnoreCase(grandFatherBlockBoxNodeName) || "UL".equalsIgnoreCase(grandFatherBlockBoxNodeName));
     }
     
-    private boolean isDescriptionList(BlockBox parentBlockBox){
+    private boolean isDescriptionListItem(BlockBox parentBlockBox){
+        return isDescriptionListItem(parentBlockBox.getElement());
+    }
+    
+    
+    private boolean isDescriptionListItem(Element parentBlockBoxElement){
         //Usually a blockbox is a <p>, it can contains more html elements like <a>
-        String parentBlockBoxNodeName = parentBlockBox.getElement().getNodeName();      
+        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
         //A grandfather node could be a <dl>, we need them to tag description lists
-        Node grandFatherBlockBoxNode = parentBlockBox.getElement().getParentNode();
+        Node grandFatherBlockBoxNode = parentBlockBoxElement.getParentNode();
         String grandFatherBlockBoxNodeName = grandFatherBlockBoxNode.getNodeName();
     	return ("DT".equalsIgnoreCase(parentBlockBoxNodeName) || "DD".equalsIgnoreCase(parentBlockBoxNodeName)) && "DL".equalsIgnoreCase(grandFatherBlockBoxNodeName);
+    }
+    private boolean isList(Element parentBlockBoxElement){
+        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
+    	return "LI".equalsIgnoreCase(parentBlockBoxNodeName) || "OL".equalsIgnoreCase(parentBlockBoxNodeName) || "UL".equalsIgnoreCase(parentBlockBoxNodeName);
+    }   
+    
+    private boolean isDescriptionList(Element parentBlockBoxElement){
+        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
+    	return "DT".equalsIgnoreCase(parentBlockBoxNodeName) || "DD".equalsIgnoreCase(parentBlockBoxNodeName) || "DL".equalsIgnoreCase(parentBlockBoxNodeName);
     }
     
     private boolean isAnchor(String parentNodeName){
@@ -877,6 +901,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     private void processGenericList(InlineText inlineText, BlockBox parentBlockBox, PdfContentByte cb, String listItemTag){   
+    	// Check if we have to close before tagged element distinc the current list
+    	if(!isList(pdfUABean.getCurrentBlockElement()) && !isDescriptionList(pdfUABean.getCurrentBlockElement())){
+    		ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getCurrentBlockStrucElement(), pdfUABean.getListener());
+    	}
         //A grandfather node could be a <ul> , <ol> or <dl>, we need them to tag lists
     	Node grandFatherBlockBoxNode = parentBlockBox.getElement().getParentNode();
     	Element htmlElement = parentBlockBox.getElement();
@@ -1829,5 +1857,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         y -= (int) Math.ceil(fm.getDescent());
         y -= (int) Math.ceil(fm.getAscent());
         drawLine(x, y, x + width, y);
+    }
+    
+    /**
+     * PDF/UA
+     */
+    @Override
+    public void closeOpenTags(){
+    	pdfUABean.getListener().closeOpenTags();
     }
 }

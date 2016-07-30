@@ -8,7 +8,6 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.event.DocTagListenerAccessible;
 import org.xhtmlrenderer.util.XRLog;
 
-import com.itextpdf.text.DocListener;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfStructureElement;
@@ -31,7 +30,8 @@ public class ITextOutputDeviceAccessibleUtil {
 	}
 
 	static void beginMarkedContentSequenceDrawingString(Element parentNode, String text,
-			PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root, DocListener listener) {
+			PdfStructureElement tagDocument, PdfContentByte cb, PdfStructureTreeRoot root,
+			DocTagListenerAccessible listener) {
 		String htmlNodeName = parentNode.getNodeName();
 		PdfStructureElement struc = getStrucElementByHtmlElement(tagDocument, htmlNodeName, text);
 		if (struc == null) {
@@ -83,25 +83,23 @@ public class ITextOutputDeviceAccessibleUtil {
 		return struc;
 	}
 
-	static void endMarkedContentSequence(PdfContentByte cb, PdfStructureElement struc, DocListener listener) {
-		if (listener != null) {
-			if (listener instanceof DocTagListenerAccessible) {
-				((DocTagListenerAccessible) listener).preCloseTag(struc);
+	static void endMarkedContentSequence(PdfContentByte cb, PdfStructureElement struc, DocTagListenerAccessible listener) {
+		if(listener.getCurrentOpenTags() > 0){
+			if (listener != null) {
+				(listener).preCloseTag(struc);
 			}
+			cb.endMarkedContentSequence();
 		}
-		cb.endMarkedContentSequence();
 	}
 
-	static void beginMarkedContentSequence(PdfContentByte cb, PdfStructureElement struc, DocListener listener) {
+	static void beginMarkedContentSequence(PdfContentByte cb, PdfStructureElement struc, DocTagListenerAccessible listener) {
 		if (listener != null) {
-			if (listener instanceof DocTagListenerAccessible) {
-				// Check if struc is orphan (new page creation forces to close
-				// all tags)
-				PdfStructureElement parentStruc = ((DocTagListenerAccessible) listener).preOpenTag(struc, cb);
-				if (parentStruc != null) {
-					cb.beginMarkedContentSequence(parentStruc);
-					struc = new PdfStructureElement(parentStruc, struc.getStructureType());
-				}
+			// Check if struc is orphan (new page creation forces to close
+			// all tags)
+			PdfStructureElement parentStruc = (listener).preOpenTag(struc, cb);
+			if (parentStruc != null) {
+				cb.beginMarkedContentSequence(parentStruc);
+				struc = new PdfStructureElement(parentStruc, struc.getStructureType());
 			}
 		}
 		cb.beginMarkedContentSequence(struc);
@@ -113,6 +111,7 @@ public class ITextOutputDeviceAccessibleUtil {
 		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, rootListStruc, pdfUABean.getListener());
 		pdfUABean.setUlTagged(grandFatherBlockBoxNode);
 		pdfUABean.setCurrentBlockStrucElement(rootListStruc);
+		pdfUABean.setCurrentBlockElement((Element) grandFatherBlockBoxNode);
 	}
 
 	static void createListItemTag(Node htmlElement, PdfContentByte cb, ITextOutputDeviceAccessibleBean pdfUABean,
@@ -125,18 +124,18 @@ public class ITextOutputDeviceAccessibleUtil {
 		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, li, pdfUABean.getListener());
 		pdfUABean.setLiTagged(htmlElement);
 	}
-	
-	static String getAbsoluteUrlIfIsRelative(String uri, String basePath){
-		if (uri != null) {       		
-            if (uri.length() > 1 && uri.charAt(0) == '#') {
-                return uri;
-            } else if (uri.indexOf("://") != -1) {
-            	return uri;
-            } else{
-            	return basePath + uri;
-            }
-        }else{
-        	return null;
-        }
+
+	static String getAbsoluteUrlIfIsRelative(String uri, String basePath) {
+		if (uri != null) {
+			if (uri.length() > 1 && uri.charAt(0) == '#') {
+				return uri;
+			} else if (uri.indexOf("://") != -1) {
+				return uri;
+			} else {
+				return basePath + uri;
+			}
+		} else {
+			return null;
+		}
 	}
 }

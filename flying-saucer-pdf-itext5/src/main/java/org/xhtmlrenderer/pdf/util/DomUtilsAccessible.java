@@ -54,7 +54,7 @@ public class DomUtilsAccessible {
 	    return numChildren;
 	}
 	
-	public static void getNumTextElementChildren(Node node, Vector<Integer> numChildren){
+	private static void getNumTextElementChildren(Node node, Vector<Integer> numChildren){
 		NodeList children = node.getChildNodes();
 	    Node current = null;
 	    for (int i = 0; i < children.getLength(); i++) {
@@ -89,7 +89,73 @@ public class DomUtilsAccessible {
 	    return cont;
 	}
 	
-	public static void getChildTextPosition(Node node, Vector<Integer> position, String text){
+	public static int getNumInlineLayoutBoxChildren(BlockBox parentBlockBox){
+		List children = parentBlockBox.getChildren();
+	    Object current = null;
+	    int cont = 0;
+	    for (int i = 0; i < children.size(); i++) {
+	      current = children.get(i);
+	      if(current instanceof LineBox){
+	    	  LineBox lineBox = (LineBox)current;
+	    	  return getNumInlineChildren(lineBox);
+	      }
+	    }
+	    return cont;
+	}
+	
+	public static int getNumInlineChildren(InlineLayoutBox inlineLayoutBox){
+		return inlineLayoutBox.getInlineChildren().size();
+	}
+	
+	public static int getNumInlineChildren(LineBox parentLineBox){
+		List children = parentLineBox.getChildren();
+	    Object current = null;
+	    int cont = 0;
+	    for (int i = 0; i < children.size(); i++) {
+	      current = children.get(i);
+	      if (current instanceof InlineLayoutBox) {
+	    	cont+= getNumInlineChildren((InlineLayoutBox)current);
+	      }
+	    }
+	    return cont;
+	}
+	
+	public static int getChildPosition(BlockBox parentBlockBox, InlineText child){
+		List children = parentBlockBox.getChildren();
+		InlineLayoutBox childLayoutBox = child.getParent();
+	    Object current = null;
+	    int cont = 0;
+	    for (int i = 0; i < children.size(); i++) {
+	      current = children.get(i);
+	      if(current instanceof LineBox){
+	    	  LineBox lineBox = (LineBox)current;
+	    	  return getChildPosition(lineBox, child);
+	      }
+	    }
+	    return cont;
+	}
+	
+	public static int getChildPosition(LineBox parentLineBox, InlineText child){
+		List children = parentLineBox.getChildren();
+		InlineLayoutBox childLayoutBox = child.getParent();
+	    Object current = null;
+	    int cont = 0;
+	    for (int i = 0; i < children.size(); i++) {
+	      current = children.get(i);
+	      if (current instanceof InlineLayoutBox) {
+	    	cont++;
+	    	InlineLayoutBox currentElement = (InlineLayoutBox) current;
+	        if (currentElement == childLayoutBox) {
+	        	return cont;
+	        }
+	      }
+	    }
+	    return cont;
+	}
+	
+	
+	
+	private static void getChildTextPosition(Node node, Vector<Integer> position, String text){
 		if(position.size() <= 1){
 			NodeList children = node.getChildNodes();
 		    Node current = null;

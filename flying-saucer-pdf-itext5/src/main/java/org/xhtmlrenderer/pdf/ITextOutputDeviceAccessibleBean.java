@@ -2,6 +2,7 @@ package org.xhtmlrenderer.pdf;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.event.DocTagListenerAccessible;
 import org.xhtmlrenderer.render.RenderingContext;
 
 import com.itextpdf.text.DocListener;
@@ -27,7 +28,7 @@ public class ITextOutputDeviceAccessibleBean {
     //PDF/UA Rendering Context
     private RenderingContext renderingContext;
     //PDF/UA DocListener implementation to close/open tag when a new document is created
-    private DocListener listener;
+    private DocTagListenerAccessible listener;
     
 	public boolean isEndMarkedSecuence() {
 		return endMarkedSecuence;
@@ -77,10 +78,10 @@ public class ITextOutputDeviceAccessibleBean {
 	public void setRenderingContext(RenderingContext renderingContext) {
 		this.renderingContext = renderingContext;
 	}
-	public DocListener getListener() {
+	public DocTagListenerAccessible getListener() {
 		return listener;
 	}
-	public void setListener(DocListener listener) {
+	public void setListener(DocTagListenerAccessible listener) {
 		this.listener = listener;
 	}
 	public Node getLiTagged() {

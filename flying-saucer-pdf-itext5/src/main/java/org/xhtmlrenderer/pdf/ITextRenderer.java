@@ -46,6 +46,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.event.DocTagListenerAccessible;
 import org.xhtmlrenderer.event.DocTagListenerAccessibleImpl;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -367,7 +368,9 @@ public class ITextRenderer {
         _outputDevice.start(_doc);
         //PDF/UA: setting rendering context and DocTagListener on begin Tag and end tag of PDFContentByte
         _outputDevice.setRenderingContext(c);
-        _outputDevice.setListener(listener);
+        if(listener instanceof DocTagListenerAccessible){
+        	_outputDevice.setListener((DocTagListenerAccessible)listener);
+        }
         _outputDevice.setWriter(writer);
         _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.getHeight());
 
@@ -392,7 +395,7 @@ public class ITextRenderer {
                 	doc.newPage();
                 }catch(IllegalPdfSyntaxException e){
                 	//PDF/UA iText bug counting opening and closed tags, try avoid unbalanced document exceptions closing one tag.
-                	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(writer.getDirectContent(), null, listener);
+                	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(writer.getDirectContent(), null, (DocTagListenerAccessible)listener);
                 	System.out.println("IllegalPdfSyntaxException: endedMArkedContentSecuence");
                 }
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());

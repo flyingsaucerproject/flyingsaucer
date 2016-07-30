@@ -337,6 +337,8 @@ public class Layer {
 //            paintInlineContent(c, lines, rangeLists);
             //PDF/UA: Calling static method that process the lines in occurrence order traversing recursively the child elements
             LayerAccessible.paintInlineContentAccessible(c, lines, rangeLists);
+            
+            //TODO cerrar etiquetas abiertas antes de pintar floats
             paintFloats(c);
             paintListMarkers(c, blocks, rangeLists);
             //paintInlineContent(c, lines, rangeLists);

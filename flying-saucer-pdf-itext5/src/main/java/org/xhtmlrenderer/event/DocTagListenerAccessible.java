@@ -12,23 +12,32 @@ public interface DocTagListenerAccessible {
      * 
      * Return a parent structure element if orphan child found, null if not orphan child
      */
-    PdfStructureElement preOpenTag(PdfStructureElement struc, PdfContentByte cb);
+    public PdfStructureElement preOpenTag(PdfStructureElement struc, PdfContentByte cb);
 
     /**
      * Called immediately before close a tag
      *
      */
-    void preCloseTag(PdfStructureElement struc);
+    public void preCloseTag(PdfStructureElement struc);
     
     /**
      * Method that return true if new page created
      * @return
      */
-    boolean newPageCreated();
+    public boolean newPageCreated();
     
     /**
      * Sets if new page created
      * @param newPageCreated
      */
-    void setNewPageCreated(boolean newPageCreated);
+    public void setNewPageCreated(boolean newPageCreated);
+    
+    /**
+     * 
+     * Gets current open tags
+     * @return
+     */
+    public int getCurrentOpenTags();
+    
+    public void closeOpenTags();
 }
