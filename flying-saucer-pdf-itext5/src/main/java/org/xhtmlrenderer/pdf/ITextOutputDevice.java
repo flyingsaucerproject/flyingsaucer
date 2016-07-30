@@ -800,12 +800,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         	}
         	
         	ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, parentStruc, pdfUABean.getListener());
+        	pdfUABean.setEndMarkedSecuence(true);
         	
         	//Si es el utlimo elemento cerramos el bloque, si no lo dejamos abierto para el siguiente inlineText
         	if(currentElementPosition == numChildren){
-        		pdfUABean.setEndMarkedSecuence(true);
+        		pdfUABean.setParentEndMarkedSecuence(true);
         	}else{
-        		pdfUABean.setEndMarkedSecuence(false);
+        		pdfUABean.setParentEndMarkedSecuence(false);
         	}
 
     		// Process anchors

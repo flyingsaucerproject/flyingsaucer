@@ -274,6 +274,14 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             Object child = getInlineChild(i);
             if (child instanceof InlineText) {
                 ((InlineText)child).paint(c);
+            }else if (child instanceof InlineLayoutBox){
+            	InlineLayoutBox illb = (InlineLayoutBox)child;
+            	List children = illb.getInlineChildren();
+            	for (Object childIllb : children) {
+            		if (childIllb instanceof InlineText) {
+                        ((InlineText)childIllb).paint(c);
+                    }
+				}
             }
         }
         
