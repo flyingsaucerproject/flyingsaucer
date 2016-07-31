@@ -273,13 +273,25 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object child = getInlineChild(i);
             if (child instanceof InlineText) {
-                ((InlineText)child).paint(c);
+            	InlineText inlineTextChild = (InlineText)child;
+            	//PDF/UA Check is not marked as tagged for no repeat it
+                if(!inlineTextChild.isTagged()){
+                	inlineTextChild.paint(c);
+                	//PDF/UA mark as tagged for no repeat it
+                	inlineTextChild.setTagged(true);
+                }
+            //PDF/UA we need process right now inlineLayoutBox to ensure the right tagging order 
             }else if (child instanceof InlineLayoutBox){
             	InlineLayoutBox illb = (InlineLayoutBox)child;
             	List children = illb.getInlineChildren();
             	for (Object childIllb : children) {
             		if (childIllb instanceof InlineText) {
-                        ((InlineText)childIllb).paint(c);
+            			InlineText inlineTextChild = (InlineText)childIllb;
+            			if(!inlineTextChild.isTagged()){
+                			inlineTextChild.paint(c);
+                			//PDF/UA mark as tagged for no repeat it
+                			inlineTextChild.setTagged(true);
+            			}
                     }
 				}
             }

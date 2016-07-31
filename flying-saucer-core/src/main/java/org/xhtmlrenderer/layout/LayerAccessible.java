@@ -28,23 +28,17 @@ public class LayerAccessible {
 		helper.popClipRegions(c, lines.size());
 	}
 
-	private static void paintChildrenInline(RenderingContext c, InlinePaintable paintable,
-			Vector<Object> processedElements) {
+	private static void paintChildrenInline(RenderingContext c, InlinePaintable paintable, Vector<Object> processedElements) {
 		if (!processedElements.contains(paintable)) {
 			if (paintable instanceof InlineLayoutBox) {
 				InlineLayoutBox inlineLB = (InlineLayoutBox) paintable;
 				List children = inlineLB.getInlineChildren();
 				for (int i = 0; i < children.size(); i++) {
 					if (children.get(i) instanceof InlineLayoutBox) {
-						// TODO revisar si es necesario usar esta recursividad
-						// en lugar de presuponer que el hijo es un inlineText
-						// paintChildrenInline(c, (InlinePaintable)
-						// children.get(i), processedElements);
-						// LA siguiente burrada que no es recursiva se hace para
-						// mantener el order de los inline text, ya que la
-						// recursividad
-						// hace que el orden de pintado dependa de la
-						// profuncidad que tiene el texto.
+						// TODO revisar si es necesario usar esta recursividad en lugar de presuponer que el hijo es un inlineText
+						// paintChildrenInline(c, (InlinePaintable)children.get(i), processedElements);
+						// Las siguientes lineas, que no son recursivas, se hace para mantener el order de los inline text, ya que la
+						// recursividad hace que el orden de pintado dependa de la profuncidad que tiene el texto.
 						InlineLayoutBox inlineLB1 = (InlineLayoutBox) children.get(i);
 						if (!processedElements.contains(inlineLB1)) {
 							processedElements.addElement(inlineLB1);
@@ -71,6 +65,8 @@ public class LayerAccessible {
 				for (int i = 0; i < children.size(); i++) {
 					paintChildrenInline(c, (InlinePaintable) children.get(i), processedElements);
 				}
+			} else {
+				System.out.println("What kind am i::" + paintable);
 			}
 		}
 	}
