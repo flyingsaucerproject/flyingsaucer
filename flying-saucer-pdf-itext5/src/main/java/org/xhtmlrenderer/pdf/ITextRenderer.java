@@ -395,7 +395,7 @@ public class ITextRenderer {
                 	doc.newPage();
                 }catch(IllegalPdfSyntaxException e){
                 	//PDF/UA iText bug counting opening and closed tags, try avoid unbalanced document exceptions closing one tag.
-                	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(writer.getDirectContent(), null, (DocTagListenerAccessible)listener);
+                	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(writer.getDirectContent(), (DocTagListenerAccessible)listener);
                 	System.out.println("IllegalPdfSyntaxException: endedMArkedContentSecuence");
                 }
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());

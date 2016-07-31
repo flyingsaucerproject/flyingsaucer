@@ -18,7 +18,7 @@ public interface DocTagListenerAccessible {
      * Called immediately before close a tag
      *
      */
-    public void preCloseTag(PdfStructureElement struc);
+    public void preCloseTag();
     
     /**
      * Method that return true if new page created

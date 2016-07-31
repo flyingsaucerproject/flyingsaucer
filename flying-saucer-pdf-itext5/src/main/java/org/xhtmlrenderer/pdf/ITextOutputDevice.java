@@ -85,6 +85,7 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.CMYKColor;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfAction;
@@ -384,7 +385,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
                         annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
 //                        _writer.addAnnotation(annot);
+                        //PDF/UA add the annotation to the PdfContentByte instead of PdfWriter
                         _currentPage.addAnnotation(annot, false);
+                        System.out.println("Link local as annotation:" + anchor);
                     }
                 } else if (uri.indexOf("://") != -1) {
                     PdfAction action = new PdfAction(uri);
@@ -404,6 +407,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
 //                    _writer.addAnnotation(annot);
                     _currentPage.addAnnotation(annot, false);
+                    System.out.println("Link external as annotation:" + uri);
                 }
             }
         }
@@ -545,21 +549,27 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 	private void addTaggedImage(BlockBox box, PdfStructureElement tagDocument, PdfContentByte currentPage, Image image, double[] mx ) throws DocumentException{
 		String altText = null;
 		if(box != null && box.getElement() != null && box.getElement().getAttribute("alt") != null){
-			altText = box.getElement().getAttribute("alt");
+			altText = box.getElement().getAttribute("alt"); 
+		}
+		PdfStructureElement parentTag = tagDocument;
+		if(pdfUABean.getCurrentBlockStrucElement() != null){
+			parentTag = pdfUABean.getCurrentBlockStrucElement();
 		}
 		// If no alt text found create image as an artifact
 		if(altText == null || altText.trim().length() < 1){
-			PdfStructureElement struc = new PdfStructureElement(tagDocument, PdfName.ARTIFACT);
+			PdfStructureElement struc = new PdfStructureElement(parentTag, PdfName.ARTIFACT);
 			ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(currentPage, struc, pdfUABean.getListener());
 			currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5]);
-			ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(currentPage, struc, pdfUABean.getListener());		
+			ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(currentPage, pdfUABean.getListener());		
 		}else{
 			//Si la imagen esta dentro de un enlace generamos el link como un anchor (ya se genera accesible)
 			Element anchorElement = DomUtilsAccessible.getParentAnchorElement(box.getElement());
-			boolean embededInAnchor = false;
-	    	if (anchorElement != null) {
-	            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
-	            String uri = handler.getLinkUri(anchorElement);
+            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
+            String uri = null;
+            if(anchorElement != null){
+            	uri = handler.getLinkUri(anchorElement);
+            }
+	    	if (anchorElement != null && uri != null && uri.trim().length() > 0) {
 	            uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
 	            if (uri != null) {
 	                com.itextpdf.text.Rectangle targetArea = checkLinkArea(pdfUABean.getRenderingContext(), box);
@@ -570,18 +580,21 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 	                Chunk anchorChunk = new Chunk(image, 0, (float) mx[3], true);
 	                Anchor anchor = new Anchor(anchorChunk);
 	                anchor.setReference(uri);
-	                anchor.setName(altText);
+	                //Aunque el chunk con el anchor ya se genera etiquetado como link, generamos la etiqueta de la imagen para que aparezca en el orden del doc
+					PdfStructureElement imageTag = new PdfStructureElement(parentTag, PdfName.FIGURE);
+			    	imageTag.put(PdfName.ALT, new PdfString(altText));
+			    	ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(currentPage, imageTag, pdfUABean.getListener());
 	                ColumnText.showTextAligned(currentPage, com.itextpdf.text.Element.ALIGN_RIGHT, anchor, (float) mx[4], (float) mx[5], 0);
 //	                currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5], true);
-	                embededInAnchor = true;
+	                ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(currentPage, pdfUABean.getListener());
 	            }
-	    	}
-	    	if (!embededInAnchor){
-				PdfStructureElement imageTag = new PdfStructureElement(tagDocument, PdfName.FIGURE);
-		    	imageTag.put(new PdfName("Alt"), new PdfString(altText));
+	    	} else {
+				PdfStructureElement imageTag = new PdfStructureElement(parentTag, PdfName.FIGURE);
+		    	imageTag.put(PdfName.ALT, new PdfString(altText));
 		    	ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(currentPage, imageTag, pdfUABean.getListener());
-		        currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5]);
-		        ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(currentPage, imageTag, pdfUABean.getListener());
+		    	//No añadir el true en addImage para que no la pinte inline, si se pinta inline no se pinta bien las transparencias
+		        currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5], false);
+		        ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(currentPage, pdfUABean.getListener());
 	    	}
 		}
 	}
@@ -795,12 +808,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         	// Si es el primer elemento abrimos el bloque
         	if(parentStruc == null || currentElementPosition == 1){
         		parentStruc = ITextOutputDeviceAccessibleUtil.getStructElement(pdfUABean.getTagDocument(), parentBlockBoxNodeName, pdfUABean.getRoot(), null);
+        		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, parentStruc, pdfUABean.getListener());
    				pdfUABean.setCurrentBlockElement(parentBlockBox.getElement());
     			pdfUABean.setCurrentBlockStrucElement(parentStruc);
         	}
-        	
-        	ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, parentStruc, pdfUABean.getListener());
-        	pdfUABean.setEndMarkedSecuence(true);
         	
         	//Si es el utlimo elemento cerramos el bloque, si no lo dejamos abierto para el siguiente inlineText
         	if(currentElementPosition == numChildren){
@@ -811,25 +822,24 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     		// Process anchors
     		if (isAnchor(parentNodeName)){
-        		processAnchor(inlineText, parentBlockBox, cb);
+        		//los links se procesan como anotaciones accesibles 
+    			//processAnchor(inlineText, parentBlockBox, cb);
         	}
-	        //END PDF/UA ******
         }
         
         if(pdfUABean.isPaintText()){
         	paintText(inlineText, s, x, y, info);
+        	System.out.println("Text painted:" + s);
         }
         
-        //PDF/UA ******
-        if(pdfUABean.isEndMarkedSecuence()){
-        	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getCurrentBlockStrucElement(), pdfUABean.getListener());
+        //Si estamos procesando una lista comprobamos si hay que cerrar los item: LI, DD 
+        if(pdfUABean.isEndMarkedSecuence()){ 
+        	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getListener());
         }
+        //Cierra raices de lista L o DL y resto de elementos padre DIV, P, etc.
         if(pdfUABean.isParentEndMarkedSecuence()){ 
-        	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getCurrentBlockStrucElement(), pdfUABean.getListener());
-        }
-        //End PDF/UA ******
-        
-            
+        	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getListener());
+        }   
     }
         
     private void resetPdfUABeanIfNewPageCreated(){
@@ -904,7 +914,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private void processGenericList(InlineText inlineText, BlockBox parentBlockBox, PdfContentByte cb, String listItemTag){   
     	// Check if we have to close before tagged element distinc the current list
     	if(!isList(pdfUABean.getCurrentBlockElement()) && !isDescriptionList(pdfUABean.getCurrentBlockElement())){
-    		ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getCurrentBlockStrucElement(), pdfUABean.getListener());
+    		ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getListener());
     	}
         //A grandfather node could be a <ul> , <ol> or <dl>, we need them to tag lists
     	Node grandFatherBlockBoxNode = parentBlockBox.getElement().getParentNode();

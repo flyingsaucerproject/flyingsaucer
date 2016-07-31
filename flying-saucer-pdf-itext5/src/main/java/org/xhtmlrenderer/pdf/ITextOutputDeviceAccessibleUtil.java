@@ -83,10 +83,10 @@ public class ITextOutputDeviceAccessibleUtil {
 		return struc;
 	}
 
-	static void endMarkedContentSequence(PdfContentByte cb, PdfStructureElement struc, DocTagListenerAccessible listener) {
+	static void endMarkedContentSequence(PdfContentByte cb, DocTagListenerAccessible listener) {
 		if(listener.getCurrentOpenTags() > 0){
 			if (listener != null) {
-				(listener).preCloseTag(struc);
+				(listener).preCloseTag();
 			}
 			cb.endMarkedContentSequence();
 		}

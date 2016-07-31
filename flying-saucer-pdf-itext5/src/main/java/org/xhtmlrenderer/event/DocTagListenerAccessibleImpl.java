@@ -51,7 +51,7 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
      * {@inheritDoc}
      */
 	@Override
-	public void preCloseTag(PdfStructureElement struc) {
+	public void preCloseTag() {
 		if(currentOpenTags.size() > 0){
 			System.out.println("Remove struc in preCoseTag operation:" + currentOpenTags.peekLast().getStructureType());
 			currentOpenTags.removeLast();

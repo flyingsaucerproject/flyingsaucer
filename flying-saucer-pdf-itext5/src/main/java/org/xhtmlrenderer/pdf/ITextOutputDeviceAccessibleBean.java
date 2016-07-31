@@ -5,7 +5,6 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.event.DocTagListenerAccessible;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import com.itextpdf.text.DocListener;
 import com.itextpdf.text.pdf.PdfStructureElement;
 import com.itextpdf.text.pdf.PdfStructureTreeRoot;
 
