@@ -66,7 +66,7 @@ public class LayerAccessible {
 					paintChildrenInline(c, (InlinePaintable) children.get(i), processedElements);
 				}
 			} else {
-				System.out.println("What kind am i::" + paintable);
+				System.out.println(LayerAccessible.class.getName() + "paintChildrenInline:: What kind am i?:" + paintable);
 			}
 		}
 	}
