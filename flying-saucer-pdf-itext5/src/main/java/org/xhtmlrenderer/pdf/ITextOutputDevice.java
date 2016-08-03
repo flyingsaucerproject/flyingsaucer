@@ -1339,9 +1339,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             inverse.getMatrix(mx);
             
             try {
-                _currentPage.addImage(image, 
-                        (float)mx[0], (float)mx[1], (float)mx[2], 
-                        (float)mx[3], (float)mx[4], (float)mx[5]);
+            	//PDF/UA
+//              _currentPage.addImage(image, 
+//                      (float)mx[0], (float)mx[1], (float)mx[2], 
+//                      (float)mx[3], (float)mx[4], (float)mx[5]);
+          	
+          	addTaggedImage(null, pdfUABean.getTagDocument(), _currentPage, image, mx);
+              //PDF/UA End
             } catch (DocumentException e) {
                 throw new XRRuntimeException(e.getMessage(), e);
             }
