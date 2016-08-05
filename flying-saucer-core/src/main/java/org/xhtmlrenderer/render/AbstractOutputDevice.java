@@ -280,7 +280,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                 xoff = adjustTo(backgroundBounds.x, xoff, (int)imageWidth);
                 Rectangle imageBounds = new Rectangle(xoff, yoff, (int)imageWidth, (int)imageHeight);
                 if (imageBounds.intersects(backgroundBounds)) {
-                    paintHorizontalBand(
+                	//PDF/UA
+                    paintHorizontalBandAccessible(
                             backgroundImage,
                             xoff,
                             yoff,
@@ -290,7 +291,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                 yoff = adjustTo(backgroundBounds.y, yoff, (int)imageHeight);
                 Rectangle imageBounds = new Rectangle(xoff, yoff, (int)imageWidth, (int)imageHeight);
                 if (imageBounds.intersects(backgroundBounds)) {
-                    paintVerticalBand(
+                	//PDF/UA
+                    paintVerticalBandAccessible(
                             backgroundImage,
                             xoff,
                             yoff,
@@ -344,6 +346,14 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         for (int x = left; x < right; x+= width) {
             drawImage(image, x, top);
         }
+    }
+
+    private void paintVerticalBandAccessible(FSImage image, int left, int top, int bottom) {
+        drawImageAsVerticalBandAccessible(image, left, top, bottom);
+    }
+    
+    private void paintHorizontalBandAccessible(FSImage image, int left, int top, int right) {
+    	drawImageAsHorizontalBandAccessible(image, left, top, right);
     }
 
     private int calcOffset(CssContext c, CalculatedStyle style, PropertyValue value, float boundsDim, float imageDim) {

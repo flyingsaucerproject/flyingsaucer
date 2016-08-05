@@ -405,4 +405,22 @@ public class SWTOutputDevice extends AbstractOutputDevice {
 		
 	}
 
+	@Override
+	public void drawImageNoAccessible(FSImage fsImage, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawImageAsHorizontalBandAccessible(FSImage image, int left, int top, int bottom) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawImageAsVerticalBandAccessible(FSImage image, int left, int top, int bottom) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

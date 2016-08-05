@@ -1315,6 +1315,60 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public Stroke getStroke() {
         return _originalStroke;
     }
+    
+    
+    public void drawImageAsHorizontalBandAccessible(FSImage image, int left, int top, int bottom){
+        int height = image.getHeight();
+		PdfStructureElement struc = new PdfStructureElement(pdfUABean.getTagDocument(), PdfName.ARTIFACT);
+		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(_currentPage, struc, pdfUABean.getListener());
+        for (int y = top; y < bottom; y+= height) {
+            drawImageNoAccessible(image, left, y);
+        }
+        ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(_currentPage, pdfUABean.getListener());
+    }
+    
+    public void drawImageAsVerticalBandAccessible(FSImage image, int left, int top, int right){
+        int width = image.getWidth();
+		PdfStructureElement struc = new PdfStructureElement(pdfUABean.getTagDocument(), PdfName.ARTIFACT);
+		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(_currentPage, struc, pdfUABean.getListener());
+        for (int x = left; x < right; x+= width) {
+        	drawImageNoAccessible(image, x, top);
+        }
+        ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(_currentPage, pdfUABean.getListener());	
+    }
+    
+    //PDF/UA This the original drawImage adding tagged images
+    public void drawImageNoAccessible(FSImage fsImage, int x, int y) {
+        if (fsImage instanceof PDFAsImage) {
+            drawPDFAsImage((PDFAsImage)fsImage, x, y);
+        } else {
+            Image image = ((ITextFSImage)fsImage).getImage();
+            
+            if (fsImage.getHeight() <= 0 || fsImage.getWidth() <= 0) {
+                return;
+            }
+            
+            AffineTransform at = AffineTransform.getTranslateInstance(x,y);
+            at.translate(0, fsImage.getHeight());
+            at.scale(fsImage.getWidth(), fsImage.getHeight());
+            
+            AffineTransform inverse = normalizeMatrix(_transform);
+            AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
+            inverse.concatenate(at);
+            inverse.concatenate(flipper);
+            
+            double[] mx = new double[6];
+            inverse.getMatrix(mx);
+            
+            try {
+              _currentPage.addImage(image, 
+                      (float)mx[0], (float)mx[1], (float)mx[2], 
+                      (float)mx[3], (float)mx[4], (float)mx[5]);
+            } catch (DocumentException e) {
+                throw new XRRuntimeException(e.getMessage(), e);
+            }
+        }
+    }
 
     public void drawImage(FSImage fsImage, int x, int y) {
         if (fsImage instanceof PDFAsImage) {

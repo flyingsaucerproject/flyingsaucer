@@ -69,7 +69,17 @@ public interface OutputDevice {
     
     public void drawBorderLine(Shape bounds, int side, int width, boolean solid);
     
+    //PDF/UA This the original drawImage adding tagged images
     public void drawImage(FSImage image, int x, int y);
+    
+    //PDF/UA This is the original drawImage
+    public void drawImageNoAccessible(FSImage fsImage, int x, int y);
+    
+    //PDF/UA Draw background with all images in the same ARTIFACT accessible tag
+    public void drawImageAsHorizontalBandAccessible(FSImage image, int left, int top, int bottom);
+    
+    //PDF/UA Draw background with all images in the same ARTIFACT accessible tag
+    public void drawImageAsVerticalBandAccessible(FSImage image, int left, int top, int bottom);
 
     public void draw(Shape s);
     public void fill(Shape s);
