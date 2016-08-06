@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -42,6 +43,7 @@ import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PaintingInfo;
+import org.xhtmlrenderer.util.XRLog;
 
 /**
  * A {@link Box} which contains the portion of an inline element layed out on a
@@ -273,25 +275,16 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object child = getInlineChild(i);
             if (child instanceof InlineText) {
-            	InlineText inlineTextChild = (InlineText)child;
-            	//PDF/UA Check is not marked as tagged for no repeat it
-                if(!inlineTextChild.isTagged()){
-                	inlineTextChild.paint(c);
-                	//PDF/UA mark as tagged for no repeat it
-                	inlineTextChild.setTagged(true);
-                }
-            //PDF/UA we need process right now inlineLayoutBox to ensure the right tagging order 
+                paintInlineText(c, (InlineText)child);
+            //PDF/UA Not using recursive methods, we need process right now the inlineLayoutBox to ensure the right tagging order 
             }else if (child instanceof InlineLayoutBox){
-            	InlineLayoutBox illb = (InlineLayoutBox)child;
-            	List children = illb.getInlineChildren();
+            	List children = ((InlineLayoutBox)child).getInlineChildren();
             	for (Object childIllb : children) {
             		if (childIllb instanceof InlineText) {
-            			InlineText inlineTextChild = (InlineText)childIllb;
-            			if(!inlineTextChild.isTagged()){
-                			inlineTextChild.paint(c);
-                			//PDF/UA mark as tagged for no repeat it
-                			inlineTextChild.setTagged(true);
-            			}
+            			paintInlineText(c, (InlineText)childIllb);
+            		//PDF/UA we need process right now inlineLayoutBox to ensure the right tagging order 
+                    }else if (childIllb instanceof InlineLayoutBox){
+	                	paintInlineLayoutBox(c, (InlineLayoutBox)childIllb);
                     }
 				}
             }
@@ -306,6 +299,31 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
                 }
             }
         }
+    }
+    
+    //PDF/UA
+    private void paintInlineText(RenderingContext c, InlineText inlineText){
+    	//PDF/UA Check is not marked as tagged for no repeat it
+        if(!inlineText.isTagged()){
+        	inlineText.paint(c);
+        	//PDF/UA mark as tagged for no repeat it
+        	inlineText.setTagged(true);
+        }
+    }
+    
+    //PDF/UA
+    private void paintInlineLayoutBox(RenderingContext c, InlineLayoutBox layoutBox){
+    	List children = layoutBox.getInlineChildren();
+    	for (Object child : children) {
+    		if (child instanceof InlineText) {
+    			paintInlineText(c, (InlineText)child);
+    		// We use recursion as a last resort, reading order could be wrong if we reach this line
+    		// Maybe you have add another non recursive fragment on paintInline(c) method
+            }else if (child instanceof InlineLayoutBox){
+            	paintInlineLayoutBox(c, (InlineLayoutBox)child);
+            	XRLog.log(".paintInlineLayoutBox", Level.WARNING, "We use recursion as a last resort, reading order could be wrong. InlineLayoutBox:" + child);
+            }
+		}
     }
     
     public int getBorderSides() {
