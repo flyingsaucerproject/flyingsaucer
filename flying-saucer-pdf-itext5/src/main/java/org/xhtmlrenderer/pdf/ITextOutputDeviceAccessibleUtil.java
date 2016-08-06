@@ -79,6 +79,8 @@ public class ITextOutputDeviceAccessibleUtil {
 			struc = new PdfStructureElement(parentStruct, PdfName.SPAN);
 		} else if (htmlNodeName.equalsIgnoreCase("TD")) {
 			struc = new PdfStructureElement(parentStruct, PdfName.P);
+		} else if (htmlNodeName.equalsIgnoreCase("BLOCKQUOTE")) {
+			struc = new PdfStructureElement(parentStruct, PdfName.BLOCKQUOTE);
 		}
 		return struc;
 	}
