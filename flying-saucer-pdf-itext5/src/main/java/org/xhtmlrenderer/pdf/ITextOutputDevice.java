@@ -861,12 +861,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
     
     private boolean isListItem(Element parentBlockBoxElement){
-        //Usually a blockbox is a <p>, it can contains more html elements like <a>
-        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
-        //A grandfather node could be a <ul> or <ol>, we need them to tag lists
-        Node grandFatherBlockBoxNode = parentBlockBoxElement.getParentNode();
-        String grandFatherBlockBoxNodeName = grandFatherBlockBoxNode.getNodeName();
-    	return "LI".equalsIgnoreCase(parentBlockBoxNodeName) && ("OL".equalsIgnoreCase(grandFatherBlockBoxNodeName) || "UL".equalsIgnoreCase(grandFatherBlockBoxNodeName));
+    	boolean isList = false;
+    	if(parentBlockBoxElement != null && parentBlockBoxElement.getNodeName() != null){
+	        //Usually a blockbox is a <p>, it can contains more html elements like <a>
+	        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
+	        //A grandfather node could be a <ul> or <ol>, we need them to tag lists
+	        Node grandFatherBlockBoxNode = parentBlockBoxElement.getParentNode();
+	        String grandFatherBlockBoxNodeName = grandFatherBlockBoxNode.getNodeName();
+	        isList = "LI".equalsIgnoreCase(parentBlockBoxNodeName) && ("OL".equalsIgnoreCase(grandFatherBlockBoxNodeName) || "UL".equalsIgnoreCase(grandFatherBlockBoxNodeName));
+    	}
+    	return isList;
     }
     
     private boolean isDescriptionListItem(BlockBox parentBlockBox){
@@ -875,21 +879,33 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     
     private boolean isDescriptionListItem(Element parentBlockBoxElement){
-        //Usually a blockbox is a <p>, it can contains more html elements like <a>
-        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
-        //A grandfather node could be a <dl>, we need them to tag description lists
-        Node grandFatherBlockBoxNode = parentBlockBoxElement.getParentNode();
-        String grandFatherBlockBoxNodeName = grandFatherBlockBoxNode.getNodeName();
-    	return ("DT".equalsIgnoreCase(parentBlockBoxNodeName) || "DD".equalsIgnoreCase(parentBlockBoxNodeName)) && "DL".equalsIgnoreCase(grandFatherBlockBoxNodeName);
+    	boolean isList = false;
+    	if(parentBlockBoxElement != null && parentBlockBoxElement.getNodeName() != null){
+	        //Usually a blockbox is a <p>, it can contains more html elements like <a>
+	        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
+	        //A grandfather node could be a <dl>, we need them to tag description lists
+	        Node grandFatherBlockBoxNode = parentBlockBoxElement.getParentNode();
+	        String grandFatherBlockBoxNodeName = grandFatherBlockBoxNode.getNodeName();
+	        isList = ("DT".equalsIgnoreCase(parentBlockBoxNodeName) || "DD".equalsIgnoreCase(parentBlockBoxNodeName)) && "DL".equalsIgnoreCase(grandFatherBlockBoxNodeName);
+    	}
+    	return isList;
     }
     private boolean isList(Element parentBlockBoxElement){
-        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
-    	return "LI".equalsIgnoreCase(parentBlockBoxNodeName) || "OL".equalsIgnoreCase(parentBlockBoxNodeName) || "UL".equalsIgnoreCase(parentBlockBoxNodeName);
+    	boolean isList = false;
+    	if(parentBlockBoxElement != null && parentBlockBoxElement.getNodeName() != null){
+    		String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
+    		isList =  "LI".equalsIgnoreCase(parentBlockBoxNodeName) || "OL".equalsIgnoreCase(parentBlockBoxNodeName) || "UL".equalsIgnoreCase(parentBlockBoxNodeName);
+    	}
+    	return isList;
     }   
     
     private boolean isDescriptionList(Element parentBlockBoxElement){
-        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
-    	return "DT".equalsIgnoreCase(parentBlockBoxNodeName) || "DD".equalsIgnoreCase(parentBlockBoxNodeName) || "DL".equalsIgnoreCase(parentBlockBoxNodeName);
+    	boolean isList = false;
+    	if(parentBlockBoxElement != null && parentBlockBoxElement.getNodeName() != null){
+    		String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
+    		isList = "DT".equalsIgnoreCase(parentBlockBoxNodeName) || "DD".equalsIgnoreCase(parentBlockBoxNodeName) || "DL".equalsIgnoreCase(parentBlockBoxNodeName);
+    	}
+    	return isList;
     }
     
     private boolean isAnchor(String parentNodeName){
