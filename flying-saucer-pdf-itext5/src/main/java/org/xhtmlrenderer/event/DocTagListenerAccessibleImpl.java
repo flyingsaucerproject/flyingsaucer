@@ -1,6 +1,9 @@
 package org.xhtmlrenderer.event;
 
 import java.util.LinkedList;
+import java.util.logging.Level;
+
+import org.xhtmlrenderer.util.XRLog;
 
 import com.itextpdf.text.DocListener;
 import com.itextpdf.text.DocumentException;
@@ -43,7 +46,7 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
 		}
 		currentOpenTags.add(struc);
 
-		System.out.println("Added struc in preOpenTag operation:" + struc.getStructureType());
+		XRLog.render(Level.INFO, "Added struc in preOpenTag operation:" + struc.getStructureType() );
 		return parentStruc;
 	}
 
@@ -53,7 +56,7 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
 	@Override
 	public void preCloseTag() {
 		if(currentOpenTags.size() > 0){
-			System.out.println("Remove struc in preCoseTag operation:" + currentOpenTags.peekLast().getStructureType());
+			XRLog.render(Level.INFO, "Remove struc in preCoseTag operation:" + currentOpenTags.peekLast().getStructureType() );
 			currentOpenTags.removeLast();
 		}
 	}
@@ -98,7 +101,7 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
     	for (PdfStructureElement pdfStructureElement : currentForcedClodedTags) {
 			cb.endMarkedContentSequence();
 			currentOpenTags.removeLast();
-			System.out.println("struct closed and removed for new page creation." + pdfStructureElement.getStructureType());
+			XRLog.render(Level.INFO, "struct closed and removed for new page creation." + pdfStructureElement.getStructureType());
 		}
 	}
 	

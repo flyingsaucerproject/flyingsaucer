@@ -387,7 +387,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 //                        _writer.addAnnotation(annot);
                         //PDF/UA add the annotation to the PdfContentByte instead of PdfWriter
                         _currentPage.addAnnotation(annot, false);
-                        System.out.println("Link local as annotation:" + anchor);
+                        XRLog.render(Level.INFO, "Link local as annotation:" + anchor);
                     }
                 } else if (uri.indexOf("://") != -1) {
                     PdfAction action = new PdfAction(uri);
@@ -407,7 +407,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
 //                    _writer.addAnnotation(annot);
                     _currentPage.addAnnotation(annot, false);
-                    System.out.println("Link external as annotation:" + uri);
+                    XRLog.render(Level.INFO, "Link external as annotation:" + uri);
                 }
             }
         }
@@ -829,7 +829,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         
         if(pdfUABean.isPaintText()){
         	paintText(inlineText, s, x, y, info);
-        	System.out.println("Text painted:" + s);
+        	XRLog.render(Level.INFO, "Text painted:" + s);
         }
         
         //Si estamos procesando una lista comprobamos si hay que cerrar los item: LI, DD 

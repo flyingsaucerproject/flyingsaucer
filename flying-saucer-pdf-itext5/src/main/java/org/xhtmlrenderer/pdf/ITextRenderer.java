@@ -31,6 +31,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
@@ -61,6 +62,7 @@ import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
 import com.itextpdf.text.DocListener;
@@ -396,7 +398,7 @@ public class ITextRenderer {
                 }catch(IllegalPdfSyntaxException e){
                 	//PDF/UA iText bug counting opening and closed tags, try avoid unbalanced document exceptions closing one tag.
                 	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(writer.getDirectContent(), (DocTagListenerAccessible)listener);
-                	System.out.println("IllegalPdfSyntaxException: endedMArkedContentSecuence");
+                	XRLog.render(Level.INFO, "IllegalPdfSyntaxException: endedMArkedContentSecuence called trying void unbalanced document exceptions closing one tag", e);
                 }
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());
             }
