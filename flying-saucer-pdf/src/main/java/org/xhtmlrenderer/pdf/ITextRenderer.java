@@ -22,9 +22,12 @@ package org.xhtmlrenderer.pdf;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.color.ICC_Profile;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -62,6 +65,9 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfBoolean;
+import com.lowagie.text.pdf.PdfDictionary;
+import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class ITextRenderer {
@@ -95,6 +101,8 @@ public class ITextRenderer {
     private Integer _pdfXConformance;
 
 	private PDFCreationListener _listener;
+
+	private String colourSpaceProfile;
 
     public ITextRenderer() {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
@@ -257,7 +265,7 @@ public class ITextRenderer {
         return result;
     }
 
-    public void createPDF(OutputStream os) throws DocumentException {
+    public void createPDF(OutputStream os) throws DocumentException, FileNotFoundException, IOException {
         createPDF(os, true, 0);
     }
 
@@ -289,15 +297,17 @@ public class ITextRenderer {
         }
     }
 
-    public void createPDF(OutputStream os, boolean finish) throws DocumentException {
+    public void createPDF(OutputStream os, boolean finish) throws DocumentException, FileNotFoundException, IOException {
         createPDF(os, finish, 0);
     }
 
     /**
      * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream if
      * something goes wrong.
+     * @throws IOException
+     * @throws FileNotFoundException
      */
-    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException {
+    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, FileNotFoundException, IOException {
         List pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
@@ -314,17 +324,29 @@ public class ITextRenderer {
 		
 		if (_pdfXConformance != null) {
 			writer.setPDFXConformance(_pdfXConformance.intValue());
+			
+			if(_pdfXConformance == PdfWriter.PDFA1A) {
+				 writer.createXmpMetadata();
+				 writer.setTagged();
+			}
 		}
 
         if (_pdfEncryption != null) {
             writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
                     _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
         }
+       
         _pdfDoc = doc;
         _writer = writer;
 
         firePreOpen();
         doc.open();
+
+        if (_pdfXConformance != null && _pdfXConformance == PdfWriter.PDFA1A) {
+        	writer.getStructureTreeRoot();
+			setWriterOutputIntents(writer);
+	        setMarkInfo(writer);
+        }
 
         writePDF(pages, c, firstPageSize, doc, writer);
 
@@ -334,6 +356,23 @@ public class ITextRenderer {
         }
     }
 
+	private void setWriterOutputIntents(PdfWriter writer) throws IOException {
+		if(colourSpaceProfile != null) {
+			InputStream is = this.getClass().getResourceAsStream(colourSpaceProfile);
+			ICC_Profile icc = ICC_Profile.getInstance(is);
+			writer.setOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+		} else {
+			throw new NullPointerException("Colour space profile has not been set");
+		}
+	}
+
+	private void setMarkInfo(PdfWriter writer) {
+		PdfDictionary markInfo = new PdfDictionary(PdfName.MARKINFO);
+		markInfo.put(PdfName.MARKED, new PdfBoolean(true));
+		PdfDictionary catalog = writer.getExtraCatalog();
+		catalog.put(PdfName.MARKINFO, markInfo);
+	}
+	
     private void firePreOpen() {
         if (_listener != null) {
             _listener.preOpen(this);
@@ -540,4 +579,12 @@ public class ITextRenderer {
     public PdfWriter getWriter() {
         return _writer;
     }
+
+	public String getColourSpaceProfile() {
+		return colourSpaceProfile;
+	}
+
+	public void setColourSpaceProfile(String colourSpaceProfile) {
+		this.colourSpaceProfile = colourSpaceProfile;
+	}
 }
