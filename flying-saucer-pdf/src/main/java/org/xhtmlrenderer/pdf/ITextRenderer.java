@@ -265,7 +265,7 @@ public class ITextRenderer {
         return result;
     }
 
-    public void createPDF(OutputStream os) throws DocumentException, FileNotFoundException, IOException {
+    public void createPDF(OutputStream os) throws DocumentException, IOException {
         createPDF(os, true, 0);
     }
 
@@ -297,7 +297,7 @@ public class ITextRenderer {
         }
     }
 
-    public void createPDF(OutputStream os, boolean finish) throws DocumentException, FileNotFoundException, IOException {
+    public void createPDF(OutputStream os, boolean finish) throws DocumentException, IOException {
         createPDF(os, finish, 0);
     }
 
@@ -307,7 +307,7 @@ public class ITextRenderer {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, FileNotFoundException, IOException {
+    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, IOException {
         List pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
