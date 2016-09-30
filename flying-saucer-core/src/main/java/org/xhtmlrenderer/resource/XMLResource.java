@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.logging.Level;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -44,6 +45,7 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+import java.util.logging.Level;
 
 
 /**
@@ -168,6 +170,16 @@ public class XMLResource extends AbstractResource {
             long st = 0L;
 
             xmlReader = XMLResource.newXMLReader();
+            try {
+                xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            } catch (SAXNotSupportedException e) {
+                XRLog.load(Level.SEVERE, "Unable to disable XML External Entities, which might put you at risk to XXE attacks", e);
+            } catch (SAXNotRecognizedException e) {
+                XRLog.load(Level.SEVERE, "Unable to disable XML External Entities, which might put you at risk to XXE attacks", e);
+            }
             addHandlers(xmlReader);
             setParserFeatures(xmlReader);
 
@@ -175,10 +187,16 @@ public class XMLResource extends AbstractResource {
             try {
                 input = new SAXSource(xmlReader, target.getResourceInputSource());
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
                 dbf.setNamespaceAware(true);
                 dbf.setValidating(false);//validation is the root of all evil in xml - tobe
                 output = new DOMResult(dbf.newDocumentBuilder().newDocument());
                 xformFactory = TransformerFactory.newInstance();
+                xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+                xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
                 idTransform = xformFactory.newTransformer();
             } catch (Exception ex) {
                 throw new XRRuntimeException(
