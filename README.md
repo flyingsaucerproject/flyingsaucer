@@ -1,13 +1,13 @@
 Flying Saucer
-
+=====================
 http://code.google.com/p/flying-saucer/
 Please see project website for links to git, mailing lists, issue tracker, etc.
 
 
 OVERVIEW
 --------
-Flying Saucer is a pure-Java library for rendering arbitrary well-formed XML 
-(or XHTML) using CSS 2.1 for layout and formatting, output to Swing panels, 
+Flying Saucer is a pure-Java library for rendering arbitrary well-formed XML
+(or XHTML) using CSS 2.1 for layout and formatting, output to Swing panels,
 PDF, and images.
 
 Comprehensive documentation available in our user's guide, linked from our website at http://code.google.com/p/flying-saucer/
@@ -20,16 +20,16 @@ and inspiring to other developers.
 
 LICENSE
 -------
-Flying Saucer is distributed under the LGPL.  Flying Saucer itself is licensed 
+Flying Saucer is distributed under the LGPL.  Flying Saucer itself is licensed
 under the GNU Lesser General Public License, version 2.1 or later, available at
 http://www.gnu.org/copyleft/lesser.html. You can use Flying Saucer in any
-way and for any purpose you want as long as you respect the terms of the 
+way and for any purpose you want as long as you respect the terms of the
 license. A copy of the LGPL license is included as license-lgpl-2.1.txt or license-lgpl-3.txt
 in our distributions and in our source tree.
 
 Flying Saucer uses a couple of FOSS packages to get the job done. A list
-of these, along with the license they each have, is listed in the 
-LICENSE file in our distribution.   
+of these, along with the license they each have, is listed in the
+LICENSE file in our distribution.
 
 GETTING FLYING SAUCER
 ---------------------
@@ -43,7 +43,7 @@ org.xhtmlrenderer:flying-saucer-log4j - Logging plugin for log4j
 GETTING STARTED
 ---------------
 There is a large amount of sample code under the flying-saucer-demos directory.
-A pre-configured Eclipse project is provided to run a few of them.  
+A pre-configured Eclipse project is provided to run a few of them.
 
 For users of other IDEs, make sure the src/java and resources directories under
 the about, docbook, svg, and browser directories are available on the build
@@ -63,3 +63,25 @@ org.xhtmlrenderer.simple.PDFRenderer
 org.xhtmlrenderer.simple.ImageRenderer
 
 
+PDF/A Conformance
+---------------
+PDF/A conformance is an ISO-standardized version of the PDF for long term preservation of electronic documents.
+
+PDF/A conformance can be set using:
+```
+ITextRenderer renderer = new ITextRenderer();
+renderer.setPDFXConformance(PdfWriter.PDFA1A);
+```
+
+The colour profile needs to be set to be used for the output intents for the output device.
+```
+ITextRenderer renderer = new ITextRenderer();
+renderer.setColourSpaceProfile(path);
+```
+
+The fonts need to be embedded into the PDF:
+```
+ITextRenderer renderer = new ITextRenderer();
+ITextFontResolver fontResolver = renderer.getFontResolver();
+fontResolver.addFont(path, name, BaseFont.IDENTITY_H, BaseFont.EMBEDDED, null);
+```
