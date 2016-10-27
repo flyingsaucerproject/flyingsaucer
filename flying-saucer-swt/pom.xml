@@ -25,8 +25,8 @@
 
   <distributionManagement>
     <repository>
-      <id>bintray</id>
-      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer-swt</url>
+      <id>ch-artifactory</id>
+      <url>${artifactoryBaseUrl}/${artifactoryPublishRepo}</url>
     </repository>
   </distributionManagement>
 
