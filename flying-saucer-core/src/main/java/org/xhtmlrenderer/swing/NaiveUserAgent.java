@@ -26,14 +26,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
+import javax.net.ssl.HttpsURLConnection;
 
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -117,21 +120,89 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @return The stylesheet value
      */
     //TOdO:implement this with nio.
-    protected InputStream resolveAndOpenStream(String uri) {
+    protected InputStream resolveAndOpenStream(final String uri) {
         java.io.InputStream is = null;
-        uri = resolveURI(uri);
+        String resolvedUri = resolveURI(uri);
         try {
-            is = new URL(uri).openStream();
+            is = openStream(resolvedUri);
         } catch (java.net.MalformedURLException e) {
-            XRLog.exception("bad URL given: " + uri, e);
+            XRLog.exception("bad URL given: " + resolvedUri, e);
         } catch (java.io.FileNotFoundException e) {
-            XRLog.exception("item at URI " + uri + " not found");
+            XRLog.exception("item at URI " + resolvedUri + " not found");
         } catch (java.io.IOException e) {
-            XRLog.exception("IO problem for " + uri, e);
+            XRLog.exception("IO problem for " + resolvedUri, e);
         }
         return is;
     }
+	
+	protected InputStream openStream(String uri) throws MalformedURLException, IOException {
+		return openConnection(uri).getInputStream();
+	}
 
+	/**
+	 * Opens a connections to uri.
+	 * 
+	 * This can be overwritten to customize handling of connections by type.
+	 * 
+	 * @param uri the uri to connect to
+	 * @return URLConnection opened connection to uri
+	 * @throws IOException if an I/O exception occurs.
+	 */
+	protected URLConnection openConnection(String uri) throws IOException {
+		URLConnection connection = new URL(uri).openConnection();
+		if (connection instanceof HttpURLConnection) {
+			connection = onHttpConnection((HttpURLConnection) connection);
+		}
+		return connection;
+	}
+
+	/**
+	 * Customized handling of @link{HttpUrlConnection}.
+	 * 
+	 * 
+	 * @param origin the original connection
+	 * @return @link{URLConnection} 
+	 * 
+	 * @throws MalformedURLException if an unknown protocol is specified.
+	 * @throws IOException if an I/O exception occurs.
+	 */
+	protected URLConnection onHttpConnection(HttpURLConnection origin) throws MalformedURLException, IOException {
+		URLConnection connection = origin;
+		int status = origin.getResponseCode();
+
+		if (needsRedirect(status)) {
+			// get redirect url from "location" header field
+			String newUrl = origin.getHeaderField("Location");
+			
+			if (origin.getInstanceFollowRedirects()) {
+				XRLog.load("Connection is redirected to: " + newUrl);
+				// open the new connnection again
+				connection = new URL(newUrl).openConnection();
+			} else {
+				XRLog.load("Redirect is required but not allowed to: " + newUrl);
+			}
+		}
+		return connection;
+	}
+
+	/**
+	 * Verify that return code of connection represents a redirection.
+	 * 
+	 * But it is final because redirection processing is determined.
+	 * 
+	 * @param status return code of connection
+	 * @return boolean true if return code is a 3xx
+	 */
+	protected final boolean needsRedirect(int status) {
+		return 
+				status != HttpURLConnection.HTTP_OK
+				&& (
+					status == HttpURLConnection.HTTP_MOVED_TEMP
+					|| status == HttpURLConnection.HTTP_MOVED_PERM
+					|| status == HttpURLConnection.HTTP_SEE_OTHER
+				);
+	}
+	
     /**
      * Retrieves the CSS located at the given URI.  It's assumed the URI does point to a CSS file--the URI will
      * be accessed (using java.io or java.net), opened, read and then passed into the CSS parser.
