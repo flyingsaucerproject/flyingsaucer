@@ -43,6 +43,14 @@ public class EmptyReplacedElement extends AbstractFormField
     Element elem = box.getElement();
     String name = getFieldName(outputDevice, elem);
     String value = getValue(elem);
+    /*ISO-32000-1 defines the limit for a name in a PDF file to be at maximum 127 bytes.
+     *Source(http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/PDF32000_2008.pdf) 
+     *  see Annex C § 2 Architectural limits "Table C.1" pages 649 and 650.
+     *iText stores the hidden field value as a PDFName 
+     */
+    if (value.length() > 127) {
+    	value = value.substring(0, 127);
+    }
     acroForm.addHiddenField(name, value);
 
 
