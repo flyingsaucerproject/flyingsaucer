@@ -94,6 +94,8 @@ public class ITextRenderer {
 
     private PDFCreationListener _listener;
 
+    private boolean _timeouted;
+
     public ITextRenderer() {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
     }
@@ -128,6 +130,8 @@ public class ITextRenderer {
         _sharedContext.setDotsPerPixel(dotsPerPixel);
         _sharedContext.setPrint(true);
         _sharedContext.setInteractive(false);
+
+        _timeouted= false;
     }
 
     public Document getDocument() {
@@ -351,6 +355,10 @@ public class ITextRenderer {
         firePreWrite(pageCount); // opportunity to adjust meta data
         setDidValues(doc); // set PDF header fields from meta data
         for (int i = 0; i < pageCount; i++) {
+
+            if (isTimeouted() || Thread.currentThread().isInterrupted())
+                throw new RuntimeException("Timeout occured");
+
             PageBox currentPage = (PageBox) pages.get(i);
             c.setPage(i, currentPage);
             paintPage(c, writer, currentPage);
@@ -523,5 +531,13 @@ public class ITextRenderer {
 
     public PdfWriter getWriter() {
         return _writer;
+    }
+
+    public void setTimeouted(boolean timeouted) {
+        _timeouted= timeouted;
+    }
+
+    public boolean isTimeouted() {
+        return _timeouted;
     }
 }
