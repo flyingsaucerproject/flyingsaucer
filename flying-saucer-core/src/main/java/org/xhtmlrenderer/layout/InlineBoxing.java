@@ -247,6 +247,9 @@ public class InlineBoxing {
                         if (currentLine.isFirstLine() && hasFirstLinePEs) {
                             lbContext.setMaster(TextUtil.transformText(iB.getText(), iB.getStyle()));
                         }
+                        if (lbContext.isEndsOnNL()) {
+                            currentLine.setEndsOnNL(true);
+                        }
                         previousLine = currentLine;
                         currentLine = newLine(c, previousLine, box);
                         currentIB = addOpenInlineBoxes(
