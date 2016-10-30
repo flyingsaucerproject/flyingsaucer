@@ -34,6 +34,7 @@ import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
@@ -97,7 +98,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         InputStream is = inputSource.getByteStream();
         if (is==null) return null;
         try {
-            return parse(new InputStreamReader(is, "UTF-8"), info);
+            return parse(new InputStreamReader(is, Configuration.valueFor("xr.stylesheets.charset-name", "UTF-8")), info);
         } catch (UnsupportedEncodingException e) {
             // Shouldn't happen
             throw new RuntimeException(e.getMessage(), e);
