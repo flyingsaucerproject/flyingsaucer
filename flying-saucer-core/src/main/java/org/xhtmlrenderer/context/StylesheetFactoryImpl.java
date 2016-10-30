@@ -80,7 +80,6 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
             return _cssParser.parseStylesheet(info.getUri(), info.getOrigin(), reader);
         } catch (IOException e) {
             XRLog.cssParse(Level.WARNING, "Couldn't parse stylesheet at URI " + info.getUri() + ": " + e.getMessage(), e);
-            e.printStackTrace();
             return new Stylesheet(info.getUri(), info.getOrigin());
         }
     }
