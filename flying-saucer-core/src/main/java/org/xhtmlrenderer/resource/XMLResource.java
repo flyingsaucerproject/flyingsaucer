@@ -214,23 +214,17 @@ public class XMLResource extends AbstractResource {
         }
 
         public XMLResource createXMLResource(Source source) {
-            DOMResult output = null;
-            TransformerFactory xformFactory = null;
-            Transformer idTransform = null;
-            long st = 0L;
+            DOMResult output = new DOMResult();
+            Transformer idTransform;
 
-            st = System.currentTimeMillis();
+            long st = System.currentTimeMillis();
             try {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                dbf.setNamespaceAware(true);
-                dbf.setValidating(false);//validation is the root of all evil in xml - tobe
-                output = new DOMResult(dbf.newDocumentBuilder().newDocument());
-                xformFactory = TransformerFactory.newInstance();
+                TransformerFactory xformFactory = TransformerFactory.newInstance();
                 xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
                 xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
                 idTransform = xformFactory.newTransformer();
             } catch (Exception ex) {
-                throw new XRRuntimeException("Failed on configuring SAX to DOM transformer.", ex);
+                throw new XRRuntimeException("Failed on configuring TRaX transformer.", ex);
             }
 
             try {
