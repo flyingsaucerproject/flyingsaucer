@@ -19,10 +19,8 @@
  */
 package org.xhtmlrenderer.resource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
@@ -39,7 +37,6 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -228,13 +225,7 @@ public class XMLResource extends AbstractResource {
         private void addHandlers(XMLReader xmlReader) {
             try {
                 // add our own entity resolver
-                xmlReader.setEntityResolver(new EntityResolver() {
-                    final EntityResolver fsResolver = FSEntityResolver.instance();
-                    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-                        InputSource entity = fsResolver.resolveEntity(publicId, systemId);
-                        return (entity == null) ? new InputSource(new StringReader("")) : entity;
-                    }
-                });
+                xmlReader.setEntityResolver(FSEntityResolver.instance());
                 xmlReader.setErrorHandler(new ErrorHandler() {
 
                     public void error(SAXParseException ex) {

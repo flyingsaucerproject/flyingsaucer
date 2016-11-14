@@ -28,6 +28,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -122,9 +123,9 @@ public class FSEntityResolver implements EntityResolver {
             XRLog.xmlEntities(Level.FINE, "Entity public: " + publicID + " -> " + url +
                     (local == null ? ", NOT FOUND" : " (local)"));
         } else {
-            XRLog.xmlEntities("Entity public: " + publicID + ", no local mapping. Parser will probably pull from network.");
+            XRLog.xmlEntities("Entity public: " + publicID + ", no local mapping. Replacing with empty content.");
         }
-        return local;
+        return (local == null) ? new InputSource(new StringReader("")) : local;
     }
 
     /**
