@@ -21,6 +21,8 @@ package org.xhtmlrenderer.resource;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
@@ -157,23 +159,38 @@ public class XMLResource extends AbstractResource {
     }
 
     private static class XMLResourceBuilder {
-        XMLResource createXMLResource(XMLResource target) {
-            Document document;
-            DocumentBuilder parser;
 
-            long st = System.currentTimeMillis();
-            try {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                dbf.setNamespaceAware(true);
-                dbf.setValidating(false); // That's the default, really.
-                parser = dbf.newDocumentBuilder();
-            } catch (Exception ex) {
-                throw new XRRuntimeException(
-                        "Failed on configuring DOM parser.", ex);
+        private static ThreadLocal<Reference<DocumentBuilder>> domParser =
+                new ThreadLocal<Reference<DocumentBuilder>>();
+
+        private DocumentBuilder getDocumentBuilder() {
+            DocumentBuilder parser = null;
+            Reference<DocumentBuilder> ref = domParser.get();
+            if (ref != null) {
+                parser = ref.get();
             }
 
-            addHandlers(parser);
+            if (parser == null) {
+                try {
+                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    dbf.setNamespaceAware(true);
+                    dbf.setValidating(false);
+                    parser = dbf.newDocumentBuilder();
+                } catch (Exception ex) {
+                    throw new XRRuntimeException(
+                            "Failed on configuring DOM parser.", ex);
+                }
+                addHandlers(parser);
+                domParser.set(new SoftReference<DocumentBuilder>(parser));
+            }
+            return parser;
+        }
 
+        XMLResource createXMLResource(XMLResource target) {
+            Document document;
+
+            long st = System.currentTimeMillis();
+            DocumentBuilder parser = getDocumentBuilder();
             try {
                 document = parser.parse(target.getResourceInputSource());
             } catch (Exception ex) {
