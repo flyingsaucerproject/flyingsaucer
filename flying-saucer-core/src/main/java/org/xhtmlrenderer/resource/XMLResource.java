@@ -195,22 +195,22 @@ public class XMLResource extends AbstractResource {
          * Adds the default EntityResolved and ErrorHandler for the DOM parser.
          */
         private void addHandlers(DocumentBuilder parser) {
-                // add our own entity resolver
-                parser.setEntityResolver(FSEntityResolver.instance());
-                parser.setErrorHandler(new ErrorHandler() {
+            // add our own entity resolver
+            parser.setEntityResolver(FSEntityResolver.instance());
+            parser.setErrorHandler(new ErrorHandler() {
 
-                    public void error(SAXParseException ex) {
-                        XRLog.load(ex.getMessage());
-                    }
+                public void error(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
 
-                    public void fatalError(SAXParseException ex) {
-                        XRLog.load(ex.getMessage());
-                    }
+                public void fatalError(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
 
-                    public void warning(SAXParseException ex) {
-                        XRLog.load(ex.getMessage());
-                    }
-                });
+                public void warning(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
+            });
         }
 
         public XMLResource createXMLResource(Source source) {
