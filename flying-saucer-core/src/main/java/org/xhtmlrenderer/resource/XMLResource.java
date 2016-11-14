@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -31,7 +32,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXSource;
 
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.util.Configuration;
@@ -39,9 +39,6 @@ import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -161,52 +158,27 @@ public class XMLResource extends AbstractResource {
 
     private static class XMLResourceBuilder {
         XMLResource createXMLResource(XMLResource target) {
-            Source input = null;
-            DOMResult output = null;
-            TransformerFactory xformFactory = null;
-            Transformer idTransform = null;
-            XMLReader xmlReader = null;
-            long st = 0L;
+            Document document;
+            DocumentBuilder parser;
 
-            xmlReader = XMLResource.newXMLReader();
+            long st = System.currentTimeMillis();
             try {
-                xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-                xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-                xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            } catch (SAXNotSupportedException e) {
-                XRLog.load(Level.SEVERE, "Unable to disable XML External Entities, which might put you at risk to XXE attacks", e);
-            } catch (SAXNotRecognizedException e) {
-                XRLog.load(Level.SEVERE, "Unable to disable XML External Entities, which might put you at risk to XXE attacks", e);
-            }
-            addHandlers(xmlReader);
-            setParserFeatures(xmlReader);
-
-            st = System.currentTimeMillis();
-            try {
-                input = new SAXSource(xmlReader, target.getResourceInputSource());
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-                dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-                dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
                 dbf.setNamespaceAware(true);
-                dbf.setValidating(false);//validation is the root of all evil in xml - tobe
-                output = new DOMResult(dbf.newDocumentBuilder().newDocument());
-                xformFactory = TransformerFactory.newInstance();
-                xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-                idTransform = xformFactory.newTransformer();
+                dbf.setValidating(false); // That's the default, really.
+                parser = dbf.newDocumentBuilder();
             } catch (Exception ex) {
                 throw new XRRuntimeException(
-                        "Failed on configuring SAX to DOM transformer.", ex);
+                        "Failed on configuring DOM parser.", ex);
             }
 
+            addHandlers(parser);
+
             try {
-                idTransform.transform(input, output);
+                document = parser.parse(target.getResourceInputSource());
             } catch (Exception ex) {
                 throw new XRRuntimeException(
-                        "Can't load the XML resource (using TRaX transformer). " + ex.getMessage(), ex);
+                        "Can't load the XML resource (using DOM parser). " + ex.getMessage(), ex);
             }
 
             long end = System.currentTimeMillis();
@@ -215,18 +187,17 @@ public class XMLResource extends AbstractResource {
 
             XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
 
-            target.setDocument((Document) output.getNode());
+            target.setDocument(document);
             return target;
         }
 
         /**
-         * Adds the default EntityResolved and ErrorHandler for the SAX parser.
+         * Adds the default EntityResolved and ErrorHandler for the DOM parser.
          */
-        private void addHandlers(XMLReader xmlReader) {
-            try {
+        private void addHandlers(DocumentBuilder parser) {
                 // add our own entity resolver
-                xmlReader.setEntityResolver(FSEntityResolver.instance());
-                xmlReader.setErrorHandler(new ErrorHandler() {
+                parser.setEntityResolver(FSEntityResolver.instance());
+                parser.setErrorHandler(new ErrorHandler() {
 
                     public void error(SAXParseException ex) {
                         XRLog.load(ex.getMessage());
@@ -240,58 +211,6 @@ public class XMLResource extends AbstractResource {
                         XRLog.load(ex.getMessage());
                     }
                 });
-            } catch (Exception ex) {
-                throw new XRRuntimeException("Failed on configuring SAX parser/XMLReader.", ex);
-            }
-        }
-
-        /**
-         * Sets all standard features for SAX parser, using values from Configuration.
-         */
-        private void setParserFeatures(XMLReader xmlReader) {
-            try {        // perf: validation off
-                xmlReader.setFeature("http://xml.org/sax/features/validation", false);
-                // perf: namespaces
-                xmlReader.setFeature("http://xml.org/sax/features/namespaces", true);
-            } catch (SAXException s) {
-                // nothing to do--some parsers will not allow setting features
-                XRLog.load(Level.WARNING, "Could not set validation/namespace features for XML parser," +
-                        "exception thrown.", s);
-            }
-            if (Configuration.isFalse("xr.load.configure-features", false)) {
-                XRLog.load(Level.FINE, "SAX Parser: by request, not changing any parser features.");
-                return;
-            }
-            
-            // perf: validation off
-            setFeature(xmlReader, "http://xml.org/sax/features/validation", "xr.load.validation");
-            
-            // mem: intern strings
-            setFeature(xmlReader, "http://xml.org/sax/features/string-interning", "xr.load.string-interning");
-            
-            // perf: namespaces
-            setFeature(xmlReader, "http://xml.org/sax/features/namespaces", "xr.load.namespaces");
-            setFeature(xmlReader, "http://xml.org/sax/features/namespace-prefixes", "xr.load.namespace-prefixes");
-        }
-
-        /**
-         * Attempts to set requested feature on the parser; logs exception if not supported
-         * or not recognized.
-         */
-        private void setFeature(XMLReader xmlReader, String featureUri, String configName) {
-            try {
-                xmlReader.setFeature(featureUri, Configuration.isTrue(configName, false));
-
-                XRLog.load(Level.FINE, "SAX Parser feature: " +
-                        featureUri.substring(featureUri.lastIndexOf("/")) +
-                        " set to " +
-                        xmlReader.getFeature(featureUri));
-            } catch (SAXNotSupportedException ex) {
-                XRLog.load(Level.WARNING, "SAX feature not supported on this XMLReader: " + featureUri);
-            } catch (SAXNotRecognizedException ex) {
-                XRLog.load(Level.WARNING, "SAX feature not recognized on this XMLReader: " + featureUri +
-                        ". Feature may be properly named, but not recognized by this parser.");
-            }
         }
 
         public XMLResource createXMLResource(Source source) {
@@ -307,6 +226,8 @@ public class XMLResource extends AbstractResource {
                 dbf.setValidating(false);//validation is the root of all evil in xml - tobe
                 output = new DOMResult(dbf.newDocumentBuilder().newDocument());
                 xformFactory = TransformerFactory.newInstance();
+                xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+                xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
                 idTransform = xformFactory.newTransformer();
             } catch (Exception ex) {
                 throw new XRRuntimeException("Failed on configuring SAX to DOM transformer.", ex);
