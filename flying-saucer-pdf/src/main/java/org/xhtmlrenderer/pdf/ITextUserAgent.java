@@ -29,6 +29,7 @@ import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
@@ -45,7 +46,7 @@ public class ITextUserAgent extends NaiveUserAgent {
     private final ITextOutputDevice _outputDevice;
 
     public ITextUserAgent(ITextOutputDevice outputDevice) {
-        super(IMAGE_CACHE_CAPACITY);
+        super(Configuration.valueAsInt("xr.image.cache-capacity", IMAGE_CACHE_CAPACITY));
         _outputDevice = outputDevice;
     }
 
