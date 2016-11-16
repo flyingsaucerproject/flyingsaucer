@@ -24,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
 
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -63,13 +62,17 @@ public class ITextUserAgent extends NaiveUserAgent {
     }
 
     public ImageResource getImageResource(String uriStr) {
-        ImageResource resource = null;
-        if (ImageUtil.isEmbeddedBase64Image(uriStr)) {
-            resource = loadEmbeddedBase64ImageResource(uriStr);
-        } else {
+        ImageResource resource;
+        if (!ImageUtil.isEmbeddedBase64Image(uriStr)) {
             uriStr = resolveURI(uriStr);
-            resource = (ImageResource) _imageCache.get(uriStr);
-            if (resource == null) {
+        }
+        resource = (ImageResource) _imageCache.get(uriStr);
+
+        if (resource == null) {
+            if (ImageUtil.isEmbeddedBase64Image(uriStr)) {
+                resource = loadEmbeddedBase64ImageResource(uriStr);
+                _imageCache.put(uriStr, resource);
+            } else {
                 InputStream is = resolveAndOpenStream(uriStr);
                 if (is != null) {
                     try {
