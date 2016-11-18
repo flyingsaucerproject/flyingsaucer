@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -63,7 +64,7 @@
       <id>mac</id>
       <activation>
         <os>
-            <!-- TODO handle 32 bit and 64 bit procs differently -->
+          <!-- TODO handle 32 bit and 64 bit procs differently -->
           <family>Mac</family>
         </os>
       </activation>
@@ -80,35 +81,71 @@
       </dependencies>
     </profile>
     <profile>
-        <id>linux</id>
-        <activation>
-          <os>
-            <name>Linux</name>
-          </os>
-        </activation>
-        <dependencies>
-          <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>swt</artifactId>
-            <version>3.6</version>
-            <type>jar</type>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/swt/swt-3.6-linux.jar</systemPath>
-            <optional>true</optional>
-          </dependency>
-        </dependencies>
+      <id>linux</id>
+      <activation>
+        <os>
+          <name>Linux</name>
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.eclipse</groupId>
+          <artifactId>swt</artifactId>
+          <version>3.6</version>
+          <type>jar</type>
+          <scope>system</scope>
+          <systemPath>${basedir}/lib/swt/swt-3.6-linux.jar</systemPath>
+          <optional>true</optional>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 
   <build>
-	  <resources>
-	    <resource>
-	      <directory>../</directory>
-	      <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
-	      <includes>
-	        <include>LICENSE*</include>
-	      </includes>
-	    </resource>
-	  </resources>
+    <resources>
+      <resource>
+        <directory>../</directory>
+        <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+        <includes>
+          <include>LICENSE*</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.swt</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- Dependency resolution seems not to work properly with default 
+              behavior of importing the exported packages. -->
+            <Import-Package>!org.xhtmlrenderer.*,*</Import-Package>
+            <!-- Do not export package org.xhtmlrenderer.simple as it is 
+              already exported by flying-saucer-core and this would lead to a split package 
+              without correctly marking it as such. -->
+            <Export-Package>!org.xhtmlrenderer.simple,org.xhtmlrenderer.*</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>
