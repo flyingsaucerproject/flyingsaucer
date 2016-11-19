@@ -103,16 +103,15 @@ public class ITextUserAgent extends NaiveUserAgent {
                     }
                 }
             }
-
-            if (resource != null) {
-                FSImage image=resource.getImage();
-                if (image instanceof ITextFSImage) {
-                    image=(FSImage) ((ITextFSImage) resource.getImage()).clone();
-                }
-                resource = new ImageResource(resource.getImageUri(), image);
-            } else {
-                resource = new ImageResource(uriStr, null);
+        }
+        if (resource != null) {
+            FSImage image = resource.getImage();
+            if (image instanceof ITextFSImage) {
+                image = (FSImage) ((ITextFSImage) resource.getImage()).clone();
             }
+            resource = new ImageResource(resource.getImageUri(), image);
+        } else {
+            resource = new ImageResource(uriStr, null);
         }
         return resource;
     }
