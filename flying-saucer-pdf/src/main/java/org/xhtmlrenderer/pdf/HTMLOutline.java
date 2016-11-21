@@ -1,6 +1,24 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2016 Stanimir Stamenkov
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.pdf;
 
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +39,18 @@ class HTMLOutline {
     private static final Pattern HEADING =
             Pattern.compile("h([1-6])", Pattern.CASE_INSENSITIVE);
 
+    /** <a href="https://www.w3.org/TR/html51/sections.html#sectioning-roots">sectioning roots</a> */
+    private static final Pattern ROOT =
+            Pattern.compile("blockquote|details|fieldset|figure|td",
+                            Pattern.CASE_INSENSITIVE);
+
     private static final Pattern WS = Pattern.compile("\\s+");
+
+    private static final int MAX_NAME_LENGTH = 200;
 
     private final HTMLOutline parent;
 
-    private final int rank;
+    private final int level;
 
     private final Bookmark bookmark;
 
@@ -33,9 +58,9 @@ class HTMLOutline {
         this(0, "root", null);
     }
 
-    private HTMLOutline(int rank, String title, HTMLOutline parent) {
-        this.rank = rank;
-        this.bookmark = new Bookmark(title, "");
+    private HTMLOutline(int level, String name, HTMLOutline parent) {
+        this.level = level;
+        this.bookmark = new Bookmark(name, "");
         this.parent = parent;
         if (parent != null) {
             parent.bookmark.addChild(bookmark);
@@ -43,30 +68,80 @@ class HTMLOutline {
     }
 
     /**
-     * Include non-heading element as bookmark:
-     * <pre>
-     * &lt;strong data-pdf-bookmark="4">...&lt;/strong></pre>
+     * Creates a bookmark list of the document outline generated for the given
+     * element context (usually the root document element).
      * <p>
-     * Specify bookmark name:</p>
+     * The current algorithm is more simple than the one suggested in the HTML5
+     * specification such as it is not affected by
+     * <a href="https://www.w3.org/TR/html51/dom.html#sectioning-content">sectioning
+     * content</a> but just the heading level.  For
+     * <a href="https://www.w3.org/TR/html51/sections.html#example-d42b7aaf">example</a>:</p>
      * <pre>
-     * &lt;tr data-pdf-bookmark="4" data-pdf-bookmark-name="Bar baz">...&lt;/tr></pre>
+     * &lt;body>
+     *   &lt;h1>Foo&lt;/h1>
+     *   &lt;h3>Bar&lt;/h3>
+     *   &lt;blockquote>
+     *     &lt;h5>Bla&lt;/h5>
+     *   &lt;/blockquote>
+     *   &lt;p>Baz&lt;/p>
+     *   &lt;h2>Quux&lt;/h2>
+     *   &lt;section>
+     *     &lt;h3>Thud&lt;/h3>
+     *   &lt;/section>
+     *   &lt;h4>Grunt&lt;/h4>
+     * &lt;/body></pre>
      * <p>
-     * Exclude individual heading from bookmarks:</p>
+     * Should generate outline as:</p>
+     * <ol>
+     * <li>Foo
+     *   <ol>
+     *   <li>Bar</li>
+     *   <li>Quux</li>
+     *   <li>Thud</li>
+     *   <li>Grunt</li>
+     *   </ol></li>
+     * </ol>
+     * <p>
+     * But it generates outline as:</p>
+     * <ol>
+     * <li>Foo
+     *   <ol>
+     *   <li>Bar</li>
+     *   <li>Quux
+     *     <ol>
+     *     <li>Thud
+     *       <ol>
+     *       <li>Grunt</li>
+     *       </ol></li>
+     *     </ol></li>
+     *   </ol></li>
+     * </ol>
+     *
+     * <h4>Example document customizations</h4>
+     *
+     * <h5>Include non-heading element as bookmark (level 4)</h5>
+     * <pre>
+     * &lt;strong data-pdf-bookmark="4">Foo bar&lt;/strong></pre>
+     *
+     * <h5>Specify bookmark name</h5>
+     * <pre>
+     * &lt;tr data-pdf-bookmark="5" data-pdf-bookmark-name="Bar baz">...&lt;/tr></pre>
+     *
+     * <h5>Exclude individual heading from bookmarks</h5>
      * <pre>
      * &lt;h3 data-pdf-bookmark="none">Baz qux&lt;/h3></pre>
-     * <p>
-     * Prevent automatic bookmarks for the whole of the document:</p>
+     *
+     * <h5>Prevent automatic bookmarks for the whole of the document</h5>
      * <pre>
-     * &lt;html data-pdf-bookmark="none">...&lt;/html></pre>
+     * &lt;html data-pdf-bookmark="exclude">...&lt;/html></pre>
+     *
+     * @param   context  the top element a sectioning outline would be generated for;
+     * @param   box  box hierarchy the outline bookmarks would get mapped into.
+     * @return  Bookmarks of the outline generated for the given element context.
+     * @see     <a href="https://www.w3.org/TR/html51/sections.html#creating-an-outline">Creating an outline</a>
      */
     public static List<Bookmark> generate(Element context, Box box) {
-        if (context.getAttribute("data-pdf-bookmark").trim().equalsIgnoreCase("none")) {
-            return new ArrayList<Bookmark>(0);
-        }
-
-        NodeIterator iterator = ((DocumentTraversal) context.getOwnerDocument())
-                .createNodeIterator(context, NodeFilter.SHOW_ELEMENT,
-                                    NestedSectioningFilter.INSTANCE, true);
+        NodeIterator iterator = NestedSectioningFilter.iterator(context);
 
         HTMLOutline root = new HTMLOutline();
         HTMLOutline current = root;
@@ -74,49 +149,63 @@ class HTMLOutline {
 
         for (Element element = (Element) iterator.nextNode();
                 element != null; element = (Element) iterator.nextNode()) {
-            String bookmark = element.getAttribute("data-pdf-bookmark").trim();
-            Matcher matcher = HEADING.matcher(element.getTagName());
-            if (bookmark.isEmpty()) {
-                bookmark = matcher.matches() ? matcher.group(1) : "none";
-            }
-            if (bookmark.equalsIgnoreCase("none")) {
-                continue;
-            }
-
-            int rank;
+            int level;
             try {
-                rank = Integer.parseInt(bookmark);
-                if (rank < 1) {
+                level = Integer.parseInt(getOutlineLevel(element));
+                if (level < 1) {
                     continue; // Illegal value
                 }
             } catch (NumberFormatException e) {
                 continue; // Invalid value
             }
 
-            String name = element.getAttribute("data-pdf-bookmark-name").trim();
-            if (name.isEmpty()) {
-                name = element.getTextContent();
-            }
-            name = WS.matcher(name.trim()).replaceAll(" ");
+            String name = getBookmarkName(element);
 
-            while (current.rank >= rank) {
+            while (current.level >= level) {
                 current = current.parent;
             }
-            current = new HTMLOutline(rank, name, current);
+            current = new HTMLOutline(level, name, current);
             map.put(element, current.bookmark);
         }
-        initBoxPositions(map, box);
+        initBoxRefs(map, box);
         return root.bookmark.getChildren();
-    }
+    } // generate(Element, Box) : List<Bookmark>
 
-    private static void initBoxPositions(Map<Element,Bookmark> map, Box box) {
+    private static void initBoxRefs(Map<Element,Bookmark> map, Box box) {
         Bookmark bookmark = map.get(box.getElement());
         if (bookmark != null) {
             bookmark.setBox(box);
         }
         for (int i = 0, len = box.getChildCount(); i < len; i++) {
-            initBoxPositions(map, box.getChild(i));
+            initBoxRefs(map, box.getChild(i));
         }
+    }
+
+    private static String getBookmarkName(Element element) {
+        String name = element.getAttribute("data-pdf-bookmark-name").trim();
+        if (name.isEmpty()) {
+            name = element.getTextContent();
+        }
+        name = WS.matcher(name.trim()).replaceAll(" ");
+        if (name.length() > MAX_NAME_LENGTH) {
+            name = name.substring(0, MAX_NAME_LENGTH);
+        }
+        return name;
+    }
+
+    static String getOutlineLevel(Element element) {
+        String bookmark = element.getAttribute("data-pdf-bookmark").trim();
+        if (bookmark.isEmpty()) {
+            Matcher heading = HEADING.matcher(element.getTagName());
+            if (heading.matches()) {
+                bookmark = heading.group(1);
+            } else if (ROOT.matcher(element.getTagName()).matches()) {
+                bookmark = "exclude";
+            } else {
+                bookmark = "none";
+            }
+        }
+        return bookmark;
     }
 
 
@@ -124,22 +213,23 @@ class HTMLOutline {
 
         static final NestedSectioningFilter INSTANCE = new NestedSectioningFilter();
 
-        // https://www.w3.org/TR/html51/sections.html#sectioning-roots
-        private static final Pattern ROOTS = Pattern
-                .compile("blockquote|details|fieldset|figure|td",
-                         Pattern.CASE_INSENSITIVE);
+        static NodeIterator iterator(Element root) {
+            return ((DocumentTraversal) root.getOwnerDocument())
+                    .createNodeIterator(root, SHOW_ELEMENT, INSTANCE, true);
+        }
 
         @Override
         public short acceptNode(Node n) {
-            if (((Element) n).getAttribute("data-pdf-bookmark").equalsIgnoreCase("none")) {
-                return FILTER_REJECT;
+            String outlineLevel = getOutlineLevel((Element) n);
+            if (outlineLevel.equalsIgnoreCase("none")) {
+                return FILTER_SKIP;
             }
-            // REVISIT: May be use another control "data-pdf-bookmark" value
-            // to indicate force traversing into "blockquote" and similar.
-            return ROOTS.matcher(n.getNodeName()).matches() ? FILTER_REJECT
-                                                            : FILTER_ACCEPT;
+            return outlineLevel.equalsIgnoreCase("exclude")
+                    ? FILTER_REJECT
+                    : FILTER_ACCEPT;
         }
 
     } // class NestedSectioningFilter
 
-}
+
+} // class HTMLOutline
