@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.pdf;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -35,8 +34,6 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,7 +63,6 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.BorderPainter;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineLayoutBox;
@@ -906,6 +902,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     private void writeOutline(RenderingContext c, Box root) {
+        if (_bookmarks.isEmpty()) {
+            _bookmarks = HTMLOutline.generate(root.getElement(), root);
+        }
         if (_bookmarks.size() > 0) {
             _writer.setViewerPreferences(PdfWriter.PageModeUseOutlines);
             writeBookmarks(c, root, _writer.getRootOutline(), _bookmarks);
@@ -931,15 +930,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private void writeBookmark(RenderingContext c, Box root, PdfOutline parent, Bookmark bookmark) {
         String href = bookmark.getHRef();
         PdfDestination target = null;
+        Box box = bookmark.getBox();
         if (href.length() > 0 && href.charAt(0) == '#') {
-            Box box = _sharedContext.getBoxById(href.substring(1));
-            if (box != null) {
-                PageBox page = root.getLayer().getPage(c, getPageRefY(box));
-                int distanceFromTop = page.getMarginBorderPadding(c, CalculatedStyle.TOP);
-                distanceFromTop += box.getAbsY() - page.getTop();
-                target = new PdfDestination(PdfDestination.XYZ, 0, normalizeY(distanceFromTop / _dotsPerPoint), 0);
-                target.addPage(_writer.getPageReference(_startPageNo + page.getPageNo() + 1));
-            }
+            box = _sharedContext.getBoxById(href.substring(1));
+        }
+        if (box != null) {
+            PageBox page = root.getLayer().getPage(c, getPageRefY(box));
+            int distanceFromTop = page.getMarginBorderPadding(c, CalculatedStyle.TOP);
+            distanceFromTop += box.getAbsY() - page.getTop();
+            target = new PdfDestination(PdfDestination.XYZ, 0, normalizeY(distanceFromTop / _dotsPerPoint), 0);
+            target.addPage(_writer.getPageReference(_startPageNo + page.getPageNo() + 1));
         }
         if (target == null) {
             target = _defaultDestination;
@@ -980,9 +980,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
 
-    private static class Bookmark {
+    static class Bookmark {
         private String _name;
         private String _HRef;
+        private Box    _box;
 
         private List _children;
 
@@ -992,6 +993,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         public Bookmark(String name, String href) {
             _name = name;
             _HRef = href;
+        }
+
+        public Box getBox() {
+            return _box;
+        }
+
+        public void setBox(Box box) {
+            _box = box;
         }
 
         public String getHRef() {
