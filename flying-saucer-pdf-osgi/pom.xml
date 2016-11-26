@@ -16,6 +16,13 @@
   <name>Flying Saucer PDF Rendering (OSGi bundle)</name>
   <description>This artifacts rebundles the flying-saucer-pdf artifact to make it available in OSGi context.</description>
 
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer-pdf</url>
+    </repository>
+  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
