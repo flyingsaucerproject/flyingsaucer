@@ -23,11 +23,18 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
@@ -50,6 +57,20 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author Patrick Wright
  */
 public class XMLResource extends AbstractResource {
+
+
+    /**
+     * Instances of this interface <em>must</em> be thread-safe.
+     */
+    public static interface DocumentBuilderProvider {
+
+        DocumentBuilder get() throws ParserConfigurationException;
+
+        void release(DocumentBuilder parser);
+
+    } // interface DocumentBuilderProvider
+
+
     private Document document;
     private static final XMLResourceBuilder XML_RESOURCE_BUILDER;
     private static boolean useConfiguredParser;
@@ -65,6 +86,24 @@ public class XMLResource extends AbstractResource {
 
     private XMLResource(InputSource source) {
         super(source);
+    }
+
+    /**
+     * Sets a custom parser provider to use by this class for loading
+     * documents.  Setting this to {@code null} will reset to use the library
+     * default provider.
+     *
+     * @param   provider  a parser provider to use, or {@code null}.
+     */
+    public static void setDocumentBuilderProvider(DocumentBuilderProvider provider) {
+        XML_RESOURCE_BUILDER.providerLock.writeLock().lock();
+        try {
+            XML_RESOURCE_BUILDER.parserProvider = (provider == null)
+                                                  ? new ParserCachingProvider()
+                                                  : provider;
+        } finally {
+            XML_RESOURCE_BUILDER.providerLock.writeLock().unlock();
+        }
     }
 
     public static XMLResource load(InputStream stream) {
@@ -160,42 +199,27 @@ public class XMLResource extends AbstractResource {
 
     private static class XMLResourceBuilder {
 
-        private static ThreadLocal<Reference<DocumentBuilder>> domParser =
-                new ThreadLocal<Reference<DocumentBuilder>>();
+        final ReadWriteLock providerLock = new ReentrantReadWriteLock();
 
-        private DocumentBuilder getDocumentBuilder() {
-            DocumentBuilder parser = null;
-            Reference<DocumentBuilder> ref = domParser.get();
-            if (ref != null) {
-                parser = ref.get();
-            }
-
-            if (parser == null) {
-                try {
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                    dbf.setNamespaceAware(true);
-                    dbf.setValidating(false);
-                    parser = dbf.newDocumentBuilder();
-                } catch (Exception ex) {
-                    throw new XRRuntimeException(
-                            "Failed on configuring DOM parser.", ex);
-                }
-                addHandlers(parser);
-                domParser.set(new SoftReference<DocumentBuilder>(parser));
-            }
-            return parser;
-        }
+        DocumentBuilderProvider parserProvider = new ParserCachingProvider();
 
         XMLResource createXMLResource(XMLResource target) {
             Document document;
 
             long st = System.currentTimeMillis();
-            DocumentBuilder parser = getDocumentBuilder();
+            DocumentBuilder parser = null;
+            providerLock.readLock().lock();
             try {
+                parser = parserProvider.get();
                 document = parser.parse(target.getResourceInputSource());
             } catch (Exception ex) {
                 throw new XRRuntimeException(
                         "Can't load the XML resource (using DOM parser). " + ex.getMessage(), ex);
+            } finally {
+                if (parser != null) {
+                    parserProvider.release(parser);
+                }
+                providerLock.readLock().unlock();
             }
 
             long end = System.currentTimeMillis();
@@ -206,28 +230,6 @@ public class XMLResource extends AbstractResource {
 
             target.setDocument(document);
             return target;
-        }
-
-        /**
-         * Adds the default EntityResolved and ErrorHandler for the DOM parser.
-         */
-        private void addHandlers(DocumentBuilder parser) {
-            // add our own entity resolver
-            parser.setEntityResolver(FSEntityResolver.instance());
-            parser.setErrorHandler(new ErrorHandler() {
-
-                public void error(SAXParseException ex) {
-                    XRLog.load(ex.getMessage());
-                }
-
-                public void fatalError(SAXParseException ex) {
-                    XRLog.load(ex.getMessage());
-                }
-
-                public void warning(SAXParseException ex) {
-                    XRLog.load(ex.getMessage());
-                }
-            });
         }
 
         public XMLResource createXMLResource(Source source) {
@@ -262,8 +264,86 @@ public class XMLResource extends AbstractResource {
             target.setDocument((Document) output.getNode());
             return target;
         }
-    }
-}
+
+    } // class XMLResourceBuilder
+
+
+    private static class ParserCachingProvider implements DocumentBuilderProvider {
+
+        private final Lock factoryLock = new ReentrantLock();
+
+        private final Queue<Reference<DocumentBuilder>> parserPool =
+                new ArrayBlockingQueue<Reference<DocumentBuilder>>(3);
+
+        private DocumentBuilderFactory parserFactory;
+
+        private DocumentBuilderFactory factory() {
+            DocumentBuilderFactory dbf = parserFactory;
+            if (dbf == null) {
+                dbf = DocumentBuilderFactory.newInstance();
+                dbf.setNamespaceAware(true);
+                dbf.setValidating(false);
+                parserFactory = dbf;
+            }
+            return dbf;
+        }
+
+        @Override
+        public DocumentBuilder get() throws ParserConfigurationException {
+            DocumentBuilder parser = null;
+            Reference<DocumentBuilder> ref = parserPool.poll();
+            if (ref != null) {
+                parser = ref.get();
+            }
+
+            if (parser == null) {
+                // Previously (Java 1.4) it has been specified:
+                // "An implementation of the DocumentBuilderFactory class
+                // is NOT guaranteed to be thread safe."
+                // Current (Java 5+) API doc doesn't mention it, but
+                // doesn't explicitly state it's thread-safe, either.
+                factoryLock.lock();
+                try {
+                    parser = factory().newDocumentBuilder();
+                } finally {
+                    factoryLock.unlock();
+                }
+                addHandlers(parser);
+            }
+            return parser;
+        }
+
+        /**
+         * Adds the default EntityResolved and ErrorHandler for the DOM parser.
+         */
+        private void addHandlers(DocumentBuilder parser) {
+            // add our own entity resolver
+            parser.setEntityResolver(FSEntityResolver.instance());
+            parser.setErrorHandler(new ErrorHandler() {
+
+                public void error(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
+
+                public void fatalError(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
+
+                public void warning(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
+            });
+        }
+
+        @Override
+        public void release(DocumentBuilder parser) {
+            parserPool.offer(new SoftReference<DocumentBuilder>(parser));
+        }
+
+    } // class ParserCachingProvider
+
+
+} // class XMLResource
 
 /*
  * $Id$
