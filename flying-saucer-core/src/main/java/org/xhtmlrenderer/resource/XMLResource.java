@@ -177,6 +177,8 @@ public class XMLResource extends AbstractResource {
             if (dbf == null) {
                 dbf = DocumentBuilderFactory.newInstance();
                 dbf.setNamespaceAware(true);
+                dbf.setIgnoringElementContentWhitespace(Boolean.parseBoolean(
+                        Configuration.valueFor("xr.load.ignore-element-content-whitespace", "false")));
                 dbf.setValidating(false);
                 parserFactory = dbf;
             }
