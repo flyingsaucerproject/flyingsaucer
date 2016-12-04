@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
@@ -160,28 +162,35 @@ public class XMLResource extends AbstractResource {
 
     private static class XMLResourceBuilder {
 
-        private static ThreadLocal<Reference<DocumentBuilder>> domParser =
-                new ThreadLocal<Reference<DocumentBuilder>>();
+        private final Queue<Reference<DocumentBuilder>> parserPool =
+                new ArrayBlockingQueue<Reference<DocumentBuilder>>(
+                        Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
+
+        private final DocumentBuilderFactory parserFactory;
+        {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            dbf.setIgnoringElementContentWhitespace(Boolean.parseBoolean(
+                    Configuration.valueFor("xr.load.ignore-element-content-whitespace", "false")));
+            dbf.setValidating(false);
+            parserFactory = dbf;
+        }
 
         private DocumentBuilder getDocumentBuilder() {
             DocumentBuilder parser = null;
-            Reference<DocumentBuilder> ref = domParser.get();
+            Reference<DocumentBuilder> ref = parserPool.poll();
             if (ref != null) {
                 parser = ref.get();
             }
 
             if (parser == null) {
                 try {
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                    dbf.setNamespaceAware(true);
-                    dbf.setValidating(false);
-                    parser = dbf.newDocumentBuilder();
+                    parser = parserFactory.newDocumentBuilder();
                 } catch (Exception ex) {
                     throw new XRRuntimeException(
                             "Failed on configuring DOM parser.", ex);
                 }
                 addHandlers(parser);
-                domParser.set(new SoftReference<DocumentBuilder>(parser));
             }
             return parser;
         }
@@ -196,6 +205,8 @@ public class XMLResource extends AbstractResource {
             } catch (Exception ex) {
                 throw new XRRuntimeException(
                         "Can't load the XML resource (using DOM parser). " + ex.getMessage(), ex);
+            } finally {
+                parserPool.offer(new SoftReference<DocumentBuilder>(parser));
             }
 
             long end = System.currentTimeMillis();
