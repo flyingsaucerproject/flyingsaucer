@@ -25,8 +25,6 @@ import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
@@ -168,21 +166,14 @@ public class XMLResource extends AbstractResource {
                 new ArrayBlockingQueue<Reference<DocumentBuilder>>(
                         Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
 
-        private final Lock factoryLock = new ReentrantLock();
-
-        private DocumentBuilderFactory parserFactory;
-
-        private DocumentBuilderFactory getDocumentBuilderFactory() {
-            DocumentBuilderFactory dbf = parserFactory;
-            if (dbf == null) {
-                dbf = DocumentBuilderFactory.newInstance();
-                dbf.setNamespaceAware(true);
-                dbf.setIgnoringElementContentWhitespace(Boolean.parseBoolean(
-                        Configuration.valueFor("xr.load.ignore-element-content-whitespace", "false")));
-                dbf.setValidating(false);
-                parserFactory = dbf;
-            }
-            return dbf;
+        private final DocumentBuilderFactory parserFactory;
+        {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            dbf.setIgnoringElementContentWhitespace(Boolean.parseBoolean(
+                    Configuration.valueFor("xr.load.ignore-element-content-whitespace", "false")));
+            dbf.setValidating(false);
+            parserFactory = dbf;
         }
 
         private DocumentBuilder getDocumentBuilder() {
@@ -193,19 +184,11 @@ public class XMLResource extends AbstractResource {
             }
 
             if (parser == null) {
-                // Previously (Java 1.4) it has been specified:
-                // "An implementation of the DocumentBuilderFactory class
-                // is NOT guaranteed to be thread safe."
-                // Current (Java 5+) API doc doesn't mention it, but
-                // doesn't explicitly state it's thread-safe, either.
-                factoryLock.lock();
                 try {
-                    parser = getDocumentBuilderFactory().newDocumentBuilder();
+                    parser = parserFactory.newDocumentBuilder();
                 } catch (Exception ex) {
                     throw new XRRuntimeException(
                             "Failed on configuring DOM parser.", ex);
-                } finally {
-                    factoryLock.unlock();
                 }
                 addHandlers(parser);
             }
