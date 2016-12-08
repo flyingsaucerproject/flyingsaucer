@@ -82,6 +82,42 @@ public class XMLResource extends AbstractResource {
         return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(new InputSource(reader)));
     }
 
+    /**
+     * Example usage for parsing real-world HTML (vs. well-formed XML/XHTML),
+     * using the TagSoup library:
+     * <pre>
+     * import org.xml.sax.InputSource;
+     * import org.xml.sax.XMLReader;
+     *
+     * import org.ccil.cowan.tagsoup.Parser;
+     *
+     * import javax.xml.transform.Source;
+     * import javax.xml.transform.sax.SAXSource;
+     *
+     * import org.w3c.dom.Document;
+     * import org.w3c.dom.Element;
+     * import org.w3c.dom.NodeList;
+     *
+     * import org.xhtmlrenderer.resource.XMLResource;
+     *
+     * ...
+     *
+     *         XMLReader xmlReader = new Parser();
+     *         xmlReader.setFeature(Parser.defaultAttributesFeature, false);
+     *         Source source = new SAXSource(xmlReader,
+     *                 new InputSource("https://www.w3.org/TR/REC-html32"));
+     *         Document document = XMLResource.load(source).getDocument();
+     *
+     *         Element root = document.getDocumentElement();
+     *         System.out.printf("{%s}%s%n", root.getNamespaceURI(), root.getLocalName());
+     *
+     *         NodeList elements = document.getElementsByTagName("p");
+     *         Node lastParagraph = elements.item(elements.getLength() - 1);
+     *         System.out.println(lastParagraph.getTextContent());
+     * </pre>
+     *
+     * @see     <a href="http://web.archive.org/web/20160415072307/http://home.ccil.org/~cowan/XML/tagsoup/">http://ccil.org/~cowan/XML/tagsoup/</a>
+     */
     public static XMLResource load(Source source) {
         return XML_RESOURCE_BUILDER.createXMLResource(source);
     }
