@@ -34,6 +34,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 
@@ -81,6 +82,42 @@ public class XMLResource extends AbstractResource {
         return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(new InputSource(reader)));
     }
 
+    /**
+     * Example usage for parsing real-world HTML (vs. well-formed XML/XHTML),
+     * using the TagSoup library:
+     * <pre>
+     * import org.xml.sax.InputSource;
+     * import org.xml.sax.XMLReader;
+     *
+     * import org.ccil.cowan.tagsoup.Parser;
+     *
+     * import javax.xml.transform.Source;
+     * import javax.xml.transform.sax.SAXSource;
+     *
+     * import org.w3c.dom.Document;
+     * import org.w3c.dom.Element;
+     * import org.w3c.dom.NodeList;
+     *
+     * import org.xhtmlrenderer.resource.XMLResource;
+     *
+     * ...
+     *
+     *         XMLReader xmlReader = new Parser();
+     *         xmlReader.setFeature(Parser.defaultAttributesFeature, false);
+     *         Source source = new SAXSource(xmlReader,
+     *                 new InputSource("https://www.w3.org/TR/REC-html32"));
+     *         Document document = XMLResource.load(source).getDocument();
+     *
+     *         Element root = document.getDocumentElement();
+     *         System.out.printf("{%s}%s%n", root.getNamespaceURI(), root.getLocalName());
+     *
+     *         NodeList elements = document.getElementsByTagName("p");
+     *         Node lastParagraph = elements.item(elements.getLength() - 1);
+     *         System.out.println(lastParagraph.getTextContent());
+     * </pre>
+     *
+     * @see     <a href="http://web.archive.org/web/20160415072307/http://home.ccil.org/~cowan/XML/tagsoup/">http://ccil.org/~cowan/XML/tagsoup/</a>
+     */
     public static XMLResource load(Source source) {
         return XML_RESOURCE_BUILDER.createXMLResource(source);
     }
@@ -162,9 +199,76 @@ public class XMLResource extends AbstractResource {
 
     private static class XMLResourceBuilder {
 
-        private final Queue<Reference<DocumentBuilder>> parserPool =
-                new ArrayBlockingQueue<Reference<DocumentBuilder>>(
-                        Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
+        private final DocumentBuilderPool parserPool = new DocumentBuilderPool();
+
+        private final IdentityTransformerPool traxPool = new IdentityTransformerPool();
+
+        XMLResource createXMLResource(XMLResource target) {
+            Document document;
+
+            long st = System.currentTimeMillis();
+            DocumentBuilder parser = parserPool.get();
+            try {
+                document = parser.parse(target.getResourceInputSource());
+            } catch (Exception ex) {
+                throw new XRRuntimeException(
+                        "Can't load the XML resource (using DOM parser). " + ex.getMessage(), ex);
+            } finally {
+                parserPool.release(parser);
+            }
+
+            long end = System.currentTimeMillis();
+
+            target.setElapsedLoadTime(end - st);
+
+            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
+
+            target.setDocument(document);
+            return target;
+        }
+
+        private DOMResult newDOMResult() {
+            DocumentBuilder builder = parserPool.get();
+            try {
+                Document document = builder.newDocument();
+                document.setStrictErrorChecking(false);
+                return new DOMResult(document);
+            } finally {
+                parserPool.release(builder);
+            }
+        }
+
+        XMLResource createXMLResource(Source source) {
+            DOMResult output = newDOMResult();
+
+            long st = System.currentTimeMillis();
+            Transformer idTransform = traxPool.get();
+            try {
+                idTransform.transform(source, output);
+            } catch (Exception ex) {
+                throw new XRRuntimeException("Can't load the XML resource (using TRaX transformer). " + ex.getMessage(), ex);
+            } finally {
+                traxPool.release(idTransform);
+            }
+
+            long end = System.currentTimeMillis();
+
+            //HACK: should rather use a default constructor
+            XMLResource target = new XMLResource((InputSource) null);
+
+            target.setElapsedLoadTime(end - st);
+
+            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
+
+            Document document = (Document) output.getNode();
+            document.setStrictErrorChecking(true);
+            target.setDocument(document);
+            return target;
+        }
+    } // class XMLResourceBuilder
+
+
+    private static class DocumentBuilderPool extends ObjectPool<DocumentBuilder> {
 
         private final DocumentBuilderFactory parserFactory;
         {
@@ -176,47 +280,25 @@ public class XMLResource extends AbstractResource {
             parserFactory = dbf;
         }
 
-        private DocumentBuilder getDocumentBuilder() {
-            DocumentBuilder parser = null;
-            Reference<DocumentBuilder> ref = parserPool.poll();
-            if (ref != null) {
-                parser = ref.get();
-            }
-
-            if (parser == null) {
-                try {
-                    parser = parserFactory.newDocumentBuilder();
-                } catch (Exception ex) {
-                    throw new XRRuntimeException(
-                            "Failed on configuring DOM parser.", ex);
-                }
-                addHandlers(parser);
-            }
-            return parser;
+        DocumentBuilderPool() {
+            this(Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
         }
 
-        XMLResource createXMLResource(XMLResource target) {
-            Document document;
+        DocumentBuilderPool(int capacity) {
+            super(capacity);
+        }
 
-            long st = System.currentTimeMillis();
-            DocumentBuilder parser = getDocumentBuilder();
+        @Override
+        protected DocumentBuilder newValue() {
+            DocumentBuilder parser;
             try {
-                document = parser.parse(target.getResourceInputSource());
+                parser = parserFactory.newDocumentBuilder();
             } catch (Exception ex) {
                 throw new XRRuntimeException(
-                        "Can't load the XML resource (using DOM parser). " + ex.getMessage(), ex);
-            } finally {
-                parserPool.offer(new SoftReference<DocumentBuilder>(parser));
+                        "Failed on configuring DOM parser.", ex);
             }
-
-            long end = System.currentTimeMillis();
-
-            target.setElapsedLoadTime(end - st);
-
-            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
-
-            target.setDocument(document);
-            return target;
+            addHandlers(parser);
+            return parser;
         }
 
         /**
@@ -241,39 +323,71 @@ public class XMLResource extends AbstractResource {
             });
         }
 
-        public XMLResource createXMLResource(Source source) {
-            DOMResult output = new DOMResult();
-            Transformer idTransform;
+    } // class DocumentBuilderPool
 
-            long st = System.currentTimeMillis();
+
+    private static class IdentityTransformerPool extends ObjectPool<Transformer> {
+
+        private final TransformerFactory traxFactory;
+        {
+            TransformerFactory tf = TransformerFactory.newInstance();
             try {
-                TransformerFactory xformFactory = TransformerFactory.newInstance();
-                xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-                idTransform = xformFactory.newTransformer();
-            } catch (Exception ex) {
-                throw new XRRuntimeException("Failed on configuring TRaX transformer.", ex);
+                tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            } catch (TransformerConfigurationException e) {
+                XRLog.init(Level.WARNING, "Problem configuring TrAX factory", e);
             }
-
-            try {
-                idTransform.transform(source, output);
-            } catch (Exception ex) {
-                throw new XRRuntimeException("Can't load the XML resource (using TRaX transformer). " + ex.getMessage(), ex);
-            }
-
-            long end = System.currentTimeMillis();
-
-            //HACK: should rather use a default constructor
-            XMLResource target = new XMLResource((InputSource) null);
-
-            target.setElapsedLoadTime(end - st);
-
-            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
-
-            target.setDocument((Document) output.getNode());
-            return target;
+            traxFactory = tf;
         }
-    }
+
+        IdentityTransformerPool() {
+            this(Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
+        }
+
+        IdentityTransformerPool(int capacity) {
+            super(capacity);
+        }
+
+        @Override
+        protected Transformer newValue() {
+            try {
+                return traxFactory.newTransformer();
+            } catch (TransformerConfigurationException ex) {
+                throw new XRRuntimeException("Failed on configuring TrAX transformer.", ex);
+            }
+        }
+
+    } // class TranformerPool
+
+
+    private static abstract class ObjectPool<T> {
+
+        private final Queue<Reference<T>> pool;
+
+        ObjectPool(int capacity) {
+            pool = new ArrayBlockingQueue<Reference<T>>(capacity);
+        }
+
+        protected abstract T newValue();
+
+        T get() {
+            T obj = null;
+            Reference<T> ref = pool.poll();
+            if (ref != null) {
+                obj = ref.get();
+            }
+
+            if (obj == null) {
+                obj = newValue();
+            }
+            return obj;
+        }
+
+        void release(T obj) {
+            pool.offer(new SoftReference<T>(obj));
+        }
+
+    } // class ObjectPool
+
 }
 
 /*
