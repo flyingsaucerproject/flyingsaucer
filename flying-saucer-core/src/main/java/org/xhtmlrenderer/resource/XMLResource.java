@@ -34,6 +34,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 
@@ -164,6 +165,8 @@ public class XMLResource extends AbstractResource {
 
         private final DocumentBuilderPool parserPool = new DocumentBuilderPool();
 
+        private final IdentityTransformerPool traxPool = new IdentityTransformerPool();
+
         XMLResource createXMLResource(XMLResource target) {
             Document document;
 
@@ -190,22 +193,15 @@ public class XMLResource extends AbstractResource {
 
         public XMLResource createXMLResource(Source source) {
             DOMResult output = new DOMResult();
-            Transformer idTransform;
 
             long st = System.currentTimeMillis();
-            try {
-                TransformerFactory xformFactory = TransformerFactory.newInstance();
-                xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                xformFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-                idTransform = xformFactory.newTransformer();
-            } catch (Exception ex) {
-                throw new XRRuntimeException("Failed on configuring TRaX transformer.", ex);
-            }
-
+            Transformer idTransform = traxPool.get();
             try {
                 idTransform.transform(source, output);
             } catch (Exception ex) {
                 throw new XRRuntimeException("Can't load the XML resource (using TRaX transformer). " + ex.getMessage(), ex);
+            } finally {
+                traxPool.release(idTransform);
             }
 
             long end = System.currentTimeMillis();
@@ -279,6 +275,39 @@ public class XMLResource extends AbstractResource {
         }
 
     } // class DocumentBuilderPool
+
+
+    private static class IdentityTransformerPool extends ObjectPool<Transformer> {
+
+        private final TransformerFactory traxFactory;
+        {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            try {
+                tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            } catch (TransformerConfigurationException e) {
+                XRLog.init(Level.WARNING, "Problem configuring TrAX factory", e);
+            }
+            traxFactory = tf;
+        }
+
+        IdentityTransformerPool() {
+            this(Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
+        }
+
+        IdentityTransformerPool(int capacity) {
+            super(capacity);
+        }
+
+        @Override
+        protected Transformer newValue() {
+            try {
+                return traxFactory.newTransformer();
+            } catch (TransformerConfigurationException ex) {
+                throw new XRRuntimeException("Failed on configuring TrAX transformer.", ex);
+            }
+        }
+
+    } // class TranformerPool
 
 
     private static abstract class ObjectPool<T> {
