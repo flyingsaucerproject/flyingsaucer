@@ -162,51 +162,20 @@ public class XMLResource extends AbstractResource {
 
     private static class XMLResourceBuilder {
 
-        private final Queue<Reference<DocumentBuilder>> parserPool =
-                new ArrayBlockingQueue<Reference<DocumentBuilder>>(
-                        Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
-
-        private final DocumentBuilderFactory parserFactory;
-        {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            dbf.setIgnoringElementContentWhitespace(Boolean.parseBoolean(
-                    Configuration.valueFor("xr.load.ignore-element-content-whitespace", "false")));
-            dbf.setValidating(false);
-            parserFactory = dbf;
-        }
-
-        private DocumentBuilder getDocumentBuilder() {
-            DocumentBuilder parser = null;
-            Reference<DocumentBuilder> ref = parserPool.poll();
-            if (ref != null) {
-                parser = ref.get();
-            }
-
-            if (parser == null) {
-                try {
-                    parser = parserFactory.newDocumentBuilder();
-                } catch (Exception ex) {
-                    throw new XRRuntimeException(
-                            "Failed on configuring DOM parser.", ex);
-                }
-                addHandlers(parser);
-            }
-            return parser;
-        }
+        private final DocumentBuilderPool parserPool = new DocumentBuilderPool();
 
         XMLResource createXMLResource(XMLResource target) {
             Document document;
 
             long st = System.currentTimeMillis();
-            DocumentBuilder parser = getDocumentBuilder();
+            DocumentBuilder parser = parserPool.get();
             try {
                 document = parser.parse(target.getResourceInputSource());
             } catch (Exception ex) {
                 throw new XRRuntimeException(
                         "Can't load the XML resource (using DOM parser). " + ex.getMessage(), ex);
             } finally {
-                parserPool.offer(new SoftReference<DocumentBuilder>(parser));
+                parserPool.release(parser);
             }
 
             long end = System.currentTimeMillis();
@@ -217,28 +186,6 @@ public class XMLResource extends AbstractResource {
 
             target.setDocument(document);
             return target;
-        }
-
-        /**
-         * Adds the default EntityResolved and ErrorHandler for the DOM parser.
-         */
-        private void addHandlers(DocumentBuilder parser) {
-            // add our own entity resolver
-            parser.setEntityResolver(FSEntityResolver.instance());
-            parser.setErrorHandler(new ErrorHandler() {
-
-                public void error(SAXParseException ex) {
-                    XRLog.load(ex.getMessage());
-                }
-
-                public void fatalError(SAXParseException ex) {
-                    XRLog.load(ex.getMessage());
-                }
-
-                public void warning(SAXParseException ex) {
-                    XRLog.load(ex.getMessage());
-                }
-            });
         }
 
         public XMLResource createXMLResource(Source source) {
@@ -273,7 +220,96 @@ public class XMLResource extends AbstractResource {
             target.setDocument((Document) output.getNode());
             return target;
         }
-    }
+    } // class XMLResourceBuilder
+
+
+    private static class DocumentBuilderPool extends ObjectPool<DocumentBuilder> {
+
+        private final DocumentBuilderFactory parserFactory;
+        {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            dbf.setIgnoringElementContentWhitespace(Boolean.parseBoolean(
+                    Configuration.valueFor("xr.load.ignore-element-content-whitespace", "false")));
+            dbf.setValidating(false);
+            parserFactory = dbf;
+        }
+
+        DocumentBuilderPool() {
+            this(Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
+        }
+
+        DocumentBuilderPool(int capacity) {
+            super(capacity);
+        }
+
+        @Override
+        protected DocumentBuilder newValue() {
+            DocumentBuilder parser;
+            try {
+                parser = parserFactory.newDocumentBuilder();
+            } catch (Exception ex) {
+                throw new XRRuntimeException(
+                        "Failed on configuring DOM parser.", ex);
+            }
+            addHandlers(parser);
+            return parser;
+        }
+
+        /**
+         * Adds the default EntityResolved and ErrorHandler for the DOM parser.
+         */
+        private void addHandlers(DocumentBuilder parser) {
+            // add our own entity resolver
+            parser.setEntityResolver(FSEntityResolver.instance());
+            parser.setErrorHandler(new ErrorHandler() {
+
+                public void error(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
+
+                public void fatalError(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
+
+                public void warning(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
+            });
+        }
+
+    } // class DocumentBuilderPool
+
+
+    private static abstract class ObjectPool<T> {
+
+        private final Queue<Reference<T>> pool;
+
+        ObjectPool(int capacity) {
+            pool = new ArrayBlockingQueue<Reference<T>>(capacity);
+        }
+
+        protected abstract T newValue();
+
+        T get() {
+            T obj = null;
+            Reference<T> ref = pool.poll();
+            if (ref != null) {
+                obj = ref.get();
+            }
+
+            if (obj == null) {
+                obj = newValue();
+            }
+            return obj;
+        }
+
+        void release(T obj) {
+            pool.offer(new SoftReference<T>(obj));
+        }
+
+    } // class ObjectPool
+
 }
 
 /*
