@@ -191,8 +191,19 @@ public class XMLResource extends AbstractResource {
             return target;
         }
 
-        public XMLResource createXMLResource(Source source) {
-            DOMResult output = new DOMResult();
+        private DOMResult newDOMResult() {
+            DocumentBuilder builder = parserPool.get();
+            try {
+                Document document = builder.newDocument();
+                document.setStrictErrorChecking(false);
+                return new DOMResult(document);
+            } finally {
+                parserPool.release(builder);
+            }
+        }
+
+        XMLResource createXMLResource(Source source) {
+            DOMResult output = newDOMResult();
 
             long st = System.currentTimeMillis();
             Transformer idTransform = traxPool.get();
@@ -213,7 +224,9 @@ public class XMLResource extends AbstractResource {
 
             XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
 
-            target.setDocument((Document) output.getNode());
+            Document document = (Document) output.getNode();
+            document.setStrictErrorChecking(true);
+            target.setDocument(document);
             return target;
         }
     } // class XMLResourceBuilder
