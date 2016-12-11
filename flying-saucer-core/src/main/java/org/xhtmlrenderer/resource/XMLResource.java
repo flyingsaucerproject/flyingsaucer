@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.resource;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.ref.Reference;
@@ -41,6 +42,7 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -48,6 +50,8 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.ext.EntityResolver2;
+import org.xml.sax.helpers.XMLFilterImpl;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 
@@ -227,6 +231,9 @@ public class XMLResource extends AbstractResource {
 
     private static class XMLReaderPool extends ObjectPool<XMLReader> {
 
+        private final boolean preserveElementContentWhitespace = Configuration
+                .isFalse("xr.load.ignore-element-content-whitespace", true);
+
         XMLReaderPool() {
             this(Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
         }
@@ -238,6 +245,9 @@ public class XMLResource extends AbstractResource {
         @Override
         protected XMLReader newValue() {
             XMLReader xmlReader = newXMLReader();
+            if (preserveElementContentWhitespace) {
+                xmlReader = new WhitespacePreservingFilter(xmlReader);
+            }
             addHandlers(xmlReader);
             setParserFeatures(xmlReader);
             return xmlReader;
@@ -323,6 +333,50 @@ public class XMLResource extends AbstractResource {
         }
 
     } // class XMLReaderPool
+
+
+    private static class WhitespacePreservingFilter
+            extends XMLFilterImpl implements EntityResolver2
+    {
+
+        WhitespacePreservingFilter(XMLReader parent) {
+            super(parent);
+        }
+
+        @Override
+        public void ignorableWhitespace(char[] ch, int start, int length)
+                throws SAXException
+        {
+            getContentHandler().characters(ch, start, length);
+        }
+
+        @Override
+        public InputSource getExternalSubset(String name, String baseURI)
+                throws SAXException, IOException
+        {
+            EntityResolver resolver = getEntityResolver();
+            if (resolver instanceof EntityResolver2) {
+                return ((EntityResolver2) resolver).getExternalSubset(name, baseURI);
+            }
+            return null;
+        }
+
+        @Override
+        public InputSource resolveEntity(String name,
+                                         String publicId,
+                                         String baseURI,
+                                         String systemId)
+                throws SAXException, IOException
+        {
+            EntityResolver resolver = getEntityResolver();
+            if (resolver instanceof EntityResolver2) {
+                return ((EntityResolver2) resolver)
+                        .resolveEntity(name, publicId, baseURI, systemId);
+            }
+            return resolveEntity(publicId, systemId);
+        }
+
+    } // class SpacePreservingFilter
 
 
     private static class IdentityTransformerPool extends ObjectPool<Transformer> {
