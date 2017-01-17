@@ -19,12 +19,14 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.DocumentTraversal;
@@ -143,6 +145,10 @@ class HTMLOutline {
     public static List<Bookmark> generate(Element context, Box box) {
         NodeIterator iterator = NestedSectioningFilter.iterator(context);
 
+        if (iterator == null) {
+            return Collections.emptyList();
+        }
+
         HTMLOutline root = new HTMLOutline();
         HTMLOutline current = root;
         Map<Element,Bookmark> map = new IdentityHashMap();
@@ -214,8 +220,10 @@ class HTMLOutline {
         static final NestedSectioningFilter INSTANCE = new NestedSectioningFilter();
 
         static NodeIterator iterator(Element root) {
-            return ((DocumentTraversal) root.getOwnerDocument())
-                    .createNodeIterator(root, SHOW_ELEMENT, INSTANCE, true);
+            Document ownerDocument = root.getOwnerDocument();
+            return (ownerDocument instanceof DocumentTraversal)
+                ? ((DocumentTraversal) ownerDocument).createNodeIterator(root, SHOW_ELEMENT, INSTANCE, true)
+                : null;
         }
 
         @Override
