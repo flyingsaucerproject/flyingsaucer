@@ -1529,7 +1529,17 @@ public class PrimitivePropertyBuilders {
             return ALLOWED;
         }
     }
+    
+    public static class Hyphens extends SingleIdent {
+        // none | manual | auto
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] {
+                        IdentValue.NONE, IdentValue.MANUAL, IdentValue.AUTO});
 
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+    }
 
     public static class Widows extends PlainInteger {
         protected boolean isNegativeValuesAllowed() {

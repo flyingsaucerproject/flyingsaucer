@@ -32,6 +32,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.layout.breaker.Breaker;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -237,6 +238,9 @@ public class InlineBoxing {
                     }
 
                     if (lbContext.isNeedsNewLine()) {
+                    	if (iB.getStyle().isTextJustify()) {
+                    		currentLine.trimTrailingSpace(c);
+                    	}
                         saveLine(currentLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, pendingFloats,
                                 hasFirstLinePEs, pendingInlineLayers, markerData,
@@ -844,7 +848,7 @@ public class InlineBoxing {
             Breaker.breakText(c, lbContext, remainingWidth, style);
         }
 
-        result.setMasterText(masterText);
+        result.setMasterText(lbContext.getMaster());
         result.setTextNode(lbContext.getTextNode());
         result.setSubstring(lbContext.getStart(), lbContext.getEnd());
         result.setWidth(lbContext.getWidth());

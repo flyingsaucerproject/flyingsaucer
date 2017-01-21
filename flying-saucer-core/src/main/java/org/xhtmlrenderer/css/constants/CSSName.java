@@ -1070,6 +1070,18 @@ public final class CSSName implements Comparable {
                     INHERITS,
                     new PrimitivePropertyBuilders.WordWrap()
             );
+    
+    /**
+     * Unique CSSName instance for CSS3 property.
+     */
+    public final static CSSName HYPHENS =
+            addProperty(
+                    "hyphens",
+                    PRIMITIVE,
+                    "none",
+                    INHERITS,
+                    new PrimitivePropertyBuilders.Hyphens()
+            );
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1588,8 +1600,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new OneToFourPropertyBuilders.Padding()
             );
-
-
+    
     /**
      * Unique CSSName instance for CSS2 property.
      */
