@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-package org.xhtmlrenderer.pdf;
+package org.xhtmlrenderer.fop;
 
 import java.text.BreakIterator;
 import java.util.Arrays;
@@ -27,11 +27,11 @@ import org.apache.fop.hyphenation.HyphenationTree;
 import org.apache.fop.hyphenation.Hyphenator;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.BreakPoint;
-import org.xhtmlrenderer.layout.BreakPointsProvider;
-import org.xhtmlrenderer.layout.LineBreakingStrategy;
-import org.xhtmlrenderer.layout.ListBreakPointsProvider;
-import org.xhtmlrenderer.layout.UrlAwareLineBreakIterator;
+import org.xhtmlrenderer.layout.breaker.BreakPoint;
+import org.xhtmlrenderer.layout.breaker.BreakPointsProvider;
+import org.xhtmlrenderer.layout.breaker.LineBreakingStrategy;
+import org.xhtmlrenderer.layout.breaker.ListBreakPointsProvider;
+import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@media-sol.com, MEDIA SOLUTIONS
@@ -40,10 +40,10 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
 	
 	private static final int SOFT_HYPHEN = '\u00AD';
 	
-	private TreeSet<BreakPoint> getPoints(String text, CalculatedStyle style) {
+	private TreeSet<BreakPoint> getPoints(String text, String lang, CalculatedStyle style) {
 		BreakIterator breakIt = new UrlAwareLineBreakIterator();
 		breakIt.setText(text);
-		TreeSet<BreakPoint> points = new TreeSet<>();
+		TreeSet<BreakPoint> points = new TreeSet<BreakPoint>();
 		int p = BreakIterator.DONE;
 		while ((p = breakIt.next()) != BreakIterator.DONE) {
 			points.add(new BreakPoint(p));
@@ -62,7 +62,7 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
 			return points;
 		}
 		if (style.getHyphens() == IdentValue.AUTO) {
-			HyphenationTree tree = Hyphenator.getFopHyphenationTree("cs");
+			HyphenationTree tree = Hyphenator.getFopHyphenationTree(lang);
 			Hyphenation s = tree.hyphenate(text, 2, 2);
 			if (s == null) return points;
 			for (int i = 0; i < s.getHyphenationPoints().length; i++) {
@@ -76,8 +76,8 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
 	}
 
 	@Override
-	public BreakPointsProvider getBreakPointsProvider(String text, CalculatedStyle style) {
-		return new ListBreakPointsProvider(Arrays.asList(getPoints(text, style).toArray(new BreakPoint[0])));
+	public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
+		return new ListBreakPointsProvider(Arrays.asList(getPoints(text, lang, style).toArray(new BreakPoint[0])));
 	}
 	
 	private void addHyphen(BreakPoint p) {

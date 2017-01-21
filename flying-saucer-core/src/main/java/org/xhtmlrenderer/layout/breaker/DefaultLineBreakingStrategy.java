@@ -29,7 +29,7 @@ public class DefaultLineBreakingStrategy implements LineBreakingStrategy {
 
 	@Override
 	public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
-		BreakIterator i = new UrlAwareLineBreakIterator();
+		final BreakIterator i = new UrlAwareLineBreakIterator();
 		i.setText(text);
 		
 		return new BreakPointsProvider() {
