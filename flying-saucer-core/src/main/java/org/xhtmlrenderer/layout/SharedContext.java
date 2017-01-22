@@ -42,6 +42,8 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.breaker.DefaultLineBreakingStrategy;
+import org.xhtmlrenderer.layout.breaker.LineBreakingStrategy;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
@@ -94,6 +96,8 @@ public class SharedContext {
 
     private ReplacedElementFactory replacedElementFactory;
     private Rectangle temp_canvas;
+    
+    private LineBreakingStrategy lineBreakingStrategy = new DefaultLineBreakingStrategy();
 
     public SharedContext() {
     }
@@ -618,6 +622,14 @@ public class SharedContext {
             }
         }
     }
+
+	public LineBreakingStrategy getLineBreakingStrategy() {
+		return lineBreakingStrategy;
+	}
+
+	public void setLineBreakingStrategy(LineBreakingStrategy lineBreakingStrategy) {
+		this.lineBreakingStrategy = lineBreakingStrategy;
+	}
 }
 
 /*

@@ -1666,7 +1666,6 @@ public class BlockBox extends Box implements InlinePaintable {
             } else { /* child.getStyle().isInline() */
                 InlineBox iB = (InlineBox) child;
                 IdentValue whitespace = iB.getStyle().getWhitespace();
-
                 iB.calcMinMaxWidth(c, getContentWidth(), lineWidth == 0);
 
                 if (whitespace == IdentValue.NOWRAP) {
