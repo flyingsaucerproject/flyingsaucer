@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 MEDIA SOLUTIONS
+ * Copyright (C) 2017 Lukas Zaruba, lukas.zaruba@gmail.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -21,7 +21,7 @@ package org.xhtmlrenderer.layout.breaker;
 import java.text.BreakIterator;
 
 /**
- * @author Lukas Zaruba, lukas.zaruba@media-sol.com, MEDIA SOLUTIONS
+ * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public interface BreakPointsProvider {
 	

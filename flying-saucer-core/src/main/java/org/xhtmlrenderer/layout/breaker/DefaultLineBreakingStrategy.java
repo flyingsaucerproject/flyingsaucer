@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 MEDIA SOLUTIONS
+ * Copyright (C) 2017 Lukas Zaruba, lukas.zaruba@gmail.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -23,7 +23,7 @@ import java.text.BreakIterator;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 /**
- * @author Lukas Zaruba, lukas.zaruba@media-sol.com, MEDIA SOLUTIONS
+ * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class DefaultLineBreakingStrategy implements LineBreakingStrategy {
 

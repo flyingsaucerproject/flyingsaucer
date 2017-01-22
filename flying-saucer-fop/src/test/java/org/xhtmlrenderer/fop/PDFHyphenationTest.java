@@ -1,18 +1,19 @@
 /*
- * Copyright (C) 2017 MEDIA SOLUTIONS
- * All Rights Reserved.  No use, copying or distribution of this
- * work may be made except in accordance with a valid license
- * agreement from MEDIA SOLUTIONS. This notice must be
- * included on all copies, modifications and derivatives of this
- * work.
+ * Copyright (C) 2017 Lukas Zaruba, lukas.zaruba@gmail.com
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
  *
- * MEDIA SOLUTIONS MAKES NO REPRESENTATIONS OR WARRANTIES
- * ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER EXPRESSED OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
- * MEDIA SOLUTIONS SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
 package org.xhtmlrenderer.fop;
@@ -29,7 +30,7 @@ import org.xhtmlrenderer.pdf.ITextUserAgent;
 import com.itextpdf.text.DocumentException;
 
 /**
- * @author Lukas Zaruba, lukas.zaruba@media-sol.com, MEDIA SOLUTIONS
+ * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class PDFHyphenationTest {
 	
