@@ -1,0 +1,24 @@
+# Definice nezalomitelnych pripadu castecne dle http://prirucka.ujc.cas.cz/?id=880
+# (C) 2017 Lukas Zaruba, lukas.zaruba@gmail.com
+# License LGPL 2.1
+#
+# Copy for testing
+
+([\s]+k)( )([^\s]+)
+([\s]+s)( )([^\s]+)
+([\s]+v)( )([^\s]+)
+([\s]+z)( )([^\s]+)
+([\s]+o)( )([^\s]+)
+([\s]+u)( )([^\s]+)
+([\s]+a)( )([^\s]+)
+([\s]+i)( )([^\s]+)
+([\s]+[\d]+\.)( )([^\s]+)
+([\d]{1})( )([\d]{1})
+(\*)( )([\d]+)
+(†)( )([\d]+)
+(§)( )([\d]+)
+(#)( )([\d]+)
+([\d]+)( )(€)
+([\d]+)( )(Kč)
+([\d]+)( )(kč)
+([\d]+)( )(%)

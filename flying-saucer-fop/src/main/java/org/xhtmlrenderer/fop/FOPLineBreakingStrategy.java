@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 MEDIA SOLUTIONS
+ * Copyright (C) 2017 Lukas Zaruba, lukas.zaruba@gmail.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -27,6 +27,7 @@ import org.apache.fop.hyphenation.HyphenationTree;
 import org.apache.fop.hyphenation.Hyphenator;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.fop.nbsp.NonBreakPointsEnhancer;
 import org.xhtmlrenderer.layout.breaker.BreakPoint;
 import org.xhtmlrenderer.layout.breaker.BreakPointsProvider;
 import org.xhtmlrenderer.layout.breaker.LineBreakingStrategy;
@@ -34,13 +35,14 @@ import org.xhtmlrenderer.layout.breaker.ListBreakPointsProvider;
 import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 
 /**
- * @author Lukas Zaruba, lukas.zaruba@media-sol.com, MEDIA SOLUTIONS
+ * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class FOPLineBreakingStrategy implements LineBreakingStrategy {
 	
 	private static final int SOFT_HYPHEN = '\u00AD';
 	
 	private TreeSet<BreakPoint> getPoints(String text, String lang, CalculatedStyle style) {
+		text = new NonBreakPointsEnhancer().enhance(text, lang);
 		BreakIterator breakIt = new UrlAwareLineBreakIterator();
 		breakIt.setText(text);
 		TreeSet<BreakPoint> points = new TreeSet<BreakPoint>();
