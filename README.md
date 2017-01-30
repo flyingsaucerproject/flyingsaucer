@@ -39,7 +39,7 @@ GETTING FLYING SAUCER
 New releases of Flying Saucer are distributed through Maven.  The available artifacts are:
 
 * `org.xhtmlrenderer:flying-saucer-core` - Core library and Java2D rendering
-* `org.xhtmlrenderer:flying-saucer-pdf` - PDF output using iText
+* `org.xhtmlrenderer:flying-saucer-pdf` - PDF output using iText or OpenPDF
 * `org.xhtmlrenderer:flying-saucer-swt` - SWT output
 * `org.xhtmlrenderer:flying-saucer-log4j` - Logging plugin for log4j
 

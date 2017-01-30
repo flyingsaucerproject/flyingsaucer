@@ -30,24 +30,47 @@
     </repository>
   </distributionManagement>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.lowagie</groupId>
-      <artifactId>itext</artifactId>
-      <version>2.1.7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xhtmlrenderer</groupId>
-      <artifactId>flying-saucer-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.10</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+  <profiles>
+    <profile>
+      <id>itext</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.lowagie</groupId>
+          <artifactId>itext</artifactId>
+          <version>2.1.7</version>
+        </dependency>
+        <dependency>
+          <groupId>org.xhtmlrenderer</groupId>
+          <artifactId>flying-saucer-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.10</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>openpdf</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.github.librepdf</groupId>
+          <artifactId>openpdf</artifactId>
+          <version>1.0.1</version>
+        </dependency>
+        <dependency>
+          <groupId>org.xhtmlrenderer</groupId>
+          <artifactId>flying-saucer-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
   <build>
 	  <resources>
