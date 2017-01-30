@@ -43,6 +43,8 @@ New releases of Flying Saucer are distributed through Maven.  The available arti
 * `org.xhtmlrenderer:flying-saucer-swt` - SWT output
 * `org.xhtmlrenderer:flying-saucer-log4j` - Logging plugin for log4j
 
+Build with openpdf Maven profile to use OpenPDF.
+
 GETTING STARTED
 ---------------
 There is a large amount of sample code under the `flying-saucer-examples` directory.

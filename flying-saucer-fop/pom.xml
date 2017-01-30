@@ -35,6 +35,45 @@
 		</repository>
 	</distributionManagement>
 
+	<profiles>
+		<profile>
+			<id>itext</id>
+			<activation>
+			<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<!-- IText used for test execution -->
+				<dependency>
+					<groupId>com.itextpdf</groupId>
+					<artifactId>itextpdf</artifactId>
+					<version>5.3.0</version>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.xhtmlrenderer</groupId>
+					<artifactId>flying-saucer-pdf-itext5</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>openpdf</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.github.librepdf</groupId>
+					<artifactId>openpdf</artifactId>
+					<version>1.0.1</version>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.xhtmlrenderer</groupId>
+					<artifactId>flying-saucer-pdf</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.xhtmlrenderer</groupId>
@@ -58,18 +97,6 @@
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
 			<scope>test</scope>
-		</dependency>
-		<!-- IText used for test execution -->
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>itextpdf</artifactId>
-			<version>5.3.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.xhtmlrenderer</groupId>
-			<artifactId>flying-saucer-pdf-itext5</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 

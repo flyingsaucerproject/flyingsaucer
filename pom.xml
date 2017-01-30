@@ -26,7 +26,6 @@
     <module>flying-saucer-core</module>
     <module>flying-saucer-pdf</module>
     <module>flying-saucer-pdf-osgi</module>
-    <module>flying-saucer-pdf-itext5</module>
     <module>flying-saucer-log4j</module>
     <module>flying-saucer-swt</module>
     <module>flying-saucer-swt-examples</module>
@@ -63,6 +62,15 @@
 
   <profiles>
     <profile>
+      <id>itext</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>flying-saucer-pdf-itext5</module>
+      </modules>
+    </profile>
+    <profile>
       <id>doclint-java8-disable</id>
       <activation>
         <jdk>[1.8,)</jdk>
@@ -70,6 +78,12 @@
       <properties>
         <javadoc.opts>-Xdoclint:none</javadoc.opts>
       </properties>
+    </profile>
+    <profile>
+      <id>openpdf</id>
+      <modules>
+        <module>flying-saucer-pdf</module>
+      </modules>
     </profile>
   </profiles>
 
