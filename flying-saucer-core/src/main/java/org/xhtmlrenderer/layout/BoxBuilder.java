@@ -1225,6 +1225,15 @@ public class BoxBuilder {
                 } else if(nodeType == Node.ENTITY_REFERENCE_NODE) {
                     EntityReference entityReference = (EntityReference)working;
                     child = createInlineBox(entityReference.getTextContent(), parent, parentStyle, null);
+
+                    InlineBox iB = (InlineBox) child;
+                    iB.setEndsHere(true);
+                    if (previousIB == null) {
+                        iB.setStartsHere(true);
+                    } else {
+                        previousIB.setEndsHere(false);
+                    }
+                    previousIB = iB;
                 }
 
                 if (child != null) {
