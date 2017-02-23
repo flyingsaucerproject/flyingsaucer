@@ -16,6 +16,14 @@
   <name>Flying Saucer PDF Rendering</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output.</description>
 
+  <properties>
+  
+    <bouncycastle.version>1.38</bouncycastle.version>
+    <junit.version>4.12</junit.version>
+    <openpdf.version>1.0.1</openpdf.version>
+    <itext.version>2.1.7</itext.version>
+  </properties>
+
   <licenses>
     <license>
       <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
@@ -37,10 +45,44 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <dependencies>
+      	<!-- 
+      		Note: The iText Bouncy Castle dependencies have been moved to a new group and version on maven central.
+      		This caused some of the artifacts to be resolved twice. By excluding dependencies from the old group
+      		and adding corresponding dependencies from the updated group, the artifacts are only resolved once. 
+      	 -->
         <dependency>
           <groupId>com.lowagie</groupId>
           <artifactId>itext</artifactId>
-          <version>2.1.7</version>
+          <version>${itext.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>bouncycastle</groupId>
+              <artifactId>bcmail-jdk14</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>bouncycastle</groupId>
+              <artifactId>bcprov-jdk14</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>bouncycastle</groupId>
+              <artifactId>bctsp-jdk14</artifactId>
+            </exclusion>            
+          </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcmail-jdk14</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bctsp-jdk14</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk14</artifactId>
+            <version>${bouncycastle.version}</version>
         </dependency>
         <dependency>
           <groupId>org.xhtmlrenderer</groupId>
@@ -50,7 +92,7 @@
         <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
-          <version>4.10</version>
+          <version>${junit.version}</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -61,7 +103,7 @@
         <dependency>
           <groupId>com.github.librepdf</groupId>
           <artifactId>openpdf</artifactId>
-          <version>1.0.1</version>
+          <version>${openpdf.version}</version>
         </dependency>
         <dependency>
           <groupId>org.xhtmlrenderer</groupId>
@@ -71,7 +113,7 @@
         <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
-          <version>4.10</version>
+          <version>${junit.version}</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -79,14 +121,14 @@
   </profiles>
 
   <build>
-	  <resources>
-	    <resource>
-	      <directory>../</directory>
-	      <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
-	      <includes>
-	        <include>LICENSE*</include>
-	      </includes>
-	    </resource>
-	  </resources>
+    <resources>
+      <resource>
+        <directory>../</directory>
+        <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+        <includes>
+          <include>LICENSE*</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
 </project>
