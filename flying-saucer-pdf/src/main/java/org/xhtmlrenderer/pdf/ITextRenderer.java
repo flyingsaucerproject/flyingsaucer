@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -100,9 +100,9 @@ public class ITextRenderer {
 
     private Integer _pdfXConformance;
 
-	private PDFCreationListener _listener;
+    private PDFCreationListener _listener;
 
-	private String colourSpaceProfile;
+    private String colourSpaceProfile;
 
     public ITextRenderer() {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
@@ -216,14 +216,14 @@ public class ITextRenderer {
     public char getPDFVersion() {
         return _pdfVersion == null ? '0' : _pdfVersion.charValue();
     }
-	
-	public void setPDFXConformance(int pdfXConformance){
-		_pdfXConformance = new Integer(pdfXConformance);
-	}
-	
-	public int getPDFXConformance(){
+    
+    public void setPDFXConformance(int pdfXConformance){
+        _pdfXConformance = new Integer(pdfXConformance);
+    }
+    
+    public int getPDFXConformance(){
         return _pdfXConformance == null ? '0' : _pdfXConformance.intValue();
-	}
+    }
 
 
     public void layout() {
@@ -321,15 +321,15 @@ public class ITextRenderer {
         if (_pdfVersion != null) {
             writer.setPdfVersion(_pdfVersion.charValue());
         }
-		
-		if (_pdfXConformance != null) {
-			writer.setPDFXConformance(_pdfXConformance.intValue());
-			
-			if(_pdfXConformance == PdfWriter.PDFA1A) {
-				 writer.createXmpMetadata();
-				 writer.setTagged();
-			}
-		}
+        
+        if (_pdfXConformance != null) {
+            writer.setPDFXConformance(_pdfXConformance.intValue());
+            
+            if(_pdfXConformance == PdfWriter.PDFA1A) {
+                 writer.createXmpMetadata();
+                 writer.setTagged();
+            }
+        }
 
         if (_pdfEncryption != null) {
             writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
@@ -343,9 +343,9 @@ public class ITextRenderer {
         doc.open();
 
         if (_pdfXConformance != null && _pdfXConformance == PdfWriter.PDFA1A) {
-        	writer.getStructureTreeRoot();
-			setWriterOutputIntents(writer);
-	        setMarkInfo(writer);
+            writer.getStructureTreeRoot();
+            setWriterOutputIntents(writer);
+            setMarkInfo(writer);
         }
 
         writePDF(pages, c, firstPageSize, doc, writer);
@@ -356,23 +356,23 @@ public class ITextRenderer {
         }
     }
 
-	private void setWriterOutputIntents(PdfWriter writer) throws IOException {
-		if(colourSpaceProfile != null) {
-			InputStream is = this.getClass().getResourceAsStream(colourSpaceProfile);
-			ICC_Profile icc = ICC_Profile.getInstance(is);
-			writer.setOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
-		} else {
-			throw new NullPointerException("Colour space profile has not been set");
-		}
-	}
+    private void setWriterOutputIntents(PdfWriter writer) throws IOException {
+        if(colourSpaceProfile != null) {
+            InputStream is = this.getClass().getResourceAsStream(colourSpaceProfile);
+            ICC_Profile icc = ICC_Profile.getInstance(is);
+            writer.setOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+        } else {
+            throw new NullPointerException("Colour space profile has not been set");
+        }
+    }
 
-	private void setMarkInfo(PdfWriter writer) {
-		PdfDictionary markInfo = new PdfDictionary(PdfName.MARKINFO);
-		markInfo.put(PdfName.MARKED, new PdfBoolean(true));
-		PdfDictionary catalog = writer.getExtraCatalog();
-		catalog.put(PdfName.MARKINFO, markInfo);
-	}
-	
+    private void setMarkInfo(PdfWriter writer) {
+        PdfDictionary markInfo = new PdfDictionary(PdfName.MARKINFO);
+        markInfo.put(PdfName.MARKED, new PdfBoolean(true));
+        PdfDictionary catalog = writer.getExtraCatalog();
+        catalog.put(PdfName.MARKINFO, markInfo);
+    }
+    
     private void firePreOpen() {
         if (_listener != null) {
             _listener.preOpen(this);
@@ -580,11 +580,11 @@ public class ITextRenderer {
         return _writer;
     }
 
-	public String getColourSpaceProfile() {
-		return colourSpaceProfile;
-	}
+    public String getColourSpaceProfile() {
+        return colourSpaceProfile;
+    }
 
-	public void setColourSpaceProfile(String colourSpaceProfile) {
-		this.colourSpaceProfile = colourSpaceProfile;
-	}
+    public void setColourSpaceProfile(String colourSpaceProfile) {
+        this.colourSpaceProfile = colourSpaceProfile;
+    }
 }
