@@ -304,8 +304,8 @@ public class ITextRenderer {
     /**
      * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream if
      * something goes wrong.
+     * @throws DocumentException
      * @throws IOException
-     * @throws FileNotFoundException
      */
     public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, IOException {
         List pages = _root.getLayer().getPages();

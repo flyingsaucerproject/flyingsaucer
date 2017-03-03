@@ -29,7 +29,9 @@ public class ITextRendererTest extends TestCase {
 	}
 	
 	public void testCreateNonPdfAConformance() throws Exception {
-		createPdf(TEST_HTML_FILE);
+		ByteArrayOutputStream outputStream = createPdf(TEST_HTML_FILE);
+		assertNotNull(outputStream);
+		assertTrue(outputStream.size() > 0);
 	}
 	
 	public void testCreatePdfAConformanceNoFontsEmbedded() throws Exception {
@@ -54,7 +56,7 @@ public class ITextRendererTest extends TestCase {
 		}
 	}
 	
-	private void createPdf(String htmlPath) throws Exception {
+	private ByteArrayOutputStream createPdf(String htmlPath) throws Exception {
 		URL htmlUrl = getClass().getResource(htmlPath);
 		
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -65,7 +67,9 @@ public class ITextRendererTest extends TestCase {
 		renderer.setDocument(doc, htmlUrl.toString());
 		renderer.layout();
 		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		renderer.createPDF(bos);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		renderer.createPDF(outputStream);
+		
+		return outputStream;
 	}
 }
