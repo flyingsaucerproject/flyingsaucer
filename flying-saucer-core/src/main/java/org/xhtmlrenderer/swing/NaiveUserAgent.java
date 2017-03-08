@@ -34,10 +34,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-
 import javax.imageio.ImageIO;
-import javax.net.ssl.HttpsURLConnection;
-
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
