@@ -1,10 +1,9 @@
-package eeze;
+package org.xhtmlrenderer.swing;
 
 import junit.framework.TestCase;
 
-import org.xhtmlrenderer.swing.NaiveUserAgent;
-
-public class TestNaiveUserAgentUrlResolver extends TestCase
+public class NaiveUserAgentTest
+        extends TestCase
 {
     protected String resolve(String uri)
     {
