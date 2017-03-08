@@ -44,5 +44,23 @@ public class NaiveUserAgentTest
         assertEquals("custom://www.example.com/test", resolve("custom://www.example.com/other/","/test"));
     }
 
+    /**
+     * This reproduces https://code.google.com/archive/p/flying-saucer/issues/262
+     * 
+     * Below test was green with 9.0.6 and turned red in 9.0.7
+     */
+    public void testJarFileUriResolve()
+    {
+        // absolute uris should be unchanged
+        assertEquals("jar:file:/path/jarfile.jar!/foo/index.xhtml", resolve(null, "jar:file:/path/jarfile.jar!/foo/index.xhtml"));
+        assertEquals("jar:file:/path/jarfile.jar!/foo/index.xhtml", resolve("ftp://www.example.com/other","jar:file:/path/jarfile.jar!/foo/index.xhtml"));
+
+        // relative uris without slash
+        assertEquals("jar:file:/path/jarfile.jar!/foo/other.xhtml", resolve("jar:file:/path/jarfile.jar!/foo/index.xhtml","other.xhtml"));
+
+        // relative uris with slash
+        assertEquals("jar:file:/path/jarfile.jar!/foo/other.xhtml", resolve("jar:file:/path/jarfile.jar!/foo/","other.xhtml"));
+        assertEquals("jar:file:/path/jarfile.jar!/other.xhtml", resolve("jar:file:/path/jarfile.jar!/foo/","/other.xhtml"));
+    }
 
 }
