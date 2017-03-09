@@ -458,8 +458,11 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
 
     public String getLang(org.w3c.dom.Element e) {
+        if(e == null) {
+            return "";
+        }
         String lang = e.getAttribute("lang");
-        if(lang.equals("")) {
+        if("".equals(lang)) {
             lang = (String) this.getMetaInfo(e.getOwnerDocument()).get("Content-Language");
             if(lang == null) {
                 lang = "";
