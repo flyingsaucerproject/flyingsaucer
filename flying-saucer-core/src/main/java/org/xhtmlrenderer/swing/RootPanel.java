@@ -680,8 +680,12 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     public boolean getScrollableTracksViewportHeight() {
         // If the last layout height of this component is <= the viewport
         // height then we make the viewport height match the component size.
-        int viewportHeight = enclosingScrollPane.getViewport().getHeight();
-        return getPreferredSize().height <= viewportHeight;
+        JViewport viewPort = enclosingScrollPane.getViewport();
+        if(viewPort != null) {
+            int viewportHeight = viewPort.getHeight();
+            return getPreferredSize().height <= viewportHeight;
+        }
+        return false;
     }
 
 }
