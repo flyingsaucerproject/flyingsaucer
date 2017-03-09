@@ -1,13 +1,8 @@
-Flying Saucer
-=============
-
-https://code.google.com/archive/p/flying-saucer/
-
-Please see project website for links to git, mailing lists, issue tracker, etc.
+# Flying Saucer
 
 
-OVERVIEW
---------
+## OVERVIEW
+
 Flying Saucer is a pure-Java library for rendering arbitrary well-formed XML 
 (or XHTML) using CSS 2.1 for layout and formatting, output to Swing panels, 
 PDF, and images.
@@ -21,8 +16,8 @@ email and tell us about it; it helps inform where we go next, and is interesting
 and inspiring to other developers.
 
 
-LICENSE
--------
+## LICENSE
+
 Flying Saucer is distributed under the LGPL.  Flying Saucer itself is licensed 
 under the GNU Lesser General Public License, version 2.1 or later, available at
 http://www.gnu.org/copyleft/lesser.html. You can use Flying Saucer in any
@@ -34,8 +29,9 @@ Flying Saucer uses a couple of FOSS packages to get the job done. A list
 of these, along with the license they each have, is listed in the 
 [`LICENSE`](https://github.com/flyingsaucerproject/flyingsaucer/blob/master/LICENSE) file in our distribution.   
 
-GETTING FLYING SAUCER
----------------------
+
+## GETTING FLYING SAUCER
+
 New releases of Flying Saucer are distributed through Maven.  The available artifacts are:
 
 * `org.xhtmlrenderer:flying-saucer-core` - Core library and Java2D rendering
@@ -45,8 +41,9 @@ New releases of Flying Saucer are distributed through Maven.  The available arti
 
 Build with openpdf Maven profile to use OpenPDF.
 
-GETTING STARTED
----------------
+
+## GETTING STARTED
+
 There is a large amount of sample code under the `flying-saucer-examples` directory.
 
 `flying-saucer-core`, `flying-saucer-pdf`, and `flying-saucer-swt` must be on the
@@ -60,3 +57,20 @@ Some good entry points (classes) are:
 * `org.xhtmlrenderer.simple.ImageRenderer`
 
 
+## STATE OF THE PROJECT
+
+Ongoing discussions are carried out in [our online discussion group](https://groups.google.com/forum/#!forum/flying-saucer-users).
+
+Excerpt from the latest [merge/release policy](https://groups.google.com/forum/#!topic/flying-saucer-users/ySI8HrLI70A):
+
+> If you create a PR that can merge without conflicts, I'll merge it. I might ask for additional changes (or feedback from others), but I expect that will be extremely rare.
+> 
+> The basic contract is this: If you're still using Flying Saucer, need something changed, and are willing to do the work yourself, the change will be accepted and released. 
+> 
+> Along that line, please also let me know if you need a release done right away. Otherwise I'll bundle up the changes and do a release every four to six months as long as it's required.
+ 
+This is also the reason why Issues are currently deactivated on GitHub.
+
+### HISTORIC LINKS
+* [Google Code project page (archived/read-only)](https://code.google.com/archive/p/flying-saucer/)
+* [Google Code Issues (archived/read-only)](https://code.google.com/archive/p/flying-saucer/issues)
