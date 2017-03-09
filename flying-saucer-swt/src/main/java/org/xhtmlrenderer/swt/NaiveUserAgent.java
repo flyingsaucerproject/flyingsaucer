@@ -196,7 +196,7 @@ public class NaiveUserAgent implements UserAgentCallback {
 
     public String resolveURI(String uri) {
         if (uri == null) return null;
-        String ret = null;
+
         if (_baseURL == null) {//first try to set a base URL
             try {
                 URI result = new URI(uri);
@@ -213,18 +213,33 @@ public class NaiveUserAgent implements UserAgentCallback {
                 }
             }
         }
+
+        // _baseURL is guaranteed to be non-null at this point.
         // test if the URI is valid; if not, try to assign the base url as its parent
+        Throwable t;
         try {
             URI result = new URI(uri);
-            if (!result.isAbsolute()) {
-                XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
-                result=new URI(_baseURL).resolve(result);
+            if (result.isAbsolute()) {
+                return result.toString();
             }
-            ret = result.toString();
+            XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
+            URI baseURI = new URI(_baseURL);
+            if(!baseURI.isOpaque()) {
+                // uri.resolve(child) only works for opaque URIs.
+                // Otherwise it would simply return child.
+                return baseURI.resolve(result).toString();
+            }
+            // Fall back to previous resolution using URL
+            try {
+                return new URL(new URL(_baseURL), uri).toExternalForm();
+            } catch (MalformedURLException ex) {
+                t = ex;
+            }
         } catch (URISyntaxException e) {
-            XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
+            t = e;
         }
-        return ret;
+        XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL, t);
+        return null;
     }
 
     public String getBaseURL() {

@@ -34,10 +34,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-
 import javax.imageio.ImageIO;
-import javax.net.ssl.HttpsURLConnection;
-
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
@@ -134,75 +131,75 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         }
         return is;
     }
-	
-	protected InputStream openStream(String uri) throws MalformedURLException, IOException {
-		return openConnection(uri).getInputStream();
-	}
+    
+    protected InputStream openStream(String uri) throws MalformedURLException, IOException {
+        return openConnection(uri).getInputStream();
+    }
 
-	/**
-	 * Opens a connections to uri.
-	 * 
-	 * This can be overwritten to customize handling of connections by type.
-	 * 
-	 * @param uri the uri to connect to
-	 * @return URLConnection opened connection to uri
-	 * @throws IOException if an I/O exception occurs.
-	 */
-	protected URLConnection openConnection(String uri) throws IOException {
-		URLConnection connection = new URL(uri).openConnection();
-		if (connection instanceof HttpURLConnection) {
-			connection = onHttpConnection((HttpURLConnection) connection);
-		}
-		return connection;
-	}
+    /**
+     * Opens a connections to uri.
+     * 
+     * This can be overwritten to customize handling of connections by type.
+     * 
+     * @param uri the uri to connect to
+     * @return URLConnection opened connection to uri
+     * @throws IOException if an I/O exception occurs.
+     */
+    protected URLConnection openConnection(String uri) throws IOException {
+        URLConnection connection = new URL(uri).openConnection();
+        if (connection instanceof HttpURLConnection) {
+            connection = onHttpConnection((HttpURLConnection) connection);
+        }
+        return connection;
+    }
 
-	/**
-	 * Customized handling of @link{HttpUrlConnection}.
-	 * 
-	 * 
-	 * @param origin the original connection
-	 * @return @link{URLConnection} 
-	 * 
-	 * @throws MalformedURLException if an unknown protocol is specified.
-	 * @throws IOException if an I/O exception occurs.
-	 */
-	protected URLConnection onHttpConnection(HttpURLConnection origin) throws MalformedURLException, IOException {
-		URLConnection connection = origin;
-		int status = origin.getResponseCode();
+    /**
+     * Customized handling of @link{HttpUrlConnection}.
+     * 
+     * 
+     * @param origin the original connection
+     * @return @link{URLConnection} 
+     * 
+     * @throws MalformedURLException if an unknown protocol is specified.
+     * @throws IOException if an I/O exception occurs.
+     */
+    protected URLConnection onHttpConnection(HttpURLConnection origin) throws MalformedURLException, IOException {
+        URLConnection connection = origin;
+        int status = origin.getResponseCode();
 
-		if (needsRedirect(status)) {
-			// get redirect url from "location" header field
-			String newUrl = origin.getHeaderField("Location");
-			
-			if (origin.getInstanceFollowRedirects()) {
-				XRLog.load("Connection is redirected to: " + newUrl);
-				// open the new connnection again
-				connection = new URL(newUrl).openConnection();
-			} else {
-				XRLog.load("Redirect is required but not allowed to: " + newUrl);
-			}
-		}
-		return connection;
-	}
+        if (needsRedirect(status)) {
+            // get redirect url from "location" header field
+            String newUrl = origin.getHeaderField("Location");
+            
+            if (origin.getInstanceFollowRedirects()) {
+                XRLog.load("Connection is redirected to: " + newUrl);
+                // open the new connnection again
+                connection = new URL(newUrl).openConnection();
+            } else {
+                XRLog.load("Redirect is required but not allowed to: " + newUrl);
+            }
+        }
+        return connection;
+    }
 
-	/**
-	 * Verify that return code of connection represents a redirection.
-	 * 
-	 * But it is final because redirection processing is determined.
-	 * 
-	 * @param status return code of connection
-	 * @return boolean true if return code is a 3xx
-	 */
-	protected final boolean needsRedirect(int status) {
-		return 
-				status != HttpURLConnection.HTTP_OK
-				&& (
-					status == HttpURLConnection.HTTP_MOVED_TEMP
-					|| status == HttpURLConnection.HTTP_MOVED_PERM
-					|| status == HttpURLConnection.HTTP_SEE_OTHER
-				);
-	}
-	
+    /**
+     * Verify that return code of connection represents a redirection.
+     * 
+     * But it is final because redirection processing is determined.
+     * 
+     * @param status return code of connection
+     * @return boolean true if return code is a 3xx
+     */
+    protected final boolean needsRedirect(int status) {
+        return 
+                status != HttpURLConnection.HTTP_OK
+                && (
+                    status == HttpURLConnection.HTTP_MOVED_TEMP
+                    || status == HttpURLConnection.HTTP_MOVED_PERM
+                    || status == HttpURLConnection.HTTP_SEE_OTHER
+                );
+    }
+    
     /**
      * Retrieves the CSS located at the given URI.  It's assumed the URI does point to a CSS file--the URI will
      * be accessed (using java.io or java.net), opened, read and then passed into the CSS parser.
@@ -355,7 +352,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      */
     public String resolveURI(String uri) {
         if (uri == null) return null;
-        String ret = null;
+
         if (_baseURL == null) {//first try to set a base URL
             try {
                 URI result = new URI(uri);
@@ -372,18 +369,33 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
                 }
             }
         }
+
+        // _baseURL is guaranteed to be non-null at this point.
         // test if the URI is valid; if not, try to assign the base url as its parent
+        Throwable t;
         try {
             URI result = new URI(uri);
-            if (!result.isAbsolute()) {
-                XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
-                result=new URI(_baseURL).resolve(result);
+            if (result.isAbsolute()) {
+                return result.toString();
             }
-            ret = result.toString();
+            XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
+            URI baseURI = new URI(_baseURL);
+            if(!baseURI.isOpaque()) {
+                // uri.resolve(child) only works for opaque URIs.
+                // Otherwise it would simply return child.
+                return baseURI.resolve(result).toString();
+            }
+            // Fall back to previous resolution using URL
+            try {
+                return new URL(new URL(_baseURL), uri).toExternalForm();
+            } catch (MalformedURLException ex) {
+                t = ex;
+            }
         } catch (URISyntaxException e) {
-            XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL);
+            t = e;
         }
-        return ret;
+        XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL, t);
+        return null;
     }
 
     /**
