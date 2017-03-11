@@ -502,24 +502,15 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     public Element focus_element = null;
 
     public boolean isHover(org.w3c.dom.Element e) {
-        if (e == hovered_element) {
-            return true;
-        }
-        return false;
+        return e == hovered_element;
     }
 
     public boolean isActive(org.w3c.dom.Element e) {
-        if (e == active_element) {
-            return true;
-        }
-        return false;
+        return e == active_element;
     }
 
     public boolean isFocus(org.w3c.dom.Element e) {
-        if (e == focus_element) {
-            return true;
-        }
-        return false;
+        return e == focus_element;
     }
 
     protected void relayout() {

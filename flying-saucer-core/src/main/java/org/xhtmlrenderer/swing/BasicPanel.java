@@ -477,32 +477,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         XMLResource xmlResource = sharedContext.getUac().getXMLResource(uri);
         return xmlResource.getDocument();
     }
-
-    /* ====== hover and active utility methods
-========= */
-
-    public boolean isHover(org.w3c.dom.Element e) {
-        if (e == hovered_element) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isActive(org.w3c.dom.Element e) {
-        if (e == active_element) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isFocus(org.w3c.dom.Element e) {
-        if (e == focus_element) {
-            return true;
-        }
-        return false;
-    }
-
-
+    
     /**
      * Returns whether the background of this <code>BasicPanel</code> will
      * be painted when it is rendered.
