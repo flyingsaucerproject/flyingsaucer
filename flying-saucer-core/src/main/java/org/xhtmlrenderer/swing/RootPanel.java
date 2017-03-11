@@ -76,8 +76,29 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     private boolean needRelayout = false;
     private CellRendererPane cellRendererPane;
     protected Map documentListeners;
-
     private boolean defaultFontFromComponent;
+    protected SharedContext sharedContext;
+    private volatile LayoutContext layoutContext;
+    protected JScrollPane enclosingScrollPane;
+    private boolean viewportMatchWidth = true;
+
+    // initialize to JViewport default mode
+    private int default_scroll_mode = JViewport.BLIT_SCROLL_MODE;
+
+    protected Document doc = null;
+
+    /*
+     * ========= UserInterface implementation ===============
+     */
+    public Element hovered_element = null;
+    public Element active_element = null;
+    public Element focus_element = null;
+
+    // On-demand repaint requests for async image loading
+    private long lastRepaintRunAt = System.currentTimeMillis();
+    private final long maxRepaintRequestWaitMs = 50;
+    private boolean repaintRequestPending = false;
+    private long pendingRepaintCount = 0;
 
     public RootPanel() {
     }
@@ -89,10 +110,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     public LayoutContext getLayoutContext() {
         return layoutContext;
     }
-
-    protected SharedContext sharedContext;
-
-    private volatile LayoutContext layoutContext;
 
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
         fireDocumentStarted();
@@ -137,8 +154,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         }
     }
 
-    protected JScrollPane enclosingScrollPane;
-    private boolean viewportMatchWidth = true;
     public void resetScrollPosition() {
         if (enclosingScrollPane != null) {
             JScrollBar scrollBar = enclosingScrollPane.getVerticalScrollBar();
@@ -168,9 +183,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             }
         }
     }
-
-    // initialize to JViewport default mode
-    private int default_scroll_mode = JViewport.BLIT_SCROLL_MODE;
 
     /**
      * Gets the fixedRectangle attribute of the BasicPanel object
@@ -211,17 +223,11 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         setEnclosingScrollPane(null);
     }
 
-    protected Document doc = null;
-
     protected void init() {
-
-
         documentListeners = new HashMap();
         setBackground(Color.white);
         super.setLayout(null);
     }
-
-    boolean layoutInProgress = false;
 
     public RenderingContext newRenderingContext(Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
@@ -334,9 +340,9 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             System.out.println(root.dump(c, "", BlockBox.DUMP_LAYOUT));
             */
 
-    // if there is a fixed child then we need to set opaque to false
-    // so that the entire viewport will be repainted. this is slower
-    // but that's the hit you get from using fixed layout
+            // if there is a fixed child then we need to set opaque to false
+            // so that the entire viewport will be repainted. this is slower
+            // but that's the hit you get from using fixed layout
             if (root.getLayer().containsFixedContent()) {
                 super.setOpaque(false);
             } else {
@@ -492,15 +498,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     }
 
 
-    /*
-    * ========= UserInterface implementation ===============
-    */
-    public Element hovered_element = null;
-
-    public Element active_element = null;
-
-    public Element focus_element = null;
-
     public boolean isHover(org.w3c.dom.Element e) {
         return e == hovered_element;
     }
@@ -591,12 +588,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     protected synchronized void setNeedRelayout(boolean needRelayout) {
         this.needRelayout = needRelayout;
     }
-
-    // On-demand repaint requests for async image loading
-    private long lastRepaintRunAt = System.currentTimeMillis();
-    private final long maxRepaintRequestWaitMs = 50;
-    private boolean repaintRequestPending = false;
-    private long pendingRepaintCount = 0;
 
     public void repaintRequested(final boolean doLayout) {
         final long now = System.currentTimeMillis();
