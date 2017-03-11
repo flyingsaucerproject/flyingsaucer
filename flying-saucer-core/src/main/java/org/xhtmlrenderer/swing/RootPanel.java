@@ -28,11 +28,10 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
-
 import javax.swing.CellRendererPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -40,7 +39,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -75,7 +73,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     private Box rootBox = null;
     private boolean needRelayout = false;
     private CellRendererPane cellRendererPane;
-    protected Map documentListeners;
+    private final Set<DocumentListener> documentListeners = new HashSet<DocumentListener>();
     private boolean defaultFontFromComponent;
     protected SharedContext sharedContext;
     private volatile LayoutContext layoutContext;
@@ -224,7 +222,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     }
 
     protected void init() {
-        documentListeners = new HashMap();
         setBackground(Color.white);
         super.setLayout(null);
     }
@@ -397,7 +394,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         } catch (ThreadDeath t) {
             throw t;
         } catch (Throwable t) {
-            if (documentListeners.size() > 0) {
+            if (hasDocumentListeners()) {
                 fireOnLayoutException(t);
             } else {
                 if (t instanceof Error) {
@@ -437,10 +434,40 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         }
     }
 
+    /**
+     * Adds the specified Document listener to receive Document events from this
+     * component. If listener l is null, no exception is thrown and no action is
+     * performed.
+     *
+     * @param listener Contains the DocumentListener for DocumentEvent data.
+     */
+    public void addDocumentListener(DocumentListener listener) {
+        if(listener == null) {
+            return;
+        }
+        documentListeners.add(listener);
+    }
+
+    /**
+     * Removes the specified Document listener from receive Document events from this
+     * component. If listener l is null, no exception is thrown and no action is
+     * performed.
+     *
+     * @param listener Contains the DocumentListener to remove.
+     */
+    public void removeDocumentListener(DocumentListener listener) {
+        if(listener == null) {
+            return;
+        }
+        documentListeners.remove(listener);
+    }
+
+    protected boolean hasDocumentListeners() {
+        return !documentListeners.isEmpty();
+    }
+
     protected void fireDocumentStarted() {
-        Iterator it = this.documentListeners.keySet().iterator();
-        while (it.hasNext()) {
-            DocumentListener list = (DocumentListener) it.next();
+        for (DocumentListener list : documentListeners) {
             try {
                 list.documentStarted();
             } catch (Exception e) {
@@ -450,9 +477,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     }
 
     protected void fireDocumentLoaded() {
-        Iterator it = this.documentListeners.keySet().iterator();
-        while (it.hasNext()) {
-            DocumentListener list = (DocumentListener) it.next();
+        for (DocumentListener list : documentListeners) {
             try {
                 list.documentLoaded();
             } catch (Exception e) {
@@ -462,9 +487,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     }
 
     protected void fireOnLayoutException(Throwable t) {
-        Iterator it = this.documentListeners.keySet().iterator();
-        while (it.hasNext()) {
-            DocumentListener list = (DocumentListener) it.next();
+        for (DocumentListener list : documentListeners) {
             try {
                 list.onLayoutException(t);
             } catch (Exception e) {
@@ -474,9 +497,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     }
 
     protected void fireOnRenderException(Throwable t) {
-        Iterator it = this.documentListeners.keySet().iterator();
-        while (it.hasNext()) {
-            DocumentListener list = (DocumentListener) it.next();
+        for (DocumentListener list : documentListeners) {
             try {
                 list.onRenderException(t);
             } catch (Exception e) {

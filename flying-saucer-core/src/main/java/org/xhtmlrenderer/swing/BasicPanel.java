@@ -37,14 +37,11 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-
 import javax.swing.JOptionPane;
-
 import javax.swing.JScrollBar;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
@@ -105,28 +102,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         init();
     }
 
-    /**
-     * Adds the specified Document listener to receive Document events from this
-     * component. If listener l is null, no exception is thrown and no action is
-     * performed.
-     *
-     * @param listener Contains the DocumentListener for DocumentEvent data.
-     */
-    public void addDocumentListener(DocumentListener listener) {
-        this.documentListeners.put(listener, listener);
-    }
-
-    /**
-     * Removes the specified Document listener from receive Document events from this
-     * component. If listener l is null, no exception is thrown and no action is
-     * performed.
-     *
-     * @param listener Contains the DocumentListener to remove.
-     */
-    public void removeDocumentListener(DocumentListener listener) {
-        this.documentListeners.remove(listener);
-    }
-
     public void paintComponent(Graphics g) {
         if (doc == null) {
             paintDefaultBackground(g);
@@ -179,7 +154,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         } catch (ThreadDeath t) {
             throw t;
         } catch (Throwable t) {
-            if (documentListeners.size() > 0) {
+            if (hasDocumentListeners()) {
                 fireOnRenderException(t);
             } else {
                 if (t instanceof Error) {
