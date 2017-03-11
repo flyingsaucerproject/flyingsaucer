@@ -77,7 +77,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     private boolean defaultFontFromComponent;
     protected SharedContext sharedContext;
     private volatile LayoutContext layoutContext;
-    protected JScrollPane enclosingScrollPane;
+    private JScrollPane enclosingScrollPane;
     private boolean viewportMatchWidth = true;
 
     // initialize to JViewport default mode
@@ -182,6 +182,10 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         }
     }
 
+    protected JScrollPane getEnclosingScrollPane() {
+        return enclosingScrollPane;
+    }
+
     /**
      * Gets the fixedRectangle attribute of the BasicPanel object
      *
@@ -190,10 +194,9 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     public Rectangle getFixedRectangle() {
         if (enclosingScrollPane != null) {
             return enclosingScrollPane.getViewportBorderBounds();
-        } else {
-            Dimension dim = getSize();
-            return new Rectangle(0, 0, dim.width, dim.height);
         }
+        Dimension dim = getSize();
+        return new Rectangle(0, 0, dim.width, dim.height);
     }
 
     /**

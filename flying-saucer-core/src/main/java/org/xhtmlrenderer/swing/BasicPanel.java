@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -136,7 +137,8 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
             paintDefaultBackground(g);
 
-            if (enclosingScrollPane == null) {
+            JScrollPane scrollPane = getEnclosingScrollPane();
+            if (scrollPane == null) {
                 Insets insets = getInsets();
                 g.translate(insets.left, insets.top);
             }
@@ -502,15 +504,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         return sharedContext;
     }
 
-    public Rectangle getFixedRectangle() {
-        if (enclosingScrollPane != null) {
-            return enclosingScrollPane.getViewportBorderBounds();
-        }
-
-        Dimension dim = getSize();
-        return new Rectangle(0, 0, dim.width, dim.height);
-    }
-
     private boolean isAnchorInCurrentDocument(String str) {
         return str.charAt(0) == '#';
     }
@@ -524,8 +517,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
      * this will scroll the screen down to the y component of the point.
      */
     public void scrollTo(Point pt) {
-        if (enclosingScrollPane != null) {
-            JScrollBar scrollBar = enclosingScrollPane.getVerticalScrollBar();
+        JScrollPane scrollPane = getEnclosingScrollPane();
+        if (scrollPane != null) {
+            JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
             if(scrollBar != null) {
                 scrollBar.setValue(pt.y);
             }
