@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -37,13 +37,12 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-
 import javax.swing.JOptionPane;
-
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
@@ -104,28 +103,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         init();
     }
 
-    /**
-     * Adds the specified Document listener to receive Document events from this
-     * component. If listener l is null, no exception is thrown and no action is
-     * performed.
-     *
-     * @param listener Contains the DocumentListener for DocumentEvent data.
-     */
-    public void addDocumentListener(DocumentListener listener) {
-        this.documentListeners.put(listener, listener);
-    }
-
-    /**
-     * Removes the specified Document listener from receive Document events from this
-     * component. If listener l is null, no exception is thrown and no action is
-     * performed.
-     *
-     * @param listener Contains the DocumentListener to remove.
-     */
-    public void removeDocumentListener(DocumentListener listener) {
-        this.documentListeners.remove(listener);
-    }
-
     public void paintComponent(Graphics g) {
         if (doc == null) {
             paintDefaultBackground(g);
@@ -160,7 +137,8 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
             paintDefaultBackground(g);
 
-            if (enclosingScrollPane == null) {
+            JScrollPane scrollPane = getEnclosingScrollPane();
+            if (scrollPane == null) {
                 Insets insets = getInsets();
                 g.translate(insets.left, insets.top);
             }
@@ -178,7 +156,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         } catch (ThreadDeath t) {
             throw t;
         } catch (Throwable t) {
-            if (documentListeners.size() > 0) {
+            if (hasDocumentListeners()) {
                 fireOnRenderException(t);
             } else {
                 if (t instanceof Error) {
@@ -476,32 +454,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         XMLResource xmlResource = sharedContext.getUac().getXMLResource(uri);
         return xmlResource.getDocument();
     }
-
-    /* ====== hover and active utility methods
-========= */
-
-    public boolean isHover(org.w3c.dom.Element e) {
-        if (e == hovered_element) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isActive(org.w3c.dom.Element e) {
-        if (e == active_element) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isFocus(org.w3c.dom.Element e) {
-        if (e == focus_element) {
-            return true;
-        }
-        return false;
-    }
-
-
+    
     /**
      * Returns whether the background of this <code>BasicPanel</code> will
      * be painted when it is rendered.
@@ -551,15 +504,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         return sharedContext;
     }
 
-    public Rectangle getFixedRectangle() {
-        if (enclosingScrollPane != null) {
-            return enclosingScrollPane.getViewportBorderBounds();
-        } else {
-            Dimension dim = getSize();
-            return new Rectangle(0, 0, dim.width, dim.height);
-        }
-    }
-
     private boolean isAnchorInCurrentDocument(String str) {
         return str.charAt(0) == '#';
     }
@@ -573,8 +517,12 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
      * this will scroll the screen down to the y component of the point.
      */
     public void scrollTo(Point pt) {
-        if (this.enclosingScrollPane != null) {
-            this.enclosingScrollPane.getVerticalScrollBar().setValue(pt.y);
+        JScrollPane scrollPane = getEnclosingScrollPane();
+        if (scrollPane != null) {
+            JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+            if(scrollBar != null) {
+                scrollBar.setValue(pt.y);
+            }
         }
     }
 
