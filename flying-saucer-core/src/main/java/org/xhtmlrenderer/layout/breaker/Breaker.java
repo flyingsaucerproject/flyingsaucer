@@ -23,6 +23,7 @@ package org.xhtmlrenderer.layout.breaker;
 import java.text.BreakIterator;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -131,12 +132,15 @@ public class Breaker {
     	}
     	return language;
     }
-    
+
     private static String getLanguage(LayoutContext c, Text textNode) {
-    	if (textNode.getParentNode() instanceof Element) {
-    		return getLanguage(c, (Element) textNode.getParentNode()); 
-    	}
-    	return DEFAULT_LANGUAGE;
+        if (textNode != null) {
+            Node parentNode = textNode.getParentNode();
+            if (parentNode instanceof Element) {
+                return getLanguage(c, (Element) parentNode);
+            }
+        }
+        return DEFAULT_LANGUAGE;
     }
 
     private static void doBreakText(LayoutContext c,
