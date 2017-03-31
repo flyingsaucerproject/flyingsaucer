@@ -123,7 +123,7 @@ public class BoxCollector {
                 if (intersectsAggregateBounds || 
                         (container.getPaintingInfo() == null && container.intersects(c, clip))) {
                     blockContent.add(container);
-                    if (container.getStyle().isTable() && c instanceof RenderingContext) {  // HACK
+                    if (container.getStyle().isTable() && c instanceof RenderingContext && container instanceof TableBox) {  // HACK
                         TableBox table = (TableBox)container;
                         if (table.hasContentLimitContainer()) {
                             table.updateHeaderFooterPosition((RenderingContext)c);
