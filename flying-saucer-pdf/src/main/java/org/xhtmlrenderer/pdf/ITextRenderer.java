@@ -62,6 +62,7 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfAction;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class ITextRenderer {
@@ -297,11 +298,17 @@ public class ITextRenderer {
         createPDF(os, finish, 0);
     }
 
+	public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException
+	{
+		createPDF(os, finish, initialPageNo, false);
+	}
+
     /**
      * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream if
      * something goes wrong.
      */
-    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException {
+	public void createPDF(OutputStream os, boolean finish, int initialPageNo, boolean openPrintDialogue) throws DocumentException
+	{
         List pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
@@ -330,6 +337,10 @@ public class ITextRenderer {
         firePreOpen();
         doc.open();
 
+		if (openPrintDialogue)
+		{
+			writer.setOpenAction(new PdfAction(PdfAction.PRINTDIALOG));
+		}
         writePDF(pages, c, firstPageSize, doc, writer);
 
         if (finish) {
