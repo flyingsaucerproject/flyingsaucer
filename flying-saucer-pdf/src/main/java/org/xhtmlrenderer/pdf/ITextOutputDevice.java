@@ -288,7 +288,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                             _writer.addAnnotation(annot);
                         }
                     }
-                } else if (uri.indexOf("://") != -1) {
+                } else if (uri.indexOf("://") != -1 || uri.startsWith("mailto:")) {
                     PdfAction action = new PdfAction(uri);
 
                     com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
