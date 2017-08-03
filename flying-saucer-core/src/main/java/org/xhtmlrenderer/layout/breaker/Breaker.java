@@ -179,14 +179,14 @@ public class Breaker {
         }
 
         context.setNeedsNewLine(true);
-        if (right < 0 && style.getWordWrap() == IdentValue.BREAK_WORD) {
+        if (right <= 0 && style.getWordWrap() == IdentValue.BREAK_WORD) {
             if (!tryToBreakAnywhere) {
                 doBreakText(c, context, avail, style, true);
                 return;
             }
         }
 
-        if (right >= 0) { // found a place to wrap
+        if (right > 0) { // found a place to wrap
             context.setEnd(context.getStart() + right);
             context.setWidth(getWidth(c, f, context.getMaster().substring(context.getStart(), context.getStart() + right)));
             return;
