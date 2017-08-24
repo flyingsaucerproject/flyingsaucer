@@ -33,6 +33,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+    </dependency>
+    <dependency>
       <groupId>com.itextpdf</groupId>
       <artifactId>itextpdf</artifactId>
         <version>5.5.11</version>
