@@ -45,6 +45,7 @@ import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.TextDecoration;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 /**
  * This class is responsible for flowing inline content into lines.  Block
@@ -52,6 +53,9 @@ import org.xhtmlrenderer.render.TextDecoration;
  * here as well as floating and absolutely positioned content.
  */
 public class InlineBoxing {
+
+    private static final int MAX_ITERATION_COUNT = 100000;
+
     private InlineBoxing() {
     }
 
@@ -161,7 +165,12 @@ public class InlineBoxing {
                     lbContext.setMaster(iB.getContentFunction().getLayoutReplacementText());
                 }
 
+                int q = 0;
                 do {
+                    if (q++ > MAX_ITERATION_COUNT) {
+                        throw new XRRuntimeException("Too many iterations (" + q + ") in InlineBoxing, giving up.");
+                    }
+
                     lbContext.reset();
 
                     int fit = 0;
