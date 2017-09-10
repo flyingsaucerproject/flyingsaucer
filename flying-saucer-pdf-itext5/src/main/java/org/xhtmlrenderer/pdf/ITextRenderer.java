@@ -23,6 +23,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -150,6 +151,12 @@ public class ITextRenderer {
 
         File parent = file.getAbsoluteFile().getParentFile();
         setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
+    }
+
+    public void setDocument(byte[] bytes) throws IOException {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+        Document dom = XMLResource.load(inputStream).getDocument();
+        setDocument(dom, "");
     }
 
     public void setDocumentFromString(String content) {
