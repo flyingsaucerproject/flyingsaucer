@@ -65,6 +65,7 @@ import org.xml.sax.InputSource;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
 
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to
@@ -82,6 +83,7 @@ public class ITextRenderer {
 
     private com.itextpdf.text.Document _pdfDoc;
     private PdfWriter _writer;
+    private PdfPageEventHelper _pageEvent;
 
     private PDFEncryption _pdfEncryption;
 
@@ -185,6 +187,10 @@ public class ITextRenderer {
         _sharedContext.setNamespaceHandler(nsh);
         _sharedContext.getCss().setDocumentContext(_sharedContext, _sharedContext.getNamespaceHandler(), doc, new NullUserInterface());
         getFontResolver().importFontFaces(_sharedContext.getCss().getFontFaceRules());
+    }
+
+    public void setPageEvent(PdfPageEventHelper event) {
+        _pageEvent = event;
     }
 
     public PDFEncryption getPDFEncryption() {
@@ -310,6 +316,9 @@ public class ITextRenderer {
         if (_pdfEncryption != null) {
             writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
                     _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
+        }
+        if (_pageEvent != null) {
+            writer.setPageEvent(_pageEvent);
         }
         _pdfDoc = doc;
         _writer = writer;
