@@ -83,7 +83,7 @@ public class ITextUserAgent extends NaiveUserAgent {
                             URI uri = new URI(uriStr);
                             PdfReader reader = _outputDevice.getReader(uri);
                             PDFAsImage image = new PDFAsImage(uri);
-                            Rectangle rect = reader.getPageSizeWithRotation(1);
+                            Rectangle rect = reader.getPageSizeWithRotation(PDFAsImage.pageNumberFromURI(uri));
                             image.setInitialWidth(rect.getWidth() * _outputDevice.getDotsPerPoint());
                             image.setInitialHeight(rect.getHeight() * _outputDevice.getDotsPerPoint());
                             resource = new ImageResource(uriStr, image);
