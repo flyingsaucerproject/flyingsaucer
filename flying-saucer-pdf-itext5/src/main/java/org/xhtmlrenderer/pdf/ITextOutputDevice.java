@@ -850,14 +850,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {
         URI uri = image.getURI();
         PdfReader reader = null;
+        int pageNumber = 1;
 
         try {
             reader = getReader(uri);
+            pageNumber = PDFAsImage.pageNumberFromURI(uri);
         } catch (IOException e) {
             throw new XRRuntimeException("Could not load " + uri + ": " + e.getMessage(), e);
         }
 
-        PdfImportedPage page = getWriter().getImportedPage(reader, 1);
+        PdfImportedPage page = getWriter().getImportedPage(reader, pageNumber);
 
         AffineTransform at = AffineTransform.getTranslateInstance(x, y);
         at.translate(0, image.getHeightAsFloat());
@@ -880,10 +882,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     public PdfReader getReader(URI uri) throws IOException {
-        PdfReader result = (PdfReader) _readerCache.get(uri);
+        PdfReader result = (PdfReader) _readerCache.get(uri.getPath());
         if (result == null) {
             result = new PdfReader(getSharedContext().getUserAgentCallback().getBinaryResource(uri.toString()));
-            _readerCache.put(uri, result);
+            _readerCache.put(uri.getPath(), result);
         }
         return result;
     }
