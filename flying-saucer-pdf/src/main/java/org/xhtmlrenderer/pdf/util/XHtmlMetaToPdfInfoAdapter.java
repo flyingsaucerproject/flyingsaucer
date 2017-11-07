@@ -112,7 +112,9 @@ import com.lowagie.text.pdf.PdfString;
  * @see http://www.seoconsultants.com/meta-tags/dublin/
  */
 public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
-    private static final String HTML_TAG_TITLE = "title";    
+    private static final String HTML_TAG_TITLE = "title";  
+    private static final String HTML_TAG_HTML = "html";      
+    private static final String HTML_TAG_HTML_ATTR_LANG = "lang"; 
     private static final String HTML_TAG_HEAD = "head";    
     private static final String HTML_TAG_META = "meta";    
     private static final String HTML_META_KEY_TITLE = "title";    
@@ -158,7 +160,15 @@ public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
     
     private void parseHtmlTitleTag( Document doc ) {
         
-        NodeList headNodeList = doc.getDocumentElement().getElementsByTagName( HTML_TAG_HEAD );
+        Element htmlElement = doc.getDocumentElement();
+        String language = htmlElement.getAttribute( HTML_TAG_HTML_ATTR_LANG );
+        if ( language.length() != 0 ) {
+            PdfName pdfName = PdfName.LANG;
+            PdfString pdfString = new PdfString( language );
+            this.pdfInfoValues.put( pdfName, pdfString );
+        }
+        
+        NodeList headNodeList = htmlElement.getElementsByTagName( HTML_TAG_HEAD );
         XRLog.render(Level.FINEST, "headNodeList=" + headNodeList );
         Element rootHeadNodeElement = (Element) headNodeList.item( 0 );
         NodeList titleNodeList = rootHeadNodeElement.getElementsByTagName( HTML_TAG_TITLE );
@@ -170,8 +180,8 @@ public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
             XRLog.render(Level.FINEST, "titleElement.value=" + titleElement.getNodeValue() );
             XRLog.render(Level.FINEST, "titleElement.content=" + titleElement.getTextContent() );
             String titleContent = titleElement.getTextContent();
-            PdfName pdfName = PdfName.TITLE;
-            PdfString pdfString = new PdfString( titleContent );
+            pdfName = PdfName.TITLE;
+            pdfString = new PdfString( titleContent );
             this.pdfInfoValues.put( pdfName, pdfString );
         }
     }
