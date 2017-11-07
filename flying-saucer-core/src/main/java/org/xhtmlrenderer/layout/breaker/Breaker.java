@@ -112,23 +112,23 @@ public class Breaker {
         context.setEndsOnNL(false);
         doBreakText(c, context, avail, style, false);
     }
-    
+
     private static int getWidth(LayoutContext c, FSFont f, String text) {
     	return c.getTextRenderer().getWidth(c.getFontContext(), f, text);
     }
-    
+
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Element element, CalculatedStyle style) {
     	return c.getSharedContext().getLineBreakingStrategy().getBreakPointsProvider(text, getLanguage(c, element), style);
     }
-    
+
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Text textNode, CalculatedStyle style) {
     	return c.getSharedContext().getLineBreakingStrategy().getBreakPointsProvider(text, getLanguage(c, textNode), style);
     }
-    
+
     private static String getLanguage(LayoutContext c, Element element) {
     	String language = c.getNamespaceHandler().getLang(element);
     	if (language == null || language.isEmpty()) {
-    		language = DEFAULT_LANGUAGE; 
+    		language = DEFAULT_LANGUAGE;
     	}
     	return language;
     }
@@ -155,22 +155,27 @@ public class Breaker {
         BreakPoint bp = iterator.next();
         BreakPoint lastBreakPoint = null;
         int right = -1;
+        int previousWidth = 0;
+        int previousPosition = 0;
         while (bp != null && bp.getPosition() != BreakIterator.DONE) {
-        	int widthWithHyphen = getWidth(c, f, currentString.substring(0, bp.getPosition()) + bp.getHyphen());
+            int currentWidth = getWidth(c, f, currentString.substring(previousPosition, bp.getPosition()) + bp.getHyphen());
+            int widthWithHyphen = previousWidth + currentWidth;
+            previousWidth = widthWithHyphen;
+            previousPosition = bp.getPosition();
         	if (widthWithHyphen > avail) break;
-        	right = bp.getPosition();
+        	right = previousPosition;
         	lastBreakPoint = bp;
         	bp = iterator.next();
         };
-        
+
         // add hyphen if needed
-        if (bp != null && bp.getPosition() != BreakIterator.DONE // it fits 
+        if (bp != null && bp.getPosition() != BreakIterator.DONE // it fits
         		&& right >= 0 // some break point found
         		&& !lastBreakPoint.getHyphen().isEmpty()) {
         	context.setMaster(new StringBuilder(context.getMaster()).insert(context.getStart() + right, lastBreakPoint.getHyphen()).toString());
         	right += lastBreakPoint.getHyphen().length();
         }
-        
+
         if (bp != null && bp.getPosition() == BreakIterator.DONE) {
             context.setWidth(getWidth(c, f, currentString));
             context.setEnd(context.getMaster().length());
@@ -191,7 +196,7 @@ public class Breaker {
             context.setWidth(getWidth(c, f, context.getMaster().substring(context.getStart(), context.getStart() + right)));
             return;
         }
-        
+
        	// unbreakable string
         context.setEnd(context.getStart() + currentString.length());
         context.setUnbreakable(true);
