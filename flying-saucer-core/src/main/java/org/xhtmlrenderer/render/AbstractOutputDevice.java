@@ -176,7 +176,6 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             try {
                 return c.getUac().getImageResource(uri).getImage();
             } catch (Exception ex) {
-                ex.printStackTrace();
                 Uu.p(ex);
             }
         }
