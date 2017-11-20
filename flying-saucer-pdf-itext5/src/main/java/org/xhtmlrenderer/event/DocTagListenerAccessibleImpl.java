@@ -46,7 +46,7 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
 		}
 		currentOpenTags.add(struc);
 
-		XRLog.render(Level.INFO, "Added struc in preOpenTag operation:" + struc.getStructureType() );
+		XRLog.render(Level.FINE, "Added struc in preOpenTag operation:" + struc.getStructureType() );
 		return parentStruc;
 	}
 
@@ -56,7 +56,7 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
 	@Override
 	public void preCloseTag() {
 		if(currentOpenTags.size() > 0){
-			XRLog.render(Level.INFO, "Remove struc in preCoseTag operation:" + currentOpenTags.peekLast().getStructureType() );
+			XRLog.render(Level.FINE, "Remove struc in preCoseTag operation:" + currentOpenTags.peekLast().getStructureType() );
 			currentOpenTags.removeLast();
 		}
 	}
@@ -90,18 +90,18 @@ public class DocTagListenerAccessibleImpl implements DocListener, DocTagListener
      */
 	@Override
 	public boolean newPage() {
+		setNewPageCreated(true);
 		closeOpenTags();
 		return false;
 	}
 	
 	public void closeOpenTags(){
-		setNewPageCreated(true);
 		currentForcedClodedTags = new LinkedList<PdfStructureElement>();
 		addAll(currentOpenTags, currentForcedClodedTags);
     	for (PdfStructureElement pdfStructureElement : currentForcedClodedTags) {
 			cb.endMarkedContentSequence();
 			currentOpenTags.removeLast();
-			XRLog.render(Level.INFO, "struct closed and removed for new page creation." + pdfStructureElement.getStructureType());
+			XRLog.render(Level.FINE, "struct closed and removed for new page creation." + pdfStructureElement.getStructureType());
 		}
 	}
 	

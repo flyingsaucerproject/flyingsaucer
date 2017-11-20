@@ -393,13 +393,14 @@ public class ITextRenderer {
                         nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
                 // PDF/UA usar un PDFACreationListener para controlar cuando se crea una nueva pagina, ya que hay cerrar
-                try{
+//                try{
+                XRLog.render(Level.INFO, "Creating new page ..................." + i + " of " + pageCount);
                 	doc.newPage();
-                }catch(IllegalPdfSyntaxException e){
-                	//PDF/UA iText bug counting opening and closed tags, try avoid unbalanced document exceptions closing one tag.
-                	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(writer.getDirectContent(), (DocTagListenerAccessible)listener);
-                	XRLog.render(Level.INFO, "IllegalPdfSyntaxException: endedMArkedContentSecuence called trying void unbalanced document exceptions closing one tag", e);
-                }
+//                }catch(IllegalPdfSyntaxException e){
+//                	//PDF/UA iText bug counting opening and closed tags, try avoid unbalanced document exceptions closing one tag.
+//                	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(writer.getDirectContent(), (DocTagListenerAccessible)listener, "exception");
+//                	XRLog.render(Level.INFO, "IllegalPdfSyntaxException: endedMArkedContentSecuence called trying void unbalanced document exceptions closing one tag", e);
+//                }
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());
             }
         }

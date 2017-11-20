@@ -24,7 +24,8 @@ public class LayerAccessible {
 			paintChildrenInline(c, paintable, processedElements);
 		}
 		// PDF/UA close open tags after inlinecontent painted
-		c.getOutputDevice().closeOpenTags();
+		// EStá creando un layer nuevo, no una pagina nueva
+//		c.getOutputDevice().closeOpenTags();
 		helper.popClipRegions(c, lines.size());
 	}
 

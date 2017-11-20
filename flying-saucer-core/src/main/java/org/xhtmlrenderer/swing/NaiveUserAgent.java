@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 
@@ -305,7 +306,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         try {
             URI result = new URI(uri);
             if (!result.isAbsolute()) {
-                XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
+                XRLog.load(Level.FINE, uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
                 result=new URI(_baseURL).resolve(result);
             }
             ret = result.toString();

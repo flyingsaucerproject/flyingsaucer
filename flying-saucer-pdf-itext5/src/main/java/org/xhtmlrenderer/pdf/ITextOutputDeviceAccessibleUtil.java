@@ -37,7 +37,7 @@ public class ITextOutputDeviceAccessibleUtil {
 		if (struc == null) {
 			struc = getStructElement(tagDocument, htmlNodeName, root, text);
 		}
-		beginMarkedContentSequence(cb, struc, listener);
+		beginMarkedContentSequence(cb, struc, listener, htmlNodeName);
 	}
 
 	public static PdfStructureElement getStructElement(PdfStructureElement parentStruct, String htmlNodeName,
@@ -85,32 +85,42 @@ public class ITextOutputDeviceAccessibleUtil {
 		return struc;
 	}
 
-	static void endMarkedContentSequence(PdfContentByte cb, DocTagListenerAccessible listener) {
-		if(listener.getCurrentOpenTags() > 0){
-			if (listener != null) {
-				(listener).preCloseTag();
-			}
+	static void endMarkedContentSequence(PdfContentByte cb, DocTagListenerAccessible listener, String elementName) {
+		if(listener != null && listener.getCurrentOpenTags() > 0){
+			(listener).preCloseTag();
 			cb.endMarkedContentSequence();
+			XRLog.render(Level.INFO, "close:" + elementName);
+		}
+	}
+	
+	static void endAllMarkedContentSequence(PdfContentByte cb, DocTagListenerAccessible listener) {
+		if(listener != null){
+			int numOpenTags = listener.getCurrentOpenTags();
+			for (int i = 0; i < numOpenTags; i++) {
+				(listener).preCloseTag();
+				cb.endMarkedContentSequence();
+				XRLog.render(Level.INFO, "closing opened tag");
+			}
 		}
 	}
 
-	static void beginMarkedContentSequence(PdfContentByte cb, PdfStructureElement struc, DocTagListenerAccessible listener) {
+	static void beginMarkedContentSequence(PdfContentByte cb, PdfStructureElement struc, DocTagListenerAccessible listener, String elementName) {
 		if (listener != null) {
-			// Check if struc is orphan (new page creation forces to close
-			// all tags)
+			// Check if struc is orphan (new page creation forces to close all tags)
 			PdfStructureElement parentStruc = (listener).preOpenTag(struc, cb);
 			if (parentStruc != null) {
 				cb.beginMarkedContentSequence(parentStruc);
 				struc = new PdfStructureElement(parentStruc, struc.getStructureType());
 			}
 		}
+		XRLog.render(Level.INFO, "open:" + elementName);
 		cb.beginMarkedContentSequence(struc);
 	}
 
 	static void createRootListTag(Node grandFatherBlockBoxNode, PdfContentByte cb,
 			ITextOutputDeviceAccessibleBean pdfUABean, PdfName pdfName) {
 		PdfStructureElement rootListStruc = new PdfStructureElement(pdfUABean.getTagDocument(), pdfName);
-		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, rootListStruc, pdfUABean.getListener());
+		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, rootListStruc, pdfUABean.getListener(), "ul");
 		pdfUABean.setUlTagged(grandFatherBlockBoxNode);
 		pdfUABean.setCurrentBlockStrucElement(rootListStruc);
 		pdfUABean.setCurrentBlockElement((Element) grandFatherBlockBoxNode);
@@ -123,7 +133,7 @@ public class ITextOutputDeviceAccessibleUtil {
 		// LI elementos Lbl y LBody
 		// en la listas oredenadas OL se podria estabecer el campo Lbl con
 		// numeros de la lista 1. 2. etc.
-		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, li, pdfUABean.getListener());
+		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, li, pdfUABean.getListener(), "li");
 		pdfUABean.setLiTagged(htmlElement);
 	}
 
