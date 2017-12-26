@@ -9,12 +9,12 @@
     <version>9.1.20</version>
   </parent>
 
-  <artifactId>flying-saucer-openpdf</artifactId>
+  <artifactId>flying-saucer-pdf-openpdf</artifactId>
 
   <packaging>jar</packaging>
 
-  <name>Flying Saucer PDF Rendering</name>
-  <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output.</description>
+  <name>Flying Saucer PDF Rendering (OpenPDF)</name>
+  <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output. (OpenPDF)</description>
 
   <properties>
     <bouncycastle.version>1.67</bouncycastle.version>
