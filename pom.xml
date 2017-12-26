@@ -34,7 +34,7 @@
 
   <modules>
     <module>flying-saucer-core</module>
-    <module>flying-saucer-pdf</module>
+    <module>flying-saucer-pdf-openpdf</module>
     <module>flying-saucer-pdf-osgi</module>
     <module>flying-saucer-pdf-itext5</module>
     <module>flying-saucer-log4j</module>
