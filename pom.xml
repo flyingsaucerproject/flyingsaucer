@@ -22,6 +22,16 @@
     </license>
   </licenses>
 
+  <dependencyManagement>
+      <dependencies>
+          <dependency>
+              <groupId>com.github.librepdf</groupId>
+              <artifactId>openpdf</artifactId>
+              <version>${openpdf.version}</version>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>
+
   <modules>
     <module>flying-saucer-core</module>
     <module>flying-saucer-pdf</module>
@@ -150,6 +160,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <openpdf.version>1.0.5</openpdf.version>
   </properties>
 
 </project>
