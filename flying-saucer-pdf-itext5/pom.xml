@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.9</version>
+    <version>9.1.10</version>
   </parent>
 
   <artifactId>flying-saucer-pdf-itext5</artifactId>
