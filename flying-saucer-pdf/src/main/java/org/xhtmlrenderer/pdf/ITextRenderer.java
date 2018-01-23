@@ -62,6 +62,7 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class ITextRenderer {
@@ -93,10 +94,13 @@ public class ITextRenderer {
             PdfWriter.VERSION_1_5, PdfWriter.VERSION_1_6, PdfWriter.VERSION_1_7 };
 
     private Integer _pdfXConformance;
-
+	
+    private List<PdfPageEventHelper> _pdfPageEvents;
+	
 	private PDFCreationListener _listener;
 
     private boolean _timeouted;
+
 
     public ITextRenderer() {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
@@ -324,6 +328,13 @@ public class ITextRenderer {
             writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
                     _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
         }
+        
+        if(_pdfPageEvents != null) {
+        		for (PdfPageEventHelper pageEvent : _pdfPageEvents) {
+        			writer.setPageEvent(pageEvent);
+        		}
+        }
+        
         _pdfDoc = doc;
         _writer = writer;
 
@@ -556,4 +567,8 @@ public class ITextRenderer {
     public boolean isTimeouted() {
         return _timeouted;
     }
+
+	public void set_pdfPageEvents(List<PdfPageEventHelper> _pdfPageEvents) {
+		this._pdfPageEvents = _pdfPageEvents;
+	}
 }
