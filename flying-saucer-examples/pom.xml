@@ -25,9 +25,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.lowagie</groupId>
-      <artifactId>itext</artifactId>
-      <version>2.1.7</version>
+        <groupId>com.github.librepdf</groupId>
+        <artifactId>openpdf</artifactId>
     </dependency>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
@@ -36,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
-      <artifactId>flying-saucer-pdf</artifactId>
+      <artifactId>flying-saucer-pdf-openpdf</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

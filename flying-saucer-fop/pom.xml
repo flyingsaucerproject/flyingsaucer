@@ -62,12 +62,11 @@
 				<dependency>
 					<groupId>com.github.librepdf</groupId>
 					<artifactId>openpdf</artifactId>
-					<version>1.0.1</version>
 					<scope>test</scope>
 				</dependency>
 				<dependency>
 					<groupId>org.xhtmlrenderer</groupId>
-					<artifactId>flying-saucer-pdf</artifactId>
+					<artifactId>flying-saucer-pdf-openpdf</artifactId>
 					<version>${project.version}</version>
 				</dependency>
 			</dependencies>
