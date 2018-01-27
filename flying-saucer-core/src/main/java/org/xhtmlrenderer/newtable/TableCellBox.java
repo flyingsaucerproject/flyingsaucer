@@ -149,7 +149,7 @@ public class TableCellBox extends BlockBox {
         return _table;
     }
     
-    protected TableSectionBox getSection() {
+    public TableSectionBox getSection() {
         if (_section == null) {
             _section = (TableSectionBox)getParent().getParent();
         }

@@ -50,7 +50,7 @@ public class LengthValue extends DerivedValue {
     private short _lengthPrimitiveType;
     
     public LengthValue(CalculatedStyle style, CSSName name, PropertyValue value) {
-        super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
+        super(name, value, value.getPrimitiveType(), value.getCssText(), value.getCssText());
         
         _style = style;
         _lengthAsFloat = value.getFloatValue();
