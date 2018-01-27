@@ -283,6 +283,9 @@ public class XMLResource extends AbstractResource {
                 xmlReader.setFeature("http://xml.org/sax/features/validation", false);
                 // perf: namespaces
                 xmlReader.setFeature("http://xml.org/sax/features/namespaces", true);
+
+                // prevent behaviour: " no local mapping. Parser will probably pull from network." 
+                xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false); 
             } catch (SAXException s) {
                 // nothing to do--some parsers will not allow setting features
                 XRLog.load(Level.WARNING, "Could not set validation/namespace features for XML parser," +

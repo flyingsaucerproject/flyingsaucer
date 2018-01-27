@@ -17,23 +17,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.css.style.derived;
+package org.xhtmlrenderer.docx;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.parser.FSFunction;
-import org.xhtmlrenderer.css.parser.PropertyValue;
-import org.xhtmlrenderer.css.style.DerivedValue;
+import org.xhtmlrenderer.render.FSFont;
 
-public class FunctionValue extends DerivedValue {
-    private FSFunction _function;
+public class Docx4jFSFont implements FSFont {
     
-    public FunctionValue(CSSName name, PropertyValue value) {
-        super(name, value, value.getPrimitiveType(), value.getCssText(), value.getCssText());
-        
-        _function = value.getFunction();
+    private Docx4jFontDescription _font;
+    private float _size;
+    
+    public Docx4jFSFont(Docx4jFontDescription font, float size) {
+        _font = font;
+        _size = size;
+    }
+
+    public float getSize2D() {
+        return _size;
     }
     
-    public FSFunction getFunction() {
-        return _function;
+    public Docx4jFontDescription getFontDescription() {
+        return _font;
     }
 }
