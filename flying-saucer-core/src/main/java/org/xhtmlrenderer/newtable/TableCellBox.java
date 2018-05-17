@@ -339,7 +339,7 @@ public class TableCellBox extends BlockBox {
         }
         
         ContentLimitContainer contentLimitContainer = ((TableRowBox)getParent()).getContentLimitContainer();
-        ContentLimit limit = contentLimitContainer.getContentLimit(c.getPageNo());
+        ContentLimit limit = contentLimitContainer != null ? contentLimitContainer.getContentLimit(c.getPageNo()) : null;
         
         if (limit == null) {
             return null;
@@ -860,9 +860,12 @@ public class TableCellBox extends BlockBox {
         boolean result = super.isNeedsClipOnPaint(c);
         if (result) {
             return result;
+        }        
+        ContentLimitContainer contentLimitContainer = ((TableRowBox)getParent()).getContentLimitContainer();
+        if (contentLimitContainer == null) {
+          return false;
         }
-        
         return c.isPrint() && getTable().getStyle().isPaginateTable() &&
-                ((TableRowBox)getParent()).getContentLimitContainer().isContainsMultiplePages();
+            contentLimitContainer.isContainsMultiplePages();
     }
 }

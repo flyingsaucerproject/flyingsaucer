@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.11</version>
+    <version>9.1.13</version>
   </parent>
 
   <artifactId>flying-saucer-pdf-openpdf</artifactId>
@@ -17,8 +17,7 @@
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output. (OpenPDF)</description>
 
   <properties>
-  
-    <bouncycastle.version>1.38</bouncycastle.version>
+    <bouncycastle.version>1.59</bouncycastle.version>
     <junit.version>4.12</junit.version>
   </properties>
 
