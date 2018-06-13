@@ -25,8 +25,11 @@ import java.util.logging.Level;
  * An interface whose implementations log Flying Saucer log messages.
  */
 public interface XRLogger {
-    public void log(String where, Level level, String msg);
-    public void log(String where, Level level, String msg, Throwable th);
-    
-    public void setLevel(String logger, Level level);
+
+    void log(String where, Level level, String msg);
+
+    void log(String where, Level level, String msg, Throwable th);
+
+    void setLevel(String logger, Level level);
+
 }
