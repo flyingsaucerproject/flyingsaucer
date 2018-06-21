@@ -228,14 +228,14 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         	borderBounds.intersect(new Area(oldclip));
         }
         
-        setClip(borderBounds);
-        
         if (backgroundColor != null && backgroundColor != FSRGBColor.TRANSPARENT) {
             setColor(backgroundColor);
             fill(borderBounds);
         }
 
         if (backgroundImage != null) {
+            setClip(borderBounds);
+
             Rectangle localBGImageContainer = bgImageContainer;
             if (style.isFixedBackground()) {
                 localBGImageContainer = c.getViewportRectangle();
@@ -297,8 +297,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                 }
             }
 
+            setClip(oldclip);
         }
-        setClip(oldclip);
     }
 
     private int adjustTo(int target, int current, int imageDim) {
