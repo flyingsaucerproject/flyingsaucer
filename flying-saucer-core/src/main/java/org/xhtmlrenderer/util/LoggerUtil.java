@@ -20,24 +20,26 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
  * Utility class for working with java.logging Logger classes
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class LoggerUtil {
+
     /**
      * Instantiate a Logger for debug messages for a given class.
      *
-     * @param cls  PARAM
-     * @return     The debugLogger value
+     * @param cls PARAM
+     * @return The debugLogger value
      */
-    public static Logger getDebugLogger( Class cls ) {
-        Logger l = Logger.getLogger( cls.getName() );
-        l.setLevel( Level.ALL );
+    public static Logger getDebugLogger(Class cls) {
+        Logger l = Logger.getLogger(cls.getName());
+        l.setLevel(Level.ALL);
         return l;
     }
 
