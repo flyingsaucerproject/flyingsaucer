@@ -669,6 +669,7 @@ public class BlockBox extends Box implements InlinePaintable {
     protected void calcDimensions(LayoutContext c, int cssWidth) {
         if (! isDimensionsCalculated()) {
             CalculatedStyle style = getStyle();
+            boolean borderBox = style.isBorderBox();
 
             RectPropertySet padding = getPadding(c);
             BorderPropertySet border = getBorder(c);
@@ -689,16 +690,20 @@ public class BlockBox extends Box implements InlinePaintable {
             if (c.isPrint() && getStyle().isDynamicAutoWidth()) {
                 setContentWidth(calcEffPageRelativeWidth(c));
             } else {
-                setContentWidth((getContainingBlockWidth() - getLeftMBP() - getRightMBP()));
+                int proporcionalContainingBlockWidth = cssWidth != -1 ? cssWidth : getContainingBlockWidth();
+
+                if (borderBox) {
+                    setContentWidth((proporcionalContainingBlockWidth - (int)border.width() - (int)padding.width()));
+                } else {
+                    setContentWidth((proporcionalContainingBlockWidth) - getLeftMBP() - getRightMBP());
+                }
             }
             setHeight(0);
 
             if (! isAnonymous() || (isFromCaptionedTable() && isFloated())) {
                 int pinnedContentWidth = -1;
 
-                if (cssWidth != -1) {
-                    setContentWidth(cssWidth);
-                } else if (getStyle().isAbsolute() || getStyle().isFixed()) {
+                if (getStyle().isAbsolute() || getStyle().isFixed()) {
                     pinnedContentWidth = calcPinnedContentWidth(c);
                     if (pinnedContentWidth != -1) {
                         setContentWidth(pinnedContentWidth);
@@ -707,7 +712,12 @@ public class BlockBox extends Box implements InlinePaintable {
 
                 int cssHeight = getCSSHeight(c);
                 if (cssHeight != -1) {
-                    setHeight(cssHeight);
+                    if (borderBox) {
+                        setHeight(cssHeight - (int)padding.height() - (int)border.height());
+                    } else {
+                        setHeight(cssHeight);
+                    }
+
                 }
 
                 //check if replaced
