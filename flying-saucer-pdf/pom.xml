@@ -17,7 +17,7 @@
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output. (OpenPDF)</description>
 
   <properties>
-    <bouncycastle.version>1.59</bouncycastle.version>
+    <bouncycastle.version>1.60</bouncycastle.version>
     <junit.version>4.12</junit.version>
   </properties>
 
