@@ -21,31 +21,29 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-import java.util.logging.Handler;
-import java.util.logging.Formatter;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Enumeration;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.Properties;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An {@link XRLogger} interface that uses <code>java.util.logging</code>.
  */
 public class JDKXRLogger implements XRLogger {
+
     private static boolean initPending = true;
-    
-    /** {@inheritdoc} */
+
+    /**
+     * {@inheritdoc}
+     */
     public void log(String where, Level level, String msg) {
         if (initPending) {
             init();
@@ -54,7 +52,9 @@ public class JDKXRLogger implements XRLogger {
         getLogger(where).log(level, msg);
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     */
     public void log(String where, Level level, String msg, Throwable th) {
         if (initPending) {
             init();
@@ -63,7 +63,9 @@ public class JDKXRLogger implements XRLogger {
         getLogger(where).log(level, msg, th);
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     */
     public void setLevel(String logger, Level level) {
         getLogger(logger).setLevel(level);
     }
@@ -90,7 +92,7 @@ public class JDKXRLogger implements XRLogger {
             try {
                 Properties props = retrieveLoggingProperties();
 
-                if(!XRLog.isLoggingEnabled()) {
+                if (!XRLog.isLoggingEnabled()) {
                     Configuration.setConfigLogger(Logger.getLogger(XRLog.CONFIG));
                     return;
                 }
@@ -99,8 +101,6 @@ public class JDKXRLogger implements XRLogger {
                 Configuration.setConfigLogger(Logger.getLogger(XRLog.CONFIG));
             } catch (SecurityException e) {
                 // may happen in a sandbox environment
-            } catch (FileNotFoundException e) {
-                throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage(), e);
             } catch (IOException e) {
                 throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage(), e);
             }
@@ -123,19 +123,20 @@ public class JDKXRLogger implements XRLogger {
     }
 
     private static void initializeJDKLogManager(final Properties fsLoggingProperties) throws IOException {
-        final List loggers = retrieveLoggers();
+        final List<Logger> loggers = retrieveLoggers();
 
         configureLoggerHandlerForwarding(fsLoggingProperties, loggers);
 
         // load our properties into our log manager
         Enumeration keys = fsLoggingProperties.keys();
-        Map handlers = new HashMap();
-        Map handlerFormatterMap = new HashMap();
+        Map<String, Handler> handlers = new HashMap<String, Handler>();
+        Map<String, String> handlerFormatterMap = new HashMap<String, String>();
+
         while (keys.hasMoreElements()) {
             String key = (String) keys.nextElement();
             String prop = fsLoggingProperties.getProperty(key);
             if (key.endsWith("level")) {
-                configureLogLevel(key.substring(0, key.lastIndexOf(".")), prop);
+                configureLogLevel(key.substring(0, key.lastIndexOf('.')), prop);
             } else if (key.endsWith("handlers")) {
                 handlers = configureLogHandlers(loggers, prop);
             } else if (key.endsWith("formatter")) {
@@ -146,30 +147,29 @@ public class JDKXRLogger implements XRLogger {
 
         // formatters apply to a specific handler we have initialized previously,
         // hence we need to wait until we've parsed the handler class
-        for (Iterator it = handlerFormatterMap.keySet().iterator(); it.hasNext();) {
-            String handlerClassName = (String) it.next();
-            String formatterClassName = (String) handlerFormatterMap.get(handlerClassName);
+        for (String handlerClassName : handlerFormatterMap.keySet()) {
+            String formatterClassName = handlerFormatterMap.get(handlerClassName);
             assignFormatter(handlers, handlerClassName, formatterClassName);
         }
     }
 
-    private static void configureLoggerHandlerForwarding(Properties fsLoggingProperties, List loggers) {
+    private static void configureLoggerHandlerForwarding(Properties fsLoggingProperties, List<Logger> loggers) {
         String val = fsLoggingProperties.getProperty("use-parent-handler");
 
-        boolean flag = val == null ? false : Boolean.valueOf(val).booleanValue();
-        for (Iterator it = loggers.iterator(); it.hasNext();) {
-            Logger logger = (Logger) it.next();
+        boolean flag = val != null && Boolean.valueOf(val);
+        for (Logger logger : loggers) {
             logger.setUseParentHandlers(flag);
         }
     }
 
-    private static void assignFormatter(Map handlers, String handlerClassName, String formatterClassName) {
-        Handler handler = (Handler) handlers.get(handlerClassName);
+    private static void assignFormatter(Map<String, Handler> handlers, String handlerClassName, String formatterClassName) {
+        Handler handler = handlers.get(handlerClassName);
+
         if (handler != null) {
             try {
                 Class fclass = Class.forName(formatterClassName);
-                Formatter f = (Formatter) fclass.newInstance();
-                handler.setFormatter(f);
+                Formatter formatter = (Formatter) fclass.newInstance();
+                handler.setFormatter(formatter);
             } catch (ClassNotFoundException e) {
                 throw new XRRuntimeException("Could not initialize logging properties; " +
                         "Formatter class not found: " + formatterClassName);
@@ -187,14 +187,14 @@ public class JDKXRLogger implements XRLogger {
      * Returns a List of all Logger instances used by Flying Saucer from the JDK LogManager; these will
      * be automatically created if they aren't already available.
      */
-    private static List retrieveLoggers() {
-        List loggerNames = XRLog.listRegisteredLoggers();
-        List loggers = new ArrayList(loggerNames.size());
-        Iterator it = loggerNames.iterator();
-        while (it.hasNext()) {
-            final String ln = (String) it.next();
-            loggers.add(Logger.getLogger(ln));
+    private static List<Logger> retrieveLoggers() {
+        List<String> loggerNames = XRLog.listRegisteredLoggers();
+        List<Logger> loggers = new ArrayList<Logger>(loggerNames.size());
+
+        for (String loggerName : loggerNames) {
+            loggers.add(Logger.getLogger(loggerName));
         }
+
         return loggers;
     }
 
@@ -202,17 +202,16 @@ public class JDKXRLogger implements XRLogger {
      * For each logger provided, assigns the logger an instance of the named log output handlers. Will attempt
      * to instantiate each handler; any which can't be instantiated will cause the method to throw a RuntimeException.
      *
-     * @param loggers List of Logger instances.
+     * @param loggers          List of Logger instances.
      * @param handlerClassList A space-separated string (following the configuration convention for JDK logging
-     * configuration files, for handlers) of FQN of log handlers.
-     *
+     *                         configuration files, for handlers) of FQN of log handlers.
      * @return Map of handler class names to handler instances.
      */
-    private static Map configureLogHandlers(List loggers, final String handlerClassList) {
+    private static Map<String, Handler> configureLogHandlers(List<Logger> loggers, final String handlerClassList) {
         final String[] names = handlerClassList.split(" ");
-        final Map handlers = new HashMap(names.length);
-        for (int i = 0; i < names.length; i++) {
-            final String name = names[i];
+        final Map<String, Handler> handlers = new HashMap<String, Handler>(names.length);
+
+        for (final String name : names) {
             try {
                 Class handlerClass = Class.forName(name);
                 Handler handler = (Handler) handlerClass.newInstance();
@@ -232,10 +231,8 @@ public class JDKXRLogger implements XRLogger {
         }
 
         // now assign each handler to each FS logger
-        for (Iterator iterator = loggers.iterator(); iterator.hasNext();) {
-            Logger logger = (Logger) iterator.next();
-            for (Iterator ith = handlers.values().iterator(); ith.hasNext();) {
-                Handler handler = (Handler) ith.next();
+        for (Logger logger : loggers) {
+            for (Handler handler : handlers.values()) {
                 logger.addHandler(handler);
             }
         }

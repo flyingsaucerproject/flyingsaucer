@@ -1613,6 +1613,18 @@ public final class CSSName implements Comparable {
                     new SizePropertyBuilder()
             );
 
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName BOX_SIZING =
+            addProperty(
+                    "box-sizing",
+                    PRIMITIVE,
+                    "content-box",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.BoxSizing()
+            );
+
     public final static CSSSideProperties MARGIN_SIDE_PROPERTIES =
             new CSSSideProperties(
                     CSSName.MARGIN_TOP,
