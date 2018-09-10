@@ -1,4 +1,4 @@
-# Flying Saucer
+# Flying Saucer [![Download](https://api.bintray.com/packages/flyingsaucerproject/maven/org.xhtmlrenderer%3Aflying-saucer/images/download.svg)](https://bintray.com/flyingsaucerproject/maven/org.xhtmlrenderer%3Aflying-saucer/_latestVersion) [![License: LGPL v2.1](https://img.shields.io/badge/license-LGPL--2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
 
 
 ## OVERVIEW
