@@ -35,11 +35,13 @@ import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import javax.imageio.ImageIO;
+
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.util.FontUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -121,7 +123,11 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         java.io.InputStream is = null;
         String resolvedUri = resolveURI(uri);
         try {
-            is = openStream(resolvedUri);
+            if (FontUtil.isEmbeddedBase64Font(uri)) {
+                is = FontUtil.getEmbeddedBase64Data(uri);
+            } else {
+                is = openStream(resolvedUri);
+            }
         } catch (java.net.MalformedURLException e) {
             XRLog.exception("bad URL given: " + resolvedUri, e);
         } catch (java.io.FileNotFoundException e) {
