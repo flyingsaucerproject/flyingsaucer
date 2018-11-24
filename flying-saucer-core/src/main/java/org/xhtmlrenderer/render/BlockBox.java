@@ -689,7 +689,7 @@ public class BlockBox extends Box implements InlinePaintable {
             if (c.isPrint() && getStyle().isDynamicAutoWidth()) {
                 setContentWidth(calcEffPageRelativeWidth(c));
             } else {
-				setContentWidth((getContainingBlockWidth() - getLeftMBP() - getRightMBP()));
+                setContentWidth((getContainingBlockWidth() - getLeftMBP() - getRightMBP()));
             }
             setHeight(0);
 
@@ -698,13 +698,13 @@ public class BlockBox extends Box implements InlinePaintable {
 
                 boolean borderBox = style.isBorderBox();
 
-				if (cssWidth != -1) {
-					if (borderBox) {
-						setContentWidth(cssWidth - (int)border.width() - (int)padding.width());
-					} else {
-						setContentWidth(cssWidth);
-					}
-				} else if (getStyle().isAbsolute() || getStyle().isFixed()) {
+                if (cssWidth != -1) {
+                    if (borderBox) {
+                        setContentWidth(cssWidth - (int)border.width() - (int)padding.width());
+                    } else {
+                        setContentWidth(cssWidth);
+                    }
+                } else if (getStyle().isAbsolute() || getStyle().isFixed()) {
                     pinnedContentWidth = calcPinnedContentWidth(c);
                     if (pinnedContentWidth != -1) {
                         setContentWidth(pinnedContentWidth);
