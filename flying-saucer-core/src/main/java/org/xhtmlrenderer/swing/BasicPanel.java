@@ -112,7 +112,12 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         // if this is the first time painting this document, then calc layout
         Layer root = getRootLayer();
         if (root == null || isNeedRelayout()) {
-            doDocumentLayout(g.create());
+            Graphics gg = g.create();
+            try {
+                doDocumentLayout(gg);
+            } finally {
+                gg.dispose();
+            }
             root = getRootLayer();
         }
         setNeedRelayout(false);
@@ -121,11 +126,16 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
             //queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
             XRLog.render(Level.FINE, "skipping the actual painting");
         } else {
-            RenderingContext c = newRenderingContext((Graphics2D) g.create());
-            long start = System.currentTimeMillis();
-            doRender(c, root);
-            long end = System.currentTimeMillis();
-            XRLog.render(Level.FINE, "RENDERING TOOK " + (end - start) + " ms");
+            Graphics gg = g.create();
+            try {
+                RenderingContext c = newRenderingContext((Graphics2D) gg);
+                long start = System.currentTimeMillis();
+                doRender(c, root);
+                long end = System.currentTimeMillis();
+                XRLog.render(Level.FINE, "RENDERING TOOK " + (end - start) + " ms");
+            } finally {
+                gg.dispose();
+            }
         }
     }
 
