@@ -12,24 +12,31 @@ body { background: #4784FF; border: 0px solid red; margin: 0px;}
 div { border: 0px solid red; padding: 0px; margin: 0px;}
 
 .section {
-	background-image: url(images/body-r.png);
-	background-repeat: no-repeat;
+  background: white;
 	background-position: bottom right;
 	padding: 0px;
 	}
 
 .top {
-	background-image: url(images/head-r.png);
-	background-repeat: no-repeat;
+  background: white;
 	background-position: top right;
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+	<!-- box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.3); -->
 	}
 	
 .content {
-	background-image: url(images/body-l.png);
-	background-repeat: no-repeat;
+	border-bottom-right-radius: 20px;
+	border-bottom-left-radius: 20px;
+  background: white;
 	background-position: bottom left;
+	<!-- box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.3); -->
 	}
-.top div { background: url(images/head-l.png) no-repeat top left; } 
+.top div {
+	background: white;
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+}
 
 .content { padding-bottom: 2em; }
 
