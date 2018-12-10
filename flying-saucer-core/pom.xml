@@ -20,13 +20,6 @@
     </license>
   </licenses>
 
-  <distributionManagement>
-    <repository>
-      <id>bintray</id>
-      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer</url>
-    </repository>
-  </distributionManagement>
-
   <packaging>jar</packaging>
 
   <name>Flying Saucer Core Renderer</name>
