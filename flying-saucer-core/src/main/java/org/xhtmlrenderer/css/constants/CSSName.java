@@ -1278,43 +1278,55 @@ public final class CSSName implements Comparable {
                     new PrimitivePropertyBuilders.BorderLeftWidth()
             );
 
+    /**
+     * Unique CSSName instance for CSS3 property.
+     */
     public final static CSSName BORDER_TOP_LEFT_RADIUS =
             addProperty(
                     "border-top-left-radius",
                     PRIMITIVE,
-                    "0px",
+                    "0 0",
                     NOT_INHERITED,
-                    false,
+                    true,
                     new PrimitivePropertyBuilders.BorderTopLeftRadius()
             );
 
+    /**
+     * Unique CSSName instance for CSS3 property.
+     */
     public final static CSSName BORDER_TOP_RIGHT_RADIUS =
             addProperty(
                     "border-top-right-radius",
                     PRIMITIVE,
-                    "0px",
+                    "0 0",
                     NOT_INHERITED,
-                    false,
+                    true,
                     new PrimitivePropertyBuilders.BorderTopRightRadius()
             );
 
+    /**
+     * Unique CSSName instance for CSS3 property.
+     */
     public final static CSSName BORDER_BOTTOM_RIGHT_RADIUS =
             addProperty(
                     "border-bottom-right-radius",
                     PRIMITIVE,
-                    "0px",
+                    "0 0",
                     NOT_INHERITED,
-                    false,
+                    true,
                     new PrimitivePropertyBuilders.BorderBottomRightRadius()
             );
 
+    /**
+     * Unique CSSName instance for CSS3 property.
+     */
     public final static CSSName BORDER_BOTTOM_LEFT_RADIUS =
             addProperty(
                     "border-bottom-left-radius",
                     PRIMITIVE,
-                    "0px",
+                    "0 0",
                     NOT_INHERITED,
-                    false,
+                    true,
                     new PrimitivePropertyBuilders.BorderBottomLeftRadius()
             );
 
@@ -1419,6 +1431,8 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new BackgroundPropertyBuilder()
             );
+
+
     /**
      * Unique CSSName instance for CSS3 property.
      */
@@ -1428,11 +1442,8 @@ public final class CSSName implements Comparable {
                     SHORTHAND,
                     "0px",
                     NOT_INHERITED,
-                    false,
-                    new PrimitivePropertyBuilders.BorderRadius()
-                    // discarded during merge - PR #22
-                    //true,
-                    //new OneToFourPropertyBuilders.BorderRadius()
+                    true,
+                    new OneToFourPropertyBuilders.BorderRadius()
             );
 
     /**

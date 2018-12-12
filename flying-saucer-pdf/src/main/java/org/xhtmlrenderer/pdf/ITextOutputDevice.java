@@ -131,8 +131,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private float _opacity = 1f;
 
-    private float _opacity = 1f;
-
     private Area _clip;
 
     private SharedContext _sharedContext;
@@ -405,18 +403,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
         draw(bounds);
     }
-
-    public void setOpacity(float opacity) {
-    	if (opacity != _opacity) {
-    		PdfGState gs = new PdfGState();
-
-        	gs.setBlendMode(PdfGState.BM_NORMAL);
-        	gs.setFillOpacity(opacity);
-
-        	_currentPage.setGState(gs);
-        	_opacity = opacity;
-    	}
-	}
 
     public void setOpacity(float opacity) {
     	if (opacity != _opacity) {
