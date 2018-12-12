@@ -19,13 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
@@ -195,13 +189,20 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     }
     
     public void setOpacity(float opacity) {
-    	// TODO: implement opacity
+        if (opacity == 1)
+        {
+            _graphics.setComposite(AlphaComposite.SrcOver);
+        }
+        else
+        {
+            _graphics.setComposite(AlphaComposite.SrcOver.derive(opacity));
+        }
 	}
     
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
-            FSRGBColor rgb = (FSRGBColor)color;
-            _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
+            final FSRGBColor rgb = (FSRGBColor) color;
+            _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(),(int) (rgb.getAlpha() * 255)));
         } else {
             throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
