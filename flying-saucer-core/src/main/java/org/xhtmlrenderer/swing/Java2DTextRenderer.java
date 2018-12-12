@@ -53,7 +53,7 @@ public class Java2DTextRenderer implements TextRenderer {
 
     public Java2DTextRenderer() {
         scale = Configuration.valueAsFloat("xr.text.scale", 1.0f);
-        threshold = Configuration.valueAsFloat("xr.text.aa-fontsize-threshhold", 25);
+        threshold = Configuration.valueAsFloat("xr.text.aa-fontsize-threshhold", 0);
 
         Object dummy = new Object();
 
