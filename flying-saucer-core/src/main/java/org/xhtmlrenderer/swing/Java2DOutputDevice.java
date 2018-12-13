@@ -22,19 +22,25 @@ package org.xhtmlrenderer.swing;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.LinearGradientPaint;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.AlphaComposite;
 import java.awt.RenderingHints.Key;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.logging.Level;
 
 import javax.swing.*;
 
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient.StopValue;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -47,6 +53,7 @@ import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.XRLog;
 
 public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDevice {
     private Graphics2D _graphics;
@@ -59,7 +66,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         this(outputImage.createGraphics());
     }
     
-    
+
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         if (inlineText.isSelected()) {
             InlineLayoutBox iB = inlineText.getParent();
@@ -193,11 +200,22 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                     image, (int)location.getX(), (int)location.getY(), null);
         }
     }
-    
+
+    public void setOpacity(float opacity) {
+        if (opacity == 1)
+        {
+            _graphics.setComposite(AlphaComposite.SrcOver);
+        }
+        else
+        {
+            _graphics.setComposite(AlphaComposite.SrcOver.derive(opacity));
+        }
+	}
+
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
-            FSRGBColor rgb = (FSRGBColor)color;
-            _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
+            final FSRGBColor rgb = (FSRGBColor) color;
+            _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(),(int) (rgb.getAlpha() * 255)));
         } else {
             throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
@@ -218,11 +236,11 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void setClip(Shape s) {
         _graphics.setClip(s);
     }
-    
+
     public Shape getClip() {
         return _graphics.getClip();
     }
-    
+
     public void clip(Shape s) {
         _graphics.clip(s);
     }
@@ -266,20 +284,53 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void fill(Shape s) {
         _graphics.fill(s);
     }
-    
+
     public void draw(Shape s) {
         _graphics.draw(s);
     }
-    
+
     public void drawImage(FSImage image, int x, int y) {
         _graphics.drawImage(((AWTFSImage)image).getImage(), x, y, null);
     }
-    
+
     public boolean isSupportsSelection() {
         return true;
     }
-    
+
     public boolean isSupportsCMYKColors() {
         return true;
     }
+
+	@Override
+	public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height)
+	{
+		float[] fractions = new float[gradient.getStopPoints().size()];
+		Color[] colors = new Color[gradient.getStopPoints().size()];
+
+		float range = gradient.getStopPoints().get(gradient.getStopPoints().size() - 1).getLength() -
+				gradient.getStopPoints().get(0).getLength();
+
+		int i = 0;
+		for (StopValue pt : gradient.getStopPoints())
+		{
+	        if (pt.getColor() instanceof FSRGBColor) {
+	            FSRGBColor rgb = (FSRGBColor) pt.getColor();
+	            colors[i] = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+	        } else {
+	            throw new RuntimeException("internal error: unsupported color class " + pt.getColor().getClass().getName());
+	        }
+
+	        if (range != 0)
+	        	fractions[i] = (pt.getLength() / range);
+
+	        i++;
+		}
+
+        LinearGradientPaint paint = new LinearGradientPaint(
+                gradient.getStartX() + x, gradient.getStartY() + y,
+                gradient.getEndX() + x, gradient.getEndY() + y, fractions, colors);
+		_graphics.setPaint(paint);
+		_graphics.fillRect(x, y, width, height);
+		_graphics.setPaint(null);
+	}
 }

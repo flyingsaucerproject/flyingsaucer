@@ -55,6 +55,7 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -90,6 +91,7 @@ import com.itextpdf.text.pdf.PdfOutline;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfTextArray;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfGState;
 
 /**
  * This class is largely based on {@link com.itextpdf.text.pdf.PdfGraphics2D}.
@@ -398,6 +400,15 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
         draw(bounds);
     }
+    
+    public void setOpacity(float opacity) {
+    	PdfGState gs = new PdfGState();
+
+    	System.out.println("Setting opacity to " + opacity);
+    	
+    	gs.setFillOpacity(opacity);
+    	_currentPage.setGState(gs);
+	}
 
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
@@ -579,6 +590,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (!(_color.equals(_fillColor))) {
             _fillColor = _color;
             _currentPage.setColorFill(_fillColor);
+            
+            if (_fillColor.getAlpha() < 255) {
+            	setOpacity(_fillColor.getAlpha()/255.0f);
+            }
         }
     }
 
@@ -845,6 +860,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 throw new XRRuntimeException(e.getMessage(), e);
             }
         }
+    }
+
+    @Override
+    public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height) {
+        // TODO: implement
     }
 
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {

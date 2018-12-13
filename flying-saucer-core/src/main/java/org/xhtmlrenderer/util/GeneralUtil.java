@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -34,6 +35,16 @@ import java.util.List;
  */
 public class GeneralUtil {
 
+    public static boolean ciEquals(final String a, final String b)
+    {
+        if (a == null)
+            return b == null;
+
+        if (b == null)
+            return false;
+
+        return a.toLowerCase(Locale.US).equals(b.toLowerCase(Locale.US));
+    }
     /**
      * Used to format an Object's hashcode into a 0-padded 10 char String, e.g.
      * for 24993066 returns "0024993066"

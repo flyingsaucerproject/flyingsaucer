@@ -57,6 +57,7 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -95,6 +96,7 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfString;
 import com.lowagie.text.pdf.PdfTextArray;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.PdfGState;
 
 /**
  * This class is largely based on {@link com.lowagie.text.pdf.PdfGraphics2D}.
@@ -127,6 +129,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private Stroke _stroke = null;
     private Stroke _originalStroke = null;
     private Stroke _oldStroke = null;
+
+    private float _opacity = 1f;
 
     private Area _clip;
 
@@ -401,10 +405,22 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         draw(bounds);
     }
 
+    public void setOpacity(float opacity) {
+    	if (opacity != _opacity) {
+    		PdfGState gs = new PdfGState();
+
+        	gs.setBlendMode(PdfGState.BM_NORMAL);
+        	gs.setFillOpacity(opacity);
+
+        	_currentPage.setGState(gs);
+        	_opacity = opacity;
+    	}
+	}
+
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
             FSRGBColor rgb = (FSRGBColor) color;
-            _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+            _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), (int) (rgb.getAlpha()*255));
         } else if (color instanceof FSCMYKColor) {
             FSCMYKColor cmyk = (FSCMYKColor) color;
             _color = new CMYKColor(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getBlack());
@@ -582,6 +598,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (!(_color.equals(_fillColor))) {
             _fillColor = _color;
             _currentPage.setColorFill(_fillColor);
+
+            if (_fillColor.getAlpha() < 255) {
+            	setOpacity(_fillColor.getAlpha()/255.0f);
+            }
         }
     }
 
@@ -849,6 +869,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 throw new XRRuntimeException(e.getMessage(), e);
             }
         }
+    }
+
+    @Override
+    public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height) {
     }
 
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {

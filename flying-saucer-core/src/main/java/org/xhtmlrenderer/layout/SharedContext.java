@@ -65,7 +65,7 @@ public class SharedContext {
 
     private boolean interactive = true;
 
-    private Map idMap;
+    private Map<String, Box> idMap;
 
     /*
      * used to adjust fonts, ems, points, into screen resolution
@@ -96,7 +96,7 @@ public class SharedContext {
 
     private ReplacedElementFactory replacedElementFactory;
     private Rectangle temp_canvas;
-    
+
     private LineBreakingStrategy lineBreakingStrategy = new DefaultLineBreakingStrategy();
 
     public SharedContext() {

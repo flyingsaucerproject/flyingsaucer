@@ -776,6 +776,16 @@ public final class CSSName implements Comparable {
                     true,
                     new PrimitivePropertyBuilders.Orphans()
             );
+    
+    public final static CSSName OPACITY =
+    		addProperty(
+    				"opacity",
+    				PRIMITIVE,
+    				"1",
+                    NOT_INHERITED, // PR22 - INHERITS
+    				true,
+    				new PrimitivePropertyBuilders.Opacity()
+    		);
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1070,7 +1080,7 @@ public final class CSSName implements Comparable {
                     INHERITS,
                     new PrimitivePropertyBuilders.WordWrap()
             );
-    
+
     /**
      * Unique CSSName instance for CSS3 property.
      */
@@ -1319,7 +1329,7 @@ public final class CSSName implements Comparable {
                     true,
                     new PrimitivePropertyBuilders.BorderBottomLeftRadius()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -1421,7 +1431,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new BackgroundPropertyBuilder()
             );
-    
+
 
     /**
      * Unique CSSName instance for CSS3 property.
@@ -1600,7 +1610,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new OneToFourPropertyBuilders.Padding()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */

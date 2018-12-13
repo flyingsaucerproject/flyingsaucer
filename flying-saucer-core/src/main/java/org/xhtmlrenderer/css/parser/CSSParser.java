@@ -1485,6 +1485,33 @@ public class CSSParser {
         PropertyValue result = null;
         switch (t.getType()) {
             case Token.ANGLE:
+            {
+                String unit = extractUnit(t);
+                short type;
+
+                if ("deg".equals(unit))
+                {
+                    type = CSSPrimitiveValue.CSS_DEG;
+                }
+                else if ("rad".equals(unit))
+                {
+                    type = CSSPrimitiveValue.CSS_RAD;
+                }
+                else
+                {
+                    throw new CSSParseException("Unsupported CSS unit " + unit, getCurrentLine());
+                }
+
+                result = new PropertyValue(type,
+                        sign * Float.parseFloat(extractNumber(t)),
+                        sign(sign) + getTokenValue(t));
+
+                next();
+                skip_whitespace();
+                break;
+            }
+
+
             case Token.TIME:
             case Token.FREQ:
             case Token.DIMENSION:
@@ -1629,7 +1656,7 @@ public class CSSParser {
                 throw new CSSParseException(t, Token.TK_RPAREN, getCurrentLine());
             }
 
-            if (f.equals("rgb(")) {
+            if (f.equals("rgb(") || f.equals("rgba(")) {
                 result = new PropertyValue(createRGBColorFromFunction(params));
             } else if (f.equals("cmyk(")) {
                 if (! isSupportCMYKColors()) {
@@ -1690,15 +1717,16 @@ public class CSSParser {
     }
 
     private FSRGBColor createRGBColorFromFunction(List params) {
-        if (params.size() != 3) {
+        if (params.size() != 3 && params.size() != 4) {
             throw new CSSParseException(
-                    "The rgb() function must have exactly three parameters",
+                    "The rgb() function must have three or four parameters",
                     getCurrentLine());
         }
 
         int red = 0;
         int green = 0;
         int blue = 0;
+        float alpha = 1;
         for (int i = 0; i < params.size(); i++) {
             PropertyValue value = (PropertyValue)params.get(i);
             short type = value.getPrimitiveType();
@@ -1707,6 +1735,12 @@ public class CSSParser {
                 throw new CSSParseException(
                         "Parameter " + (i+1) + " to the rgb() function is " +
                         "not a number or percentage", getCurrentLine());
+            }
+            
+            if (type != CSSPrimitiveValue.CSS_NUMBER && i==3) {
+            	throw new CSSParseException(
+            			"Parameter alpha to the rgba() function is " +
+            		    "not a number", getCurrentLine());
             }
 
             float f = value.getFloatValue();
@@ -1729,10 +1763,13 @@ public class CSSParser {
                 case 2:
                     blue = (int)f;
                     break;
+                case 3:
+                	alpha = f;
+                	break;
             }
         }
 
-        return new FSRGBColor(red, green, blue);
+        return new FSRGBColor(red, green, blue, alpha);
     }
 
 //  /*
