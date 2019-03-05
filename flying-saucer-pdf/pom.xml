@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.16</version>
+    <version>9.1.17</version>
   </parent>
 
   <artifactId>flying-saucer-pdf-openpdf</artifactId>
@@ -19,7 +19,7 @@
   <properties>
     <bouncycastle.version>1.60</bouncycastle.version>
     <junit.version>4.12</junit.version>
-    <openpdf.version>1.2.3</openpdf.version>
+    <openpdf.version>1.2.5</openpdf.version>
     <itext.version>2.1.7</itext.version>
   </properties>
 
