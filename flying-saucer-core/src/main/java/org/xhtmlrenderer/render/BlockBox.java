@@ -703,7 +703,9 @@ public class BlockBox extends Box implements InlinePaintable {
             if (! isAnonymous() || (isFromCaptionedTable() && isFloated())) {
                 int pinnedContentWidth = -1;
 
-                if (getStyle().isAbsolute() || getStyle().isFixed()) {
+                if (cssWidth != -1 && !borderBox) {
+                    setContentWidth(cssWidth);
+                } else if (getStyle().isAbsolute() || getStyle().isFixed()) {
                     pinnedContentWidth = calcPinnedContentWidth(c);
                     if (pinnedContentWidth != -1) {
                         setContentWidth(pinnedContentWidth);
