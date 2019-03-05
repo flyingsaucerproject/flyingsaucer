@@ -15,7 +15,7 @@
 
   <name>Flying Saucer SWT Examples</name>
   <description>Examples that use SWT.  It is not deployed with a release.</description>
-  
+
   <licenses>
     <license>
       <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>

@@ -42,11 +42,11 @@
           <instructions>
             <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.pdf.osgi</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <!-- This bundle re-bundles the original flying-saucer-pdf artifact 
+            <!-- This bundle re-bundles the original flying-saucer-pdf artifact
               and only needs to import packages from flying-saucer-core. -->
             <Import-Package>org.xhtmlrenderer.*</Import-Package>
-            <!-- Do not export package org.xhtmlrenderer.simple as it is 
-              already exported by flying-saucer-core and this would lead to a split package 
+            <!-- Do not export package org.xhtmlrenderer.simple as it is
+              already exported by flying-saucer-core and this would lead to a split package
               without correctly marking it as such. -->
             <Export-Package>!org.xhtmlrenderer.simple,org.xhtmlrenderer.*</Export-Package>
             <Embed-Dependency>*;scope=compile|runtime;artifactId=!flying-saucer-core</Embed-Dependency>
