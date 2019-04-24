@@ -904,6 +904,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public void finish(RenderingContext c, Box root) {
         writeOutline(c, root);
         writeNamedDestinations(c);
+        _bookmarks.clear();
     }
 
     private void writeOutline(RenderingContext c, Box root) {
