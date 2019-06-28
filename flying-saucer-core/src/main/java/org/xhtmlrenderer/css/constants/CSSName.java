@@ -110,7 +110,7 @@ public final class CSSName implements Comparable {
     /**
      * Map of all CSS properties
      */
-    private static final CSSName[] ALL_PROPERTIES;
+    private static CSSName[] ALL_PROPERTIES;
 
     /**
      * Map of all CSS properties
@@ -1821,6 +1821,10 @@ public final class CSSName implements Comparable {
     }
 
     static {
+    	reload();
+    }
+    
+    public static void reload() {
         Iterator iter = ALL_PROPERTY_NAMES.values().iterator();
         ALL_PROPERTIES = new CSSName[ALL_PROPERTY_NAMES.size()];
         while (iter.hasNext()) {
@@ -2029,4 +2033,3 @@ public final class CSSName implements Comparable {
  *
  *
  */
-
