@@ -281,7 +281,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
                         _writer.addAnnotation(annot);
                     }
-                } else if (uri.indexOf("://") != -1) {
+                } else {
                     int boxTop = box.getAbsY();
                     int boxBottom = boxTop + box.getHeight();
                     int pageTop = c.getPage().getTop();
