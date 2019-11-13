@@ -681,7 +681,7 @@ public class Layer {
     }
     
     private void layoutAbsoluteChildren(LayoutContext c) {
-        List children = getChildren();
+        List children = new ArrayList(getChildren());
         if (children.size() > 0) {
             LayoutState state = c.captureLayoutState();
             for (int i = 0; i < children.size(); i++) {
