@@ -160,7 +160,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <openpdf.version>1.3.11</openpdf.version>
+    <openpdf.version>1.3.12</openpdf.version>
   </properties>
 
 </project>
