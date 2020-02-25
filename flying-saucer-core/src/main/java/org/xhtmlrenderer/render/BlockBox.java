@@ -669,7 +669,6 @@ public class BlockBox extends Box implements InlinePaintable {
     protected void calcDimensions(LayoutContext c, int cssWidth) {
         if (! isDimensionsCalculated()) {
             CalculatedStyle style = getStyle();
-            boolean borderBox = style.isBorderBox();
 
             RectPropertySet padding = getPadding(c);
             BorderPropertySet border = getBorder(c);
@@ -690,20 +689,22 @@ public class BlockBox extends Box implements InlinePaintable {
             if (c.isPrint() && getStyle().isDynamicAutoWidth()) {
                 setContentWidth(calcEffPageRelativeWidth(c));
             } else {
-                int proporcionalContainingBlockWidth = cssWidth != -1 ? cssWidth : getContainingBlockWidth();
-
-                if (borderBox) {
-                    setContentWidth((proporcionalContainingBlockWidth - (int)border.width() - (int)padding.width()));
-                } else {
-                    setContentWidth((proporcionalContainingBlockWidth) - getLeftMBP() - getRightMBP());
-                }
+                setContentWidth((getContainingBlockWidth() - getLeftMBP() - getRightMBP()));
             }
             setHeight(0);
 
             if (! isAnonymous() || (isFromCaptionedTable() && isFloated())) {
                 int pinnedContentWidth = -1;
 
-                if (getStyle().isAbsolute() || getStyle().isFixed()) {
+                boolean borderBox = style.isBorderBox();
+
+                if (cssWidth != -1) {
+                    if (borderBox) {
+                        setContentWidth(cssWidth - (int)border.width() - (int)padding.width());
+                    } else {
+                        setContentWidth(cssWidth);
+                    }
+                } else if (getStyle().isAbsolute() || getStyle().isFixed()) {
                     pinnedContentWidth = calcPinnedContentWidth(c);
                     if (pinnedContentWidth != -1) {
                         setContentWidth(pinnedContentWidth);

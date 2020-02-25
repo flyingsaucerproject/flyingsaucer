@@ -40,6 +40,8 @@ public class TextFormField extends AbstractFormField
 
   private int _baseline;
 
+  private boolean multiline = false;
+
   public TextFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
   {
     initDimensions(c, box, cssWidth, cssHeight);
@@ -66,6 +68,7 @@ public class TextFormField extends AbstractFormField
     if (cssHeight != -1)
     {
       setHeight(cssHeight);
+      multiline = true;
     }
     else
     {
@@ -90,12 +93,16 @@ public class TextFormField extends AbstractFormField
 
     String value = getValue(elem);
     field.setText(value);
+    field.setMaxCharacterLength(getMaxLength(elem));
 
     try
     {
       PdfFormField formField = field.getTextField();
+      if( multiline) {
+        formField.setFieldFlags(PdfFormField.FF_MULTILINE);
+      }
       createAppearance(c, outputDevice, box, formField, value);
-      //TODO add max length back in
+
       if (isReadOnly(elem))
       {
         formField.setFieldFlags(PdfFormField.FF_READ_ONLY);
