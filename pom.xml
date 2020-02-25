@@ -53,15 +53,11 @@
 
   <distributionManagement>
     <repository>
-      <id>gamatron</id>
-      <url>https://www.gamatron.net/nexus/repository/maven-releases/</url>
+      <id>github</id>
+      <name>GitHub OpenGrabeso Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/OpenGrabeso/packages</url>
     </repository>
-    <snapshotRepository>
-      <id>gamatron</id>
-      <url>https://www.gamatron.net/nexus/repository/maven-snapshots/</url>
-    </snapshotRepository>
   </distributionManagement>
-
   <developers>
     <developer>
       <id>pdoubleya</id>
