@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.20-opengrabeso.x1</version>
+    <version>9.1.20-opengrabeso.4</version>
   </parent>
 
   <artifactId>flying-saucer-examples</artifactId>

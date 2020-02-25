@@ -1,7 +1,6 @@
 name: Deploy (Maven)
 
 on:
-  push:
   release:
     types:
       - created
