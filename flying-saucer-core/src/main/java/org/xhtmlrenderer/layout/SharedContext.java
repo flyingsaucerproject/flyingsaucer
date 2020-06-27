@@ -553,13 +553,15 @@ public class SharedContext {
     }
 
     public CalculatedStyle getStyle(Element e, boolean restyle) {
-        if (styleMap == null) {
-            styleMap = new HashMap(1024, 0.75f);
+	Map localMap = styleMap;
+	    
+        if (localMap == null) {
+            localMap = new HashMap(1024, 0.75f);
         }
 
         CalculatedStyle result = null;
         if (! restyle) {
-            result = (CalculatedStyle)styleMap.get(e);
+            result = (CalculatedStyle)localMap.get(e);
         }
         if (result == null) {
             Node parent = e.getParentNode();
@@ -572,8 +574,10 @@ public class SharedContext {
 
             result = parentCalculatedStyle.deriveStyle(getCss().getCascadedStyle(e, restyle));
 
-            styleMap.put(e, result);
+            localMap.put(e, result);
         }
+	    
+	styleMap = localMap;
 
         return result;
     }
