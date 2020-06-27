@@ -553,7 +553,7 @@ public class SharedContext {
     }
 
     public CalculatedStyle getStyle(Element e, boolean restyle) {
-	Map localMap = styleMap;
+        Map localMap = styleMap;
 	    
         if (localMap == null) {
             localMap = new HashMap(1024, 0.75f);
@@ -576,8 +576,8 @@ public class SharedContext {
 
             localMap.put(e, result);
         }
-	    
-	styleMap = localMap;
+
+        styleMap = localMap;
 
         return result;
     }
