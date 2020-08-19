@@ -86,6 +86,9 @@ public class NoNamespaceHandler implements NamespaceHandler {
     }
 
     public String getLang(org.w3c.dom.Element e) {
+        if(e == null) {
+            return "";
+        }
         return e.getAttribute("lang");
     }
 

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.0.10-SNAPSHOT</version>
+    <version>9.1.20</version>
   </parent>
 
   <artifactId>flying-saucer-log4j</artifactId>
@@ -26,32 +27,65 @@
   <distributionManagement>
     <repository>
       <id>bintray</id>
-      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer-log4j</url>
+      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer</url>
     </repository>
   </distributionManagement>
 
   <dependencies>
     <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.17</version>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
     </dependency>
     <dependency>
-        <groupId>org.xhtmlrenderer</groupId>
-        <artifactId>flying-saucer-core</artifactId>
-        <version>${project.version}</version>
+      <groupId>org.xhtmlrenderer</groupId>
+      <artifactId>flying-saucer-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
   <build>
-	  <resources>
-	    <resource>
-	      <directory>../</directory>
-	      <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
-	      <includes>
-	        <include>LICENSE*</include>
-	      </includes>
-	    </resource>
-	  </resources>
+    <resources>
+      <resource>
+        <directory>../</directory>
+        <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+        <includes>
+          <include>LICENSE*</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.pdf.itext5</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- Dependency resolution seems not to work properly with default 
+              behavior of importing the exported packages. -->
+            <Import-Package>!org.xhtmlrenderer.*,*</Import-Package>
+            <Export-Package>org.xhtmlrenderer.*</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

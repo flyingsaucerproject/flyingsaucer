@@ -32,6 +32,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+import org.w3c.dom.EntityReference;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -1212,6 +1213,18 @@ public class BoxBuilder {
                     */
 
                     child = createInlineBox(textNode.getData(), parent, parentStyle, textNode);
+
+                    InlineBox iB = (InlineBox) child;
+                    iB.setEndsHere(true);
+                    if (previousIB == null) {
+                        iB.setStartsHere(true);
+                    } else {
+                        previousIB.setEndsHere(false);
+                    }
+                    previousIB = iB;
+                } else if(nodeType == Node.ENTITY_REFERENCE_NODE) {
+                    EntityReference entityReference = (EntityReference)working;
+                    child = createInlineBox(entityReference.getTextContent(), parent, parentStyle, null);
 
                     InlineBox iB = (InlineBox) child;
                     iB.setEndsHere(true);

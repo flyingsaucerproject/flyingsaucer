@@ -26,11 +26,12 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.Breaker;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
+import org.xhtmlrenderer.layout.breaker.BreakPointsProvider;
+import org.xhtmlrenderer.layout.breaker.Breaker;
 
 /**
  * A class which reprsents a portion of an inline element. If an inline element
@@ -228,10 +229,11 @@ public class InlineBox implements Styleable {
         int lastWord = 0;
 
         String text = getText(trimLeadingSpace);
-        BreakIterator breakIterator = Breaker.getWordStream(text);
+        
+        BreakPointsProvider breakIterator = Breaker.getBreakPointsProvider(text, c, getElement(), getStyle());
 
         // Breaker should be used
-        while ( (current = breakIterator.next()) != BreakIterator.DONE) {
+        while ( (current = breakIterator.next().getPosition()) != BreakIterator.DONE) {
             String currentWord = text.substring(last, current);
             int wordWidth = getTextWidth(c, currentWord);
             int minWordWidth;

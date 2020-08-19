@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.xhtmlrenderer</groupId>
   <artifactId>flying-saucer-parent</artifactId>
-  <version>9.0.10-SNAPSHOT</version>
+  <version>9.1.20</version>
 
   <packaging>pom</packaging>
 
@@ -21,15 +22,27 @@
     </license>
   </licenses>
 
+  <dependencyManagement>
+      <dependencies>
+          <dependency>
+              <groupId>com.github.librepdf</groupId>
+              <artifactId>openpdf</artifactId>
+              <version>${openpdf.version}</version>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>
+
   <modules>
     <module>flying-saucer-core</module>
     <module>flying-saucer-pdf</module>
+    <module>flying-saucer-pdf-osgi</module>
     <module>flying-saucer-pdf-itext5</module>
     <module>flying-saucer-log4j</module>
     <module>flying-saucer-swt</module>
     <module>flying-saucer-swt-examples</module>
     <module>flying-saucer-examples</module>
     <module>flying-saucer-pdf-itext5-accessible</module>
+    <module>flying-saucer-fop</module>
   </modules>
 
   <scm>
@@ -42,7 +55,7 @@
   <distributionManagement>
     <repository>
       <id>bintray</id>
-      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer-parent</url>
+      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer</url>
     </repository>
   </distributionManagement>
 
@@ -121,11 +134,34 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
+      </plugin>
     </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <openpdf.version>1.3.11</openpdf.version>
   </properties>
 
 </project>

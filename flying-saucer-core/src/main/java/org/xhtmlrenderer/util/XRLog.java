@@ -33,29 +33,30 @@ import java.util.logging.Level;
  * @author empty
  */
 public class XRLog {
-    private static final List LOGGER_NAMES = new ArrayList(20);
-    public final static String CONFIG = registerLoggerByName("org.xhtmlrenderer.config");
-    public final static String EXCEPTION = registerLoggerByName("org.xhtmlrenderer.exception");
-    public final static String GENERAL = registerLoggerByName("org.xhtmlrenderer.general");
-    public final static String INIT = registerLoggerByName("org.xhtmlrenderer.init");
-    public final static String JUNIT = registerLoggerByName("org.xhtmlrenderer.junit");
-    public final static String LOAD = registerLoggerByName("org.xhtmlrenderer.load");
-    public final static String MATCH = registerLoggerByName("org.xhtmlrenderer.match");
-    public final static String CASCADE = registerLoggerByName("org.xhtmlrenderer.cascade");
-    public final static String XML_ENTITIES = registerLoggerByName("org.xhtmlrenderer.load.xml-entities");
-    public final static String CSS_PARSE = registerLoggerByName("org.xhtmlrenderer.css-parse");
-    public final static String LAYOUT = registerLoggerByName("org.xhtmlrenderer.layout");
-    public final static String RENDER = registerLoggerByName("org.xhtmlrenderer.render");
 
-    private static String registerLoggerByName(final String loggerName) {
-        LOGGER_NAMES.add(loggerName);
-        return loggerName;
-    }
+    private static final List<String> LOGGER_NAMES = new ArrayList<String>(20);
+    public static final String CONFIG = registerLoggerByName("org.xhtmlrenderer.config");
+    public static final String EXCEPTION = registerLoggerByName("org.xhtmlrenderer.exception");
+    public static final String GENERAL = registerLoggerByName("org.xhtmlrenderer.general");
+    public static final String INIT = registerLoggerByName("org.xhtmlrenderer.init");
+    public static final String JUNIT = registerLoggerByName("org.xhtmlrenderer.junit");
+    public static final String LOAD = registerLoggerByName("org.xhtmlrenderer.load");
+    public static final String MATCH = registerLoggerByName("org.xhtmlrenderer.match");
+    public static final String CASCADE = registerLoggerByName("org.xhtmlrenderer.cascade");
+    public static final String XML_ENTITIES = registerLoggerByName("org.xhtmlrenderer.load.xml-entities");
+    public static final String CSS_PARSE = registerLoggerByName("org.xhtmlrenderer.css-parse");
+    public static final String LAYOUT = registerLoggerByName("org.xhtmlrenderer.layout");
+    public static final String RENDER = registerLoggerByName("org.xhtmlrenderer.render");
 
     private static boolean initPending = true;
     private static XRLogger loggerImpl;
 
     private static boolean loggingEnabled = true;
+
+    private static String registerLoggerByName(final String loggerName) {
+        LOGGER_NAMES.add(loggerName);
+        return loggerName;
+    }
 
     /**
      * Returns a list of all loggers that will be accessed by XRLog. Each entry is a String with a logger
@@ -64,9 +65,9 @@ public class XRLog {
      *
      * @return List of loggers, never null.
      */
-    public static List listRegisteredLoggers() {
+    public static List<String> listRegisteredLoggers() {
         // defensive copy
-        return new ArrayList(LOGGER_NAMES);
+        return new ArrayList<String>(LOGGER_NAMES);
     }
 
 
@@ -216,7 +217,7 @@ public class XRLog {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
             XRLog.cascade("Cascade msg");
             XRLog.cascade(Level.WARNING, "Cascade msg");
@@ -264,6 +265,7 @@ public class XRLog {
 
     /**
      * Whether logging is on or off.
+     *
      * @return Returns true if logging is enabled, false if not. Corresponds
      * to configuration file property xr.util-logging.loggingEnabled, or to
      * value passed to setLoggingEnabled(bool).
@@ -276,8 +278,8 @@ public class XRLog {
      * Turns logging on or off, without affecting logging configuration.
      *
      * @param loggingEnabled Flag whether logging is enabled or not;
-     * if false, all logging calls fail silently. Corresponds
-     * to configuration file property xr.util-logging.loggingEnabled
+     *                       if false, all logging calls fail silently. Corresponds
+     *                       to configuration file property xr.util-logging.loggingEnabled
      */
     public static synchronized void setLoggingEnabled(boolean loggingEnabled) {
         XRLog.loggingEnabled = loggingEnabled;

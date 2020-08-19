@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.xhtmlrenderer</groupId>
+    <artifactId>flying-saucer-parent</artifactId>
+    <version>9.1.20</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>flying-saucer-pdf-osgi</artifactId>
+  <packaging>bundle</packaging>
+  <name>Flying Saucer PDF Rendering (OSGi bundle)</name>
+  <description>This artifacts rebundles the flying-saucer-pdf artifact to make it available in OSGi context.</description>
+
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.xhtmlrenderer</groupId>
+      <artifactId>flying-saucer-pdf</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>3.2.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.pdf.osgi</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- This bundle re-bundles the original flying-saucer-pdf artifact 
+              and only needs to import packages from flying-saucer-core. -->
+            <Import-Package>org.xhtmlrenderer.*</Import-Package>
+            <!-- Do not export package org.xhtmlrenderer.simple as it is 
+              already exported by flying-saucer-core and this would lead to a split package 
+              without correctly marking it as such. -->
+            <Export-Package>!org.xhtmlrenderer.simple,org.xhtmlrenderer.*</Export-Package>
+            <Embed-Dependency>*;scope=compile|runtime;artifactId=!flying-saucer-core</Embed-Dependency>
+            <Embed-Directory>.</Embed-Directory>
+            <Embed-Transitive>true</Embed-Transitive>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

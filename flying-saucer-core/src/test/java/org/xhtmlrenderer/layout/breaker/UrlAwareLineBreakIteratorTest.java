@@ -1,6 +1,8 @@
-package org.xhtmlrenderer.layout;
+package org.xhtmlrenderer.layout.breaker;
 
 import java.text.BreakIterator;
+
+import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 
 import junit.framework.TestCase;
 

@@ -299,7 +299,7 @@ public class TableCellBox extends BlockBox {
         imageContainer.x += tableStyle.getBorderHSpacing(c);
         imageContainer.width -= 2*tableStyle.getBorderHSpacing(c);
         
-        c.getOutputDevice().paintBackground(c, sectionStyle, bounds, imageContainer, border);
+        c.getOutputDevice().paintBackground(c, sectionStyle, bounds, imageContainer, sectionStyle.getBorder(c));
         
         CalculatedStyle rowStyle = row.getStyle();
         
@@ -307,8 +307,7 @@ public class TableCellBox extends BlockBox {
         imageContainer.x += tableStyle.getBorderHSpacing(c);
         imageContainer.width -= 2*tableStyle.getBorderHSpacing(c);
         
-        c.getOutputDevice().paintBackground(c, rowStyle, bounds, imageContainer, border);
-        
+        c.getOutputDevice().paintBackground(c, rowStyle, bounds, imageContainer, rowStyle.getBorder(c));
         c.getOutputDevice().paintBackground(c, getStyle(), bounds, getPaintingBorderEdge(c), border);
     }
     
@@ -340,7 +339,7 @@ public class TableCellBox extends BlockBox {
         }
         
         ContentLimitContainer contentLimitContainer = ((TableRowBox)getParent()).getContentLimitContainer();
-        ContentLimit limit = contentLimitContainer.getContentLimit(c.getPageNo());
+        ContentLimit limit = contentLimitContainer != null ? contentLimitContainer.getContentLimit(c.getPageNo()) : null;
         
         if (limit == null) {
             return null;
@@ -861,9 +860,12 @@ public class TableCellBox extends BlockBox {
         boolean result = super.isNeedsClipOnPaint(c);
         if (result) {
             return result;
+        }        
+        ContentLimitContainer contentLimitContainer = ((TableRowBox)getParent()).getContentLimitContainer();
+        if (contentLimitContainer == null) {
+          return false;
         }
-        
         return c.isPrint() && getTable().getStyle().isPaginateTable() &&
-                ((TableRowBox)getParent()).getContentLimitContainer().isContainsMultiplePages();
+            contentLimitContainer.isContainsMultiplePages();
     }
 }

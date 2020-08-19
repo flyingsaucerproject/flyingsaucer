@@ -18,12 +18,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-package org.xhtmlrenderer.layout;
+package org.xhtmlrenderer.layout.breaker;
 
 import java.text.BreakIterator;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.LineBreakContext;
+import org.xhtmlrenderer.layout.TextUtil;
+import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.render.FSFont;
 
 /**
@@ -33,7 +40,9 @@ import org.xhtmlrenderer.render.FSFont;
  */
 public class Breaker {
 
-    public static void breakFirstLetter(LayoutContext c, LineBreakContext context,
+    private static final String DEFAULT_LANGUAGE = System.getProperty("org.xhtmlrenderer.layout.breaker.default-language", "en");
+
+	public static void breakFirstLetter(LayoutContext c, LineBreakContext context,
             int avail, CalculatedStyle style) {
         FSFont font = style.getFSFont(c);
         context.setEnd(getFirstLetterEnd(context.getMaster(), context.getStart()));
@@ -104,81 +113,96 @@ public class Breaker {
         doBreakText(c, context, avail, style, false);
     }
 
+    private static int getWidth(LayoutContext c, FSFont f, String text) {
+    	return c.getTextRenderer().getWidth(c.getFontContext(), f, text);
+    }
+
+    public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Element element, CalculatedStyle style) {
+    	return c.getSharedContext().getLineBreakingStrategy().getBreakPointsProvider(text, getLanguage(c, element), style);
+    }
+
+    public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Text textNode, CalculatedStyle style) {
+    	return c.getSharedContext().getLineBreakingStrategy().getBreakPointsProvider(text, getLanguage(c, textNode), style);
+    }
+
+    private static String getLanguage(LayoutContext c, Element element) {
+    	String language = c.getNamespaceHandler().getLang(element);
+    	if (language == null || language.isEmpty()) {
+    		language = DEFAULT_LANGUAGE;
+    	}
+    	return language;
+    }
+
+    private static String getLanguage(LayoutContext c, Text textNode) {
+        if (textNode != null) {
+            Node parentNode = textNode.getParentNode();
+            if (parentNode instanceof Element) {
+                return getLanguage(c, (Element) parentNode);
+            }
+        }
+        return DEFAULT_LANGUAGE;
+    }
+
     private static void doBreakText(LayoutContext c,
             LineBreakContext context, int avail, CalculatedStyle style,
             boolean tryToBreakAnywhere) {
-        FSFont font = style.getFSFont(c);
+        FSFont f = style.getFSFont(c);
         String currentString = context.getStartSubstring();
-        BreakIterator iterator = getWordStream(currentString);
-        int left = 0;
-        int right = tryToBreakAnywhere ? 1 : iterator.next();
-        int lastWrap = 0;
-        int graphicsLength = 0;
-        int lastGraphicsLength = 0;
+        BreakPointsProvider iterator = getBreakPointsProvider(currentString, c, context.getTextNode(), style);
+        if (tryToBreakAnywhere) {
+        	iterator = new BreakAnywhereLineBreakStrategy(currentString);
+        }
+        BreakPoint bp = iterator.next();
+        BreakPoint lastBreakPoint = null;
+        int right = -1;
+        int previousWidth = 0;
+        int previousPosition = 0;
+        while (bp != null && bp.getPosition() != BreakIterator.DONE) {
+            int currentWidth = getWidth(c, f, currentString.substring(previousPosition, bp.getPosition()) + bp.getHyphen());
+            int widthWithHyphen = previousWidth + currentWidth;
+            previousWidth = widthWithHyphen;
+            previousPosition = bp.getPosition();
+        	if (widthWithHyphen > avail) break;
+        	right = previousPosition;
+        	lastBreakPoint = bp;
+        	bp = iterator.next();
+        };
 
-        while (right > 0 && graphicsLength <= avail) {
-            lastGraphicsLength = graphicsLength;
-            graphicsLength += c.getTextRenderer().getWidth(
-                    c.getFontContext(), font, currentString.substring(left, right));
-            lastWrap = left;
-            left = right;
-            if ( tryToBreakAnywhere ) {
-                right = ( right + 1 ) % currentString.length();
-            }
-            else { // break relies on BreakIterator
-                right = iterator.next();
-            }
+        // add hyphen if needed
+        if (bp != null && bp.getPosition() != BreakIterator.DONE // it fits
+        		&& right >= 0 // some break point found
+        		&& !lastBreakPoint.getHyphen().isEmpty()) {
+        	context.setMaster(new StringBuilder(context.getMaster()).insert(context.getStart() + right, lastBreakPoint.getHyphen()).toString());
+        	right += lastBreakPoint.getHyphen().length();
         }
 
-        if (graphicsLength <= avail) {
-            //try for the last bit too!
-            lastWrap = left;
-            lastGraphicsLength = graphicsLength;
-            graphicsLength += c.getTextRenderer().getWidth(
-                    c.getFontContext(), font, currentString.substring(left));
-        }
-
-        if (graphicsLength <= avail) {
-            context.setWidth(graphicsLength);
+        if (bp != null && bp.getPosition() == BreakIterator.DONE) {
+            context.setWidth(getWidth(c, f, currentString));
             context.setEnd(context.getMaster().length());
-            //It fit!
+            //It fits!
             return;
         }
 
         context.setNeedsNewLine(true);
-        if ( lastWrap == 0 && style.getWordWrap() == IdentValue.BREAK_WORD ) {
-            if ( ! tryToBreakAnywhere ) {
+        if (right <= 0 && style.getWordWrap() == IdentValue.BREAK_WORD) {
+            if (!tryToBreakAnywhere) {
                 doBreakText(c, context, avail, style, true);
                 return;
             }
         }
 
-        if (lastWrap != 0) {//found a place to wrap
-            context.setEnd(context.getStart() + lastWrap);
-            context.setWidth(lastGraphicsLength);
-        } else {//unbreakable string
-            if (left == 0) {
-                left = currentString.length();
-            }
-
-            context.setEnd(context.getStart() + left);
-            context.setUnbreakable(true);
-
-            if (left == currentString.length()) {
-                context.setWidth(c.getTextRenderer().getWidth(
-                        c.getFontContext(), font, context.getCalculatedSubstring()));
-            } else {
-                context.setWidth(graphicsLength);
-            }
+        if (right > 0) { // found a place to wrap
+            context.setEnd(context.getStart() + right);
+            context.setWidth(getWidth(c, f, context.getMaster().substring(context.getStart(), context.getStart() + right)));
+            return;
         }
-        return;
+
+       	// unbreakable string
+        context.setEnd(context.getStart() + currentString.length());
+        context.setUnbreakable(true);
+        context.setWidth(getWidth(c, f, context.getCalculatedSubstring()));
     }
 
-	public static BreakIterator getWordStream(String s) {
-		BreakIterator i = new UrlAwareLineBreakIterator();
-		i.setText(s);
-		return i;
-	}
-
 }
+
 

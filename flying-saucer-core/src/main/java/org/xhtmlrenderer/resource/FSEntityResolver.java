@@ -22,12 +22,13 @@ package org.xhtmlrenderer.resource;
 
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.EntityResolver2;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +53,7 @@ import java.util.logging.Level;
  *
  * @author Patrick Wright
  */
-public class FSEntityResolver implements EntityResolver {
+public class FSEntityResolver implements EntityResolver2 {
     /**
      * Singleton instance, use {@link #instance()} to retrieve.
      */
@@ -121,10 +122,41 @@ public class FSEntityResolver implements EntityResolver {
             local.setSystemId(realUrl.toExternalForm());
             XRLog.xmlEntities(Level.FINE, "Entity public: " + publicID + " -> " + url +
                     (local == null ? ", NOT FOUND" : " (local)"));
+        } else if ("about:legacy-compat".equals(systemID)) {
+            // https://www.w3.org/TR/html5/syntax.html#doctype-legacy-string
+            // https://www.w3.org/TR/html51/syntax.html#doctype-legacy-string
+            local = newHTML5DoctypeSource();
         } else {
-            XRLog.xmlEntities("Entity public: " + publicID + ", no local mapping. Parser will probably pull from network.");
+            XRLog.xmlEntities("Entity public: " + publicID + ", no local mapping. Replacing with empty content.");
         }
-        return local;
+        return (local == null) ? newEmptySource() : local;
+    }
+
+    public InputSource resolveEntity(String name,
+                                     String publicId,
+                                     String baseURI,
+                                     String systemId)
+            throws SAXException, IOException {
+        return resolveEntity(publicId, systemId);
+    }
+
+    public InputSource getExternalSubset(String name, String baseURI)
+            throws SAXException, IOException {
+        return name.equalsIgnoreCase("html") ? newHTML5DoctypeSource() : null;
+    }
+
+    private static InputSource newHTML5DoctypeSource() {
+        URL dtd = FSEntityResolver.class
+                .getResource("/resources/schema/html5/entities.dtd");
+        if (dtd == null) {
+            throw new IllegalStateException("Could not find " +
+                    "/resources/schema/html5/entities.dtd on the classpath");
+        }
+        return new InputSource(dtd.toExternalForm());
+    }
+
+    private static InputSource newEmptySource() {
+        return new InputSource(new StringReader(""));
     }
 
     /**

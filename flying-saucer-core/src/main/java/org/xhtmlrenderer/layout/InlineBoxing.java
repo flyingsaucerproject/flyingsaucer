@@ -32,6 +32,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.layout.breaker.Breaker;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -44,6 +45,7 @@ import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.TextDecoration;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 /**
  * This class is responsible for flowing inline content into lines.  Block
@@ -51,6 +53,9 @@ import org.xhtmlrenderer.render.TextDecoration;
  * here as well as floating and absolutely positioned content.
  */
 public class InlineBoxing {
+
+    private static final int MAX_ITERATION_COUNT = 100000;
+
     private InlineBoxing() {
     }
 
@@ -160,7 +165,12 @@ public class InlineBoxing {
                     lbContext.setMaster(iB.getContentFunction().getLayoutReplacementText());
                 }
 
+                int q = 0;
                 do {
+                    if (q++ > MAX_ITERATION_COUNT) {
+                        throw new XRRuntimeException("Too many iterations (" + q + ") in InlineBoxing, giving up.");
+                    }
+
                     lbContext.reset();
 
                     int fit = 0;
@@ -237,6 +247,9 @@ public class InlineBoxing {
                     }
 
                     if (lbContext.isNeedsNewLine()) {
+                    	if (iB.getStyle().isTextJustify()) {
+                    		currentLine.trimTrailingSpace(c);
+                    	}
                         saveLine(currentLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, pendingFloats,
                                 hasFirstLinePEs, pendingInlineLayers, markerData,
@@ -246,6 +259,9 @@ public class InlineBoxing {
                         contentStart = 0;
                         if (currentLine.isFirstLine() && hasFirstLinePEs) {
                             lbContext.setMaster(TextUtil.transformText(iB.getText(), iB.getStyle()));
+                        }
+                        if (lbContext.isEndsOnNL()) {
+                            currentLine.setEndsOnNL(true);
                         }
                         previousLine = currentLine;
                         currentLine = newLine(c, previousLine, box);
@@ -841,7 +857,7 @@ public class InlineBoxing {
             Breaker.breakText(c, lbContext, remainingWidth, style);
         }
 
-        result.setMasterText(masterText);
+        result.setMasterText(lbContext.getMaster());
         result.setTextNode(lbContext.getTextNode());
         result.setSubstring(lbContext.getStart(), lbContext.getEnd());
         result.setWidth(lbContext.getWidth());

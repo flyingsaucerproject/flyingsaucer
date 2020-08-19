@@ -696,8 +696,14 @@ public class BlockBox extends Box implements InlinePaintable {
             if (! isAnonymous() || (isFromCaptionedTable() && isFloated())) {
                 int pinnedContentWidth = -1;
 
+                boolean borderBox = style.isBorderBox();
+
                 if (cssWidth != -1) {
-                    setContentWidth(cssWidth);
+                    if (borderBox) {
+                        setContentWidth(cssWidth - (int)border.width() - (int)padding.width());
+                    } else {
+                        setContentWidth(cssWidth);
+                    }
                 } else if (getStyle().isAbsolute() || getStyle().isFixed()) {
                     pinnedContentWidth = calcPinnedContentWidth(c);
                     if (pinnedContentWidth != -1) {
@@ -707,7 +713,12 @@ public class BlockBox extends Box implements InlinePaintable {
 
                 int cssHeight = getCSSHeight(c);
                 if (cssHeight != -1) {
-                    setHeight(cssHeight);
+                    if (borderBox) {
+                        setHeight(cssHeight - (int)padding.height() - (int)border.height());
+                    } else {
+                        setHeight(cssHeight);
+                    }
+
                 }
 
                 //check if replaced
@@ -1666,7 +1677,6 @@ public class BlockBox extends Box implements InlinePaintable {
             } else { /* child.getStyle().isInline() */
                 InlineBox iB = (InlineBox) child;
                 IdentValue whitespace = iB.getStyle().getWhitespace();
-
                 iB.calcMinMaxWidth(c, getContentWidth(), lineWidth == 0);
 
                 if (whitespace == IdentValue.NOWRAP) {

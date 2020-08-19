@@ -20,56 +20,67 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.logging.*;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 
 /**
  * A java.util.logging.Formatter class that writes a bare-bones log messages,
  * with no origin class name and no date/time.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class XRSimpleLogFormatter extends Formatter {
-    /** Description of the Field */
-    private final MessageFormat mformat;
-    /** Description of the Field */
-    private final MessageFormat exmformat;
-    /** Description of the Field */
-    private final static String msgFmt;
-    /** Description of the Field */
-    private final static String exmsgFmt;
 
-    /** Constructor for the XRSimpleLogFormatter object */
+    private static final String MSG_FMT;
+
+    private static final String EXMSG_FMT;
+
+    private final MessageFormat mformat;
+
+    private final MessageFormat exmformat;
+
+    static {
+        MSG_FMT = Configuration.valueFor("xr.simple-log-format", "{1}:\n  {5}\n").trim() + "\n";
+        EXMSG_FMT = Configuration.valueFor("xr.simple-log-format-throwable", "{1}:\n  {5}\n{8}").trim() + "\n";
+    }
+
+    /**
+     * Constructor for the XRSimpleLogFormatter object
+     */
     public XRSimpleLogFormatter() {
         super();
-        mformat = new MessageFormat( msgFmt );
-        exmformat = new MessageFormat( exmsgFmt );
+        mformat = new MessageFormat(MSG_FMT);
+        exmformat = new MessageFormat(EXMSG_FMT);
     }
 
     /**
      * Format the given log record and return the formatted string.
      *
-     * @param record  PARAM
-     * @return        Returns
+     * @param record PARAM
+     * @return Returns
      */
-    public String format( LogRecord record ) {
-
+    public String format(LogRecord record) {
         Throwable th = record.getThrown();
         String thName = "";
         String thMessage = "";
         String trace = null;
-        if ( th != null ) {
+
+        if (th != null) {
             StringWriter sw = new StringWriter();
-            th.printStackTrace( new PrintWriter( sw ) );
+            th.printStackTrace(new PrintWriter(sw));
             trace = sw.toString();
 
             thName = th.getClass().getName();
             thMessage = th.getMessage();
         }
-        String args[] = {
-                String.valueOf( record.getMillis() ),
+
+        String[] args = {
+                String.valueOf(record.getMillis()),
                 record.getLoggerName(),
                 record.getLevel().toString(),
                 record.getSourceClassName(),
@@ -78,49 +89,42 @@ public class XRSimpleLogFormatter extends Formatter {
                 thName,
                 thMessage,
                 trace
-                };
-        String log = null;
-        if ( th == null ) {
-            log = mformat.format( args );
-        } else {
-            log = exmformat.format( args );
-        }
-        return log;
+        };
+
+        return th == null ? mformat.format(args) : exmformat.format(args);
     }
 
     /**
      * Localize and format the message string from a log record.
      *
-     * @param record  PARAM
-     * @return        Returns
+     * @param record PARAM
+     * @return Returns
      */
-    public String formatMessage( LogRecord record ) {
-        return super.formatMessage( record );
+    @Override
+    public String formatMessage(LogRecord record) {
+        return super.formatMessage(record);
     }
 
     /**
      * Return the header string for a set of formatted records.
      *
-     * @param h  PARAM
-     * @return   The head value
+     * @param h PARAM
+     * @return The head value
      */
-    public String getHead( Handler h ) {
-        return super.getHead( h );
+    @Override
+    public String getHead(Handler h) {
+        return super.getHead(h);
     }
 
     /**
      * Return the tail string for a set of formatted records.
      *
-     * @param h  PARAM
-     * @return   The tail value
+     * @param h PARAM
+     * @return The tail value
      */
-    public String getTail( Handler h ) {
-        return super.getTail( h );
-    }
-
-    static {
-        msgFmt = Configuration.valueFor( "xr.simple-log-format", "{1}:\n  {5}\n" ).trim() + "\n";
-        exmsgFmt = Configuration.valueFor( "xr.simple-log-format-throwable", "{1}:\n  {5}\n{8}" ).trim() + "\n";
+    @Override
+    public String getTail(Handler h) {
+        return super.getTail(h);
     }
 
 }// end class

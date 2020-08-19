@@ -28,22 +28,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.logging.Level;
-
 import javax.xml.transform.sax.SAXSource;
-
 import org.eclipse.swt.graphics.Device;
+import org.xhtmlrenderer.demo.browser.DemoMarker;
 import org.xhtmlrenderer.demo.browser.DirectoryLister;
 import org.xhtmlrenderer.demo.browser.PlainTextXMLReader;
-import org.xhtmlrenderer.demo.browser.DemoMarker;
 import org.xhtmlrenderer.demo.browser.swt.DemosNavigation.Demo;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swt.NaiveUserAgent;
 import org.xhtmlrenderer.util.GeneralUtil;
-import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
 public class BrowserUserAgent extends NaiveUserAgent {
@@ -57,41 +54,6 @@ public class BrowserUserAgent extends NaiveUserAgent {
         _history = new History();
     }
 
-    public String resolveURIX(String uri) {
-        final String burl = getBaseURL();
-
-        if (uri == null) {
-            return null;
-        }
-        try {
-            URI base;
-            if (burl == null || burl.length() == 0) {
-                base = new File(".").toURI();
-            } else {
-                base = new URI(burl);
-            }
-            uri = base.resolve(new URI(uri)).toString();
-        } catch (URISyntaxException e) {
-            XRLog.general(Level.WARNING, "URI is malformed: " + burl + " or "
-                    + uri);
-            return null;
-        }
-
-        if (uri.startsWith("demoNav:")) {
-            String action = uri.substring(8);
-            Demo demo = null;
-            if (action.equalsIgnoreCase("back")) {
-                demo = _demos.previous();
-            } else if (action.equalsIgnoreCase("forward")) {
-                demo = _demos.next();
-            }
-            if (demo != null) {
-                uri = demo.getUrl();
-            }
-        }
-
-        return uri;
-    }
     public String resolveURI(String uri) {
         final String burl = getBaseURL();
 

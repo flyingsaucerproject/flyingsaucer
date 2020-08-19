@@ -23,6 +23,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -49,6 +50,7 @@ import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.event.DocTagListenerAccessible;
 import org.xhtmlrenderer.event.DocTagListenerAccessibleImpl;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
@@ -99,6 +101,8 @@ public class ITextRenderer {
     // check for null before calling writer.setPdfVersion()
     // use one of the values in PDFWriter.VERSION...
     private Character _pdfVersion;
+    private Dimension _dim;
+    private boolean scaleToFit;
 
     private final char[] validPdfVersions = new char[] { PdfWriter.VERSION_1_2, PdfWriter.VERSION_1_3, PdfWriter.VERSION_1_4,
             PdfWriter.VERSION_1_5, PdfWriter.VERSION_1_6, PdfWriter.VERSION_1_7 };
@@ -160,6 +164,12 @@ public class ITextRenderer {
         setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
     }
 
+    public void setDocument(byte[] bytes) throws IOException {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+        Document dom = XMLResource.load(inputStream).getDocument();
+        setDocument(dom, "");
+    }
+
     public void setDocumentFromString(String content) {
         setDocumentFromString(content, null);
     }
@@ -216,8 +226,8 @@ public class ITextRenderer {
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
-        Dimension dim = root.getLayer().getPaintingDimension(c);
-        root.getLayer().trimEmptyPages(c, dim.height);
+        _dim = root.getLayer().getPaintingDimension(c);
+        root.getLayer().trimEmptyPages(c, _dim.height);
         root.getLayer().layoutPages(c);
         _root = root;
     }
@@ -302,9 +312,11 @@ public class ITextRenderer {
         RenderingContext c = newRenderingContext();
         c.setInitialPageNo(initialPageNo);
         PageBox firstPage = (PageBox) pages.get(0);
-        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
-                firstPage.getHeight(c) / _dotsPerPoint);
-
+        int pageWidth = calculateWidth(c, firstPage);
+        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
+        		firstPage.getHeight(c) / _dotsPerPoint);
+//        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
+//                firstPage.getHeight(c) / _dotsPerPoint);
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document(firstPageSize, 0, 0, 0, 0);
         //PDF/UA
 //        PdfAWriter writer = PdfAWriter.getInstance(doc, os, PdfAConformanceLevel.PDF_A_1A);      
@@ -337,6 +349,20 @@ public class ITextRenderer {
             fireOnClose();
             doc.close();
         }
+    }
+    
+    private int calculateWidth(RenderingContext c, PageBox firstPage) {
+    	if (isScaleToFit()) {
+	    	int pageWidth = firstPage.getWidth(c);
+	        Rectangle pageRec = firstPage.getPrintClippingBounds(c);
+	        if(_dim.getWidth() > pageRec.getWidth()) {
+	            RectPropertySet margin = firstPage.getMargin(c);
+	            pageWidth = (int) (_dim.getWidth() + margin.left() + margin.right());
+	        }
+	        return pageWidth;
+    	} else {
+    		return firstPage.getWidth(c);
+    	}
     }
 
     private void firePreOpen() {
@@ -389,8 +415,12 @@ public class ITextRenderer {
             _outputDevice.finishPage();
             if (i != pageCount - 1) {
                 PageBox nextPage = (PageBox) pages.get(i + 1);
-                com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
-                        nextPage.getHeight(c) / _dotsPerPoint);
+                int pageWidth = calculateWidth(c, nextPage);
+                
+                com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
+                		nextPage.getHeight(c) / _dotsPerPoint);
+//              com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
+//                        nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
                 // PDF/UA usar un PDFACreationListener para controlar cuando se crea una nueva pagina, ya que hay cerrar
 //                try{
@@ -436,8 +466,12 @@ public class ITextRenderer {
         page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
 
         Shape working = _outputDevice.getClip();
-
+        
         Rectangle content = page.getPrintClippingBounds(c);
+        if (isScaleToFit()) {
+        	int pageWidth = calculateWidth(c, page);
+        	content.setSize(pageWidth, (int) content.getSize().getHeight());//RTD - to change
+        }
         _outputDevice.clip(content);
 
         int top = -page.getPaintingTop() + page.getMarginBorderPadding(c, CalculatedStyle.TOP);
@@ -563,5 +597,13 @@ public class ITextRenderer {
 
     public PdfWriter getWriter() {
         return _writer;
+    }
+    
+    public boolean isScaleToFit() {
+    	return scaleToFit;
+    }
+    
+    public boolean setScaleToFit(boolean scaleToFit) {
+    	return this.scaleToFit = scaleToFit;
     }
 }

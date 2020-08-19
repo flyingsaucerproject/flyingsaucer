@@ -19,15 +19,21 @@
  */
 package org.xhtmlrenderer.resource;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
@@ -36,6 +42,7 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -43,6 +50,8 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.ext.EntityResolver2;
+import org.xml.sax.helpers.XMLFilterImpl;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 
@@ -159,37 +168,19 @@ public class XMLResource extends AbstractResource {
     }
 
     private static class XMLResourceBuilder {
+
+        private final XMLReaderPool parserPool = new XMLReaderPool();
+        private final IdentityTransformerPool traxPool = new IdentityTransformerPool();
+
         XMLResource createXMLResource(XMLResource target) {
-            Source input = null;
-            DOMResult output = null;
-            TransformerFactory xformFactory = null;
-            Transformer idTransform = null;
-            XMLReader xmlReader = null;
-            long st = 0L;
+            Document document;
 
-            xmlReader = XMLResource.newXMLReader();
-            addHandlers(xmlReader);
-            setParserFeatures(xmlReader);
-
-            st = System.currentTimeMillis();
+            long st = System.currentTimeMillis();
+            XMLReader xmlReader = parserPool.get();
             try {
-                input = new SAXSource(xmlReader, target.getResourceInputSource());
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                dbf.setNamespaceAware(true);
-                dbf.setValidating(false);//validation is the root of all evil in xml - tobe
-                output = new DOMResult(dbf.newDocumentBuilder().newDocument());
-                xformFactory = TransformerFactory.newInstance();
-                idTransform = xformFactory.newTransformer();
-            } catch (Exception ex) {
-                throw new XRRuntimeException(
-                        "Failed on configuring SAX to DOM transformer.", ex);
-            }
-
-            try {
-                idTransform.transform(input, output);
-            } catch (Exception ex) {
-                throw new XRRuntimeException(
-                        "Can't load the XML resource (using TRaX transformer). " + ex.getMessage(), ex);
+                document = transform(new SAXSource(xmlReader, target.getResourceInputSource()));
+            } finally {
+                parserPool.release(xmlReader);
             }
 
             long end = System.currentTimeMillis();
@@ -198,34 +189,90 @@ public class XMLResource extends AbstractResource {
 
             XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
 
-            target.setDocument((Document) output.getNode());
+            target.setDocument(document);
             return target;
         }
 
+        public XMLResource createXMLResource(Source source) {
+            Document document;
+
+            long st = System.currentTimeMillis();
+
+            document = transform(source);
+
+            long end = System.currentTimeMillis();
+
+            //HACK: should rather use a default constructor
+            XMLResource target = new XMLResource((InputSource) null);
+
+            target.setElapsedLoadTime(end - st);
+
+            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
+
+            target.setDocument(document);
+            return target;
+        }
+
+        private Document transform(Source source) {
+            DOMResult result = new DOMResult();
+            Transformer idTransform = traxPool.get();
+            try {
+                idTransform.transform(source, result);
+            } catch (Exception ex) {
+                throw new XRRuntimeException("Can't load the XML resource (using TrAX transformer). " + ex.getMessage(), ex);
+            } finally {
+                traxPool.release(idTransform);
+            }
+            return (Document) result.getNode();
+        }
+
+    } // class XMLResourceBuilder
+
+
+    private static class XMLReaderPool extends ObjectPool<XMLReader> {
+
+        private final boolean preserveElementContentWhitespace = Configuration
+                .isFalse("xr.load.ignore-element-content-whitespace", true);
+
+        XMLReaderPool() {
+            this(Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
+        }
+
+        XMLReaderPool(int capacity) {
+            super(capacity);
+        }
+
+        @Override
+        protected XMLReader newValue() {
+            XMLReader xmlReader = newXMLReader();
+            if (preserveElementContentWhitespace) {
+                xmlReader = new WhitespacePreservingFilter(xmlReader);
+            }
+            addHandlers(xmlReader);
+            setParserFeatures(xmlReader);
+            return xmlReader;
+        }
+
         /**
-         * Adds the default EntityResolved and ErrorHandler for the SAX parser.
+         * Adds the default EntityResolved and ErrorHandler for the DOM parser.
          */
         private void addHandlers(XMLReader xmlReader) {
-            try {
-                // add our own entity resolver
-                xmlReader.setEntityResolver(FSEntityResolver.instance());
-                xmlReader.setErrorHandler(new ErrorHandler() {
+            // add our own entity resolver
+            xmlReader.setEntityResolver(FSEntityResolver.instance());
+            xmlReader.setErrorHandler(new ErrorHandler() {
 
-                    public void error(SAXParseException ex) {
-                        XRLog.load(ex.getMessage());
-                    }
+                public void error(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
 
-                    public void fatalError(SAXParseException ex) {
-                        XRLog.load(ex.getMessage());
-                    }
+                public void fatalError(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
 
-                    public void warning(SAXParseException ex) {
-                        XRLog.load(ex.getMessage());
-                    }
-                });
-            } catch (Exception ex) {
-                throw new XRRuntimeException("Failed on configuring SAX parser/XMLReader.", ex);
-            }
+                public void warning(SAXParseException ex) {
+                    XRLog.load(ex.getMessage());
+                }
+            });
         }
 
         /**
@@ -245,16 +292,20 @@ public class XMLResource extends AbstractResource {
                 XRLog.load(Level.FINE, "SAX Parser: by request, not changing any parser features.");
                 return;
             }
-            
+
             // perf: validation off
             setFeature(xmlReader, "http://xml.org/sax/features/validation", "xr.load.validation");
-            
+
             // mem: intern strings
             setFeature(xmlReader, "http://xml.org/sax/features/string-interning", "xr.load.string-interning");
-            
+
             // perf: namespaces
             setFeature(xmlReader, "http://xml.org/sax/features/namespaces", "xr.load.namespaces");
             setFeature(xmlReader, "http://xml.org/sax/features/namespace-prefixes", "xr.load.namespace-prefixes");
+
+            // util
+            setFeature(xmlReader, "http://xml.org/sax/features/use-entity-resolver2", true);
+            setFeature(xmlReader, "http://xml.org/sax/features/xmlns-uris", true);
         }
 
         /**
@@ -262,8 +313,12 @@ public class XMLResource extends AbstractResource {
          * or not recognized.
          */
         private void setFeature(XMLReader xmlReader, String featureUri, String configName) {
+            setFeature(xmlReader, featureUri, Configuration.isTrue(configName, false));
+        }
+
+        private void setFeature(XMLReader xmlReader, String featureUri, boolean value) {
             try {
-                xmlReader.setFeature(featureUri, Configuration.isTrue(configName, false));
+                xmlReader.setFeature(featureUri, value);
 
                 XRLog.load(Level.FINE, "SAX Parser feature: " +
                         featureUri.substring(featureUri.lastIndexOf("/")) +
@@ -277,43 +332,115 @@ public class XMLResource extends AbstractResource {
             }
         }
 
-        public XMLResource createXMLResource(Source source) {
-            DOMResult output = null;
-            TransformerFactory xformFactory = null;
-            Transformer idTransform = null;
-            long st = 0L;
+    } // class XMLReaderPool
 
-            st = System.currentTimeMillis();
-            try {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                dbf.setNamespaceAware(true);
-                dbf.setValidating(false);//validation is the root of all evil in xml - tobe
-                output = new DOMResult(dbf.newDocumentBuilder().newDocument());
-                xformFactory = TransformerFactory.newInstance();
-                idTransform = xformFactory.newTransformer();
-            } catch (Exception ex) {
-                throw new XRRuntimeException("Failed on configuring SAX to DOM transformer.", ex);
-            }
 
-            try {
-                idTransform.transform(source, output);
-            } catch (Exception ex) {
-                throw new XRRuntimeException("Can't load the XML resource (using TRaX transformer). " + ex.getMessage(), ex);
-            }
+    private static class WhitespacePreservingFilter
+            extends XMLFilterImpl implements EntityResolver2
+    {
 
-            long end = System.currentTimeMillis();
-
-            //HACK: should rather use a default constructor
-            XMLResource target = new XMLResource((InputSource) null);
-
-            target.setElapsedLoadTime(end - st);
-
-            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
-
-            target.setDocument((Document) output.getNode());
-            return target;
+        WhitespacePreservingFilter(XMLReader parent) {
+            super(parent);
         }
-    }
+
+        @Override
+        public void ignorableWhitespace(char[] ch, int start, int length)
+                throws SAXException
+        {
+            getContentHandler().characters(ch, start, length);
+        }
+
+        @Override
+        public InputSource getExternalSubset(String name, String baseURI)
+                throws SAXException, IOException
+        {
+            EntityResolver resolver = getEntityResolver();
+            if (resolver instanceof EntityResolver2) {
+                return ((EntityResolver2) resolver).getExternalSubset(name, baseURI);
+            }
+            return null;
+        }
+
+        @Override
+        public InputSource resolveEntity(String name,
+                                         String publicId,
+                                         String baseURI,
+                                         String systemId)
+                throws SAXException, IOException
+        {
+            EntityResolver resolver = getEntityResolver();
+            if (resolver instanceof EntityResolver2) {
+                return ((EntityResolver2) resolver)
+                        .resolveEntity(name, publicId, baseURI, systemId);
+            }
+            return resolveEntity(publicId, systemId);
+        }
+
+    } // class SpacePreservingFilter
+
+
+    private static class IdentityTransformerPool extends ObjectPool<Transformer> {
+
+        private final TransformerFactory traxFactory;
+        {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            try {
+                tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            } catch (TransformerConfigurationException e) {
+                XRLog.init(Level.WARNING, "Problem configuring TrAX factory", e);
+            }
+            traxFactory = tf;
+        }
+
+        IdentityTransformerPool() {
+            this(Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
+        }
+
+        IdentityTransformerPool(int capacity) {
+            super(capacity);
+        }
+
+        @Override
+        protected Transformer newValue() {
+            try {
+                return traxFactory.newTransformer();
+            } catch (TransformerConfigurationException ex) {
+                throw new XRRuntimeException("Failed on configuring TrAX transformer.", ex);
+            }
+        }
+
+    } // class TranformerPool
+
+
+    private static abstract class ObjectPool<T> {
+
+        private final Queue<Reference<T>> pool;
+
+        ObjectPool(int capacity) {
+            pool = new ArrayBlockingQueue<Reference<T>>(capacity);
+        }
+
+        protected abstract T newValue();
+
+        T get() {
+            T obj = null;
+            Reference<T> ref = pool.poll();
+            if (ref != null) {
+                obj = ref.get();
+            }
+
+            if (obj == null) {
+                obj = newValue();
+            }
+            return obj;
+        }
+
+        void release(T obj) {
+            pool.offer(new SoftReference<T>(obj));
+        }
+
+    } // class ObjectPool
+
 }
 
 /*

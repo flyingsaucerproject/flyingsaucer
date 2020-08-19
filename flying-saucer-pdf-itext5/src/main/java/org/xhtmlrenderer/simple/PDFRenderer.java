@@ -4,6 +4,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -112,6 +113,80 @@ public class PDFRenderer {
     }
 
     /**
+     * Renders the XML file as a PDF file and return its bytes.
+     *
+     * @param bytes XML file bytes to render
+     * @throws IOException       if the file or PDF location is
+     *                           invalid
+     * @throws DocumentException if an error occurred
+     *                           while building the Document.
+     */
+    public static byte[] renderToPDFBytes(byte[] bytes)
+            throws IOException, DocumentException {
+
+        byte[] b = renderToPDFBytes(bytes, null);
+        return b;
+    }
+
+    /**
+     * Renders the XML file as a PDF file return its bytes.
+     *
+     * @param bytes XML file bytes to render
+     * @param pdfVersion version of PDF to output; null uses default version
+     * @throws IOException       if the file or PDF location is
+     *                           invalid
+     * @throws DocumentException if an error occurred
+     *                           while building the Document.
+     */
+    public static byte[] renderToPDFBytes(byte[] bytes, Character pdfVersion)
+            throws IOException, DocumentException {
+
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocument(bytes);
+        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion.charValue());
+        byte[] b = doRenderToPDF(renderer);
+        return b;
+    }
+
+
+    /**
+     * Renders the XML file as a PDF file at the target location.
+     *
+     * @param bytes XML file bytes to render
+     * @param pdf  path to the PDF file to create
+     * @throws IOException       if the file or PDF location is
+     *                           invalid
+     * @throws DocumentException if an error occurred
+     *                           while building the Document.
+     */
+    public static void renderToPDF(byte[] bytes, String pdf)
+            throws IOException, DocumentException {
+
+        renderToPDF(bytes, pdf, null);
+    }
+
+    /**
+     * Renders the XML file as a PDF file at the target location.
+     *
+     * @param bytes XML file bytes to render
+     * @param pdf  path to the PDF file to create
+     * @param pdfVersion version of PDF to output; null uses default version
+     * @throws IOException       if the file or PDF location is
+     *                           invalid
+     * @throws DocumentException if an error occurred
+     *                           while building the Document.
+     */
+    public static void renderToPDF(byte[] bytes, String pdf, Character pdfVersion)
+            throws IOException, DocumentException {
+
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocument(bytes);
+        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion.charValue());
+        doRenderToPDF(renderer, pdf);
+    }
+
+
+    /**
      * Internal use, runs the render process
      * @param renderer
      * @param pdf
@@ -137,6 +212,37 @@ public class PDFRenderer {
                 }
             }
         }
+    }
+
+    /**
+     * Internal use, runs the render process
+     * @param renderer
+     * @throws com.itextpdf.text.DocumentException
+     * @throws java.io.IOException
+     */
+    private static byte[] doRenderToPDF(ITextRenderer renderer)
+            throws IOException, DocumentException {
+        ByteArrayOutputStream os = null;
+        byte[] pdf;
+        try {
+            os = new ByteArrayOutputStream();
+            renderer.layout();
+            renderer.createPDF(os);
+
+            pdf = os.toByteArray();
+
+            os.close();
+            os = null;
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
+        return pdf;
     }
 
     /**
