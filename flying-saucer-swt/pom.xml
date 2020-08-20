@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.xhtmlrenderer</groupId>
+    <groupId>org.msl.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
     <version>9.1.20</version>
   </parent>
@@ -33,7 +33,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.xhtmlrenderer</groupId>
+      <groupId>org.msl.xhtmlrenderer</groupId>
       <artifactId>flying-saucer-core</artifactId>
       <version>${project.version}</version>
     </dependency>

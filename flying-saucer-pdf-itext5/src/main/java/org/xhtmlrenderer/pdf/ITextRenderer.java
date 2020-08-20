@@ -109,8 +109,9 @@ public class ITextRenderer {
 
     private PDFCreationListener _listener;
 
-    public ITextRenderer() {
+    public ITextRenderer() {    	
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
+        XRLog.render(Level.INFO, "msalaslo@gmail.com for PDF/UA ITextRenderer");
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel) {
