@@ -1,18 +1,14 @@
 package org.xhtmlrenderer.css.style.derived;
 
-import java.awt.Rectangle;
-import java.util.List;
-
-import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSColor;
-import org.xhtmlrenderer.css.style.BackgroundPosition;
 import org.xhtmlrenderer.css.style.BorderRadiusCorner;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.newtable.CollapsedBorderValue;
+
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.

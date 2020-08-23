@@ -37,7 +37,6 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class ITextFontResolver implements FontResolver {
     private Map _fontFamilies;
