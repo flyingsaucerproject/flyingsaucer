@@ -32,6 +32,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
@@ -47,6 +48,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.event.DocTagListenerAccessible;
+import org.xhtmlrenderer.event.DocTagListenerAccessibleImpl;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -61,11 +64,19 @@ import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
+import com.itextpdf.text.DocListener;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.exceptions.IllegalPdfSyntaxException;
 import com.itextpdf.text.pdf.PdfWriter;
 
+/**
+ * Rewrites Flyin Saurcer class org.xhtmlrenderer.pdf.ITextRenderer for supporting PDF/UA generation
+ * Delegates PDF/UA operations on org.xhtmlrenderer.pdf.ITextRendererAccessible
+ *
+ */
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to
     // the inch
@@ -98,8 +109,9 @@ public class ITextRenderer {
 
     private PDFCreationListener _listener;
 
-    public ITextRenderer() {
+    public ITextRenderer() {    	
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
+        XRLog.render(Level.INFO, "msalaslo@gmail.com for PDF/UA ITextRenderer");
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel) {
@@ -248,9 +260,13 @@ public class ITextRenderer {
 
         return result;
     }
-
+   
     public void createPDF(OutputStream os) throws DocumentException, IOException {
-        createPDF(os, true, 0);
+        createPDF(os, true, 0, null);
+    }
+    
+    public void createPDF(OutputStream os, String language) throws DocumentException, IOException {
+        createPDF(os, true, 0, language);
     }
 
     public void writeNextDocument() throws DocumentException, IOException {
@@ -282,7 +298,7 @@ public class ITextRenderer {
     }
 
     public void createPDF(OutputStream os, boolean finish) throws DocumentException, IOException {
-        createPDF(os, finish, 0);
+        createPDF(os, finish, 0, null);
     }
 
     /**
@@ -291,7 +307,7 @@ public class ITextRenderer {
      * 
      * @throws IOException
      */
-    public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, IOException {
+    public void createPDF(OutputStream os, boolean finish, int initialPageNo, String language) throws DocumentException, IOException {
         List pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
@@ -303,7 +319,12 @@ public class ITextRenderer {
 //        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
 //                firstPage.getHeight(c) / _dotsPerPoint);
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document(firstPageSize, 0, 0, 0, 0);
-        PdfWriter writer = PdfWriter.getInstance(doc, os);
+        //PDF/UA
+//        PdfAWriter writer = PdfAWriter.getInstance(doc, os, PdfAConformanceLevel.PDF_A_1A);      
+//        PdfWriter writer = PdfWriter.getInstance(doc, os);
+        DocListener docTaggedListener = new DocTagListenerAccessibleImpl();
+        // PDF/UA the listener is setted in PDFWriter and will be called on newPage
+        PdfWriter writer = PdfWriter.getInstance(doc, os, docTaggedListener);
         if (_pdfVersion != null) {
             writer.setPdfVersion(_pdfVersion.charValue());
         }
@@ -311,13 +332,19 @@ public class ITextRenderer {
             writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
                     _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
         }
+        
+        //PDF/UA
+        ITextRendererAccessible.addAccessibilityMetaData(writer, doc, language, null);
+        //PDF/UA End
+        
         _pdfDoc = doc;
         _writer = writer;
 
         firePreOpen();
         doc.open();
 
-        writePDF(pages, c, firstPageSize, doc, writer);
+        //PDF/UA The listener is setted on ITextOutputDevice and will be called on begin tag and entag method of PDFContentByte
+        writePDF(pages, c, firstPageSize, doc, writer, docTaggedListener);
 
         if (finish) {
             fireOnClose();
@@ -356,12 +383,23 @@ public class ITextRenderer {
             _listener.onClose(this);
         }
     }
-
+    
     private void writePDF(List pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc,
             PdfWriter writer) throws DocumentException, IOException {
+    	writePDF(pages, c, firstPageSize, doc, writer, null);
+    }
+
+  //PDF/UA: New param PDFCreationListener for setting it on ITextOuputDevice 
+    private void writePDF(List pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc,
+            PdfWriter writer, DocListener listener) throws DocumentException, IOException {
         _outputDevice.setRoot(_root);
 
         _outputDevice.start(_doc);
+        //PDF/UA: setting rendering context and DocTagListener on begin Tag and end tag of PDFContentByte
+        _outputDevice.setRenderingContext(c);
+        if(listener instanceof DocTagListenerAccessible){
+        	_outputDevice.setListener((DocTagListenerAccessible)listener);
+        }
         _outputDevice.setWriter(writer);
         _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.getHeight());
 
@@ -385,7 +423,15 @@ public class ITextRenderer {
 //              com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
 //                        nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
-                doc.newPage();
+                // PDF/UA usar un PDFACreationListener para controlar cuando se crea una nueva pagina, ya que hay cerrar
+//                try{
+                XRLog.render(Level.INFO, "Creating new page ..................." + i + " of " + pageCount);
+                	doc.newPage();
+//                }catch(IllegalPdfSyntaxException e){
+//                	//PDF/UA iText bug counting opening and closed tags, try avoid unbalanced document exceptions closing one tag.
+//                	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(writer.getDirectContent(), (DocTagListenerAccessible)listener, "exception");
+//                	XRLog.render(Level.INFO, "IllegalPdfSyntaxException: endedMArkedContentSecuence called trying void unbalanced document exceptions closing one tag", e);
+//                }
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());
             }
         }

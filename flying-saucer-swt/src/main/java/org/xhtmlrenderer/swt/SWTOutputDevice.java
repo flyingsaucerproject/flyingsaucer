@@ -402,4 +402,28 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+	@Override
+	public void closeOpenTags() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawImageNoAccessible(FSImage fsImage, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawImageAsHorizontalBandAccessible(FSImage image, int left, int top, int bottom) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawImageAsVerticalBandAccessible(FSImage image, int left, int top, int bottom) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -34,6 +34,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 
 import org.xhtmlrenderer.event.DocumentListener;
@@ -376,7 +377,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
             }
         }
 
-        // _baseURL is guaranteed to be non-null at this point.
+       // _baseURL is guaranteed to be non-null at this point.
         // test if the URI is valid; if not, try to assign the base url as its parent
         Throwable t;
         try {

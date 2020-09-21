@@ -177,6 +177,20 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         return href;
     }
+    
+    /**
+     * Gets the linkTitle attribute of the XhtmlNamespaceHandler object
+     *
+     * @param e PARAM
+     * @return The linkTitle value
+     */
+    public String getLinkTitle(org.w3c.dom.Element e) {
+        String title = null;
+        if (e.getNodeName().equalsIgnoreCase("a") && e.hasAttribute("title")) {
+        	title = e.getAttribute("title");
+        }
+        return title;
+    }
 
     public String getAnchorName(Element e) {
         if (e != null && e.getNodeName().equalsIgnoreCase("a") &&

@@ -152,10 +152,15 @@ public class Layer {
 
     private void paintFloats(RenderingContext c) {
         if (_floats != null) {
-            for (int i = _floats.size() - 1; i >= 0; i--) {
+//            for (int i = _floats.size() - 1; i >= 0; i--) {
+//                BlockBox floater = (BlockBox) _floats.get(i);
+//                paintAsLayer(c, floater);
+//            }
+        	//PDF/UA: Rading order: Change order iteration
+            for (int i = 0; i < _floats.size(); i++) {
                 BlockBox floater = (BlockBox) _floats.get(i);
                 paintAsLayer(c, floater);
-            }
+            }        	
         }
     }
 
@@ -325,11 +330,18 @@ public class Layer {
             }
             
             Map collapsedTableBorders = collectCollapsedTableBorders(c, blocks);
-    
+            
             paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
+                
+            //PDF/UA: Reading Order: change the order of paint methods, first paint inline and then floats 
+//            paintInlineContent(c, lines, rangeLists);
+            //PDF/UA: Calling static method that process the lines in occurrence order traversing recursively the child elements
+            LayerAccessible.paintInlineContentAccessible(c, lines, rangeLists);
+            
+            //TODO cerrar etiquetas abiertas antes de pintar floats
             paintFloats(c);
             paintListMarkers(c, blocks, rangeLists);
-            paintInlineContent(c, lines, rangeLists);
+            //paintInlineContent(c, lines, rangeLists);
             paintReplacedElements(c, blocks, rangeLists);
             paintSelection(c, lines); // XXX do only when there is a selection
     
@@ -466,7 +478,11 @@ public class Layer {
         
         paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
         paintListMarkers(c, blocks, rangeLists);
+        
         paintInlineContent(c, lines, rangeLists);
+        //PDF/UA: Calling static method that process the lines in occurrence order traversing recursively the child elements
+//        LayerAccessible.paintInlineContentAccessible(c, lines, rangeLists);
+        
         paintSelection(c, lines); // XXX only do when there is a selection
         paintReplacedElements(c, blocks, rangeLists);
     }    

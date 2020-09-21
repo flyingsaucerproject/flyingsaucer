@@ -80,7 +80,8 @@ public class PDFHyphenationTest {
 		
 		renderer.setDocumentFromString(xml);
 		renderer.layout();
-		renderer.createPDF(os);
+		//MSL
+//		renderer.createPDF(os);
 	}
 
 }

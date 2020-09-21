@@ -646,7 +646,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 break;
 
             case PathIterator.SEG_QUADTO:
-            	System.out.println("Quad to " + coords[0] + " " + coords[1] + " " + coords[2] + " " + coords[3]);
+            	XRLog.render(Level.INFO, "Quad to " + coords[0] + " " + coords[1] + " " + coords[2] + " " + coords[3]);
                 cb.curveTo(coords[0], coords[1], coords[2], coords[3]);
                 break;
             }
@@ -1332,4 +1332,28 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
         return result;
     }
+
+	@Override
+	public void closeOpenTags() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawImageNoAccessible(FSImage fsImage, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawImageAsHorizontalBandAccessible(FSImage image, int left, int top, int bottom) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawImageAsVerticalBandAccessible(FSImage image, int left, int top, int bottom) {
+		// TODO Auto-generated method stub
+		
+	}
 }

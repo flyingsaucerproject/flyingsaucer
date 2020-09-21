@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
 
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Device;

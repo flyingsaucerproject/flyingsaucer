@@ -57,7 +57,19 @@ public class InlineText {
     private boolean _trimmedLeadingSpace;
     private boolean _trimmedTrailingSpace;
     private Text _textNode;
-    public void trimTrailingSpace(LayoutContext c) {
+    
+    // PDF/UA marked as tagged 
+    private boolean _tagged = false;
+    
+    public boolean isTagged() {
+		return _tagged;
+	}
+
+	public void setTagged(boolean _tagged) {
+		this._tagged = _tagged;
+	}
+
+	public void trimTrailingSpace(LayoutContext c) {
         if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
             setWidth(c.getTextRenderer().getWidth(c.getFontContext(), 

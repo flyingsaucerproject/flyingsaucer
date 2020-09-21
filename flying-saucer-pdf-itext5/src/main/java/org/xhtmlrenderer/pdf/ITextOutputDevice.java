@@ -22,9 +22,9 @@ package org.xhtmlrenderer.pdf;
 import java.awt.BasicStroke;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints.Key;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -42,13 +42,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -56,15 +57,19 @@ import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
+import org.xhtmlrenderer.event.DocTagListenerAccessible;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.OutputDevice;
+import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
+import org.xhtmlrenderer.pdf.util.DomUtilsAccessible;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.JustificationInfo;
@@ -74,10 +79,14 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import com.itextpdf.text.Anchor;
 import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.CMYKColor;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfAction;
 import com.itextpdf.text.pdf.PdfAnnotation;
 import com.itextpdf.text.pdf.PdfBorderArray;
@@ -88,15 +97,20 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfOutline;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfString;
+import com.itextpdf.text.pdf.PdfStructureElement;
 import com.itextpdf.text.pdf.PdfTextArray;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
+ * Rewrites Flyin Saurcer class gorg.xhtmlrenderer.pdf.ITextOutputDevice for supporting PDF/UA generation
+ * Delegates PDF/UA operations on org.xhtmlrenderer.pdf.ITextOutputDeviceAccessible
+ *  
  * This class is largely based on {@link com.itextpdf.text.pdf.PdfGraphics2D}.
  * See <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/
  * projects/itext/</a> for license information.
  */
-public class ITextOutputDevice extends AbstractOutputDevice implements OutputDevice {
+public class ITextOutputDevice extends AbstractOutputDevice implements OutputDevice {	
     private static final int FILL = 1;
     private static final int STROKE = 2;
     private static final int CLIP = 3;
@@ -107,7 +121,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private static final boolean ROUND_RECT_DIMENSIONS_DOWN = Configuration.isTrue("xr.pdf.round.rect.dimensions.down", false);
 
-    private PdfContentByte _currentPage;
+    private PdfContentByte _currentPage;    
     private float _pageHeight;
 
     private ITextFSFont _font;
@@ -144,13 +158,24 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private int _nextFormFieldIndex;
 
-    private Set _linkTargetAreas;
+    private Set _linkTargetAreas;      
+    
+    // PDF/UA Creating bean to save accessibility information
+    private ITextOutputDeviceAccessibleBean pdfUABean = new ITextOutputDeviceAccessibleBean();
+    
+    public void setRenderingContext(RenderingContext renderingContext){
+    	pdfUABean.setRenderingContext(renderingContext);
+    }
+    public void setListener(DocTagListenerAccessible listener){
+    	pdfUABean.setListener(listener);
+    }
 
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
     }
 
-    public void setWriter(PdfWriter writer) {
+   
+	public void setWriter(PdfWriter writer) {
         _writer = writer;
     }
 
@@ -161,9 +186,15 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public int getNextFormFieldIndex() {
         return ++_nextFormFieldIndex;
     }
-
+   
     public void initializePage(PdfContentByte currentPage, float height) {
         _currentPage = currentPage;
+        //PDF/UA       
+        pdfUABean.setRoot(ITextOutputDeviceAccessibleUtil.getRoot(_writer));        
+        pdfUABean.getRoot().mapRole(new PdfName("Artifact"), PdfName.ARTIFACT);
+        pdfUABean.setTagDocument(ITextOutputDeviceAccessibleUtil.createTagDocument(pdfUABean.getRoot()));        
+        //PDF/UA End
+        
         _pageHeight = height;
 
         _currentPage.saveState();
@@ -182,22 +213,38 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             _defaultDestination.addPage(_writer.getPageReference(1));
         }
 
-        _linkTargetAreas = new HashSet();
+        _linkTargetAreas = new HashSet();        
     }
 
+    //PDF/UA reset page state
     public void finishPage() {
         _currentPage.restoreState();
+        ITextOutputDeviceAccessibleUtil.endAllMarkedContentSequence(_currentPage, pdfUABean.getListener());
+        //reset page state
     }
 
-    public void paintReplacedElement(RenderingContext c, BlockBox box) {
+    //PDF/UA
+    public void paintReplacedElementOri(RenderingContext c, BlockBox box) {
         ITextReplacedElement element = (ITextReplacedElement) box.getReplacedElement();
         element.paint(c, this, box);
     }
-
+    
+    //PDF/UA
+    public void paintReplacedElement(RenderingContext c, BlockBox box) {
+    	Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+        ReplacedElement element = box.getReplacedElement();
+        if(element instanceof ITextImageElement){
+        	this.drawImage(box, ((ITextImageElement)element).getImage(), contentBounds.x, contentBounds.y);
+        }else{
+        	paintReplacedElementOri(c, box);
+        }
+    }
+    
     public void paintBackground(RenderingContext c, Box box) {
         super.paintBackground(c, box);
-
-        processLink(c, box);
+        //PDF/UA: Descomentado es el original, procesa los link como anotaciones no accesibles
+//        processLink(c, box);
+        processLinkTaggedAnno(c, box);
     }
 
     private com.itextpdf.text.Rectangle calcTotalLinkArea(RenderingContext c, Box box) {
@@ -245,13 +292,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _linkTargetAreas.add(key);
         return targetArea;
     }
-
+    
     private void processLink(RenderingContext c, Box box) {
         Element elem = box.getElement();
         if (elem != null) {
             NamespaceHandler handler = _sharedContext.getNamespaceHandler();
             String uri = handler.getLinkUri(elem);
-            if (uri != null) {
+            if (uri != null) {   
+            	uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
                 if (uri.length() > 1 && uri.charAt(0) == '#') {
                     String anchor = uri.substring(1);
                     Box target = _sharedContext.getBoxById(anchor);
@@ -306,7 +354,260 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             }
         }
     }
+    
+    private void processLinkTaggedAnno(RenderingContext c, Box box) {
+        Element elem = box.getElement();
+        if (elem != null) {
+            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
+            String uri = handler.getLinkUri(elem);
+            String title = handler.getLinkTitle(elem);
+            if (uri != null) {       		
+            	uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
+                if (uri.length() > 1 && uri.charAt(0) == '#') {
+                    String anchor = uri.substring(1);
+                    Box target = _sharedContext.getBoxById(anchor);
+                    if (target != null) {
+                        PdfDestination dest = createDestination(c, target);
 
+                        PdfAction action = new PdfAction();
+                        if (!"".equals(handler.getAttributeValue(elem, "onclick"))) {
+                            action = PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
+                        } else {
+                            action.put(PdfName.S, PdfName.GOTO);
+                            action.put(PdfName.D, dest);
+                        }
+
+                        com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, box);
+                        if (targetArea == null) {
+                            return;
+                        }
+                        targetArea.setBorder(0);
+                        targetArea.setBorderWidth(0);
+                        
+                        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(),
+                                targetArea.getRight(), targetArea.getTop(), action);
+                        annot.setRole(PdfName.LINK);
+                        annot.put(PdfName.SUBTYPE, PdfName.LINK);
+                        if(title != null){
+                        	annot.setAccessibleAttribute(PdfName.TITLE, new PdfString(title));
+                        }
+                        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+                        annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
+//                        _writer.addAnnotation(annot);
+                        //PDF/UA add the annotation to the PdfContentByte instead of PdfWriter
+                        _currentPage.addAnnotation(annot, false);
+                        XRLog.render(Level.FINE, "Link local as annotation:" + anchor);
+                    }
+                } else if (uri.indexOf("://") != -1) {
+                    PdfAction action = new PdfAction(uri);
+
+                    com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, box);
+                    if (targetArea == null) {
+                        return;
+                    }
+                    PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(), targetArea.getRight(),
+                            targetArea.getTop(), action);
+                    annot.put(PdfName.SUBTYPE, PdfName.LINK);
+                    annot.setRole(PdfName.LINK);
+                    if(title != null){
+                    	annot.setAccessibleAttribute(PdfName.TITLE, new PdfString(title));
+                    }
+                    annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+                    annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
+//                    _writer.addAnnotation(annot);
+                    _currentPage.addAnnotation(annot, false);
+                    XRLog.render(Level.FINE, "Link external as annotation:" + uri);
+                }
+            }
+        }
+    }
+    
+    //PDF/UA
+    private void processLinkAccessible1(RenderingContext c, InlineLayoutBox parentBox, BlockBox parentBlockBox) {
+    	PdfContentByte cb = _currentPage; 
+
+        Element elem = parentBox.getElement();
+        if (elem != null) {
+            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
+            String uri = handler.getLinkUri(elem);
+            String title = handler.getLinkTitle(elem);
+            if (uri != null) {
+                com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, parentBox);
+                if (targetArea == null) {
+                    return;
+                }
+                uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
+                Font font = new Font(_font.getFontDescription().getFont());
+                Chunk chunk = new Chunk(elem.getTextContent(), font);
+                Anchor anchor = new Anchor(chunk);
+                anchor.setReference(uri);
+                if(title != null){
+                	// title is Not supported by iText
+                }
+                float yPos = targetArea.getBottom() + (((targetArea.getTop() - targetArea.getBottom())/2) * 0.4f); // 40% of font size 
+                float xPos = targetArea.getLeft();
+                ColumnText.showTextAligned(cb, com.itextpdf.text.Element.ALIGN_LEFT, anchor, xPos, yPos, 0);
+            }
+        }
+    }
+    
+    private void processLinkAccessible(RenderingContext c, InlineLayoutBox parentBox, BlockBox parentBlockBox) {
+    	PdfContentByte cb = _currentPage; 
+        Element elem = parentBox.getElement();
+        if (elem != null) {
+            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
+            String uri = handler.getLinkUri(elem);
+            String title = handler.getLinkTitle(elem);
+            if (uri != null) {
+                com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, parentBox);
+                if (targetArea == null) {
+                    return;
+                }
+                uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
+                cb.rectangle(targetArea);
+                Font font = new Font(_font.getFontDescription().getFont());
+                Chunk chunk = new Chunk(elem.getTextContent(), font);
+                Anchor anchor = new Anchor(chunk);
+                anchor.setReference(uri);
+                ColumnText ct = new ColumnText(cb);
+                ct.setSimpleColumn(targetArea);
+                ct.setUseAscender(true);
+                ct.addText(anchor);
+                try {
+					ct.go();
+				} catch (DocumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        }
+    }
+    
+
+    
+    private void processLinkAsAnnotation(RenderingContext c, InlineLayoutBox parentBox, BlockBox parentBlockBox) {
+    	PdfContentByte cb = _currentPage; 
+        Element elem = parentBox.getElement();
+        if (elem != null) {
+            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
+            String uri = handler.getLinkUri(elem);
+            String title = handler.getLinkTitle(elem);
+            if (uri != null) {
+            	uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
+                com.itextpdf.text.Rectangle targetArea = checkLinkArea(c, parentBox);
+                if (targetArea == null) {
+                    return;
+                }
+                cb.addAnnotation(getLinkAsAnnotation(c, parentBox, targetArea, uri, title), true);
+            }
+        }
+    }
+    
+	private PdfAnnotation getLinkAsAnnotation(RenderingContext c, Box box, com.itextpdf.text.Rectangle targetArea,
+			String uri, String title) {
+		PdfAnnotation annotation = null;
+		Element elem = box.getElement();
+		if (elem != null) {
+			PdfAction action = getPdfAction(c, box, uri);
+			if (uri.length() > 1 && uri.charAt(0) == '#') {
+				String anchor = uri.substring(1);
+				Box target = _sharedContext.getBoxById(anchor);
+				if (target != null) {
+					targetArea.setBorder(0);
+					targetArea.setBorderWidth(0);
+				}
+			}
+			PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(),
+					targetArea.getRight(), targetArea.getTop(), action);
+			annot.put(PdfName.SUBTYPE, PdfName.LINK);
+			annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+			annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
+			annotation = annot;
+		}
+		return annotation;
+	}
+    
+	private PdfAction getPdfAction(RenderingContext c, Box box, String uri) {
+		PdfAction action = null;
+		Element elem = box.getElement();
+		if (elem != null) {
+			NamespaceHandler handler = _sharedContext.getNamespaceHandler();
+			if (uri != null) {
+				if (uri.length() > 1 && uri.charAt(0) == '#') {
+					String anchor = uri.substring(1);
+					Box target = _sharedContext.getBoxById(anchor);
+					if (target != null) {
+						PdfDestination dest = createDestination(c, target);
+
+						action = new PdfAction();
+						if (!"".equals(handler.getAttributeValue(elem, "onclick"))) {
+							action = PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
+						} else {
+							action.put(PdfName.S, PdfName.GOTO);
+							action.put(PdfName.D, dest);
+						}
+					}
+				} else if (uri.indexOf("://") != -1) {
+					action = new PdfAction(uri);
+				}
+			}
+		}
+		return action;
+	}
+    
+	private void addTaggedImage(BlockBox box, PdfStructureElement tagDocument, PdfContentByte currentPage, Image image, double[] mx ) throws DocumentException{
+		String altText = null;
+		if(box != null && box.getElement() != null && box.getElement().getAttribute("alt") != null){
+			altText = box.getElement().getAttribute("alt"); 
+		}
+		PdfStructureElement parentTag = tagDocument;
+		if(pdfUABean.getCurrentBlockStrucElement() != null){
+			parentTag = pdfUABean.getCurrentBlockStrucElement();
+		}
+		// If no alt text found create image as an artifact
+		if(altText == null || altText.trim().length() < 1){
+			PdfStructureElement struc = new PdfStructureElement(parentTag, PdfName.ARTIFACT);
+			ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(currentPage, struc, pdfUABean.getListener(), "ARTIFACT");
+			currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5]);
+			ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(currentPage, pdfUABean.getListener(), "ARTIFACT");		
+		}else{
+			//Si la imagen esta dentro de un enlace generamos el link como un anchor (ya se genera accesible)
+			Element anchorElement = DomUtilsAccessible.getParentAnchorElement(box.getElement());
+            NamespaceHandler handler = _sharedContext.getNamespaceHandler();
+            String uri = null;
+            if(anchorElement != null){
+            	uri = handler.getLinkUri(anchorElement);
+            }
+	    	if (anchorElement != null && uri != null && uri.trim().length() > 0) {
+	            uri = ITextOutputDeviceAccessibleUtil.getAbsoluteUrlIfIsRelative(uri, _sharedContext.getBaseURL());
+	            if (uri != null) {
+	                com.itextpdf.text.Rectangle targetArea = checkLinkArea(pdfUABean.getRenderingContext(), box);
+	                if (targetArea == null) {
+	                    return;
+	                }
+	                image.setRotationDegrees(180);
+	                Chunk anchorChunk = new Chunk(image, 0, (float) mx[3], true);
+	                Anchor anchor = new Anchor(anchorChunk);
+	                anchor.setReference(uri);
+	                //Aunque el chunk con el anchor ya se genera etiquetado como link, generamos la etiqueta de la imagen para que aparezca en el orden del doc
+					PdfStructureElement imageTag = new PdfStructureElement(parentTag, PdfName.FIGURE);
+			    	imageTag.put(PdfName.ALT, new PdfString(altText));
+			    	ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(currentPage, imageTag, pdfUABean.getListener(), "imageTag");
+	                ColumnText.showTextAligned(currentPage, com.itextpdf.text.Element.ALIGN_RIGHT, anchor, (float) mx[4], (float) mx[5], 0);
+//	                currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5], true);
+	                ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(currentPage, pdfUABean.getListener(), "imageTag");
+	            }
+	    	} else {
+				PdfStructureElement imageTag = new PdfStructureElement(parentTag, PdfName.FIGURE);
+		    	imageTag.put(PdfName.ALT, new PdfString(altText));
+		    	ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(currentPage, imageTag, pdfUABean.getListener(), "imageTag");
+		    	//No añadir el true en addImage para que no la pinte inline, si se pinta inline no se pinta bien las transparencias
+		        currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5], false);
+		        ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(currentPage, pdfUABean.getListener(), "imageTag");
+	    	}
+		}
+	}
+    
     public com.itextpdf.text.Rectangle createLocalTargetArea(RenderingContext c, Box box) {
         return createLocalTargetArea(c, box, false);
     }
@@ -473,13 +774,234 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     public void drawString(String s, float x, float y, JustificationInfo info) {
+        //using drawStringAccessible(InlineText inlineText, String s, float x, float y, JustificationInfo info)           
+    }
+    
+    public void drawStringAccessible(InlineText inlineText, String s, float x, float y, JustificationInfo info) {
         if (Configuration.isTrue("xr.renderer.replace-missing-characters", false)) {
             s = replaceMissingCharacters(s);
         }
         if (s.length() == 0)
             return;
-        PdfContentByte cb = _currentPage;
-        ensureFillColor();
+        PdfContentByte cb = _currentPage;   
+
+        //PDF/UA ****** 
+        //A parent block box node of an inline text could be a <p>
+    	BlockBox parentBlockBox = DomUtilsAccessible.getParentBlockBox(inlineText.getParent());
+        //Usually a blockbox is a <p>, it can contains more html elements like <a>
+        String parentBlockBoxNodeName = parentBlockBox.getElement().getNodeName();  
+    	
+    	//A parent node of an inline text could be an <a>
+        String parentNodeName = DomUtilsAccessible.getParentNodeName(inlineText.getParent());
+    
+        
+        pdfUABean.setParentEndMarkedSecuence(false);
+        pdfUABean.setEndMarkedSecuence(false);
+        pdfUABean.setPaintText(true);
+        
+        //Rest current elements if listener has received newPage event
+        resetPdfUABeanIfNewPageCreated();
+        
+        // Processing lists
+        if (isListItem(parentBlockBox)){
+        	processList(inlineText, parentBlockBox, cb);
+        }// Processing description lists
+        else if (isDescriptionListItem(parentBlockBox)){
+        	processDescriptionList(inlineText, parentBlockBox, cb);
+        }else{
+        	//Recuperamos el numero de LI que hay en la lista y la posicion del LI que se esta procesando actualmente
+        	int numChildren = DomUtilsAccessible.getNumInlineTextChildren(parentBlockBox);
+        	int currentElementPosition = DomUtilsAccessible.getChildTextPosition(parentBlockBox, inlineText);
+        	PdfStructureElement parentStruc = pdfUABean.getCurrentBlockStrucElement();
+
+        	// Si es el primer elemento abrimos el bloque
+        	if(parentStruc == null || currentElementPosition == 1){
+        		parentStruc = ITextOutputDeviceAccessibleUtil.getStructElement(pdfUABean.getTagDocument(), parentBlockBoxNodeName, pdfUABean.getRoot(), null);
+        		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(cb, parentStruc, pdfUABean.getListener(), parentBlockBoxNodeName);
+   				pdfUABean.setCurrentBlockElement(parentBlockBox.getElement());
+    			pdfUABean.setCurrentBlockStrucElement(parentStruc);
+        	}
+        	
+        	//Si es el utlimo elemento cerramos el bloque, si no lo dejamos abierto para el siguiente inlineText
+        	if(currentElementPosition == numChildren){
+        		pdfUABean.setParentEndMarkedSecuence(true);
+        	}else{
+        		pdfUABean.setParentEndMarkedSecuence(false);
+        	}
+
+    		// Process anchors
+    		if (isAnchor(parentNodeName)){
+        		//los links se procesan como anotaciones accesibles 
+    			//processAnchor(inlineText, parentBlockBox, cb);
+        	}
+        }
+        
+        if(pdfUABean.isPaintText()){
+        	paintText(inlineText, s, x, y, info);
+        	XRLog.render(Level.INFO, "Text painted:" + s);
+        }
+        
+        //Si estamos procesando una lista comprobamos si hay que cerrar los item: LI, DD 
+        if(pdfUABean.isEndMarkedSecuence()){ 
+        	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getListener(), parentBlockBoxNodeName);
+        }
+        //Cierra raices de lista L o DL y resto de elementos padre DIV, P, etc.
+        if(pdfUABean.isParentEndMarkedSecuence()){ 
+        	ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getListener(), parentBlockBoxNodeName);
+        }   
+    }
+        
+    private void resetPdfUABeanIfNewPageCreated(){
+    	if(pdfUABean.getListener() instanceof DocTagListenerAccessible){
+	    	DocTagListenerAccessible listener = (DocTagListenerAccessible)pdfUABean.getListener();
+	    	boolean newPageCreated = listener.newPageCreated();
+	    	if(newPageCreated){
+	    		pdfUABean.setCurrentBlockElement(null);
+	    		pdfUABean.setCurrentBlockStrucElement(null);
+	    		pdfUABean.setLiTagged(null);
+	    		pdfUABean.setUlTagged(null);
+	    		listener.setNewPageCreated(false);
+	    	}
+    	}
+    }
+    
+    private boolean isListItem(BlockBox parentBlockBox){
+        return isListItem(parentBlockBox.getElement());
+    }
+    
+    private boolean isListItem(Element parentBlockBoxElement){
+    	boolean isList = false;
+    	if(parentBlockBoxElement != null && parentBlockBoxElement.getNodeName() != null){
+	        //Usually a blockbox is a <p>, it can contains more html elements like <a>
+	        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
+	        //A grandfather node could be a <ul> or <ol>, we need them to tag lists
+	        Node grandFatherBlockBoxNode = parentBlockBoxElement.getParentNode();
+	        String grandFatherBlockBoxNodeName = grandFatherBlockBoxNode.getNodeName();
+	        isList = "LI".equalsIgnoreCase(parentBlockBoxNodeName) && ("OL".equalsIgnoreCase(grandFatherBlockBoxNodeName) || "UL".equalsIgnoreCase(grandFatherBlockBoxNodeName));
+    	}
+    	return isList;
+    }
+    
+    private boolean isDescriptionListItem(BlockBox parentBlockBox){
+        return isDescriptionListItem(parentBlockBox.getElement());
+    }
+    
+    
+    private boolean isDescriptionListItem(Element parentBlockBoxElement){
+    	boolean isList = false;
+    	if(parentBlockBoxElement != null && parentBlockBoxElement.getNodeName() != null){
+	        //Usually a blockbox is a <p>, it can contains more html elements like <a>
+	        String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
+	        //A grandfather node could be a <dl>, we need them to tag description lists
+	        Node grandFatherBlockBoxNode = parentBlockBoxElement.getParentNode();
+	        String grandFatherBlockBoxNodeName = grandFatherBlockBoxNode.getNodeName();
+	        isList = ("DT".equalsIgnoreCase(parentBlockBoxNodeName) || "DD".equalsIgnoreCase(parentBlockBoxNodeName)) && "DL".equalsIgnoreCase(grandFatherBlockBoxNodeName);
+    	}
+    	return isList;
+    }
+    private boolean isList(Element parentBlockBoxElement){
+    	boolean isList = false;
+    	if(parentBlockBoxElement != null && parentBlockBoxElement.getNodeName() != null){
+    		String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
+    		isList =  "LI".equalsIgnoreCase(parentBlockBoxNodeName) || "OL".equalsIgnoreCase(parentBlockBoxNodeName) || "UL".equalsIgnoreCase(parentBlockBoxNodeName);
+    	}
+    	return isList;
+    }   
+    
+    private boolean isDescriptionList(Element parentBlockBoxElement){
+    	boolean isList = false;
+    	if(parentBlockBoxElement != null && parentBlockBoxElement.getNodeName() != null){
+    		String parentBlockBoxNodeName = parentBlockBoxElement.getNodeName();      
+    		isList = "DT".equalsIgnoreCase(parentBlockBoxNodeName) || "DD".equalsIgnoreCase(parentBlockBoxNodeName) || "DL".equalsIgnoreCase(parentBlockBoxNodeName);
+    	}
+    	return isList;
+    }
+    
+    private boolean isAnchor(String parentNodeName){
+    	return parentNodeName!= null && parentNodeName.equalsIgnoreCase("A");
+    }
+    
+    private void processAnchor(InlineText inlineText, BlockBox parentBlockBox, PdfContentByte cb){
+    	//TODO cambiar a asAnnotation
+//    	processLinkAccessible1(pdfUABean.getRenderingContext(), inlineText.getParent(), parentBlockBox);
+//		pdfUABean.setEndMarkedSecuence(false);
+//		pdfUABean.setPaintText(false);
+    }
+    
+    private void processList(InlineText inlineText, BlockBox parentBlockBox, PdfContentByte cb){
+    	processGenericList(inlineText, parentBlockBox, cb, "LI");
+    }
+    
+    private void processDescriptionList(InlineText inlineText, BlockBox parentBlockBox, PdfContentByte cb){
+    	processGenericList(inlineText, parentBlockBox, cb, "DT");
+    }
+
+    private void processGenericList(InlineText inlineText, BlockBox parentBlockBox, PdfContentByte cb, String listItemTag){   
+    	// Check if we have to close before tagged element distinc the current list
+    	if(pdfUABean.getCurrentBlockElement() != null && !isList(pdfUABean.getCurrentBlockElement()) && !isDescriptionList(pdfUABean.getCurrentBlockElement())){
+    		ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(cb, pdfUABean.getListener(), "<>L");
+    	}
+        //A grandfather node could be a <ul> , <ol> or <dl>, we need them to tag lists
+    	Node grandFatherBlockBoxNode = parentBlockBox.getElement().getParentNode();
+    	Element htmlElement = parentBlockBox.getElement();
+    	
+    	//Recuperamos el numero de LI que hay en la lista y la posicion del LI que se esta procesando actualmente
+    	int numChildren = DomUtilsAccessible.getNumChildren(grandFatherBlockBoxNode, listItemTag);
+    	int currentElementPosition = DomUtilsAccessible.getChildPosition(grandFatherBlockBoxNode, htmlElement, listItemTag);
+    	
+    	// Si es el padre es null, empezamos la lista UL
+    	// El segundo caso es para cuando El proceso ha dejado a medias una lista y procesamos la segunda mitad, tenemos que crear el padre otra vez
+    	if(pdfUABean.getUlTagged() == null || !pdfUABean.getUlTagged().isSameNode(grandFatherBlockBoxNode)){
+    		ITextOutputDeviceAccessibleUtil.createRootListTag(grandFatherBlockBoxNode, cb, pdfUABean, PdfName.L);
+    	}
+    	// Es el primer elemento de la lista por lo que primero abrimos el tag L
+//    	else if(currentElementPosition == 1){
+//    		ITextOutputDeviceAccessibleUtil.createRootListTag(grandFatherBlockBoxNode, cb, pdfUABean, PdfName.L);
+//    	} 
+
+    	if(pdfUABean.getLiTagged() == null){
+    		ITextOutputDeviceAccessibleUtil.createListItemTag(htmlElement, cb, pdfUABean, PdfName.LI);
+    	}
+    	// Si el tag LI aun no esta abierto lo abrimos
+    	if(!pdfUABean.getLiTagged().equals(htmlElement)){    
+    		//Checkqueamos los posibles LI huerfanos, si es asi creamos una etiqueta L. Esto puede ocurrir al crear nuevas paginas
+    		// y que las listas se queden a medias
+    		if(pdfUABean.getCurrentBlockStrucElement() == null){
+    			ITextOutputDeviceAccessibleUtil.createRootListTag(grandFatherBlockBoxNode, cb, pdfUABean, PdfName.L);
+    		}
+    		ITextOutputDeviceAccessibleUtil.createListItemTag(htmlElement, cb, pdfUABean, PdfName.LI);
+    	}
+    	
+    	//A parent node of an inline text could be an <a>
+        String parentNodeName = DomUtilsAccessible.getParentNodeName(inlineText.getParent()); 
+    	//Controlamos si el texto esta dentro de un anchor para pintarlo como LINK
+        if(isAnchor(parentNodeName)){
+        	processAnchor(inlineText, parentBlockBox, cb);
+        }
+        markClosingTags(inlineText, parentBlockBox, currentElementPosition, numChildren);
+    }
+   
+    private void markClosingTags(InlineText inlineText, BlockBox parentBlockBox, int currentElementPosition, int numChildren){
+    	//Controlamos los textos que vienen dentro de un mismo LI fragmentados
+    	int numTextChildren = DomUtilsAccessible.getNumInlineTextChildren(parentBlockBox);
+    	int currentTextElementPosition = DomUtilsAccessible.getChildTextPosition(parentBlockBox, inlineText);
+    	
+    	// Si es el ultimo fragmento de texto del LI marcamos que hay que cerrar la etiqueta LI
+    	if(numTextChildren == currentTextElementPosition){
+    		pdfUABean.setEndMarkedSecuence(true);
+           	// Es el ultimo elemento de la lista por lo que tenemos que cerrar el tag L que estaba abierto
+        	if(currentElementPosition == numChildren){
+        		pdfUABean.setParentEndMarkedSecuence(true);    		
+        	}
+    	}else{
+    		// Si no es el ultimo fragmento de texto tenemos que dejar abierta la etiqueta LIs
+    		pdfUABean.setEndMarkedSecuence(false);
+    	}
+    }
+    
+    private void paintText(InlineText inlineText, String s, float x, float y, JustificationInfo info){
+    	PdfContentByte cb = _currentPage;
+		ensureFillColor();
         AffineTransform at = (AffineTransform) getTransform().clone();
         at.translate(x, y);
         AffineTransform inverse = normalizeMatrix(at);
@@ -488,11 +1010,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         inverse.scale(_dotsPerPoint, _dotsPerPoint);
         double[] mx = new double[6];
         inverse.getMatrix(mx);
-        cb.beginText();
+        
+        FontDescription desc = _font.getFontDescription();
+        float fontSize = _font.getSize2D() / _dotsPerPoint; 
+        
+        cb.beginText();           
+        
         // Check if bold or italic need to be emulated
         boolean resetMode = false;
-        FontDescription desc = _font.getFontDescription();
-        float fontSize = _font.getSize2D() / _dotsPerPoint;
         cb.setFontAndSize(desc.getFont(), fontSize);
         float b = (float) mx[1];
         float c = (float) mx[2];
@@ -523,9 +1048,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             cb.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL);
             cb.setLineWidth(1);
         }
-        cb.endText();
+               
+        cb.endText(); 
     }
-
+    
     private String replaceMissingCharacters(String string) {
         char[] charArr = string.toCharArray();
         char replacementCharacter = Configuration.valueAsChar("xr.renderer.missing-character-replacement", '#');
@@ -533,7 +1059,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         // first check to see if the replacement character even exists in the
         // given font. If not, then do nothing.
         if (!_font.getFontDescription().getFont().charExists(replacementCharacter)) {
-            XRLog.render(Level.INFO, "Missing replacement character [" + replacementCharacter + ":" + (int) replacementCharacter
+            XRLog.render(Level.FINE, "Missing replacement character [" + replacementCharacter + ":" + (int) replacementCharacter
                     + "]. No replacement will occur.");
             return string;
         }
@@ -816,8 +1342,99 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public Stroke getStroke() {
         return _originalStroke;
     }
+    
+    
+    public void drawImageAsHorizontalBandAccessible(FSImage image, int left, int top, int bottom){
+        int height = image.getHeight();
+		PdfStructureElement struc = new PdfStructureElement(pdfUABean.getTagDocument(), PdfName.ARTIFACT);
+		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(_currentPage, struc, pdfUABean.getListener(), "img-h");
+        for (int y = top; y < bottom; y+= height) {
+            drawImageNoAccessible(image, left, y);
+        }
+        ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(_currentPage, pdfUABean.getListener(), "img-h");
+    }
+    
+    public void drawImageAsVerticalBandAccessible(FSImage image, int left, int top, int right){
+        int width = image.getWidth();
+		PdfStructureElement struc = new PdfStructureElement(pdfUABean.getTagDocument(), PdfName.ARTIFACT);
+		ITextOutputDeviceAccessibleUtil.beginMarkedContentSequence(_currentPage, struc, pdfUABean.getListener(), "img-v");
+        for (int x = left; x < right; x+= width) {
+        	drawImageNoAccessible(image, x, top);
+        }
+        ITextOutputDeviceAccessibleUtil.endMarkedContentSequence(_currentPage, pdfUABean.getListener(), "img-v");	
+    }
+    
+    //PDF/UA This the original drawImage adding tagged images
+    public void drawImageNoAccessible(FSImage fsImage, int x, int y) {
+        if (fsImage instanceof PDFAsImage) {
+            drawPDFAsImage((PDFAsImage)fsImage, x, y);
+        } else {
+            Image image = ((ITextFSImage)fsImage).getImage();
+            
+            if (fsImage.getHeight() <= 0 || fsImage.getWidth() <= 0) {
+                return;
+            }
+            
+            AffineTransform at = AffineTransform.getTranslateInstance(x,y);
+            at.translate(0, fsImage.getHeight());
+            at.scale(fsImage.getWidth(), fsImage.getHeight());
+            
+            AffineTransform inverse = normalizeMatrix(_transform);
+            AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
+            inverse.concatenate(at);
+            inverse.concatenate(flipper);
+            
+            double[] mx = new double[6];
+            inverse.getMatrix(mx);
+            
+            try {
+              _currentPage.addImage(image, 
+                      (float)mx[0], (float)mx[1], (float)mx[2], 
+                      (float)mx[3], (float)mx[4], (float)mx[5]);
+            } catch (DocumentException e) {
+                throw new XRRuntimeException(e.getMessage(), e);
+            }
+        }
+    }
 
     public void drawImage(FSImage fsImage, int x, int y) {
+        if (fsImage instanceof PDFAsImage) {
+            drawPDFAsImage((PDFAsImage)fsImage, x, y);
+        } else {
+            Image image = ((ITextFSImage)fsImage).getImage();
+            
+            if (fsImage.getHeight() <= 0 || fsImage.getWidth() <= 0) {
+                return;
+            }
+            
+            AffineTransform at = AffineTransform.getTranslateInstance(x,y);
+            at.translate(0, fsImage.getHeight());
+            at.scale(fsImage.getWidth(), fsImage.getHeight());
+            
+            AffineTransform inverse = normalizeMatrix(_transform);
+            AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
+            inverse.concatenate(at);
+            inverse.concatenate(flipper);
+            
+            double[] mx = new double[6];
+            inverse.getMatrix(mx);
+            
+            try {
+            	//PDF/UA
+//              _currentPage.addImage(image, 
+//                      (float)mx[0], (float)mx[1], (float)mx[2], 
+//                      (float)mx[3], (float)mx[4], (float)mx[5]);
+          	
+          	addTaggedImage(null, pdfUABean.getTagDocument(), _currentPage, image, mx);
+              //PDF/UA End
+            } catch (DocumentException e) {
+                throw new XRRuntimeException(e.getMessage(), e);
+            }
+        }
+    }  
+    
+    //PDF/UA, new input param BlockBox
+    public void drawImage(BlockBox box, FSImage fsImage, int x, int y) {
         if (fsImage instanceof PDFAsImage) {
             drawPDFAsImage((PDFAsImage) fsImage, x, y);
         } else {
@@ -840,12 +1457,18 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             inverse.getMatrix(mx);
 
             try {
-                _currentPage.addImage(image, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5]);
+            	//PDF/UA
+//                _currentPage.addImage(image, 
+//                        (float)mx[0], (float)mx[1], (float)mx[2], 
+//                        (float)mx[3], (float)mx[4], (float)mx[5]);
+            	
+            	addTaggedImage(box, pdfUABean.getTagDocument(), _currentPage, image, mx);
+                //PDF/UA End
             } catch (DocumentException e) {
                 throw new XRRuntimeException(e.getMessage(), e);
             }
         }
-    }
+    }           
 
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {
         URI uri = image.getURI();
@@ -1287,5 +1910,71 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         result.setHeight(box.getHeight() / _dotsPerPoint);
 
         return result;
+    }
+  
+    @Override
+    public void drawText(RenderingContext c, InlineText inlineText) {
+        InlineLayoutBox iB = inlineText.getParent();
+        String text = inlineText.getSubstring();
+
+        if (text != null && text.length() > 0) {
+            setColor(iB.getStyle().getColor());
+            setFont(iB.getStyle().getFSFont(c));
+            setFontSpecification(iB.getStyle().getFontSpecification());
+            if (inlineText.getParent().getStyle().isTextJustify()) {
+                JustificationInfo info = inlineText.getParent().getLineBox().getJustificationInfo();
+                if (info != null) {
+                	ITextTextRendererAccessible.drawStringAccessible(c.getOutputDevice(), inlineText,
+                            text,
+                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline(),
+                            info);
+                } else {
+                	ITextTextRendererAccessible.drawStringAccessible(
+                            c.getOutputDevice(), inlineText,
+                            text,
+                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());
+                }
+            } else {
+            	ITextTextRendererAccessible.drawStringAccessible(
+                        c.getOutputDevice(), inlineText,
+                        text,
+                        iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());
+            }
+        }
+
+        if (c.debugDrawFontMetrics()) {
+            drawFontMetrics(c, inlineText);
+        }
+    }   
+    
+    private void drawFontMetrics(RenderingContext c, InlineText inlineText) {
+        InlineLayoutBox iB = inlineText.getParent();
+        String text = inlineText.getSubstring();
+
+        setColor(new FSRGBColor(0xFF, 0x33, 0xFF));
+
+        FSFontMetrics fm = iB.getStyle().getFSFontMetrics(null);
+        int width = c.getTextRenderer().getWidth(
+                c.getFontContext(),
+                iB.getStyle().getFSFont(c), text);
+        int x = iB.getAbsX() + inlineText.getX();
+        int y = iB.getAbsY() + iB.getBaseline();
+
+        drawLine(x, y, x + width, y);
+
+        y += (int) Math.ceil(fm.getDescent());
+        drawLine(x, y, x + width, y);
+
+        y -= (int) Math.ceil(fm.getDescent());
+        y -= (int) Math.ceil(fm.getAscent());
+        drawLine(x, y, x + width, y);
+    }
+    
+    /**
+     * PDF/UA
+     */
+    @Override
+    public void closeOpenTags(){
+    	pdfUABean.getListener().closeOpenTags();
     }
 }

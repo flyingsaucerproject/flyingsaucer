@@ -114,6 +114,14 @@ public interface NamespaceHandler {
      * @return The linkUri value
      */
     String getLinkUri(org.w3c.dom.Element e);
+    
+    /**
+     * should return null if element is not a link
+     *
+     * @param e PARAM
+     * @return The linkTitle value
+     */
+    String getLinkTitle(org.w3c.dom.Element e);
 
     /**
      * 
