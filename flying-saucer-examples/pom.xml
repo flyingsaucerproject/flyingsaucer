@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.msl.xhtmlrenderer</groupId>
+    <groupId>io.github.msalaslo</groupId>
     <artifactId>flying-saucer-parent</artifactId>
     <version>9.1.20</version>
   </parent>
@@ -30,12 +30,12 @@
       <version>2.1.7</version>
     </dependency>
     <dependency>
-      <groupId>org.msl.xhtmlrenderer</groupId>
+      <groupId>io.github.msalaslo</groupId>
       <artifactId>flying-saucer-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.msl.xhtmlrenderer</groupId>
+      <groupId>io.github.msalaslo</groupId>
       <artifactId>flying-saucer-pdf</artifactId>
       <version>${project.version}</version>
     </dependency>

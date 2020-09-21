@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.msl.xhtmlrenderer</groupId>
+    <groupId>io.github.msalaslo</groupId>
     <artifactId>flying-saucer-parent</artifactId>
     <version>9.1.20</version>
     <relativePath>../pom.xml</relativePath>
@@ -25,7 +25,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.msl.xhtmlrenderer</groupId>
+      <groupId>io.github.msalaslo</groupId>
       <artifactId>flying-saucer-pdf</artifactId>
       <version>${project.version}</version>
     </dependency>

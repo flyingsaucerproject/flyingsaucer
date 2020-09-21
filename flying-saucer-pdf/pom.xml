@@ -1,133 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.msl.xhtmlrenderer</groupId>
-    <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.20</version>
-  </parent>
+	<parent>
+		<groupId>io.github.msalaslo</groupId>
+		<artifactId>flying-saucer-parent</artifactId>
+		<version>9.1.20</version>
+	</parent>
 
-  <artifactId>flying-saucer-pdf</artifactId>
+	<artifactId>flying-saucer-pdf</artifactId>
 
-  <packaging>jar</packaging>
+	<packaging>jar</packaging>
 
-  <name>Flying Saucer PDF Rendering</name>
-  <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output.</description>
+	<name>Flying Saucer PDF Rendering</name>
+	<description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output.</description>
 
-  <properties>
-    <bouncycastle.version>1.64</bouncycastle.version>
-    <junit.version>4.12</junit.version>
-    <openpdf.version>1.3.11</openpdf.version>
-    <itext.version>2.1.7</itext.version>
-  </properties>
+	<properties>
+		<bouncycastle.version>1.64</bouncycastle.version>
+		<junit.version>4.12</junit.version>
+		<openpdf.version>1.3.11</openpdf.version>
+		<itext.version>2.1.7</itext.version>
+	</properties>
 
-  <licenses>
-    <license>
-      <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
-    </license>
-  </licenses>
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
+			<url>http://www.gnu.org/licenses/lgpl.html</url>
+		</license>
+	</licenses>
 
-  <distributionManagement>
-    <repository>
-      <id>bintray</id>
-      <url>https://api.bintray.com/maven/flyingsaucerproject/maven/org.xhtmlrenderer:flying-saucer</url>
-    </repository>
-  </distributionManagement>
+	<!-- msl -->
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
-  <profiles>
-    <profile>
-      <id>itext</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-      	<!-- 
-      		Note: The iText Bouncy Castle dependencies have been moved to a new group and version on maven central.
-      		This caused some of the artifacts to be resolved twice. By excluding dependencies from the old group
-      		and adding corresponding dependencies from the updated group, the artifacts are only resolved once. 
-      	 -->
-        <dependency>
-          <groupId>com.lowagie</groupId>
-          <artifactId>itext</artifactId>
-          <version>${itext.version}</version>
-          <exclusions>
-            <exclusion>
-              <groupId>bouncycastle</groupId>
-              <artifactId>bcmail-jdk14</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>bouncycastle</groupId>
-              <artifactId>bcprov-jdk14</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>bouncycastle</groupId>
-              <artifactId>bctsp-jdk14</artifactId>
-            </exclusion>            
-          </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcmail-jdk14</artifactId>
-            <version>${bouncycastle.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bctsp-jdk14</artifactId>
-            <version>1.46</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk14</artifactId>
-            <version>${bouncycastle.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.msl.xhtmlrenderer</groupId>
-          <artifactId>flying-saucer-core</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>${junit.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>openpdf</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.github.librepdf</groupId>
-          <artifactId>openpdf</artifactId>
-          <version>${openpdf.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.msl.xhtmlrenderer</groupId>
-          <artifactId>flying-saucer-core</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>${junit.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
+	<profiles>
+		<profile>
+			<id>itext</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<!-- Note: The iText Bouncy Castle dependencies have been moved to a 
+					new group and version on maven central. This caused some of the artifacts 
+					to be resolved twice. By excluding dependencies from the old group and adding 
+					corresponding dependencies from the updated group, the artifacts are only 
+					resolved once. -->
+				<dependency>
+					<groupId>com.lowagie</groupId>
+					<artifactId>itext</artifactId>
+					<version>${itext.version}</version>
+					<exclusions>
+						<exclusion>
+							<groupId>bouncycastle</groupId>
+							<artifactId>bcmail-jdk14</artifactId>
+						</exclusion>
+						<exclusion>
+							<groupId>bouncycastle</groupId>
+							<artifactId>bcprov-jdk14</artifactId>
+						</exclusion>
+						<exclusion>
+							<groupId>bouncycastle</groupId>
+							<artifactId>bctsp-jdk14</artifactId>
+						</exclusion>
+					</exclusions>
+				</dependency>
+				<dependency>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcmail-jdk14</artifactId>
+					<version>${bouncycastle.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bctsp-jdk14</artifactId>
+					<version>1.46</version>
+				</dependency>
+				<dependency>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk14</artifactId>
+					<version>${bouncycastle.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>io.github.msalaslo</groupId>
+					<artifactId>flying-saucer-core</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+					<version>${junit.version}</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>openpdf</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.github.librepdf</groupId>
+					<artifactId>openpdf</artifactId>
+					<version>${openpdf.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>io.github.msalaslo</groupId>
+					<artifactId>flying-saucer-core</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+					<version>${junit.version}</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
-  <build>
-    <resources>
-      <resource>
-        <directory>../</directory>
-        <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
-        <includes>
-          <include>LICENSE*</include>
-        </includes>
-      </resource>
-    </resources>
-  </build>
+	<build>
+		<resources>
+			<resource>
+				<directory>../</directory>
+				<targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+				<includes>
+					<include>LICENSE*</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
 </project>
