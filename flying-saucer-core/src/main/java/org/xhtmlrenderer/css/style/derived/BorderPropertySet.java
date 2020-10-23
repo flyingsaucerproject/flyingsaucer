@@ -335,5 +335,35 @@ public class BorderPropertySet extends RectPropertySet {
         return Math.max(sideWidth, left.getMaxRight(sideWidth) + right.getMaxLeft(sideWidth));
     }
 
+    public boolean isSingleColor() {
+        // TODO: maybe define and use value comparison instead?
+        return _bottomColor == _topColor && _bottomColor == _leftColor && _bottomColor == _rightColor;
+    }
+
+    public boolean isSingleWidth() {
+        return _bottom == _top && _bottom == _left && _bottom == _right;
+    }
+
+    public boolean isSingleStyle() {
+        // TODO: maybe define and use value comparison instead?
+        return _bottomColor == _topColor && _bottomColor == _leftColor && _bottomColor == _rightColor;
+    }
+
+    public boolean isSingleRadius() {
+        return (
+                _topLeft.isSimple() && _topRight.isSimple() && _bottomLeft.isSimple() && _bottomRight.isSimple() &&
+                _topLeft.left() == _topRight.left() &&
+                _topLeft.left() == _bottomRight.left() &&
+                _topLeft.left() == _topRight.left()
+        );
+    }
+
+
+    /**
+     * Check if the single radius value is used for all cornes and only a single color / style is used
+     * */
+    public boolean isSimple() {
+        return isSingleColor() && isSingleWidth() && isSingleStyle() && isSingleRadius();
+    }
 }
 

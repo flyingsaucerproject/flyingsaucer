@@ -23,10 +23,7 @@ import java.awt.BasicStroke;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Area;
-import java.awt.geom.Path2D;
+import java.awt.geom.*;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -46,17 +43,23 @@ public class BorderPainter {
      * Generates a full round rectangle that is made of bounds and border
      * @param bounds Dimmensions of the rect
      * @param border The border specs
-     * @param Set true if you want the inner bounds of borders
+     * @param inside Set true if you want the inner bounds of borders
      * @return A Path that is all sides of the round rectangle
      */
-    public static Path2D generateBorderBounds(Rectangle bounds, BorderPropertySet border, boolean inside) {
-        Path2D path = generateBorderShape(bounds, TOP, border, false, inside ? 1 : 0, 1);
-        path.append(generateBorderShape(bounds, RIGHT, border, false, inside ? 1 : 0, 1), true);
-        path.append(generateBorderShape(bounds, BOTTOM, border, false, inside ? 1 : 0, 1), true);
-        path.append(generateBorderShape(bounds, LEFT, border, false, inside ? 1 : 0, 1), true);
-        return path;
+    public static Shape generateBorderBounds(Rectangle bounds, BorderPropertySet border, boolean inside) {
+        if (border.isSimple() && !inside) {
+            return new RoundRectangle2D.Float(
+                    (float) bounds.x, (float) bounds.y, (float) bounds.width, (float) bounds.height,
+                    border.getTopLeft().left(), border.getTopLeft().left()
+            );
+        } else {
+            Path2D path = generateBorderShape(bounds, TOP, border, false, inside ? 1 : 0, 1);
+            path.append(generateBorderShape(bounds, RIGHT, border, false, inside ? 1 : 0, 1), true);
+            path.append(generateBorderShape(bounds, BOTTOM, border, false, inside ? 1 : 0, 1), true);
+            path.append(generateBorderShape(bounds, LEFT, border, false, inside ? 1 : 0, 1), true);
+            return path;
+        }
     }
-    
 
     /**
      * Generates one side of a border

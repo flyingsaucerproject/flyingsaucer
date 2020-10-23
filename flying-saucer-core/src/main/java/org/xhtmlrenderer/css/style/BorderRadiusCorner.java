@@ -101,6 +101,10 @@ public class BorderRadiusCorner {
 		return _left > 0 || _right > 0;
 	}
 
+	public boolean isSimple() {
+	    return !_leftPercent && !_rightPercent && _left == _right;
+    }
+
 	public float getMaxLeft(float max) {
 		if(_leftPercent)
 			return max*_left;
