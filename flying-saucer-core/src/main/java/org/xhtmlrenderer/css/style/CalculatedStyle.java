@@ -117,7 +117,7 @@ public class CalculatedStyle {
      * this for class instantiation externally.
      */
     protected CalculatedStyle() {
-        _derivedValuesById = new FSDerivedValue[CSSName.countCSSPrimitiveNames()];
+        _derivedValuesById = new FSDerivedValue[CSSName.countCSSNames()];
     }
 
 
@@ -1095,6 +1095,10 @@ public class CalculatedStyle {
         return isIdent(CSSName.MAX_HEIGHT, IdentValue.NONE);
     }
 
+    public boolean isBorderBox() {
+        return isIdent(CSSName.BOX_SIZING, IdentValue.BORDER_BOX);
+    }
+
     public int getMinWidth(CssContext c, int cbWidth) {
         return (int) getFloatPropertyProportionalTo(CSSName.MIN_WIDTH, cbWidth, c);
     }
@@ -1112,7 +1116,7 @@ public class CalculatedStyle {
     }
 
     public boolean isCollapseBorders() {
-        return isIdent(CSSName.BORDER_COLLAPSE, IdentValue.COLLAPSE) && ! isPaginateTable();
+        return isIdent(CSSName.BORDER_COLLAPSE, IdentValue.COLLAPSE);
     }
 
     public int getBorderHSpacing(CssContext c) {

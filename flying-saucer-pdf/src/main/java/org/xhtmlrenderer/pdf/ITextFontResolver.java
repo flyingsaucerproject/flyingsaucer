@@ -30,11 +30,14 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.util.FontUtil;
+import org.xhtmlrenderer.util.SupportedEmbeddedFontTypes;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class ITextFontResolver implements FontResolver {
     private Map _fontFamilies = createInitialFontMap();
@@ -252,12 +255,24 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
+    private boolean fontSupported(String uri) {
+        String lower = uri.toLowerCase();
+        if(FontUtil.isEmbeddedBase64Font(uri)) {
+            return SupportedEmbeddedFontTypes.isSupported(uri);
+        } else {
+            return lower.endsWith(".otf") ||
+                    lower.endsWith(".ttf") ||
+                    lower.contains(".ttc,");
+        }
+    }
+
     private void addFontFaceFont(
             String fontFamilyNameOverride, IdentValue fontWeightOverride, IdentValue fontStyleOverride, String uri, String encoding, boolean embedded, byte[] afmttf, byte[] pfb)
             throws DocumentException, IOException {
         String lower = uri.toLowerCase();
-        if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
-            BaseFont font = BaseFont.createFont(uri, encoding, embedded, false, afmttf, pfb);
+        if (fontSupported(lower)) {
+            String fontName = (FontUtil.isEmbeddedBase64Font(uri)) ? fontFamilyNameOverride+SupportedEmbeddedFontTypes.getExtension(uri) : uri;
+            BaseFont font = BaseFont.createFont(fontName, encoding, embedded, false, afmttf, pfb);
 
             String[] fontFamilyNames;
             if (fontFamilyNameOverride != null) {

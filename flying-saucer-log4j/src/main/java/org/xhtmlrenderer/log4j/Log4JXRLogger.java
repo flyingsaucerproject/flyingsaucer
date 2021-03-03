@@ -19,21 +19,23 @@
  */
 package org.xhtmlrenderer.log4j;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
 import org.apache.log4j.Logger;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRLogger;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
 public class Log4JXRLogger implements XRLogger {
+
     private static final String DEFAULT_LOGGER_NAME = "org.xhtmlrenderer.other";
-    
+
     private static final Map LOGGER_NAME_MAP;
+
     static {
         LOGGER_NAME_MAP = new HashMap();
-        
+
         LOGGER_NAME_MAP.put(XRLog.CONFIG, "org.xhtmlrenderer.config");
         LOGGER_NAME_MAP.put(XRLog.EXCEPTION, "org.xhtmlrenderer.exception");
         LOGGER_NAME_MAP.put(XRLog.GENERAL, "org.xhtmlrenderer.general");
@@ -47,10 +49,10 @@ public class Log4JXRLogger implements XRLogger {
         LOGGER_NAME_MAP.put(XRLog.LAYOUT, "org.xhtmlrenderer.layout");
         LOGGER_NAME_MAP.put(XRLog.RENDER, "org.xhtmlrenderer.render");
     }
-    
-    private String _defaultLoggerName = DEFAULT_LOGGER_NAME;
-    private Map _loggerNameMap = LOGGER_NAME_MAP;
-    
+
+    private String defaultLoggerName = DEFAULT_LOGGER_NAME;
+    private Map loggerNameMap = LOGGER_NAME_MAP;
+
     public void log(String where, Level level, String msg) {
         Logger.getLogger(getLoggerName(where)).log(toLog4JLevel(level), msg);
     }
@@ -58,7 +60,7 @@ public class Log4JXRLogger implements XRLogger {
     public void log(String where, Level level, String msg, Throwable th) {
         Logger.getLogger(getLoggerName(where)).log(toLog4JLevel(level), msg, th);
     }
-    
+
     private org.apache.log4j.Level toLog4JLevel(Level level) {
         if (level == Level.SEVERE) {
             return org.apache.log4j.Level.ERROR;
@@ -74,33 +76,34 @@ public class Log4JXRLogger implements XRLogger {
             return org.apache.log4j.Level.INFO;
         }
     }
-    
+
     private String getLoggerName(String xrLoggerName) {
-        String result = (String)_loggerNameMap.get(xrLoggerName);
+        String result = (String) loggerNameMap.get(xrLoggerName);
         if (result != null) {
             return result;
         } else {
-            return _defaultLoggerName;
+            return defaultLoggerName;
         }
     }
 
     public void setLevel(String logger, Level level) {
         throw new UnsupportedOperationException("log4j should be not be configured here");
     }
-    
+
     public Map getLoggerNameMap() {
-        return _loggerNameMap;
+        return loggerNameMap;
     }
 
     public void setLoggerNameMap(Map loggerNameMap) {
-        _loggerNameMap = loggerNameMap;
+        this.loggerNameMap = loggerNameMap;
     }
 
     public String getDefaultLoggerName() {
-        return _defaultLoggerName;
+        return defaultLoggerName;
     }
 
     public void setDefaultLoggerName(String defaultLoggerName) {
-        _defaultLoggerName = defaultLoggerName;
+        this.defaultLoggerName = defaultLoggerName;
     }
+
 }

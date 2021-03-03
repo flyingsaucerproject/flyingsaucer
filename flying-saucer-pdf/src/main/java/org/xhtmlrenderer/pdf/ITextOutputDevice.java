@@ -288,7 +288,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                             _writer.addAnnotation(annot);
                         }
                     }
-                } else if (uri.indexOf("://") != -1 || uri.startsWith("mailto:")) {
+                } else {
                     PdfAction action = new PdfAction(uri);
 
                     com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
@@ -510,7 +510,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 resetMode = true;
                 ensureStrokeColor();
             }
-            if ((fontSpec.fontStyle == IdentValue.ITALIC) && (desc.getStyle() != IdentValue.ITALIC)) {
+            if ((fontSpec.fontStyle == IdentValue.ITALIC) && (desc.getStyle() != IdentValue.ITALIC) && (desc.getStyle() != IdentValue.OBLIQUE)) {
                 b = 0f;
                 c = 0.21256f;
             }
@@ -904,6 +904,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public void finish(RenderingContext c, Box root) {
         writeOutline(c, root);
         writeNamedDestinations(c);
+        _bookmarks.clear();
     }
 
     private void writeOutline(RenderingContext c, Box root) {

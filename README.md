@@ -1,4 +1,4 @@
-# Flying Saucer
+# Flying Saucer [![Download](https://api.bintray.com/packages/flyingsaucerproject/maven/org.xhtmlrenderer%3Aflying-saucer/images/download.svg)](https://bintray.com/flyingsaucerproject/maven/org.xhtmlrenderer%3Aflying-saucer/_latestVersion) [![License: LGPL v2.1](https://img.shields.io/badge/license-LGPL--2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
 
 
 ## OVERVIEW
@@ -35,12 +35,13 @@ of these, along with the license they each have, is listed in the
 New releases of Flying Saucer are distributed through Maven.  The available artifacts are:
 
 * `org.xhtmlrenderer:flying-saucer-core` - Core library and Java2D rendering
-* `org.xhtmlrenderer:flying-saucer-pdf` - PDF output using iText or OpenPDF
+* `org.xhtmlrenderer:flying-saucer-pdf` - PDF output using iText 2.x
+* `org.xhtmlrenderer:flying-saucer-pdf-itext5` - PDF output using iText 5.x
+* `org.xhtmlrenderer:flying-saucer-pdf-openpdf` - PDF output using OpenPDF
 * `org.xhtmlrenderer:flying-saucer-swt` - SWT output
 * `org.xhtmlrenderer:flying-saucer-log4j` - Logging plugin for log4j
 
-Build with openpdf Maven profile to use OpenPDF.
-
+iText 2.x has unfixed security bugs. New projects should avoid it.
 
 ## GETTING STARTED
 

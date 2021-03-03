@@ -1,31 +1,31 @@
 package org.xhtmlrenderer.pdf;
 
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.RandomAccessFileOrArray;
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
-
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.RandomAccessFileOrArray;
-
 /**
  * Uses code from iText's DefaultFontMapper and TrueTypeFont classes.  See
  * <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/projects/itext/</a> for license information.
  */
 public class TrueTypeUtil {
+
     private static IdentValue guessStyle(BaseFont font) {
         String[][] names = font.getFullFontName();
-        for (int i = 0; i < names.length; i++) {
-            String name[] = names[i];
+
+        for (String[] name : names) {
             String lower = name[3].toLowerCase();
-            if (lower.indexOf("italic") != -1) {
+            if (lower.contains("italic")) {
                 return IdentValue.ITALIC;
-            } else if (lower.indexOf("oblique") != -1) {
+            } else if (lower.contains("oblique")) {
                 return IdentValue.OBLIQUE;
             }
         }
@@ -34,32 +34,32 @@ public class TrueTypeUtil {
     }
 
     public static String[] getFamilyNames(BaseFont font) {
-        String names[][] = font.getFamilyFontName();
+        String[][] names = font.getFamilyFontName();
+
         if (names.length == 1) {
-            return new String[] { names[0][3] };
+            return new String[]{names[0][3]};
         }
 
-        List result = new ArrayList();
-        for (int k = 0; k < names.length; ++k) {
-            String name[] = names[k];
-            if ((name[0].equals("1") && name[1].equals("0")) ||
-                    name[2].equals("1033")) {
+        List<String> result = new ArrayList<String>();
+        for (String[] name : names) {
+            if ((name[0].equals("1") && name[1].equals("0")) || name[2].equals("1033")) {
                 result.add(name[3]);
             }
         }
-        return (String[]) result.toArray(new String[result.size()]);
+
+        return result.toArray(new String[result.size()]);
     }
 
     // HACK No accessor
-    private static Map extractTables(BaseFont font)
-            throws SecurityException, NoSuchFieldException, IllegalArgumentException,
-                    IllegalAccessException {
+    private static Map<String, int[]> extractTables(BaseFont font)
+            throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Class current = font.getClass();
+
         while (current != null) {
             if (current.getName().endsWith(".TrueTypeFont")) {
-                Field f = current.getDeclaredField("tables");
-                f.setAccessible(true);
-                return (Map)f.get(font);
+                Field field = current.getDeclaredField("tables");
+                field.setAccessible(true);
+                return (Map) field.get(font);
             }
 
             current = current.getSuperclass();
@@ -69,12 +69,9 @@ public class TrueTypeUtil {
     }
 
     private static String getTTCName(String name) {
-        int idx = name.toLowerCase().indexOf(".ttc,");
-        if (idx < 0) {
-            return name;
-        } else {
-            return name.substring(0, idx + 4);
-        }
+        int index = name.toLowerCase().indexOf(".ttc,");
+
+        return index < 0 ? name : name.substring(0, index + 4);
     }
 
     public static void populateDescription(String path, BaseFont font, FontDescription descr)
@@ -114,32 +111,35 @@ public class TrueTypeUtil {
     }
 
     private static RandomAccessFileOrArray populateDescription0(String path,
-            BaseFont font, FontDescription descr, RandomAccessFileOrArray rf)
-               throws NoSuchFieldException, IllegalAccessException, DocumentException, IOException {
-        Map tables = extractTables(font);
+                                                                BaseFont font, FontDescription descr, RandomAccessFileOrArray rf)
+            throws NoSuchFieldException, IllegalAccessException, DocumentException, IOException {
+        Map<String, int[]> tables = extractTables(font);
 
         descr.setStyle(guessStyle(font));
 
-        int[] location = (int[])tables.get("OS/2");
+        int[] location = tables.get("OS/2");
         if (location == null) {
             throw new DocumentException("Table 'OS/2' does not exist in " + path);
         }
+
         rf.seek(location[0]);
         int want = 4;
         long got = rf.skip(want);
         if (got < want) {
             throw new DocumentException("Skip TT font weight, expect read " + want + " bytes, but only got " + got);
         }
+
         descr.setWeight(rf.readUnsignedShort());
         want = 20;
         got = rf.skip(want);
         if (got < want) {
             throw new DocumentException("Skip TT font strikeout, expect read " + want + " bytes, but only got " + got);
         }
+
         descr.setYStrikeoutSize(rf.readShort());
         descr.setYStrikeoutPosition(rf.readShort());
 
-        location = (int[])tables.get("post");
+        location = tables.get("post");
 
         if (location != null) {
             rf.seek(location[0]);
@@ -156,4 +156,5 @@ public class TrueTypeUtil {
         rf = null;
         return rf;
     }
+
 }

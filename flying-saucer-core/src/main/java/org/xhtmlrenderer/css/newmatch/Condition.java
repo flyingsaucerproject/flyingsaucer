@@ -409,15 +409,53 @@ abstract class Condition {
             // getPositionOfElement() starts at 0, CSS spec starts at 1
             int position = treeRes.getPositionOfElement(e)+1;
 
-            position -= b;
 
-            if (a == 0) {
-                return position == 0;
-            } else if ((a < 0) && (position > 0)) {
-                return false; // n is negative
-            } else {
-                return position % a == 0;
-            }
+            //<An+B> from https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child
+            //Represents elements whose numeric position in a series of siblings matches the pattern An+B, 
+            //for every positive integer or zero value of n. The index of the first element is 1. 
+            //The values A and B must both be <integer>s.             
+            
+            // an+b generates a sequence b, a+b, 2a+b, 3a+b, 4a+b
+            // e.g. if 
+            //a=2 b=3, it generates the sequence: 3, 5, 7, 9, 11... for values of n=0,1,2,3,4...
+            //a=2 b=0, the sequence is 0 (which is moot), 2, 4, 6... - i.e. even
+            //a=2 b=1, gives 1, 3, 5, 7... - i.e. even
+            //a=1 b=2, gives 2, 3, 4, 5, 6... - i.e. not first
+            //a=1 b=3, gives 3, 4, 5, 6, 7... 
+            //a=-1 b=5, gives 5, 4, 3, 2, 1. So only matches the first 5 - it won't reverse the order of the elements!
+            //a=-2 b=5, gives 5, 3, 1. So only matches the odd 3 of the first 5 
+            //a=0 b=1, gives 1, just the first element
+            //a=0 b=7, gives 7. Just the seventh element
+            
+//            p = ( a * n ) + b  - is n zero, or a positive integer?
+//            p-b = ( a * n )
+//            (p-b)/a = n 
+                
+            //Clearly n==0 iff p==b, for any value of a
+            if ( position == b )
+                return true;
+            
+            //And if a==0 then a x n is 0 for all n, and if we didn't match position==b above then n cannot be valid (0 or +ve integer).
+            if ( a == 0 )
+                return false;
+            
+            //return true if n is an integer and 0 or +ve
+            if  (    ( ( ( position - b ) % a ) == 0 )   // n is an integer
+                  && ( ( ( position - b ) / a ) >= 0 ) ) // n is 0 or +ve 
+                return true;
+                        
+            return false;
+            
+//            
+//            position -= b;
+//
+//            if (a == 0) {
+//                return position == 0;
+//            } else if ((a < 0) && (position > 0)) {
+//                return false; // n is negative
+//            } else {
+//                return position % a == 0;
+//            }
         }
 
         static NthChildCondition fromString(String number) {

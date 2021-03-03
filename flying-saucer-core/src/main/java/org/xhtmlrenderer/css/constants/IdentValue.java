@@ -72,6 +72,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue BLOCK = addValue("block");
     public final static IdentValue BOLD = addValue("bold");
     public final static IdentValue BOLDER = addValue("bolder");
+    public static final IdentValue BORDER_BOX = addValue("border-box");
     public final static IdentValue BOTH = addValue("both");
     public final static IdentValue BOTTOM = addValue("bottom");
     public final static IdentValue CAPITALIZE = addValue("capitalize");
@@ -82,6 +83,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue COLLAPSE = addValue("collapse");
     public final static IdentValue COMPACT = addValue("compact");
     public final static IdentValue CONTAIN = addValue("contain");
+    public static final IdentValue CONTENT_BOX = addValue("content-box");
     public final static IdentValue COVER = addValue("cover");
     public final static IdentValue CREATE = addValue("create");
     public final static IdentValue DASHED = addValue("dashed");
