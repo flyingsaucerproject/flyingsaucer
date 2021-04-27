@@ -119,7 +119,7 @@ public class BorderPainter {
         if (widthSum != 0.0f) { // Avoid NaN
         	angle = fullAngle * props.getTop() / widthSum;
         }
-        appendPath(path, 0-props.getLeft(), 0-props.getTop(), props.getLeftCorner().left(), props.getLeftCorner().right(), 90+angle, -angle-overlapAngle, props.getTop(), props.getLeft(), scaledOffset, true, widthScale);
+        appendPath(path, 0-props.getLeft(), 0-props.getTop(), props.getLeftCorner().left(), props.getLeftCorner().right(), 90+angle+overlapAngle, -angle-overlapAngle, props.getTop(), props.getLeft(), scaledOffset, true, widthScale);
 
         angle = defaultAngle;
         widthSum = props.getTop() + props.getRight();
@@ -133,7 +133,7 @@ public class BorderPainter {
             //border = border.normalizeBorderRadius(new Rectangle((int)(bounds.width), (int)(bounds.height)));
             //props = new RelativeBorderProperties(bounds, border, 0f, side, 1+scaledOffset, 1);
             
-            appendPath(path, sideWidth, 0, props.getRightCorner().right(), props.getRightCorner().left(), 90-angle, angle+overlapAngle, props.getTop(), props.getRight(), scaledOffset+1, false, widthScale);
+            appendPath(path, sideWidth, 0, props.getRightCorner().right(), props.getRightCorner().left(), 90-angle-overlapAngle, angle+overlapAngle, props.getTop(), props.getRight(), scaledOffset+1, false, widthScale);
 
             angle = defaultAngle;
             widthSum = props.getTop() + props.getLeft();
@@ -151,9 +151,10 @@ public class BorderPainter {
                 (props.isDimmensionsSwapped() ? -bounds.width/2f : -bounds.height/2f) + (scaledOffset+1)*props.getTop()));
         path.transform(AffineTransform.getRotateInstance(
                 props.getRotation()));
+        // empirical: add 0.5 to better play with rasterization rules
         path.transform(AffineTransform.getTranslateInstance( 
                 bounds.width/2f+bounds.x, bounds.height/2f+bounds.y));
-        
+
         return path;
     }
 
@@ -164,7 +165,7 @@ public class BorderPainter {
         if(innerWidth > 0 && innerHeight > 0) {
             // do arc
             Arc2D arc = new Arc2D.Float(
-                    xOffset-(left?0:(innerWidth)), 
+                    xOffset-(left?0:(innerWidth)),
                     yOffset, 
                     innerWidth, 
                     innerHeight, startAngle, distance, Arc2D.OPEN);
