@@ -17,23 +17,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.css.style.derived;
+package org.xhtmlrenderer.docx;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.parser.FSFunction;
-import org.xhtmlrenderer.css.parser.PropertyValue;
-import org.xhtmlrenderer.css.style.DerivedValue;
+import org.xhtmlrenderer.extend.ReplacedElement;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.RenderingContext;
 
-public class FunctionValue extends DerivedValue {
-    private FSFunction _function;
-    
-    public FunctionValue(CSSName name, PropertyValue value) {
-        super(name, value, value.getPrimitiveType(), value.getCssText(), value.getCssText());
-        
-        _function = value.getFunction();
-    }
-    
-    public FSFunction getFunction() {
-        return _function;
-    }
+public interface Docx4jReplacedElement extends ReplacedElement
+{
+    public void paint(RenderingContext c, Docx4jDocxOutputDevice outputDevice, BlockBox box);
 }

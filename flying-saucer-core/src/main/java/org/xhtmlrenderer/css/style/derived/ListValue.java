@@ -30,7 +30,7 @@ public class ListValue extends DerivedValue {
     private List _values;
     
     public ListValue(CSSName name, PropertyValue value) {
-        super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
+        super(name, value, value.getPrimitiveType(), value.getCssText(), value.getCssText());
         
         _values = value.getValues();
     }

@@ -49,6 +49,9 @@ import org.xhtmlrenderer.util.XRLog;
 // manage colspans and the details of the table layout algorithms).  Many kudos
 // to the KHTML developers for making such an amazing piece of software!
 public class TableBox extends BlockBox {
+   
+    public TableBox() {}
+   
     private final List _columns = new ArrayList();
     private int[] _columnPos;
     private TableLayout _tableLayout;
@@ -197,7 +200,7 @@ public class TableBox extends BlockBox {
         return _columns;
     }
 
-    private void recalcSections(LayoutContext c) {
+    public void recalcSections(LayoutContext c) {
         ensureChildren(c);
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
             TableSectionBox section = (TableSectionBox)i.next();

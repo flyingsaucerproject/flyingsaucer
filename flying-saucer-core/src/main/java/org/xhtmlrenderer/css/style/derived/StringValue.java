@@ -29,7 +29,7 @@ public class StringValue extends DerivedValue {
     private String[] _stringAsArray;
 
     public StringValue(CSSName name, PropertyValue value) {
-        super(name, value.getPrimitiveType(), value.getCssText(), value.getStringValue());
+        super(name, value, value.getPrimitiveType(), value.getCssText(), value.getStringValue());
         if (value.getStringArrayValue() != null) {
             _stringAsArray = value.getStringArrayValue();
         }

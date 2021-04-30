@@ -46,6 +46,7 @@ public class DerivedValueFactory {
                 if (ident == null) {
                     ident = IdentValue.getByIdentString(value.getStringValue());
                 }
+                ident.setCSSPrimitiveValue(value);
                 return ident;
             case PropertyValue.VALUE_TYPE_STRING:
                 return new StringValue(cssName, value);

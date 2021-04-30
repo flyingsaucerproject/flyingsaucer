@@ -17,23 +17,44 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.css.style.derived;
+package org.xhtmlrenderer.docx;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.parser.FSFunction;
-import org.xhtmlrenderer.css.parser.PropertyValue;
-import org.xhtmlrenderer.css.style.DerivedValue;
 
-public class FunctionValue extends DerivedValue {
-    private FSFunction _function;
+//import org.xhtmlrenderer.extend.FSImage;
+//import com.lowagie.text.Image;
+
+public class Docx4JFSImage { 
+//    implements FSImage, Cloneable {
     
-    public FunctionValue(CSSName name, PropertyValue value) {
-        super(name, value, value.getPrimitiveType(), value.getCssText(), value.getCssText());
-        
-        _function = value.getFunction();
+    byte[] image;
+    public byte[] getBytes() {
+        return image;
     }
     
-    public FSFunction getFunction() {
-        return _function;
+    public Docx4JFSImage(byte[] bytes) {
+        image = bytes;
     }
+
+//    public int getWidth() {
+//        throw new NotImplementedException();
+//    }
+//
+//    public int getHeight() {
+//        throw new NotImplementedException();
+//    }
+//
+//    public void scale(int width, int height) {
+//        throw new NotImplementedException();
+//    }
+//
+//    public Image getImage() {
+//        throw new NotImplementedException();
+//    }
+//
+//    public Object clone() {
+//        throw new NotImplementedException();
+//    }
+    
+    
+
 }

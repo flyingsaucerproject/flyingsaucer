@@ -628,6 +628,39 @@ public class CalculatedStyle {
 
     }
 
+    public String toStringMine() {
+       StringBuffer sb = new StringBuffer();
+       for (int i = 0; i < _derivedValuesById.length; i++) {
+           CSSName name = CSSName.getByID(i);
+           FSDerivedValue val = this.valueByName(name); // walks parents as necessary to get the value
+           //FSDerivedValue val = _derivedValuesById[i];
+           if (val != null) {
+               sb.append(name.toString()+ ": " + val.asString() );
+           } else {
+//               sb.append(name.toString() );
+//               sb.append("(no prop assigned in this pos)");
+           }
+           sb.append("; ");
+       }
+       return sb.toString();
+
+   }
+
+    public String getDisplayMine() {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < _derivedValuesById.length; i++) {
+            CSSName name = CSSName.getByID(i);
+            if (name.equals(CSSName.DISPLAY) ) {
+                return _derivedValuesById[i].asString();
+            } 
+        }
+        return null;
+    }
+
+    public FSDerivedValue[] getDerivedValues() {
+        return _derivedValuesById;
+    }
+
     public RectPropertySet getCachedPadding() {
         if (_padding == null) {
             throw new XRRuntimeException("No padding property cached yet; should have called getPropertyRect() at least once before.");
