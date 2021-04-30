@@ -7,13 +7,11 @@ Flying Saucer is a pure-Java library for rendering arbitrary well-formed XML
 (or XHTML) using CSS 2.1 for layout and formatting, output to Swing panels, 
 PDF, and images.
 
-Comprehensive documentation available in our user's guide, linked from our website at https://code.google.com/archive/p/flying-saucer/
+Comprehensive documentation available in our user's guide, linked from our
+website at https://code.google.com/archive/p/flying-saucer/
 
-For information on our development releases, please contact us on our mailing lists.
-
-If you end up using Flying Saucer for your own projects, please drop us an
-email and tell us about it; it helps inform where we go next, and is interesting
-and inspiring to other developers.
+If you use Flying Saucer in a project, please tell us; it helps suggest
+directions for the code and may inspire other developers.
 
 
 ## LICENSE
@@ -32,7 +30,7 @@ of these, along with the license they each have, is listed in the
 
 ## GETTING FLYING SAUCER
 
-New releases of Flying Saucer are distributed through Maven.  The available artifacts are:
+New releases of Flying Saucer are distributed through Maven. The available artifacts are:
 
 * `org.xhtmlrenderer:flying-saucer-core` - Core library and Java2D rendering
 * `org.xhtmlrenderer:flying-saucer-pdf` - PDF output using iText 2.x
@@ -43,24 +41,30 @@ New releases of Flying Saucer are distributed through Maven.  The available arti
 
 iText 2.x has unfixed security bugs. New projects should avoid it.
 
+
 ## GETTING STARTED
 
-There is a large amount of sample code under the `flying-saucer-examples` directory.
+See the sample code under the `flying-saucer-examples` directory.
 
 `flying-saucer-core`, `flying-saucer-pdf`, and `flying-saucer-swt` must be on the
 build path, as well as the SWT JAR for your OS.
 
 `org.xhtmlrenderer.demo.browser.BrowserStartup` will start the browser demo.
 
-Some good entry points (classes) are:
+Other notable entry points include:
+
 * `org.xhtmlrenderer.simple.XHTMLPanel`
 * `org.xhtmlrenderer.simple.PDFRenderer`
 * `org.xhtmlrenderer.simple.ImageRenderer`
 
 
-## STATE OF THE PROJECT
+## CONTACT
 
-Ongoing discussions are carried out in [our online discussion group](https://groups.google.com/forum/#!forum/flying-saucer-users).
+See the [discussion group](https://groups.google.com/g/flying-saucer-users) for
+on-going discussions.
+
+
+## PROJECT STATUS
 
 Excerpt from the latest [merge/release policy](https://groups.google.com/forum/#!topic/flying-saucer-users/ySI8HrLI70A):
 
@@ -73,5 +77,6 @@ Excerpt from the latest [merge/release policy](https://groups.google.com/forum/#
 This is also the reason why Issues are currently deactivated on GitHub.
 
 ### HISTORIC LINKS
+
 * [Google Code project page (archived/read-only)](https://code.google.com/archive/p/flying-saucer/)
 * [Google Code Issues (archived/read-only)](https://code.google.com/archive/p/flying-saucer/issues)
