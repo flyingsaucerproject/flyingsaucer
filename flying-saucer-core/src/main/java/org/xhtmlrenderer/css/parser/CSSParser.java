@@ -1951,6 +1951,12 @@ public class CSSParser {
                     if (lastSlash != -1) {
                         uriResult = _URI.substring(0, lastSlash+1) + uriResult;
                     }
+                } else if (isServerRelativeURI(uriResult)) {
+                    int uriOffset = _URI.indexOf("://") + 3;
+                    int firstSlashAfterProtocol = _URI.substring(uriOffset).indexOf('/');
+                    if (firstSlashAfterProtocol != -1) {
+                        uriResult = _URI.substring(0, uriOffset + firstSlashAfterProtocol) + uriResult;
+                    }
                 }
 
                 return uriResult;
@@ -1975,6 +1981,14 @@ public class CSSParser {
     private boolean isRelativeURI(String uri) {
         try {
             return uri.length() > 0 && (uri.charAt(0) != '/' && ! new URI(uri).isAbsolute());
+        } catch (URISyntaxException e) {
+            return false;
+        }
+    }
+
+    private boolean isServerRelativeURI(String uri) {
+        try {
+            return uri.length() > 0 && uri.charAt(0) == '/' && !new URI(uri).isAbsolute();
         } catch (URISyntaxException e) {
             return false;
         }
