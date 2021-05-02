@@ -61,6 +61,7 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
+import com.lowagie.text.DocListener;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
@@ -231,6 +232,101 @@ public class ITextRenderer {
         root.getLayer().trimEmptyPages(c, dim.height);
         root.getLayer().layoutPages(c);
         _root = root;
+    }
+
+    public void layoutAndPaint(OutputStream os, DocListener docListener) throws DocumentException
+    {
+        //------------------------------------------------------------------------------
+        //creation basic layout
+        //------------------------------------------------------------------------------
+        LayoutContext layoutContext = newLayoutContext();
+        BlockBox root = BoxBuilder.createRootBox(layoutContext, _doc);
+        root.setContainingBlock(new ViewportBox(getInitialExtents(layoutContext)));
+        root.layout(layoutContext);
+        Dimension dim = root.getLayer().getPaintingDimension(layoutContext);
+        root.getLayer().trimEmptyPages(layoutContext, dim.height);
+
+        //------------------------------------------------------------------------------
+        //layout first page
+        //------------------------------------------------------------------------------
+        _root = root;
+        layoutContext.setRootDocumentLayer(layoutContext.getRootLayer());
+        ((PageBox)(_root.getLayer().getPages().get(0))).layout(layoutContext);
+
+        //------------------------------------------------------------------------------
+        //initialising output device
+        //------------------------------------------------------------------------------
+        List pages = _root.getLayer().getPages();
+
+        RenderingContext renderingContext = newRenderingContext();
+        renderingContext.setInitialPageNo(0);
+        PageBox firstPage = (PageBox) pages.get(0);
+        com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(0, 0, firstPage.getWidth(renderingContext) / _dotsPerPoint,
+                firstPage.getHeight(renderingContext) / _dotsPerPoint);
+
+        com.lowagie.text.Document doc = new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
+        PdfWriter writer = docListener == null ? PdfWriter.getInstance(doc, os) :
+                PdfWriter.getInstance(doc, os, docListener);
+        if (_pdfVersion != null) {
+            writer.setPdfVersion(_pdfVersion.charValue());
+        }
+        if (_pdfEncryption != null) {
+            writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
+                    _pdfEncryption.getAllowedPrivileges(), _pdfEncryption.getEncryptionType());
+        }
+        _pdfDoc = doc;
+        _writer = writer;
+
+        firePreOpen();
+        doc.open();
+
+        //------------------------------------------------------------------------------
+        //writing page by page
+        //------------------------------------------------------------------------------
+        _outputDevice.setRoot(_root);
+
+        _outputDevice.start(_doc);
+        _outputDevice.setWriter(writer);
+        _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.getHeight());
+
+        _root.getLayer().assignPagePaintingPositions(renderingContext, Layer.PAGED_MODE_PRINT);
+
+        int pageCount = _root.getLayer().getPages().size();
+        renderingContext.setPageCount(pageCount);
+        firePreWrite(pageCount); // opportunity to adjust meta data
+        setDidValues(doc); // set PDF header fields from meta data
+        if(docListener != null) {
+            docListener.setPageCount(pageCount);
+        }
+
+        for (int i = 0; i < pageCount; i++) {
+            PageBox currentPage = (PageBox) pages.get(i);
+            if(i > 0) {
+                currentPage.layout(layoutContext);
+            }
+
+            renderingContext.setPage(i, currentPage);
+            paintPage(renderingContext, writer, currentPage);
+            _outputDevice.finishPage();
+            if (i != pageCount - 1) {
+                PageBox nextPage = (PageBox) pages.get(i + 1);
+                com.lowagie.text.Rectangle nextPageSize = new com.lowagie.text.Rectangle(0, 0, nextPage.getWidth(renderingContext) / _dotsPerPoint,
+                        nextPage.getHeight(renderingContext) / _dotsPerPoint);
+                doc.setPageSize(nextPageSize);
+                doc.newPage();
+                _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());
+            }
+
+            currentPage.clear();
+        }
+
+        _outputDevice.finish(renderingContext, _root);
+
+        //------------------------------------------------------------------------------
+        //closing stuff
+        //------------------------------------------------------------------------------
+        fireOnClose();
+        doc.close();
     }
 
     private Rectangle getInitialExtents(LayoutContext c) {
