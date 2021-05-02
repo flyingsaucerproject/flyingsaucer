@@ -81,6 +81,8 @@ public class Layer {
     
     private Set _pageSequences;
     private List _sortedPageSequences;
+
+    private Map _pendingPagesMap = new HashMap();
     
     private Map _runningBlocks;
     
@@ -749,15 +751,34 @@ public class Layer {
     public boolean isLastPage(PageBox pageBox) {
         return _pages.get(_pages.size()-1) == pageBox;
     }
-    
+
     public void addPage(CssContext c) {
         String pseudoPage = null;
         if (_pages == null) {
             _pages = new ArrayList();
         }
         
-        List pages = getPages();
-        if (pages.size() == 0) {
+		String pendingPageName = null;
+		if (c instanceof LayoutContext) {
+			pendingPageName = ((LayoutContext) c).getPendingPageName();
+		}
+
+		if (pendingPageName != null) {
+			if (_pendingPagesMap.containsKey(pendingPageName)) {
+				Integer counter = (Integer) _pendingPagesMap.get(pendingPageName);
+				_pendingPagesMap.put(pendingPageName, counter + 1);
+			} else {
+				_pendingPagesMap.put(pendingPageName, 0);
+			}
+		}
+
+		int currentPendingPageNumber = -1;
+		if (_pendingPagesMap.containsKey(pendingPageName)) {
+			currentPendingPageNumber = (Integer) _pendingPagesMap.get(pendingPageName);
+		}
+
+		List pages = getPages();
+        if (pages.size() == 0 || currentPendingPageNumber == 1) {
             pseudoPage = "first";
         } else if (pages.size() % 2 == 0) {
             pseudoPage = "right";
