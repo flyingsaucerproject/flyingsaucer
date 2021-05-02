@@ -18,28 +18,40 @@
  * }}}
  */
 
-import java.io.*;
 import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 
+import static java.lang.Character.isValidCodePoint;
+import static java.lang.Integer.parseInt;
 
 /**
- * Simple command-line program to test whether a given font has a glyph available for a given Unicode codepoint, expressed
- * as an integer.
+ * Simple command-line program to test whether a given font has a glyph
+ * available for a given Unicode codepoint, expressed as an integer.
  * <pre>
  * java VerifyGlyphExists 945 /path/to/fontfile
  * </pre>
+ * <p>
  * If the glyph is available, output will look something like
- * "FOUND    &#945; for java.awt.Font[family=Kochi Gothic,name=Kochi Gothic,style=plain,size=12] from
- * /usr/share/fonts/truetype/kochi/kochi-gothic.ttf"; if not available, will look something like "NO GLYPH &#945; for
- * java.awt.Font[family=Lohit Bengali,name=Lohit Bengali,style=plain,size=12] from
- * /usr/share/fonts/truetype/ttf-bengali-fonts/lohit_bn.ttf".
+ * "FOUND    &#945; for java.awt.Font[family=Kochi Gothic,name=Kochi Gothic,
+ * style=plain,size=12] from
+ * /usr/share/fonts/truetype/kochi/kochi-gothic.ttf"; if not available, will
+ * look something like "NO GLYPH &#945; for
+ * java.awt.Font[family=Lohit Bengali,name=Lohit Bengali,style=plain,size=12]
+ * from /usr/share/fonts/truetype/ttf-bengali-fonts/lohit_bn.ttf".
+ * </p>
+ * <p>
  * Test for the glyph relies on java.awt.Font.canDisplay(codepoint).
- * <p>Arguments: valid arguments are either code point and font-file path, or code point and font-list path. Font-list
- * must be a text file with one line per font-file path. When providing a font list, the program will loop over all
- * font files listed in the font-list, and check each one for support of the glyph.
+ * </p>
+ * <p>
+ * Arguments: valid arguments are either code point and font-file path, or
+ * code point and font-list path. Font-list
+ * must be a text file with one line per font-file path. When providing a
+ * font list, the program will loop over all
+ * font files listed in the font-list, and check each one for support of the
+ * glyph.
+ * </p>
  */
 public class VerifyGlyphExists {
     public static void main(String[] args) {
@@ -48,17 +60,16 @@ public class VerifyGlyphExists {
         }
         int codePoint = 0;
         try {
-            codePoint = Integer.valueOf(args[0]).intValue();
+            codePoint = parseInt( args[ 0 ] );
         } catch (NumberFormatException e) {
             error("Value " + args[0] + " for codepoint is not an integer.");
         }
-        File file = new File(args[1]);
+        final File file = new File(args[1]);
         if (file.exists()) {
             if (file.getName().endsWith("txt")) {
-                List lines = readLines(file);
-                for (Iterator it = lines.iterator(); it.hasNext();) {
-                    String path = (String) it.next();
-                    testForGlyph(codePoint, new File(path));
+                final List<String> lines = readLines(file);
+                for(final String path : lines ) {
+                    testForGlyph( codePoint, new File( path ) );
                 }
                 System.out.println("TODO: read list of fonts");
             } else {
@@ -69,23 +80,16 @@ public class VerifyGlyphExists {
         }
     }
 
-    private static List readLines(File file) {
-        List l = new ArrayList();
-        LineNumberReader r = null;
-        try {
-            r = new LineNumberReader(new BufferedReader(new FileReader(file)));
-            String path;
-            while ((path = r.readLine()) != null) {
-                l.add(path);
-            }
-        } catch (IOException e) {
-            error("Can't read list of font paths from " + file.getPath());
-        } finally {
-            try {
-                if (r != null) r.close();
-            } catch (IOException e) {
-                // swallow
-            }
+    private static List<String> readLines(File file) {
+        final List<String> l = new ArrayList<>();
+        try( LineNumberReader r = new LineNumberReader(
+            new BufferedReader( new FileReader( file ) ) ) ) {
+          String path;
+          while( (path = r.readLine()) != null ) {
+            l.add( path );
+          }
+        } catch( IOException e ) {
+          error( "Can't read list of font paths from " + file.getPath() );
         }
         return l;
     }
@@ -97,23 +101,28 @@ public class VerifyGlyphExists {
             if (font == null) {
                 error("Could not load font at path: " + file.getPath());
             } else {
-                if (font.canDisplay((char) 0)) {  // FIXME: Character.codePoint(codePoint) not in 1.4
-                    System.out.println("FOUND    &#" + codePoint + "; for " + font + " from " + file.getPath());
-                } else {
-                    System.out.println("NO GLYPH &#" + codePoint + "; for " + font + " from " + file.getPath());
+                final String msg = "%s&#%d; for %s from %s";
+                String found = "NO GLYPH ";
+
+                if( !isValidCodePoint( codePoint ) ) {
+                  found = "INVALID  ";
                 }
+                else if( font.canDisplay( (char) codePoint ) ) {
+                  found = "FOUND    ";
+                }
+
+                System.out.printf( msg, found, codePoint, font, file.getPath() );
             }
         } catch (IOException e) {
             error("Can't load font at path " + file.getPath() + ", err: " + e.getMessage());
         }
     }
 
-    private static Font loadFont(String fontPath) throws IOException {
-        try {
-            // FIXME: only TTF supported in 1.4
-            // int format = fontPath.endsWith(".ttf") ? Font.TRUETYPE_FONT : Font.TYPE1_FONT;
-            int format = Font.TRUETYPE_FONT;
-            Font font = Font.createFont(format, new File(fontPath).toURL().openStream());
+    private static Font loadFont( String fontPath) throws IOException {
+        try( final InputStream s = new File( fontPath ).toURL().openStream() ) {
+            final int format = Font.TRUETYPE_FONT;
+            final Font font = Font.createFont(format,s );
+
             return font.deriveFont(Font.PLAIN, 12);
         } catch (FontFormatException e) {
             System.err.println(fontPath + " INVALID FONT FORMAT " + e.getMessage());
