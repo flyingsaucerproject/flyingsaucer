@@ -98,8 +98,19 @@ public class ITextRenderer {
 
     private PDFCreationListener _listener;
 
+    private boolean _marginsAllowed = true;
+
     public ITextRenderer() {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
+    }
+
+    /**
+     *
+     * @param marginsAllowed false Ò³±ß¾àÎª0
+     */
+    public ITextRenderer(boolean marginsAllowed) {
+        this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
+        this._marginsAllowed = marginsAllowed;
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel) {
@@ -373,6 +384,9 @@ public class ITextRenderer {
         setDidValues(doc); // set PDF header fields from meta data
         for (int i = 0; i < pageCount; i++) {
             PageBox currentPage = (PageBox) pages.get(i);
+            // ÉèÖÃÒ³±ß¾àÎª0
+            CalculatedStyle style = currentPage.getStyle();
+            style.set_marginsAllowed(this._marginsAllowed);
             c.setPage(i, currentPage);
             paintPage(c, writer, currentPage);
             _outputDevice.finishPage();
