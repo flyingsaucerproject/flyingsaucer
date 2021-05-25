@@ -106,7 +106,7 @@ public class ITextRenderer {
 
     /**
      *
-     * @param marginsAllowed false Ò³±ß¾àÎª0
+     * @param marginsAllowed false Ã’Â³Â±ÃŸÂ¾Ã ÃŽÂª0
      */
     public ITextRenderer(boolean marginsAllowed) {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
@@ -384,7 +384,7 @@ public class ITextRenderer {
         setDidValues(doc); // set PDF header fields from meta data
         for (int i = 0; i < pageCount; i++) {
             PageBox currentPage = (PageBox) pages.get(i);
-            // ÉèÖÃÒ³±ß¾àÎª0
+            // set no page margin mode
             CalculatedStyle style = currentPage.getStyle();
             style.set_marginsAllowed(this._marginsAllowed);
             c.setPage(i, currentPage);
