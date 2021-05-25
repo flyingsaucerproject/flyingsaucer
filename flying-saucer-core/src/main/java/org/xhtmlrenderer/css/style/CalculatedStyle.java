@@ -1252,6 +1252,31 @@ public class CalculatedStyle {
         return isInlineBlock() || isFloated() || isAbsolute() || isFixed();
     }
 
+
+    public boolean is_marginsAllowed() {
+        return _marginsAllowed;
+    }
+
+    public void set_marginsAllowed(boolean _marginsAllowed) {
+        this._marginsAllowed = _marginsAllowed;
+    }
+
+    public boolean is_paddingAllowed() {
+        return _paddingAllowed;
+    }
+
+    public void set_paddingAllowed(boolean _paddingAllowed) {
+        this._paddingAllowed = _paddingAllowed;
+    }
+
+    public boolean is_bordersAllowed() {
+        return _bordersAllowed;
+    }
+
+    public void set_bordersAllowed(boolean _bordersAllowed) {
+        this._bordersAllowed = _bordersAllowed;
+    }
+
 }// end class
 
 /*
