@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.20</version>
+    <version>9.1.22</version>
   </parent>
 
   <artifactId>flying-saucer-pdf-itext5</artifactId>
@@ -35,7 +35,7 @@
     <dependency>
       <groupId>com.itextpdf</groupId>
       <artifactId>itextpdf</artifactId>
-        <version>5.5.11</version>
+        <version>5.5.12</version>
     </dependency>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
@@ -48,7 +48,7 @@
     <resources>
       <resource>
         <directory>../</directory>
-        <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+        <targetPath>META-INF</targetPath>
         <includes>
           <include>LICENSE*</include>
         </includes>
@@ -59,7 +59,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
-            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            <manifestFile>/META-INF/MANIFEST.MF</manifestFile>
           </archive>
         </configuration>
       </plugin>
