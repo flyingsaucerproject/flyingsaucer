@@ -1,5 +1,0 @@
-language: java
-jdk:
-    - openjdk8 # Don't work with higher versions of java :-/
-
-install: mvn install -Dgpg.skip

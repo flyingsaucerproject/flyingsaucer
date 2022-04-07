@@ -103,7 +103,7 @@
 		<resources>
 			<resource>
 				<directory>../</directory>
-				<targetPath>META-INF</targetPath>
+				<targetPath>${project.build.outputDirectory}/META-INF</targetPath>
 				<includes>
 					<include>LICENSE*</include>
 				</includes>
@@ -117,7 +117,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
-						<manifestFile>/META-INF/MANIFEST.MF</manifestFile>
+						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
 					</archive>
 				</configuration>
 			</plugin>
