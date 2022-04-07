@@ -571,7 +571,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return array;
     }
 
-    private AffineTransform getTransform() {
+    public AffineTransform getTransform() {
         return _transform;
     }
 
