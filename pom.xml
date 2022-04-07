@@ -162,7 +162,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <openpdf.version>1.3.26</openpdf.version>
+        <openpdf.version>1.3.27</openpdf.version>
     </properties>
 
 </project>
