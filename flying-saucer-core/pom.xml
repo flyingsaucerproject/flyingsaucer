@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.20-opengrabeso.7</version>
+    <version>9.1.21-opengrabeso</version>
   </parent>
 
   <artifactId>flying-saucer-core</artifactId>
@@ -70,7 +70,7 @@
           <instructions>
             <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.core</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <!-- Dependency resolution seems not to work properly with default 
+            <!-- Dependency resolution seems not to work properly with default
               behavior of importing the exported packages. -->
             <Import-Package>!org.xhtmlrenderer.*</Import-Package>
             <Export-Package>org.xhtmlrenderer.*</Export-Package>

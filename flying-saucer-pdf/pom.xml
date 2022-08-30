@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.20-opengrabeso.7</version>
+    <version>9.1.21-opengrabeso</version>
   </parent>
 
   <artifactId>flying-saucer-pdf</artifactId>
@@ -37,10 +37,10 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <dependencies>
-      	<!-- 
+      	<!--
       		Note: The iText Bouncy Castle dependencies have been moved to a new group and version on maven central.
       		This caused some of the artifacts to be resolved twice. By excluding dependencies from the old group
-      		and adding corresponding dependencies from the updated group, the artifacts are only resolved once. 
+      		and adding corresponding dependencies from the updated group, the artifacts are only resolved once.
       	 -->
         <dependency>
           <groupId>com.lowagie</groupId>
@@ -58,7 +58,7 @@
             <exclusion>
               <groupId>bouncycastle</groupId>
               <artifactId>bctsp-jdk14</artifactId>
-            </exclusion>            
+            </exclusion>
           </exclusions>
         </dependency>
         <dependency>
