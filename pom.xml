@@ -149,7 +149,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <artifactoryBaseUrl>http://ch-jenkins-2k8.internal.ch:8081/artifactory</artifactoryBaseUrl>
+    <artifactoryBaseUrl>http://repository.aws.chdev.org:8081/artifactory</artifactoryBaseUrl>
     <publishRepo>dev</publishRepo>
   </properties>
 
