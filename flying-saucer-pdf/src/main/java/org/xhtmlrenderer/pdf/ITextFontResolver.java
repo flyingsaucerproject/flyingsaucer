@@ -42,11 +42,17 @@ import java.util.stream.Stream;
 public class ITextFontResolver implements FontResolver {
     private Map _fontFamilies = createInitialFontMap();
     private Map _fontCache = new HashMap();
-
+    private boolean withCJKFonts;
     private final SharedContext _sharedContext;
 
     public ITextFontResolver(SharedContext sharedContext) {
         _sharedContext = sharedContext;
+        this.withCJKFonts = true;
+    }
+    
+    public ITextFontResolver(SharedContext sharedContext, boolean withCjkfonts ) {
+        _sharedContext = sharedContext;
+        this.withCJKFonts = withCjkfonts;
     }
 
     /**
@@ -478,7 +484,7 @@ public class ITextFontResolver implements FontResolver {
             addZapfDingbats(result);
 
             // Try and load the iTextAsian fonts
-            if(ITextFontResolver.class.getClassLoader().getResource("com/lowagie/text/pdf/fonts/cjkfonts.properties") != null) {
+            if(withCJKFonts && ITextFontResolver.class.getClassLoader().getResource("com/lowagie/text/pdf/fonts/cjkfonts.properties") != null) {
                 addCJKFonts(result);
             }
         } catch (DocumentException e) {
