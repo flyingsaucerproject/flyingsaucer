@@ -12,6 +12,7 @@
       }
       .wrapper {
           display: table;
+          table-layout: fixed;
           width: 100%;
           height: 100%;
       }
@@ -20,6 +21,12 @@
       }
       .cell {
           display: table-cell;
+      }
+      .narrow {
+          width: 10%;
+      }
+      .wide {
+          width: 60%;
       }
       .header {
           background-color: lightblue;
@@ -35,10 +42,14 @@
 <body>
 <div class="wrapper">
   <div class="row header">
-    <div class="cell">Header</div>
+    <div class="cell narrow">Header A</div>
+    <div class="cell wide">Header B </div>
+    <div class="cell">Header C</div>
   </div>
   <div class="row main">
-    <div class="cell">Main content area</div>
+    <div class="cell">Main content area A</div>
+    <div class="cell">Main content area B</div>
+    <div class="cell">Main content area C</div>
   </div>
   <div class="row footer">
     <div class="cell">Footer</div>
