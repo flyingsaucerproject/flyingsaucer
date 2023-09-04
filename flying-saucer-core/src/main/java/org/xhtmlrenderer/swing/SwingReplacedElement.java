@@ -29,11 +29,11 @@ import org.xhtmlrenderer.layout.LayoutContext;
 public class SwingReplacedElement implements ReplacedElement {
     private JComponent _component;
     private Dimension intrinsicSize;
-    
+
     public SwingReplacedElement(JComponent component) {
         _component = component;
     }
-    
+
     public JComponent getJComponent() {
         return _component;
     }
@@ -41,7 +41,7 @@ public class SwingReplacedElement implements ReplacedElement {
     public void setIntrinsicSize(Dimension intrinsicSize){
         this.intrinsicSize = intrinsicSize;
     }
-    
+
     public int getIntrinsicHeight() {
         return intrinsicSize == null ? _component.getSize().height : intrinsicSize.height;
     }
@@ -49,30 +49,30 @@ public class SwingReplacedElement implements ReplacedElement {
     public int getIntrinsicWidth() {
         return intrinsicSize == null ? _component.getSize().width : intrinsicSize.width;
     }
-    
+
     public void setLocation(int x, int y) {
         _component.setLocation(x, y);
     }
-    
+
     public Point getLocation() {
         return _component.getLocation();
     }
-    
+
     public void detach(LayoutContext c) {
         if (c.isInteractive()) {
             ((RootPanel)c.getCanvas()).remove(getJComponent());
         }
     }
-    
+
     public boolean isRequiresInteractivePaint() {
         return false;
     }
 
-	public int getBaseline() {
-		return 0;
-	}
+    public int getBaseline() {
+        return 0;
+    }
 
-	public boolean hasBaseline() {
-		return false;
-	}
+    public boolean hasBaseline() {
+        return false;
+    }
 }

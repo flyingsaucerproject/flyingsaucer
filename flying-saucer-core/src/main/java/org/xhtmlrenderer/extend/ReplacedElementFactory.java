@@ -25,27 +25,27 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
 public interface ReplacedElementFactory {
-    
+
     /**
      * <b>NOTE:</b> Only block equivalent elements can be replaced.
-     * 
+     *
      * @param cssWidth The CSS width of the element in dots (or <code>-1</code> if
      * width is <code>auto</code>)
      * @param cssHeight The CSS height of the element in dots (or <code>-1</code>
      * if the height should be treated as <code>auto</code>)
      * @return The <code>ReplacedElement</code> or <code>null</code> if no
-     * <code>ReplacedElement</code> applies 
+     * <code>ReplacedElement</code> applies
      */
     public ReplacedElement createReplacedElement(
             LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight);
-    
+
     /**
      * Instructs the <code>ReplacedElementFactory</code> to discard any cached
      * data (typically because a new page is about to be loaded).
      */
     public void reset();
-    
+
     /**
      * Removes any reference to <code>Element</code> <code>e</code>.
      * @param e

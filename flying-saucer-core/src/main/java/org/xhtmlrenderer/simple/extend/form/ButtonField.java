@@ -35,7 +35,7 @@ class ButtonField extends AbstractButtonField {
     public ButtonField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
-    
+
     public JComponent create() {
         JButton button = new JButton();
 
@@ -47,7 +47,7 @@ class ButtonField extends AbstractButtonField {
         applyComponentStyle(button);
 
         button.setText(value);
-        
+
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(
@@ -56,7 +56,7 @@ class ButtonField extends AbstractButtonField {
                         "sense without <script>! (Volunteers wanted)",
                         "We need <script> support!",
                         JOptionPane.INFORMATION_MESSAGE);
-            } 
+            }
         });
 
         return button;

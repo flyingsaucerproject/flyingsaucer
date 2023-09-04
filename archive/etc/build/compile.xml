@@ -41,7 +41,7 @@
 		<antcall target="compile.browser" />
 		<antcall target="compile.about" />
 	</target>
-    
+
     <!-- Compiles the Help/About Box demo along with the main codebase -->
 	<target name="compile.about" depends="compile">
 		<javac-full srcdir="${src.about.java.dir}"/>

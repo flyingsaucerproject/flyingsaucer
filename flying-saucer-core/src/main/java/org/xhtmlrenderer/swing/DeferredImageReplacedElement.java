@@ -162,11 +162,11 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
         return _image;
     }
 
-	public int getBaseline() {
-		return 0;
-	}
+    public int getBaseline() {
+        return 0;
+    }
 
     public boolean hasBaseline() {
-		return false;
-	}
+        return false;
+    }
 }

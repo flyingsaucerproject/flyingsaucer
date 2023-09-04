@@ -14,7 +14,7 @@ import org.xhtmlrenderer.render.FSFontMetrics;
  */
 public interface CssContext {
     float getMmPerDot();
-    
+
     int getDotsPerPixel();
 
     float getFontSize2D(FontSpecification font);
@@ -22,11 +22,11 @@ public interface CssContext {
     float getXHeight(FontSpecification parentFont);
 
     FSFont getFont(FontSpecification font);
-    
+
     // FIXME Doesn't really belong here, but this is
     // the only common interface of LayoutContext
     // and RenderingContext
     StyleReference getCss();
-    
+
     FSFontMetrics getFSFontMetrics(FSFont font);
 }

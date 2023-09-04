@@ -126,7 +126,7 @@ class TextAreaField extends FormField {
         }
     }
 
-    
+
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromString(
                 XhtmlForm.collectText(getElement()));
@@ -135,10 +135,10 @@ class TextAreaField extends FormField {
     protected void applyOriginalState() {
         _textarea.setText(getOriginalState().getValue());
     }
-    
+
     protected String[] getFieldValues() {
         JTextArea textarea = (JTextArea) ((JScrollPane) getComponent()).getViewport().getView();
-        
+
         return new String[] {
                 textarea.getText()
         };

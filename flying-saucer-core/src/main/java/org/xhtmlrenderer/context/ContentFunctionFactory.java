@@ -40,14 +40,14 @@ import org.xhtmlrenderer.render.RenderingContext;
 
 public class ContentFunctionFactory {
     private List _functions = new ArrayList();
-    
+
     {
         _functions.add(new PageCounterFunction());
         _functions.add(new PagesCounterFunction());
         _functions.add(new TargetCounterFunction());
         _functions.add(new LeaderFunction());
     }
-    
+
     public ContentFunction lookupFunction(LayoutContext c, FSFunction function) {
         for (Iterator i = _functions.iterator(); i.hasNext(); ) {
             ContentFunction f = (ContentFunction)i.next();
@@ -57,27 +57,27 @@ public class ContentFunctionFactory {
         }
         return null;
     }
-    
+
     public void registerFunction(ContentFunction function) {
         _functions.add(function);
     }
-    
+
     private static abstract class PageNumberFunction implements ContentFunction {
         public boolean isStatic() {
             return false;
         }
-        
+
         public String calculate(LayoutContext c, FSFunction function) {
             return null;
         }
-        
+
         public String getLayoutReplacementText() {
             return "999";
         }
-        
+
         protected IdentValue getListStyleType(FSFunction function) {
             IdentValue result = IdentValue.DECIMAL;
-            
+
             List parameters = function.getParameters();
             if (parameters.size() == 2) {
                 PropertyValue pValue = (PropertyValue)parameters.get(1);
@@ -86,10 +86,10 @@ public class ContentFunctionFactory {
                     result = iValue;
                 }
             }
-            
+
             return result;
         }
-        
+
         protected boolean isCounter(FSFunction function, String counterName) {
             if (function.getName().equals("counter")) {
                 List parameters = function.getParameters();
@@ -99,33 +99,33 @@ public class ContentFunctionFactory {
                             ! param.getStringValue().equals(counterName)) {
                         return false;
                     }
-                    
+
                     if (parameters.size() == 2) {
                         param = (PropertyValue)parameters.get(1);
                         if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                             return false;
                         }
                     }
-                    
+
                     return true;
                 }
             }
-            
+
             return false;
         }
     }
-    
+
     private static class PageCounterFunction extends PageNumberFunction implements ContentFunction {
         public String calculate(RenderingContext c, FSFunction function, InlineText text) {
             int value = c.getRootLayer().getRelativePageNo(c) + 1;
             return CounterFunction.createCounterText(getListStyleType(function), value);
         }
-        
+
         public boolean canHandle(LayoutContext c, FSFunction function) {
             return c.isPrint() && isCounter(function, "page");
         }
     }
-    
+
     private static class PagesCounterFunction extends PageNumberFunction implements ContentFunction {
         public String calculate(RenderingContext c, FSFunction function, InlineText text) {
             int value = c.getRootLayer().getRelativePageCount(c);
@@ -136,7 +136,7 @@ public class ContentFunctionFactory {
             return c.isPrint() && isCounter(function, "pages");
         }
     }
-    
+
     /**
      * Partially implements target counter as specified here:
      * http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#cross-references
@@ -162,7 +162,7 @@ public class ContentFunctionFactory {
         public String calculate(LayoutContext c, FSFunction function) {
             return null;
         }
-        
+
         public String getLayoutReplacementText() {
             return "999";
         }
@@ -184,11 +184,11 @@ public class ContentFunctionFactory {
                             ! param.getStringValue().equals("page")) {
                         return false;
                     }
-                    
+
                     return true;
                 }
             }
-            
+
             return false;
         }
     }
@@ -273,7 +273,7 @@ public class ContentFunctionFactory {
         public String calculate(LayoutContext c, FSFunction function) {
             return null;
         }
-        
+
         public String getLayoutReplacementText() {
             return " . ";
         }
@@ -290,11 +290,11 @@ public class ContentFunctionFactory {
                                         !param.getStringValue().equals("space")))) {
                         return false;
                     }
-                    
+
                     return true;
                 }
             }
-            
+
             return false;
         }
     }

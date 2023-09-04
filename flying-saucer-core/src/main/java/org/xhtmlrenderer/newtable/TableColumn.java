@@ -30,17 +30,17 @@ import org.xhtmlrenderer.layout.Styleable;
 public class TableColumn implements Styleable {
     private Element _element;
     private CalculatedStyle _style;
-    
+
     private TableColumn _parent;
-    
+
     public TableColumn() {
     }
-    
+
     public TableColumn(Element element, CalculatedStyle style) {
         _element = element;
         _style = style;
     }
-    
+
     public Element getElement() {
         return _element;
     }

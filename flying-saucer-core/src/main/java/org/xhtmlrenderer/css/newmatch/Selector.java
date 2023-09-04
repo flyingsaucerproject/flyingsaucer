@@ -160,7 +160,7 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createFirstChildCondition());
     }
-    
+
     /**
      * the CSS condition that element has pseudo-class :last-child
      */
@@ -184,7 +184,7 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createEvenChildCondition());
     }
-    
+
     /**
      * the CSS condition that element has pseudo-class :odd
      */
@@ -232,7 +232,7 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createAttributeEqualsCondition(namespaceURI, name, value));
     }
-    
+
     /**
      * the CSS condition [attribute^=value]
      */
@@ -240,7 +240,7 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createAttributePrefixCondition(namespaceURI, name, value));
     }
-    
+
     /**
      * the CSS condition [attribute$=value]
      */
@@ -248,7 +248,7 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createAttributeSuffixCondition(namespaceURI, name, value));
     }
-    
+
     /**
      * the CSS condition [attribute*=value]
      */
@@ -323,7 +323,7 @@ public class Selector {
      * @return The pseudoElement value
      */
     public String getPseudoElement() {
-    	return _pe;
+        return _pe;
     }
 
     /**
@@ -442,12 +442,12 @@ public class Selector {
     public int getSelectorID() {
         return selectorID;
     }
-    
+
     public void setName(String name) {
         _name = name;
         _specificityD++;
     }
-    
+
     public void setPos(int pos) {
         _pos = pos;
         if (siblingSelector != null) {
@@ -457,35 +457,35 @@ public class Selector {
             chainedSelector.setPos(pos);
         }
     }
-    
+
     public void setParent(Ruleset ruleset) {
         _parent = ruleset;
     }
-    
+
     public void setAxis(int axis) {
         _axis = axis;
     }
-    
+
     public void setSpecificityB(int b) {
         _specificityB = b;
     }
-    
+
     public void setSpecificityC(int c) {
         _specificityC = c;
     }
-    
+
     public void setSpecificityD(int d) {
         _specificityD = d;
     }
-    
+
     public void setChainedSelector(Selector selector) {
         chainedSelector = selector;
     }
-    
+
     public void setSiblingSelector(Selector selector) {
         siblingSelector = selector;
     }
-    
+
     public void setNamespaceURI(String namespaceURI) {
         _namespaceURI = namespaceURI;
     }

@@ -25,9 +25,9 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 
 /**
  * Adapt SWT's font metrics to Flying Saucer's ones.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTFontMetricsAdapter implements FSFontMetrics {
     private final FontMetrics _fm;

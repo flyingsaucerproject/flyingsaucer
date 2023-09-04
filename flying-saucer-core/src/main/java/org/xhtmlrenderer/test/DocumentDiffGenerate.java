@@ -37,11 +37,11 @@ public class DocumentDiffGenerate {
     public static void main( String[] args )
         throws Exception {
         DocumentDiffTest ddt = new DocumentDiffTest();
-		if(args.length == 2) {
-			DocumentDiffTest.generateTestFile(args[0],args[1],500,500);
-		} else {
-			ddt.generateDiffs( new File( "tests/diff" ), 500, 500 );
-		}
+        if(args.length == 2) {
+            DocumentDiffTest.generateTestFile(args[0],args[1],500,500);
+        } else {
+            ddt.generateDiffs( new File( "tests/diff" ), 500, 500 );
+        }
     }
 }
 

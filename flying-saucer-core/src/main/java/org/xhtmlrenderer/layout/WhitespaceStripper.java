@@ -36,18 +36,18 @@ public class WhitespaceStripper {
     public final static String SPACE = " ";
     public final static String EOL = "\n";
     public final static char EOLC = '\n';
-    
+
     public final static Pattern linefeed_space_collapse = Pattern.compile("\\s+\\n\\s+");//Pattern is thread-safe
     public final static Pattern linefeed_to_space = Pattern.compile("\\n");
     public final static Pattern tab_to_space = Pattern.compile("\\t");
     public final static Pattern space_collapse = Pattern.compile("(?: )+");
     public final static Pattern space_before_linefeed_collapse = Pattern.compile("[\\s&&[^\\n]]\\n");
-    
+
     /**
      * Strips whitespace early in inline content generation. This can be done
      * because "whitespage" does not ally to :first-line and :first-letter. For
      * dynamic pseudo-classes we are allowed to choose which properties apply.
-     * 
+     *
      * <b>NOTE:</b> The <code>inlineContent</code> parameter may be modified
      *
      * @param c
@@ -66,7 +66,7 @@ public class WhitespaceStripper {
                 if (! iB.isRemovableWhitespace()) {
                     allWhitespace = false;
                 }
-                
+
                 collapse = collapseNext;
             } else {
                 if (! canCollapseThrough(node)) {
@@ -80,7 +80,7 @@ public class WhitespaceStripper {
             stripTextContent(inlineContent);
         }
     }
-    
+
     private static boolean canCollapseThrough(Styleable styleable) {
         CalculatedStyle style = styleable.getStyle();
         return style.isFloated() || style.isAbsolute() || style.isFixed() || style.isRunning();
@@ -95,11 +95,11 @@ public class WhitespaceStripper {
                 if (iB.getElement() != null) {
                     onlyAnonymous = false;
                 }
-                
+
                 iB.truncateText();
             }
         }
-        
+
         if (onlyAnonymous) {
             for (Iterator i = stripped.iterator(); i.hasNext(); ) {
                 Styleable node = (Styleable)i.next();
@@ -125,7 +125,7 @@ public class WhitespaceStripper {
     private static boolean stripWhitespace(InlineBox iB, boolean collapseLeading) {
 
         IdentValue whitespace = iB.getStyle().getIdent(CSSName.WHITE_SPACE);
-        
+
         String text = iB.getText();
 
         text = collapseWhitespace(iB, whitespace, text, collapseLeading);

@@ -47,9 +47,9 @@ public class StylesheetInfo {
     private int origin = USER_AGENT;
     /** Description of the Field */
     private String type;
-    
+
     private List mediaTypes = new ArrayList();
-    
+
     private String content;
 
     /** Origin of stylesheet - user agent  */
@@ -60,14 +60,14 @@ public class StylesheetInfo {
 
     /** Origin of stylesheet - author  */
     public final static int AUTHOR = 2;
-    
+
 
     /**
      * @param m  a single media identifier
      * @return   true if the stylesheet referenced applies to the medium
      */
     public boolean appliesToMedia(String m) {
-        return m.toLowerCase().equals("all") || 
+        return m.toLowerCase().equals("all") ||
             mediaTypes.contains("all") || mediaTypes.contains(m.toLowerCase());
     }
 
@@ -93,11 +93,11 @@ public class StylesheetInfo {
         }
         this.mediaTypes = l;
     }
-    
+
     public void setMedia(List mediaTypes) {
         this.mediaTypes = mediaTypes;
     }
-    
+
     public void addMedium(String medium) {
         mediaTypes.add(medium);
     }
@@ -199,7 +199,7 @@ public class StylesheetInfo {
     public void setContent(String content) {
         this.content = content;
     }
-    
+
     public boolean isInline() {
         return this.content != null;
     }

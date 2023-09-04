@@ -38,7 +38,7 @@ import org.xhtmlrenderer.render.RenderingContext;
  */
 public class BoxCollector {
     public void collect(
-            CssContext c, Shape clip, Layer layer, 
+            CssContext c, Shape clip, Layer layer,
             List blockContent, List inlineContent, BoxRangeLists rangeLists) {
         if (layer.isInline()) {
             collectInlineLayer(c, clip, layer, blockContent, inlineContent, rangeLists);
@@ -46,25 +46,25 @@ public class BoxCollector {
             collect(c, clip, layer, layer.getMaster(), blockContent, inlineContent, rangeLists);
         }
     }
-    
+
     public boolean intersectsAny(
             CssContext c, Shape clip, Box master) {
         return intersectsAny(c, clip, master, master);
     }
-    
+
     private void collectInlineLayer(
-            CssContext c, Shape clip, Layer layer, 
+            CssContext c, Shape clip, Layer layer,
             List blockContent, List inlineContent, BoxRangeLists rangeLists) {
         InlineLayoutBox iB = (InlineLayoutBox)layer.getMaster();
         List content = iB.getElementWithContent();
-        
+
         for (int i = 0; i < content.size(); i++) {
             Box b = (Box)content.get(i);
-            
+
             if (b.intersects(c, clip)) {
                 if (b instanceof InlineLayoutBox) {
                     inlineContent.add(b);
-                } else { 
+                } else {
                     BlockBox bb = (BlockBox)b;
                     if (bb.isInline()) {
                         if (intersectsAny(c, clip, b)) {
@@ -77,7 +77,7 @@ public class BoxCollector {
             }
         }
     }
-    
+
     private boolean intersectsAggregateBounds(Shape clip, Box box) {
         if (clip == null) {
             return true;
@@ -89,16 +89,16 @@ public class BoxCollector {
         Rectangle bounds = info.getAggregateBounds();
         return clip.intersects(bounds);
     }
-    
+
     public void collect(
-            CssContext c, Shape clip, Layer layer, Box container, 
+            CssContext c, Shape clip, Layer layer, Box container,
             List blockContent, List inlineContent, BoxRangeLists rangeLists) {
         if (layer != container.getContainingLayer()) {
             return;
         }
-        
+
         boolean isBlock = container instanceof BlockBox;
-        
+
         int blockStart = 0;
         int inlineStart = 0;
         int blockRangeStart = 0;
@@ -106,11 +106,11 @@ public class BoxCollector {
         if (isBlock) {
             blockStart = blockContent.size();
             inlineStart = inlineContent.size();
-            
+
             blockRangeStart = rangeLists.getBlock().size();
             inlineRangeStart = rangeLists.getInline().size();
         }
-        
+
         if (container instanceof LineBox) {
             if (intersectsAggregateBounds(clip, container) ||
                     (container.getPaintingInfo() == null && container.intersects(c, clip))) {
@@ -120,7 +120,7 @@ public class BoxCollector {
         } else {
             boolean intersectsAggregateBounds = intersectsAggregateBounds(clip, container);
             if (container.getLayer() == null || !(container instanceof BlockBox)) {
-                if (intersectsAggregateBounds || 
+                if (intersectsAggregateBounds ||
                         (container.getPaintingInfo() == null && container.intersects(c, clip))) {
                     blockContent.add(container);
                     if (container.getStyle().isTable() && c instanceof RenderingContext) {  // HACK
@@ -141,9 +141,9 @@ public class BoxCollector {
                 }
             }
         }
-        
+
         saveRangeData(
-                c, container, blockContent, inlineContent, 
+                c, container, blockContent, inlineContent,
                 rangeLists, isBlock, blockStart, inlineStart,
                 blockRangeStart, inlineRangeStart);
     }
@@ -160,7 +160,7 @@ public class BoxCollector {
                     BoxRange range = new BoxRange(blockStart, blockEnd);
                     rangeLists.getBlock().add(blockRangeStart, new BoxRangeData(blockBox, range));
                 }
-                
+
                 int inlineEnd = inlineContent.size();
                 if (inlineStart != inlineEnd) {
                     BoxRange range = new BoxRange(inlineStart, inlineEnd);
@@ -169,9 +169,9 @@ public class BoxCollector {
             }
         }
     }
-    
+
     private boolean intersectsAny(
-            CssContext c, Shape clip, 
+            CssContext c, Shape clip,
             Box master, Box container) {
         if (container instanceof LineBox) {
             if (container.intersects(c, clip)) {
@@ -194,7 +194,7 @@ public class BoxCollector {
                 }
             }
         }
-        
+
         return false;
-    }    
+    }
 }

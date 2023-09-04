@@ -203,7 +203,7 @@ public class Regress {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();  
+            e.printStackTrace();
         } finally {
             try {
                 fos.close();

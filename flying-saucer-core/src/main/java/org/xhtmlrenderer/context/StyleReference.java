@@ -78,7 +78,7 @@ public class StyleReference {
 
     /** */
     private UserAgentCallback _uac;
-    
+
     /**
      * Default constructor for initializing members.
      *
@@ -106,39 +106,39 @@ public class StyleReference {
         List infos = getStylesheets();
         XRLog.match("media = " + _context.getMedia());
         _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(
-                new DOMTreeResolver(), 
-                attRes, 
-                _stylesheetFactory, 
-                readAndParseAll(infos, _context.getMedia()), 
+                new DOMTreeResolver(),
+                attRes,
+                _stylesheetFactory,
+                readAndParseAll(infos, _context.getMedia()),
                 _context.getMedia());
     }
-    
+
     private List readAndParseAll(List infos, String medium) {
         List result = new ArrayList(infos.size() + 15);
         for (Iterator i = infos.iterator(); i.hasNext(); ) {
             StylesheetInfo info = (StylesheetInfo)i.next();
             if (info.appliesToMedia(medium)) {
                 Stylesheet sheet = info.getStylesheet();
-                
+
                 if (sheet == null) {
                     sheet = _stylesheetFactory.getStylesheet(info);
                 }
-                
+
                 if (sheet!=null) {
                     if (sheet.getImportRules().size() > 0) {
                         result.addAll(readAndParseAll(sheet.getImportRules(), medium));
                     }
-                    
+
                     result.add(sheet);
                 } else {
                     XRLog.load(Level.WARNING, "Unable to load CSS from "+info.getUri());
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Description of the Method
      *
@@ -203,7 +203,7 @@ public class StyleReference {
         if (e == null) return CascadedStyle.emptyCascadedStyle;
         return _matcher.getCascadedStyle(e, restyle);
     }
-    
+
     public PageInfo getPageStyle(String pageName, String pseudoPage) {
         return _matcher.getPageCascadedStyle(pageName, pseudoPage);
     }
@@ -224,7 +224,7 @@ public class StyleReference {
 
         }
     }
-    
+
     public void flushAllStyleSheets() {
         _stylesheetFactory.flushCachedStylesheets();
     }
@@ -251,7 +251,7 @@ public class StyleReference {
         if (refs != null) {
             for (int i = 0; i < refs.length; i++) {
                 String uri;
-                
+
                 if (! refs[i].isInline()) {
                     uri = _uac.resolveURI(refs[i].getUri());
                     refs[i].setUri(uri);
@@ -273,22 +273,22 @@ public class StyleReference {
 
         return infos;
     }
-    
+
     public void removeStyle(Element e) {
         if (_matcher != null) {
             _matcher.removeStyle(e);
         }
     }
-    
+
     public List getFontFaceRules() {
         return _matcher.getFontFaceRules();
     }
-    
+
     public void setUserAgentCallback(UserAgentCallback userAgentCallback) {
         _uac = userAgentCallback;
         _stylesheetFactory.setUserAgentCallback(userAgentCallback);
     }
-    
+
     public void setSupportCMYKColors(boolean b) {
         _stylesheetFactory.setSupportCMYKColors(b);
     }

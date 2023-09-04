@@ -22,19 +22,19 @@ package org.xhtmlrenderer.render;
 public class JustificationInfo {
     private float _nonSpaceAdjust;
     private float _spaceAdjust;
-    
+
     public float getNonSpaceAdjust() {
         return _nonSpaceAdjust;
     }
-    
+
     public void setNonSpaceAdjust(float nonSpaceAdjust) {
         _nonSpaceAdjust = nonSpaceAdjust;
     }
-    
+
     public float getSpaceAdjust() {
         return _spaceAdjust;
     }
-    
+
     public void setSpaceAdjust(float spaceAdjust) {
         _spaceAdjust = spaceAdjust;
     }

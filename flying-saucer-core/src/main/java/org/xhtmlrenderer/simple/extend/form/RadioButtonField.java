@@ -38,7 +38,7 @@ class RadioButtonField extends InputField {
 
         radio.setText("");
         radio.setOpaque(false);
-        
+
         String groupName = null;
 
         if (hasAttribute("name")) {
@@ -50,7 +50,7 @@ class RadioButtonField extends InputField {
 
         return radio;
     }
-    
+
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromBoolean(
                 getAttribute("checked").equalsIgnoreCase("checked"));
@@ -58,16 +58,16 @@ class RadioButtonField extends InputField {
 
     protected void applyOriginalState() {
         JToggleButton button = (JToggleButton) getComponent();
-        
+
         button.setSelected(getOriginalState().isChecked());
     }
-    
+
     protected String[] getFieldValues() {
         JToggleButton button = (JToggleButton) getComponent();
-        
+
         if (button.isSelected()) {
             return new String [] {
-                    hasAttribute("value") ? getAttribute("value") : "" 
+                    hasAttribute("value") ? getAttribute("value") : ""
             };
         } else {
             return new String [] {};

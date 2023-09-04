@@ -41,7 +41,7 @@ public interface AttributeResolver {
      * not null if attribute exists.
      */
     public String getAttributeValue(Object e, String attrName);
-    
+
     /**
      * May return null. Required to return null if attribute does not exist and
      * not null if attribute exists.

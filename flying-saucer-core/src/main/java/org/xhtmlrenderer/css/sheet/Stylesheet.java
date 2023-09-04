@@ -76,35 +76,35 @@ public class Stylesheet implements RulesetContainer {
     public String getURI() {
         return _uri;
     }
-    
+
     public void addContent(Ruleset ruleset) {
         _contents.add(ruleset);
     }
-    
+
     public void addContent(MediaRule rule) {
         _contents.add(rule);
     }
-    
+
     public void addContent(PageRule rule) {
         _contents.add(rule);
     }
-    
+
     public List getContents() {
         return _contents;
     }
-    
+
     public void addImportRule(StylesheetInfo info) {
         _importRules.add(info);
     }
-    
+
     public List getImportRules() {
         return _importRules;
     }
-    
+
     public void addFontFaceRule(FontFaceRule rule) {
         _fontFaceRules.add(rule);
     }
-    
+
     public List getFontFaceRules() {
         return _fontFaceRules;
     }

@@ -46,7 +46,7 @@ class FileField extends InputField implements ActionListener {
 
     public JComponent create() {
         JPanel panel = new JPanel(new GridBagLayout());
-        
+
         panel.setOpaque(false);
 
         _pathTextField = new JTextField();
@@ -75,13 +75,13 @@ class FileField extends InputField implements ActionListener {
 
         return panel;
     }
-    
+
     protected void applyOriginalState() {
         // This is always the default, since you can't set a default
         // value for this in the HTML
         _pathTextField.setText("");
     }
-    
+
     protected String[] getFieldValues() {
         return new String [] {
                 // TODO: This will have to be special once we aren't
@@ -89,18 +89,18 @@ class FileField extends InputField implements ActionListener {
                 _pathTextField.getText()
         };
     }
-    
+
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == _browseButton) {
             JFileChooser chooser = new JFileChooser();
-            
+
             // TODO: We should probably use the BasicPanel as the parent
             int result = chooser.showOpenDialog(_browseButton);
-            
+
             if (result == JFileChooser.APPROVE_OPTION) {
                 _pathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
                 _pathTextField.setCaretPosition(0);
-                
+
                 _browseButton.requestFocus();
             }
         }

@@ -89,7 +89,7 @@ public class BrowsePanel {
         ImageResourceLoader irl = new ImageResourceLoader();
         irl.setRepaintListener(panel);
         ((DelegatingUserAgent) uac).setImageResourceLoader(irl);
-        
+
         panel.getSharedContext().setUserAgentCallback(uac);
         panel.getSharedContext().setReplacedElementFactory(new SwingReplacedElementFactory(panel, irl));
     }
@@ -166,7 +166,7 @@ public class BrowsePanel {
             panel.setDocument(document, uri);
         }
         catch (Exception e) {
-            e.printStackTrace();  
+            e.printStackTrace();
         }
     }
 

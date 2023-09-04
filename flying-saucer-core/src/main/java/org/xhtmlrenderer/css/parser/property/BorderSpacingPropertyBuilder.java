@@ -30,18 +30,18 @@ import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 public class BorderSpacingPropertyBuilder extends AbstractPropertyBuilder {
     private static final CSSName[] ALL = new CSSName[] {
         CSSName.FS_BORDER_SPACING_HORIZONTAL, CSSName.FS_BORDER_SPACING_VERTICAL };
-    
+
     public List buildDeclarations(CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
         List result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
         if (result != null) {
             return result;
         }
-        
+
         checkValueCount(CSSName.BORDER_SPACING, 1, 2, values.size());
-        
+
         PropertyDeclaration horizontalSpacing = null;
         PropertyDeclaration verticalSpacing = null;
-        
+
         if (values.size() == 1) {
             PropertyValue value = (PropertyValue)values.get(0);
             checkLengthType(cssName, value);
@@ -51,7 +51,7 @@ public class BorderSpacingPropertyBuilder extends AbstractPropertyBuilder {
             horizontalSpacing = new PropertyDeclaration(
                     CSSName.FS_BORDER_SPACING_HORIZONTAL, value, important, origin);
             verticalSpacing = new PropertyDeclaration(
-                    CSSName.FS_BORDER_SPACING_VERTICAL, value, important, origin);            
+                    CSSName.FS_BORDER_SPACING_VERTICAL, value, important, origin);
         } else { /* values.size() == 2 */
             PropertyValue horizontal = (PropertyValue)values.get(0);
             checkLengthType(cssName, horizontal);
@@ -60,20 +60,20 @@ public class BorderSpacingPropertyBuilder extends AbstractPropertyBuilder {
             }
             horizontalSpacing = new PropertyDeclaration(
                     CSSName.FS_BORDER_SPACING_HORIZONTAL, horizontal, important, origin);
-            
+
             PropertyValue vertical = (PropertyValue)values.get(1);
             checkLengthType(cssName, vertical);
             if (vertical.getFloatValue() < 0.0f) {
                 throw new CSSParseException("border-spacing may not be negative", -1);
             }
             verticalSpacing = new PropertyDeclaration(
-                    CSSName.FS_BORDER_SPACING_VERTICAL, vertical, important, origin);            
+                    CSSName.FS_BORDER_SPACING_VERTICAL, vertical, important, origin);
         }
-        
+
         result = new ArrayList(2);
         result.add(horizontalSpacing);
         result.add(verticalSpacing);
-        
+
         return result;
     }
 }

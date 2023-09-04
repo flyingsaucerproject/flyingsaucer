@@ -27,50 +27,50 @@ public class Length {
     // Should use something more reasonable here (e.g. a few feet based on the current
     // DPI)
     public static final int MAX_WIDTH = Integer.MAX_VALUE / 2;
-    
+
     public static final int VARIABLE = 1;
     public static final int FIXED = 2;
     public static final int PERCENT = 3;
-    
+
     private int _type = VARIABLE;
     private long _value = 0;
-    
+
     public Length() {
     }
-    
+
     public Length(long value, int type) {
         _value = value;
         _type = type;
     }
-    
+
     public void setValue(long value) {
         _value = value;
     }
-    
+
     public long value() {
         return _value;
     }
-    
+
     public void setType(int type) {
         _type = type;
     }
-    
+
     public int type() {
         return _type;
     }
-    
+
     public boolean isVariable() {
         return _type == VARIABLE;
     }
-    
+
     public boolean isFixed() {
         return _type == FIXED;
     }
-    
+
     public boolean isPercent() {
         return _type == PERCENT;
     }
-    
+
     public long width(int maxWidth) {
         switch (_type) {
             case FIXED:
@@ -83,7 +83,7 @@ public class Length {
                 return -1;
         }
     }
-    
+
     public long minWidth(int maxWidth) {
         switch (_type) {
             case FIXED:
@@ -94,7 +94,7 @@ public class Length {
                 return 0;
         }
     }
-    
+
     public String toString() {
         StringBuffer result = new StringBuffer();
         result.append("(type=");
@@ -114,7 +114,7 @@ public class Length {
         result.append(", value=");
         result.append(_value);
         result.append(")");
-        
+
         return result.toString();
     }
 }

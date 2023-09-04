@@ -408,7 +408,7 @@ public class Eeze {
         public boolean imageWasLoaded() {
             if ( Eeze.this.comparingWithImage == false )
                 return false;
-            
+
             currentPageImg = loadImageForPage();
             if (currentPageImg != null) {
                 this.setPreferredSize(new Dimension(currentPageImg.getWidth(null), currentPageImg.getHeight(null)));

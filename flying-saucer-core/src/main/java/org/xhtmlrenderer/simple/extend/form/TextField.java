@@ -48,7 +48,7 @@ class TextField extends InputField {
 
         if (hasAttribute("size")) {
             int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
-            
+
             // Size of 0 doesn't make any sense, so use default value
             if (size == 0) {
                 textfield.setColumns(15);
@@ -71,7 +71,7 @@ class TextField extends InputField {
         }
 
         applyComponentStyle(textfield);
-        
+
         return textfield;
     }
 
@@ -126,19 +126,19 @@ class TextField extends InputField {
     }
 
 
-    
+
     protected void applyOriginalState() {
         JTextField textfield = (JTextField) getComponent();
-        
+
         textfield.setText(getOriginalState().getValue());
-        
+
         // Make sure we are showing the front of 'value' instead of the end.
         textfield.setCaretPosition(0);
     }
-    
+
     protected String[] getFieldValues() {
         JTextField textfield = (JTextField) getComponent();
-        
+
         return new String[] {
                 textfield.getText()
         };

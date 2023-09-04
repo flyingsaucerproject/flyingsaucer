@@ -27,7 +27,7 @@ import org.xml.sax.InputSource;
  */
 public interface Resource {
     InputSource getResourceInputSource();
-    long getResourceLoadTimeStamp();    
+    long getResourceLoadTimeStamp();
 }
 
 /*

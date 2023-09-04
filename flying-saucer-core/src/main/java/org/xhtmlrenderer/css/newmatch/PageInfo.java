@@ -34,70 +34,70 @@ public class PageInfo {
     private final List _properties;
     private final CascadedStyle _pageStyle;
     private final Map _marginBoxes;
-    
+
     private final List _xmpPropertyList;
-    
+
     public PageInfo(List properties, CascadedStyle pageStyle, Map marginBoxes) {
         _properties = properties;
         _pageStyle = pageStyle;
         _marginBoxes = marginBoxes;
-        
+
         _xmpPropertyList = (List)marginBoxes.remove(MarginBoxName.FS_PDF_XMP_METADATA);
     }
 
     public Map getMarginBoxes() {
         return _marginBoxes;
     }
-    
+
     public CascadedStyle getPageStyle() {
         return _pageStyle;
     }
-    
+
     public List getProperties() {
         return _properties;
     }
-    
+
     public CascadedStyle createMarginBoxStyle(MarginBoxName marginBox, boolean alwaysCreate) {
         List marginProps = (List)_marginBoxes.get(marginBox);
-        
+
         if ((marginProps == null || marginProps.size() == 0) && ! alwaysCreate) {
             return null;
         }
-        
+
         List all;
         if (marginProps != null) {
             all = new ArrayList(marginProps.size() + 3);
-            all.addAll(marginProps);    
+            all.addAll(marginProps);
         } else {
             all = new ArrayList(3);
         }
-        
+
         all.add(CascadedStyle.createLayoutPropertyDeclaration(CSSName.DISPLAY, IdentValue.TABLE_CELL));
         all.add(new PropertyDeclaration(
-                    CSSName.VERTICAL_ALIGN, 
-                    new PropertyValue(marginBox.getInitialVerticalAlign()), 
+                    CSSName.VERTICAL_ALIGN,
+                    new PropertyValue(marginBox.getInitialVerticalAlign()),
                     false,
                     StylesheetInfo.USER_AGENT));
         all.add(new PropertyDeclaration(
-                CSSName.TEXT_ALIGN, 
-                new PropertyValue(marginBox.getInitialTextAlign()), 
+                CSSName.TEXT_ALIGN,
+                new PropertyValue(marginBox.getInitialTextAlign()),
                 false,
-                StylesheetInfo.USER_AGENT));        
-                        
-        
+                StylesheetInfo.USER_AGENT));
+
+
         return new CascadedStyle(all.iterator());
     }
-    
+
     public boolean hasAny(MarginBoxName[] marginBoxes) {
         for (int i = 0; i < marginBoxes.length; i++) {
             if (_marginBoxes.containsKey(marginBoxes[i])) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     public List getXMPPropertyList()
     {
         return _xmpPropertyList;

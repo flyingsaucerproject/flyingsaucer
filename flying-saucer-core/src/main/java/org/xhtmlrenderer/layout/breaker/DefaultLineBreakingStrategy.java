@@ -27,22 +27,22 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
  */
 public class DefaultLineBreakingStrategy implements LineBreakingStrategy {
 
-	@Override
-	public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
-		final BreakIterator i = new UrlAwareLineBreakIterator();
-		i.setText(text);
-		
-		return new BreakPointsProvider() {
-			
-			@Override
-			public BreakPoint next() {
-				int next = i.next();
-				if (next < 0) return BreakPoint.getDonePoint();
-				return new BreakPoint(next);
-			}
-		};
-	}
-	
-	
+    @Override
+    public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
+        final BreakIterator i = new UrlAwareLineBreakIterator();
+        i.setText(text);
+
+        return new BreakPointsProvider() {
+
+            @Override
+            public BreakPoint next() {
+                int next = i.next();
+                if (next < 0) return BreakPoint.getDonePoint();
+                return new BreakPoint(next);
+            }
+        };
+    }
+
+
 
 }

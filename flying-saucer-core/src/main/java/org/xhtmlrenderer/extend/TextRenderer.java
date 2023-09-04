@@ -32,11 +32,11 @@ public interface TextRenderer {
     public void drawString(OutputDevice outputDevice, String string, float x, float y);
     public void drawString(
             OutputDevice outputDevice, String string, float x, float y, JustificationInfo info);
-    
+
     public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y);
-    
+
     public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string);
-    
+
     public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector);
     public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y);
 
@@ -51,8 +51,8 @@ public interface TextRenderer {
 
     /**
      * Set the smoothing threashold. This is a font size above which
-     * all text will be anti-aliased. Text below this size will not be antialiased. 
-     * Set to -1 for no antialiasing. 
+     * all text will be anti-aliased. Text below this size will not be antialiased.
+     * Set to -1 for no antialiasing.
      * Set to 0 for all antialising.
      * Else, set to the threshold font size. does not take font scaling
      * into account.

@@ -28,13 +28,13 @@ public class ParserTest {
         for (int i = 0 ; i < 10000; i++) {
             longTest.append(test);
         }
-        
+
         CSSErrorHandler errorHandler = new CSSErrorHandler() {
             public void error(String uri, String message) {
                 System.out.println(message);
             }
         };
-        
+
         long total = 0;
         for (int i = 0; i < 40; i++) {
             long start = System.currentTimeMillis();
@@ -45,7 +45,7 @@ public class ParserTest {
             total += (end-start);
         }
         System.out.println("Average " + (total/10) + " ms");
-        
+
         total = 0;
         for (int i = 0; i < 10; i++) {
             long start = System.currentTimeMillis();
@@ -56,9 +56,9 @@ public class ParserTest {
             total += (end-start);
         }
         System.out.println("Average " + (total/10) + " ms");
-        
+
         CSSParser p = new CSSParser(errorHandler);
-        
+
         total = 0;
         for (int i = 0; i < 10; i++) {
             long start = System.currentTimeMillis();

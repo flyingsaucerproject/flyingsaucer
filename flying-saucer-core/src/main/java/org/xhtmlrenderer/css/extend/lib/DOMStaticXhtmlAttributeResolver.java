@@ -34,7 +34,7 @@ public class DOMStaticXhtmlAttributeResolver implements AttributeResolver {
     public String getAttributeValue(Object e, String attrName) {
         return ((Element) e).getAttribute(attrName);
     }
-    
+
     public String getAttributeValue(Object o, String namespaceURI, String attrName) {
         Element e = (Element)o;
         if (namespaceURI == TreeResolver.NO_NAMESPACE) {
@@ -51,7 +51,7 @@ public class DOMStaticXhtmlAttributeResolver implements AttributeResolver {
                         return attr.getValue();
                     }
                 }
-                
+
                 return "";
             }
         } else {

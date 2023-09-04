@@ -38,7 +38,7 @@ import org.xhtmlrenderer.render.Box;
  * as the last listener is removed via {@link #removeListener(FSMouseListener)}. This binding is handled automatically
  * via the add and remove methods and the tracker will remain active as long as the tracker has at least one listener.
  * The MouseTracker is also responsible for using MouseEvent coordinates to located the Box on which the mouse is
- * acting. 
+ * acting.
  */
 public class MouseTracker extends MouseInputAdapter {
     private BasicPanel _panel;
@@ -64,15 +64,15 @@ public class MouseTracker extends MouseInputAdapter {
         if (l == null) {
             return;
         }
-        
+
         if (!_handlers.containsKey(l)) {
             _handlers.put(l, l);
         }
-        
+
         if (!_enabled && _handlers.size() > 0) {
             _panel.addMouseListener(this);
             _panel.addMouseMotionListener(this);
-            
+
             _enabled = true;
         }
     }
@@ -86,15 +86,15 @@ public class MouseTracker extends MouseInputAdapter {
         if (l == null) {
             return;
         }
-        
+
         if (_handlers.containsKey(l)) {
             _handlers.remove(l);
         }
-        
+
         if (_enabled && _handlers.size() == 0) {
             _panel.removeMouseListener(this);
             _panel.removeMouseMotionListener(this);
-            
+
             _enabled = false;
         }
     }
@@ -134,14 +134,14 @@ public class MouseTracker extends MouseInputAdapter {
     public void mouseReleased(MouseEvent e) {
         handleMouseUp(_panel.find(e));
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void mousePressed(MouseEvent e) {
         fireMousePressed(e);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -165,11 +165,11 @@ public class MouseTracker extends MouseInputAdapter {
         if (box == null || box.equals(_last)) {
             return;
         }
-        
+
         if (_last != null) {
             fireMouseOut(_last);
         }
-        
+
         fireMouseOver(box);
 
         _last = box;
@@ -180,10 +180,10 @@ public class MouseTracker extends MouseInputAdapter {
         if (box == null) {
             return;
         }
-        
+
         fireMouseUp(box);
     }
-    
+
     // delegates onMouseOver() to all listeners
     private void fireMouseOver(Box box) {
         Iterator iterator = _handlers.keySet().iterator();
@@ -199,7 +199,7 @@ public class MouseTracker extends MouseInputAdapter {
             ((FSMouseListener) iterator.next()).onMouseOut(_panel, box);
         }
     }
-    
+
     // delegates onMouseUp() to all listeners
     private void fireMouseUp(Box box) {
         Iterator iterator = _handlers.keySet().iterator();
@@ -207,7 +207,7 @@ public class MouseTracker extends MouseInputAdapter {
             ((FSMouseListener) iterator.next()).onMouseUp(_panel, box);
         }
     }
-    
+
     // delegates onMousePressed() to all listeners
     private void fireMousePressed(MouseEvent e) {
         Iterator iterator = _handlers.keySet().iterator();
@@ -215,7 +215,7 @@ public class MouseTracker extends MouseInputAdapter {
             ((FSMouseListener) iterator.next()).onMousePressed(_panel, e);
         }
     }
-    
+
     // delegates onMouseDragged() to all listeners
     private void fireMouseDragged(MouseEvent e) {
         Iterator iterator = _handlers.keySet().iterator();

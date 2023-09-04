@@ -33,11 +33,11 @@ import org.xhtmlrenderer.css.parser.Token;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
 public class FontPropertyBuilder extends AbstractPropertyBuilder {
-    // [ [ <'font-style'> || <'font-variant'> || <'font-weight'> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'> ] 
+    // [ [ <'font-style'> || <'font-variant'> || <'font-weight'> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'> ]
     private static final CSSName[] ALL = new CSSName[] {
-        CSSName.FONT_STYLE, CSSName.FONT_VARIANT, CSSName.FONT_WEIGHT, 
+        CSSName.FONT_STYLE, CSSName.FONT_VARIANT, CSSName.FONT_WEIGHT,
         CSSName.FONT_SIZE, CSSName.LINE_HEIGHT, CSSName.FONT_FAMILY };
-    
+
     public List buildDeclarations(
             CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
         List result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
@@ -51,9 +51,9 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
         PropertyDeclaration fontSize = null;
         PropertyDeclaration lineHeight = null;
         PropertyDeclaration fontFamily = null;
-        
+
         boolean keepGoing = false;
-        
+
         ListIterator i = values.listIterator();
         while (i.hasNext()) {
             PropertyValue value = (PropertyValue)i.next();
@@ -92,38 +92,38 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
                 if (fontWeight != null) {
                     throw new CSSParseException("font-weight cannot be set twice", -1);
                 }
-                
+
                 IdentValue weight = Conversions.getNumericFontWeight(value.getFloatValue());
                 if (weight == null) {
                     throw new CSSParseException(value + " is not a valid font weight", -1);
                 }
-                
+
                 PropertyValue replacement = new PropertyValue(
                         CSSPrimitiveValue.CSS_IDENT, weight.toString(), weight.toString());
                 replacement.setIdentValue(weight);
-                
+
                 fontWeight = new PropertyDeclaration(CSSName.FONT_WEIGHT, replacement, important, origin);
             } else {
                 keepGoing = true;
                 break;
             }
         }
-        
+
         if (keepGoing) {
             i.previous();
             PropertyValue value = (PropertyValue)i.next();
-            
+
             if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                 String lowerCase = value.getStringValue().toLowerCase();
                 value = new PropertyValue(CSSPrimitiveValue.CSS_IDENT, lowerCase, lowerCase);
             }
-            
+
             PropertyBuilder fontSizeBuilder = CSSName.getPropertyBuilder(CSSName.FONT_SIZE);
             List l = fontSizeBuilder.buildDeclarations(
                     CSSName.FONT_SIZE, Collections.singletonList(value), origin, important);
-            
+
             fontSize = (PropertyDeclaration)l.get(0);
-            
+
             if (i.hasNext()) {
                 value = (PropertyValue)i.next();
                 if (value.getOperator() == Token.TK_VIRGULE) {
@@ -135,7 +135,7 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
                     i.previous();
                 }
             }
-            
+
             if (i.hasNext()) {
                 List families = new ArrayList();
                 while (i.hasNext()) {
@@ -147,33 +147,33 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
                 fontFamily = (PropertyDeclaration)l.get(0);
             }
         }
-        
+
         if (fontStyle == null) {
             fontStyle = new PropertyDeclaration(
                     CSSName.FONT_STYLE, new PropertyValue(IdentValue.NORMAL), important, origin);
         }
-        
+
         if (fontVariant == null) {
             fontVariant = new PropertyDeclaration(
                     CSSName.FONT_VARIANT, new PropertyValue(IdentValue.NORMAL), important, origin);
         }
-        
+
         if (fontWeight == null) {
             fontWeight = new PropertyDeclaration(
                     CSSName.FONT_WEIGHT, new PropertyValue(IdentValue.NORMAL), important, origin);
         }
-        
+
         if (fontSize == null) {
             throw new CSSParseException("A font-size value is required", -1);
         }
-        
+
         if (lineHeight == null) {
             lineHeight = new PropertyDeclaration(
                     CSSName.LINE_HEIGHT, new PropertyValue(IdentValue.NORMAL), important, origin);
         }
-        
+
         // XXX font-family should be reset too (although does this really make sense?)
-        
+
         result = new ArrayList(ALL.length);
         result.add(fontStyle);
         result.add(fontVariant);
@@ -183,7 +183,7 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
         if (fontFamily != null) {
             result.add(fontFamily);
         }
-        
+
         return result;
     }
 }

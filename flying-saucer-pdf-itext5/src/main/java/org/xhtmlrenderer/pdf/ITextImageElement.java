@@ -30,9 +30,9 @@ import org.xhtmlrenderer.render.RenderingContext;
 
 public class ITextImageElement implements ITextReplacedElement {
     private FSImage _image;
-    
+
     private Point _location = new Point(0, 0);
-    
+
     public ITextImageElement(FSImage image) {
         _image = image;
     }
@@ -52,19 +52,19 @@ public class ITextImageElement implements ITextReplacedElement {
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }
-    
+
     public FSImage getImage() {
         return _image;
     }
-    
+
     public void detach(LayoutContext c) {
     }
-    
+
     public boolean isRequiresInteractivePaint() {
         // N/A
         return false;
     }
-    
+
     public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box)
     {
         Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
@@ -74,11 +74,11 @@ public class ITextImageElement implements ITextReplacedElement {
             contentBounds.x, contentBounds.y);
     }
 
-	public int getBaseline() {
-		return 0;
-	}
+    public int getBaseline() {
+        return 0;
+    }
 
-	public boolean hasBaseline() {
-		return false;
-	}
+    public boolean hasBaseline() {
+        return false;
+    }
 }

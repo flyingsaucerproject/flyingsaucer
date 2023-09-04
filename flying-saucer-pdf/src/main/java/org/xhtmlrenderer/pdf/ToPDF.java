@@ -43,19 +43,19 @@ public class ToPDF
         }
         createPDF(url, args[1]);
     }
-    
-    public static void createPDF(String url, String pdf) 
+
+    public static void createPDF(String url, String pdf)
             throws IOException, DocumentException {
         OutputStream os = null;
         try {
             os = new FileOutputStream(pdf);
-            
+
             ITextRenderer renderer = new ITextRenderer();
-            
+
             renderer.setDocument(url);
             renderer.layout();
             renderer.createPDF(os);
-            
+
             os.close();
             os = null;
         } finally {

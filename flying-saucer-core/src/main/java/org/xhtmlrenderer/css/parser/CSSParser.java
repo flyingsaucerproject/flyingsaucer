@@ -523,7 +523,7 @@ public class CSSParser {
     }
 
 //  page :
-//    PAGE_SYM S* IDENT? pseudo_page? S* 
+//    PAGE_SYM S* IDENT? pseudo_page? S*
 //    '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
 //
     private void page(Stylesheet stylesheet) throws IOException {

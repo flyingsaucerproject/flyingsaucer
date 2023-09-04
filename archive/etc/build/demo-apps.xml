@@ -30,7 +30,7 @@
     <!-- hack: for os x and swt, need vm parameter startOnFirstThread. not sure how to make this conditional
     within Ant; if you figure out a way, please merge these SWT targets into one browser-swt -->
     <target name="browser-swt" depends="browser-swt-not-osx,browser-swt-osx" />
-	
+
 	<target name="browser-swt-not-osx" depends="jar.browser" unless="isMac">
 		<echo message="Please make sure you have the swt.jar corresponding to your platform in the lib directory."/>
 		<java classname="org.xhtmlrenderer.demo.browser.swt.BrowserStartup"
@@ -43,7 +43,7 @@
 			<sysproperty key="java.protocol.handler.pkgs" value="org.xhtmlrenderer.protocols"/>
 		</java>
 	</target>
-    
+
 	<target name="browser-swt-osx" depends="jar.browser" if="isMac">
 		<echo message="Please make sure you have the swt.jar corresponding to your platform in the lib directory."/>
 		<java classname="org.xhtmlrenderer.demo.browser.swt.BrowserStartup"

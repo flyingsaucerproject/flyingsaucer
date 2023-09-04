@@ -38,7 +38,7 @@ class PasswordField extends InputField {
 
         if (hasAttribute("size")) {
             int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
-            
+
             // Size of 0 doesn't make any sense, so use default value
             if (size == 0) {
                 password.setColumns(15);
@@ -62,16 +62,16 @@ class PasswordField extends InputField {
 
         return password;
     }
-    
+
     protected void applyOriginalState() {
         JPasswordField password = (JPasswordField) getComponent();
-        
+
         password.setText(getOriginalState().getValue());
     }
-    
+
     protected String[] getFieldValues() {
         JPasswordField textfield = (JPasswordField) getComponent();
-        
+
         return new String [] {
                 new String(textfield.getPassword())
         };

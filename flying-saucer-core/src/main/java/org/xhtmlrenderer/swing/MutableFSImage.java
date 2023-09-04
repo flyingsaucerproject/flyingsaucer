@@ -62,7 +62,7 @@ public class MutableFSImage extends AWTFSImage {
 
     public synchronized void setImage(String uri, BufferedImage newImg, final boolean wasScaled) {
         assert EventQueue.isDispatchThread() : "setImage() must be called on EDT";
-        
+
         img = newImg;
         loaded = true;
         XRLog.general(Level.FINE, "Mutable image " + uri + " loaded, repaint requested");

@@ -45,24 +45,24 @@ public class DataURLConnection extends URLConnection {
 
     public String getContentType() {
         String type = (String) _headers.get("Content-Type");
-        
+
         if (type == null) {
             return "Content-Type: text/plain; charset=US-ASCII";
         }
 
         return type;
     }
-    
+
     public int getContentLength() {
         if (_data == null)
             return 0;
 
         return _data.length;
     }
-    
+
     public InputStream getInputStream() throws IOException {
         connect();
-        
+
         if (_data == null)
             return new ByteArrayInputStream(new byte [] {});
 
@@ -73,19 +73,19 @@ public class DataURLConnection extends URLConnection {
         String sub = getURL().getPath();
 
         int comma = sub.indexOf(',');
-        
+
         if (comma < 0) {
             throw new RuntimeException("Improperly formatted data URL");
         }
-        
+
         String meta = sub.substring(0, comma);
         String data = sub.substring(comma + 1);
 
         boolean isBase64 = false;
         Map properties = new HashMap();
-        
+
         properties.put("charset", "US-ASCII");
-        
+
         if (meta.length() > 0) {
             String [] parts = meta.split(";");
 
@@ -97,11 +97,11 @@ public class DataURLConnection extends URLConnection {
                     // We have a media type
                     _headers.put("Content-Type", parts[index++]);
                 }
-                
+
                 for (; index < parts.length; index++) {
                     if (parts[index].indexOf("=") >= 0) {
                         String [] nameValuePair = parts[index].split("=");
-                        
+
                         if (nameValuePair.length > 1) {
                             _headers.put(nameValuePair[0], nameValuePair[1]);
                         }
@@ -113,14 +113,14 @@ public class DataURLConnection extends URLConnection {
                 }
             }
         }
-        
+
         String charset = (String) properties.get("charset");
 
         // Make sure we have a supported charset
         if (!Charset.isSupported(charset)) {
             throw new UnsupportedCharsetException(charset);
         }
-        
+
         // Now we parse the data
         if (isBase64) {
             _data = Base64.decode(data);
@@ -131,18 +131,18 @@ public class DataURLConnection extends URLConnection {
 }
 
 class URLByteDecoder {
-    
+
     public static byte [] decode(String s) {
 
         byte [] buffer = new byte [s.length()];
-        
+
         int index = 0;
         int bindex = 0;
         char c;
-        
+
         while (index < s.length()) {
             c =  s.charAt(index);
-            
+
             switch (c) {
                 case '+':
                     buffer[bindex++] = ' ';
@@ -156,33 +156,33 @@ class URLByteDecoder {
                     buffer[bindex++] = (byte) c;
                     break;
             }
-            
+
             index++;
         }
-        
+
         byte [] result = new byte [bindex];
-        
+
         System.arraycopy(buffer, 0, result, 0, bindex);
-        
+
         return result;
     }
-    
+
 }
 
 class Base64 {
-    
+
     private static String _map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    
+
     public static byte [] decode(String s) {
 
         if (s == null || s.length() < 4)
             return new byte [] {};
-        
+
         s = s.replaceAll("[^A-Za-z0-9\\+\\/\\=]+", "");
-        
+
         if (s.length() < 4)
             return new byte [] {};
-        
+
         int padding = 0;
 
         if (s.charAt(s.length() - 1) == '=')
@@ -192,7 +192,7 @@ class Base64 {
 
         byte [] input = s.getBytes();
         byte [] output = new byte [((s.length() / 4) * 3) - padding];
-        
+
         int outputIndex = 0;
 
         for (int i = 0; i < input.length; i += 4) {
@@ -202,9 +202,9 @@ class Base64 {
                 _map.indexOf(input[i + 1]) << 12 |
                 _map.indexOf(input[i + 2]) << 6  |
                 _map.indexOf(input[i + 3]);
-            
+
             output[outputIndex++] = (byte) ((e >> 16) & 0xFF);
-            
+
             if (input[i + 2] != '=') {
                 output[outputIndex++] = (byte) ((e >> 8)  & 0xFF);
 

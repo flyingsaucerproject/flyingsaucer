@@ -1,6 +1,6 @@
 <project name="build.clean">
     <target name="clean-for-core-debug" depends="clean,resources.core"/>
-    
+
     <!-- cleans all javadoc/api files -->
     <target name="clean.javadoc" description="Clean project javadoc files" depends="properties">
         <delete dir="${dest.javadoc.full.dir}"/>

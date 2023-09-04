@@ -27,13 +27,13 @@ public class FormFieldState {
     private String _value;
     private boolean _checked;
     private int [] _selected;
-    
+
     private FormFieldState() {
         _value = "";
         _checked = false;
         _selected = null;
     }
-    
+
     public String getValue() {
         return _value;
     }
@@ -45,32 +45,32 @@ public class FormFieldState {
     public int[] getSelectedIndices() {
         return ArrayUtil.cloneOrEmpty(_selected);
     }
-    
+
     public static FormFieldState fromString(String s) {
         FormFieldState stateObject = new FormFieldState();
-        
+
         stateObject._value = s;
 
         return stateObject;
     }
-    
+
     public static FormFieldState fromBoolean(boolean b) {
         FormFieldState stateObject = new FormFieldState();
-        
+
         stateObject._checked = b;
-        
+
         return stateObject;
     }
-    
+
     public static FormFieldState fromList(List list) {
         FormFieldState stateObject = new FormFieldState();
-        
+
         int [] indices = new int [list.size()];
-        
+
         for (int i = 0; i < list.size(); i++) {
             indices[i] = ((Integer) list.get(i)).intValue();
         }
-        
+
         stateObject._selected = indices;
 
         return stateObject;

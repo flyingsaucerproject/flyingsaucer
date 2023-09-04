@@ -324,7 +324,7 @@ public class BrowserMenuBar extends JMenuBar {
                    } else {
                        super.linkClicked(panel, uri);
                    }
-               } 
+               }
             });
         }
     }

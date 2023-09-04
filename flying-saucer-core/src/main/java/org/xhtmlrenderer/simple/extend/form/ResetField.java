@@ -35,7 +35,7 @@ class ResetField extends AbstractButtonField {
     public ResetField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
-    
+
     public JComponent create() {
         JButton button = new JButton();
 
@@ -52,25 +52,25 @@ class ResetField extends AbstractButtonField {
         applyComponentStyle(button);
 
         button.setText(value);
-        
+
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 XRLog.layout("Reset pressed: Restore");
-                
+
                 getParentForm().reset();
             }
         });
 
         return button;
     }
-    
+
     public boolean includeInSubmission(JComponent source) {
         return false;
     }
 
     protected String[] getFieldValues() {
         return new String[] {
-                hasAttribute("value") ? getAttribute("value") : "Reset" // TODO: Don't hardcode 
+                hasAttribute("value") ? getAttribute("value") : "Reset" // TODO: Don't hardcode
         };
     }
 }

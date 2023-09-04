@@ -21,7 +21,7 @@ package org.xhtmlrenderer.render;
 
 public interface FSFontMetrics {
     public float getAscent();
-    
+
     /**
      * In keeping with the JDK {@link java.awt.font.LineMetrics} convention, this number is
      * positive for values below the baseline.
@@ -29,12 +29,12 @@ public interface FSFontMetrics {
     public float getDescent();
     public float getStrikethroughOffset();
     public float getStrikethroughThickness();
-    
+
     /**
      * In keeping with the JDK {@link java.awt.font.LineMetrics} convention, this number is
      * positive for values below the baseline.
      */
     public float getUnderlineOffset();
-    
+
     public float getUnderlineThickness();
 }

@@ -81,9 +81,9 @@ import org.xhtmlrenderer.util.XRLog;
  * href="#install(org.xhtmlrenderer.simple.XHTMLPanel)">install</a>. See also:
  * /demos/samples/src/SelectionHighlighterTest.java
  * </p>
- * 
+ *
  * With thanks to Swing's <code>DefaultCaret</code>
- * 
+ *
  * @author Nick Reddel
  */
 public class SelectionHighlighter implements MouseMotionListener, MouseListener {
@@ -262,7 +262,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     /**
      * Adjusts the focus, if necessary.
-     * 
+     *
      * @param inWindow
      *            if true indicates requestFocusInWindow should be used
      */
@@ -816,7 +816,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
         /**
          * The operation to perform when this action is triggered.
-         * 
+         *
          * @param e
          *            the action event
          */

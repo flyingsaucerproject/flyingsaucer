@@ -29,11 +29,11 @@ package org.xhtmlrenderer.newtable;
  */
 public class ColumnData {
     private int _span = 1;
-    
+
     public int getSpan() {
         return _span;
     }
-    
+
     public void setSpan(int span) {
         _span = span;
     }

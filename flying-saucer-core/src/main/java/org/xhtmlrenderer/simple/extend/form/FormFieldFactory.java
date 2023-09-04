@@ -34,7 +34,7 @@ public class FormFieldFactory {
         Element e = box.getElement();
 
         if (e.getNodeName().equals("input")) {
-            typeKey = e.getAttribute("type");  
+            typeKey = e.getAttribute("type");
         } else if (e.getNodeName().equals("textarea")) {
             typeKey = "textarea";
         } else if (e.getNodeName().equals("select")) {

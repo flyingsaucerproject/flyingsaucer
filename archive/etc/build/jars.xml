@@ -55,7 +55,7 @@
             </fileset>
         </jar>
     </target>
-    
+
     <!-- Compiles SVG sample and main codebase, and builds jar for browser -->
     <target name="jar.svg" depends="compile.svg, jar.core" description="build SVG jar">
         <jar jarfile="${dest.dir}/svg.jar" compress="true"

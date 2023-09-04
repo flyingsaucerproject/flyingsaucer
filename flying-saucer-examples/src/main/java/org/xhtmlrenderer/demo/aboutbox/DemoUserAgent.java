@@ -110,7 +110,7 @@ public class DemoUserAgent implements UserAgentCallback {
         if (ir == null) ir = new ImageResource(uri, null);
         return ir;
     }
-    
+
     public byte[] getBinaryResource(String uri) {
         InputStream is = null;
         try {
@@ -125,7 +125,7 @@ public class DemoUserAgent implements UserAgentCallback {
             }
             is.close();
             is = null;
-            
+
             return result.toByteArray();
         } catch (IOException e) {
             return null;
@@ -138,7 +138,7 @@ public class DemoUserAgent implements UserAgentCallback {
                 }
             }
         }
-    }    
+    }
 
     public XMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);

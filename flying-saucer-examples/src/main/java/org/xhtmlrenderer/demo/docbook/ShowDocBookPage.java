@@ -26,15 +26,15 @@ import org.xhtmlrenderer.util.XRLog;
  */
 public class ShowDocBookPage {
     public JFrame frame;
-    
+
     private static class ResourceLoadingUserAgent extends NaiveUserAgent {
         protected InputStream resolveAndOpenStream(String uri) {
-        	InputStream result = super.resolveAndOpenStream(uri);
-        	if (result == null && uri != null && uri.startsWith("file:")) {
-        		return ShowDocBookPage.class.getResourceAsStream(uri.substring("file:".length()));
-        	} else {
-        		return result;
-        	}
+            InputStream result = super.resolveAndOpenStream(uri);
+            if (result == null && uri != null && uri.startsWith("file:")) {
+                return ShowDocBookPage.class.getResourceAsStream(uri.substring("file:".length()));
+            } else {
+                return result;
+            }
         }
     }
 

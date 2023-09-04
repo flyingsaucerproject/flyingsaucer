@@ -29,27 +29,27 @@ import org.xhtmlrenderer.render.RenderingContext;
 
 public class TableSectionBox extends BlockBox {
     private List _grid = new ArrayList();
-    
+
     private boolean _needCellWidthCalc;
     private boolean _needCellRecalc;
-    
+
     private boolean _footer;
     private boolean _header;
-    
+
     private boolean _capturedOriginalAbsY;
     private int _originalAbsY;
-    
+
     public TableSectionBox() {
     }
-    
+
     public BlockBox copyOf() {
         TableSectionBox result = new TableSectionBox();
         result.setStyle(getStyle());
         result.setElement(getElement());
-        
+
         return result;
     }
-    
+
     public List getGrid() {
         return _grid;
     }
@@ -57,21 +57,21 @@ public class TableSectionBox extends BlockBox {
     public void setGrid(List grid) {
         _grid = grid;
     }
-    
+
     public void extendGridToColumnCount(int columnCount) {
         for (Iterator i = _grid.iterator(); i.hasNext(); ) {
             RowData row = (RowData)i.next();
             row.extendToColumnCount(columnCount);
         }
     }
-    
+
     public void splitColumn(int pos) {
         for (Iterator i = _grid.iterator(); i.hasNext(); ) {
             RowData row = (RowData)i.next();
             row.splitColumn(pos);
         }
     }
-    
+
     public void recalcCells(LayoutContext c) {
         int cRow = 0;
         _grid.clear();
@@ -85,7 +85,7 @@ public class TableSectionBox extends BlockBox {
             }
         }
     }
-    
+
     public void calcBorders(LayoutContext c) {
         ensureChildren(c);
         for (Iterator i = getChildIterator(); i.hasNext(); ) {
@@ -97,22 +97,22 @@ public class TableSectionBox extends BlockBox {
             }
         }
     }
-    
+
     public TableCellBox cellAt(int row, int col) {
         if (row >= _grid.size()) return null;
         RowData rowData = (RowData)_grid.get(row);
         if (col >= rowData.getRow().size()) return null;
         return (TableCellBox)rowData.getRow().get(col);
     }
-    
+
     private void setCellAt(int row, int col, TableCellBox cell) {
         ((RowData)_grid.get(row)).getRow().set(col, cell);
     }
-    
+
     private void ensureRows(int numRows) {
         int nRows = _grid.size();
         int nCols = getTable().numEffCols();
-        
+
         while (nRows < numRows) {
             RowData row = new RowData();
             row.extendToColumnCount(nCols);
@@ -120,39 +120,39 @@ public class TableSectionBox extends BlockBox {
             nRows++;
         }
     }
-    
+
     private TableBox getTable() {
         return (TableBox)getParent();
     }
-    
+
     protected void layoutChildren(LayoutContext c, int contentStart) {
         if (isNeedCellRecalc()) {
             recalcCells(c);
             setNeedCellRecalc(false);
         }
-        
+
         if (isNeedCellWidthCalc()) {
             setCellWidths(c);
             setNeedCellWidthCalc(false);
         }
-        
+
         super.layoutChildren(c, contentStart);
     }
-    
+
     private void addCell(TableRowBox row, TableCellBox cell, int cRow) {
         int rSpan = cell.getStyle().getRowSpan();
         int cSpan = cell.getStyle().getColSpan();
-        
+
         List columns = getTable().getColumns();
         int nCols = columns.size();
         int cCol = 0;
-        
+
         ensureRows(cRow + rSpan);
-        
+
         while ( cCol < nCols && cellAt(cRow, cCol) != null) {
             cCol++;
         }
-        
+
         int col = cCol;
         TableCellBox set = cell;
         while (cSpan > 0) {
@@ -166,7 +166,7 @@ public class TableSectionBox extends BlockBox {
             }
             cData = (ColumnData)columns.get(cCol);
             currentSpan = cData.getSpan();
-            
+
             int r = 0;
             while (r < rSpan) {
                 if (cellAt(cRow + r, cCol) == null) {
@@ -178,11 +178,11 @@ public class TableSectionBox extends BlockBox {
             cSpan -= currentSpan;
             set = TableCellBox.SPANNING_CELL;
         }
-        
+
         cell.setRow(cRow);
         cell.setCol(getTable().effColToCol(col));
     }
-    
+
     public void reset(LayoutContext c) {
         super.reset(c);
         _grid.clear();
@@ -190,57 +190,57 @@ public class TableSectionBox extends BlockBox {
         setNeedCellRecalc(true);
         setCapturedOriginalAbsY(false);
     }
-    
+
     void setCellWidths(LayoutContext c)
     {
         int[] columnPos = getTable().getColumnPos();
-        
+
         for (Iterator i = _grid.iterator(); i.hasNext(); ) {
             RowData row = (RowData)i.next();
             List cols = row.getRow();
             int hspacing = getTable().getStyle().getBorderHSpacing(c);
             for (int j = 0; j < cols.size(); j++) {
                 TableCellBox cell = (TableCellBox)cols.get(j);
-                
+
                 if (cell == null || cell == TableCellBox.SPANNING_CELL) {
                     continue;
                 }
-                
+
                 int endCol = j;
                 int cspan = cell.getStyle().getColSpan();
                 while (cspan > 0 && endCol < cols.size()) {
                     cspan -= getTable().spanOfEffCol(endCol);
                     endCol++;
                 }
-                
+
                 int w = columnPos[endCol] - columnPos[j] - hspacing;
                 cell.setLayoutWidth(c, w);
                 cell.setX(columnPos[j] + hspacing);
             }
         }
     }
-    
+
     public boolean isAutoHeight() {
         // FIXME Should properly handle absolute heights (%s resolve to auto)
         return true;
     }
-    
-    public int numRows() { 
-        return _grid.size(); 
+
+    public int numRows() {
+        return _grid.size();
     }
-    
+
     protected boolean isSkipWhenCollapsingMargins() {
         return true;
     }
-    
+
     public void paintBorder(RenderingContext c) {
         // row groups never have borders
     }
-    
+
     public void paintBackground(RenderingContext c) {
         // painted at the cell level
     }
-    
+
     public TableRowBox getLastRow() {
         if (getChildCount() > 0) {
             return (TableRowBox)getChild(getChildCount()-1);
@@ -264,16 +264,16 @@ public class TableSectionBox extends BlockBox {
     private void setNeedCellRecalc(boolean needCellRecalc) {
         _needCellRecalc = needCellRecalc;
     }
-    
+
     public void layout(LayoutContext c, int contentStart) {
         boolean running = c.isPrint() && (isHeader() || isFooter()) && getTable().getStyle().isPaginateTable();
-        
+
         if (running) {
             c.setNoPageBreak(c.getNoPageBreak()+1);
         }
-        
+
         super.layout(c, contentStart);
-        
+
         if (running) {
             c.setNoPageBreak(c.getNoPageBreak()-1);
         }

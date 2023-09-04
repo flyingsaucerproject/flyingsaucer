@@ -40,9 +40,9 @@ import org.xhtmlrenderer.css.parser.FSRGBColor;
 
 /**
  * Implementation of {@link OutputDevice} for SWT.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTOutputDevice extends AbstractOutputDevice {
 
@@ -146,7 +146,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
             }
             drawLine(x, y + h - offset, x + w - adj, y + h - offset);
         }*/
-    	draw(bounds);
+        draw(bounds);
     }
 
     public void drawImage(FSImage image, int x, int y) {
@@ -181,12 +181,12 @@ public class SWTOutputDevice extends AbstractOutputDevice {
 
 
 
-	public void draw(Shape s) {
+    public void draw(Shape s) {
         Path p = convertToPath(s);
         _gc.drawPath(p);
         p.dispose();
-	}
-	
+    }
+
     public void fill(Shape s) {
         Path p = convertToPath(s);
         _gc.fillPath(p);
@@ -353,7 +353,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
 
     /**
      * Convert an AWT Shape to an SWT Path.
-     * 
+     *
      * @param shape
      * @return the SWT Path or <code>null</code> if <code>shape == null</code>
      */

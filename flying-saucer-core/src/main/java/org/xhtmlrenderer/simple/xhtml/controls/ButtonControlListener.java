@@ -21,13 +21,13 @@ package org.xhtmlrenderer.simple.xhtml.controls;
 
 /**
  * Listener for the button control
- * 
+ *
  * @author Vianney le Clément
  */
 public interface ButtonControlListener {
     /**
      * The button has been pressed.
-     * 
+     *
      * @param button
      * @return <code>true</code> if the following listeners should be notified
      *         and/or the action (submit or reset) of the button should be

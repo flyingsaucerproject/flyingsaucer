@@ -33,14 +33,14 @@ public abstract class InputField extends FormField {
     }
 
     public abstract JComponent create();
-    
+
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromString(getAttribute("value"));
     }
 
     protected String[] getFieldValues() {
         return new String [] {
-                hasAttribute("value") ? getAttribute("value") : "" 
+                hasAttribute("value") ? getAttribute("value") : ""
         };
     }
 }

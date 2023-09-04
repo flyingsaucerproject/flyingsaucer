@@ -71,7 +71,7 @@ public class PropertyDeclaration {
      * Description of the Field
      */
     private boolean identIsSet;
-    
+
     private String _fingerprint;
 
     /**
@@ -153,10 +153,10 @@ public class PropertyDeclaration {
     public String getDeclarationStandardText() {
         return cssName + ": " + cssPrimitiveValue.getCssText() + ";";
     }
-    
+
     public String getFingerprint() {
         if (_fingerprint == null) {
-            _fingerprint = 'P' + cssName.FS_ID + ':' + ((PropertyValue)cssPrimitiveValue).getFingerprint() + ';';    
+            _fingerprint = 'P' + cssName.FS_ID + ':' + ((PropertyValue)cssPrimitiveValue).getFingerprint() + ';';
         }
         return _fingerprint;
     }
@@ -221,11 +221,11 @@ public class PropertyDeclaration {
     public org.w3c.dom.css.CSSPrimitiveValue getValue() {
         return cssPrimitiveValue;
     }
-    
+
     public boolean isImportant() {
         return important;
     }
-    
+
     public int getOrigin() {
         return origin;
     }

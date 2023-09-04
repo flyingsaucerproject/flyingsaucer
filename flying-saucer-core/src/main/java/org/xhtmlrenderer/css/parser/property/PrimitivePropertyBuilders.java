@@ -207,12 +207,12 @@ public class PrimitivePropertyBuilders {
                     new PropertyDeclaration(cssName, value, important, origin));
         }
     }
-    
+
     private static class GenericBorderCornerRadius extends AbstractPropertyBuilder  {
-    	public List buildDeclarations(CSSName cssName, List values, int origin,
+        public List buildDeclarations(CSSName cssName, List values, int origin,
                 boolean important, boolean inheritAllowed) {
             checkValueCount(cssName, 1, 2, values.size());
-            
+
             PropertyValue first = (PropertyValue)values.get(0);
             PropertyValue second = null;
             if (values.size() == 2) {
@@ -567,7 +567,7 @@ public class PrimitivePropertyBuilders {
                 } else if (((PropertyValue)second).getFloatValue() < 0.0f) {
                     throw new CSSParseException(cssName + " values cannot be negative", -1);
                 }
-                
+
                 return createTwoValueResponse(CSSName.BACKGROUND_SIZE, first, second, origin, important);
             }
         }
@@ -762,16 +762,16 @@ public class PrimitivePropertyBuilders {
 
     public static class BorderLeftWidth extends GenericBorderWidth {
     }
-    
+
     public static class BorderTopLeftRadius extends GenericBorderCornerRadius {
     }
-    
+
     public static class BorderTopRightRadius extends GenericBorderCornerRadius {
     }
-    
+
     public static class BorderBottomRightRadius extends GenericBorderCornerRadius {
     }
-    
+
     public static class BorderBottomLeftRadius extends GenericBorderCornerRadius {
     }
 
@@ -1529,7 +1529,7 @@ public class PrimitivePropertyBuilders {
             return ALLOWED;
         }
     }
-    
+
     public static class Hyphens extends SingleIdent {
         // none | manual | auto
         private static final BitSet ALLOWED = setFor(
@@ -1590,7 +1590,7 @@ public class PrimitivePropertyBuilders {
                     new PropertyDeclaration(cssName, value, important, origin));
         }
     }
-    
+
 
     private static List createTwoValueResponse(CSSName cssName, CSSPrimitiveValue value1, CSSPrimitiveValue value2,
             int origin, boolean important) {

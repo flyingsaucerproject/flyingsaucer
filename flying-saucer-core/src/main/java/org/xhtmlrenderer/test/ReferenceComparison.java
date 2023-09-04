@@ -13,7 +13,7 @@ import java.util.Map;
 
 
 /**
- * ReferenceComparison runs a comparison of rendering a set of source XHTML files against a 
+ * ReferenceComparison runs a comparison of rendering a set of source XHTML files against a
  */
 public class ReferenceComparison {
     private int width;

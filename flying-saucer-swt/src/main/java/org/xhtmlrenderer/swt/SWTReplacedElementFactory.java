@@ -36,9 +36,9 @@ import org.xhtmlrenderer.simple.extend.DefaultFormSubmissionListener;
 import org.xhtmlrenderer.util.ImageUtil;
 
 /**
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTReplacedElementFactory implements ReplacedElementFactory {
     /**
@@ -70,7 +70,7 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
         if (c.getNamespaceHandler().isImageElement(e)) {
             return replaceImage(uac, c, e, cssWidth, cssHeight);
         }
-        
+
         return null;
     }
 
@@ -80,7 +80,7 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
      * automatically scaled to cssWidth and cssHeight assuming these are
      * non-zero positive values. The element is assume to have a src attribute
      * (e.g. it's an &lt;img&gt; element)
-     * 
+     *
      * @param uac Used to retrieve images on demand from some source.
      * @param context
      * @param elem The element with the image reference
@@ -92,7 +92,7 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
             LayoutContext context, Element elem, int cssWidth, int cssHeight) {
         ReplacedElement re = null;
         String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
-        
+
         if (imageSrc == null || imageSrc.length() == 0) {
             XRLog.layout(Level.WARNING, "No source provided for img element.");
             re = new ImageReplacedElement(new SWTFSImage(), cssWidth, cssHeight);
@@ -123,7 +123,7 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Adds a ReplacedElement containing an image to a cache of images for quick
      * lookup.
-     * 
+     *
      * @param e The element under which the image is keyed.
      * @param cc The replaced element containing the image, or another
      *            ReplacedElement to be used in its place (like a placeholder if
@@ -139,7 +139,7 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Retrieves a ReplacedElement for an image from cache, or null if not
      * found.
-     * 
+     *
      * @param e The element by which the image is keyed
      * @return The ReplacedElement for the image, or null if there is none.
      */

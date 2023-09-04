@@ -94,7 +94,7 @@ public class ITextRenderer {
 
     private Integer _pdfXConformance;
 
-	private PDFCreationListener _listener;
+    private PDFCreationListener _listener;
 
     private boolean _timeouted;
 
@@ -212,14 +212,14 @@ public class ITextRenderer {
     public char getPDFVersion() {
         return _pdfVersion == null ? '0' : _pdfVersion.charValue();
     }
-	
-	public void setPDFXConformance(int pdfXConformance){
-		_pdfXConformance = new Integer(pdfXConformance);
-	}
-	
-	public int getPDFXConformance(){
+
+    public void setPDFXConformance(int pdfXConformance){
+        _pdfXConformance = new Integer(pdfXConformance);
+    }
+
+    public int getPDFXConformance(){
         return _pdfXConformance == null ? '0' : _pdfXConformance.intValue();
-	}
+    }
 
 
     public void layout() {
@@ -315,10 +315,10 @@ public class ITextRenderer {
         if (_pdfVersion != null) {
             writer.setPdfVersion(_pdfVersion.charValue());
         }
-		
-		if (_pdfXConformance != null) {
-			writer.setPDFXConformance(_pdfXConformance.intValue());
-		}
+
+        if (_pdfXConformance != null) {
+            writer.setPDFXConformance(_pdfXConformance.intValue());
+        }
 
         if (_pdfEncryption != null) {
             writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),

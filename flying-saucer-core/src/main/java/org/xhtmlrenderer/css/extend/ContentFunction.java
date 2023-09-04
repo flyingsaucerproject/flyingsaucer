@@ -35,15 +35,15 @@ public interface ContentFunction {
      * {@link #calculate(RenderingContext, String, TextContent)} will be called.
      */
     public boolean isStatic();
-    
+
     public String calculate(LayoutContext c, FSFunction function);
     public String calculate(RenderingContext c, FSFunction function, InlineText text);
-    
+
     /**
      * If a function value can change at render time (i.e. {@link #isStatic()} returns false)
      * use this text as an approximation at layout.
      */
     public String getLayoutReplacementText();
-    
+
     public boolean canHandle(LayoutContext c, FSFunction function);
 }

@@ -34,14 +34,14 @@ import com.itextpdf.text.pdf.BaseFont;
 
 public class ITextTextRenderer implements TextRenderer {
     private static float TEXT_MEASURING_DELTA = 0.01f;
-    
+
     public void setup(FontContext context) {
     }
 
     public void drawString(OutputDevice outputDevice, String string, float x, float y) {
         ((ITextOutputDevice)outputDevice).drawString(string, x, y, null);
     }
-    
+
     public void drawString(
             OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
         ((ITextOutputDevice)outputDevice).drawString(string, x, y, info);
@@ -54,17 +54,17 @@ public class ITextTextRenderer implements TextRenderer {
         ITextFSFontMetrics result = new ITextFSFontMetrics();
         result.setAscent(bf.getFontDescriptor(BaseFont.BBOXURY, size));
         result.setDescent(-bf.getFontDescriptor(BaseFont.BBOXLLY, size));
-        
+
         result.setStrikethroughOffset(-descr.getYStrikeoutPosition() / 1000f * size);
         if (descr.getYStrikeoutSize() != 0) {
             result.setStrikethroughThickness(descr.getYStrikeoutSize() / 1000f * size);
         } else {
             result.setStrikethroughThickness(size / 12.0f);
         }
-        
+
         result.setUnderlineOffset(-descr.getUnderlinePosition() / 1000f * size);
         result.setUnderlineThickness(descr.getUnderlineThickness() / 1000f * size);
-        
+
         return result;
     }
 
@@ -74,7 +74,7 @@ public class ITextTextRenderer implements TextRenderer {
         if (result - Math.floor(result) < TEXT_MEASURING_DELTA) {
             return (int)result;
         } else {
-            return (int)Math.ceil(result); 
+            return (int)Math.ceil(result);
         }
     }
 

@@ -33,17 +33,17 @@ import java.util.List;
  */
 public class RowData {
     private List _row = new ArrayList();
-    
+
     public List getRow() {
         return _row;
     }
-    
+
     public void extendToColumnCount(int columnCount) {
         while (_row.size() < columnCount) {
             _row.add(null);
         }
     }
-    
+
     public void splitColumn(int pos) {
         TableCellBox current = (TableCellBox)_row.get(pos);
         _row.add(pos+1, current == null ? null : TableCellBox.SPANNING_CELL);

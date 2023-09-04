@@ -23,7 +23,7 @@ import org.xhtmlrenderer.newtable.CollapsedBorderValue;
  */
 public class BorderPropertySet extends RectPropertySet {
     public static final BorderPropertySet EMPTY_BORDER = new BorderPropertySet(0.0f, 0.0f, 0.0f, 0.0f);
-    
+
     private IdentValue _topStyle;
     private IdentValue _rightStyle;
     private IdentValue _bottomStyle;
@@ -50,7 +50,7 @@ public class BorderPropertySet extends RectPropertySet {
         this._rightColor = border.rightColor();
         this._bottomColor = border.bottomColor();
         this._leftColor = border.leftColor();
-        
+
         this._topLeft = border._topLeft;
         this._topRight = border._topRight;
         this._bottomLeft = border._bottomLeft;
@@ -70,7 +70,7 @@ public class BorderPropertySet extends RectPropertySet {
         this._right = right;
         this._bottom = bottom;
         this._left = left;
-        
+
         this._topLeft = topLeftCorner;
         this._topRight = topRightCorner;
         this._bottomLeft = bottomLeftCorner;
@@ -87,13 +87,13 @@ public class BorderPropertySet extends RectPropertySet {
         this._right = right;
         this._bottom = bottom;
         this._left = left;
-        
+
         this._topLeft = new BorderRadiusCorner();
         this._topRight = new BorderRadiusCorner();
         this._bottomLeft = new BorderRadiusCorner();
         this._bottomRight = new BorderRadiusCorner();
     }
-    
+
     public BorderPropertySet(
            CollapsedBorderValue top,
            CollapsedBorderValue right,
@@ -104,7 +104,7 @@ public class BorderPropertySet extends RectPropertySet {
                 right.width(),
                 bottom.width(),
                 left.width());
-        
+
         this._topStyle = top.style();
         this._rightStyle = right.style();
         this._bottomStyle = bottom.style();
@@ -113,12 +113,12 @@ public class BorderPropertySet extends RectPropertySet {
         this._topColor = top.color();
         this._rightColor = right.color();
         this._bottomColor = bottom.color();
-        this._leftColor = left.color();       
-        
+        this._leftColor = left.color();
+
         this._topLeft = new BorderRadiusCorner();
         this._topRight = new BorderRadiusCorner();
         this._bottomLeft = new BorderRadiusCorner();
-        this._bottomRight = new BorderRadiusCorner(); 
+        this._bottomRight = new BorderRadiusCorner();
     }
 
     private BorderPropertySet(
@@ -126,11 +126,11 @@ public class BorderPropertySet extends RectPropertySet {
             CssContext ctx
     ) {
         _top = ( style.isIdent(CSSName.BORDER_TOP_STYLE, IdentValue.NONE) ||
-                 style.isIdent(CSSName.BORDER_TOP_STYLE, IdentValue.HIDDEN)  
+                 style.isIdent(CSSName.BORDER_TOP_STYLE, IdentValue.HIDDEN)
                 ?
             0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_TOP_WIDTH, 0, ctx));
-        _right = ( style.isIdent(CSSName.BORDER_RIGHT_STYLE, IdentValue.NONE) || 
-                   style.isIdent(CSSName.BORDER_RIGHT_STYLE, IdentValue.HIDDEN) 
+        _right = ( style.isIdent(CSSName.BORDER_RIGHT_STYLE, IdentValue.NONE) ||
+                   style.isIdent(CSSName.BORDER_RIGHT_STYLE, IdentValue.HIDDEN)
                   ?
             0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_RIGHT_WIDTH, 0, ctx));
         _bottom = ( style.isIdent(CSSName.BORDER_BOTTOM_STYLE, IdentValue.NONE) ||
@@ -141,7 +141,7 @@ public class BorderPropertySet extends RectPropertySet {
                   style.isIdent(CSSName.BORDER_LEFT_STYLE, IdentValue.HIDDEN)
                  ?
             0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_LEFT_WIDTH, 0, ctx));
-        
+
         _topColor = style.asColor(CSSName.BORDER_TOP_COLOR);
         _rightColor = style.asColor(CSSName.BORDER_RIGHT_COLOR);
         _bottomColor = style.asColor(CSSName.BORDER_BOTTOM_COLOR);
@@ -251,16 +251,16 @@ public class BorderPropertySet extends RectPropertySet {
     public FSColor leftColor() {
         return _leftColor;
     }
-    
+
     public boolean hasHidden() {
         return _topStyle == IdentValue.HIDDEN || _rightStyle == IdentValue.HIDDEN ||
                     _bottomStyle == IdentValue.HIDDEN || _leftStyle == IdentValue.HIDDEN;
-    }    
-    
+    }
+
     public boolean hasBorderRadius() {
         return getTopLeft().hasRadius() || getTopRight().hasRadius() || getBottomLeft().hasRadius() || getBottomRight().hasRadius();
     }
-    
+
     public BorderRadiusCorner getBottomRight() {
         return _bottomRight;
     }
@@ -292,10 +292,10 @@ public class BorderPropertySet extends RectPropertySet {
     public void setTopLeft(BorderRadiusCorner topLeft) {
         this._topLeft = topLeft;
     }
-    
+
     public BorderPropertySet normalizedInstance(Rectangle bounds) {
         float factor = 1;
-        
+
         // top
         factor = Math.min(factor, bounds.width / getSideWidth(_topLeft, _topRight, bounds.width));
         // bottom
@@ -304,23 +304,23 @@ public class BorderPropertySet extends RectPropertySet {
         factor = Math.min(factor, bounds.height / getSideWidth(_topRight, _bottomRight, bounds.height));
         // left
         factor = Math.min(factor, bounds.height / getSideWidth(_bottomLeft, _bottomRight, bounds.height));
-        
-        BorderPropertySet newPropSet = new BorderPropertySet(_top, _right, _bottom, _left, 
-                new BorderRadiusCorner(factor*_topLeft.getMaxLeft(bounds.height), factor*_topLeft.getMaxRight(bounds.width)), 
-                new BorderRadiusCorner(factor*_topRight.getMaxLeft(bounds.width), factor*_topRight.getMaxRight(bounds.height)), 
-                new BorderRadiusCorner(factor*_bottomRight.getMaxLeft(bounds.height), factor*_bottomRight.getMaxRight(bounds.width)), 
+
+        BorderPropertySet newPropSet = new BorderPropertySet(_top, _right, _bottom, _left,
+                new BorderRadiusCorner(factor*_topLeft.getMaxLeft(bounds.height), factor*_topLeft.getMaxRight(bounds.width)),
+                new BorderRadiusCorner(factor*_topRight.getMaxLeft(bounds.width), factor*_topRight.getMaxRight(bounds.height)),
+                new BorderRadiusCorner(factor*_bottomRight.getMaxLeft(bounds.height), factor*_bottomRight.getMaxRight(bounds.width)),
                 new BorderRadiusCorner(factor*_bottomLeft.getMaxLeft(bounds.width), factor*_bottomLeft.getMaxRight(bounds.height)));
-        
+
         newPropSet._topColor = _topColor;
         newPropSet._rightColor = _rightColor;
         newPropSet._bottomColor = _bottomColor;
         newPropSet._leftColor = _leftColor;
-        
+
         newPropSet._topStyle = _topStyle;
         newPropSet._rightStyle = _rightStyle;
         newPropSet._bottomStyle = _bottomStyle;
         newPropSet._leftStyle = _leftStyle;
-        
+
         return newPropSet;
     }
 

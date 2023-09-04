@@ -2,7 +2,7 @@
     <!--
     DONT USE THIS FROM COMMAND LINE; use docs
     builds JavaDoc for all code. Meant to be used with antcall; set parameters
-    for properties antcall.dest.javadoc.dir and antcall.javadoc.file 
+    for properties antcall.dest.javadoc.dir and antcall.javadoc.file
     -->
     <target name="_javadoc"
             description="internal use; use 'docs' instead. builds javadoc for all XR packages"

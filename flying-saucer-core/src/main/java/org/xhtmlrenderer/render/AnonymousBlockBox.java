@@ -38,7 +38,7 @@ import org.xhtmlrenderer.layout.Styleable;
  */
 public class AnonymousBlockBox extends BlockBox {
     private List _openInlineBoxes;
-    
+
     public AnonymousBlockBox(Element element) {
         setElement(element);
     }
@@ -50,7 +50,7 @@ public class AnonymousBlockBox extends BlockBox {
     public int getContentWidth() {
         return getContainingBlock().getContentWidth();
     }
-    
+
     public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         Box result = super.find(cssCtx, absX, absY, findAnonymous);
         if (! findAnonymous && result == this) {
@@ -67,7 +67,7 @@ public class AnonymousBlockBox extends BlockBox {
     public void setOpenInlineBoxes(List openInlineBoxes) {
         _openInlineBoxes = openInlineBoxes;
     }
-    
+
     public boolean isSkipWhenCollapsingMargins() {
         // An anonymous block will already have its children provided to it
         for (Iterator i = getInlineContent().iterator(); i.hasNext(); ) {
@@ -79,7 +79,7 @@ public class AnonymousBlockBox extends BlockBox {
         }
         return true;
     }
-    
+
     public void provideSiblingMarginToFloats(int margin) {
         for (Iterator i = getInlineContent().iterator(); i.hasNext(); ) {
             Styleable styleable = (Styleable)i.next();
@@ -91,15 +91,15 @@ public class AnonymousBlockBox extends BlockBox {
             }
         }
     }
-    
+
     public boolean isMayCollapseMarginsWithChildren() {
         return false;
     }
-    
+
     public void styleText(LayoutContext c) {
         styleText(c, getParent().getStyle());
-    } 
-    
+    }
+
     public BlockBox copyOf() {
         throw new IllegalArgumentException("cannot be copied");
     }

@@ -307,11 +307,11 @@ public class Configuration {
             } else {
                 InputStream in = null;
                 try {
-					URL url = new URL(uri);
-					in = new BufferedInputStream(url.openStream());
-					info("Found config override URI " + uri);
-					temp.load(in);
-				} catch (MalformedURLException e) {
+                    URL url = new URL(uri);
+                    in = new BufferedInputStream(url.openStream());
+                    info("Found config override URI " + uri);
+                    temp.load(in);
+                } catch (MalformedURLException e) {
                     warning("URI for override properties is malformed, skipping: " + uri);
                     return;
                 } catch (IOException e) {
@@ -468,11 +468,11 @@ public class Configuration {
         return val;
     }
 
-	public static boolean hasValue(String key) {
+    public static boolean hasValue(String key) {
         Configuration conf = instance();
         String val = conf.properties.getProperty(key);
         return val != null;
-	}
+    }
 
     /**
      * Returns the value for key in the Configuration as a byte, or the default

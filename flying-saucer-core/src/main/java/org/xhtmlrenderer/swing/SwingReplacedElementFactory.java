@@ -140,7 +140,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     protected ReplacedElement replaceImage(UserAgentCallback uac, LayoutContext context, Element elem, int cssWidth, int cssHeight) {
         ReplacedElement re = null;
         String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
-        
+
         if (imageSrc == null || imageSrc.length() == 0) {
             XRLog.layout(Level.WARNING, "No source provided for img element.");
             re = newIrreplaceableImageElement(cssWidth, cssHeight);

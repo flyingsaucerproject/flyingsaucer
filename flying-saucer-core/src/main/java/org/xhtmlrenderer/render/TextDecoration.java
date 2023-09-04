@@ -25,23 +25,23 @@ public class TextDecoration {
     private IdentValue _identValue;
     private int _offset;
     private int _thickness;
-    
+
     public TextDecoration(IdentValue identValue) {
         _identValue = identValue;
     }
-    
+
     public int getOffset() {
         return _offset;
     }
-    
+
     public void setOffset(int offset) {
         _offset = offset;
     }
-    
+
     public int getThickness() {
         return _thickness;
     }
-    
+
     public void setThickness(int thickness) {
         if (thickness == 0) {
             _thickness = 1;
@@ -49,7 +49,7 @@ public class TextDecoration {
             _thickness = thickness;
         }
     }
-    
+
     public IdentValue getIdentValue() {
         return _identValue;
     }

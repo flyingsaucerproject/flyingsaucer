@@ -30,23 +30,23 @@ public class PageRule implements RulesetContainer {
     private String _pseudoPage;
     private Ruleset _ruleset;
     private int _origin;
-    
+
     private Map _marginBoxes = new HashMap();
-    
+
     private int _pos;
-    
+
     private int _specificityF;
     private int _specificityG;
     private int _specificityH;
-    
+
     public PageRule(int origin) {
         _origin = origin;
     }
-    
+
     public String getPseudoPage() {
         return _pseudoPage;
     }
-    
+
     public void setPseudoPage(String pseudoPage) {
         _pseudoPage = pseudoPage;
         if (pseudoPage.equals("first")) {
@@ -55,15 +55,15 @@ public class PageRule implements RulesetContainer {
             _specificityH = 1;
         }
     }
-    
+
     public Ruleset getRuleset() {
         return _ruleset;
     }
-    
+
     public void setRuleset(Ruleset ruleset) {
         _ruleset = ruleset;
     }
-    
+
     public void addContent(Ruleset ruleset) {
         if (_ruleset != null) {
             throw new IllegalStateException("Ruleset has already been set");
@@ -87,35 +87,35 @@ public class PageRule implements RulesetContainer {
         _name = name;
         _specificityF = 1;
     }
-    
+
     public List getMarginBoxProperties(MarginBoxName name) {
         return (List)_marginBoxes.get(name);
     }
-    
+
     public void addMarginBoxProperties(MarginBoxName name, List props) {
         _marginBoxes.put(name, props);
     }
-    
+
     public Map getMarginBoxes() {
         return _marginBoxes;
     }
-    
+
     public long getOrder() {
         long result = 0;
-        
+
         result |= (long)_specificityF << 32;
         result |= (long)_specificityG << 24;
         result |= (long)_specificityH << 16;
         result |= _pos;
-        
+
         return result;
     }
-    
+
     public boolean applies(String pageName, String pseudoPage) {
         if (_name == null && _pseudoPage == null) {
             return true;
-        } else if (_name == null && _pseudoPage != null && 
-                (_pseudoPage.equals(pseudoPage) || 
+        } else if (_name == null && _pseudoPage != null &&
+                (_pseudoPage.equals(pseudoPage) ||
                         (_pseudoPage.equals("right") && pseudoPage != null && pseudoPage.equals("first")))) { // assume first page is a right page
             return true;
         } else if (_name != null && _name.equals(pageName) && _pseudoPage == null) {
@@ -124,7 +124,7 @@ public class PageRule implements RulesetContainer {
                     _pseudoPage != null && _pseudoPage.equals(pseudoPage)) {
             return true;
         }
-        
+
         return false;
     }
 

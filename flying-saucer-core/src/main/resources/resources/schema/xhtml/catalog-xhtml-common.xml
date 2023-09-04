@@ -4,21 +4,21 @@
 <!-- ...................................................................... -->
 <!-- XML Catalog data for HTML XML V4.01 ................................ -->
 
-<!-- This is derived from the sample catalog.xml that ships with the   
+<!-- This is derived from the sample catalog.xml that ships with the
      DocBook XML v4.4 DTDs. It maps to the Flying Saucer DTD repository
      under resources/schema/xhtmlschema/html-4.01/* -->
 
 <!-- ...................................................................... -->
 
   <public publicId="-//W3C//ELEMENTS XHTML Inline Style 1.0//EN" uri="resources/schema/xhtml/element/xhtml-inlstyle-1.mod" />
-  <public publicId="-//W3C//ELEMENTS XHTML Text 1.0//EN" 
+  <public publicId="-//W3C//ELEMENTS XHTML Text 1.0//EN"
   uri="resources/schema/xhtml/element/xhtml-text-1.mod" />
   <public publicId="-//W3C//ELEMENTS XHTML Inline Structural 1.0//EN" uri="resources/schema/xhtml/element/xhtml-inlstruct-1.mod" />
   <public publicId="-//W3C//ELEMENTS XHTML Inline Phrasal 1.0//EN" uri="resources/schema/xhtml/element/xhtml-inlphras-1.mod" />
   <public publicId="-//W3C//ELEMENTS XHTML Block Structural 1.0//EN" uri="resources/schema/xhtml/element/xhtml-blkstruct-1.mod" />
   <public publicId="-//W3C//ELEMENTS XHTML Block Phrasal 1.0//EN" uri="resources/schema/xhtml/element/xhtml-blkphras-1.mod" />
   <public publicId="-//W3C//ELEMENTS XHTML Hypertext 1.0//EN" uri="resources/schema/xhtml/element/xhtml-hypertext-1.mod" />
-  <public publicId="-//W3C//ELEMENTS XHTML Lists 1.0//EN" 
+  <public publicId="-//W3C//ELEMENTS XHTML Lists 1.0//EN"
   uri="resources/schema/xhtml/element/xhtml-list-1.mod" />
   <public publicId="-//W3C//ELEMENTS XHTML Editing Elements 1.0//EN" uri="resources/schema/xhtml/element/xhtml-edit-1.mod" />
   <public publicId="-//W3C//ELEMENTS XHTML BIDI Override Element 1.0//EN" uri="resources/schema/xhtml/element/xhtml-bdo-1.mod" />
@@ -50,11 +50,11 @@
 
   <public publicId="-//W3C//NOTATIONS XHTML Notations 1.0//EN" uri="resources/schema/xhtml/notation/xhtml-notations-1.mod" />
 
-  <public publicId="-//W3C//ENTITIES Latin 1 for XHTML//EN" 
+  <public publicId="-//W3C//ENTITIES Latin 1 for XHTML//EN"
   uri="resources/schema/xhtml/entity/xhtml-lat1.ent" />
-  <public publicId="-//W3C//ENTITIES Symbols for XHTML//EN" 
+  <public publicId="-//W3C//ENTITIES Symbols for XHTML//EN"
   uri="resources/schema/xhtml/entity/xhtml-symbol.ent" />
-  <public publicId="-//W3C//ENTITIES Special for XHTML//EN" 
+  <public publicId="-//W3C//ENTITIES Special for XHTML//EN"
   uri="resources/schema/xhtml/entity/xhtml-special.ent" />
 
         <!-- End of catalog data for HTML XML V4.01 ............................. -->

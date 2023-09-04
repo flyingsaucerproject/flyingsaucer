@@ -130,33 +130,33 @@ public class Token {
     public static final Token TK_VERTICAL_BAR = new Token(VERTICAL_BAR, "VERTICAL_BAR", "|");
     public static final Token TK_EOF = new Token(EOF, "EOF", "end of file");
 
-  
+
     private final int _type;
     private final String _name;
     private final String _externalName;
-  
+
     private Token(int type, String name, String externalName) {
         _type = type;
         _name = name;
         _externalName = externalName;
     }
-    
+
     public int getType() {
         return _type;
     }
-    
+
     public String getName() {
         return _name;
     }
-    
+
     public String getExternalName() {
         return _externalName;
     }
-    
+
     public String toString() {
         return _name;
     }
-    
+
     public static Token createOtherToken(String value) {
         return new Token(OTHER, "OTHER", value + " (other)");
     }

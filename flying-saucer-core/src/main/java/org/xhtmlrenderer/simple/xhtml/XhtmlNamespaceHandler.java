@@ -37,7 +37,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     public boolean isImageElement(Element e) {
         return (e != null && e.getNodeName().equalsIgnoreCase("img"));
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -55,7 +55,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
 
     public String getNonCssStyling(Element e) {
         if (e.getNodeName().equals("table")) {
-            return applyTableStyles(e);            
+            return applyTableStyles(e);
         } else if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
             return applyTableCellStyles(e);
         } else if (e.getNodeName().equals("tr")) {
@@ -65,7 +65,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         }
         return "";
     }
-    
+
     private String applyImgStyles(Element e) {
         StringBuffer style = new StringBuffer();
         applyFloatingAlign(e, style);
@@ -100,7 +100,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
             style.append("height: ");
             style.append(convertToLength(s));
             style.append(";");
-        }        
+        }
         applyAlignment(e, style);
         s = getAttribute(e, "bgcolor");
         if (s != null) {
@@ -165,13 +165,13 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         applyFloatingAlign(e, style);
         return style.toString();
     }
-    
+
     private String applyTableRowStyles(Element e) {
         StringBuffer style = new StringBuffer();
         applyAlignment(e, style);
         return style.toString();
     }
-    
+
     private void applyFloatingAlign(Element e, StringBuffer style) {
         String s;
         s = getAttribute(e, "align");
@@ -186,7 +186,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
             }
         }
     }
-    
+
     private void applyAlignment(Element e, StringBuffer style) {
         String s;
         s = getAttribute(e, "align");
@@ -202,7 +202,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
             style.append(";");
         }
     }
-    
+
     private boolean looksLikeAMangledColor(String s) {
         if (s.length() != 6) {
             return false;
@@ -216,7 +216,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         }
         return true;
     }
-    
+
     private Element findTable(Element cell) {
         Node n = cell.getParentNode();
         Element next;
@@ -230,7 +230,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
                     if (name.equals("table")) {
                         return next;
                     }
-                    
+
                     if (name.equals("tbody") || name.equals("tfoot") || name.equals("thead")) {
                         n = next.getParentNode();
                         if (n.getNodeType() == Node.ELEMENT_NODE) {
@@ -243,10 +243,10 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
                 }
             }
         }
-        
+
         return null;
     }
-    
+
     public XhtmlForm createForm(Element e) {
         if(e == null) {
             return new XhtmlForm("", "get");

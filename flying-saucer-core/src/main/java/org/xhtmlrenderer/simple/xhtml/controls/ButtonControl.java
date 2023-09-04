@@ -51,7 +51,7 @@ public class ButtonControl extends AbstractControl {
     public String getType() {
         return _type;
     }
-    
+
     public String getLabel() {
         return _label;
     }

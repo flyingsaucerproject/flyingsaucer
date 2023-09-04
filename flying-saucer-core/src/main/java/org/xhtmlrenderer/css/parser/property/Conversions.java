@@ -32,7 +32,7 @@ public class Conversions {
     private static final Map COLORS = new HashMap();
     private static final Map NUMERIC_FONT_WEIGHTS = new HashMap();
     private static final Map BORDER_WIDTHS = new HashMap();
-    
+
     static {
         COLORS.put("cyan", new FSRGBColor(0x00FFFF));
         COLORS.put("magenta", new FSRGBColor(0xFF00FF));
@@ -174,7 +174,7 @@ public class Conversions {
         COLORS.put("whitesmoke",new FSRGBColor(0xF5F5F5));
         COLORS.put("yellowgreen",new FSRGBColor(0x9ACD32));
     }
-    
+
     static {
         NUMERIC_FONT_WEIGHTS.put(new Float(100f), IdentValue.FONT_WEIGHT_100);
         NUMERIC_FONT_WEIGHTS.put(new Float(200f), IdentValue.FONT_WEIGHT_200);
@@ -186,23 +186,23 @@ public class Conversions {
         NUMERIC_FONT_WEIGHTS.put(new Float(800f), IdentValue.FONT_WEIGHT_800);
         NUMERIC_FONT_WEIGHTS.put(new Float(900f), IdentValue.FONT_WEIGHT_900);
     }
-    
+
     static {
         BORDER_WIDTHS.put("thin", new PropertyValue(CSSPrimitiveValue.CSS_PX, 1.0f, "1px"));
         BORDER_WIDTHS.put("medium", new PropertyValue(CSSPrimitiveValue.CSS_PX, 2.0f, "2px"));
         BORDER_WIDTHS.put("thick", new PropertyValue(CSSPrimitiveValue.CSS_PX, 3.0f, "3px"));
     }
-    
+
     public static FSRGBColor getColor(String ident) {
         return (FSRGBColor)COLORS.get(ident);
     }
-    
+
     public static IdentValue getNumericFontWeight(float weight) {
         return (IdentValue)NUMERIC_FONT_WEIGHTS.get(new Float(weight));
     }
-    
+
     public static PropertyValue getBorderWidth(String ident) {
         return (PropertyValue)BORDER_WIDTHS.get(ident);
     }
-    
+
 }

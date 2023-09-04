@@ -24,7 +24,7 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 public class BackgroundPosition {
     private final PropertyValue _horizontal;
     private final PropertyValue _vertical;
-    
+
     public BackgroundPosition(PropertyValue horizontal, PropertyValue vertical) {
         _horizontal = horizontal;
         _vertical = vertical;
@@ -37,5 +37,5 @@ public class BackgroundPosition {
     public PropertyValue getVertical() {
         return _vertical;
     }
-    
+
 }
