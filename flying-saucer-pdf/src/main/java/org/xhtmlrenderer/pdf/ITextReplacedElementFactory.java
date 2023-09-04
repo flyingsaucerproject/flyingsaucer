@@ -76,8 +76,6 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
                         this, c, box, cssWidth, cssHeight);
                 saveResult(e, result);
                 return result;
-                return new EmptyReplacedElement(0, 0);
-
             } else {
                 return new TextFormField(c, box, cssWidth, cssHeight);
             }
