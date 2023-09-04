@@ -77,7 +77,7 @@
         </executions>
         <configuration>
           <instructions>
-            <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.pdf.itext5</Bundle-SymbolicName>
+            <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.log4j</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <!-- Dependency resolution seems not to work properly with default 
               behavior of importing the exported packages. -->
