@@ -72,13 +72,10 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
             } else if (type.equals("checkbox")) {
                 return new CheckboxFormField(c, box, cssWidth, cssHeight);
             } else if (type.equals("radio")) {
-                //TODO finish support for Radio button
-                //RadioButtonFormField result = new RadioButtonFormField(
-                //			this, c, box, cssWidth, cssHeight);
-                //		saveResult(e, result);
-                //return result;
-                return new EmptyReplacedElement(0, 0);
-
+                RadioButtonFormField result = new RadioButtonFormField(
+                        this, c, box, cssWidth, cssHeight);
+                saveResult(e, result);
+                return result;
             } else {
                 return new TextFormField(c, box, cssWidth, cssHeight);
             }

@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSColor;
+import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -116,7 +117,8 @@ public class RadioButtonFormField extends AbstractFormField {
         PdfFormField field = PdfFormField.createEmpty(writer);
 
         FSColor color = box.getStyle().getColor();
-        FSColor darker = box.getEffBackgroundColor(c).darkenColor();
+//        FSColor darker = box.getEffBackgroundColor(c).darkenColor();
+        FSColor darker = new FSRGBColor(255, 255, 255);
         createAppearances(cb, field, onValue, width, height, true, color, darker);
         createAppearances(cb, field, onValue, width, height, false, color, darker);
 

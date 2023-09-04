@@ -153,6 +153,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      */
     protected URLConnection openConnection(String uri) throws IOException {
         URLConnection connection = new URL(uri).openConnection();
+		connection.setRequestProperty("Accept", "*/*");
         if (connection instanceof HttpURLConnection) {
             connection = onHttpConnection((HttpURLConnection) connection);
         }
@@ -181,6 +182,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
                 XRLog.load("Connection is redirected to: " + newUrl);
                 // open the new connnection again
                 connection = new URL(newUrl).openConnection();
+				connection.setRequestProperty("Accept", "*/*");
             } else {
                 XRLog.load("Redirect is required but not allowed to: " + newUrl);
             }
