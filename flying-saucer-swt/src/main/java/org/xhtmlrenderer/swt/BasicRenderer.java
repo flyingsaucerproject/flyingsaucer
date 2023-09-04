@@ -64,7 +64,7 @@ import org.xml.sax.InputSource;
 /**
  * Renders XML+CSS using SWT in a widget (a Composite). Scrollbars are handled
  * automatically.
- * 
+ *
  * @author Vianney le Clément
  */
 public class BasicRenderer extends Canvas implements PaintListener, UserInterface, FSCanvas {
@@ -117,7 +117,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Construct the BasicRenderer
-     * 
+     *
      * @param parent
      * @param uac
      */
@@ -301,7 +301,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Redraw only rect.
-     * 
+     *
      * @param rect
      *            the rectangle
      */
@@ -415,7 +415,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Set the origin of the view. NOTE: this won't be done immediately.
-     * 
+     *
      * @param pt
      */
     public void setOrigin(Point pt) {
@@ -450,7 +450,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Update the scrollbars
-     * 
+     *
      * @return true if we need to relayout the whole thing
      */
     protected boolean updateScrollBars() {
@@ -482,7 +482,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Convert an SWT rectangle into an AWT rectangle.
-     * 
+     *
      * @param rect
      * @return
      */
@@ -842,7 +842,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     /**
      * Sets the new current document, where the new document is located
      * relative, e.g using a relative URL.
-     * 
+     *
      * @param filename
      *            The new document to load
      */

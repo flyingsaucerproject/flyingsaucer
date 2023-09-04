@@ -30,11 +30,11 @@ import java.util.List;
 public class MakeTokens {
     private static final String EOL = System.getProperty("line.separator");
     private static final String INPUT = "C:/eclipseWorkspaceQT/xhtmlrenderer/src/java/org/xhtmlrenderer/css/parser/tokens.txt";
-    
+
     public static final void main(String[] args) throws IOException {
         List tokens = new ArrayList();
-        
-        BufferedReader reader = null; 
+
+        BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(
                         new FileInputStream(INPUT)));
@@ -51,14 +51,14 @@ public class MakeTokens {
                 }
             }
         }
-        
+
         StringBuffer buf = new StringBuffer();
-        
+
         int offset = 1;
         for (Iterator i = tokens.iterator(); i.hasNext(); offset++) {
             String s = (String)i.next();
             String id = s.substring(0, s.indexOf(','));
-            
+
             buf.append("\tpublic static final int ");
             buf.append(id);
             buf.append(" = ");
@@ -66,14 +66,14 @@ public class MakeTokens {
             buf.append(";");
             buf.append(EOL);
         }
-        
+
         buf.append(EOL);
-        
+
         for (Iterator i = tokens.iterator(); i.hasNext(); offset++) {
             String s = (String)i.next();
             String id = s.substring(0, s.indexOf(','));
             String descr = s.substring(s.indexOf(',')+1);
-            
+
             buf.append("\tpublic static final Token TK_");
             buf.append(id);
             buf.append(" = new Token(");
@@ -85,9 +85,9 @@ public class MakeTokens {
             buf.append("\");");
             buf.append(EOL);
         }
-        
+
         buf.append(EOL);
-        
+
         System.out.println(buf.toString());
     }
 }

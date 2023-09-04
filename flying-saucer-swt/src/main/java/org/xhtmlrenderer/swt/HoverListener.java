@@ -32,9 +32,9 @@ import org.xhtmlrenderer.render.Box;
 
 /**
  * Listener implementing css :hover class.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class HoverListener implements MouseMoveListener {
 
@@ -43,7 +43,7 @@ public class HoverListener implements MouseMoveListener {
 
     /**
      * Construct a HoverListener and add it to the parent.
-     * 
+     *
      * @param parent
      */
     public HoverListener(BasicRenderer parent) {

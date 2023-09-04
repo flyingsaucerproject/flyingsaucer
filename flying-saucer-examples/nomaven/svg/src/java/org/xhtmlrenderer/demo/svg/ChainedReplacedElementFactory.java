@@ -34,7 +34,7 @@ import java.util.Iterator;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
 /**
- * 
+ *
  */
 public class ChainedReplacedElementFactory implements ReplacedElementFactory {
     private List factoryList;
@@ -61,14 +61,14 @@ public class ChainedReplacedElementFactory implements ReplacedElementFactory {
         for (Iterator i = this.factoryList.iterator(); i.hasNext(); ) {
             ReplacedElementFactory factory = (ReplacedElementFactory)i.next();
             factory.reset();
-        }       
+        }
     }
 
     public void remove(Element e) {
         for (Iterator i = this.factoryList.iterator(); i.hasNext(); ) {
             ReplacedElementFactory factory = (ReplacedElementFactory)i.next();
             factory.remove(e);
-        }       
+        }
     }
 
     public void setFormSubmissionListener(FormSubmissionListener listener) {

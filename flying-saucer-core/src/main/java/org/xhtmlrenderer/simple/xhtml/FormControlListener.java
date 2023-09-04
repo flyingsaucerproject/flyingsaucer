@@ -23,21 +23,21 @@ public interface FormControlListener {
 
     /**
      * Called when the current value has changed.
-     * 
+     *
      * @param control
      */
     void changed(FormControl control);
 
     /**
      * Called when the successful state has changed.
-     * 
+     *
      * @param control
      */
     void successful(FormControl control);
 
     /**
      * Called when the control has been enabled/disabled.
-     * 
+     *
      * @param control
      */
     void enabled(FormControl control);

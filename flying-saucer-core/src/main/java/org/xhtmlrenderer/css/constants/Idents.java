@@ -73,7 +73,7 @@ public final class Idents {
      * Pattern instance, for Hex-colors
      */
     private final static Pattern COLOR_HEX_PATTERN = Pattern.compile("#((((\\d)|[a-fA-F]){6})|(((\\d)|[a-fA-F]){3}))");
-    
+
     /**
      * Pattern instance for functions (not quite right [e.g no escapes], but good enough)
      */
@@ -132,7 +132,7 @@ public final class Idents {
         if (ident.equals("inherit")) {
             return ident;
         }
-        
+
         String val = ident;
 
         if (cssName == CSSName.FONT_SIZE) {
@@ -196,7 +196,7 @@ public final class Idents {
     public static boolean looksLikeAColor(String val) {
         return COLOR_MAP.get(val) != null || (val.startsWith("#") && (val.length() == 7 || val.length() == 4)) || val.startsWith("rgb");
     }
-    
+
     /**
      * Description of the Method
      *
@@ -216,7 +216,7 @@ public final class Idents {
     public static boolean looksLikeAURI(String val) {
         return val.startsWith("url(") && val.endsWith(")");
     }
-    
+
     public static boolean looksLikeAFunction(String value) {
         return FUNCTION_PATTERN.matcher(value).find();
     }
@@ -413,7 +413,7 @@ public final class Idents {
         FONT_SIZES.put("large", "14.4pt");
         FONT_SIZES.put("x-large", "17.3pt");
         FONT_SIZES.put("xx-large", "20.7pt");
-        
+
         // HACK
         FONT_SIZES.put("smaller", "0.8em");
         FONT_SIZES.put("larger", "1.2em");

@@ -235,9 +235,9 @@ public class FSImageWriter {
     private ImageWriter lookupImageWriterForFormat(String imageFormat) {
         ImageWriter writer = null;
         Iterator iter = ImageIO.getImageWritersByFormatName(imageFormat);
-		if (iter.hasNext()) {
-			writer = (ImageWriter) iter.next();
-		}
-		return writer;
-	}
+        if (iter.hasNext()) {
+            writer = (ImageWriter) iter.next();
+        }
+        return writer;
+    }
 }

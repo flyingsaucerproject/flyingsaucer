@@ -32,7 +32,7 @@ import org.xhtmlrenderer.css.style.FSDerivedValue;
 
 public class DerivedValueFactory {
     private static final Map CACHED_COLORS = new HashMap();
-    
+
     public static FSDerivedValue newDerivedValue(
             CalculatedStyle style, CSSName cssName, PropertyValue value) {
         if (value.getCssValueType() == CSSValue.CSS_INHERIT) {

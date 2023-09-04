@@ -41,17 +41,17 @@ public class LengthValue extends DerivedValue {
      * The specified length value, as a float; pulled from the CSS text
      */
     private float _lengthAsFloat;
-    
+
     private CalculatedStyle _style;
 
     /**
      * The specified primitive SAC data type given for this length, from the CSS text
      */
     private short _lengthPrimitiveType;
-    
+
     public LengthValue(CalculatedStyle style, CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
-        
+
         _style = style;
         _lengthAsFloat = value.getFloatValue();
         _lengthPrimitiveType = value.getPrimitiveType();
@@ -86,7 +86,7 @@ public class LengthValue extends DerivedValue {
     public boolean hasAbsoluteUnit() {
         return ValueConstants.isAbsoluteUnit(getCssSacUnitType());
     }
-    
+
     public boolean isDependentOnFontSize() {
         return _lengthPrimitiveType == CSSPrimitiveValue.CSS_EXS ||
                     _lengthPrimitiveType == CSSPrimitiveValue.CSS_EMS;
@@ -199,7 +199,7 @@ public class LengthValue extends DerivedValue {
         absVal = new Float(d).floatValue();
         return absVal;
     }
-    
+
     private CalculatedStyle getStyle() {
         return _style;
     }

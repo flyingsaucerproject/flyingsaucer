@@ -25,15 +25,15 @@ import org.xhtmlrenderer.render.FSFont;
 
 public class AWTFSFont implements FSFont {
     private Font _font;
-    
+
     public AWTFSFont(Font font) {
         _font = font;
     }
-    
+
     public float getSize2D() {
         return _font.getSize2D();
     }
-    
+
     public Font getAWTFont() {
         return _font;
     }

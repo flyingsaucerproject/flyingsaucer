@@ -29,16 +29,16 @@ public abstract class OneToFourPropertyBuilders {
     private abstract static class OneToFourPropertyBuilder extends AbstractPropertyBuilder {
         protected abstract CSSName[] getProperties();
         protected abstract PropertyBuilder getPropertyBuilder();
-        
+
         public List buildDeclarations(
                 CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
             List result = new ArrayList(4);
             checkValueCount(cssName, 1, 4, values.size());
-            
+
             PropertyBuilder builder = getPropertyBuilder();
-            
+
             CSSName[] props = getProperties();
-            
+
             PropertyDeclaration decl1;
             PropertyDeclaration decl2;
             PropertyDeclaration decl3;
@@ -47,72 +47,72 @@ public abstract class OneToFourPropertyBuilders {
                 case 1:
                     decl1 = (PropertyDeclaration)builder.buildDeclarations(
                             cssName, values, origin, important).get(0);
-                    
+
                     result.add(copyOf(decl1, props[0]));
                     result.add(copyOf(decl1, props[1]));
                     result.add(copyOf(decl1, props[2]));
                     result.add(copyOf(decl1, props[3]));
                     break;
-                
+
                 case 2:
-                    decl1 = 
+                    decl1 =
                         (PropertyDeclaration)builder.buildDeclarations(
                                 cssName, values.subList(0, 1), origin, important, false).get(0);
-                    decl2 = 
+                    decl2 =
                         (PropertyDeclaration)builder.buildDeclarations(
-                                cssName, values.subList(1, 2), origin, important, false).get(0);                
-                    
+                                cssName, values.subList(1, 2), origin, important, false).get(0);
+
                     result.add(copyOf(decl1, props[0]));
                     result.add(copyOf(decl2, props[1]));
                     result.add(copyOf(decl1, props[2]));
                     result.add(copyOf(decl2, props[3]));
-                    break;  
-                
+                    break;
+
                 case 3:
-                    decl1 = 
+                    decl1 =
                         (PropertyDeclaration)builder.buildDeclarations(
                                 cssName, values.subList(0, 1), origin, important, false).get(0);
-                    decl2 = 
+                    decl2 =
                         (PropertyDeclaration)builder.buildDeclarations(
                                 cssName, values.subList(1, 2), origin, important, false).get(0);
-                    decl3 = 
+                    decl3 =
                         (PropertyDeclaration)builder.buildDeclarations(
-                                cssName, values.subList(2, 3), origin, important, false).get(0);                
-                    
+                                cssName, values.subList(2, 3), origin, important, false).get(0);
+
                     result.add(copyOf(decl1, props[0]));
                     result.add(copyOf(decl2, props[1]));
                     result.add(copyOf(decl3, props[2]));
                     result.add(copyOf(decl2, props[3]));
-                    break; 
-                
+                    break;
+
                 case 4:
-                    decl1 = 
+                    decl1 =
                         (PropertyDeclaration)builder.buildDeclarations(
                                 cssName, values.subList(0, 1), origin, important, false).get(0);
-                    decl2 = 
+                    decl2 =
                         (PropertyDeclaration)builder.buildDeclarations(
                                 cssName, values.subList(1, 2), origin, important, false).get(0);
-                    decl3 = 
+                    decl3 =
                         (PropertyDeclaration)builder.buildDeclarations(
                                 cssName, values.subList(2, 3), origin, important, false).get(0);
-                    decl4 = 
+                    decl4 =
                         (PropertyDeclaration)builder.buildDeclarations(
-                                cssName, values.subList(3, 4), origin, important, false).get(0);                
-                    
+                                cssName, values.subList(3, 4), origin, important, false).get(0);
+
                     result.add(copyOf(decl1, props[0]));
                     result.add(copyOf(decl2, props[1]));
                     result.add(copyOf(decl3, props[2]));
                     result.add(copyOf(decl4, props[3]));
-                    break;             
+                    break;
             }
-            
+
             return result;
         }
     }
-    
+
     public static class BorderColor extends OneToFourPropertyBuilder {
         protected CSSName[] getProperties() {
-            return new CSSName[] { 
+            return new CSSName[] {
                     CSSName.BORDER_TOP_COLOR,
                     CSSName.BORDER_RIGHT_COLOR,
                     CSSName.BORDER_BOTTOM_COLOR,
@@ -122,11 +122,11 @@ public abstract class OneToFourPropertyBuilders {
         protected PropertyBuilder getPropertyBuilder() {
             return PrimitivePropertyBuilders.COLOR;
         }
-    } 
+    }
 
     public static class BorderStyle extends OneToFourPropertyBuilder {
         protected CSSName[] getProperties() {
-            return new CSSName[] { 
+            return new CSSName[] {
                     CSSName.BORDER_TOP_STYLE,
                     CSSName.BORDER_RIGHT_STYLE,
                     CSSName.BORDER_BOTTOM_STYLE,
@@ -137,10 +137,10 @@ public abstract class OneToFourPropertyBuilders {
             return PrimitivePropertyBuilders.BORDER_STYLE;
         }
     }
-    
+
     public static class BorderWidth extends OneToFourPropertyBuilder {
         protected CSSName[] getProperties() {
-            return new CSSName[] { 
+            return new CSSName[] {
                     CSSName.BORDER_TOP_WIDTH,
                     CSSName.BORDER_RIGHT_WIDTH,
                     CSSName.BORDER_BOTTOM_WIDTH,
@@ -150,12 +150,12 @@ public abstract class OneToFourPropertyBuilders {
         protected PropertyBuilder getPropertyBuilder() {
             return PrimitivePropertyBuilders.BORDER_WIDTH;
         }
-    } 
-    
+    }
+
 
     public static class BorderRadius extends OneToFourPropertyBuilder {
         protected CSSName[] getProperties() {
-            return new CSSName[] { 
+            return new CSSName[] {
                     CSSName.BORDER_TOP_LEFT_RADIUS,
                     CSSName.BORDER_TOP_RIGHT_RADIUS,
                     CSSName.BORDER_BOTTOM_RIGHT_RADIUS,
@@ -166,10 +166,10 @@ public abstract class OneToFourPropertyBuilders {
             return PrimitivePropertyBuilders.BORDER_RADIUS;
         }
     }
-    
+
     public static class Margin extends OneToFourPropertyBuilder {
         protected CSSName[] getProperties() {
-            return new CSSName[] { 
+            return new CSSName[] {
                     CSSName.MARGIN_TOP,
                     CSSName.MARGIN_RIGHT,
                     CSSName.MARGIN_BOTTOM,
@@ -180,10 +180,10 @@ public abstract class OneToFourPropertyBuilders {
             return PrimitivePropertyBuilders.MARGIN;
         }
     }
-    
+
     public static class Padding extends OneToFourPropertyBuilder {
         protected CSSName[] getProperties() {
-            return new CSSName[] { 
+            return new CSSName[] {
                     CSSName.PADDING_TOP,
                     CSSName.PADDING_RIGHT,
                     CSSName.PADDING_BOTTOM,
@@ -193,5 +193,5 @@ public abstract class OneToFourPropertyBuilders {
         protected PropertyBuilder getPropertyBuilder() {
             return PrimitivePropertyBuilders.PADDING;
         }
-    }    
+    }
 }

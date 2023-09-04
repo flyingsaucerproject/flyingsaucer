@@ -53,7 +53,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
     public String getAttributeValue(org.w3c.dom.Element e, String attrName) {
         return e.getAttribute(attrName);
     }
-    
+
     public String getAttributeValue(Element e, String namespaceURI, String attrName) {
         if (namespaceURI == TreeResolver.NO_NAMESPACE) {
             return e.getAttribute(attrName);
@@ -69,7 +69,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
                         return attr.getValue();
                     }
                 }
-                
+
                 return "";
             }
         } else {
@@ -107,7 +107,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
     public String getDocumentTitle(org.w3c.dom.Document doc) {
         return null;
     }
-    
+
     public String getAnchorName(Element e) {
         return null;
     }
@@ -119,7 +119,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
     public String getImageSourceURI(Element e) {
         return null;
     }
-    
+
     public boolean isFormElement(Element e) {
         return false;
     }

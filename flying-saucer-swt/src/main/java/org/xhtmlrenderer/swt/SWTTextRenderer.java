@@ -31,9 +31,9 @@ import org.xhtmlrenderer.util.Configuration;
 
 /**
  * Render text with SWT.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTTextRenderer implements TextRenderer {
 

@@ -44,7 +44,7 @@ import org.xhtmlrenderer.util.Uu;
  */
 public class AboutBox extends JDialog implements Runnable {
     private static final long serialVersionUID = 1L;
-    
+
     /**
      * Description of the Field
      */

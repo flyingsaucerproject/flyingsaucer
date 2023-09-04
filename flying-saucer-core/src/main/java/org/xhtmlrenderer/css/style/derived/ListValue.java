@@ -28,29 +28,29 @@ import org.xhtmlrenderer.css.style.DerivedValue;
 
 public class ListValue extends DerivedValue {
     private List _values;
-    
+
     public ListValue(CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
-        
+
         _values = value.getValues();
     }
-    
+
     public List getValues() {
         return _values;
     }
-    
+
     public String[] asStringArray() {
         if (_values == null || _values.isEmpty()) {
             return new String[0];
         }
-        
+
         String[] arr = new String[_values.size()];
         int i = 0;
-        
+
         for (Iterator iter = _values.iterator(); iter.hasNext();) {
             arr[i++] = iter.next().toString();
         }
-        
+
         return arr;
     }
 }

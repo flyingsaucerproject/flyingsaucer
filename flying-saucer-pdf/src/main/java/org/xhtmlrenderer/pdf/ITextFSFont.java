@@ -25,7 +25,7 @@ import org.xhtmlrenderer.render.FSFont;
 public class ITextFSFont implements FSFont {
     private FontDescription _font;
     private float _size;
-    
+
     public ITextFSFont(FontDescription font, float size) {
         _font = font;
         _size = size;
@@ -34,7 +34,7 @@ public class ITextFSFont implements FSFont {
     public float getSize2D() {
         return _size;
     }
-    
+
     public FontDescription getFontDescription() {
         return _font;
     }

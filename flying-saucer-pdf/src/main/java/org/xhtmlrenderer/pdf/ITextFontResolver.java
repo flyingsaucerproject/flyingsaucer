@@ -46,14 +46,14 @@ public class ITextFontResolver implements FontResolver {
     private final SharedContext _sharedContext;
 
     public ITextFontResolver(SharedContext sharedContext) {
-	this(sharedContext, true);
+        this(sharedContext, true);
     }
-    
+
     public ITextFontResolver(SharedContext sharedContext, boolean withCjkfonts ) {
         _sharedContext = sharedContext;
         _withCJKFonts = withCjkfonts;
-	_fontFamilies = createInitialFontMap();
-	_fontCache = new HashMap();
+        _fontFamilies = createInitialFontMap();
+        _fontCache = new HashMap();
     }
 
     /**

@@ -58,8 +58,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public Java2DOutputDevice(BufferedImage outputImage) {
         this(outputImage.createGraphics());
     }
-    
-    
+
+
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         if (inlineText.isSelected()) {
             InlineLayoutBox iB = inlineText.getParent();
@@ -70,7 +70,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                         c.getOutputDevice(),
                         font,
                         inlineText.getSubstring());
-                
+
                 Rectangle start = c.getTextRenderer().getGlyphBounds(
                         c.getOutputDevice(),
                         font,
@@ -78,7 +78,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                         inlineText.getSelectionStart(),
                         iB.getAbsX() + inlineText.getX(),
                         iB.getAbsY() + iB.getBaseline());
-                
+
                 Rectangle end = c.getTextRenderer().getGlyphBounds(
                         c.getOutputDevice(),
                         font,
@@ -97,10 +97,10 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                         iB.getAbsY(),
                         endX - startX,
                         iB.getHeight());
-                
+
                 _graphics.setColor(Color.WHITE); // FIXME
-                setFont(iB.getStyle().getFSFont(c));                
-                
+                setFont(iB.getStyle().getFSFont(c));
+
                 drawSelectedText(c, inlineText, iB, glyphVector);
             }
         }
@@ -108,8 +108,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
 
     private void drawSelectedText(RenderingContext c, InlineText inlineText, InlineLayoutBox iB, FSGlyphVector glyphVector) {
         GlyphVector vector = ((AWTFSGlyphVector)glyphVector).getGlyphVector();
-        
-        // We'd like to draw only the characters that are actually selected, but 
+
+        // We'd like to draw only the characters that are actually selected, but
         // unfortunately vector.getGlyphPixelBounds() doesn't give us accurate
         // results with the result that text can appear to jump around as it's
         // selected.  To work around this, we draw the whole string, but move
@@ -146,7 +146,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                 glyphVector,
                 iB.getAbsX() + inlineText.getX(),
                 iB.getAbsY() + iB.getBaseline());
-    }    
+    }
 
     public void drawBorderLine(
             Shape bounds, int side, int lineWidth, boolean solid) {
@@ -154,9 +154,9 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         int y = bounds.y;
         int w = bounds.width;
         int h = bounds.height;
-        
+
         int adj = solid ? 1 : 0;
-        
+
         if (side == BorderPainter.TOP) {
             drawLine(x, y + (int) (lineWidth / 2), x + w - adj, y + (int) (lineWidth / 2));
         } else if (side == BorderPainter.LEFT) {
@@ -174,7 +174,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
             }
             drawLine(x, y + h - offset, x + w - adj, y + h - offset);
         }*/
-    	draw(bounds);
+        draw(bounds);
     }
 
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
@@ -187,13 +187,13 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
             pane.paintComponent(_graphics, component, canvas, contentBounds.x,  contentBounds.y, contentBounds.width, contentBounds.height,true);
         } else if (replaced instanceof ImageReplacedElement) {
             Image image = ((ImageReplacedElement)replaced).getImage();
-            
+
             Point location = replaced.getLocation();
             _graphics.drawImage(
                     image, (int)location.getX(), (int)location.getY(), null);
         }
     }
-    
+
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
             FSRGBColor rgb = (FSRGBColor)color;
@@ -202,35 +202,35 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
             throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
     }
-    
+
     protected void drawLine(int x1, int y1, int x2, int y2) {
         _graphics.drawLine(x1, y1, x2, y2);
     }
-    
+
     public void drawRect(int x, int y, int width, int height) {
         _graphics.drawRect(x, y, width, height);
     }
-    
+
     public void fillRect(int x, int y, int width, int height) {
         _graphics.fillRect(x, y, width, height);
     }
-    
+
     public void setClip(Shape s) {
         _graphics.setClip(s);
     }
-    
+
     public Shape getClip() {
         return _graphics.getClip();
     }
-    
+
     public void clip(Shape s) {
         _graphics.clip(s);
     }
-    
+
     public void translate(double tx, double ty) {
         _graphics.translate(tx, ty);
     }
-    
+
     public Graphics2D getGraphics() {
         return _graphics;
     }
@@ -250,7 +250,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void setRenderingHint(Key key, Object value) {
         _graphics.setRenderingHint(key, value);
     }
-    
+
     public void setFont(FSFont font) {
         _graphics.setFont(((AWTFSFont)font).getAWTFont());
     }
@@ -266,19 +266,19 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void fill(Shape s) {
         _graphics.fill(s);
     }
-    
+
     public void draw(Shape s) {
         _graphics.draw(s);
     }
-    
+
     public void drawImage(FSImage image, int x, int y) {
         _graphics.drawImage(((AWTFSImage)image).getImage(), x, y, null);
     }
-    
+
     public boolean isSupportsSelection() {
         return true;
     }
-    
+
     public boolean isSupportsCMYKColors() {
         return true;
     }

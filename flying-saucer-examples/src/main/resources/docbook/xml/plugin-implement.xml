@@ -65,9 +65,9 @@ How Plugins are Loaded</title>
 </para>
 
 <para>
-  Additionally, plugins using the new jEdit 4.2 plugin API can be 
-  loaded and unloaded at any time. This is a great help when 
-  developing your own plugins -- there is no need to restart the 
+  Additionally, plugins using the new jEdit 4.2 plugin API can be
+  loaded and unloaded at any time. This is a great help when
+  developing your own plugins -- there is no need to restart the
   editor after making changes (see <xref linkend="plugin-implement-reloading"/> ).
 </para>
 
@@ -1144,7 +1144,7 @@ and the docking position of the plugin.
 
 <para>
   Once you have compiled your plugin using the 4.2 API you will need to reload
-  it to test it. Follow these steps to reload your plugin without restarting jEdit: 
+  it to test it. Follow these steps to reload your plugin without restarting jEdit:
 </para>
 
 <itemizedlist>
@@ -1152,14 +1152,14 @@ and the docking position of the plugin.
    From the Plugins menu open the Plugin Manager.
   </para></listitem>
   <listitem><para>
-    On the Manage tab uncheck Hide libraries. This will 
+    On the Manage tab uncheck Hide libraries. This will
     allow you to see plugins that are not loaded.
   </para></listitem>
   <listitem><para>
     Find the plugin on the Manage tab and uncheck it. This will unload the plugin.
-    You will get a warning if this plugin does not support dynamic reloading. 
-    If you get that warning you will need to restart jEdit to reload the plugin 
-    until the plugin is converted over to the 4.2 API. 
+    You will get a warning if this plugin does not support dynamic reloading.
+    If you get that warning you will need to restart jEdit to reload the plugin
+    until the plugin is converted over to the 4.2 API.
   </para></listitem>
   <listitem><para>
     Recheck the plugin to reload it.
@@ -1168,8 +1168,8 @@ and the docking position of the plugin.
 
 
 <para>
-  The jEdit web site contains a macro and an Ant task that can be used as an alternative 
-  method for dynamically reloading plugins. 
+  The jEdit web site contains a macro and an Ant task that can be used as an alternative
+  method for dynamically reloading plugins.
 </para>
 
 

@@ -117,7 +117,7 @@ public class ImageUtil {
 
             // TODO: check type using image type - can be sniffed; see Filthy Rich Clients
             int type = (biType == BufferedImage.TYPE_INT_ARGB || biType == BufferedImage.TYPE_INT_ARGB_PRE ?
-					Transparency.TRANSLUCENT : Transparency.OPAQUE);
+                    Transparency.TRANSLUCENT : Transparency.OPAQUE);
 
             bimage = gc.createCompatibleImage(width, height, type);
         }
@@ -269,7 +269,7 @@ public class ImageUtil {
         g2d.dispose();
         return bi;
     }
-    
+
     /**
      * Detect if an URI represents an embedded base 64 image.
      *
@@ -279,7 +279,7 @@ public class ImageUtil {
     public static boolean isEmbeddedBase64Image(String uri) {
         return (uri != null && uri.startsWith("data:image/"));
     }
-    
+
     /**
      * Get the binary content of an embedded base 64 image.
      *
@@ -296,7 +296,7 @@ public class ImageUtil {
         }
         return null;
     }
-    
+
     /**
      * Get the BufferedImage of an embedded base 64 image.
      *
@@ -314,7 +314,7 @@ public class ImageUtil {
         }
         return null;
     }
-    
+
     interface Scaler {
         /**
          * Convenience method that returns a scaled instance of the

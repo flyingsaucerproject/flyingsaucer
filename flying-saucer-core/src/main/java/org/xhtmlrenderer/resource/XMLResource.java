@@ -104,7 +104,7 @@ public class XMLResource extends AbstractResource {
     public static final XMLReader newXMLReader() {
         XMLReader xmlReader = null;
         String xmlReaderClass = Configuration.valueFor("xr.load.xml-reader");
-        
+
         //TODO: if it doesn't find the parser, note that in a static boolean--otherwise
         // you get exceptions on every load
         try {

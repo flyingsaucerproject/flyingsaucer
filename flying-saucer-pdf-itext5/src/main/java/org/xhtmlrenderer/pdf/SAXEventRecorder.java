@@ -30,11 +30,11 @@ import org.xml.sax.SAXException;
 
 public class SAXEventRecorder implements ContentHandler {
     private List _events = new LinkedList();
-    
+
     private interface Event {
         public void replay(ContentHandler handler) throws SAXException;
     }
-    
+
     public void characters(final char[] ch, final int start, final int length) throws SAXException {
         _events.add(new Event() {
             public void replay(ContentHandler handler) throws SAXException {
@@ -57,7 +57,7 @@ public class SAXEventRecorder implements ContentHandler {
                 handler.endElement(uri, localName, qName);
             }
         });
-        
+
     }
 
     public void endPrefixMapping(final String prefix) throws SAXException {
@@ -92,7 +92,7 @@ public class SAXEventRecorder implements ContentHandler {
             public void replay(ContentHandler handler) throws SAXException {
                 handler.skippedEntity(name);
             }
-        });        
+        });
     }
 
     public void startDocument() throws SAXException {
@@ -100,7 +100,7 @@ public class SAXEventRecorder implements ContentHandler {
             public void replay(ContentHandler handler) throws SAXException {
                 handler.startDocument();
             }
-        });        
+        });
     }
 
     public void startElement(
@@ -109,7 +109,7 @@ public class SAXEventRecorder implements ContentHandler {
             public void replay(ContentHandler handler) throws SAXException {
                 handler.startElement(uri, localName, qName, atts);
             }
-        });        
+        });
     }
 
     public void startPrefixMapping(final String prefix, final String uri) throws SAXException {
@@ -117,9 +117,9 @@ public class SAXEventRecorder implements ContentHandler {
             public void replay(ContentHandler handler) throws SAXException {
                 handler.startPrefixMapping(prefix, uri);
             }
-        });        
+        });
     }
-    
+
     public void replay(ContentHandler handler) throws SAXException {
         for (Iterator i = _events.iterator(); i.hasNext(); ) {
             Event e = (Event)i.next();

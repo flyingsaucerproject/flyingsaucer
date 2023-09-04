@@ -62,7 +62,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
                         fsImage.scale(cssWidth, cssHeight);
                     }
                     return new ITextImageElement(fsImage);
-                }                    
+                }
             }
 
         } else if (nodeName.equals("input")) {

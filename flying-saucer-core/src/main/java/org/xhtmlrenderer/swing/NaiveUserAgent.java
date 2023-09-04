@@ -137,23 +137,23 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         }
         return is;
     }
-    
+
     protected InputStream openStream(String uri) throws MalformedURLException, IOException {
         return openConnection(uri).getInputStream();
     }
 
     /**
      * Opens a connections to uri.
-     * 
+     *
      * This can be overwritten to customize handling of connections by type.
-     * 
+     *
      * @param uri the uri to connect to
      * @return URLConnection opened connection to uri
      * @throws IOException if an I/O exception occurs.
      */
     protected URLConnection openConnection(String uri) throws IOException {
         URLConnection connection = new URL(uri).openConnection();
-		connection.setRequestProperty("Accept", "*/*");
+        connection.setRequestProperty("Accept", "*/*");
         if (connection instanceof HttpURLConnection) {
             connection = onHttpConnection((HttpURLConnection) connection);
         }
@@ -162,11 +162,11 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     /**
      * Customized handling of @link{HttpUrlConnection}.
-     * 
-     * 
+     *
+     *
      * @param origin the original connection
-     * @return @link{URLConnection} 
-     * 
+     * @return @link{URLConnection}
+     *
      * @throws MalformedURLException if an unknown protocol is specified.
      * @throws IOException if an I/O exception occurs.
      */
@@ -177,12 +177,12 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         if (needsRedirect(status)) {
             // get redirect url from "location" header field
             String newUrl = origin.getHeaderField("Location");
-            
+
             if (origin.getInstanceFollowRedirects()) {
                 XRLog.load("Connection is redirected to: " + newUrl);
                 // open the new connnection again
                 connection = new URL(newUrl).openConnection();
-				connection.setRequestProperty("Accept", "*/*");
+                connection.setRequestProperty("Accept", "*/*");
             } else {
                 XRLog.load("Redirect is required but not allowed to: " + newUrl);
             }
@@ -192,14 +192,14 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     /**
      * Verify that return code of connection represents a redirection.
-     * 
+     *
      * But it is final because redirection processing is determined.
-     * 
+     *
      * @param status return code of connection
      * @return boolean true if return code is a 3xx
      */
     protected final boolean needsRedirect(int status) {
-        return 
+        return
                 status != HttpURLConnection.HTTP_OK
                 && (
                     status == HttpURLConnection.HTTP_MOVED_TEMP
@@ -207,7 +207,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
                     || status == HttpURLConnection.HTTP_SEE_OTHER
                 );
     }
-    
+
     /**
      * Retrieves the CSS located at the given URI.  It's assumed the URI does point to a CSS file--the URI will
      * be accessed (using java.io or java.net), opened, read and then passed into the CSS parser.
@@ -268,7 +268,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     }
 
     /**
-     * Factory method to generate ImageResources from a given Image. May be overridden in subclass. 
+     * Factory method to generate ImageResources from a given Image. May be overridden in subclass.
      *
      * @param uri The URI for the image, resolved to an absolute URI.
      * @param img The image to package; may be null (for example, if image could not be loaded).

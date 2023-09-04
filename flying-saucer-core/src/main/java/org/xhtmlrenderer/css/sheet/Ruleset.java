@@ -56,19 +56,19 @@ public class Ruleset {
     public void addProperty(PropertyDeclaration decl) {
         _props.add(decl);
     }
-    
+
     public void addAllProperties(List props) {
         _props.addAll(props);
     }
-    
+
     public void addFSSelector(Selector selector) {
         _fsSelectors.add(selector);
     }
-    
+
     public List getFSSelectors() {
         return _fsSelectors;
     }
-    
+
     public int getOrigin() {
         return _origin;
     }

@@ -109,7 +109,7 @@ public abstract class AbstractControl implements FormControl {
     public String getInitialValue() {
         return _initialValue;
     }
-    
+
     protected void setInitialValue(String value) {
         _initialValue = value;
         _value = value;

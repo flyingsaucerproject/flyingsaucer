@@ -97,7 +97,7 @@ public class ImageResourceLoader {
             return ir;
         }
     }
-    
+
     public static ImageResource loadEmbeddedBase64ImageResource(final String uri) {
         BufferedImage bufferedImage = ImageUtil.loadEmbeddedBase64Image(uri);
         if (bufferedImage != null) {

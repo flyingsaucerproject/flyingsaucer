@@ -24,24 +24,24 @@ import java.util.LinkedList;
 import org.xhtmlrenderer.render.MarkerData;
 
 /**
- * A bean which captures all state necessary to lay out an arbitrary box.  
+ * A bean which captures all state necessary to lay out an arbitrary box.
  * Mutable objects must be copied when provided to this class.  It is far too
- * expensive to maintain a bean of this class for each box.  
+ * expensive to maintain a bean of this class for each box.
  * It is only created as needed.
  */
 public class LayoutState {
     private StyleTracker _firstLines;
     private StyleTracker _firstLetters;
-    
+
     private MarkerData _currentMarkerData;
-    
+
     private LinkedList _BFCs;
-    
+
     private String _pageName;
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
     private int _noPageBreak;
-    
+
     public LinkedList getBFCs() {
         return _BFCs;
     }

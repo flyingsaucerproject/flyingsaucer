@@ -288,7 +288,7 @@ public class ITextRenderer {
     /**
      * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream if
      * something goes wrong.
-     * 
+     *
      * @throws IOException
      */
     public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, IOException {
@@ -299,7 +299,7 @@ public class ITextRenderer {
         PageBox firstPage = (PageBox) pages.get(0);
         int pageWidth = calculateWidth(c, firstPage);
         com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
-        		firstPage.getHeight(c) / _dotsPerPoint);
+                firstPage.getHeight(c) / _dotsPerPoint);
 //        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
 //                firstPage.getHeight(c) / _dotsPerPoint);
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document(firstPageSize, 0, 0, 0, 0);
@@ -324,19 +324,19 @@ public class ITextRenderer {
             doc.close();
         }
     }
-    
+
     private int calculateWidth(RenderingContext c, PageBox firstPage) {
-    	if (isScaleToFit()) {
-	    	int pageWidth = firstPage.getWidth(c);
-	        Rectangle pageRec = firstPage.getPrintClippingBounds(c);
-	        if(_dim.getWidth() > pageRec.getWidth()) {
-	            RectPropertySet margin = firstPage.getMargin(c);
-	            pageWidth = (int) (_dim.getWidth() + margin.left() + margin.right());
-	        }
-	        return pageWidth;
-    	} else {
-    		return firstPage.getWidth(c);
-    	}
+        if (isScaleToFit()) {
+            int pageWidth = firstPage.getWidth(c);
+            Rectangle pageRec = firstPage.getPrintClippingBounds(c);
+            if(_dim.getWidth() > pageRec.getWidth()) {
+                RectPropertySet margin = firstPage.getMargin(c);
+                pageWidth = (int) (_dim.getWidth() + margin.left() + margin.right());
+            }
+            return pageWidth;
+        } else {
+            return firstPage.getWidth(c);
+        }
     }
 
     private void firePreOpen() {
@@ -379,9 +379,9 @@ public class ITextRenderer {
             if (i != pageCount - 1) {
                 PageBox nextPage = (PageBox) pages.get(i + 1);
                 int pageWidth = calculateWidth(c, nextPage);
-                
+
                 com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
-                		nextPage.getHeight(c) / _dotsPerPoint);
+                        nextPage.getHeight(c) / _dotsPerPoint);
 //              com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
 //                        nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
@@ -421,11 +421,11 @@ public class ITextRenderer {
         page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
 
         Shape working = _outputDevice.getClip();
-        
+
         Rectangle content = page.getPrintClippingBounds(c);
         if (isScaleToFit()) {
-        	int pageWidth = calculateWidth(c, page);
-        	content.setSize(pageWidth, (int) content.getSize().getHeight());//RTD - to change
+            int pageWidth = calculateWidth(c, page);
+            content.setSize(pageWidth, (int) content.getSize().getHeight());//RTD - to change
         }
         _outputDevice.clip(content);
 
@@ -553,12 +553,12 @@ public class ITextRenderer {
     public PdfWriter getWriter() {
         return _writer;
     }
-    
+
     public boolean isScaleToFit() {
-    	return scaleToFit;
+        return scaleToFit;
     }
-    
+
     public boolean setScaleToFit(boolean scaleToFit) {
-    	return this.scaleToFit = scaleToFit;
+        return this.scaleToFit = scaleToFit;
     }
 }

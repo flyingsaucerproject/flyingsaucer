@@ -25,13 +25,13 @@ import org.xhtmlrenderer.render.BlockBox;
  * A bean containing the result of laying out a floated block.  If the floated
  * block can't fit on the current line, it will be marked pending with the result
  * that it will be layed out again once the line has been saved.
- *   
+ *
  * FIXME: This class can go away
  */
 public class FloatLayoutResult {
     private boolean _pending;
     private BlockBox _block;
-    
+
     public boolean isPending() {
         return _pending;
     }

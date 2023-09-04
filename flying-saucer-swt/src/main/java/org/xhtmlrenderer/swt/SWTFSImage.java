@@ -25,9 +25,9 @@ import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 
 /**
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTFSImage implements FSImage {
     private final UserAgentCallback _uac;
@@ -66,7 +66,7 @@ public class SWTFSImage implements FSImage {
 
     /**
      * Get the SWT image. Reload it from the UAC if it was disposed.
-     * 
+     *
      * @return
      */
     public Image getImage() {

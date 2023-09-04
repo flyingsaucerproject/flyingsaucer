@@ -24,11 +24,11 @@ public class FSRGBColor implements FSColor {
     public static final FSRGBColor RED = new FSRGBColor(255, 0, 0);
     public static final FSRGBColor GREEN = new FSRGBColor(0, 255, 0);
     public static final FSRGBColor BLUE = new FSRGBColor(0, 0, 255);
-    
+
     private int _red;
     private int _green;
     private int _blue;
-    
+
     public FSRGBColor(int red, int green, int blue) {
         if (red < 0 || red > 255) {
             throw new IllegalArgumentException();
@@ -59,11 +59,11 @@ public class FSRGBColor implements FSColor {
     public int getRed() {
         return _red;
     }
-    
+
     public String toString() {
         return '#' + toString(_red) + toString(_green) + toString(_blue);
     }
-    
+
     private String toString(int color) {
         String result = Integer.toHexString(color);
         if (result.length() == 1) {
@@ -98,29 +98,29 @@ public class FSRGBColor implements FSColor {
         float hBase = hsb[0];
         float sBase = hsb[1];
         float bBase = hsb[2];
-        
+
         float hLighter = hBase;
         float sLighter = 0.35f*bBase*sBase;
         float bLighter = 0.6999f + 0.3f*bBase;
-        
+
         int[] rgb = HSBtoRGB(hLighter, sLighter, bLighter);
         return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
     }
-    
+
     public FSColor darkenColor() {
         float[] hsb = RGBtoHSB(getRed(), getGreen(), getBlue(), null);
         float hBase = hsb[0];
         float sBase = hsb[1];
         float bBase = hsb[2];
-        
+
         float hDarker = hBase;
         float sDarker = sBase;
         float bDarker = 0.56f*bBase;
-        
+
         int[] rgb = HSBtoRGB(hDarker, sDarker, bDarker);
         return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
     }
-    
+
     // Taken from java.awt.Color to avoid dependency on it
     private static float[] RGBtoHSB(int r, int g, int b, float[] hsbvals) {
         float hue, saturation, brightness;
@@ -160,7 +160,7 @@ public class FSRGBColor implements FSColor {
         hsbvals[2] = brightness;
         return hsbvals;
     }
-    
+
     // Taken from java.awt.Color to avoid dependency on it
     private static int[] HSBtoRGB(float hue, float saturation, float brightness) {
         int r = 0, g = 0, b = 0;

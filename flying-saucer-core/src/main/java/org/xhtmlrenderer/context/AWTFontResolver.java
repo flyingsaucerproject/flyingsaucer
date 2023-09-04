@@ -52,7 +52,7 @@ public class AWTFontResolver implements FontResolver {
     public AWTFontResolver() {
         init();
     }
-    
+
     private void init() {
         GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
         String[] available_fonts = gfx.getAvailableFontFamilyNames();
@@ -72,7 +72,7 @@ public class AWTFontResolver implements FontResolver {
         available_fonts_hash.put("SansSerif", new Font("SansSerif", Font.PLAIN, 1));
         available_fonts_hash.put("Monospaced", new Font("Monospaced", Font.PLAIN, 1));
     }
-    
+
     public void flushCache() {
         init();
     }

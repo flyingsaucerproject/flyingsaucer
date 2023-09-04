@@ -25,11 +25,11 @@ import java.util.List;
 public class BoxRangeLists {
     private List _block = new ArrayList();
     private List _inline = new ArrayList();
-    
+
     public List getBlock() {
         return _block;
     }
-    
+
     public List getInline() {
         return _inline;
     }

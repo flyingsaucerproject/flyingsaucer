@@ -22,19 +22,19 @@ package org.xhtmlrenderer.render;
 public class CharCounts {
     private int _spaceCount;
     private int _nonSpaceCount;
-    
+
     public int getSpaceCount() {
         return _spaceCount;
     }
-    
+
     public void setSpaceCount(int spaceCount) {
         _spaceCount = spaceCount;
     }
-    
+
     public int getNonSpaceCount() {
         return _nonSpaceCount;
     }
-    
+
     public void setNonSpaceCount(int nonSpaceCount) {
         _nonSpaceCount = nonSpaceCount;
     }

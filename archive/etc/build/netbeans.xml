@@ -5,7 +5,7 @@
 		<nbprofiledirect>
 			<classpath refid="libraries-and-dest.all"/>
 		</nbprofiledirect>
-		<java fork="true" classname="org.xhtmlrenderer.swing.HTMLTest" 
+		<java fork="true" classname="org.xhtmlrenderer.swing.HTMLTest"
                         jvm="${profiler.info.jvm}">
                       <jvmarg value="${profiler.info.jvmargs.agent}"/>
                       <jvmarg line="${profiler.info.jvmargs}"/>
@@ -18,16 +18,16 @@
 			<classpath refid="libraries-and-dest.all"/>
                   </java>
 	</target>
-	
+
 	<!--
     Optional - If source roots are properly declared in project, should
-                            work without setting source path.     
-            <sourcepath refid="debug.sourcepath"/> 
+                            work without setting source path.
+            <sourcepath refid="debug.sourcepath"/>
     -->
 	<target name="debug" depends="compile" if="netbeans.home" description="Debug Project">
 		<nbjpdastart name="flying-saucer-simple" addressproperty="jpda.address" transport="dt_socket">
 			<classpath refid="run.classpath"/>
-			
+
 		</nbjpdastart>
 		<java fork="true" classname="org.xhtmlrenderer.swing.HTMLTest">
 			<jvmarg value="-Xdebug"/>

@@ -27,9 +27,9 @@ import org.xhtmlrenderer.render.Box;
 
 /**
  * Listener to handle links.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class LinkListener implements MouseListener {
     private final BasicRenderer _parent;

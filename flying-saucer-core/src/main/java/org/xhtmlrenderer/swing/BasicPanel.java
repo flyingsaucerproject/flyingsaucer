@@ -464,7 +464,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         XMLResource xmlResource = sharedContext.getUac().getXMLResource(uri);
         return xmlResource.getDocument();
     }
-    
+
     /**
      * Returns whether the background of this <code>BasicPanel</code> will
      * be painted when it is rendered.

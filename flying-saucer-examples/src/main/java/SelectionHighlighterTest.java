@@ -98,7 +98,7 @@ public class SelectionHighlighterTest extends JFrame {
 
         actionPanel.add(new JButton(copyAction), BorderLayout.SOUTH);
         add(mainPanel);
-        
+
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }

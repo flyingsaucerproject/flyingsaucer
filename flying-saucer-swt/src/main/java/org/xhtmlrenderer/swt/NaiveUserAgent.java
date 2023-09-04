@@ -129,7 +129,7 @@ public class NaiveUserAgent implements UserAgentCallback {
         }
         return ir;
     }
-    
+
     /**
      * Factory method to generate ImageResources from a given Image. May be
      * overridden in subclass.
@@ -143,7 +143,7 @@ public class NaiveUserAgent implements UserAgentCallback {
     protected ImageResource createImageResource(String uri, InputStream is) {
         return new ImageResource(uri, new SWTFSImage(new Image(_device, is), this, uri));
     }
-    
+
     private ImageResource loadEmbeddedBase64ImageResource(final String uri) {
         byte[] image = ImageUtil.getEmbeddedBase64Image(uri);
         if (image != null) {

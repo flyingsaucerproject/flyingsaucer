@@ -21,7 +21,7 @@ package org.xhtmlrenderer.layout;
 
 /**
  * A bean which tracks various charactistics of an inline box.  It is used
- * when calculating the vertical position of boxes in a line.  
+ * when calculating the vertical position of boxes in a line.
  */
 public class InlineBoxMeasurements {
     private int _textTop;
@@ -29,12 +29,12 @@ public class InlineBoxMeasurements {
     private int _baseline;
     private int _inlineTop;
     private int _inlineBottom;
-    
+
     private int _paintingTop;
     private int _paintingBottom;
-    
+
     public InlineBoxMeasurements() {
-        
+
     }
 
     public int getBaseline() {

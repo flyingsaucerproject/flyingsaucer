@@ -89,7 +89,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      */
     private Stylesheet parse(StylesheetInfo info) {
         CSSResource cr = _userAgentCallback.getCSSResource(info.getUri());
-        if (cr==null) return null;  
+        if (cr==null) return null;
         // Whether by accident or design, InputStream will never be null
         // since the null resource stream is wrapped in a BufferedInputStream
         InputSource inputSource=cr.getResourceInputSource();
@@ -158,7 +158,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     public synchronized Object removeCachedStylesheet(Object key) {
         return _cache.remove(key);
     }
-    
+
     public synchronized void flushCachedStylesheets() {
         _cache.clear();
     }
@@ -185,7 +185,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     public void setUserAgentCallback(UserAgentCallback userAgent) {
         _userAgentCallback = userAgent;
     }
-    
+
     public void setSupportCMYKColors(boolean b) {
         _cssParser.setSupportCMYKColors(b);
     }

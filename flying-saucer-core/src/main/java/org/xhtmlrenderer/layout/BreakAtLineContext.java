@@ -24,16 +24,16 @@ import org.xhtmlrenderer.render.BlockBox;
 public class BreakAtLineContext {
     private final BlockBox _block;
     private final int _line;
-    
+
     public BreakAtLineContext(BlockBox block, int line) {
         _block = block;
         _line = line;
     }
-    
+
     public BlockBox getBlock() {
         return _block;
     }
-    
+
     public int getLine() {
         return _line;
     }

@@ -26,9 +26,9 @@ import org.xhtmlrenderer.layout.LayoutContext;
 
 /**
  * ReplacedElement for <code>&lt;img&gt;</code> tags.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class ImageReplacedElement implements ReplacedElement {
     private final SWTFSImage _image;

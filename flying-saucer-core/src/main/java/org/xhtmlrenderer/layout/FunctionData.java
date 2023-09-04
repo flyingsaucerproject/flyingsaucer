@@ -23,26 +23,26 @@ import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
 
 /**
- * A bean which contains all the information necessary to invoke a 
+ * A bean which contains all the information necessary to invoke a
  * {@link ContentFunction}.
  * @see ContentFunction
  */
 public class FunctionData {
     private ContentFunction _contentFunction;
     private FSFunction _function;
-    
+
     public FunctionData() {
     }
-    
+
     public FunctionData(ContentFunction contentFunction, FSFunction function) {
         _contentFunction = contentFunction;
         _function = function;
     }
-    
+
     public ContentFunction getContentFunction() {
         return _contentFunction;
     }
-    
+
     public void setContentFunction(ContentFunction contentFunction) {
         _contentFunction = contentFunction;
     }

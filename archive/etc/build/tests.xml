@@ -6,7 +6,7 @@
 	<!-- =================================================
 	 Tests
 	 ================================================= -->
-	
+
 	<!-- Compiles, then runs HTML test -->
 	<target name="test" depends="compile" description="Test">
 		<java
@@ -21,10 +21,10 @@
 			<classpath refid="libraries.all"/>
 		</java>
 	</target>
-	
+
 	<!-- Runs a speed test after a compile -->
 	<target name="test.speed" depends="test.css-speed"></target>
-	
+
 	<!-- Runs a speed test after a compile -->
 	<target name="test.css-speed" depends="compile" description="Test timing on loading Hamlet.xhtml multiple times.">
 		<java classname="org.xhtmlrenderer.test.HamletSpeedTest"
@@ -56,7 +56,7 @@
 			<classpath refid="libraries.all"/>
 		</java>
 	</target>
-	
+
 	<!-- target just shows how a single test can be run -->
 	<target name="test.junit.simple" depends="compile.junit">
 		<junit printsummary="withOutAndErr"
@@ -65,7 +65,7 @@
 				haltonerror="on"
 				showoutput="on"
 				haltonfailure="on">
-			
+
 			<classpath>
 				<pathelement path="${basedir}" />
 				<pathelement path="${dest.dir}" />
@@ -74,14 +74,14 @@
 					<include name="*.jar"/>
 				</fileset>
 			</classpath>
-			
+
 			<formatter type="plain" usefile="false" />
-	
+
 	<!-- run a single test -->
 			<test name="tests.public_apis.SimpleJUnitTest" />
 		</junit>
 	</target>
-        
+
 	<!-- target just shows how a single test can be run -->
 	<target name="test.junit.ident" depends="compile.junit" description="test idents">
 		<junit printsummary="withOutAndErr"
@@ -90,7 +90,7 @@
 				haltonerror="on"
 				showoutput="on"
 				haltonfailure="on">
-			
+
 			<classpath>
 				<pathelement path="${basedir}" />
 				<pathelement path="${dest.dir}" />
@@ -99,14 +99,14 @@
 					<include name="*.jar"/>
 				</fileset>
 			</classpath>
-			
+
 			<formatter type="plain" usefile="false" />
-	
+
                         <!-- run a single test -->
 			<test name="tests.public_apis.css.properties.resolve.IdentResolutionTest" />
 		</junit>
-	</target>        
-	
+	</target>
+
 	<target name="test.junit.public-apis" depends="compile.junit" description="Runs all JUnit unit tests.">
 		<junit printsummary="withOutAndErr"
 				timeout="60000"
@@ -114,10 +114,10 @@
 				haltonerror="on"
 				showoutput="on"
 				haltonfailure="on">
-		 
+
 	<!-- <sysproperty key="show-config" value="${show-config}" /> -->
 	<!-- <sysproperty key="show-config" value="ALL" /> -->
-			
+
 			<classpath>
 				<pathelement path="${basedir}" />
 				<pathelement path="${dest.dir}" />
@@ -126,9 +126,9 @@
 					<include name="*.jar"/>
 				</fileset>
 			</classpath>
-			
+
 			<formatter type="plain" usefile="false" />
-	
+
 	<!-- run all class files with Test in the name in the java dest directory -->
 			<batchtest fork="no">
 				<fileset dir="${dest.java.dir}">
@@ -239,7 +239,7 @@
         <echo message="${dest.java.dir}" />
         <java classname="org.xhtmlrenderer.test.ReferenceComparison"
                 fork="${java-exec.fork.tests}"
-                
+
                 maxmemory="256m">
             <classpath>
               <path refid="libraries.all"/>

@@ -60,43 +60,43 @@ public class CascadedStyle {
      * Map of PropertyDeclarations, keyed by {@link CSSName}
      */
     private Map cascadedProperties;
-    
+
     private String fingerprint;
-    
+
     /**
      * Creates a <code>CascadedStyle</code>, setting the display property to
-     * to the value of the <code>display</code> parameter.  
+     * to the value of the <code>display</code> parameter.
      */
     public static CascadedStyle createAnonymousStyle(IdentValue display) {
         CSSPrimitiveValue val = new PropertyValue(display);
-        
+
         List props = Collections.singletonList(
                 new PropertyDeclaration(CSSName.DISPLAY, val, true, StylesheetInfo.USER));
-        
+
         return new CascadedStyle(props.iterator());
     }
-    
+
     /**
      * Creates a <code>CascadedStyle</code> using the provided property
      * declarations.  It is used when a box requires a style that does not
      * correspond to anything in the parsed stylesheets.
-     * @param decls An array of PropertyDeclaration objects created with 
+     * @param decls An array of PropertyDeclaration objects created with
      * {@link #createLayoutPropertyDeclaration(CSSName, IdentValue)}
      * @see #createLayoutPropertyDeclaration(CSSName, IdentValue)
      */
     public static CascadedStyle createLayoutStyle(PropertyDeclaration[] decls) {
         return new CascadedStyle(Arrays.asList(decls).iterator());
     }
-    
+
     public static CascadedStyle createLayoutStyle(List decls) {
         return new CascadedStyle(decls.iterator());
-    }    
-    
+    }
+
     /**
      * Creates a <code>CascadedStyle</code> using style information from
      * <code>startingPoint</code> and then adding the property declarations
      * from <code>decls</code>.
-     * @param decls An array of PropertyDeclaration objects created with 
+     * @param decls An array of PropertyDeclaration objects created with
      * {@link #createLayoutPropertyDeclaration(CSSName, IdentValue)}
      * @see #createLayoutPropertyDeclaration(CSSName, IdentValue)
      */
@@ -155,10 +155,10 @@ public class CascadedStyle {
             }
         }
     }
-    
+
     private CascadedStyle(CascadedStyle startingPoint, Iterator props) {
         cascadedProperties = new TreeMap(startingPoint.cascadedProperties);
-        
+
         addProperties(props);
     }
 

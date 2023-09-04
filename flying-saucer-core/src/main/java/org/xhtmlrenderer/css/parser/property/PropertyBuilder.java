@@ -32,6 +32,6 @@ public interface PropertyBuilder {
      */
     public List buildDeclarations(
             CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed);
-    
-    public List buildDeclarations(CSSName cssName, List values, int origin, boolean important);    
+
+    public List buildDeclarations(CSSName cssName, List values, int origin, boolean important);
 }

@@ -181,7 +181,7 @@
         <fileset dir="${libraries.dir}/swt">
                 <selector if="isMac64">
                     <filename name="swt-3.6-osx-64.jar"/>
-                </selector>            
+                </selector>
         </fileset>
     </path>
 

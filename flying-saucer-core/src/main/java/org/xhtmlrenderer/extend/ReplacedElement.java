@@ -39,7 +39,7 @@ public interface ReplacedElement {
      *
      */
     int getIntrinsicHeight();
-    
+
     /**
      * Returns the current location where the element will be rendered on the canvas
      * @return see desc
@@ -62,8 +62,8 @@ public interface ReplacedElement {
      *
      */
     boolean isRequiresInteractivePaint();
-    
+
     boolean hasBaseline();
-    
+
     int getBaseline();
 }

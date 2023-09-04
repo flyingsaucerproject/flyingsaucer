@@ -102,7 +102,7 @@ public class BrowserActions {
         setAccel(open_file, KeyEvent.VK_O);
         setMnemonic(open_file, new Integer(KeyEvent.VK_O));
 
-        
+
         export_pdf =
             new AbstractAction() {
                 public void actionPerformed(ActionEvent evt) {
@@ -110,14 +110,14 @@ public class BrowserActions {
                 }
             };
         export_pdf.putValue(Action.NAME, "Export PDF...");
-        //is iText in classpath? 
+        //is iText in classpath?
         try{
             Class.forName("com.lowagie.text.DocumentException");
         } catch( ClassNotFoundException e )
         {
             export_pdf.setEnabled(false);
         }
-        
+
         /*setAccel(export_pdf, KeyEvent.VK_E);
         setMnemonic(export_pdf, new Integer(KeyEvent.VK_E));*/
 
@@ -138,7 +138,7 @@ public class BrowserActions {
         setName(quit, "Quit");
         setAccel(quit, KeyEvent.VK_Q);
         setMnemonic(quit, new Integer(KeyEvent.VK_Q));
-        
+
         url = getImageUrl("images/go-previous.png");
         backward = new EmptyAction("Back", "Go back one page", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {

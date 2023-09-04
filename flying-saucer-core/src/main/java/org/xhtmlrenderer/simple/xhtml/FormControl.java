@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 
 /**
  * Interface describing a form control.
- * 
+ *
  * @author Vianney le Clément
  */
 public interface FormControl {
@@ -48,14 +48,14 @@ public interface FormControl {
 
     /**
      * Is this control enabled?
-     * 
+     *
      * @return <code>true</code> if this control is enabled
      */
     boolean isEnabled();
 
     /**
      * Enable/disable this control
-     * 
+     *
      * @param enabled
      */
     void setEnabled(boolean enabled);
@@ -67,7 +67,7 @@ public interface FormControl {
 
     /**
      * Is this control successful?
-     * 
+     *
      * @return <code>true</code> if this control is successful and its
      *         name-value pair should be submitted, <code>false</code>
      *         otherwise.
@@ -82,7 +82,7 @@ public interface FormControl {
 
     /**
      * Sets this control's successful state.
-     * 
+     *
      * @param successful
      */
     void setSuccessful(boolean successful);
@@ -96,7 +96,7 @@ public interface FormControl {
     /**
      * Sets the control's current value. This has no effect when isMultiple
      * returns true.
-     * 
+     *
      * @param value
      */
     void setValue(String value);
@@ -110,7 +110,7 @@ public interface FormControl {
     /**
      * Sets the control's current values (when isMultiple returns true). This
      * has no effect when isMultiple returns false.
-     * 
+     *
      * @param values
      */
     void setMultipleValues(String[] values);

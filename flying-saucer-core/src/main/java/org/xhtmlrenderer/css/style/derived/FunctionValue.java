@@ -26,13 +26,13 @@ import org.xhtmlrenderer.css.style.DerivedValue;
 
 public class FunctionValue extends DerivedValue {
     private FSFunction _function;
-    
+
     public FunctionValue(CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
-        
+
         _function = value.getFunction();
     }
-    
+
     public FSFunction getFunction() {
         return _function;
     }

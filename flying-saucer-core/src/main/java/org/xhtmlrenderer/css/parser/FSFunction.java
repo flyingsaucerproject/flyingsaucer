@@ -25,20 +25,20 @@ import java.util.List;
 public class FSFunction {
     private String _name;
     private List _parameters;
-    
+
     public FSFunction(String name, List parameters) {
         _name = name;
         _parameters = parameters;
     }
-    
+
     public String getName() {
         return _name;
     }
-    
+
     public List getParameters() {
         return _parameters;
     }
-    
+
     public String toString() {
         StringBuffer result = new StringBuffer();
         result.append(_name);

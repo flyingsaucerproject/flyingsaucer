@@ -34,9 +34,9 @@ public class SplitterTest {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setValidating(false);
-        
+
         XMLReader reader = factory.newSAXParser().getXMLReader();
-        
+
         reader.setErrorHandler(new ErrorHandler() {
             public void error(SAXParseException exception) throws SAXException {
                 throw exception;
@@ -50,12 +50,12 @@ public class SplitterTest {
                 throw exception;
             }
         });
-        
+
         DocumentSplitter splitter = new DocumentSplitter();
         reader.setContentHandler(splitter);
-        
+
         reader.parse(args[0]);
-        
+
         for (Iterator i = splitter.getDocuments().iterator(); i.hasNext(); ) {
             Document doc = (Document)i.next();
             System.out.println(doc.getDocumentElement());

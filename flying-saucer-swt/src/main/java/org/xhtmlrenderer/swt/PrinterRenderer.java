@@ -51,7 +51,7 @@ import org.xhtmlrenderer.util.XRLog;
 /**
  * A renderer for a SWT Printer. Instances must be disposed with
  * {@link PrinterRenderer#dispose()}.
- * 
+ *
  * @author Vianney le Clément
  */
 public class PrinterRenderer implements UserInterface {
@@ -187,7 +187,7 @@ public class PrinterRenderer implements UserInterface {
                 if (!_printer.startPage()) {
                     return;
                 }
-                
+
                 page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
                 page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
                 page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);

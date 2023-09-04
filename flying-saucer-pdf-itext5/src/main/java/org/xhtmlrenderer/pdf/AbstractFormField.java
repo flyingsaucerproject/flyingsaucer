@@ -112,7 +112,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     protected boolean isReadOnly(Element e) {
         return !Util.isNullOrEmpty(e.getAttribute("readonly"));
     }
-    
+
     protected boolean isSelected(Element e) {
         return Util.isNullOrEmpty(e.getAttribute("selected"));
     }
@@ -172,7 +172,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
         }
         return result.toString();
     }
-    
+
     protected void setStrokeColor(PdfTemplate template, FSColor color)
     {
         if (color instanceof FSRGBColor)
@@ -184,11 +184,11 @@ public abstract class AbstractFormField implements ITextReplacedElement {
         {
             FSCMYKColor cmyk = (FSCMYKColor)color;
             template.setCMYKColorStroke(
-                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255), 
+                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255),
                     (int)(cmyk.getYellow()*255), (int)(cmyk.getBlack()*255));
         }
     }
-    
+
     protected void setFillColor(PdfTemplate template, FSColor color)
     {
         if (color instanceof FSRGBColor)
@@ -200,7 +200,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
         {
             FSCMYKColor cmyk = (FSCMYKColor)color;
             template.setCMYKColorFill(
-                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255), 
+                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255),
                     (int)(cmyk.getYellow()*255), (int)(cmyk.getBlack()*255));
         }
     }

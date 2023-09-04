@@ -115,7 +115,7 @@ public class ITextUserAgent extends NaiveUserAgent {
         }
         return resource;
     }
-    
+
     private ImageResource loadEmbeddedBase64ImageResource(final String uri) {
         try {
             byte[] buffer = ImageUtil.getEmbeddedBase64Image(uri);

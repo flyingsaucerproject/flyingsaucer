@@ -54,21 +54,21 @@ abstract class Condition {
     static Condition createAttributePrefixCondition(String namespaceURI, String name, String value) {
         return new AttributePrefixCondition(namespaceURI, name, value);
     }
-    
+
     /**
      * the CSS condition [attribute$=value]
      */
     static Condition createAttributeSuffixCondition(String namespaceURI, String name, String value) {
         return new AttributeSuffixCondition(namespaceURI, name, value);
     }
-    
+
     /**
      * the CSS condition [attribute*=value]
      */
     static Condition createAttributeSubstringCondition(String namespaceURI, String name, String value) {
         return new AttributeSubstringCondition(namespaceURI, name, value);
     }
-    
+
     /**
      * the CSS condition [attribute=value]
      */
@@ -136,7 +136,7 @@ abstract class Condition {
     static Condition createFirstChildCondition() {
         return new FirstChildCondition();
     }
-    
+
     /**
      * the CSS condition that element has pseudo-class :last-child
      *
@@ -145,7 +145,7 @@ abstract class Condition {
     static Condition createLastChildCondition() {
         return new LastChildCondition();
     }
-    
+
     /**
      * the CSS condition that element has pseudo-class :nth-child(an+b)
      *
@@ -158,16 +158,16 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :even
-     * 
+     *
      * @return Returns
      */
     static Condition createEvenChildCondition() {
         return new EvenChildCondition();
     }
-    
+
     /**
      * the CSS condition that element has pseudo-class :odd
-     * 
+     *
      * @return Returns
      */
     static Condition createOddChildCondition() {
@@ -191,12 +191,12 @@ abstract class Condition {
     static Condition createUnsupportedCondition() {
         return new UnsupportedCondition();
     }
-    
+
     private static abstract class AttributeCompareCondition extends Condition {
         private String _namespaceURI;
         private String _name;
         private String _value;
-        
+
         protected abstract boolean compare(String attrValue, String conditionValue);
 
         AttributeCompareCondition(String namespaceURI, String name, String value) {
@@ -213,7 +213,7 @@ abstract class Condition {
             if (val == null) {
                 return false;
             }
-            
+
             return compare(val, _value);
         }
     }
@@ -222,12 +222,12 @@ abstract class Condition {
         AttributeExistsCondition(String namespaceURI, String name) {
             super(namespaceURI, name, null);
         }
-        
+
         protected boolean compare(String attrValue, String conditionValue) {
             return ! attrValue.equals("");
         }
     }
-    
+
     private static class AttributeEqualsCondition extends AttributeCompareCondition {
         AttributeEqualsCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
@@ -237,7 +237,7 @@ abstract class Condition {
             return attrValue.equals(conditionValue);
         }
     }
-    
+
     private static class AttributePrefixCondition extends AttributeCompareCondition {
         AttributePrefixCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
@@ -247,7 +247,7 @@ abstract class Condition {
             return attrValue.startsWith(conditionValue);
         }
     }
-    
+
     private static class AttributeSuffixCondition extends AttributeCompareCondition {
         AttributeSuffixCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
@@ -257,7 +257,7 @@ abstract class Condition {
             return attrValue.endsWith(conditionValue);
         }
     }
-    
+
     private static class AttributeSubstringCondition extends AttributeCompareCondition {
         AttributeSubstringCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
@@ -267,12 +267,12 @@ abstract class Condition {
             return attrValue.indexOf(conditionValue) > -1;
         }
     }
-    
+
     private static class AttributeMatchesListCondition extends AttributeCompareCondition {
         AttributeMatchesListCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
-        
+
         protected boolean compare(String attrValue, String conditionValue) {
             String[] ca = split(attrValue, ' ');
             boolean matched = false;
@@ -289,7 +289,7 @@ abstract class Condition {
         AttributeMatchesFirstPartCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
-        
+
         protected boolean compare(String attrValue, String conditionValue) {
             String[] ca = split(attrValue, '-');
             if (conditionValue.equals(ca[0])) {
@@ -381,7 +381,7 @@ abstract class Condition {
         }
 
     }
-    
+
     private static class LastChildCondition extends Condition {
 
         LastChildCondition() {
@@ -411,42 +411,42 @@ abstract class Condition {
 
 
             //<An+B> from https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child
-            //Represents elements whose numeric position in a series of siblings matches the pattern An+B, 
-            //for every positive integer or zero value of n. The index of the first element is 1. 
-            //The values A and B must both be <integer>s.             
-            
+            //Represents elements whose numeric position in a series of siblings matches the pattern An+B,
+            //for every positive integer or zero value of n. The index of the first element is 1.
+            //The values A and B must both be <integer>s.
+
             // an+b generates a sequence b, a+b, 2a+b, 3a+b, 4a+b
-            // e.g. if 
+            // e.g. if
             //a=2 b=3, it generates the sequence: 3, 5, 7, 9, 11... for values of n=0,1,2,3,4...
             //a=2 b=0, the sequence is 0 (which is moot), 2, 4, 6... - i.e. even
             //a=2 b=1, gives 1, 3, 5, 7... - i.e. even
             //a=1 b=2, gives 2, 3, 4, 5, 6... - i.e. not first
-            //a=1 b=3, gives 3, 4, 5, 6, 7... 
+            //a=1 b=3, gives 3, 4, 5, 6, 7...
             //a=-1 b=5, gives 5, 4, 3, 2, 1. So only matches the first 5 - it won't reverse the order of the elements!
-            //a=-2 b=5, gives 5, 3, 1. So only matches the odd 3 of the first 5 
+            //a=-2 b=5, gives 5, 3, 1. So only matches the odd 3 of the first 5
             //a=0 b=1, gives 1, just the first element
             //a=0 b=7, gives 7. Just the seventh element
-            
+
 //            p = ( a * n ) + b  - is n zero, or a positive integer?
 //            p-b = ( a * n )
-//            (p-b)/a = n 
-                
+//            (p-b)/a = n
+
             //Clearly n==0 iff p==b, for any value of a
             if ( position == b )
                 return true;
-            
+
             //And if a==0 then a x n is 0 for all n, and if we didn't match position==b above then n cannot be valid (0 or +ve integer).
             if ( a == 0 )
                 return false;
-            
+
             //return true if n is an integer and 0 or +ve
             if  (    ( ( ( position - b ) % a ) == 0 )   // n is an integer
-                  && ( ( ( position - b ) / a ) >= 0 ) ) // n is 0 or +ve 
+                  && ( ( ( position - b ) / a ) >= 0 ) ) // n is 0 or +ve
                 return true;
-                        
+
             return false;
-            
-//            
+
+//
 //            position -= b;
 //
 //            if (a == 0) {
@@ -500,7 +500,7 @@ abstract class Condition {
             return position >= 0 && position % 2 == 0;
         }
     }
-    
+
     private static class OddChildCondition extends Condition {
 
         OddChildCondition() {
@@ -536,29 +536,29 @@ abstract class Condition {
         }
 
     }
-    
+
     private static String[] split(String s, char ch) {
         if (s.indexOf(ch) == -1) {
             return new String[] { s };
         } else {
             List result = new ArrayList();
-            
+
             int last = 0;
             int next = 0;
-            
+
             while ((next = s.indexOf(ch, last)) != -1) {
                 if (next != last) {
                     result.add(s.substring(last, next));
                 }
                 last = next + 1;
             }
-            
+
             if (last != s.length()) {
                 result.add(s.substring(last));
             }
-            
+
             return (String[])result.toArray(new String[result.size()]);
         }
-    }    
+    }
 }
 

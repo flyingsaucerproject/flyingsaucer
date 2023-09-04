@@ -33,9 +33,9 @@ import org.xhtmlrenderer.util.XRLog;
 
 /**
  * Resolve font the SWT way.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTFontResolver implements FontResolver {
     private final Device _device;

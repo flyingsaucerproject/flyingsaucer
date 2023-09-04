@@ -41,25 +41,25 @@ import org.xml.sax.helpers.AttributesImpl;
 
 public class DocumentSplitter implements ContentHandler {
     private static final String HEAD_ELEMENT_NAME = "head";
-    
+
     private List _processingInstructions = new LinkedList();
     private SAXEventRecorder _head = new SAXEventRecorder();
     private boolean _inHead = false;
-    
+
     private int _depth = 0;
-    
+
     private boolean _needNewNSScope = false;
     private NamespaceScope _currentNSScope = new NamespaceScope();
 
     private boolean _needNSScopePop;
-    
+
     private Locator _locator;
-    
+
     private TransformerHandler _handler;
     private boolean _inDocument = false;
-    
+
     private List _documents = new LinkedList();
-    
+
     private boolean _replayedHead = false;
 
     public void characters(char[] ch, int start, int length) throws SAXException {
@@ -93,7 +93,7 @@ public class DocumentSplitter implements ContentHandler {
 
     public void processingInstruction(String target, String data) throws SAXException {
         _processingInstructions.add(new ProcessingInstruction(target, data));
-        
+
     }
 
     public void setDocumentLocator(Locator locator) {
@@ -123,10 +123,10 @@ public class DocumentSplitter implements ContentHandler {
                     _handler.startElement("", HEAD_ELEMENT_NAME, HEAD_ELEMENT_NAME, new AttributesImpl());
                     _head.replay(_handler);
                     _handler.endElement("", HEAD_ELEMENT_NAME, HEAD_ELEMENT_NAME);
-                    
+
                     _handler.startElement(uri, localName, qName, atts);
                 }
-                
+
                 _replayedHead = true;
             } else {
                 _handler.startElement(uri, localName, qName, atts);
@@ -136,7 +136,7 @@ public class DocumentSplitter implements ContentHandler {
                 _needNewNSScope = false;
                 _currentNSScope = new NamespaceScope(_currentNSScope);
             }
-            
+
             if (_depth == 1) {
                 if (HEAD_ELEMENT_NAME.equalsIgnoreCase(qName)) {
                     _inHead = true;
@@ -148,20 +148,20 @@ public class DocumentSplitter implements ContentHandler {
                         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                         factory.setNamespaceAware(true);
                         factory.setValidating(false);
-                        
+
                         Document doc = factory.newDocumentBuilder().newDocument();
                         _documents.add(doc);
-                        _handler = 
+                        _handler =
                             ((SAXTransformerFactory)SAXTransformerFactory.newInstance()).newTransformerHandler();
                         _handler.setResult(new DOMResult(doc));
-                        
+
                         _handler.startDocument();
                         _handler.setDocumentLocator(_locator);
                         for (Iterator i = _processingInstructions.iterator(); i.hasNext(); ) {
                             ProcessingInstruction pI = (ProcessingInstruction)i.next();
                             _handler.processingInstruction(pI.getTarget(), pI.getData());
                         }
-                        
+
                         _currentNSScope.replay(_handler, true);
                         _handler.startElement(uri, localName, qName, atts);
                     } catch (ParserConfigurationException e) {
@@ -172,18 +172,18 @@ public class DocumentSplitter implements ContentHandler {
                 }
             }
         }
-        
+
         _depth++;
     }
-    
+
     public void endElement(String uri, String localName, String qName) throws SAXException {
         _depth--;
-        
+
         if (_needNSScopePop) {
             _needNSScopePop = false;
             _currentNSScope = _currentNSScope.getParent();
         }
-        
+
         if (_inHead) {
             if (_depth == 1) {
                 _currentNSScope.replay(_head, false);
@@ -201,7 +201,7 @@ public class DocumentSplitter implements ContentHandler {
                 _handler.endElement(uri, localName, qName);
             }
         }
-    }    
+    }
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         if (_inHead) {
@@ -213,15 +213,15 @@ public class DocumentSplitter implements ContentHandler {
             _currentNSScope.addNamespace(new Namespace(prefix, uri));
         }
     }
-    
+
     public List getDocuments() {
         return _documents;
     }
-    
+
     private static final class Namespace {
         private String _prefix;
         private String _uri;
-        
+
         public Namespace(String prefix, String uri) {
             _prefix = prefix;
             _uri = uri;
@@ -230,36 +230,36 @@ public class DocumentSplitter implements ContentHandler {
         public String getPrefix() {
             return _prefix;
         }
-        
+
         public String getUri() {
             return _uri;
         }
     }
-    
+
     private static final class NamespaceScope {
         private NamespaceScope _parent;
         private List _namespaces = new LinkedList();
-        
+
         public NamespaceScope() {
         }
-        
+
         public NamespaceScope(NamespaceScope parent) {
             _parent = parent;
         }
-        
+
         public void addNamespace(Namespace namespace) {
             _namespaces.add(namespace);
         }
-        
+
         public void replay(ContentHandler contentHandler, boolean start) throws SAXException {
             replay(contentHandler, new HashSet(), start);
         }
-        
-        private void replay(ContentHandler contentHandler, Set seen, boolean start) 
+
+        private void replay(ContentHandler contentHandler, Set seen, boolean start)
                 throws SAXException {
             for (Iterator i = _namespaces.iterator(); i.hasNext(); ) {
                 Namespace ns = (Namespace)i.next();
-                
+
                 if (! seen.contains(ns.getPrefix())) {
                     seen.add(ns.getPrefix());
                     if (start) {
@@ -269,21 +269,21 @@ public class DocumentSplitter implements ContentHandler {
                     }
                 }
             }
-            
+
             if (_parent != null) {
                 _parent.replay(contentHandler, seen, start);
             }
         }
-        
+
         public NamespaceScope getParent() {
             return _parent;
         }
     }
-    
+
     private static class ProcessingInstruction {
         private String _target;
         private String _data;
-        
+
         public ProcessingInstruction(String target, String data) {
             _target = target;
             _data = data;
@@ -292,7 +292,7 @@ public class DocumentSplitter implements ContentHandler {
         public String getData() {
             return _data;
         }
-        
+
         public String getTarget() {
             return _target;
         }

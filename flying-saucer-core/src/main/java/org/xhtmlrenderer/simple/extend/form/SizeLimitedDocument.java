@@ -32,11 +32,11 @@ class SizeLimitedDocument extends PlainDocument
     private static final long serialVersionUID = 1L;
 
     private int _maximumLength;
-    
+
     public SizeLimitedDocument(int maximumLength) {
         _maximumLength = maximumLength;
     }
-    
+
     public int getMaximumLength() {
         return _maximumLength;
     }

@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjoern Gannholm 
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjoern Gannholm
  * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -30,12 +30,12 @@ import org.xhtmlrenderer.render.BlockBox;
  */
 public class PersistentBFC {
     private FloatManager _floatManager = new FloatManager();
-    
+
     public PersistentBFC(BlockBox master, LayoutContext c) {
         master.setPersistentBFC(this);
         _floatManager.setMaster(master);
     }
-    
+
     public FloatManager getFloatManager() {
         return _floatManager;
     }

@@ -23,9 +23,9 @@ import org.eclipse.swt.graphics.Font;
 import org.xhtmlrenderer.render.FSFont;
 
 /**
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTFSFont implements FSFont {
     private final Font _font;

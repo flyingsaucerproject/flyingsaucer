@@ -28,35 +28,35 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 public class BoxRangeHelper {
     private LinkedList _clipRegionStack = new LinkedList();
-    
+
     private OutputDevice _outputDevice;
     private List _rangeList;
-    
+
     private int _rangeIndex = 0;
     private BoxRangeData _current = null;
-    
+
     public BoxRangeHelper(OutputDevice outputDevice, List rangeList) {
         _outputDevice = outputDevice;
         _rangeList = rangeList;
-        
+
         if (rangeList.size() > 0) {
             _current = (BoxRangeData)rangeList.get(0);
         }
     }
-    
+
     public void checkFinished() {
         if (_clipRegionStack.size() != 0) {
             throw new XRRuntimeException("internal error");
         }
     }
-    
+
     public void pushClipRegion(RenderingContext c, int contentIndex) {
         while (_current != null && _current.getRange().getStart() == contentIndex) {
             _current.setClip(_outputDevice.getClip());
             _clipRegionStack.add(_current);
-            
+
             _outputDevice.clip(_current.getBox().getChildrenClipEdge(c));
-            
+
             if (_rangeIndex == _rangeList.size() - 1) {
                 _current = null;
             } else {
@@ -64,7 +64,7 @@ public class BoxRangeHelper {
             }
         }
     }
-    
+
     public void popClipRegions(RenderingContext c, int contentIndex) {
         while (_clipRegionStack.size() > 0) {
             BoxRangeData data = (BoxRangeData)_clipRegionStack.getLast();

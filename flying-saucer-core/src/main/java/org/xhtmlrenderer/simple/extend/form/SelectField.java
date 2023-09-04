@@ -64,13 +64,13 @@ class SelectField extends FormField {
             } else {
                 select.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             }
-            
+
             int size = 0;
 
             if (hasAttribute("size")) {
                 size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
             }
-            
+
             if (size == 0) {
                 // Default to the number of items in the list or 20 - whichever is less
                 select.setVisibleRowCount(Math.min(select.getModel().getSize(), 20));
@@ -90,10 +90,10 @@ class SelectField extends FormField {
             return select;
         }
     }
-    
+
     protected FormFieldState loadOriginalState() {
         ArrayList list = new ArrayList();
-        
+
         NodeList options = getElement().getElementsByTagName("option");
 
         for (int i = 0; i < options.getLength(); i++) {
@@ -106,7 +106,7 @@ class SelectField extends FormField {
 
         return FormFieldState.fromList(list);
     }
-    
+
     protected void applyOriginalState() {
         if (shouldRenderAsList()) {
             JList select = (JList) ((JScrollPane) getComponent()).getViewport().getView();
@@ -114,13 +114,13 @@ class SelectField extends FormField {
             select.setSelectedIndices(getOriginalState().getSelectedIndices());
         } else {
             JComboBox select = (JComboBox) getComponent();
-            
+
             // This looks strange, but basically since this is a single select, and
             // someone might have put selected="selected" on more than a single option
             // I believe that the correct play here is to select the _last_ option with
             // that attribute.
             int [] indices = getOriginalState().getSelectedIndices();
-            
+
             if (indices.length == 0) {
                 select.setSelectedIndex(0);
             } else {
@@ -132,22 +132,22 @@ class SelectField extends FormField {
     protected String[] getFieldValues() {
         if (shouldRenderAsList()) {
             JList select = (JList) ((JScrollPane) getComponent()).getViewport().getView();
-            
+
             Object [] selectedValues = select.getSelectedValues();
             String [] submitValues = new String [selectedValues.length];
-            
+
             for (int i = 0; i < selectedValues.length; i++) {
                 NameValuePair pair = (NameValuePair) selectedValues[i];
                 if (pair.getValue()!=null)
                     submitValues[i] = pair.getValue();
             }
-            
+
             return submitValues;
         } else {
             JComboBox select = (JComboBox) getComponent();
-            
+
             NameValuePair selectedValue = (NameValuePair) select.getSelectedItem();
-            
+
             if (selectedValue != null) {
                 if (selectedValue.getValue()!=null)
                     return new String [] { selectedValue.getValue() };
@@ -158,29 +158,29 @@ class SelectField extends FormField {
     }
 
     private List createList() {
-        List list = new ArrayList();        
+        List list = new ArrayList();
         addChildren(list, getElement(), 0);
         return list;
     }
 
     private void addChildren(List list, Element e, int indent) {
         NodeList children = e.getChildNodes();
-        
+
         for (int i = 0; i < children.getLength(); i++) {
             if (!(children.item(i) instanceof Element)) continue;
             Element child = (Element) children.item(i);
-            
+
             if ("option".equals(child.getNodeName())) {
                 // option tag, add it
                 String optionText = XhtmlForm.collectText(child);
                 String optionValue = optionText;
-                
+
                 if (child.hasAttribute("value")) {
                     optionValue = child.getAttribute("value");
                 }
 
                 list.add(new NameValuePair(optionText, optionValue, indent));
-                
+
             } else if ("optgroup".equals(child.getNodeName())) {
                 // optgroup tag, append heading and indent children
                 String titleText = child.getAttribute("label");
@@ -189,23 +189,23 @@ class SelectField extends FormField {
             }
         }
     }
-    
+
     private boolean shouldRenderAsList() {
         boolean result = false;
-        
+
         if (hasAttribute("multiple") && getAttribute("multiple").equalsIgnoreCase("true")) {
             result = true;
         } else if (hasAttribute("size")) {
             int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
-            
+
             if (size > 0) {
                 result = true;
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Provides a simple container for name/value data, such as that used
      * by the &lt;option&gt; elements in a &lt;select&gt; list.
@@ -226,15 +226,15 @@ class SelectField extends FormField {
             _value = value;
             _indent = indent;
         }
-        
+
         public String getName() {
             return _name;
         }
-        
+
         public String getValue() {
             return _value;
         }
-        
+
         public int getIndent() {
             return _indent;
         }
@@ -246,7 +246,7 @@ class SelectField extends FormField {
             return txt;
         }
     }
-    
+
     /**
      * Renderer for ordinary items and headings in a List.
      */
@@ -254,7 +254,7 @@ class SelectField extends FormField {
         public Component getListCellRendererComponent(JList list, Object value,
                 int index, boolean isSelected, boolean cellHasFocus) {
             NameValuePair pair = (NameValuePair)value;
-            
+
             if (pair!=null && pair.getValue()==null) {
                 // render as heading as such
                 super.getListCellRendererComponent(list, value, index, false, false);
@@ -265,11 +265,11 @@ class SelectField extends FormField {
                 // other items as usuall
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             }
-            
+
             return this;
         }
     }
-    
+
     /**
      * Helper class that makes headings inside a list unselectable
      * <p>
@@ -277,10 +277,10 @@ class SelectField extends FormField {
      * {@linkplain ListSelectionListener} for lists.
      */
     private static class HeadingItemListener implements ItemListener, ListSelectionListener {
-        
+
         private Object oldSelection = null;
         private int[] oldSelections = new int[0];
-        
+
         public void itemStateChanged(ItemEvent e) {
             if (e.getStateChange() != ItemEvent.SELECTED)
                 return;
@@ -288,7 +288,7 @@ class SelectField extends FormField {
             if (! (e.getSource() instanceof JComboBox) )
                 return;
             JComboBox combo = (JComboBox)e.getSource();
-            
+
             if (((NameValuePair)e.getItem()).getValue() == null) {
                 // header selected: revert to old selection
                 combo.setSelectedItem(oldSelection);
@@ -304,7 +304,7 @@ class SelectField extends FormField {
                 return;
             JList list = (JList)e.getSource();
             ListModel model = list.getModel();
-            
+
             // deselect all headings
             for (int i = e.getFirstIndex(); i <= e.getLastIndex(); i++) {
                 if (!list.isSelectedIndex(i)) continue;
@@ -324,7 +324,7 @@ class SelectField extends FormField {
                     return;
                 }
             }
-            
+
             // if final selection: store it
             if (!e.getValueIsAdjusting())
                 oldSelections = list.getSelectedIndices();

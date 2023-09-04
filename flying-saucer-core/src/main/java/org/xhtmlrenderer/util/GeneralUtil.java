@@ -339,9 +339,9 @@ public class GeneralUtil {
      * @return The string with the characters as HTML entities.
      */
     public static String escapeHTML(String s){
-    	if (s == null) {
-    		return "";
-    	}
+        if (s == null) {
+            return "";
+        }
         StringBuffer sb = new StringBuffer();
         int n = s.length();
         for (int i = 0; i < n; i++) {

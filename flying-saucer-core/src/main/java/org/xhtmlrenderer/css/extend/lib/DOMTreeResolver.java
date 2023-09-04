@@ -90,7 +90,7 @@ public class DOMTreeResolver implements TreeResolver {
             return name.equals(eName);
         }
     }
-    
+
     public int getPositionOfElement(Object element) {
         org.w3c.dom.Node parent = ((org.w3c.dom.Element) element).getParentNode();
         NodeList nl = parent.getChildNodes();
@@ -107,7 +107,7 @@ public class DOMTreeResolver implements TreeResolver {
             }
             i++;
         }
-        
+
         //should not happen
         return -1;
     }

@@ -35,11 +35,11 @@ public class NumberValue extends DerivedValue {
     public float asFloat() {
         return _floatValue;
     }
-    
+
     public float getFloatProportionalTo(CSSName cssName, float baseValue, CssContext ctx) {
         return _floatValue;
     }
-    
+
     public boolean hasAbsoluteUnit() {
         return true;
     }

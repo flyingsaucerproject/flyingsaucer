@@ -41,21 +41,21 @@ class CheckboxField extends InputField {
 
         return checkbox;
     }
-    
+
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromBoolean(
                 getAttribute("checked").equalsIgnoreCase("checked"));
     }
-    
+
     protected void applyOriginalState() {
         JToggleButton button = (JToggleButton) getComponent();
-        
+
         button.setSelected(getOriginalState().isChecked());
     }
-    
+
     protected String[] getFieldValues() {
         JToggleButton button = (JToggleButton) getComponent();
-        
+
         if (button.isSelected()) {
             return new String [] {
                     hasAttribute("value") ? getAttribute("value") : "on"

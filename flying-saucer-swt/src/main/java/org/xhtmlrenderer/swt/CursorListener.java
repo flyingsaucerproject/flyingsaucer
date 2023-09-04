@@ -30,16 +30,16 @@ import org.xhtmlrenderer.render.Box;
 
 /**
  * Listener to change cursor according to css style.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class CursorListener implements MouseMoveListener {
     private final BasicRenderer _parent;
 
     /**
      * Construct a CursorListener and add it to the parent.
-     * 
+     *
      * @param parent
      */
     public CursorListener(BasicRenderer parent) {

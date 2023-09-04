@@ -28,12 +28,12 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 /**
  * A managed list of {@link CalculatedStyle} objects.  It is used when keeping
- * track of the styles which apply to a :first-line or :first-letter pseudo 
+ * track of the styles which apply to a :first-line or :first-letter pseudo
  * element.
  */
 public class StyleTracker {
     private List _styles = new ArrayList();
-    
+
     public void addStyle(CascadedStyle style) {
         _styles.add(style);
     }
@@ -51,7 +51,7 @@ public class StyleTracker {
     public void clearStyles() {
         _styles.clear();
     }
-    
+
     public CalculatedStyle deriveAll(CalculatedStyle start) {
         CalculatedStyle result = start;
         for (Iterator i = getStyles().iterator(); i.hasNext(); ) {
@@ -63,7 +63,7 @@ public class StyleTracker {
     public List getStyles() {
         return _styles;
     }
-    
+
     public StyleTracker copyOf() {
         StyleTracker result = new StyleTracker();
         result._styles.addAll(this._styles);

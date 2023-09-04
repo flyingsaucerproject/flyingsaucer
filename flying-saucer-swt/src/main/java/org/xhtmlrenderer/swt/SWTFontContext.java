@@ -23,9 +23,9 @@ import org.eclipse.swt.graphics.GC;
 import org.xhtmlrenderer.extend.FontContext;
 
 /**
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTFontContext implements FontContext {
     private final GC _gc;

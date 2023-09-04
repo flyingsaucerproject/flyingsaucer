@@ -59,22 +59,22 @@ public class Matcher {
     private Set _activeElements;
     private Set _focusElements;
     private Set _visitElements;
-    
+
     private List _pageRules;
     private List _fontFaceRules;
-    
+
     public Matcher(
             TreeResolver tr, AttributeResolver ar, StylesheetFactory factory, List stylesheets, String medium) {
         newMaps();
         _treeRes = tr;
         _attRes = ar;
         _styleFactory = factory;
-        
+
         _pageRules = new ArrayList();
         _fontFaceRules = new ArrayList();
         docMapper = createDocumentMapper(stylesheets, medium);
     }
-    
+
     public void removeStyle(Object e) {
         _map.remove(e);
     }
@@ -101,34 +101,34 @@ public class Matcher {
             return em.getPECascadedStyle(e, pseudoElement);
         }
     }
-    
+
     public PageInfo getPageCascadedStyle(String pageName, String pseudoPage) {
         List props = new ArrayList();
         Map marginBoxes = new HashMap();
 
         for (Iterator i = _pageRules.iterator(); i.hasNext(); ) {
             PageRule pageRule = (PageRule)i.next();
-            
+
             if (pageRule.applies(pageName, pseudoPage)) {
                 props.addAll(pageRule.getRuleset().getPropertyDeclarations());
                 marginBoxes.putAll(pageRule.getMarginBoxes());
             }
         }
-        
+
         CascadedStyle style = null;
         if (props.isEmpty()) {
             style = CascadedStyle.emptyCascadedStyle;
         } else {
             style = new CascadedStyle(props.iterator());
         }
-        
+
         return new PageInfo(props, style, marginBoxes);
     }
-    
+
     public List getFontFaceRules() {
         return _fontFaceRules;
     }
-    
+
     public boolean isVisitedStyled(Object e) {
         return _visitElements.contains(e);
     }
@@ -165,7 +165,7 @@ public class Matcher {
         XRLog.match("Matcher created with " + sorter.size() + " selectors");
         return new Mapper(sorter.values());
     }
-    
+
     private void addAllStylesheets(List stylesheets, TreeMap sorter, String medium) {
         int count = 0;
         int pCount = 0;
@@ -196,15 +196,15 @@ public class Matcher {
                     }
                 }
             }
-            
+
             _fontFaceRules.addAll(stylesheet.getFontFaceRules());
         }
-        
+
         Collections.sort(_pageRules, new Comparator() {
             public int compare(Object o1, Object o2) {
                 PageRule p1 = (PageRule)o1;
                 PageRule p2 = (PageRule)o2;
-                
+
                 if (p1.getOrder() - p2.getOrder() < 0) {
                     return -1;
                 } else if (p1.getOrder() == p2.getOrder()) {
@@ -289,12 +289,12 @@ public class Matcher {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
-            
+
             String style = _attRes.getElementStyling(e);
             if (Util.isNullOrEmpty(style)) {
                 return null;
             }
-            
+
             return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
         }
     }

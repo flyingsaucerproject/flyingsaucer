@@ -39,24 +39,24 @@ public class PropertyValue implements CSSPrimitiveValue {
     public static final short VALUE_TYPE_STRING = 5;
     public static final short VALUE_TYPE_LIST = 6;
     public static final short VALUE_TYPE_FUNCTION = 7;
-    
+
     private short _type;
     private short _cssValueType;
-    
+
     private String _stringValue;
     private float _floatValue;
     private String[] _stringArrayValue;
-    
+
     private String _cssText;
-    
+
     private FSColor _FSColor;
-    
+
     private IdentValue _identValue;
-    
+
     private short _propertyValueType;
-    
+
     private Token _operator;
-    
+
     private List _values;
     private FSFunction _function;
 
@@ -65,23 +65,23 @@ public class PropertyValue implements CSSPrimitiveValue {
         _floatValue = floatValue;
         _cssValueType = CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = cssText;
-        
+
         if (type == CSSPrimitiveValue.CSS_NUMBER && floatValue != 0.0f) {
             _propertyValueType = VALUE_TYPE_NUMBER;
         } else {
             _propertyValueType = VALUE_TYPE_LENGTH;
         }
     }
-    
+
     public PropertyValue(FSColor color) {
         _type = CSSPrimitiveValue.CSS_RGBCOLOR;
         _cssValueType = CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = color.toString();
         _FSColor = color;
-        
+
         _propertyValueType = VALUE_TYPE_COLOR;
     }
-    
+
     public PropertyValue(short type, String stringValue, String cssText) {
         _type = type;
         _stringValue = stringValue;
@@ -89,38 +89,38 @@ public class PropertyValue implements CSSPrimitiveValue {
         // for font and font-family
         _cssValueType = _stringValue.equalsIgnoreCase("inherit") ? CSSValue.CSS_INHERIT : CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = cssText;
-        
+
         if (type == CSSPrimitiveValue.CSS_IDENT) {
             _propertyValueType = VALUE_TYPE_IDENT;
         } else {
             _propertyValueType = VALUE_TYPE_STRING;
         }
     }
-    
+
     public PropertyValue(IdentValue ident) {
         _type = CSSPrimitiveValue.CSS_IDENT;
         _stringValue = ident.toString();
         _cssValueType = _stringValue.equals("inherit") ? CSSValue.CSS_INHERIT : CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = ident.toString();
-        
+
         _propertyValueType = VALUE_TYPE_IDENT;
         _identValue = ident;
     }
-    
+
     public PropertyValue(List values) {
         _type = CSSPrimitiveValue.CSS_UNKNOWN; // HACK
         _cssValueType = CSSValue.CSS_CUSTOM;
         _cssText = values.toString(); // HACK
-        
+
         _values = values;
         _propertyValueType = VALUE_TYPE_LIST;
     }
-    
+
     public PropertyValue(FSFunction function) {
         _type = CSSPrimitiveValue.CSS_UNKNOWN;
         _cssValueType = CSSValue.CSS_CUSTOM;
         _cssText = function.toString();
-        
+
         _function = function;
         _propertyValueType = VALUE_TYPE_FUNCTION;
     }
@@ -132,7 +132,7 @@ public class PropertyValue implements CSSPrimitiveValue {
     public float getFloatValue(short unitType) throws DOMException {
         return _floatValue;
     }
-    
+
     public float getFloatValue() {
         return _floatValue;
     }
@@ -172,7 +172,7 @@ public class PropertyValue implements CSSPrimitiveValue {
     public void setCssText(String cssText) throws DOMException {
         throw new UnsupportedOperationException();
     }
-    
+
     public FSColor getFSColor() {
         return _FSColor;
     }
@@ -184,7 +184,7 @@ public class PropertyValue implements CSSPrimitiveValue {
     public void setIdentValue(IdentValue identValue) {
         _identValue = identValue;
     }
-    
+
     public short getPropertyValueType() {
         return _propertyValueType;
     }
@@ -204,19 +204,19 @@ public class PropertyValue implements CSSPrimitiveValue {
     public void setStringArrayValue(String[] stringArrayValue) {
         _stringArrayValue = ArrayUtil.cloneOrEmpty(stringArrayValue);
     }
-    
+
     public String toString() {
         return _cssText;
     }
-    
+
     public List getValues() {
         return new ArrayList(_values);
     }
-    
+
     public FSFunction getFunction() {
         return _function;
     }
-    
+
     public String getFingerprint() {
         if (getPropertyValueType() == VALUE_TYPE_IDENT) {
             if (_identValue == null) {

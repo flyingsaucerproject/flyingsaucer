@@ -96,7 +96,7 @@ public class SharedContext {
 
     private ReplacedElementFactory replacedElementFactory;
     private Rectangle temp_canvas;
-    
+
     private LineBreakingStrategy lineBreakingStrategy = new DefaultLineBreakingStrategy();
 
     public SharedContext() {
@@ -627,13 +627,13 @@ public class SharedContext {
         }
     }
 
-	public LineBreakingStrategy getLineBreakingStrategy() {
-		return lineBreakingStrategy;
-	}
+    public LineBreakingStrategy getLineBreakingStrategy() {
+        return lineBreakingStrategy;
+    }
 
-	public void setLineBreakingStrategy(LineBreakingStrategy lineBreakingStrategy) {
-		this.lineBreakingStrategy = lineBreakingStrategy;
-	}
+    public void setLineBreakingStrategy(LineBreakingStrategy lineBreakingStrategy) {
+        this.lineBreakingStrategy = lineBreakingStrategy;
+    }
 }
 
 /*

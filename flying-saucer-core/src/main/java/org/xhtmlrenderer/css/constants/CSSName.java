@@ -1070,7 +1070,7 @@ public final class CSSName implements Comparable {
                     INHERITS,
                     new PrimitivePropertyBuilders.WordWrap()
             );
-    
+
     /**
      * Unique CSSName instance for CSS3 property.
      */
@@ -1319,7 +1319,7 @@ public final class CSSName implements Comparable {
                     true,
                     new PrimitivePropertyBuilders.BorderBottomLeftRadius()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -1421,7 +1421,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new BackgroundPropertyBuilder()
             );
-    
+
 
     /**
      * Unique CSSName instance for CSS3 property.
@@ -1600,7 +1600,7 @@ public final class CSSName implements Comparable {
                     NOT_INHERITED,
                     new OneToFourPropertyBuilders.Padding()
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */

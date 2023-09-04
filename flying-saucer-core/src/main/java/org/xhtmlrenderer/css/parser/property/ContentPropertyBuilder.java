@@ -49,16 +49,16 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
                 }
             }
         }
-        
+
         List resultValues = new ArrayList();
         for (Iterator i = values.iterator(); i.hasNext(); ) {
             PropertyValue value = (PropertyValue)i.next();
-            
+
             if (value.getOperator() != null) {
                 throw new CSSParseException(
                         "Found unexpected operator, " + value.getOperator().getExternalName(), -1);
             }
-            
+
             short type = value.getPrimitiveType();
             if (type == CSSPrimitiveValue.CSS_URI) {
                 continue;
@@ -84,7 +84,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
                         value.getCssText() + " is not a value value for the content property", -1);
             }
         }
-        
+
         if (resultValues.size() > 0) {
             return Collections.singletonList(
                     new PropertyDeclaration(CSSName.CONTENT, new PropertyValue(resultValues), important, origin));
@@ -92,7 +92,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
             return Collections.EMPTY_LIST;
         }
     }
-    
+
     private boolean isFunctionAllowed(FSFunction function) {
         String name = function.getName();
         return name.equals("attr") || name.equals("counter") || name.equals("counters") ||

@@ -32,17 +32,17 @@ import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
 public class SizePropertyBuilder extends AbstractPropertyBuilder {
     private static final CSSName[] ALL = { CSSName.FS_PAGE_ORIENTATION, CSSName.FS_PAGE_HEIGHT, CSSName.FS_PAGE_WIDTH };
-    
+
     public List buildDeclarations(
             CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
         List result = new ArrayList(3);
         checkValueCount(cssName, 1, 2, values.size());
-        
+
         if (values.size() == 1) {
             PropertyValue value = (PropertyValue)values.get(0);
-            
+
             checkInheritAllowed(value, inheritAllowed);
-            
+
             if (value.getCssValueType() == CSSValue.CSS_INHERIT) {
                 return checkInheritAll(ALL, values, origin, important, inheritAllowed);
             } else if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
@@ -56,7 +56,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
                             CSSName.FS_PAGE_HEIGHT, pageSize.getPageHeight(), important, origin));
                     return result;
                 }
-                
+
                 IdentValue ident = checkIdent(cssName, value);
                 if (ident == IdentValue.LANDSCAPE || ident == IdentValue.PORTRAIT) {
                     result.add(new PropertyDeclaration(
@@ -81,14 +81,14 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
                 if (value.getFloatValue() < 0.0f) {
                     throw new CSSParseException("A page dimension may not be negative", -1);
                 }
-                
+
                 result.add(new PropertyDeclaration(
                         CSSName.FS_PAGE_ORIENTATION, new PropertyValue(IdentValue.AUTO), important, origin));
                 result.add(new PropertyDeclaration(
                         CSSName.FS_PAGE_WIDTH, value, important, origin));
                 result.add(new PropertyDeclaration(
                         CSSName.FS_PAGE_HEIGHT, value, important, origin));
-                
+
                 return result;
             } else {
                 throw new CSSParseException("Value for " + cssName + " must be a length or identifier", -1);
@@ -96,52 +96,52 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
         } else { /* values.size == 2 */
             PropertyValue value1 = (PropertyValue)values.get(0);
             PropertyValue value2 = (PropertyValue)values.get(1);
-            
+
             checkInheritAllowed(value2, false);
-            
+
             if (isLength(value1) && isLength(value2)) {
                 if (value1.getFloatValue() < 0.0f) {
                     throw new CSSParseException("A page dimension may not be negative", -1);
                 }
-                
+
                 if (value2.getFloatValue() < 0.0f) {
                     throw new CSSParseException("A page dimension may not be negative", -1);
                 }
-                
+
                 result.add(new PropertyDeclaration(
                         CSSName.FS_PAGE_ORIENTATION, new PropertyValue(IdentValue.AUTO), important, origin));
                 result.add(new PropertyDeclaration(
                         CSSName.FS_PAGE_WIDTH, value1, important, origin));
                 result.add(new PropertyDeclaration(
                         CSSName.FS_PAGE_HEIGHT, value2, important, origin));
-                
+
                 return result;
             } else if (value1.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT &&
                             value2.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                if (value2.getStringValue().equals("landscape") || 
+                if (value2.getStringValue().equals("landscape") ||
                         value2.getStringValue().equals("portrait")) {
                     PropertyValue temp = value1;
                     value1 = value2;
                     value2 = temp;
                 }
-                
+
                 if (! (value1.toString().equals("landscape") || value1.toString().equals("portrait"))) {
                     throw new CSSParseException("Value " + value1 + " is not a valid page orientation", -1);
                 }
-                
+
                 result.add(new PropertyDeclaration(
                         CSSName.FS_PAGE_ORIENTATION, value1, important, origin));
-                
+
                 PageSize pageSize = PageSize.getPageSize(value2.getStringValue());
                 if (pageSize == null) {
                     throw new CSSParseException("Value " + value1 + " is not a valid page size", -1);
                 }
-                
+
                 result.add(new PropertyDeclaration(
                         CSSName.FS_PAGE_WIDTH, pageSize.getPageWidth(), important, origin));
                 result.add(new PropertyDeclaration(
                         CSSName.FS_PAGE_HEIGHT, pageSize.getPageHeight(), important, origin));
-                
+
                 return result;
             } else {
                 throw new CSSParseException("Invalid value for size property", -1);

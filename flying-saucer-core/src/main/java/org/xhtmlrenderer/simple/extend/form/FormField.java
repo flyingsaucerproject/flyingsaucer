@@ -47,25 +47,25 @@ public abstract class FormField {
     private BlockBox box;
     protected Integer intrinsicWidth;
     protected Integer intrinsicHeight;
-    
+
 
     public FormField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         _element = e;
         _parentForm = form;
         this.context = context;
         this.box = box;
-        
+
         initialize();
     }
 
     protected Element getElement() {
         return _element;
     }
-    
+
     public JComponent getComponent() {
         return _component;
     }
-    
+
     public XhtmlForm getParentForm() {
         return _parentForm;
     }
@@ -78,7 +78,7 @@ public abstract class FormField {
         return new Dimension(width, height);
     }
 
-    
+
     public void reset() {
         applyOriginalState();
     }
@@ -94,7 +94,7 @@ public abstract class FormField {
 
         return _originalState;
     }
-    
+
     protected boolean hasAttribute(String attributeName) {
         return getElement().getAttribute(attributeName).length() > 0;
     }
@@ -102,10 +102,10 @@ public abstract class FormField {
     protected String getAttribute(String attributeName) {
         return getElement().getAttribute(attributeName);
     }
-    
+
     private void initialize() {
         _component = create();
-        
+
         if (_component != null) {
             if (intrinsicWidth == null)
                 intrinsicWidth = new Integer(_component.getPreferredSize().width);
@@ -128,17 +128,17 @@ public abstract class FormField {
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromString("");
     }
-    
+
     protected void applyOriginalState() {
         // Do nothing
     }
-    
+
     /**
      * Returns true if the value of the current FormField should be
      * sent along with the current submission.  This is used so that
      * only the value of the submit button that is used to trigger the
      * form's submission is sent.
-     * 
+     *
      * @param source The JComponent that caused the submission
      * @return true if it should
      */

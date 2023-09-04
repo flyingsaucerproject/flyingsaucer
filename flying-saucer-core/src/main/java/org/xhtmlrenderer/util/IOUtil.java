@@ -78,7 +78,7 @@ public class IOUtil {
             System.setProperty("sun.net.client.defaultConnectTimeout", String.valueOf(10 * 1000));
             System.setProperty("sun.net.client.defaultReadTimeout", String.valueOf(30 * 1000));
 
-			uc.setRequestProperty("Accept", "*/*");
+            uc.setRequestProperty("Accept", "*/*");
 
             uc.connect();
 

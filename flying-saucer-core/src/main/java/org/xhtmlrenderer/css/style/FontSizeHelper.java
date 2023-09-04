@@ -29,10 +29,10 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 public class FontSizeHelper {
     private static final LinkedHashMap PROPORTIONAL_FONT_SIZES = new LinkedHashMap();
     private static final LinkedHashMap FIXED_FONT_SIZES = new LinkedHashMap();
-    
+
     private static final PropertyValue DEFAULT_SMALLER = new PropertyValue(CSSPrimitiveValue.CSS_EMS, 0.8f, "0.8em");
     private static final PropertyValue DEFAULT_LARGER = new PropertyValue(CSSPrimitiveValue.CSS_EMS, 1.2f, "1.2em");
-    
+
     static {
         // XXX Should come from (or be influenced by) the UA.  These sizes
         // correspond to the Firefox defaults
@@ -43,16 +43,16 @@ public class FontSizeHelper {
         PROPORTIONAL_FONT_SIZES.put(IdentValue.LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 18f, "18px"));
         PROPORTIONAL_FONT_SIZES.put(IdentValue.X_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 24f, "24px"));
         PROPORTIONAL_FONT_SIZES.put(IdentValue.XX_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 32f, "32px"));
-        
+
         FIXED_FONT_SIZES.put(IdentValue.XX_SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 9f, "9px"));
         FIXED_FONT_SIZES.put(IdentValue.X_SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 10f, "10px"));
         FIXED_FONT_SIZES.put(IdentValue.SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 12f, "12px"));
         FIXED_FONT_SIZES.put(IdentValue.MEDIUM, new PropertyValue(CSSPrimitiveValue.CSS_PX, 13f, "13px"));
         FIXED_FONT_SIZES.put(IdentValue.LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 16f, "16px"));
         FIXED_FONT_SIZES.put(IdentValue.X_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 20f, "20px"));
-        FIXED_FONT_SIZES.put(IdentValue.XX_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 26f, "26px"));        
+        FIXED_FONT_SIZES.put(IdentValue.XX_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 26f, "26px"));
     }
-    
+
     public static IdentValue getNextSmaller(IdentValue absFontSize) {
         IdentValue prev = null;
         for (Iterator i = PROPORTIONAL_FONT_SIZES.keySet().iterator(); i.hasNext(); ) {
@@ -64,7 +64,7 @@ public class FontSizeHelper {
         }
         return null;
     }
-    
+
     public static IdentValue getNextLarger(IdentValue absFontSize) {
         for (Iterator i = PROPORTIONAL_FONT_SIZES.keySet().iterator(); i.hasNext(); ) {
             IdentValue ident = (IdentValue)i.next();
@@ -74,17 +74,17 @@ public class FontSizeHelper {
         }
         return null;
     }
-    
+
     public static PropertyValue resolveAbsoluteFontSize(IdentValue fontSize, String[] fontFamilies) {
         boolean monospace = isMonospace(fontFamilies);
-        
+
         if (monospace) {
             return (PropertyValue)FIXED_FONT_SIZES.get(fontSize);
         } else {
             return (PropertyValue)PROPORTIONAL_FONT_SIZES.get(fontSize);
         }
     }
-    
+
     public static PropertyValue getDefaultRelativeFontSize(IdentValue fontSize) {
         if (fontSize == IdentValue.LARGER) {
             return DEFAULT_LARGER;
@@ -94,7 +94,7 @@ public class FontSizeHelper {
             return null;
         }
     }
-    
+
     private static boolean isMonospace(String[] fontFamilies) {
         for (int i = 0; i < fontFamilies.length; i++) {
             if (fontFamilies[i].equals("monospace")) {

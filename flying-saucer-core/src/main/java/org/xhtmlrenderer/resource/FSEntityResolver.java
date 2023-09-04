@@ -67,19 +67,19 @@ public class FSEntityResolver implements EntityResolver2 {
      */
     private FSEntityResolver() {
         FSCatalog catalog = new FSCatalog();
-        
+
         // The HTML 4.01 DTDs; includes entities. Load from catalog file.
         entities.putAll(catalog.parseCatalog("resources/schema/html-4.01/catalog-html-4.01.xml"));
-        
+
         // XHTML common (shared declarations)
         entities.putAll(catalog.parseCatalog("resources/schema/xhtml/catalog-xhtml-common.xml"));
 
         // The XHTML 1.0 DTDs
         entities.putAll(catalog.parseCatalog("resources/schema/xhtml/catalog-xhtml-1.0.xml"));
-        
+
         // The XHMTL 1.1 DTD
         entities.putAll(catalog.parseCatalog("resources/schema/xhtml/catalog-xhtml-1.1.xml"));
-        
+
         // DocBook DTDs
         entities.putAll(catalog.parseCatalog("resources/schema/docbook/catalog-docbook.xml"));
 
@@ -173,7 +173,7 @@ public class FSEntityResolver implements EntityResolver2 {
 
     /**
      * Returns a map of entities parsed by this resolver.
-     * @return a map of entities parsed by this resolver. 
+     * @return a map of entities parsed by this resolver.
      */
     public Map getEntities() {
         return new HashMap(entities);

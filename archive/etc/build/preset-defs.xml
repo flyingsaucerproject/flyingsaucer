@@ -1,7 +1,7 @@
 <!-- :mode=xml:folding=none: -->
 <project name="build.preset-defs">
     <import file="properties.xml" />
-    <!-- 
+    <!--
          definition of a javac task with all compiler parameters read from
          properties. can be used for most uses of javac in this file.
     -->

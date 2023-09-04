@@ -21,9 +21,9 @@ package org.xhtmlrenderer.simple.xhtml;
 
 
 public interface FormListener {
-    
+
     void resetted(XhtmlForm form);
 
     void submitted(XhtmlForm form);
-    
+
 }

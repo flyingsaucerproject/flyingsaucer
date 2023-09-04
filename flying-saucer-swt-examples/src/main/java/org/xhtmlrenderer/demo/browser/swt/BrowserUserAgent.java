@@ -222,9 +222,9 @@ public class BrowserUserAgent extends NaiveUserAgent {
     /**
      * Used internally when a document can't be loaded--returns XHTML as an
      * XMLResource indicating that fact.
-     * 
+     *
      * @param uri The URI which could not be loaded.
-     * 
+     *
      * @return An XMLResource containing XML which about the failure.
      */
     private XMLResource getNotFoundDocument(String uri) {

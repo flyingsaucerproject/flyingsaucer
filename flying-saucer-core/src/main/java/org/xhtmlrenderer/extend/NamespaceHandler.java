@@ -64,7 +64,7 @@ public interface NamespaceHandler {
      * @return The attributeValue value
      */
     String getAttributeValue(org.w3c.dom.Element e, String attrName);
-    
+
     String getAttributeValue(org.w3c.dom.Element e, String namespaceURI, String attrName);
 
     /**
@@ -116,7 +116,7 @@ public interface NamespaceHandler {
     String getLinkUri(org.w3c.dom.Element e);
 
     /**
-     * 
+     *
      * @param e
      */
     String getAnchorName(Element e);
@@ -129,7 +129,7 @@ public interface NamespaceHandler {
     /**
      * Determines whether or not the specified Element represents a
      * &lt;form&gt;.
-     * 
+     *
      * @param e The Element to evaluate.
      * @return true if the Element is a &lt;form&gt; element, false otherwise.
      */
@@ -141,7 +141,7 @@ public interface NamespaceHandler {
      * particular. For elements where {@link #isImageElement(org.w3c.dom.Element)} returns false, this method may
      * return false, and may also return false if the Element is not correctly formed and contains no URI; check the
      * return value carefully.
-     * 
+     *
      * @param e The element to extract image info from.
      * @return String containing the URI for the image.
      */

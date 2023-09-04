@@ -345,7 +345,7 @@ public class LayoutContext implements CssContext {
     }
 
     public void resolveCounters(CalculatedStyle style) {
-    	resolveCounters(style, null);
+        resolveCounters(style, null);
     }
 
     public CounterContext getCounterContext(CalculatedStyle style) {
@@ -371,10 +371,10 @@ public class LayoutContext implements CssContext {
          * @param style
          */
         CounterContext(CalculatedStyle style, Integer startIndex) {
-        	// Numbering restarted via <ol start="x">
-			if (startIndex != null) {
-				_counters.put("list-item", startIndex);
-			}
+            // Numbering restarted via <ol start="x">
+            if (startIndex != null) {
+                _counters.put("list-item", startIndex);
+            }
             _parent = (LayoutContext.CounterContext) _counterContextMap.get(style.getParent());
             if (_parent == null) _parent = new CounterContext();//top-level context, above root element
             //first the explicitly named counters
@@ -394,13 +394,13 @@ public class LayoutContext implements CssContext {
             }
 
             // then the implicit list-item counter
-			if (style.isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM)) {
-				// Numbering restarted via <li value="x">
-				if (startIndex != null) {
-					_parent._counters.put("list-item", startIndex);
-				}
-				_parent.incrementListItemCounter(1);
-			}
+            if (style.isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM)) {
+                // Numbering restarted via <li value="x">
+                if (startIndex != null) {
+                    _parent._counters.put("list-item", startIndex);
+                }
+                _parent.incrementListItemCounter(1);
+            }
         }
 
         private CounterContext() {

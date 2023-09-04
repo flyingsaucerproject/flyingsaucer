@@ -27,14 +27,14 @@ import org.xhtmlrenderer.layout.LayoutContext;
 public class EmptyReplacedElement implements ReplacedElement {
     private int _width;
     private int _height;
-    
+
     private Point _location = new Point(0, 0);
-    
+
     public EmptyReplacedElement(int width, int height) {
         _width = width;
         _height = height;
     }
-    
+
     public void detach(LayoutContext c) {
     }
 
@@ -58,11 +58,11 @@ public class EmptyReplacedElement implements ReplacedElement {
         _location = new Point(0, 0);
     }
 
-	public int getBaseline() {
-		return 0;
-	}
+    public int getBaseline() {
+        return 0;
+    }
 
-	public boolean hasBaseline() {
-		return false;
-	}
+    public boolean hasBaseline() {
+        return false;
+    }
 }

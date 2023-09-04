@@ -30,47 +30,47 @@ import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.util.Uu;
 
 /**
- * A lightweight object which contains a chunk of text from an inline element.  
- * It will never extend across a line break nor will it extend across an element 
+ * A lightweight object which contains a chunk of text from an inline element.
+ * It will never extend across a line break nor will it extend across an element
  * nested within its inline element.
  */
 public class InlineText {
     private InlineLayoutBox _parent;
-    
+
     private int _x;
-    
+
     private String _masterText;
     private int _start;
     private int _end;
-    
+
     private int _width;
-    
+
     private FunctionData _functionData;
-    
+
     private boolean _containedLF = false;
-    
+
     private short _selectionStart;
     private short _selectionEnd;
-    
+
     private float[] _glyphPositions;
-    
+
     private boolean _trimmedLeadingSpace;
     private boolean _trimmedTrailingSpace;
     private Text _textNode;
     public void trimTrailingSpace(LayoutContext c) {
         if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
-            setWidth(c.getTextRenderer().getWidth(c.getFontContext(), 
+            setWidth(c.getTextRenderer().getWidth(c.getFontContext(),
                     getParent().getStyle().getFSFont(c),
                     getSubstring()));
             setTrimmedTrailingSpace(true);
-        } 
+        }
     }
-    
+
     public boolean isEmpty() {
         return _start == _end && ! _containedLF;
     }
-    
+
     public String getSubstring() {
         if (getMasterText() != null) {
             if (_start == -1 || _end == -1) {
@@ -84,7 +84,7 @@ public class InlineText {
             throw new RuntimeException("No master text set!");
         }
     }
-    
+
     public void setSubstring(int start, int end) {
         if (end < start) {
             Uu.p("setting substring to: " + start + " " + end);
@@ -94,7 +94,7 @@ public class InlineText {
         }
         _start = start;
         _end = end;
-        
+
         if (_end > 0 && _masterText.charAt(_end-1) == WhitespaceStripper.EOLC) {
             _containedLF = true;
             _end--;
@@ -124,11 +124,11 @@ public class InlineText {
     public void setWidth(int width) {
         _width = width;
     }
-    
+
     public void paint(RenderingContext c) {
         c.getOutputDevice().drawText(c, this);
     }
-    
+
     public void paintSelection(RenderingContext c) {
         c.getOutputDevice().drawSelection(c, this);
     }
@@ -152,7 +152,7 @@ public class InlineText {
     public void setFunctionData(FunctionData functionData) {
         _functionData = functionData;
     }
-    
+
     public void updateDynamicValue(RenderingContext c) {
         String value = _functionData.getContentFunction().calculate(
                 c, _functionData.getFunction(), this);
@@ -163,7 +163,7 @@ public class InlineText {
                 c.getFontContext(), getParent().getStyle().getFSFont(c),
                 value);
     }
-    
+
     public String toString() {
         StringBuffer result = new StringBuffer();
         result.append("InlineText: ");
@@ -180,19 +180,19 @@ public class InlineText {
         result.append('(');
         result.append(getSubstring());
         result.append(')');
-        
+
         return result.toString();
     }
-    
+
     public boolean updateSelection(RenderingContext c, Rectangle selection) {
         ensureGlyphPositions(c);
         float[] positions = _glyphPositions;
         int y = getParent().getAbsY();
         int offset = getParent().getAbsX() + getX();
-        
+
         int prevSelectionStart = _selectionStart;
         int prevSelectionEnd = _selectionEnd;
-        
+
         boolean found = false;
         _selectionStart = 0;
         _selectionEnd = 0;
@@ -212,7 +212,7 @@ public class InlineText {
                 }
             }
         }
-        
+
         return prevSelectionStart != _selectionStart || prevSelectionEnd != _selectionEnd;
     }
 
@@ -223,21 +223,21 @@ public class InlineText {
                     getParent().getStyle().getFSFont(c),
                     getSubstring());
             _glyphPositions = c.getTextRenderer().getGlyphPositions(
-                    c.getOutputDevice(), 
+                    c.getOutputDevice(),
                     getParent().getStyle().getFSFont(c),
                     glyphVector);
-        } 
+        }
     }
-    
+
     public boolean clearSelection() {
         boolean result = _selectionStart != 0 || _selectionEnd != 0;
-        
+
         _selectionStart = 0;
         _selectionEnd = 0;
-        
+
         return result;
     }
-    
+
     public boolean isSelected() {
         return _selectionStart != _selectionEnd;
     }
@@ -249,16 +249,16 @@ public class InlineText {
     public short getSelectionStart() {
         return _selectionStart;
     }
-    
+
     public String getSelection() {
         return getSubstring().substring(_selectionStart, _selectionEnd);
     }
-    
+
     public void selectAll() {
         _selectionStart = 0;
         _selectionEnd = (short)getSubstring().length();
     }
-    
+
     public String getTextExportText() {
         char[] ch = getSubstring().toCharArray();
         StringBuffer result = new StringBuffer();
@@ -292,13 +292,13 @@ public class InlineText {
     private boolean isTrimmedTrailingSpace() {
         return _trimmedTrailingSpace;
     }
-    
+
     public void countJustifiableChars(CharCounts counts) {
         String s = getSubstring();
         int len = s.length();
         int spaces = 0;
         int other = 0;
-        
+
         for (int i = 0; i < len; i++) {
             char c = s.charAt(i);
             if (c == ' ' || c == '\u00a0' || c == '\u3000') {
@@ -307,11 +307,11 @@ public class InlineText {
                 other++;
             }
         }
-        
+
         counts.setSpaceCount(counts.getSpaceCount() + spaces);
         counts.setNonSpaceCount(counts.getNonSpaceCount() + other);
     }
-    
+
     public float calcTotalAdjustment(JustificationInfo info) {
         String s = getSubstring();
         int len = s.length();
@@ -325,7 +325,7 @@ public class InlineText {
                 result += info.getNonSpaceAdjust();
             }
         }
-        
+
         return result;
     }
     public int getStart(){
