@@ -70,6 +70,6 @@
           <include>LICENSE*</include>
         </includes>
       </resource>
-	</resources>
+  </resources>
   </build>
 </project>
