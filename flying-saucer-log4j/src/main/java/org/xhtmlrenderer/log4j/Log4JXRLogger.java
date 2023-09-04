@@ -19,7 +19,8 @@
  */
 package org.xhtmlrenderer.log4j;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRLogger;
 
@@ -54,26 +55,26 @@ public class Log4JXRLogger implements XRLogger {
     private Map loggerNameMap = LOGGER_NAME_MAP;
 
     public void log(String where, Level level, String msg) {
-        Logger.getLogger(getLoggerName(where)).log(toLog4JLevel(level), msg);
+        LogManager.getLogger(getLoggerName(where)).log(toLog4JLevel(level), msg);
     }
 
     public void log(String where, Level level, String msg, Throwable th) {
-        Logger.getLogger(getLoggerName(where)).log(toLog4JLevel(level), msg, th);
+        LogManager.getLogger(getLoggerName(where)).log(toLog4JLevel(level), msg, th);
     }
 
-    private org.apache.log4j.Level toLog4JLevel(Level level) {
+    private org.apache.logging.log4j.Level toLog4JLevel(Level level) {
         if (level == Level.SEVERE) {
-            return org.apache.log4j.Level.ERROR;
+            return org.apache.logging.log4j.Level.ERROR;
         } else if (level == Level.WARNING) {
-            return org.apache.log4j.Level.WARN;
+            return org.apache.logging.log4j.Level.WARN;
         } else if (level == Level.INFO) {
-            return org.apache.log4j.Level.INFO;
+            return org.apache.logging.log4j.Level.INFO;
         } else if (level == Level.CONFIG) {
-            return org.apache.log4j.Level.INFO;
+            return org.apache.logging.log4j.Level.INFO;
         } else if (level == Level.FINE || level == Level.FINER || level == Level.FINEST) {
-            return org.apache.log4j.Level.DEBUG;
+            return org.apache.logging.log4j.Level.DEBUG;
         } else {
-            return org.apache.log4j.Level.INFO;
+            return org.apache.logging.log4j.Level.INFO;
         }
     }
 
