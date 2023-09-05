@@ -7,6 +7,8 @@ dist
 target
 **/*.releaseBackup
 *.releaseBackup
+**/*.versionsBackup
+*.versionsBackup
 release.properties
 */.classpath
 */.project
