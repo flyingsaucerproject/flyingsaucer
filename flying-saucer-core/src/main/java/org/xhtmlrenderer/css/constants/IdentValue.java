@@ -22,6 +22,7 @@ package org.xhtmlrenderer.css.constants;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
@@ -54,6 +55,16 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  */
 public class IdentValue implements FSDerivedValue {
     private static int maxAssigned = 0;
+
+    // JBH
+    private CSSPrimitiveValue cssPrimitiveValue;    
+    public void setCSSPrimitiveValue(CSSPrimitiveValue cssPrimitiveValue) {
+        this.cssPrimitiveValue = cssPrimitiveValue;
+    }
+
+    public CSSPrimitiveValue getCSSPrimitiveValue() {
+        return cssPrimitiveValue;
+    }
 
     /**
      * Description of the Field
