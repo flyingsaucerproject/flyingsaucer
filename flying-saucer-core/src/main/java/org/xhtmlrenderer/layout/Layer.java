@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -305,13 +306,14 @@ public class Layer {
             paintLayerBackgroundAndBorder(c);
             paintReplacedElement(c, (BlockBox)getMaster());
         } else {
+            Shape clip  = c.getOutputDevice().getClip();
             BoxRangeLists rangeLists = new BoxRangeLists();
             
             List blocks = new ArrayList();
             List lines = new ArrayList();
     
             BoxCollector collector = new BoxCollector();
-            collector.collect(c, c.getOutputDevice().getClip(), this, blocks, lines, rangeLists);
+            collector.collect(c, clip, this, blocks, lines, rangeLists);
     
             if (! isInline()) {
                 paintLayerBackgroundAndBorder(c);
@@ -338,6 +340,18 @@ public class Layer {
                 // TODO z-index: 0 layers should be painted atomically
                 paintLayers(c, getSortedLayers(ZERO));
                 paintLayers(c, getSortedLayers(POSITIVE));
+            }
+
+            if (clip != null) {
+                Rectangle paintingArea = c.getOutputDevice().getClip().getBounds();
+                for (int i = 0; i < blocks.size(); i++) {
+                    if (blocks.get(i) instanceof Box) {
+                        Box box = (Box) blocks.get(i);
+                        if (paintingArea.contains(box.getPaintingInfo().getAggregateBounds())) {
+                            box.clear();
+                        }
+                    }
+                }
             }
         }
     }

@@ -101,6 +101,20 @@ public abstract class Box implements Styleable {
     protected Box() {
     }
 
+    public void clear() {
+        _element = null;
+        _layer = null;
+        _containingLayer = null;
+        _boxes = null;
+        _relativeOffset = null;
+        _paintingInfo = null;
+        _workingMargin = null;
+        //_pseudoElementOrClass = null;
+        //_parent = null;
+        //_style = null;
+        //_containingBlock = null;
+    }
+
     public abstract String dump(LayoutContext c, String indent, int which);
 
     protected void dumpBoxes(
