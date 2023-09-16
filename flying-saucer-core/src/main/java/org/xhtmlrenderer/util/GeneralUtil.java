@@ -470,7 +470,7 @@ public class GeneralUtil {
  *
  * Revision 1.5  2004/10/23 14:06:56  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  * Revision 1.4  2004/10/19 15:00:53  joshy

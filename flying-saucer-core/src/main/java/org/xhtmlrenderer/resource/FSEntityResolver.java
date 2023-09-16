@@ -61,7 +61,7 @@ public class FSEntityResolver implements EntityResolver2 {
 
     private final Map entities = new HashMap();
 
-    // fill the list of URLs
+    // fill the list with URLs
     /**
      * Constructor for the FSEntityResolver object
      */

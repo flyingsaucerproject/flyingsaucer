@@ -880,7 +880,7 @@ public class PrimitivePropertyBuilders {
             // Both Opera and Firefox parse "Century Gothic" Arial sans-serif as
             // [Century Gothic], [Arial sans-serif] (i.e. the comma is assumed
             // after a string).  Seems wrong per the spec, but FF (at least)
-            // does it in standards mode so we do too.
+            // does it in standards mode, so we do too.
             List consecutiveIdents = new ArrayList();
             List normalized = new ArrayList(values.size());
             for (Iterator i = values.iterator(); i.hasNext(); ) {

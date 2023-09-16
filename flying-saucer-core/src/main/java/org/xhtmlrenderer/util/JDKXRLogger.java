@@ -240,7 +240,7 @@ public class JDKXRLogger implements XRLogger {
     }
 
     /**
-     * Parses the levelValue into a Level instance and assigns to the Logger instance named by loggerName; if the
+     * Parses the levelValue into a Level instance and assigns to the Logger instance named by loggerName; if
      * the levelValue is invalid (e.g. misspelled), assigns Level.OFF to the logger.
      */
     private static void configureLogLevel(String loggerName, String levelValue) {

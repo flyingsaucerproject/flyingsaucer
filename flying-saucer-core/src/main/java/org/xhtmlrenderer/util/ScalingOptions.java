@@ -100,7 +100,7 @@ public class ScalingOptions {
     /**
      * Returns a Map of image rendering hints applicable to {@link Graphics2D#setRenderingHints(java.util.Map)}.
      * By default, this will only include the interpolation hint specified for this ScalingOptions. Other hints
-     * could be added in a overridden version in a subclass.
+     * could be added in an overridden version in a subclass.
      *
      * @return Map of rendering hints.
      */

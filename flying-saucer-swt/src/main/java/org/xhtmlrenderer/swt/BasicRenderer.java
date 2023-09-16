@@ -841,7 +841,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Sets the new current document, where the new document is located
-     * relative, e.g using a relative URL.
+     * relative, e.g. using a relative URL.
      *
      * @param filename
      *            The new document to load

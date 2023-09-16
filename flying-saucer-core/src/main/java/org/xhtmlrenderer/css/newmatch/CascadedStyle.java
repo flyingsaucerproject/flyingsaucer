@@ -64,7 +64,7 @@ public class CascadedStyle {
     private String fingerprint;
 
     /**
-     * Creates a <code>CascadedStyle</code>, setting the display property to
+     * Creates a <code>CascadedStyle</code>, setting the display property
      * to the value of the <code>display</code> parameter.
      */
     public static CascadedStyle createAnonymousStyle(IdentValue display) {
@@ -285,7 +285,7 @@ public class CascadedStyle {
  * Fixe inline border mismatch and started on styling problem in switching between blocks and inlines
  *
  * Revision 1.9  2005/05/08 15:37:26  tobega
- * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ * Fixed up style caching, so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
  *
  * Revision 1.8  2005/05/08 13:02:36  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.

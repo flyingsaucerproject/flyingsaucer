@@ -88,7 +88,7 @@ public class ImageResourceLoader {
                     sr.close();
                 }
             } catch (IOException e) {
-                // couldnt open stream at URI...
+                // couldn't open stream at URI...
                 XRLog.exception("Can't open stream for URI '" + uri + "': " + e.getMessage());
             }
             if (ir == null) {

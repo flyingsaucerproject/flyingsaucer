@@ -768,7 +768,7 @@ public class Configuration {
 
     /**
      * Given a property, resolves the value to a public constant field on some class, where the field is of type Object.
-     * The property value must the the FQN of the class and field, e.g.
+     * The property value must the FQN of the class and field, e.g.
      * aKey=java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR will return the value of the
      * VALUE_INTERPOLATION_NEAREST_NEIGHBOR constant on the RendingHints class.
      *
@@ -905,7 +905,7 @@ public class Configuration {
  * Make sure resource streams are cleaned up (bug #201, patch by kaihei)
  *
  * Revision 1.19  2007/07/14 13:06:21  pdoubleya
- * Dont show stack trace if configuration file URL is malformed
+ * Don't show stack trace if configuration file URL is malformed
  *
  * Revision 1.18  2007/07/13 13:40:26  pdoubleya
  * Fix for 183, configuration should allow specifying override files by URL
@@ -949,7 +949,7 @@ public class Configuration {
  *
  * Revision 1.7  2004/10/23 14:06:56  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  * Revision 1.6  2004/10/19 15:00:53  joshy
@@ -957,7 +957,7 @@ public class Configuration {
  * removed some extraneous files
  * update the home page to point to the new jnlp files
  * updated the resource loader to use the marker class
- * updated the text of the about box
+ * updated the text of the "about" box
  *
  * Issue number:
  * Obtained from:

@@ -51,7 +51,7 @@ class SelectField extends FormField {
     public JComponent create() {
         List optionList = createList();
 
-        // Either a select list or a drop down/combobox
+        // Either a select list or a drop-down/combobox
         if (shouldRenderAsList()) {
             JList select = new JList(optionList.toArray());
             applyComponentStyle(select);
@@ -311,7 +311,7 @@ class SelectField extends FormField {
                 NameValuePair pair = (NameValuePair) model.getElementAt(i);
                 if ( pair!=null && pair.getValue() == null) {
                     // We have a heading, remove it. As this handler is called
-                    // as a result of the resulting removal and we do process
+                    // as a result of the resulting removal, and we do process
                     // the events while the value is adjusting, we don't need
                     // to process any other headings here.
                     // BUT if there'll be no selection anymore because by selecting

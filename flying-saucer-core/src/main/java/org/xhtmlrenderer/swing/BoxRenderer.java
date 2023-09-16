@@ -262,7 +262,7 @@ public class BoxRenderer {
     }
 
     /**
-     * Returns a BufferedImage using the specified width and height. By default this returns an image compatible
+     * Returns a BufferedImage using the specified width and height. By default, this returns an image compatible
      * with the screen (if not in "headless" mode) formatted for RGB.
      *
      * @param width target width

@@ -175,7 +175,7 @@ public class SWTFontResolver implements FontResolver {
             SWTFSFont fnt = new SWTFSFont(new Font(_device, fd[0].getName(), nSize, style_bits),
                     size2D);
 
-            // add the font to the hash so we don't have to do this again
+            // add the font to the hash, so we don't have to do this again
             _instance_hash.put(font_instance_name, fnt);
             return fnt;
         }

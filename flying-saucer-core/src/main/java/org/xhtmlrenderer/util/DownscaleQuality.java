@@ -39,7 +39,7 @@ public class DownscaleQuality {
      */
     public static final DownscaleQuality HIGH_QUALITY = addConstant("HIGH");
 
-    /** Low-quality, but not worst quality */
+    /** Low-quality, but not the worst quality */
     public static final DownscaleQuality LOW_QUALITY = addConstant("MED");
 
     /** Low quality, but very fast. */

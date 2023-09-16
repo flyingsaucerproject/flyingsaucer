@@ -32,7 +32,7 @@ public interface FormSubmissionListener {
     /**
      * Called by XhtmlForm when a form is submitted.
      *
-     * @param query the entire query string as composed from form elements and the form's action URL
+     * @param query the entire query string as composed of form elements and the form's action URL
      */
     void submit(String query);
 

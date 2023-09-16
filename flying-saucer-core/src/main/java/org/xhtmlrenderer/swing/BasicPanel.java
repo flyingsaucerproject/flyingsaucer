@@ -381,7 +381,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
     /**
      * Sets the new current document, where the new document
-     * is located relative, e.g using a relative URL.
+     * is located relative, e.g. using a relative URL.
      *
      * @param filename The new document to load
      */
@@ -523,7 +523,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     /**
-     * Scroll the panel to make the specified point be on screen. Typically
+     * Scroll the panel to make the specified point be on screen. Typically,
      * this will scroll the screen down to the y component of the point.
      */
     public void scrollTo(Point pt) {
@@ -749,7 +749,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
  * Patch from Peter Brant
  *
  * Revision 1.71  2005/10/02 21:30:00  tobega
- * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also, some house-cleaning.
  *
  * Revision 1.70  2005/09/29 21:34:05  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
@@ -785,7 +785,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
  *
  * Revision 1.65  2005/09/28 00:03:29  joshy
  * removed cruft from BasicPanel
- * turned of incremental layout and lazy images by default
+ * turned off incremental layout and lazy images by default
  * Issue number:
  * Obtained from:
  * Submitted by:
@@ -1153,7 +1153,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
  *
  * Revision 1.21  2004/11/07 23:24:19  joshy
  * added menu item to generate diffs
- * added diffs for multi-colored borders and inline borders
+ * added diffs for multicolored borders and inline borders
  *
  * Issue number:
  * Obtained from:
@@ -1237,7 +1237,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
  *
  * Revision 1.10  2004/10/23 13:51:54  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  * Revision 1.9  2004/10/18 12:12:26  pdoubleya

@@ -1,6 +1,6 @@
 <project name="build.docs">
     <!--
-    DONT USE THIS FROM COMMAND LINE; use docs
+    DON'T USE THIS FROM COMMAND LINE; use docs
     builds JavaDoc for all code. Meant to be used with antcall; set parameters
     for properties antcall.dest.javadoc.dir and antcall.javadoc.file
     -->

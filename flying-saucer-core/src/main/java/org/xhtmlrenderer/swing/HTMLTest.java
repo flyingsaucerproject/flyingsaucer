@@ -462,7 +462,7 @@ public class HTMLTest extends JFrame {
  * Follow up for removing Minium AA: font "smoothing level" now deprecated. Changed to use font smoothing threshold alone. Remove corresponding property from configuration file.
  *
  * Revision 1.37  2009/03/22 12:27:36  pdoubleya
- * Remove Minium anti-aliasing library as sources are not available. Removed jar and all references to it. For R8 release.
+ * Remove Minium antialiasing library as sources are not available. Removed jar and all references to it. For R8 release.
  *
  * Revision 1.36  2007/05/24 13:22:38  peterbrant
  * Optimize and clean up hover and link listeners
@@ -597,7 +597,7 @@ public class HTMLTest extends JFrame {
  *
  * Revision 1.13  2004/11/09 15:53:51  joshy
  * initial support for hover (currently disabled)
- * moved justification code into it's own class in a new subpackage for inline
+ * moved justification code into its own class in a new subpackage for inline
  * layout (because it's so blooming complicated)
  *
  * Issue number:
@@ -635,7 +635,7 @@ public class HTMLTest extends JFrame {
  *
  * Revision 1.7  2004/10/23 13:51:54  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

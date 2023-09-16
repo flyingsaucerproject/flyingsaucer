@@ -281,7 +281,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     }
 
     /**
-     * Retrieves the XML located at the given URI. It's assumed the URI does point to a XML--the URI will
+     * Retrieves the XML located at the given URI. It's assumed the URI does point to an XML--the URI will
      * be accessed (using java.io or java.net), opened, read and then passed into the XML parser (XMLReader)
      * configured for Flying Saucer. The result is packed up into an XMLResource for later consumption.
      *
@@ -391,7 +391,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
             URI baseURI = new URI(_baseURL);
             if(!baseURI.isOpaque()) {
                 // uri.resolve(child) only works for opaque URIs.
-                // Otherwise it would simply return child.
+                // Otherwise, it would simply return child.
                 return baseURI.resolve(result).toString();
             }
             // Fall back to previous resolution using URL

@@ -54,7 +54,7 @@ abs span (turns into block?)
 nested blocks and inline content inside abs div
 abs div left inside abs div right
 
-need to figure out how to handle repaint optimization on absolute positioned blocks where it's way outside of it's
+need to figure out how to handle repaint optimization on absolute positioned blocks where it's way outside of its
 parent block
 
 ------------------
@@ -84,7 +84,7 @@ subtract from the vertical float tab if tab > 0
 floating block level elements.
 the element will have to become a new box and then
 floated as if it was an image. it needs an intrinsic
-w/h. i don't know what the w/h will be if it doesn't
+w/h. I don't know what the w/h will be if it doesn't
 have them set via css. probably expand the width to the
 width of the containing block.
 
@@ -109,7 +109,7 @@ for the inline calculation
 
 * floating block level elements in a block context :
 
-the element must have an w/h set explicitly or set to the minimum size
+the element must have a w/h set explicitly or set to the minimum size
 modify the test for block context routine to skip floated blocks
 modify the layout children in block mode to move floated block to the side
 add storage of tabs

@@ -168,7 +168,7 @@ public class FSImageWriter {
     }
 
     /**
-     * Returns the image output parameters to control the output image quality, compression, etc. By default
+     * Returns the image output parameters to control the output image quality, compression, etc. By default,
      * this uses the compression values set in this class. Override this method to get full control over the
      * ImageWriteParam used in image output.
      *

@@ -98,7 +98,7 @@ public class RenderingContext implements CssContext {
     }
 
     /**
-     * Returns true if the currently set media type is paged. Currently returns
+     * Returns true if the currently set media type is paged. Currently, returns
      * true only for <i>print</i> , <i>projection</i> , and <i>embossed</i> ,
      * <i>handheld</i> , and <i>tv</i> . See the <a
      * href="http://www.w3.org/TR/CSS21/media.html">media section</a> of the CSS

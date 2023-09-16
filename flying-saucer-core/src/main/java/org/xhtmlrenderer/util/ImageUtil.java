@@ -271,7 +271,7 @@ public class ImageUtil {
     }
 
     /**
-     * Detect if an URI represents an embedded base 64 image.
+     * Detect if given URI represents an embedded base 64 image.
      *
      * @param uri URI of the image
      * @return A boolean
@@ -321,7 +321,7 @@ public class ImageUtil {
          * provided {@code BufferedImage}, taken from 
          * <a href="http://today.java.net/pub/a/today/2007/04/03/perils-of-image-getscaledinstance.html">article on java.net by Chris Campbell</a>.
          * <br>
-         * Expects the image to be fully loaded (e.g. no need to wait for loading on requesting height or width.
+         * Expects the image to be fully loaded (e.g. no need to wait for loading on requesting height or width)
          *
          * @param img           the original image to be scaled
          * @param opt           scaling options described below:
@@ -331,7 +331,7 @@ public class ImageUtil {
          *                      {@code RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR},
          *                      {@code RenderingHints.VALUE_INTERPOLATION_BILINEAR},
          *                      {@code RenderingHints.VALUE_INTERPOLATION_BICUBIC})
-         *        higherQuality if true, this method will use a multi-step
+         *        higherQuality if true, this method will use a multistep
          *                      scaling technique that provides higher quality than the usual
          *                      one-step technique (only useful in downscaling cases, where
          *                      {@code targetWidth} or {@code targetHeight} is
@@ -408,7 +408,7 @@ public class ImageUtil {
 
             // multi-pass only if higher quality requested and we are shrinking image
             if (opt.getTargetWidth() < imgw && opt.getTargetHeight() < imgh) {
-                // Use multi-step technique: start with original size, then
+                // Use multistep technique: start with original size, then
                 // scale down in multiple passes with drawImage()
                 // until the target size is reached
                 w = imgw;

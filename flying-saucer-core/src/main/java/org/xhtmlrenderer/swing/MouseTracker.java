@@ -34,10 +34,10 @@ import org.xhtmlrenderer.render.Box;
 /**
  * A MouseTracker is used to delegate mouse events to the {@link org.xhtmlrenderer.swing.FSMouseListener} instances
  *  associated with a {@link org.xhtmlrenderer.swing.BasicPanel}. The tracker will start receiving events as soon
- * as the first listener is added (via {@link #addListener(FSMouseListener)} and will stop receiving events as soon
+ * as the first listener is added (via {@link #addListener(FSMouseListener)}) and will stop receiving events as soon
  * as the last listener is removed via {@link #removeListener(FSMouseListener)}. This binding is handled automatically
  * via the add and remove methods and the tracker will remain active as long as the tracker has at least one listener.
- * The MouseTracker is also responsible for using MouseEvent coordinates to located the Box on which the mouse is
+ * The MouseTracker is also responsible for using MouseEvent coordinates to locate the Box on which the mouse is
  * acting.
  */
 public class MouseTracker extends MouseInputAdapter {

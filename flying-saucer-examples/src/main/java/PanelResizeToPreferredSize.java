@@ -75,8 +75,8 @@ public class PanelResizeToPreferredSize {
         content.add(new JButton("Button 2"));
         content.add(new JButton("Button 3"));
 
-        // Calling pack() will cause the frame and its components to be displayable (see javadoc for
-        // Window.pack(); this is critical for the document layout routine, below, to have any effect
+        // Calling pack() will cause the frame and its components to be displayable (see javadoc for {@link java.awt.Window.pack});
+        // this is critical for the document layout routine, below, to have any effect
         // Note the frame doesn't need to be visible; e.g., we don't need to show the frame, layout the document,
         // then resize the window; it just needs to be displayable.
         f.pack();

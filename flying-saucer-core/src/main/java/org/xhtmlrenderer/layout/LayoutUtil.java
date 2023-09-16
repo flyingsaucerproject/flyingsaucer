@@ -46,8 +46,8 @@ public class LayoutUtil {
         }
         box.setStaticEquivalent(currentLine);
 
-        // If printing, don't layout until we know where its going
-        if (! c.isPrint()) {
+        // If printing, don't lay out until we know where it's going
+        if (!c.isPrint()) {
             box.layout(c);
         } else {
             c.pushLayer(box);

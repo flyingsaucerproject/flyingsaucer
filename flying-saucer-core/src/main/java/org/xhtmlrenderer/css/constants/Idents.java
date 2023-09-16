@@ -340,7 +340,7 @@ public final class Idents {
 
     /**
      * Given a String, returns either the rgb declaration for the color, or the
-     * hex declaration; used to cleanup assignments like "red" or "green".
+     * hex declaration; used to clean up assignments like "red" or "green".
      *
      * @param value A String which contains a Color identifier, an rgb
      *              assignment or a Color hex value.

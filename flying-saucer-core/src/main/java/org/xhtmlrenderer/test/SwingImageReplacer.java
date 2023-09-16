@@ -57,7 +57,7 @@ public class SwingImageReplacer extends ElementReplacer {
     /**
      * Handles replacement of image elements in the document. May return the same ReplacedElement for a given image
      * on multiple calls. Image will be automatically scaled to cssWidth and cssHeight assuming these are non-zero
-     * positive values. The element is assume to have a src attribute (e.g. it's an <img> element)
+     * positive values. The element is assumed to have a src attribute (e.g. it's an <img> element)
      *
      * @param uac       Used to retrieve images on demand from some source.
      * @param context

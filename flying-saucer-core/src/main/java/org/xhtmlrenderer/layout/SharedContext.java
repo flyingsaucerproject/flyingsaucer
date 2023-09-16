@@ -399,7 +399,7 @@ public class SharedContext {
      * never need to override the dpi, as it is already set to the system
      * default by <code>Toolkit.getDefaultToolkit().getScreenResolution()</code>
      * . You can override the value if you want to scale the fonts for
-     * accessibility or printing purposes. Currently the DPI setting only
+     * accessibility or printing purposes. Currently, the DPI setting only
      * affects font sizing.
      *
      * @param dpi The new dPI value
@@ -450,7 +450,7 @@ public class SharedContext {
     }
 
     /**
-     * Returns true if the currently set media type is paged. Currently returns
+     * Returns true if the currently set media type is paged. Currently, returns
      * true only for <i>print</i> , <i>projection</i> , and <i>embossed</i> ,
      * <i>handheld</i> , and <i>tv</i> . See the <a
      * href="http://www.w3.org/TR/CSS21/media.html">media section</a> of the CSS
@@ -1036,7 +1036,7 @@ public class SharedContext {
  *
  * Revision 1.3  2004/10/23 13:46:46  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

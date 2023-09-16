@@ -408,7 +408,7 @@ public class IdentValue implements FSDerivedValue {
  * Added missing idents for cursor and font-size, removed useless comments to make sorting easier.
  *
  * Revision 1.20  2006/05/08 21:24:24  pdoubleya
- * Log, don't throw exception, if we check for an absolute unit but it doesn't make sense to do so (IdentValue.hasAbsoluteUnit()).
+ * Log, don't throw exception, if we check for an absolute unit, but it doesn't make sense to do so (IdentValue.hasAbsoluteUnit()).
  *
  * Revision 1.19  2005/12/28 00:50:51  peterbrant
  * Continue ripping out first try at pagination / Minor method name refactoring

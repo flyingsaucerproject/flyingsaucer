@@ -226,7 +226,7 @@ public class NaiveUserAgent implements UserAgentCallback {
             URI baseURI = new URI(_baseURL);
             if(!baseURI.isOpaque()) {
                 // uri.resolve(child) only works for opaque URIs.
-                // Otherwise it would simply return child.
+                // Otherwise, it would simply return child.
                 return baseURI.resolve(result).toString();
             }
             // Fall back to previous resolution using URL

@@ -1996,7 +1996,7 @@ public final class CSSName implements Comparable {
  * Fixed id assignment to scope primitive names to start of list, in static block.
  *
  * Revision 1.11  2005/06/21 08:23:13  pdoubleya
- * Added specific list and count of primitive, non shorthand properties, and CalculatedStyle now sizes array to this size.
+ * Added specific list and count of primitive, non-shorthand properties, and CalculatedStyle now sizes array to this size.
  *
  * Revision 1.10  2005/06/19 23:02:37  tobega
  * Implemented calculation of minimum cell-widths.
@@ -2024,7 +2024,7 @@ public final class CSSName implements Comparable {
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards
  * except for common packages
- * (java.io, java.util, etc).
+ * (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

@@ -1386,7 +1386,7 @@ public class TableBox extends BlockBox {
                         int spanMax = Math.max(maxWidth, cMaxWidth);
                         tMaxWidth = Math.max(tMaxWidth, spanMax * 100 / w.value());
 
-                        // all non percent columns in the span get percent
+                        // all non-percent columns in the span get percent
                         // values to sum up correctly.
                         long percentMissing = w.value() - totalPercent;
                         int totalWidth = 0;

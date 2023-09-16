@@ -232,7 +232,7 @@ public final class ValueConstants {
      */
     public static boolean isNumber(short cssPrimitiveType) {
         switch (cssPrimitiveType) {
-            // fall thru on all these
+            // fall through on all these
             // relative length or size
             case CSSPrimitiveValue.CSS_EMS:
             case CSSPrimitiveValue.CSS_EXS:
@@ -386,7 +386,7 @@ public final class ValueConstants {
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards
  * except for common packages
- * (java.io, java.util, etc).
+ * (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

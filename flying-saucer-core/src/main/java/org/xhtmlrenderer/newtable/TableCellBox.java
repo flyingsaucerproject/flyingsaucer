@@ -437,7 +437,7 @@ public class TableCellBox extends BlockBox {
             return border2;
         }
 
-        // Rule #2 above. A style of 'none' has lowest priority and always loses
+        // Rule #2 above. A style of 'none' has the lowest priority and always loses
         // to any other border.
         if (border2.style() == IdentValue.NONE) {
             return border1;
@@ -459,7 +459,7 @@ public class TableCellBox extends BlockBox {
         }
 
         // The border have the same width and style. Rely on precedence (cell
-        // over row over row group, etc.)
+        // over row group, etc.)
         if (returnNullOnEqual && border1.precedence() == border2.precedence()) {
             return null;
         } else {

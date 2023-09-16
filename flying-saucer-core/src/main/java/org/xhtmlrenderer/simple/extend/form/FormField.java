@@ -146,7 +146,7 @@ public abstract class FormField {
         return true;
     }
 
-    // These two methods are temporary but I am using them to clean up
+    // These two methods are temporary, but I am using them to clean up
     // the code in XhtmlForm
     public String[] getFormDataStrings() {
         // Fields MUST have at least a name attribute to get sent.  The attr
