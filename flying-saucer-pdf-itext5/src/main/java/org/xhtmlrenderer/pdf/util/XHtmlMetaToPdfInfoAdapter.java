@@ -193,29 +193,27 @@ public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
             XRLog.render(Level.FINEST, "metaName=" + metaName + ", metaContent=" + metaContent );
             if (metaName.length() != 0 && metaContent.length() != 0) {
 
-                PdfName pdfName = null;
-                PdfString pdfString = null;
                 if ( HTML_META_KEY_TITLE.equalsIgnoreCase( metaName )
                         || HTML_META_KEY_DC_TITLE.equalsIgnoreCase( metaName ) ) {
-                    pdfName = PdfName.TITLE;
-                    pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
+                    PdfName pdfName = PdfName.TITLE;
+                    PdfString pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
                     this.pdfInfoValues.put( pdfName, pdfString );
 
                 } else if ( HTML_META_KEY_CREATOR.equalsIgnoreCase( metaName )
                         || HTML_META_KEY_DC_CREATOR.equalsIgnoreCase( metaName ) ) {
-                    pdfName = PdfName.AUTHOR;
-                    pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
+                    PdfName pdfName = PdfName.AUTHOR;
+                    PdfString pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
                     this.pdfInfoValues.put( pdfName, pdfString );
 
                 } else if ( HTML_META_KEY_SUBJECT.equalsIgnoreCase( metaName )
                         || HTML_META_KEY_DC_SUBJECT.equalsIgnoreCase( metaName ) ) {
-                    pdfName = PdfName.SUBJECT;
-                    pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
+                    PdfName pdfName = PdfName.SUBJECT;
+                    PdfString pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
                     this.pdfInfoValues.put( pdfName, pdfString );
 
                 } else if ( HTML_META_KEY_KEYWORDS.equalsIgnoreCase( metaName ) ) {
-                    pdfName = PdfName.KEYWORDS;
-                    pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
+                    PdfName pdfName = PdfName.KEYWORDS;
+                    PdfString pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
                     this.pdfInfoValues.put( pdfName, pdfString );
                 }
             }

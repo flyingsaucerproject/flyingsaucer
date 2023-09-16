@@ -341,8 +341,8 @@ public class BlockBox extends Box implements InlinePaintable {
 
     private MarkerData.ImageMarker makeImageMarker(
             LayoutContext c, StrutMetrics structMetrics, String image) {
-        FSImage img = null;
-        if (! image.equals("none")) {
+        FSImage img;
+        if (!image.equals("none")) {
             img = c.getUac().getImageResource(image).getImage();
             if (img != null) {
                 StrutMetrics strutMetrics = structMetrics;
@@ -475,11 +475,9 @@ public class BlockBox extends Box implements InlinePaintable {
 
     public void positionAbsolute(CssContext cssCtx, int direction) {
         CalculatedStyle style = getStyle();
-
-        Rectangle boundingBox = null;
-
         int cbContentHeight = getContainingBlock().getContentAreaEdge(0, 0, cssCtx).height;
 
+        Rectangle boundingBox;
         if (getContainingBlock() instanceof BlockBox) {
             boundingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
         } else {
@@ -1782,7 +1780,7 @@ public class BlockBox extends Box implements InlinePaintable {
                     InlineBox iB = (InlineBox) child;
 
                     if (iB.isStartsHere()) {
-                        CascadedStyle cs = null;
+                        CascadedStyle cs;
                         if (iB.getElement() != null) {
                             if (iB.getPseudoElementOrClass() == null) {
                                 cs = c.getCss().getCascadedStyle(iB.getElement(), false);

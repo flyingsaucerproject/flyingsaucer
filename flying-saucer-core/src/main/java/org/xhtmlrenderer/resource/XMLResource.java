@@ -101,7 +101,7 @@ public class XMLResource extends AbstractResource {
         this.document = document;
     }
 
-    public static final XMLReader newXMLReader() {
+    public static XMLReader newXMLReader() {
         XMLReader xmlReader = null;
         String xmlReaderClass = Configuration.valueFor("xr.load.xml-reader");
 
@@ -143,7 +143,6 @@ public class XMLResource extends AbstractResource {
                 }
                 */
                 xmlReader = XMLReaderFactory.createXMLReader();
-                xmlReaderClass = "{JDK default}";
             } catch (Exception ex) {
                 XRLog.general(ex.getMessage());
             }
@@ -153,7 +152,6 @@ public class XMLResource extends AbstractResource {
                 XRLog.load(Level.WARNING, "falling back on the default parser");
                 SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
                 xmlReader = parser.getXMLReader();
-                xmlReaderClass = "SAXParserFactory default";
             } catch (Exception ex) {
                 XRLog.general(ex.getMessage());
             }

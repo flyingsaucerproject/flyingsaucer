@@ -182,7 +182,7 @@ public class StyleReference {
      * @return The pseudoElementStyle value
      */
     public CascadedStyle getPseudoElementStyle(Node node, String pseudoElement) {
-        Element e = null;
+        Element e;
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             e = (Element) node;
         } else {

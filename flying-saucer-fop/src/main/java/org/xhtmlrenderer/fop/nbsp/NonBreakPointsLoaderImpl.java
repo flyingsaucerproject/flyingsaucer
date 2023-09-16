@@ -52,7 +52,7 @@ public class NonBreakPointsLoaderImpl implements NonBreakPointsLoader {
         try {
             BufferedReader r = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             List<String> result = new ArrayList<String>();
-            String line = null;
+            String line;
             while ((line = r.readLine()) != null) {
                 if (line.isEmpty() || line.startsWith("#")) continue;
                 result.add(line);

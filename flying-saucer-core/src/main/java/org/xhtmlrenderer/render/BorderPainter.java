@@ -295,8 +295,8 @@ public class BorderPainter {
                     (int) (border.right() / 2),
                     (int) (border.bottom() / 2),
                     (int) (border.left() / 2));
-           BorderPropertySet borderA = null,
-                   borderB = null;
+           BorderPropertySet borderA;
+           BorderPropertySet borderB;
            if (borderSideStyle == IdentValue.RIDGE) {
                 borderA = border;
                 borderB =  border.darken(borderSideStyle);

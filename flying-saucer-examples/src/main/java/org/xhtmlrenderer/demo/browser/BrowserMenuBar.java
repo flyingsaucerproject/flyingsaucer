@@ -251,12 +251,12 @@ public class BrowserMenuBar extends JMenuBar {
         List demoList = new ArrayList();
         URL url = BrowserMenuBar.class.getResource("/demos/file-list.txt");
         InputStream is = null;
-        LineNumberReader lnr = null;
+        
         if (url != null) {
             try {
                 is = url.openStream();
                 InputStreamReader reader = new InputStreamReader(is);
-                lnr = new LineNumberReader(reader);
+                LineNumberReader lnr = new LineNumberReader(reader);
                 try {
                     String line;
                     while ((line = lnr.readLine()) != null) {

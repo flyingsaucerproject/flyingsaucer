@@ -853,7 +853,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {
         URI uri = image.getURI();
-        PdfReader reader = null;
+        PdfReader reader;
 
         try {
             reader = getReader(uri);

@@ -72,7 +72,7 @@ public class ImageUtil {
     }
 
     public static BufferedImage makeCompatible(BufferedImage bimg) {
-        BufferedImage cimg = null;
+        BufferedImage cimg;
         if (GraphicsEnvironment.isHeadless()) {
             cimg = createCompatibleBufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getTransparency());
         } else {
@@ -107,7 +107,7 @@ public class ImageUtil {
      * @return A BufferedImage compatible with the screen (best fit).
      */
     public static BufferedImage createCompatibleBufferedImage(int width, int height, int biType) {
-        BufferedImage bimage = null;
+        BufferedImage bimage;
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         if (ge.isHeadlessInstance()) {

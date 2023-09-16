@@ -205,7 +205,7 @@ public class AWTFontResolver implements FontResolver {
         if (available_fonts_hash.containsKey(font)) {
             Object value = available_fonts_hash.get(font);
             // have we actually allocated the root font object yet?
-            Font root_font = null;
+            Font root_font;
             if (value instanceof Font) {
                 root_font = (Font) value;
             } else {

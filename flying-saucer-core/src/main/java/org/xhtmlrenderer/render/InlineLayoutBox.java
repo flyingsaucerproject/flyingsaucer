@@ -770,11 +770,10 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
             return null;
         }
 
-        Box result = null;
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object child = getInlineChild(i);
             if (child instanceof Box) {
-                    result = ((Box)child).find(cssCtx, absX, absY, findAnonymous);
+                    Box result = ((Box)child).find(cssCtx, absX, absY, findAnonymous);
                     if (result != null) {
                         return result;
                     }
@@ -782,7 +781,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         }
 
         Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), cssCtx);
-        result = edge.contains(absX, absY) && getStyle().isVisible() ? this : null;
+        Box result = edge.contains(absX, absY) && getStyle().isVisible() ? this : null;
 
         if (! findAnonymous && result != null && getElement() == null) {
             return getParent().getParent();

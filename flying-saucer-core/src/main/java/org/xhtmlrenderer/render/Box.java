@@ -679,7 +679,7 @@ public abstract class Box implements Styleable {
             return null;
         }
 
-        Box result = null;
+        Box result;
         for (int i = 0; i < getChildCount(); i++) {
             Box child = getChild(i);
             result = child.find(cssCtx, absX, absY, findAnonymous);
@@ -1079,7 +1079,7 @@ public abstract class Box implements Styleable {
     }
 
     public FSColor getEffBackgroundColor(RenderingContext c) {
-        FSColor result = null;
+        FSColor result;
         Box current = this;
         while (current != null) {
             result = current.getStyle().getBackgroundColor();

@@ -104,27 +104,24 @@ public class XhtmlForm {
     }
 
     public FormField addComponent(Element e, LayoutContext context, BlockBox box) {
-        FormField field = null;
 
         if (_componentCache.containsKey(e)) {
-            field = (FormField) _componentCache.get(e);
+            return (FormField) _componentCache.get(e);
         } else {
             if (!isFormField(e)) {
                 return null;
             }
 
-            field = FormFieldFactory.create(this, context, box);
+            FormField field = FormFieldFactory.create(this, context, box);
 
             if (field == null) {
                 XRLog.layout("Unknown field type: " + e.getNodeName());
-
                 return null;
             }
 
             _componentCache.put(e, field);
+            return field;
         }
-
-        return field;
     }
 
     public void reset() {

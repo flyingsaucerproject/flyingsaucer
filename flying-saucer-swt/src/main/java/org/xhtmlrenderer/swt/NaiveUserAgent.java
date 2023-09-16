@@ -91,7 +91,7 @@ public class NaiveUserAgent implements UserAgentCallback {
     }
 
     public ImageResource getImageResource(String uri) {
-        ImageResource ir = null;
+        ImageResource ir;
         if (ImageUtil.isEmbeddedBase64Image(uri)) {
             ir = loadEmbeddedBase64ImageResource(uri);
         } else {

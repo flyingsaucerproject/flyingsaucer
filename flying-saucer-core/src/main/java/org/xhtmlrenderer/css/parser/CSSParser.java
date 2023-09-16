@@ -350,18 +350,17 @@ public class CSSParser {
         try {
             Token t = next();
             if (t == Token.TK_NAMESPACE_SYM) {
-                String prefix = null;
-                String url = null;
-
                 skip_whitespace();
                 t = next();
 
+                String prefix = null;
                 if (t == Token.TK_IDENT) {
                     prefix = getTokenValue(t);
                     skip_whitespace();
                     t = next();
                 }
 
+                String url;
                 if (t == Token.TK_STRING || t == Token.TK_URI) {
                     url = getTokenValue(t);
                 } else {
@@ -459,16 +458,15 @@ public class CSSParser {
 //  ;
     private String medium() throws IOException {
         //System.out.println("medium()");
-        String result = null;
         Token t = next();
         if (t == Token.TK_IDENT) {
-            result = getTokenValue(t);
+            String result = getTokenValue(t);
             skip_whitespace();
+            return result;
         } else {
             push(t);
             throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
         }
-        return result;
     }
 
 //  font_face
@@ -629,15 +627,15 @@ public class CSSParser {
 //    ;
     private String pseudo_page() throws IOException {
         //System.out.println("pseudo_page()");
-        String result = null;
         Token t = next();
         if (t == Token.TK_COLON) {
             t = next();
             if (t == Token.TK_IDENT) {
-                result = getTokenValue(t);
+                String result = getTokenValue(t);
                 if (! (result.equals("first") || result.equals("left") || result.equals("right"))) {
                     throw new CSSParseException("Pseudo page must be one of first, left, or right", getCurrentLine());
                 }
+                return result;
             } else {
                 push(t);
                 throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
@@ -646,7 +644,6 @@ public class CSSParser {
             push(t);
             throw new CSSParseException(t, Token.TK_COLON, getCurrentLine());
         }
-        return result;
     }
 //  operator
 //    : '/' S* | COMMA S* | /* empty */
@@ -1482,7 +1479,7 @@ public class CSSParser {
             sign = unary_operator();
             t = la();
         }
-        PropertyValue result = null;
+        PropertyValue result;
         switch (t.getType()) {
             case Token.ANGLE:
             case Token.TIME:
@@ -1617,7 +1614,7 @@ public class CSSParser {
 //    ;
     private PropertyValue function() throws IOException {
         //System.out.println("function()");
-        PropertyValue result = null;
+        PropertyValue result;
         Token t = next();
         if (t == Token.TK_FUNCTION) {
             String f = getTokenValue(t);
@@ -1745,7 +1742,7 @@ public class CSSParser {
 //   ;
     private PropertyValue hexcolor() throws IOException {
         //System.out.println("hexcolor()");
-        PropertyValue result = null;
+        PropertyValue result;
         Token t = next();
         if (t == Token.TK_HASH) {
             String s = getTokenValue(t);
@@ -1753,7 +1750,7 @@ public class CSSParser {
                 push(t);
                 throw new CSSParseException('#' + s + " is not a valid color definition", getCurrentLine());
             }
-            FSRGBColor color = null;
+            FSRGBColor color;
             if (s.length() == 3) {
                 color = new FSRGBColor(
                             convertToInteger(s.charAt(0), s.charAt(0)),

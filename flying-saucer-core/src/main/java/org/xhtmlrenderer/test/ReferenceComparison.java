@@ -1,15 +1,27 @@
 package org.xhtmlrenderer.test;
 
-import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.swing.BoxRenderer;
-import org.xhtmlrenderer.util.IOUtil;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.newInputStream;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.swing.BoxRenderer;
+import org.xhtmlrenderer.util.IOUtil;
 
 
 /**
@@ -222,25 +234,17 @@ public class ReferenceComparison {
     }
 
     private String readReference(File referenceDir, String input, String sfx) throws IOException {
-        BufferedReader rdr = null;
-        StringBuffer sb;
         File f = new File(referenceDir, input + sfx);
-        rdr = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
-        try {
+        
+        try (BufferedReader rdr = new BufferedReader(new InputStreamReader(newInputStream(f.toPath()), UTF_8))) {
             String line;
-            sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             while ((line = rdr.readLine()) != null) {
                 sb.append(line);
                 sb.append(LINE_SEPARATOR);
             }
-        } finally {
-            try {
-                rdr.close();
-            } catch (IOException e) {
-                // swallow
-            }
+            return sb.toString();
         }
-        return sb.toString();
     }
 
     private void log(final String msg) {

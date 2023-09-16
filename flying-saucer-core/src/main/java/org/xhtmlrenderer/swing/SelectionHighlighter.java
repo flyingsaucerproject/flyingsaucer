@@ -595,7 +595,6 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             return null;
         }
         Element elt = null;
-        int offset = 0;
         InlineLayoutBox ilb = null;
         boolean containsWholeIlb = false;
         if (box instanceof InlineLayoutBox) {
@@ -678,6 +677,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
         String txt = fndTxt.getMasterText();
 
+        int offset;
         CalculatedStyle style = ilb.getStyle();
         if (containsWholeIlb) {
             offset = fndTxt.getEnd();

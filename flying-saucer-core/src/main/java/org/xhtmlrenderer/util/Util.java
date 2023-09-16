@@ -36,7 +36,7 @@ public class Util {
     /**
      * Description of the Field
      */
-    private PrintWriter pw = null;
+    private PrintWriter pw;
     /**
      * Description of the Field
      */
@@ -326,9 +326,7 @@ public class Util {
      */
     public static void string_to_file(String text, File file)
             throws IOException {
-        FileWriter writer = null;
-        writer = new FileWriter(file);
-        try {
+        try (FileWriter writer = new FileWriter(file)) {
             StringReader reader = new StringReader(text);
             char[] buf = new char[1000];
             while (true) {
@@ -339,10 +337,6 @@ public class Util {
                 writer.write(buf, 0, n);
             }
             writer.flush();
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
         }
     }
 

@@ -64,10 +64,9 @@ public class InlineBoxing {
         int remainingWidth = maxAvailableWidth;
 
         LineBox currentLine = newLine(c, initialY, box);
-        LineBox previousLine = null;
 
         InlineLayoutBox currentIB = null;
-        InlineLayoutBox previousIB = null;
+        InlineLayoutBox previousIB;
 
         int contentStart = 0;
 
@@ -117,7 +116,6 @@ public class InlineBoxing {
 
         boolean needFirstLetter = c.getFirstLettersTracker().hasStyles();
         boolean zeroWidthInlineBlock = false;
-
         int lineOffset = 0;
 
         for (Iterator i = box.getInlineContent().iterator(); i.hasNext(); ) {
@@ -263,7 +261,7 @@ public class InlineBoxing {
                         if (lbContext.isEndsOnNL()) {
                             currentLine.setEndsOnNL(true);
                         }
-                        previousLine = currentLine;
+                        LineBox previousLine = currentLine;
                         currentLine = newLine(c, previousLine, box);
                         currentIB = addOpenInlineBoxes(
                                 c, currentLine, openInlineBoxes,  maxAvailableWidth, iBMap);
@@ -325,7 +323,7 @@ public class InlineBoxing {
                        lineOffset++;
                        markerData = null;
                        contentStart = 0;
-                       previousLine = currentLine;
+                       LineBox previousLine = currentLine;
                        currentLine = newLine(c, previousLine, box);
                        currentIB = addOpenInlineBoxes(
                                c, currentLine, openInlineBoxes, maxAvailableWidth, iBMap);

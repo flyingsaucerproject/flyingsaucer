@@ -32,10 +32,10 @@ import org.xhtmlrenderer.css.newmatch.Selector;
  * @author Patrick Wright
  */
 public class Ruleset {
-    private int _origin;
-    private java.util.List _props;
+    private final int _origin;
+    private final java.util.List _props;
 
-    private List _fsSelectors = new ArrayList();
+    private final List _fsSelectors;
 
     public Ruleset(int orig) {
         _origin = orig;

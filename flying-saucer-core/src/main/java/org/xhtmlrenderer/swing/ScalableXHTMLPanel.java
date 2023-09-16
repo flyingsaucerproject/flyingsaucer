@@ -50,7 +50,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
 
     private int scalePolicy = SCALE_POLICY_NONE;
     private double scale = -1.0d;
-    private ArrayList scListeners = null;
+    private final ArrayList scListeners;
     /**
      * The lastly calculated layout size
      */
@@ -60,7 +60,6 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
      */
     public ScalableXHTMLPanel() {
-        super();
         scListeners = new ArrayList();
     }
 

@@ -115,13 +115,7 @@ public class Matcher {
             }
         }
 
-        CascadedStyle style = null;
-        if (props.isEmpty()) {
-            style = CascadedStyle.emptyCascadedStyle;
-        } else {
-            style = new CascadedStyle(props.iterator());
-        }
-
+        CascadedStyle style = props.isEmpty() ? CascadedStyle.emptyCascadedStyle : new CascadedStyle(props.iterator());
         return new PageInfo(props, style, marginBoxes);
     }
 
@@ -407,9 +401,7 @@ public class Matcher {
         }
 
         CascadedStyle getCascadedStyle(Object e) {
-            CascadedStyle result;
             synchronized (e) {
-                CascadedStyle cs = null;
                 org.xhtmlrenderer.css.sheet.Ruleset elementStyling = getElementStyle(e);
                 org.xhtmlrenderer.css.sheet.Ruleset nonCssStyling = getNonCssStyle(e);
                 List propList = new LinkedList();
@@ -426,15 +418,8 @@ public class Matcher {
                 if (elementStyling != null) {
                     propList.addAll(elementStyling.getPropertyDeclarations());
                 }
-                if (propList.size() == 0)
-                    cs = CascadedStyle.emptyCascadedStyle;
-                else {
-                    cs = new CascadedStyle(propList.iterator());
-                }
-
-                result = cs;
+                return propList.isEmpty() ? CascadedStyle.emptyCascadedStyle : new CascadedStyle(propList.iterator());
             }
-            return result;
         }
 
         /**
@@ -446,7 +431,6 @@ public class Matcher {
             if (!si.hasNext()) {
                 return null;
             }
-            CascadedStyle cs = null;
             java.util.List pe = (java.util.List) pseudoSelectors.get(pseudoElement);
             if (pe == null) return null;
 
@@ -455,12 +439,12 @@ public class Matcher {
                 org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
                 propList.addAll(rs.getPropertyDeclarations());
             }
+
             if (propList.size() == 0)
-                cs = CascadedStyle.emptyCascadedStyle;//already internalized
+                return CascadedStyle.emptyCascadedStyle; // already internalized
             else {
-                cs = new CascadedStyle(propList.iterator());
+                return new CascadedStyle(propList.iterator());
             }
-            return cs;
         }
     }
 }

@@ -152,12 +152,10 @@ public class Eeze {
     }
 
     private void parseArgs(String[] args) {
-        File f = null;
-
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
 
-            f = new File(arg);
+            File f = new File(arg);
 
             if (!f.exists()) {
                 showUsageAndExit("Does not exist: " + arg, -1);

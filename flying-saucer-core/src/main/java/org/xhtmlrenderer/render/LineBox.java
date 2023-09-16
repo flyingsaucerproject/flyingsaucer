@@ -315,19 +315,17 @@ public class LineBox extends Box implements InlinePaintable {
 
     public Rectangle getPaintingClipEdge(CssContext cssCtx) {
         Box parent = getParent();
-        Rectangle result = null;
         if (parent.getStyle().isIdent(
                 CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK) ||
                     getJustificationInfo() != null) {
-            result = new Rectangle(
+            return new Rectangle(
                     getAbsX(), getAbsY() + _paintingTop,
                     parent.getAbsX() + parent.getTx() + parent.getContentWidth() - getAbsX(),
                     _paintingHeight);
         } else {
-            result = new Rectangle(
+            return new Rectangle(
                     getAbsX(), getAbsY() + _paintingTop, getContentWidth(), _paintingHeight);
         }
-        return result;
     }
 
     private boolean intersectsInlineBlocks(CssContext cssCtx, Shape clip) {
@@ -496,7 +494,7 @@ public class LineBox extends Box implements InlinePaintable {
             return null;
         }
 
-        Box result = null;
+        Box result;
         for (int i = 0; i < getChildCount(); i++) {
             Box child = getChild(i);
             result = child.find(cssCtx, absX, absY, findAnonymous);

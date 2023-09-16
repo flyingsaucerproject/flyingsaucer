@@ -68,18 +68,15 @@ public class ITextFontResolver implements FontResolver {
      * @return set of all family names for the font file, as reported by iText libraries
      */
     public static Set getDistinctFontFamilyNames(String path, String encoding, boolean embedded) {
-        BaseFont font = null;
         try {
-            font = BaseFont.createFont(path, encoding, embedded);
+            BaseFont font = BaseFont.createFont(path, encoding, embedded);
             String[] fontFamilyNames = TrueTypeUtil.getFamilyNames(font);
             Set distinct = new HashSet();
             for (int i = 0; i < fontFamilyNames.length; i++) {
                 distinct.add(fontFamilyNames[i]);
             }
             return distinct;
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (DocumentException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -714,7 +711,7 @@ public class ITextFontResolver implements FontResolver {
                 }
                 return null;
             } else if (searchMode == SM_LIGHTER_OR_DARKER){
-                int offset = 0;
+                int offset;
                 FontDescription descr = null;
                 for (offset = 0; offset < matches.length; offset++) {
                     descr = matches[offset];
@@ -730,7 +727,7 @@ public class ITextFontResolver implements FontResolver {
                 }
 
             } else if (searchMode == SM_DARKER_OR_LIGHTER) {
-                int offset = 0;
+                int offset;
                 FontDescription descr = null;
                 for (offset = matches.length - 1; offset >= 0; offset--) {
                     descr = matches[offset];

@@ -65,11 +65,10 @@ public class DirectoryLister {
         sb.append("<hr />");
 
         if (file.isDirectory()) {
-            String loc = null;
             try {
                 File parent = file.getParentFile();
                 if ( parent != null ) {
-                    loc = GeneralUtil.htmlEscapeSpace(file.getAbsoluteFile().getParentFile().toURL().toExternalForm()).toString();
+                    String loc = GeneralUtil.htmlEscapeSpace(file.getAbsoluteFile().getParentFile().toURL().toExternalForm()).toString();
                     sb.append("<a class='dir' href='" + loc + "'>Up to higher level directory</a>");
                 }
             } catch (MalformedURLException e) {
@@ -77,7 +76,6 @@ public class DirectoryLister {
             }
             sb.append("<table style='width: 75%'>");
             File[] files = file.listFiles();
-            String cls = "";
             String img = "";
             for (int i = 0; i < files.length; i++) {
                 File f = files[i];
@@ -86,13 +84,15 @@ public class DirectoryLister {
                 String lenDesc = ( len > 1024 ? new DecimalFormat("#,###KB").format(len / 1024) : "");
                 String lastMod = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a").format(new Date(f.lastModified()));
                 sb.append("<tr>");
+
+                String cls;
                 if (files[i].isDirectory()) {
                     cls = "dir";
                 } else {
                     cls = "file";
                 }
                 try {
-                    loc = GeneralUtil.htmlEscapeSpace(files[i].toURL().toExternalForm()).toString();
+                    String loc = GeneralUtil.htmlEscapeSpace(files[i].toURL().toExternalForm()).toString();
                     sb.append("<td><a class='" + cls + "' href='" + loc + "'>" +
                             files[i].getName() +
                             "</a></td>" +

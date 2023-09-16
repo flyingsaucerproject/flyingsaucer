@@ -82,9 +82,8 @@ public class DemoUserAgent implements UserAgentCallback {
     }
 
     public ImageResource getImageResource(String uri) {
-        ImageResource ir = null;
         uri = resolveURI(uri);
-        ir = (ImageResource) imageCache.get(uri);
+        ImageResource ir = (ImageResource) imageCache.get(uri);
         //TODO: check that cached image is still valid
         if (ir == null) {
             InputStream is = null;
@@ -143,11 +142,10 @@ public class DemoUserAgent implements UserAgentCallback {
     public XMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);
         if (uri != null && uri.startsWith("file:")) {
-            File file = null;
             try {
-                file = new File(new URI(uri));
+                new File(new URI(uri));
             } catch (URISyntaxException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
         }
         XMLResource xr = null;

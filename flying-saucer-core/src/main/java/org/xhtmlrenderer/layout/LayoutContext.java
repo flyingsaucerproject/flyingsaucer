@@ -205,16 +205,14 @@ public class LayoutContext implements CssContext {
     }
 
     public void pushLayer(Box master) {
-        Layer layer = null;
+        Layer layer;
 
         if (_rootLayer == null) {
             layer = new Layer(master);
             _rootLayer = layer;
         } else {
             Layer parent = getLayer();
-
             layer = new Layer(parent, master);
-
             parent.addChild(layer);
         }
 
