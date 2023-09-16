@@ -58,7 +58,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * when this style is created. A property retrieved by name should always have
  * only one value in this class (e.g. one-one map). Any methods to retrieve
  * property values from an instance of this class require a valid {@link
- * org.xhtmlrenderer.layout.Context} be given to it, for some cases of property
+ * CssContext} be given to it, for some cases of property
  * resolution. Generally, a programmer will not use this class directly, but
  * will retrieve properties using a {@link org.xhtmlrenderer.context.StyleReference}
  * implementation.
