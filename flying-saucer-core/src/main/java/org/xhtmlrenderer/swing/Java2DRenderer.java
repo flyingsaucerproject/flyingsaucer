@@ -53,7 +53,7 @@ import org.xhtmlrenderer.util.ImageUtil;
  * BufferedImage image = rend.getImage();
  * </pre>
  *
- * <p>The document is not loaded, and layout and render don't take place, until {@link #getImage(int)}  is called.
+ * <p>The document is not loaded, and layout and render don't take place, until {@link #getImage()}  is called.
  * Subsequent calls to {@link #getImage()} don't result in a reload; create a new Java2DRenderer instance to do so.</p>
  *
  * <p>As with {@link org.xhtmlrenderer.swing.RootPanel}, you can access the
@@ -117,12 +117,13 @@ public class Java2DRenderer {
     }
 
     /**
-     * Creates a new instance for a given URL. Does not render until {@link #getImage(int)} is called for
+     * Creates a new instance for a given URL. Does not render until {@link #getImage()} is called for
      * the first time.
      *
      * @param url The location of the document to be rendered.
-     * @param baseurl The base url for the document, against which  relative paths are resolved.
+     * @param baseUrl The base url for the document, against which  relative paths are resolved.
      * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+     * @param height Target height, in pixels, for the image; required to provide vertical bounds for the layout.
      */
     public Java2DRenderer(String url, String baseUrl, int width, int height) {
         // bypass scaling routines based on DPI -- see PDFRenderer and compare--dotsPerPoint is not implemented
@@ -137,7 +138,7 @@ public class Java2DRenderer {
     }
 
     /**
-     * Creates a new instance for a given File. Does not render until {@link #getImage(int)} is called for
+     * Creates a new instance for a given File. Does not render until {@link #getImage()} is called for
      * the first time.
      *
      * @param file The file to be rendered.
@@ -150,7 +151,7 @@ public class Java2DRenderer {
 
 
         /**
-         * Creates a new instance pointing to the given Document. Does not render until {@link #getImage(int)} is called for
+         * Creates a new instance pointing to the given Document. Does not render until {@link #getImage()} is called for
          * the first time.
          *
          * @param doc The document to be rendered.
@@ -169,7 +170,7 @@ public class Java2DRenderer {
     }
 
         /**
-         * Creates a new instance pointing to the given Document. Does not render until {@link #getImage(int)} is called for
+         * Creates a new instance pointing to the given Document. Does not render until {@link #getImage()} is called for
          * the first time.
          *
          * @param doc The document to be rendered.
@@ -183,7 +184,7 @@ public class Java2DRenderer {
         }
 
     /**
-     * Creates a new instance for a given File. Does not render until {@link #getImage(int)} is called for
+     * Creates a new instance for a given File. Does not render until {@link #getImage()} is called for
      * the first time.
      *
      * @param file The file to be rendered.
@@ -225,7 +226,6 @@ public class Java2DRenderer {
      * automatically.
      *
      * @param url The location of the document to be rendered.
-     * @param baseurl The base url for the document, against which  relative paths are resolved.
      * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
      * @param height Target height, in pixels, for the image
      */
@@ -272,8 +272,6 @@ public class Java2DRenderer {
     /**
      * Renders the XML document if necessary and returns the resulting image. If already rendered, same image
      * reference will be returned.
-     *
-     * {@link #getImage(int)} with the target width.
      *
      * @return The XML rendered as a BufferedImage.
      */

@@ -20,13 +20,14 @@
 package org.xhtmlrenderer.util;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
 
 /**
  * POJO used when calling
- * {@link org.xhtmlrenderer.util.ImageUtil#getScaledInstance(ScalingOptions,java.awt.Image)}.
+ * {@link ImageUtil#getScaledInstance(ScalingOptions, BufferedImage)}.
  * Encapsulates a set of parameters related to scaling quality and output. Values are final once constructed, except
  * for target width and height, which can be change and the options instance reused.
  * There is a default constructor for average quality and performance.
@@ -42,9 +43,9 @@ public class ScalingOptions {
      *
      * @param downscalingHint   Directs downscaling quality. One of the enumerated types of
      *                          {@link org.xhtmlrenderer.util.DownscaleQuality} such as
-     *                          {@link org.xhtmlrenderer.util.ImageUtil.DOWNSCALE_FAST}.
+     *                          {@link DownscaleQuality#FAST}.
      * @param interpolationHint Hint for interpolation to AWT image renderer, one of the Object constants from
-     *                          {@link java.awt.RenderingHints} using {@link java.awt.RenderingHints.KEY_INTERPOLATION}
+     *                          {@link java.awt.RenderingHints} using {@link java.awt.RenderingHints#KEY_INTERPOLATION}
      */
     public ScalingOptions(DownscaleQuality downscalingHint, Object interpolationHint) {
         this.downscalingHint = downscalingHint;
@@ -68,9 +69,9 @@ public class ScalingOptions {
      *                     {@link java.awt.image.BufferedImage#BufferedImage(int,int,int)}
      * @param downscalingHint   Directs downscaling quality. One of the enumerated types of
      *                          {@link org.xhtmlrenderer.util.DownscaleQuality} such as
-     *                          {@link org.xhtmlrenderer.util.ImageUtil.DOWNSCALE_FAST}.
+     *                          {@link DownscaleQuality#FAST}.
      * @param hint		 Hint for interpolation to AWT image renderer, one of the Object constants from
-     *                     {@link java.awt.RenderingHints} using {@link java.awt.RenderingHints.KEY_INTERPOLATION}
+     *                     {@link java.awt.RenderingHints} using {@link java.awt.RenderingHints#KEY_INTERPOLATION}
      */
     public ScalingOptions(int targetWidth, int targetHeight, int type, DownscaleQuality downscalingHint, Object hint) {
         this(downscalingHint, hint);
@@ -78,16 +79,10 @@ public class ScalingOptions {
         this.setTargetWidth(Math.max(1, targetWidth));
     }
 
-    /**
-     * @return {@link ScalingOptions#ScalingOptions(int,DownscaleQuality,Object)} docs.
-     */
     public DownscaleQuality getDownscalingHint() {
         return downscalingHint;
     }
 
-    /**
-     * @return {@link ScalingOptions#ScalingOptions(int,DownscaleQuality,Object)} docs.
-     */
     public Object getRenderingHint() {
         return renderingHint;
     }

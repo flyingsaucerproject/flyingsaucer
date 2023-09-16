@@ -154,7 +154,7 @@ public class StyleReference {
      * assigned value as a SAC CSSValue instance. The properties should have
      * been matched to the element when the Context was established for this
      * StyleReference on the Document to which the Element belongs. See {@link
-     * org.xhtmlrenderer.swing.BasicPanel#setDocument(Document, java.net.URL)}
+     * org.xhtmlrenderer.swing.BasicPanel#setDocument(Document, String)}
      * for an example of how to establish a StyleReference and associate to a
      * Document.
      *

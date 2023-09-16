@@ -50,7 +50,6 @@ public class WhitespaceStripper {
      *
      * <b>NOTE:</b> The <code>inlineContent</code> parameter may be modified
      *
-     * @param c
      * @param inlineContent
      */
     public static void stripInlineContent(List inlineContent) {
@@ -115,10 +114,8 @@ public class WhitespaceStripper {
      * 2.1 spec on whitespace handling. It accounts for the different whitespace
      * settings like normal, nowrap, pre, etc
      *
-     * @param style
+     * @param iB
      * @param collapseLeading
-     * @param tc              the TextContent to strip. The text in it is
-     *                        modified.
      * @return whether the next leading space should collapse or
      *         not.
      */

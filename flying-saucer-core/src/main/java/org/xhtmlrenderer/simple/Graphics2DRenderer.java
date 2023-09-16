@@ -19,11 +19,11 @@
  */
 package org.xhtmlrenderer.simple;
 
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.layout.SharedContext;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
+import org.w3c.dom.Document;
+import org.xhtmlrenderer.layout.SharedContext;
 
 
 /**
