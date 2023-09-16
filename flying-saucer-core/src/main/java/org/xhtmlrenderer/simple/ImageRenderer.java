@@ -20,7 +20,11 @@
 package org.xhtmlrenderer.simple;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import org.xhtmlrenderer.swing.Java2DRenderer;
 import org.xhtmlrenderer.util.FSImageWriter;
@@ -28,10 +32,10 @@ import org.xhtmlrenderer.util.FSImageWriter;
 
 /**
  * <p/>
- * ImageRenderer supports rendering of XHTML documents to image formats, writing out the generated image to an outputstream
- * or a file in a given image formate. There are two static utility methods, one for rendering
- * a {@link java.net.URL}, {@link #renderToImage(String,String)} and one
- * for rendering a {@link java.io.File}, {@link #renderToImage(java.io.File,String)}</p>
+ * ImageRenderer supports rendering of XHTML documents to image formats, writing out the generated image to an output stream
+ * or a file in a given image format. There are two static utility methods, one for rendering
+ * a {@link java.net.URL}, {@link #renderToImage(String, String, int)} and one
+ * for rendering a {@link java.io.File}, {@link #renderToImage(File, String, int)}</p>
  *
  * <p>You can use this utility from the command line by passing in
  * the URL or file location as first parameter, and output file path as second

@@ -99,7 +99,7 @@ import com.itextpdf.text.pdf.PdfString;
  *
  * <h1>Notes</h1>
  * This class was derived from a sample PDF creation listener
- * at "http://markmail.org/message/46t3bw7q6mbhvra2"
+ * at "https://markmail.org/message/46t3bw7q6mbhvra2"
  * by Jesse Keller <jesse.keller@roche.com>.
  *
  * @author Tim Telcik <tim.telcik@permeance.com.au>
@@ -107,9 +107,9 @@ import com.itextpdf.text.pdf.PdfString;
  * @see DefaultPDFCreationListener
  * @see PDFCreationListener
  * @see ITextRenderer
- * @see http://markmail.org/message/46t3bw7q6mbhvra2
- * @see http://www.adobe.com/devnet/pdf/pdf_reference.html
- * @see http://www.seoconsultants.com/meta-tags/dublin/
+ * @see <a href="https://markmail.org/message/46t3bw7q6mbhvra2">...</a>
+ * @see <a href="https://www.adobe.com/devnet/pdf/pdf_reference.html">...</a>
+ * @see <a href="https://www.seoconsultants.com/meta-tags/dublin/">...</a>
  */
 public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
     private static final String HTML_TAG_TITLE = "title";

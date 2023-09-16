@@ -95,7 +95,7 @@ public class ImageUtil {
      * for best performance. In a headless environment, simply creates a new BufferedImage. For non-headless
      * environments, this just sets up and calls
      * {@link java.awt.GraphicsConfiguration#createCompatibleImage(int,int,int)}. The image will not have anything
-     * drawn to it, not even a white background; you must do this yourself. The {@link #clearBackground(BufferedImage)}
+     * drawn to it, not even a white background; you must do this yourself. The {@link #clearImage(BufferedImage)}
      * method will do this for you if you like.
      *
      * @param width  Target width for the image
@@ -212,7 +212,7 @@ public class ImageUtil {
 
     /**
      * Scales one image to multiple dimensions, using the same ScalingOptions for each. The method follows the same
-     * process for scaling as {@link #getScaledInstance(ScalingOptions,java.awt.Image)}.
+     * process for scaling as {@link #getScaledInstance(ScalingOptions, BufferedImage)}.
      *
      * @param opt		Options to apply to control scaling process.
      * @param img		The original image to scale
@@ -318,26 +318,28 @@ public class ImageUtil {
     interface Scaler {
         /**
          * Convenience method that returns a scaled instance of the
-         * provided {@code BufferedImage}, taken from article on java.net by Chris Campbell
-         * http://today.java.net/pub/a/today/2007/04/03/perils-of-image-getscaledinstance.html. Expects the image
-         * to be fully loaded (e.g. no need to wait for loading on requesting height or width.
+         * provided {@code BufferedImage}, taken from 
+         * <a href="http://today.java.net/pub/a/today/2007/04/03/perils-of-image-getscaledinstance.html">article on java.net by Chris Campbell</a>.
+         * <br>
+         * Expects the image to be fully loaded (e.g. no need to wait for loading on requesting height or width.
          *
-         * @param img		the original image to be scaled
-         * @param imageType	type of image from {@link java.awt.image.BufferedImage} (values starting with TYPE)
-         * @param hint		one of the rendering hints that corresponds to
+         * @param img           the original image to be scaled
+         * @param opt           scaling options described below:
+         *        imageType     type of image from {@link BufferedImage} (values starting with TYPE)
+         *        hint          one of the rendering hints that corresponds to
          *                      {@code RenderingHints.KEY_INTERPOLATION} (e.g.
          *                      {@code RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR},
          *                      {@code RenderingHints.VALUE_INTERPOLATION_BILINEAR},
          *                      {@code RenderingHints.VALUE_INTERPOLATION_BICUBIC})
-         * @param higherQuality if true, this method will use a multi-step
+         *        higherQuality if true, this method will use a multi-step
          *                      scaling technique that provides higher quality than the usual
          *                      one-step technique (only useful in downscaling cases, where
          *                      {@code targetWidth} or {@code targetHeight} is
          *                      smaller than the original dimensions, and generally only when
          *                      the {@code BILINEAR} hint is specified)
-         * @param targetWidth   the desired width of the scaled instance,
+         *        targetWidth   the desired width of the scaled instance,
          *                      in pixels
-         * @param targetHeight  the desired height of the scaled instance,
+         *        targetHeight  the desired height of the scaled instance,
          *                      in pixels
          * @return a scaled version of the original {@code BufferedImage}
          */

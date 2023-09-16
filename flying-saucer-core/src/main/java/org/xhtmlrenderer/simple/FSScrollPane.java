@@ -34,7 +34,7 @@ import javax.swing.KeyStroke;
 
 /**
  * <p><code>FSScrollPane</code> is a JScrollPane set up to support keyboard navigation of an XHTML/XML
- * document rendered with Flying Saucer. In particular, it assigns key bindings to the view's {@link InputMap}
+ * document rendered with Flying Saucer. In particular, it assigns key bindings to the view's {@link javax.swing.InputMap}
  * for page-up, page-down, line-up/down, page-start and page-end.
  * The amount the document scrolls is based on the current viewport and the current line height.
  * If the view is resized, the scroll increment is automatically adjusted. Using FSScrollPane

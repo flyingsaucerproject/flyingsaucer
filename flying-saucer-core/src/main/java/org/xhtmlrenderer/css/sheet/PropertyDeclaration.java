@@ -58,8 +58,8 @@ public class PropertyDeclaration {
 
     /**
      * Origin constant from the list defined in {@link Stylesheet}. See {@link
-     * Stylesheet#USER_AGENT}, {@link StylesheetInfo#USER}, and {@link
-     * Stylesheet#AUTHOR}.
+     * StylesheetInfo#USER_AGENT}, {@link StylesheetInfo#USER}, and {@link
+     * StylesheetInfo#AUTHOR}.
      */
     private int origin;
     /**
