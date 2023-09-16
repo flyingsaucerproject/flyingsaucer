@@ -25,7 +25,7 @@ in our distributions and in our source tree.
 
 Flying Saucer uses a couple of FOSS packages to get the job done. A list
 of these, along with the license they each have, is listed in the 
-[`LICENSE`](https://github.com/flyingsaucerproject/flyingsaucer/blob/master/LICENSE) file in our distribution.   
+[`LICENSE`](https://github.com/flyingsaucerproject/flyingsaucer/blob/main/LICENSE) file in our distribution.   
 
 
 ## GETTING FLYING SAUCER
