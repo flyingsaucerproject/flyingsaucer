@@ -402,7 +402,7 @@ public class Layer {
         return result;
     }
 
-    // Bit of a kludge here.  We need to paint collapsed table borders according
+    // A bit of a kludge here.  We need to paint collapsed table borders according
     // to priority so (for example) wider borders float to the top and aren't
     // overpainted by thinner borders.  This method scans the block boxes
     // we're about to draw and returns a map with the last cell in a given table

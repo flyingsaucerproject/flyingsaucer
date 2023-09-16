@@ -607,7 +607,7 @@ class DOMTreeModel implements TreeModel {
 
     }
 
-    //Returns the child of parent at index index in the parent's child array.
+    //Returns the child of parent at index in the parent's child array.
 
     /**
      * Gets the child attribute of the DOMTreeModel object
@@ -852,7 +852,7 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  *
  * Revision 1.4  2004/10/23 13:51:54  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

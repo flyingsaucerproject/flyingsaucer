@@ -1055,7 +1055,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     /**
      * Searches the metadata name/content pairs of the current document and
      * returns the content value from the first pair with a matching name. The
-     * search is case insensitive.
+     * search is case-insensitive.
      *
      * @param name
      *            the metadata element name to locate.
@@ -1077,7 +1077,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     /**
      * Searches the metadata name/content pairs of the current document and
      * returns any content values with a matching name in an ArrayList. The
-     * search is case insensitive.
+     * search is case-insensitive.
      *
      * @param name
      *            the metadata element name to locate.
@@ -1120,7 +1120,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     }
                 }
             }
-            // If there is no title meta data attribute, use the document title.
+            // If there is no title metadata attribute, use the document title.
             String title = getMetadataByName("title");
             if (title == null) {
                 Element t = DOMUtil.getChild(head, "title");
@@ -1134,7 +1134,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     /**
-     * Replaces all copies of the named metadata with a single value. A a new
+     * Replaces all copies of the named metadata with a single value. A new
      * value of null will result in the removal of all copies of the named
      * metadata. Use <code>addMetadata</code> to append additional values with
      * the same name.

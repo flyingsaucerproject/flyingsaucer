@@ -127,7 +127,7 @@ public interface NamespaceHandler {
     boolean isImageElement(Element e);
 
     /**
-     * Determines whether or not the specified Element represents a
+     * Determines whether the specified Element represents a
      * &lt;form&gt;.
      *
      * @param e The Element to evaluate.

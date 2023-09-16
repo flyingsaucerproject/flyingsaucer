@@ -150,7 +150,7 @@ public class XHTMLPanel extends BasicPanel {
     }
 
     /**
-     * Loads and renders a Document given a uri.
+     * Loads and renders a Document given an uri.
      * The uri is resolved by the UserAgentCallback
      *
      * @param uri

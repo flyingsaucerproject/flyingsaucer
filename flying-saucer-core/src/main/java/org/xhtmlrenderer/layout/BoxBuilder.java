@@ -430,7 +430,7 @@ public class BoxBuilder {
     /**
      * Handles the situation when our current parent is table related.  If
      * everything is properly nested (e.g. a <code>tr</code> contains only
-     * <code>td</code> elements), nothing is done.  Otherwise anonymous boxes
+     * <code>td</code> elements), nothing is done.  Otherwise, anonymous boxes
      * are inserted to ensure the integrity of the table model.
      */
     private static void resolveTableContent(

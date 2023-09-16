@@ -23,7 +23,7 @@
      XHTML has three basic content models:
 
          %Inline.mix;  character-level elements
-         %Block.mix;   block-like elements, eg., paragraphs and lists
+         %Block.mix;   block-like elements, e.g., paragraphs and lists
          %Flow.mix;    any block or inline elements
 
      Any parameter entities declared in this module may be used
@@ -216,7 +216,7 @@
 <!ENTITY % Block.extra "" >
 
 <!-- %Block.class; includes all block elements,
-     used as an component in mixes
+     used as a component in mixes
 -->
 <!ENTITY % Block.class
      "%BlkStruct.class;

@@ -232,7 +232,7 @@ public class AWTFontResolver implements FontResolver {
             // now that we have a root font, we need to create the correct version of it
             Font fnt = createFont(ctx, root_font, size, weight, style, variant);
 
-            // add the font to the hash so we don't have to do this again
+            // add the font to the hash, so we don't have to do this again
             instance_hash.put(font_instance_name, fnt);
             return fnt;
         }
@@ -353,7 +353,7 @@ public class AWTFontResolver implements FontResolver {
  *
  * Revision 1.3  2004/10/23 13:03:45  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.)
  * Added CVS log comments at bottom.
  *
  *

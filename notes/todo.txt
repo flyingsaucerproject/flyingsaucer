@@ -45,7 +45,7 @@
 
 //redesign font rendering interface
     
-//make sure nested content inside of a float or abs block works
+//make sure nested content inside a float or abs block works
 //    (new block formatting context?)
 //add font scaling
 //add dpi awareness
@@ -106,7 +106,7 @@
 
 //anonymous text inlines get hover instead of real box
 
-//inlines inside of a hovered block don't get restyled when the block does
+//inlines inside a hovered block don't get restyled when the block does
 
 //inlines are picking up parent block's background when they shouldn't
 
@@ -172,7 +172,7 @@ target at non-traditional gamers.
 
 "Invading the earth, 5 minutes a day!"
 
-create a head to head version.
+create a head-to-head version.
 
 humans invade alien planet version
 

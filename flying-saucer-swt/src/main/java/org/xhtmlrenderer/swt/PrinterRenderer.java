@@ -49,7 +49,7 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
 /**
- * A renderer for a SWT Printer. Instances must be disposed with
+ * A renderer for an SWT Printer. Instances must be disposed with
  * {@link PrinterRenderer#dispose()}.
  *
  * @author Vianney le Clément

@@ -304,9 +304,9 @@ public class Java2DRenderer {
     }
 
     /**
-     * Returns a BufferedImage using the specified width and height. By default this returns an image compatible
+     * Returns a BufferedImage using the specified width and height. By default, this returns an image compatible
      * with the screen (if not in "headless" mode) using the BufferedImage type specified in
-     * {@link #setBufferedImageType(int)}, or else RGB if none if specified.
+     * {@link #setBufferedImageType(int)}, or else RGB if none is specified.
      *
      * @param width target width
      * @param height target height

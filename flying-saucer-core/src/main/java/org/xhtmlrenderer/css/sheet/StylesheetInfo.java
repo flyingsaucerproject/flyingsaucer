@@ -38,7 +38,7 @@ import java.util.List;
 public class StylesheetInfo {
 
     /** Description of the Field */
-    private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also might save a lookup if it's already looked up
+    private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also, might save a lookup if it's already looked up
             /** Description of the Field */
     private String title;
     /** Description of the Field */

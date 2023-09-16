@@ -63,7 +63,7 @@ of projects they want to work on.
 The key here is creating a standard platform. This opens the doors to other
 distributed people tasks.  I'd love to have a great collection of public
 domain stock images, but most of the datasets out there have really bad
-meta data. Just entering the keywords would be a huge boon to these projects,
+metadata. Just entering the keywords would be a huge boon to these projects,
 and Distributed People could make it work.
 
 Here are some more examples:
@@ -99,7 +99,7 @@ redocument layout algorithm
     design code for canvas vs body vs viewport sizing
     document the actual recursive bounds algorithm
     move bounds and translate code to the context.
-    add mouse over, in, out, drag, etc support.
+    add mouse over, in, out, drag, etc. support.
     adjust mouse wheel and scrolling constants
     add hover support to link
     add hover support to any attribute
@@ -124,14 +124,14 @@ redocument layout algorithm
 //implement multiple adjacent spans and subspans
 //implement box width growing instead of shrinking
 //support p tag
-    a box w/ inline spans. (normal boxlayout will do it, i think)
+    a box w/ inline spans. (normal boxlayout will do it, I think)
 //convert ox,ox to an origin point
 //convert width,height to a dimension point
 //support h1 tag
     //a span which always starts on a new line and has a large bold font (by 
     //default. maybe we should assume that the style was set by previous CSS and 
     //just use the font-size and font-weight in the tag to do style). it can wrap
-    //but anything after it must be on it's own line too.
+    //but anything after it must be on its own line too.
 //create pure text demo with just p,b,i and h1s
 //support background color on any object
 //create non-nested div demo with just div boxes w/ colored borders and 
@@ -171,7 +171,7 @@ for the 0.02 release
 //patch bug where bounds of body are too swmall
 //fix new bug w/ box sizing and drawing borders when non-standard box width
 //fix bug that is crashing paragraph demo
-//test all of the demos again
+//test all the demos again
 //joshy:maybe fixed? //patch bug where normal line break goes into infinite loop
 //fix bug where size of html pane is always one refresh behind.
 //underline,strikethrough,overline
@@ -189,7 +189,7 @@ for the 0.02 release
 for the 0.03 release
 //implement width via css (px & %)
 //implement height via css (px)
-//turn on anti-aliasing
+//turn on antialiasing
 //background image for body
 //fixed background image for body
 //partial background image for divs
@@ -230,7 +230,7 @@ for the 0.03 release
 //debug menu
 //    draw boxes, lines, and inlines
 //rewrote inset/outset/ridge rendering
-//refactor CSS code into it's own package
+//refactor CSS code into its own package
 //em sizing on fonts
 //new testcases for text alignment (vert and horiz)
 //fixed bug that caused tables to always be at the origin
@@ -246,11 +246,11 @@ for the 0.03 release
 //implement break (<br/>)
 //fix text alignment (breaking test w/ right and centered text)
 //create file menu w/ quit
-//create new demo from existing good looking xhtml+css on the web
+//create new demo from existing good-looking xhtml+css on the web
 //clean up accessor code in CSSBank and move to new class
 //create dom inspector
 // float blocks
-// move CSS getProperty code into it's own class
+// move CSS getProperty code into its own class
 // make a c.css.getPointProperty() to return two float values
 // make the body paint the whole canvas
 // make painting code use boxes

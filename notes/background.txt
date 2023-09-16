@@ -1,7 +1,7 @@
 fixed background notes
 
 if the background is fixed then it needs to start tiling
-at the corner of the canvas and it needs to tile. the tiling will
+at the corner of the canvas, and it needs to tile. the tiling will
 start at the first y coord where y-img.height < box.y that is also
 a multiple of 0 (the top of the canvas) + the image heights.
 

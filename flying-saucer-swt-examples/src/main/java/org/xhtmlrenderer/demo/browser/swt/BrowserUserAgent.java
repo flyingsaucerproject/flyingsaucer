@@ -175,7 +175,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
             uc = new URL(uri).openConnection();
             uc.connect();
             String contentType = uc.getContentType();
-            // Maybe should popup a choice when content/unknown!
+            // Maybe should pop up a choice when content/unknown!
             if (contentType.equals("text/plain")
                     || contentType.equals("content/unknown")) {
                 inputStream = uc.getInputStream();

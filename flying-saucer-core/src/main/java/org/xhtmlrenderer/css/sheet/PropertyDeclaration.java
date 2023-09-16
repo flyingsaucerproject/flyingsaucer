@@ -171,8 +171,8 @@ public class PropertyDeclaration {
      * sequence number returned from this method would take priority in the
      * cascade, so that a user important! property would override a user
      * non-important! property, and so on. The actual integer value returned by
-     * this method is unimportant, but has a lowest value of 0 and increments
-     * sequentially by 1 for each increase in origin/importance..
+     * this method is unimportant, but has the lowest value of 0 and increments
+     * sequentially by 1 for each increase in origin/importance.
      *
      * @return See method javadoc.
      */
@@ -261,7 +261,7 @@ public class PropertyDeclaration {
  * Allow for custom properties (don't break).
  *
  * Revision 1.13  2005/05/08 15:37:27  tobega
- * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ * Fixed up style caching, so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
  *
  * Revision 1.12  2005/01/29 20:19:21  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.

@@ -62,8 +62,8 @@ public interface TextRenderer {
     public int getSmoothingLevel();
 
     /**
-     * @deprecated no-op, will be removed in a future release. Anti-aliasing is now controlled via the smoothing
-     * threshhold.
+     * @deprecated no-op, will be removed in a future release. Antialiasing is now controlled via the smoothing
+     * threshold.
      * @param level no-op
      */
     public void setSmoothingLevel(int level);

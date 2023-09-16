@@ -671,7 +671,7 @@ public class BlockBoxing {
  * Only do incremental rendering if we are in an interactive context
  *
  * Revision 1.15  2005/10/02 21:29:58  tobega
- * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also, some house-cleaning.
  *
  * Revision 1.14  2005/09/29 21:34:02  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
@@ -986,7 +986,7 @@ public class BlockBoxing {
  *
  * Revision 1.16  2004/11/09 15:53:48  joshy
  * initial support for hover (currently disabled)
- * moved justification code into it's own class in a new subpackage for inline
+ * moved justification code into its own class in a new subpackage for inline
  * layout (because it's so blooming complicated)
  *
  * Issue number:
@@ -1102,7 +1102,7 @@ public class BlockBoxing {
  *
  * Revision 1.4  2004/10/23 13:46:46  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

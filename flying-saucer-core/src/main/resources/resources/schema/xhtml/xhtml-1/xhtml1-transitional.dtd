@@ -152,7 +152,7 @@
 
 <!-- attributes for common UI events
   onclick     a pointer button was clicked
-  ondblclick  a pointer button was double clicked
+  ondblclick  a pointer button was double-clicked
   onmousedown a pointer button was pressed down
   onmouseup   a pointer button was released
   onmousemove a pointer was moved onto the element
@@ -376,7 +376,7 @@
   xml:space   (preserve)     #FIXED 'preserve'
   >
 
-<!-- alternate content container for non script-based rendering -->
+<!-- alternate content container for non-script-based rendering -->
 
 <!ELEMENT noscript %Flow;>
 <!ATTLIST noscript
@@ -402,7 +402,7 @@
   width       %Length;       #IMPLIED
   >
 
-<!-- alternate content container for non frame-based rendering -->
+<!-- alternate content container for non-frame-based rendering -->
 
 <!ELEMENT noframes %Flow;>
 <!ATTLIST noframes
@@ -614,7 +614,7 @@
 <!--=================== Inserted/Deleted Text ============================-->
 
 <!--
-  ins/del are allowed in block and inline content, but its
+  ins/del are allowed in block and inline content, but it's
   inappropriate to include block content within an ins element
   occurring in inline content.
 -->
@@ -789,7 +789,7 @@
 
 <!--
   param is used to supply a named property value.
-  In XML it would seem natural to follow RDF and support an
+  In XML, it would seem natural to follow RDF and support an
   abbreviated syntax where the param elements are replaced
   by attribute value pairs on the object start tag.
 -->

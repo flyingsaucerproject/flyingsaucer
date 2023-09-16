@@ -196,13 +196,13 @@ public class XhtmlForm {
             _group = new ButtonGroup();
             _dummy = new JRadioButton();
 
-            // We need a dummy button to have the appearance of all of
+            // We need a dummy button to have the appearance of all 
             // the radio buttons being in an unselected state.
             //
             // From:
             //   http://java.sun.com/j2se/1.5/docs/api/javax/swing/ButtonGroup.html
             //
-            // "There is no way to turn a button programmatically to 'off', in
+            // There is no way to turn a button programmatically to 'off', in
             // order to clear the button group. To give the appearance of 'none
             // selected', add an invisible radio button to the group and then
             // programmatically select that button to turn off all the displayed

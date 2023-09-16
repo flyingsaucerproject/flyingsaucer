@@ -123,7 +123,7 @@
                                      U+2111 ISOamso -->
 <!ENTITY real     "&#8476;"> <!-- black-letter capital R = real part symbol,
                                      U+211C ISOamso -->
-<!ENTITY trade    "&#8482;"> <!-- trade mark sign, U+2122 ISOnum -->
+<!ENTITY trade    "&#8482;"> <!-- trademark sign, U+2122 ISOnum -->
 <!ENTITY alefsym  "&#8501;"> <!-- alef symbol = first transfinite cardinal,
                                      U+2135 NEW -->
 <!-- alef symbol is NOT the same as hebrew letter alef,

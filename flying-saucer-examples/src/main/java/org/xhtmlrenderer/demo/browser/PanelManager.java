@@ -126,7 +126,7 @@ public class PanelManager extends DelegatingUserAgent {
             uc = new URL(uri).openConnection();
             uc.connect();
             String contentType = uc.getContentType();
-            //Maybe should popup a choice when content/unknown!
+            //Maybe should pop up a choice when content/unknown!
             if (contentType.equals("text/plain") || contentType.equals("content/unknown")) {
                 inputStream = uc.getInputStream();
                 SAXSource source = new SAXSource(new PlainTextXMLReader(inputStream), new InputSource());
@@ -227,7 +227,7 @@ public class PanelManager extends DelegatingUserAgent {
     }
 
     /**
-     * Returns true if there are visited URIs in history "after" the pointer the the current URI. This would be the case
+     * Returns true if there are visited URIs in history "after" the pointer the current URI. This would be the case
      * if multiple URIs were visited and the getBack() had been called at least once.
      */
     public boolean hasForward() {
@@ -239,8 +239,8 @@ public class PanelManager extends DelegatingUserAgent {
     }
 
     /**
-     * Returns true if there are visited URIs in history "before" the pointer the the current URI. This would be the case
-     * if multiple URIs were visited and the current URI pointer was not at the begininnig of the visited URI list.
+     * Returns true if there are visited URIs in history "before" the pointer the current URI. This would be the case
+     * if multiple URIs were visited and the current URI pointer was not at the beginning of the visited URI list.
      */
     public boolean hasBack() {
         if (index > 0) {

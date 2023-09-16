@@ -45,7 +45,7 @@ painting:
 dealing with anonymous text blocks
 inserting a new tag to wrap the text blocks in seems like a bad idea since
 it would be hard to undo
-i will have to modify the inline layout's nexttext node search to look for
+I will have to modify the inline layout's nexttext node search to look for
 block boundaries
-first i need to come up with a bunch of test cases for all possible scenarios
+first I need to come up with a bunch of test cases for all possible scenarios
 

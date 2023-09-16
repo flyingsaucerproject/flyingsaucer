@@ -355,7 +355,7 @@ public class BorderPainter {
                 //outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             }
             if (borderSideStyle == IdentValue.DOTTED) {
-                // turn off anti-aliasing or the dots will be all blurry
+                // turn off antialiasing or the dots will be all blurry
                 //outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 paintPatternedRect(outputDevice, bounds, border, border, new float[]{thickness, thickness}, sides, currentSide, xOffset);
                 //outputDevice.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -515,7 +515,7 @@ public class BorderPainter {
  * Don't paint transparent borders
  *
  * Revision 1.39  2005/11/08 20:02:14  peterbrant
- * Fix off by one errors for borders with an odd width
+ * Fix off-by-one errors for borders with an odd width
  *
  * Revision 1.38  2005/10/27 00:09:02  tobega
  * Sorted out Context into RenderingContext and LayoutContext
@@ -524,7 +524,7 @@ public class BorderPainter {
  * Fixed border painting bug.
  *
  * Revision 1.36  2005/10/21 18:10:52  pdoubleya
- * Support for cachable borders. Still buggy on some pages, but getting there.
+ * Support for cacheable borders. Still buggy on some pages, but getting there.
  *
  * Revision 1.35  2005/06/22 23:48:45  tobega
  * Refactored the css package to allow a clean separation from the core.
@@ -623,7 +623,7 @@ public class BorderPainter {
  *
  * Revision 1.7  2004/11/09 15:53:49  joshy
  * initial support for hover (currently disabled)
- * moved justification code into it's own class in a new subpackage for inline
+ * moved justification code into its own class in a new subpackage for inline
  * layout (because it's so blooming complicated)
  *
  * Issue number:
@@ -663,7 +663,7 @@ public class BorderPainter {
  *
  * Revision 1.3  2004/10/23 13:50:26  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

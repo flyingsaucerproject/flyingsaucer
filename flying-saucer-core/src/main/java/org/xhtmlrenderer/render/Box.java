@@ -1423,7 +1423,7 @@ public abstract class Box implements Styleable {
  * don't look right (forms.xhtml, splash.xhtml)
  *
  * Revision 1.60 2005/10/02 21:30:00 tobega Fixed a lot of concurrency (and
- * other) issues from incremental rendering. Also some house-cleaning.
+ * other) issues from incremental rendering. Also, some house-cleaning.
  *
  * Revision 1.59 2005/09/30 04:58:05 joshy fixed garbage when showing a document
  * with a fixed positioned block
@@ -1643,7 +1643,7 @@ public abstract class Box implements Styleable {
  *
  * Revision 1.5 2004/10/23 13:50:26 pdoubleya Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io,
- * java.util, etc). Added CVS log comments at bottom.
+ * java.util, etc.). Added CVS log comments at bottom.
  *
  *
  */

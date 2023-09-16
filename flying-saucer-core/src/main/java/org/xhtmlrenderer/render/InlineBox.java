@@ -36,7 +36,7 @@ import org.xhtmlrenderer.layout.breaker.Breaker;
 /**
  * A class which reprsents a portion of an inline element. If an inline element
  * does not contain any nested elements, then a single <code>InlineBox</code>
- * object will contain the content for the entire element. Otherwise multiple
+ * object will contain the content for the entire element. Otherwise, multiple
  * <code>InlineBox</code> objects will be created corresponding to each
  * discrete chunk of text appearing in the elment. It is not rendered directly
  * (and hence does not extend from {@link Box}), but does play an important

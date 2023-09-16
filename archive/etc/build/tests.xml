@@ -22,10 +22,10 @@
 		</java>
 	</target>
 
-	<!-- Runs a speed test after a compile -->
+	<!-- Runs a speed test after "compile" -->
 	<target name="test.speed" depends="test.css-speed"></target>
 
-	<!-- Runs a speed test after a compile -->
+	<!-- Runs a speed test after "compile" -->
 	<target name="test.css-speed" depends="compile" description="Test timing on loading Hamlet.xhtml multiple times.">
 		<java classname="org.xhtmlrenderer.test.HamletSpeedTest"
 				fork="${java-exec.fork.tests}">
@@ -44,7 +44,7 @@
 		</java>
 	</target>
 
-	<!-- Runs a custom block test after a compile -->
+	<!-- Runs a custom block test after "compile" -->
 	<target name="test.customblock" depends="compile">
 		<java classname="org.xhtmlrenderer.test.CustomBlockTest"
 				classpath="${dest.java.dir}"

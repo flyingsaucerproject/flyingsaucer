@@ -1259,7 +1259,7 @@ public class CalculatedStyle {
  *
  * $Log$
  * Revision 1.110  2010/01/12 14:33:27  peterbrant
- * Ignore auto margins when calculating table min/max width.  Also, when deciding whether or not to proceed with the auto margin calculation for a table,  make sure we compare consistently with how the table min width is actually set.
+ * Ignore auto margins when calculating table min/max width.  Also, when deciding whether to proceed with the auto margin calculation for a table,  make sure we compare consistently with how the table min width is actually set.
  *
  * Revision 1.109  2009/11/08 23:52:48  peterbrant
  * Treat percentage widths as auto when calculating min/max widths
@@ -1286,7 +1286,7 @@ public class CalculatedStyle {
  * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
  *
  * Revision 1.101  2008/07/14 11:12:37  peterbrant
- * Fix two bugs when -fs-table-paginate is paginate.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
+ * Fix two bugs when -fs-table-paginate is paginated.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
  *
  * Revision 1.100  2007/08/29 22:18:19  peterbrant
  * Experiment with text justification
@@ -1406,7 +1406,7 @@ public class CalculatedStyle {
  * Return value from abs value check never assigned!
  *
  * Revision 1.66  2006/05/08 21:24:24  pdoubleya
- * Log, don't throw exception, if we check for an absolute unit but it doesn't make sense to do so (IdentValue.hasAbsoluteUnit()).
+ * Log, don't throw exception, if we check for an absolute unit, but it doesn't make sense to do so (IdentValue.hasAbsoluteUnit()).
  *
  * Revision 1.65  2006/05/08 20:56:09  pdoubleya
  * Clean exception handling for case where assigned property value is not understood as a valid value; use initial value instead.
@@ -1526,7 +1526,7 @@ public class CalculatedStyle {
  * Refactored the css package to allow a clean separation from the core.
  *
  * Revision 1.26  2005/06/21 08:23:13  pdoubleya
- * Added specific list and count of primitive, non shorthand properties, and CalculatedStyle now sizes array to this size.
+ * Added specific list and count of primitive, non-shorthand properties, and CalculatedStyle now sizes array to this size.
  *
  * Revision 1.25  2005/06/16 07:24:46  tobega
  * Fixed background image bug.
@@ -1553,7 +1553,7 @@ public class CalculatedStyle {
  * Caching fonts in CalculatedStyle
  *
  * Revision 1.19  2005/05/08 15:37:28  tobega
- * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ * Fixed up style caching, so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
  *
  * Revision 1.18  2005/05/08 14:51:21  tobega
  * Removed the need for the Styler

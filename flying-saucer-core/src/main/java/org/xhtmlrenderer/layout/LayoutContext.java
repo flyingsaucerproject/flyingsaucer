@@ -245,7 +245,7 @@ public class LayoutContext implements CssContext {
         getBlockFormattingContext().translate(x, y);
     }
 
-    /* code to keep track of all of the id'd boxes */
+    /* code to keep track of all the id'd boxes */
     public void addBoxId(String id, Box box) {
         _sharedContext.addBoxId(id, box);
     }
@@ -359,7 +359,7 @@ public class LayoutContext implements CssContext {
     public class CounterContext {
         private Map _counters = new HashMap();
         /**
-         * This is different because it needs to work even when the counter- properties cascade
+         * This is different because it needs to work even when the counter-properties cascade,
          * and it should also logically be redefined on each level (think list-items within list-items)
          */
         private CounterContext _parent;

@@ -300,7 +300,7 @@ public class DocumentDiffTest {
  *
  * Revision 1.6  2004/11/07 23:24:19  joshy
  * added menu item to generate diffs
- * added diffs for multi-colored borders and inline borders
+ * added diffs for multicolored borders and inline borders
  *
  * Issue number:
  * Obtained from:
@@ -330,7 +330,7 @@ public class DocumentDiffTest {
  *
  * Revision 1.3  2004/10/23 14:01:42  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

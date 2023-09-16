@@ -2199,7 +2199,7 @@ public class BlockBox extends Box implements InlinePaintable {
  * Calculate clearance before possibly establishing new BFC.  It needs to be calculated relative to the existing BFC and not the new one.
  *
  * Revision 1.101  2010/01/12 14:33:27  peterbrant
- * Ignore auto margins when calculating table min/max width.  Also, when deciding whether or not to proceed with the auto margin calculation for a table,  make sure we compare consistently with how the table min width is actually set.
+ * Ignore auto margins when calculating table min/max width.  Also, when deciding whether to proceed with the auto margin calculation for a table,  make sure we compare consistently with how the table min width is actually set.
  *
  * Revision 1.100  2009/11/08 23:52:48  peterbrant
  * Treat percentage widths as auto when calculating min/max widths
@@ -2217,7 +2217,7 @@ public class BlockBox extends Box implements InlinePaintable {
  * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
  *
  * Revision 1.95  2008/07/14 11:12:35  peterbrant
- * Fix two bugs when -fs-table-paginate is paginate.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
+ * Fix two bugs when -fs-table-paginate is paginated.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
  *
  * Revision 1.94  2008/06/18 17:44:48  peterbrant
  * Fix a pair of NPEs when absolutely positioned content is positioned off the page
@@ -2301,7 +2301,7 @@ public class BlockBox extends Box implements InlinePaintable {
  * More progress on counter support
  *
  * Revision 1.80  2007/06/02 06:56:44  peterbrant
- * Table page clearance should be taken into account when checking whether or not the top margin should be reset when a box is moved to a new page
+ * Table page clearance should be taken into account when checking whether the top margin should be reset when a box is moved to a new page
  *
  * Revision 1.79  2007/04/25 18:09:41  peterbrant
  * Always reset block box margin if it is the first thing on a page
@@ -2519,7 +2519,7 @@ public class BlockBox extends Box implements InlinePaintable {
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *
  * Revision 1.9  2005/10/02 21:29:59  tobega
- * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also, some house-cleaning.
  *
  * Revision 1.8  2005/09/26 22:40:20  tobega
  * Applied patch from Peter Brant concerning margin collapsing
@@ -2558,7 +2558,7 @@ public class BlockBox extends Box implements InlinePaintable {
  *
  * Revision 1.2  2004/10/23 13:50:26  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

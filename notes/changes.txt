@@ -34,9 +34,9 @@ fixed bugs
 08/18/2004
     added latin (alpha), roman, square, and circle support to list item bullets
 08/07 - 08/17 
-    i'm sure i missed a bunch of stuff here. forms crap, some refactoring maybe? look over the list
+    I'm sure I missed a bunch of stuff here. forms crap, some refactoring maybe? look over the list
 08/06/2004
-    added support to the layoutfactory for all of the input elements
+    added support to the layoutfactory for all the input elements
     implemented radio, checkbox, password, and hidden form inputs
     implemented select, option, and textarea form inputs
 08/04/2004
@@ -46,7 +46,7 @@ fixed bugs
     background-attachment no longer inherits
     changed default background-attachment to scroll
     fixed bug where tiled backgrounds bleed out of the canvas
-    added boolean to control anti-aliasing
+    added boolean to control antialiasing
     added page up/down and arrow up/down to the browser
 08/02/2004
     added normalization for "border: length style color"

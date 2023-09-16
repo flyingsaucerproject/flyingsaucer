@@ -101,7 +101,7 @@ public interface UserAgentCallback {
     String getBaseURL();
 
     /**
-     * Used to find a uri that may be relative to the BaseURL.
+     * Used to find an uri that may be relative to the BaseURL.
      * The returned value will always only be used via methods in the same
      * implementation of this interface, therefore may be a private uri-space.
      *

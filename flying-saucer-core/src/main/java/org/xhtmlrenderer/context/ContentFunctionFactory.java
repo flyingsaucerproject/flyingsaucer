@@ -238,7 +238,7 @@ public class ContentFunctionFactory {
             }
 
             // Compute value width using 100x string to get more precise width.
-            // Otherwise there might be a small gap at the right side. This is
+            // Otherwise, there might be a small gap on the right side. This is
             // necessary because a TextRenderer usually use double/float for width.
             StringBuffer tmp = new StringBuffer(100 * value.length());
             for (int i = 0; i < 100; i++) {

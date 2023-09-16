@@ -38,7 +38,7 @@ import java.util.logging.Level;
  * XML schemas/dtds, to resolve those mappings to a local store for the schemas.
  * The catalog file allows one to have a single mapping of schema IDs to local
  * files, and is useful when there are many schemas, or when schemas are broken
- * into many smaller files. Currently FSCatalog only supports the very simple
+ * into many smaller files. Currently, FSCatalog only supports the very simple
  * mapping of public id to local URI using the public element in the catalog XML.
  * <p/>
  * <p>FSCatalog is not an EntityResolver; it only parses a catalog file. See
@@ -50,7 +50,7 @@ import java.util.logging.Level;
  * XMLReader configuration (and specification) follows that of the standard XML
  * parsing in Flying Saucer.
  * <p/>
- * <p>This class is not safe for multi-threaded access.
+ * <p>This class is not safe for multithreaded access.
  *
  * @author Patrick Wright
  */

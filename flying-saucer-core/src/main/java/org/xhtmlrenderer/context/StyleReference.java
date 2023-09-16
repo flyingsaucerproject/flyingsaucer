@@ -391,7 +391,7 @@ public class StyleReference {
  * Inline backgrounds now work correctly, as does mixing of inlines and blocks for style inheritance
  *
  * Revision 1.28  2005/05/08 15:37:29  tobega
- * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ * Fixed up style caching, so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
  *
  * Revision 1.27  2005/05/08 14:51:22  tobega
  * Removed the need for the Styler
