@@ -100,7 +100,7 @@ class SelectField extends FormField {
             Element option = (Element) options.item(i);
 
             if (option.hasAttribute("selected") && option.getAttribute("selected").equalsIgnoreCase("selected")) {
-                list.add(new Integer(i));
+                list.add(i);
             }
         }
 

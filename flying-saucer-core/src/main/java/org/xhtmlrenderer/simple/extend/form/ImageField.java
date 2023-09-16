@@ -20,13 +20,8 @@
 package org.xhtmlrenderer.simple.extend.form;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import org.w3c.dom.Element;
@@ -83,20 +78,17 @@ class ImageField extends InputField {
 
         FSDerivedValue widthValue = style.valueByName(CSSName.WIDTH);
         if (widthValue instanceof LengthValue) {
-            intrinsicWidth = new Integer(getBox().getContentWidth());
+            intrinsicWidth = getBox().getContentWidth();
         }
 
         FSDerivedValue heightValue = style.valueByName(CSSName.HEIGHT);
         if (heightValue instanceof LengthValue) {
-            intrinsicHeight = new Integer(getBox().getHeight());
+            intrinsicHeight = getBox().getHeight();
         }
 
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                XRLog.layout("Image pressed: Submit");
-
-                getParentForm().submit(getComponent());
-            }
+        button.addActionListener(event -> {
+            XRLog.layout("Image pressed: Submit");
+            getParentForm().submit(getComponent());
         });
 
         return button;

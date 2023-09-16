@@ -21,6 +21,8 @@
  */
 package org.xhtmlrenderer.util;
 
+import static java.lang.Boolean.parseBoolean;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -41,9 +43,7 @@ public class JDKXRLogger implements XRLogger {
 
     private static boolean initPending = true;
 
-    /**
-     * {@inheritdoc}
-     */
+    @Override
     public void log(String where, Level level, String msg) {
         if (initPending) {
             init();
@@ -52,9 +52,7 @@ public class JDKXRLogger implements XRLogger {
         getLogger(where).log(level, msg);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    @Override
     public void log(String where, Level level, String msg, Throwable th) {
         if (initPending) {
             init();
@@ -63,9 +61,7 @@ public class JDKXRLogger implements XRLogger {
         getLogger(where).log(level, msg, th);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    @Override
     public void setLevel(String logger, Level level) {
         getLogger(logger).setLevel(level);
     }
@@ -156,7 +152,7 @@ public class JDKXRLogger implements XRLogger {
     private static void configureLoggerHandlerForwarding(Properties fsLoggingProperties, List<Logger> loggers) {
         String val = fsLoggingProperties.getProperty("use-parent-handler");
 
-        boolean flag = val != null && Boolean.valueOf(val);
+        boolean flag = parseBoolean(val);
         for (Logger logger : loggers) {
             logger.setUseParentHandlers(flag);
         }
@@ -189,7 +185,7 @@ public class JDKXRLogger implements XRLogger {
      */
     private static List<Logger> retrieveLoggers() {
         List<String> loggerNames = XRLog.listRegisteredLoggers();
-        List<Logger> loggers = new ArrayList<Logger>(loggerNames.size());
+        List<Logger> loggers = new ArrayList<>(loggerNames.size());
 
         for (String loggerName : loggerNames) {
             loggers.add(Logger.getLogger(loggerName));
@@ -209,7 +205,7 @@ public class JDKXRLogger implements XRLogger {
      */
     private static Map<String, Handler> configureLogHandlers(List<Logger> loggers, final String handlerClassList) {
         final String[] names = handlerClassList.split(" ");
-        final Map<String, Handler> handlers = new HashMap<String, Handler>(names.length);
+        final Map<String, Handler> handlers = new HashMap<>(names.length);
 
         for (final String name : names) {
             try {

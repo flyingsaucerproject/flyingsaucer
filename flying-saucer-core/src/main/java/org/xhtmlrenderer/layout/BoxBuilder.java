@@ -1103,7 +1103,7 @@ public class BoxBuilder {
                         Node startAttribute = working.getAttributes().getNamedItem("start");
                         if (startAttribute != null) {
                             try {
-                                start = new Integer(Integer.parseInt(startAttribute.getNodeValue()) - 1);
+                                start = Integer.parseInt(startAttribute.getNodeValue()) - 1;
                             } catch (NumberFormatException e) {
                                 // ignore
                             }
@@ -1112,7 +1112,7 @@ public class BoxBuilder {
                         Node valueAttribute = working.getAttributes().getNamedItem("value");
                         if (valueAttribute != null) {
                             try {
-                                start = new Integer(Integer.parseInt(valueAttribute.getNodeValue()) - 1);
+                                start = Integer.parseInt(valueAttribute.getNodeValue()) - 1;
                             } catch (NumberFormatException e) {
                                 // ignore
                             }

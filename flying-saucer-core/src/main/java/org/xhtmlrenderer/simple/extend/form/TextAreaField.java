@@ -19,10 +19,9 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
+import java.awt.*;
+
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicTextAreaUI;
 import javax.swing.plaf.basic.BasicTextUI;
 
@@ -37,8 +36,6 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.GeneralUtil;
-
-import java.awt.*;
 
 class TextAreaField extends FormField {
     private TextAreaFieldJTextArea _textarea;
@@ -95,10 +92,10 @@ class TextAreaField extends FormField {
         Integer paddingBottom = getLengthValue(style, CSSName.PADDING_BOTTOM);
         Integer paddingRight = getLengthValue(style, CSSName.PADDING_RIGHT);
 
-        int top = paddingTop == null ? 2 : Math.max(2, paddingTop.intValue());
-        int left = paddingLeft == null ? 3 : Math.max(3, paddingLeft.intValue());
-        int bottom = paddingBottom == null ? 2 : Math.max(2, paddingBottom.intValue());
-        int right = paddingRight == null ? 3 : Math.max(3, paddingRight.intValue());
+        int top = paddingTop == null ? 2 : Math.max(2, paddingTop);
+        int left = paddingLeft == null ? 3 : Math.max(3, paddingLeft);
+        int bottom = paddingBottom == null ? 2 : Math.max(2, paddingBottom);
+        int right = paddingRight == null ? 3 : Math.max(3, paddingRight);
 
         //if a border is set or a background color is set, then use a special JButton with the BasicButtonUI.
         if (disableOSBorder) {
@@ -117,12 +114,12 @@ class TextAreaField extends FormField {
 
         FSDerivedValue widthValue = style.valueByName(CSSName.WIDTH);
         if (widthValue instanceof LengthValue) {
-            intrinsicWidth = new Integer(getBox().getContentWidth() + left + right);
+            intrinsicWidth = getBox().getContentWidth() + left + right;
         }
 
         FSDerivedValue heightValue = style.valueByName(CSSName.HEIGHT);
         if (heightValue instanceof LengthValue) {
-            intrinsicHeight = new Integer(getBox().getHeight() + top + bottom);
+            intrinsicHeight = getBox().getHeight() + top + bottom;
         }
     }
 
@@ -145,7 +142,7 @@ class TextAreaField extends FormField {
     }
 
 
-    private class TextAreaFieldJTextArea extends JTextArea {
+    private static class TextAreaFieldJTextArea extends JTextArea {
         int columnWidth = 0;
 
         public TextAreaFieldJTextArea(int rows, int columns) {

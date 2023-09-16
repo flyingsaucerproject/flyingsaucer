@@ -19,9 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -198,7 +196,7 @@ public class ITextRenderer {
     public void setPDFVersion(char _v) {
         for (int i = 0; i < validPdfVersions.length; i++) {
             if (_v == validPdfVersions[i]) {
-                _pdfVersion = new Character(_v);
+                _pdfVersion = _v;
                 return;
             }
         }

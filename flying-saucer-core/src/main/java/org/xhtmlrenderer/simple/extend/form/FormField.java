@@ -39,12 +39,12 @@ import org.xhtmlrenderer.swing.AWTFSFont;
 import java.awt.*;
 
 public abstract class FormField {
-    private XhtmlForm _parentForm;
-    private Element _element;
+    private final XhtmlForm _parentForm;
+    private final Element _element;
     private FormFieldState _originalState;
     private JComponent _component;
-    private LayoutContext context;
-    private BlockBox box;
+    private final LayoutContext context;
+    private final BlockBox box;
     protected Integer intrinsicWidth;
     protected Integer intrinsicHeight;
 
@@ -108,9 +108,9 @@ public abstract class FormField {
 
         if (_component != null) {
             if (intrinsicWidth == null)
-                intrinsicWidth = new Integer(_component.getPreferredSize().width);
+                intrinsicWidth = _component.getPreferredSize().width;
             if (intrinsicHeight == null)
-                intrinsicHeight = new Integer(_component.getPreferredSize().height);
+                intrinsicHeight = _component.getPreferredSize().height;
 
             _component.setSize(getIntrinsicSize());
 
@@ -219,7 +219,7 @@ public abstract class FormField {
     protected static Integer getLengthValue(CalculatedStyle style, CSSName cssName) {
         FSDerivedValue widthValue = style.valueByName(cssName);
         if (widthValue instanceof LengthValue) {
-            return new Integer((int)widthValue.asFloat());
+            return (int) widthValue.asFloat();
         }
 
         return null;
