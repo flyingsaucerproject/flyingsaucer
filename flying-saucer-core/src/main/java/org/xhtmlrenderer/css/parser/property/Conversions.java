@@ -176,15 +176,15 @@ public class Conversions {
     }
 
     static {
-        NUMERIC_FONT_WEIGHTS.put(new Float(100f), IdentValue.FONT_WEIGHT_100);
-        NUMERIC_FONT_WEIGHTS.put(new Float(200f), IdentValue.FONT_WEIGHT_200);
-        NUMERIC_FONT_WEIGHTS.put(new Float(300f), IdentValue.FONT_WEIGHT_300);
-        NUMERIC_FONT_WEIGHTS.put(new Float(400f), IdentValue.FONT_WEIGHT_400);
-        NUMERIC_FONT_WEIGHTS.put(new Float(500f), IdentValue.FONT_WEIGHT_500);
-        NUMERIC_FONT_WEIGHTS.put(new Float(600f), IdentValue.FONT_WEIGHT_600);
-        NUMERIC_FONT_WEIGHTS.put(new Float(700f), IdentValue.FONT_WEIGHT_700);
-        NUMERIC_FONT_WEIGHTS.put(new Float(800f), IdentValue.FONT_WEIGHT_800);
-        NUMERIC_FONT_WEIGHTS.put(new Float(900f), IdentValue.FONT_WEIGHT_900);
+        NUMERIC_FONT_WEIGHTS.put(100f, IdentValue.FONT_WEIGHT_100);
+        NUMERIC_FONT_WEIGHTS.put(200f, IdentValue.FONT_WEIGHT_200);
+        NUMERIC_FONT_WEIGHTS.put(300f, IdentValue.FONT_WEIGHT_300);
+        NUMERIC_FONT_WEIGHTS.put(400f, IdentValue.FONT_WEIGHT_400);
+        NUMERIC_FONT_WEIGHTS.put(500f, IdentValue.FONT_WEIGHT_500);
+        NUMERIC_FONT_WEIGHTS.put(600f, IdentValue.FONT_WEIGHT_600);
+        NUMERIC_FONT_WEIGHTS.put(700f, IdentValue.FONT_WEIGHT_700);
+        NUMERIC_FONT_WEIGHTS.put(800f, IdentValue.FONT_WEIGHT_800);
+        NUMERIC_FONT_WEIGHTS.put(900f, IdentValue.FONT_WEIGHT_900);
     }
 
     static {
@@ -198,7 +198,7 @@ public class Conversions {
     }
 
     public static IdentValue getNumericFontWeight(float weight) {
-        return (IdentValue)NUMERIC_FONT_WEIGHTS.get(new Float(weight));
+        return (IdentValue)NUMERIC_FONT_WEIGHTS.get(weight);
     }
 
     public static PropertyValue getBorderWidth(String ident) {

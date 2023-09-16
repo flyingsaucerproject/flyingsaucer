@@ -54,7 +54,7 @@ import org.xhtmlrenderer.render.PageBox;
  * {@link SharedContext}.
  */
 public class LayoutContext implements CssContext {
-    private SharedContext _sharedContext;
+    private final SharedContext _sharedContext;
 
     private Layer _rootLayer;
 
@@ -67,12 +67,12 @@ public class LayoutContext implements CssContext {
 
     private FontContext _fontContext;
 
-    private ContentFunctionFactory _contentFunctionFactory = new ContentFunctionFactory();
+    private final ContentFunctionFactory _contentFunctionFactory = new ContentFunctionFactory();
 
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
 
-    private Map _counterContextMap = new HashMap();
+    private final Map _counterContextMap = new HashMap();
 
     private String _pendingPageName;
     private String _pageName;
@@ -419,7 +419,7 @@ public class LayoutContext implements CssContext {
                     if (_parent == null) return false;
                     return _parent.incrementCounter(cd);
                 } else {
-                    _counters.put(cd.getName(), new Integer(currentValue.intValue() + cd.getValue()));
+                    _counters.put(cd.getName(), currentValue + cd.getValue());
                     return true;
                 }
             }
@@ -428,13 +428,13 @@ public class LayoutContext implements CssContext {
         private void incrementListItemCounter(int increment) {
             Integer currentValue = (Integer) _counters.get("list-item");
             if (currentValue == null) {
-                currentValue = new Integer(0);
+                currentValue = 0;
             }
-            _counters.put("list-item", new Integer(currentValue.intValue() + increment));
+            _counters.put("list-item", currentValue + increment);
         }
 
         private void resetCounter(CounterData cd) {
-            _counters.put(cd.getName(), new Integer(cd.getValue()));
+            _counters.put(cd.getName(), cd.getValue());
         }
 
         public int getCurrentCounterValue(String name) {
@@ -445,7 +445,7 @@ public class LayoutContext implements CssContext {
                 _parent.resetCounter(new CounterData(name, 0));
                 return 0;
             } else {
-                return value.intValue();
+                return value;
             }
         }
 
@@ -463,7 +463,7 @@ public class LayoutContext implements CssContext {
             _parent.getCounterValues(name, values);
             if (values.size() == 0) {
                 _parent.resetCounter(new CounterData(name, 0));
-                values.add(new Integer(0));
+                values.add(0);
             }
             return values;
         }

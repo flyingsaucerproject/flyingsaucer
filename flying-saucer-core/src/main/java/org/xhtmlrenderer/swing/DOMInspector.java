@@ -431,7 +431,7 @@ class ElementPropertiesPanel extends JPanel {
                     break;
                 case 2:
                     if (ValueConstants.isNumber(cpv.getPrimitiveType())) {
-                        val = new Float(cpv.getFloatValue(cpv.getPrimitiveType()));
+                        val = cpv.getFloatValue(cpv.getPrimitiveType());
                     } else {
                         val = "";//actual.cssValue().getCssText();
                     }
@@ -471,13 +471,9 @@ class DOMSelectionListener implements TreeSelectionListener {
     /**
      * Description of the Field
      */
-    private JTree _tree;
-    /** Description of the Field */
+    private final JTree _tree;
     //private StyleReference _sr;
-    /**
-     * Description of the Field
-     */
-    private ElementPropertiesPanel _elemPropPanel;
+    private final ElementPropertiesPanel _elemPropPanel;
 
     /**
      * Constructor for the DOMSelectionListener object
@@ -525,17 +521,17 @@ class DOMTreeModel implements TreeModel {
     /**
      * Our root for display
      */
-    Node root;
+    private Node root;
 
     /**
      * Description of the Field
      */
-    HashMap displayableNodes;
+    private final HashMap displayableNodes;
 
     /**
      * Description of the Field
      */
-    List listeners = new ArrayList();
+    private final List listeners = new ArrayList();
 
     /**
      * Constructor for the DOMTreeModel object
@@ -569,9 +565,7 @@ class DOMTreeModel implements TreeModel {
      * @param l Contains the TreeModelListener for TreeModelEvent data.
      */
     public void addTreeModelListener(TreeModelListener l) {
-
         this.listeners.add(l);
-
     }
 
 
@@ -625,7 +619,7 @@ class DOMTreeModel implements TreeModel {
             children = addDisplayable(node);
         }
 
-        return (Node) children.get(index);
+        return children.get(index);
     }
 
 

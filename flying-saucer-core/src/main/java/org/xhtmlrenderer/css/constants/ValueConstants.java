@@ -108,7 +108,7 @@ public final class ValueConstants {
      * @return Returns
      */
     public static String stringForSACPrimitiveType(short type) {
-        return (String) sacTypesStrings.get(new Short(type));
+        return (String) sacTypesStrings.get(type);
     }
 
     /**
@@ -122,7 +122,7 @@ public final class ValueConstants {
      */
     //TODO: method may be unnecessary (tobe)
     public static boolean isAbsoluteUnit(CSSPrimitiveValue primitive) {
-        short type = ((CSSPrimitiveValue) primitive).getPrimitiveType();
+        short type = primitive.getPrimitiveType();
         return isAbsoluteUnit(type);
     }
 
@@ -289,15 +289,15 @@ public final class ValueConstants {
 
         // HACK: this is a quick way to perform the lookup, but dumb if the short assigned are > 100; but the compiler will tell us that (PWW 21-01-05)
         sacTypesStrings = new HashMap(25);
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_EMS), "em");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_EXS), "ex");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PX), "px");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PERCENTAGE), "%");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_IN), "in");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_CM), "cm");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_MM), "mm");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PT), "pt");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PC), "pc");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_EMS, "em");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_EXS, "ex");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_PX, "px");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_PERCENTAGE, "%");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_IN, "in");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_CM, "cm");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_MM, "mm");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_PT, "pt");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_PC, "pc");
     }
 
     /**

@@ -201,7 +201,7 @@ public class ITextRenderer {
     public void setPDFVersion(char _v) {
         for (int i = 0; i < validPdfVersions.length; i++) {
             if (_v == validPdfVersions[i]) {
-                _pdfVersion = new Character(_v);
+                _pdfVersion = _v;
                 return;
             }
         }
@@ -214,7 +214,7 @@ public class ITextRenderer {
     }
 
     public void setPDFXConformance(int pdfXConformance){
-        _pdfXConformance = new Integer(pdfXConformance);
+        _pdfXConformance = pdfXConformance;
     }
 
     public int getPDFXConformance(){

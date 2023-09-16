@@ -366,7 +366,7 @@ public class BrowserMenuBar extends JMenuBar {
          */
         ShowDOMInspectorAction() {
             super("DOM Tree Inspector");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_D);
         }
 
         /**
@@ -404,7 +404,7 @@ public class BrowserMenuBar extends JMenuBar {
          */
         BoxOutlinesAction() {
             super("Show Box Outlines");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_B));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_B);
         }
 
         /**
@@ -429,7 +429,7 @@ public class BrowserMenuBar extends JMenuBar {
          */
         LineBoxOutlinesAction() {
             super("Show Line Box Outlines");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_L));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_L);
         }
 
         /**
@@ -454,7 +454,7 @@ public class BrowserMenuBar extends JMenuBar {
          */
         InlineBoxesAction() {
             super("Show Inline Boxes");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_I);
         }
 
         /**
@@ -474,7 +474,7 @@ public class BrowserMenuBar extends JMenuBar {
          */
         FontMetricsAction() {
             super("Show Font Metrics");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_F));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_F);
         }
 
         /**
@@ -492,7 +492,7 @@ public class BrowserMenuBar extends JMenuBar {
 
         public NextDemoAction() {
             super("Next Demo Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_N));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_N);
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         }
 
@@ -533,7 +533,7 @@ public class BrowserMenuBar extends JMenuBar {
 
         public PriorDemoAction() {
             super("Prior Demo Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_P));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_P);
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         }
 

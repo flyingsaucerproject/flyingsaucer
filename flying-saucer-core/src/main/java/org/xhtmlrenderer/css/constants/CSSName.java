@@ -59,22 +59,22 @@ public final class CSSName implements Comparable {
     /**
      * marker var, used for initialization
      */
-    private static final Integer PRIMITIVE = new Integer(0);
+    private static final Integer PRIMITIVE = 0;
 
     /**
      * marker var, used for initialization
      */
-    private static final Integer SHORTHAND = new Integer(1);
+    private static final Integer SHORTHAND = 1;
 
     /**
      * marker var, used for initialization
      */
-    private static final Integer INHERITS = new Integer(2);
+    private static final Integer INHERITS = 2;
 
     /**
      * marker var, used for initialization
      */
-    private static final Integer NOT_INHERITED = new Integer(3);
+    private static final Integer NOT_INHERITED = 3;
 
     /**
      * Used to assing unique int id values to new CSSNames created in this class

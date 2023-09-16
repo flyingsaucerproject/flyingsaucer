@@ -19,17 +19,17 @@
  */
 package org.xhtmlrenderer.swing;
 
-import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
-
-import javax.swing.*;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URL;
+
+import javax.swing.*;
+
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 
 
 /**
@@ -201,7 +201,7 @@ public class HTMLTest extends JFrame {
          */
         QuitAction() {
             super("Quit");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_Q));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_Q);
         }
 
         /**
@@ -227,7 +227,7 @@ public class HTMLTest extends JFrame {
          */
         BoxOutlinesAction() {
             super("Show Box Outlines");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_B));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_B);
         }
 
         /**
@@ -254,7 +254,7 @@ public class HTMLTest extends JFrame {
          */
         LineBoxOutlinesAction() {
             super("Show Line Box Outlines");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_L));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_L);
         }
 
         /**
@@ -281,7 +281,7 @@ public class HTMLTest extends JFrame {
          */
         InlineBoxesAction() {
             super("Show Inline Boxes");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_I);
         }
 
         /**
@@ -303,7 +303,7 @@ public class HTMLTest extends JFrame {
          */
         FontMetricsAction() {
             super("Show Font Metrics");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_F));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_F);
         }
 
         /**
@@ -355,7 +355,7 @@ public class HTMLTest extends JFrame {
          */
         ShowDOMInspectorAction() {
             super("DOM Tree Inspector");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_D);
         }
 
         /**
@@ -397,7 +397,7 @@ public class HTMLTest extends JFrame {
          */
         RefreshPageAction() {
             super("Refresh Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_R));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_R);
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("F5"));
         }
@@ -426,7 +426,7 @@ public class HTMLTest extends JFrame {
          */
         ReloadPageAction() {
             super("Reload Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_P));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_P);
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F5,
                             ActionEvent.CTRL_MASK));

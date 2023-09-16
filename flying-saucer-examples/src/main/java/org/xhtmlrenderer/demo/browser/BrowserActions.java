@@ -19,22 +19,21 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.demo.browser.actions.CopySelectionAction;
-import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
-import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
-import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.Uu;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
+
+import javax.swing.*;
+
+import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
+import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.Uu;
 
 /**
  * Description of the Class
@@ -89,7 +88,7 @@ public class BrowserActions {
         };
         // TODO: need right API call for ESC
         //stop.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE));
-        stop.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
+        stop.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
 
         open_file =
                 new AbstractAction() {
@@ -99,7 +98,7 @@ public class BrowserActions {
                 };
         open_file.putValue(Action.NAME, "Open File...");
         setAccel(open_file, KeyEvent.VK_O);
-        setMnemonic(open_file, new Integer(KeyEvent.VK_O));
+        setMnemonic(open_file, KeyEvent.VK_O);
 
 
         export_pdf =
@@ -136,7 +135,7 @@ public class BrowserActions {
 
         setName(quit, "Quit");
         setAccel(quit, KeyEvent.VK_Q);
-        setMnemonic(quit, new Integer(KeyEvent.VK_Q));
+        setMnemonic(quit, KeyEvent.VK_Q);
 
         url = getImageUrl("images/go-previous.png");
         backward = new EmptyAction("Back", "Go back one page", new ImageIcon(url)) {
@@ -200,14 +199,14 @@ public class BrowserActions {
         reload.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_F5,
                         InputEvent.SHIFT_MASK));
-        reload.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_R));
+        reload.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
 
         print_preview = new EmptyAction("Print Preview", "Print preview mode", null) {
             public void actionPerformed(ActionEvent evt) {
                 togglePrintPreview();
             }
         };
-        print_preview.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_V));
+        print_preview.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_V);
 
         load = new AbstractAction("Load") {
             public void actionPerformed(ActionEvent evt) {
@@ -273,19 +272,19 @@ public class BrowserActions {
         increase_font.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        increase_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
+        increase_font.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
 
         reset_font = new FontSizeAction(root, FontSizeAction.RESET);
         reset_font.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_0,
                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        reset_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_N));
+        reset_font.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
 
         decrease_font = new FontSizeAction(root, FontSizeAction.DECREMENT);
         decrease_font.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,
                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        decrease_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
+        decrease_font.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_D);
 
         setName(increase_font, "Increase");
         setName(reset_font, "Normal");
@@ -310,11 +309,7 @@ public class BrowserActions {
                 aboutDlg.dispose();
             }
         });
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                btn.requestFocusInWindow();
-            }
-        });
+        SwingUtilities.invokeLater(btn::requestFocusInWindow);
         JPanel control = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         control.add(btn);
         outer.add(control, BorderLayout.SOUTH);

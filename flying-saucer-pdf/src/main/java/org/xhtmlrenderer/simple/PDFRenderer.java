@@ -31,12 +31,12 @@ public class PDFRenderer {
     private static final Map versionMap = new HashMap();
 
     static {
-        versionMap.put("1.2", new Character(PdfWriter.VERSION_1_2));
-        versionMap.put("1.3", new Character(PdfWriter.VERSION_1_3));
-        versionMap.put("1.4", new Character(PdfWriter.VERSION_1_4));
-        versionMap.put("1.5", new Character(PdfWriter.VERSION_1_5));
-        versionMap.put("1.6", new Character(PdfWriter.VERSION_1_6));
-        versionMap.put("1.7", new Character(PdfWriter.VERSION_1_7));
+        versionMap.put("1.2", PdfWriter.VERSION_1_2);
+        versionMap.put("1.3", PdfWriter.VERSION_1_3);
+        versionMap.put("1.4", PdfWriter.VERSION_1_4);
+        versionMap.put("1.5", PdfWriter.VERSION_1_5);
+        versionMap.put("1.6", PdfWriter.VERSION_1_6);
+        versionMap.put("1.7", PdfWriter.VERSION_1_7);
     }
     /**
      * Renders the XML file at the given URL as a PDF file
