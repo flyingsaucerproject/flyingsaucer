@@ -44,9 +44,9 @@ public class BorderPainter {
 
     /**
      * Generates a full round rectangle that is made of bounds and border
-     * @param bounds Dimmensions of the rect
+     * @param bounds Dimensions of the rect
      * @param border The border specs
-     * @param Set true if you want the inner bounds of borders
+     * @param inside Set true if you want the inner bounds of borders
      * @return A Path that is all sides of the round rectangle
      */
     public static Path2D generateBorderBounds(Rectangle bounds, BorderPropertySet border, boolean inside) {
@@ -101,7 +101,7 @@ public class BorderPainter {
 
         RelativeBorderProperties props = new RelativeBorderProperties(bounds, border, 0f, side, 1+scaledOffset, widthScale);
         float sideWidth;
-        if(props.isDimmensionsSwapped()) {
+        if(props.isDimensionsSwapped()) {
             sideWidth = bounds.height-(1+scaledOffset)*(widthScale)*(border.top()+border.bottom());
         } else {
             sideWidth = bounds.width-(1+scaledOffset)*(widthScale)*(border.left()+border.right());
@@ -143,8 +143,8 @@ public class BorderPainter {
 
 
         path.transform(AffineTransform.getTranslateInstance(
-                (!props.isDimmensionsSwapped() ? -bounds.width/2f : -bounds.height/2f) + (scaledOffset+1)*props.getLeft(),
-                (props.isDimmensionsSwapped() ? -bounds.width/2f : -bounds.height/2f) + (scaledOffset+1)*props.getTop()));
+                (!props.isDimensionsSwapped() ? -bounds.width/2f : -bounds.height/2f) + (scaledOffset+1)*props.getLeft(),
+                (props.isDimensionsSwapped() ? -bounds.width/2f : -bounds.height/2f) + (scaledOffset+1)*props.getTop()));
         path.transform(AffineTransform.getRotateInstance(
                 props.getRotation()));
         path.transform(AffineTransform.getTranslateInstance(
@@ -183,7 +183,7 @@ public class BorderPainter {
         private final BorderRadiusCorner _rightCorner;
 
         private final double _rotation;
-        private final boolean _dimmensionsSwapped;
+        private final boolean _dimensionsSwapped;
 
         public RelativeBorderProperties(Rectangle bounds, BorderPropertySet props, float borderScaleOffset,  int side, float scaledOffset, float widthScale) {
 
@@ -194,7 +194,7 @@ public class BorderPainter {
                 _leftCorner = props.getTopLeft();
                 _rightCorner = props.getTopRight();
                 _rotation = 0;
-                _dimmensionsSwapped = false;
+                _dimensionsSwapped = false;
             } else if ((side & BorderPainter.RIGHT) == BorderPainter.RIGHT) {
                 _top = props.right()*widthScale;
                 _left = props.top()*widthScale;
@@ -202,7 +202,7 @@ public class BorderPainter {
                 _leftCorner = props.getTopRight();
                 _rightCorner = props.getBottomRight();
                 _rotation = Math.PI/2;
-                _dimmensionsSwapped = true;
+                _dimensionsSwapped = true;
             } else if ((side & BorderPainter.BOTTOM) == BorderPainter.BOTTOM) {
                 _top = props.bottom()*widthScale;
                 _left = props.right()*widthScale;
@@ -210,7 +210,7 @@ public class BorderPainter {
                 _leftCorner = props.getBottomRight();
                 _rightCorner = props.getBottomLeft();
                 _rotation = Math.PI;
-                _dimmensionsSwapped = false;
+                _dimensionsSwapped = false;
             } else if ((side & BorderPainter.LEFT) == BorderPainter.LEFT) {
                 _top = props.left()*widthScale;
                 _left = props.bottom()*widthScale;
@@ -218,7 +218,7 @@ public class BorderPainter {
                 _leftCorner = props.getBottomLeft();
                 _rightCorner = props.getTopLeft();
                 _rotation = 3*Math.PI/2;
-                _dimmensionsSwapped = true;
+                _dimensionsSwapped = true;
             } else {
                 throw new IllegalArgumentException("No side found");
             }
@@ -244,8 +244,8 @@ public class BorderPainter {
             return _rotation;
         }
 
-        private boolean isDimmensionsSwapped() {
-            return _dimmensionsSwapped;
+        private boolean isDimensionsSwapped() {
+            return _dimensionsSwapped;
         }
     }
 
