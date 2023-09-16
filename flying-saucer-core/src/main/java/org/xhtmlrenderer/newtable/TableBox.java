@@ -745,7 +745,7 @@ public class TableBox extends BlockBox {
     protected TableCellBox cellAbove(TableCellBox cell) {
         // Find the section and row to look in
         int r = cell.getRow();
-        TableSectionBox section = null;
+        final TableSectionBox section;
         int rAbove = 0;
         if (r > 0) {
             // cell is not in the first row, so use the above row in its own
@@ -778,7 +778,7 @@ public class TableBox extends BlockBox {
     protected TableCellBox cellBelow(TableCellBox cell) {
         // Find the section and row to look in
         int r = cell.getRow() + cell.getStyle().getRowSpan() - 1;
-        TableSectionBox section = null;
+        final TableSectionBox section;
         int rBelow = 0;
         if (r < cell.getSection().numRows() - 1) {
             // The cell is not in the last row, so use the next row in the

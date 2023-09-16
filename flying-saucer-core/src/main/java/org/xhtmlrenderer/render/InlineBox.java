@@ -165,7 +165,7 @@ public class InlineBox implements Styleable {
 
     private void calcMaxWidthFromLineLength(LayoutContext c, int cbWidth, boolean trim) {
         int last = 0;
-        int current = 0;
+        int current;
 
         while ( (current = _text.indexOf(WhitespaceStripper.EOL, last)) != -1) {
             String target = _text.substring(last, current);
@@ -220,7 +220,7 @@ public class InlineBox implements Styleable {
         int spaceWidth = getSpaceWidth(c);
 
         int last = 0;
-        int current = 0;
+        int current;
         int maxWidth = 0;
         int spaceCount = 0;
 

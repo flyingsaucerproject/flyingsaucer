@@ -57,8 +57,6 @@ public class ImageResourceLoader {
             this._loadQueue = null;
         }
 
-        this._repaintListener = NO_OP_REPAINT_LISTENER;
-
         // note we do *not* override removeEldestEntry() here--users of this class must call shrinkImageCache().
         // that's because we don't know when is a good time to flush the cache
         this._imageCache = new LinkedHashMap(cacheSize, 0.75f, true);

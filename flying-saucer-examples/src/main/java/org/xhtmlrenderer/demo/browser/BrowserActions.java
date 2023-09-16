@@ -79,8 +79,7 @@ public class BrowserActions {
      * Description of the Method
      */
     public void init() {
-        URL url = null;
-        url = getImageUrl("images/process-stop.png");
+        URL url = getImageUrl("images/process-stop.png");
         stop = new AbstractAction("Stop", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 // TODO: stop not coded

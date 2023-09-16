@@ -41,7 +41,7 @@ public class DemosNavigation {
         try {
             URL url = new URL(uac.resolveFullURI(FILE_LIST_URL));
             reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split(",");
                 _demos.add(new Demo(fields[1], fields[0]));

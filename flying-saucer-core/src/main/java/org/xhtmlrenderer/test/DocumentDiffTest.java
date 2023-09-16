@@ -159,7 +159,7 @@ public class DocumentDiffTest {
     public boolean compareTestFile(String test, String diff, int width, int height)
             throws Exception {
         String tin = xhtmlToDiff(test, width, height);
-        String din = null;
+        String din;
         try {
             din = Uu.file_to_string(diff);
         } catch (FileNotFoundException ex) {
@@ -208,7 +208,7 @@ public class DocumentDiffTest {
         XRLog.setLevel("plumbing.general", Level.OFF);
         //String testfile = "tests/diff/background/01.xhtml";
         //String difffile = "tests/diff/background/01.diff";
-        String file = null;
+        String file;
         if (args.length == 0) {
             file = "tests/diff";
         } else {

@@ -632,7 +632,7 @@ public class TableCellBox extends BlockBox {
 
         // (4) The previous row's bottom border.
         if (prevCell != null) {
-            TableRowBox prevRow = null;
+            final TableRowBox prevRow;
             if (prevCell.getSection() == getSection()) {
                 prevRow = (TableRowBox) getParent().getPreviousSibling();
             } else {

@@ -402,7 +402,7 @@ public class BoxBuilder {
 
     private static void stripAllWhitespace(List content) {
         int start = 0;
-        int current = 0;
+        int current;
         boolean started = false;
         for (current = 0; current < content.size(); current++) {
             Styleable styleable = (Styleable) content.get(current);
@@ -690,9 +690,8 @@ public class BoxBuilder {
             if (params.size() < 1 || params.size() > 2) {
                 return false;
             }
-            boolean ok = true;
             PropertyValue value1 = (PropertyValue) params.get(0);
-            ok = value1.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
+            boolean ok = value1.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
             if (ok && params.size() == 2) {
                 PropertyValue value2 = (PropertyValue) params.get(1);
                 ok = value2.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;

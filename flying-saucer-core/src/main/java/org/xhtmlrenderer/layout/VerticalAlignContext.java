@@ -250,9 +250,8 @@ public class VerticalAlignContext {
         }
 
         public void align() {
-            IdentValue vAlign = _root.getStyle().getIdent(
-                    CSSName.VERTICAL_ALIGN);
-            int delta = 0;
+            IdentValue vAlign = _root.getStyle().getIdent(CSSName.VERTICAL_ALIGN);
+            final int delta;
             if (vAlign == IdentValue.TOP) {
                 delta = _verticalAlignContext.getRoot().getInlineTop() -
                     _verticalAlignContext.getInlineTop();

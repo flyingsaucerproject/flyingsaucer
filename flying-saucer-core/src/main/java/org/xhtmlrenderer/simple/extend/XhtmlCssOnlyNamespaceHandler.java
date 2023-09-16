@@ -410,9 +410,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
 
     private InputStream getDefaultStylesheetStream() {
-        InputStream stream = null;
         String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
-        stream = this.getClass().getResourceAsStream(defaultStyleSheet);
+        InputStream stream = this.getClass().getResourceAsStream(defaultStyleSheet);
         if (stream == null) {
             XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
                     "This file must be on your CLASSPATH. Please check before continuing.");

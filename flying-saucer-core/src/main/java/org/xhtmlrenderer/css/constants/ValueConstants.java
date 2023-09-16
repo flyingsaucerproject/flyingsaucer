@@ -56,20 +56,16 @@ public final class ValueConstants {
      * @return Returns
      */
     public static String cssType(int cssType, int primitiveValueType) {
-        String desc = null;
         if (cssType == CSSValue.CSS_PRIMITIVE_VALUE) {
             if (primitiveValueType >= TYPE_DESCRIPTIONS.size()) {
-                desc = "{unknown: " + primitiveValueType + "}";
+                return "{unknown: " + primitiveValueType + "}";
             } else {
-                desc = (String) TYPE_DESCRIPTIONS.get(primitiveValueType);
-                if (desc == null) {
-                    desc = "{UNKNOWN VALUE TYPE}";
-                }
+                String desc = (String) TYPE_DESCRIPTIONS.get(primitiveValueType);
+                return desc == null ? "{UNKNOWN VALUE TYPE}" : desc;
             }
         } else {
-            desc = "{value list}";
+            return "{value list}";
         }
-        return desc;
     }
 
     /**
@@ -126,8 +122,7 @@ public final class ValueConstants {
      */
     //TODO: method may be unnecessary (tobe)
     public static boolean isAbsoluteUnit(CSSPrimitiveValue primitive) {
-        short type = 0;
-        type = ((CSSPrimitiveValue) primitive).getPrimitiveType();
+        short type = ((CSSPrimitiveValue) primitive).getPrimitiveType();
         return isAbsoluteUnit(type);
     }
 

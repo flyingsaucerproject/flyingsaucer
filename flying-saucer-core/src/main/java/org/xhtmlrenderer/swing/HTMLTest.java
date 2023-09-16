@@ -149,7 +149,7 @@ public class HTMLTest extends JFrame {
                 try {
                     long st = System.currentTimeMillis();
 
-                    URL url = null;
+                    final URL url;
                     if (uri.startsWith("http://"))
                         url = new URL(uri);
                     else

@@ -20,12 +20,10 @@ public class BorderRadiusCorner {
     public BorderRadiusCorner(float left, float right) {
         this._left = left;
         this._right = right;
-        this._rightPercent = false;
-        this._rightPercent = false;
     }
     public BorderRadiusCorner(CSSName fromVal, CalculatedStyle style, CssContext ctx) {
         FSDerivedValue value = style.valueByName(fromVal);
-        PropertyValue first = null, second = null;
+        PropertyValue first, second;
         if(value instanceof ListValue) {
             ListValue lValues = (ListValue)value;
             first = (PropertyValue)lValues.getValues().get(0);
@@ -82,7 +80,6 @@ public class BorderRadiusCorner {
     }
     private void setRight(CSSName fromVal, CalculatedStyle style, PropertyValue value, CssContext ctx) {
         if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_PERCENTAGE) {
-            float percent = value.getFloatValue() / 100.0f;
             _rightPercent = true;
             _right = value.getFloatValue() / 100.0f;
         } else {

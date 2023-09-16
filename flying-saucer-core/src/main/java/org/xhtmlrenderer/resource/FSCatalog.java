@@ -69,23 +69,15 @@ public class FSCatalog {
      */
     public Map parseCatalog(String catalogURI) {
         URL url;
-        Map map = null;
-        InputStream s = null;
+        Map map;
         try {
             url = FSCatalog.class.getClassLoader().getResource(catalogURI);
-            s = new BufferedInputStream(url.openStream());
-            map = parseCatalog(new InputSource(s));
+            try (InputStream s = new BufferedInputStream(url.openStream())) {
+                map = parseCatalog(new InputSource(s));
+            }
         } catch (Exception ex) {
             XRLog.xmlEntities(Level.WARNING, "Could not open XML catalog from URI '" + catalogURI + "'", ex);
             map = new HashMap();
-        } finally {
-            try {
-                if (s != null) {
-                    s.close();
-                }
-            } catch (IOException e) {
-                // ignore..
-            }
         }
         return map;
     }

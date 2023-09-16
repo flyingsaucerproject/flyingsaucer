@@ -66,10 +66,8 @@ public class SwingImageReplacer extends ElementReplacer {
      * @param cssHeight Target height of the image @return A ReplacedElement for the image; will not be null.
      */
     protected ReplacedElement replaceImage(UserAgentCallback uac, LayoutContext context, Element elem, int cssWidth, int cssHeight) {
-        ReplacedElement re = null;
-
         // lookup in cache, or instantiate
-        re = lookupImageReplacedElement(elem);
+        ReplacedElement re = lookupImageReplacedElement(elem);
         if (re == null) {
             Image im = null;
             String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
@@ -131,11 +129,10 @@ public class SwingImageReplacer extends ElementReplacer {
      * @return A ReplacedElement to substitute for one that can't be generated.
      */
     protected ReplacedElement newIrreplaceableImageElement(int cssWidth, int cssHeight) {
-        BufferedImage missingImage = null;
         ReplacedElement mre;
         try {
             // TODO: we can come up with something better; not sure if we should use Alt text, how text should size, etc.
-            missingImage = ImageUtil.createCompatibleBufferedImage(cssWidth, cssHeight, BufferedImage.TYPE_INT_RGB);
+            BufferedImage missingImage = ImageUtil.createCompatibleBufferedImage(cssWidth, cssHeight, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = missingImage.createGraphics();
             g.setColor(Color.BLACK);
             g.setBackground(Color.WHITE);

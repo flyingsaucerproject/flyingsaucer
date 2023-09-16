@@ -103,14 +103,13 @@ public class PanelManager extends DelegatingUserAgent {
     public XMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);
         if (uri != null && uri.startsWith("file:")) {
-            File file = null;
+            File file;
             try {
                 StringBuffer sbURI = GeneralUtil.htmlEscapeSpace(uri);
 
                 XRLog.general("Encoded URI: " + sbURI);
                 file = new File(new URI(sbURI.toString()));
-            } catch (URISyntaxException
-                    e) {
+            } catch (URISyntaxException e) {
                 XRLog.exception("Invalid file URI " + uri, e);
                 return getNotFoundDocument(uri);
             }
@@ -120,7 +119,7 @@ public class PanelManager extends DelegatingUserAgent {
             }
         }
         XMLResource xr = null;
-        URLConnection uc = null;
+        URLConnection uc;
         InputStream inputStream = null;
         try {
             uc = new URL(uri).openConnection();
@@ -185,14 +184,8 @@ public class PanelManager extends DelegatingUserAgent {
         return history.contains(uri);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void setBaseURL (String url) {
-        String burl = super.getBaseURL();
-        if(burl !=null &&  burl.startsWith("error:")) burl = null;
-
-        burl = resolveURI(url);
+        String burl = resolveURI(url);
         if (burl == null) burl = "error:FileNotFound";
 
         super.setBaseURL(burl);

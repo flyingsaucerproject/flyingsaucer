@@ -39,8 +39,8 @@ public class BorderSpacingPropertyBuilder extends AbstractPropertyBuilder {
 
         checkValueCount(CSSName.BORDER_SPACING, 1, 2, values.size());
 
-        PropertyDeclaration horizontalSpacing = null;
-        PropertyDeclaration verticalSpacing = null;
+        PropertyDeclaration horizontalSpacing;
+        PropertyDeclaration verticalSpacing;
 
         if (values.size() == 1) {
             PropertyValue value = (PropertyValue)values.get(0);

@@ -240,7 +240,7 @@ public class CalculatedStyle {
 
     // TODO: doc
     public boolean hasAbsoluteUnit(CSSName cssName) {
-        boolean isAbs = false;
+        boolean isAbs;
         try {
             isAbs = valueByName(cssName).hasAbsoluteUnit();
         } catch (Exception e) {

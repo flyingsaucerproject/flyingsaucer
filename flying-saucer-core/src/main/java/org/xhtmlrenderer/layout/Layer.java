@@ -347,9 +347,8 @@ public class Layer {
     }
 
     public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
-        Box result = null;
         if (isRootLayer() || isStackingContext()) {
-            result = find(cssCtx, absX, absY, getSortedLayers(POSITIVE), findAnonymous);
+            Box result = find(cssCtx, absX, absY, getSortedLayers(POSITIVE), findAnonymous);
             if (result != null) {
                 return result;
             }
@@ -367,13 +366,13 @@ public class Layer {
 
         for (int i = 0; i < getFloats().size(); i++) {
             Box floater = (Box)getFloats().get(i);
-            result = floater.find(cssCtx, absX, absY, findAnonymous);
+            Box result = floater.find(cssCtx, absX, absY, findAnonymous);
             if (result != null) {
                 return result;
             }
         }
 
-        result = getMaster().find(cssCtx, absX, absY, findAnonymous);
+        Box result = getMaster().find(cssCtx, absX, absY, findAnonymous);
         if (result != null) {
             return result;
         }
@@ -751,11 +750,11 @@ public class Layer {
     }
 
     public void addPage(CssContext c) {
-        String pseudoPage = null;
         if (_pages == null) {
             _pages = new ArrayList();
         }
 
+        String pseudoPage;
         List pages = getPages();
         if (pages.size() == 0) {
             pseudoPage = "first";

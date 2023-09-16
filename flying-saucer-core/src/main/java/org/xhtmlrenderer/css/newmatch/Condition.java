@@ -544,7 +544,7 @@ abstract class Condition {
             List result = new ArrayList();
 
             int last = 0;
-            int next = 0;
+            int next;
 
             while ((next = s.indexOf(ch, last)) != -1) {
                 if (next != last) {

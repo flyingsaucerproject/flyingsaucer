@@ -348,7 +348,6 @@ public class FontGlyphTableRender {
     }
 
     private void renderPDF(Document doc) {
-        String msgToUser = "";
         File f;
         try {
             f = File.createTempFile("flying-saucer-glyph-test", ".pdf");
@@ -358,9 +357,8 @@ public class FontGlyphTableRender {
             return;
         }
         final ITextRenderer renderer = new ITextRenderer();
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(f);
+        String msgToUser;
+        try (FileOutputStream fos = new FileOutputStream(f)) {
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             renderer.setDocument(doc, null, new XhtmlNamespaceHandler());
             ITextFontResolver resolver = renderer.getFontResolver();
@@ -380,22 +378,10 @@ public class FontGlyphTableRender {
             msgToUser = "Can't create PDF, err: " + e.getMessage();
         } catch (IOException e) {
             msgToUser = "Can't create PDF, err: " + e.getMessage();
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    // swallow
-                }
-            }
         }
         if (msgToUser.length() != 0) {
             final String finalMsg = msgToUser;
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    JOptionPane.showMessageDialog(frame, finalMsg);
-                }
-            });
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, finalMsg));
         }
     }
 

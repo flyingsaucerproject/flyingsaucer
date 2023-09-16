@@ -46,7 +46,7 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
         BreakIterator breakIt = new UrlAwareLineBreakIterator();
         breakIt.setText(text);
         TreeSet<BreakPoint> points = new TreeSet<BreakPoint>();
-        int p = BreakIterator.DONE;
+        int p;
         while ((p = breakIt.next()) != BreakIterator.DONE) {
             points.add(new BreakPoint(p));
         }
@@ -83,7 +83,7 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
     }
 
     private void addHyphen(BreakPoint p) {
-        p.setHyphen("\u002D");
+        p.setHyphen("-");
     }
 
 }

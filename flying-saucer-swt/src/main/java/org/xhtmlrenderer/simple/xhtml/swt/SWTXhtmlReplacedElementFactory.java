@@ -82,19 +82,15 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
                 // this is not a form control
                 return null;
             }
-            SWTFormControl swtControl = null;
+            final SWTFormControl swtControl;
             if (control instanceof TextControl) {
-                swtControl = new SWTTextControl(control, _parent, c, box
-                    .getStyle(), uac);
+                swtControl = new SWTTextControl(control, _parent, c, box.getStyle(), uac);
             } else if (control instanceof ButtonControl) {
-                swtControl = new SWTButtonControl(control, _parent, c, box
-                    .getStyle(), uac);
+                swtControl = new SWTButtonControl(control, _parent, c, box.getStyle(), uac);
             } else if (control instanceof CheckControl) {
-                swtControl = new SWTCheckControl(control, _parent, c, box
-                    .getStyle(), uac);
+                swtControl = new SWTCheckControl(control, _parent, c, box.getStyle(), uac);
             } else if (control instanceof SelectControl) {
-                swtControl = new SWTSelectControl(control, _parent, c, box
-                    .getStyle(), uac);
+                swtControl = new SWTSelectControl(control, _parent, c, box.getStyle(), uac);
             } else {
                 // no replacement found
                 return null;

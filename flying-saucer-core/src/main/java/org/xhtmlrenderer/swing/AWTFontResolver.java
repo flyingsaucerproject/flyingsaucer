@@ -221,7 +221,7 @@ public class AWTFontResolver implements FontResolver {
             //Uu.p("found an available font for: " + font);
             Object value = available_fonts_hash.get(font);
             // have we actually allocated the root font object yet?
-            Font root_font = null;
+            Font root_font;
             if (value instanceof Font) {
                 root_font = (Font) value;
             } else {

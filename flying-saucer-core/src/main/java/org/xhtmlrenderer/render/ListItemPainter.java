@@ -56,9 +56,8 @@ public class ListItemPainter {
     }
 
     private static void drawImage(RenderingContext c, BlockBox box, MarkerData markerData) {
-        FSImage img = null;
         MarkerData.ImageMarker marker = markerData.getImageMarker();
-        img = marker.getImage();
+        FSImage img = marker.getImage();
         if (img != null) {
             StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
             int x = getReferenceX(c, box);

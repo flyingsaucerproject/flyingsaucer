@@ -45,6 +45,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -373,9 +375,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     {
        if (manager.getBaseURL() != null) {
            setStatus( "Exporting to " + path + "..." );
-           OutputStream os = null;
-           try {
-               os = new FileOutputStream(path);
+           try (OutputStream os = Files.newOutputStream(Paths.get(path))) {
                try {
                ITextRenderer renderer = new ITextRenderer();
 
