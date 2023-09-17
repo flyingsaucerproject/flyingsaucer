@@ -88,6 +88,6 @@ public class MakeTokens {
 
         buf.append(EOL);
 
-        System.out.println(buf.toString());
+        System.out.println(buf);
     }
 }
