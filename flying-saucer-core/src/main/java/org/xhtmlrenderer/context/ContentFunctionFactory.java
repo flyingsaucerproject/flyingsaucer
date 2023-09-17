@@ -73,9 +73,9 @@ public class ContentFunctionFactory {
         protected IdentValue getListStyleType(FSFunction function) {
             IdentValue result = IdentValue.DECIMAL;
 
-            List parameters = function.getParameters();
+            List<PropertyValue> parameters = function.getParameters();
             if (parameters.size() == 2) {
-                PropertyValue pValue = (PropertyValue)parameters.get(1);
+                PropertyValue pValue = parameters.get(1);
                 IdentValue iValue = IdentValue.valueOf(pValue.getStringValue());
                 if (iValue != null) {
                     result = iValue;
@@ -87,16 +87,16 @@ public class ContentFunctionFactory {
 
         protected boolean isCounter(FSFunction function, String counterName) {
             if (function.getName().equals("counter")) {
-                List parameters = function.getParameters();
+                List<PropertyValue> parameters = function.getParameters();
                 if (parameters.size() == 1 || parameters.size() == 2) {
-                    PropertyValue param = (PropertyValue)parameters.get(0);
+                    PropertyValue param = parameters.get(0);
                     if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
                             ! param.getStringValue().equals(counterName)) {
                         return false;
                     }
 
                     if (parameters.size() == 2) {
-                        param = (PropertyValue)parameters.get(1);
+                        param = parameters.get(1);
                         if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                             return false;
                         }
@@ -164,17 +164,17 @@ public class ContentFunctionFactory {
 
         public boolean canHandle(LayoutContext c, FSFunction function) {
             if (c.isPrint() && function.getName().equals("target-counter")) {
-                List parameters = function.getParameters();
+                List<PropertyValue> parameters = function.getParameters();
                 if (parameters.size() == 2 || parameters.size() == 3) {
-                    FSFunction f = ((PropertyValue)parameters.get(0)).getFunction();
+                    FSFunction f = parameters.get(0).getFunction();
                     if (f == null ||
                             f.getParameters().size() != 1 ||
-                            ((PropertyValue)f.getParameters().get(0)).getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
-                            ! ((PropertyValue)f.getParameters().get(0)).getStringValue().equals("href")) {
+                            f.getParameters().get(0).getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
+                            ! f.getParameters().get(0).getStringValue().equals("href")) {
                         return false;
                     }
 
-                    PropertyValue param = (PropertyValue)parameters.get(1);
+                    PropertyValue param = parameters.get(1);
                     if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
                             ! param.getStringValue().equals("page")) {
                         return false;
@@ -220,7 +220,7 @@ public class ContentFunctionFactory {
             }
 
             // Get leader value and value width
-            PropertyValue param = (PropertyValue)function.getParameters().get(0);
+            PropertyValue param = function.getParameters().get(0);
             String value = param.getStringValue();
             if (param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                 if (value.equals("dotted")) {
@@ -275,9 +275,9 @@ public class ContentFunctionFactory {
 
         public boolean canHandle(LayoutContext c, FSFunction function) {
             if (c.isPrint() && function.getName().equals("leader")) {
-                List parameters = function.getParameters();
+                List<PropertyValue> parameters = function.getParameters();
                 if (parameters.size() == 1) {
-                    PropertyValue param = (PropertyValue)parameters.get(0);
+                    PropertyValue param = parameters.get(0);
                     if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_STRING &&
                             (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
                                 (!param.getStringValue().equals("dotted") &&

@@ -1351,9 +1351,9 @@ public class PrimitivePropertyBuilders {
                 } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
                     FSFunction function = value.getFunction();
                     if (function.getName().equals("running")) {
-                        List params = function.getParameters();
+                        List<PropertyValue> params = function.getParameters();
                         if (params.size() == 1) {
-                            PropertyValue param = (PropertyValue)params.get(0);
+                            PropertyValue param = params.get(0);
                             if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                                 throw new CSSParseException("The running function takes an identifier as a parameter", -1);
                             }

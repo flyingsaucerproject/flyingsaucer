@@ -990,9 +990,7 @@ public class CalculatedStyle {
     public String getRunningName() {
         FunctionValue value = (FunctionValue)valueByName(CSSName.POSITION);
         FSFunction function = value.getFunction();
-
-        PropertyValue param = (PropertyValue)function.getParameters().get(0);
-
+        PropertyValue param = function.getParameters().get(0);
         return param.getStringValue();
     }
 

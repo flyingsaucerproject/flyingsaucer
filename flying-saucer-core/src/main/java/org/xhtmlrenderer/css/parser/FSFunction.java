@@ -19,14 +19,13 @@
  */
 package org.xhtmlrenderer.css.parser;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class FSFunction {
-    private String _name;
-    private List _parameters;
+    private final String _name;
+    private final List<PropertyValue> _parameters;
 
-    public FSFunction(String name, List parameters) {
+    public FSFunction(String name, List<PropertyValue> parameters) {
         _name = name;
         _parameters = parameters;
     }
@@ -35,7 +34,7 @@ public class FSFunction {
         return _name;
     }
 
-    public List getParameters() {
+    public List<PropertyValue> getParameters() {
         return _parameters;
     }
 
@@ -43,8 +42,8 @@ public class FSFunction {
         StringBuilder result = new StringBuilder();
         result.append(_name);
         result.append('(');
-        for (Iterator i = _parameters.iterator(); i.hasNext(); ) {
-            result.append(i.next());  // HACK
+        for (PropertyValue parameter : _parameters) {
+            result.append(parameter);  // HACK
             result.append(',');
         }
         result.append(')');

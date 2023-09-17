@@ -674,9 +674,9 @@ public class BoxBuilder {
 
     private static boolean isAttrFunction(FSFunction function) {
         if (function.getName().equals("attr")) {
-            List params = function.getParameters();
+            List<PropertyValue> params = function.getParameters();
             if (params.size() == 1) {
-                PropertyValue value = (PropertyValue) params.get(0);
+                PropertyValue value = params.get(0);
                 return value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
             }
         }
@@ -686,14 +686,14 @@ public class BoxBuilder {
 
     public static boolean isElementFunction(FSFunction function) {
         if (function.getName().equals("element")) {
-            List params = function.getParameters();
+            List<PropertyValue> params = function.getParameters();
             if (params.size() < 1 || params.size() > 2) {
                 return false;
             }
-            PropertyValue value1 = (PropertyValue) params.get(0);
+            PropertyValue value1 = params.get(0);
             boolean ok = value1.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
             if (ok && params.size() == 2) {
-                PropertyValue value2 = (PropertyValue) params.get(1);
+                PropertyValue value2 = params.get(1);
                 ok = value2.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
             }
 
@@ -705,12 +705,12 @@ public class BoxBuilder {
 
     private static CounterFunction makeCounterFunction(FSFunction function, LayoutContext c, CalculatedStyle style) {
         if (function.getName().equals("counter")) {
-            List params = function.getParameters();
+            List<PropertyValue> params = function.getParameters();
             if (params.size() < 1 || params.size() > 2) {
                 return null;
             }
 
-            PropertyValue value = (PropertyValue) params.get(0);
+            PropertyValue value = params.get(0);
             if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                 return null;
             }
@@ -724,7 +724,7 @@ public class BoxBuilder {
             String counter = value.getStringValue();
             IdentValue listStyleType = IdentValue.DECIMAL;
             if (params.size() == 2) {
-                value = (PropertyValue) params.get(1);
+                value = params.get(1);
                 if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                     return null;
                 }
@@ -740,19 +740,19 @@ public class BoxBuilder {
 
             return new CounterFunction(counterValue, listStyleType);
         } else if (function.getName().equals("counters")) {
-            List params = function.getParameters();
+            List<PropertyValue> params = function.getParameters();
             if (params.size() < 2 || params.size() > 3) {
                 return null;
             }
 
-            PropertyValue value = (PropertyValue) params.get(0);
+            PropertyValue value = params.get(0);
             if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                 return null;
             }
 
             String counter = value.getStringValue();
 
-            value = (PropertyValue) params.get(1);
+            value = params.get(1);
             if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_STRING) {
                 return null;
             }
@@ -761,7 +761,7 @@ public class BoxBuilder {
 
             IdentValue listStyleType = IdentValue.DECIMAL;
             if (params.size() == 3) {
-                value = (PropertyValue) params.get(2);
+                value = params.get(2);
                 if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                     return null;
                 }
@@ -782,7 +782,7 @@ public class BoxBuilder {
     }
 
     private static String getAttributeValue(FSFunction attrFunc, Element e) {
-        PropertyValue value = (PropertyValue) attrFunc.getParameters().get(0);
+        PropertyValue value = attrFunc.getParameters().get(0);
         return e.getAttribute(value.getStringValue());
     }
 
@@ -879,18 +879,16 @@ public class BoxBuilder {
     }
 
     public static BlockBox getRunningBlock(LayoutContext c, PropertyValue value) {
-        List params = value.getFunction().getParameters();
-        String ident = ((PropertyValue)params.get(0)).getStringValue();
+        List<PropertyValue> params = value.getFunction().getParameters();
+        String ident = params.get(0).getStringValue();
         PageElementPosition position = null;
         if (params.size() == 2) {
-            position = PageElementPosition.valueOf(
-                    ((PropertyValue)params.get(1)).getStringValue());
+            position = PageElementPosition.valueOf(params.get(1).getStringValue());
         }
         if (position == null) {
             position = PageElementPosition.FIRST;
         }
-        BlockBox target = c.getRootDocumentLayer().getRunningBlock(ident, c.getPage(), position);
-        return target;
+        return c.getRootDocumentLayer().getRunningBlock(ident, c.getPage(), position);
     }
 
     private static void insertGeneratedContent(

@@ -67,7 +67,7 @@ public class CSSParser {
     }
 
     private Token _saved;
-    private Lexer _lexer;
+    private final Lexer _lexer;
 
     private CSSErrorHandler _errorHandler;
     private String _URI;
@@ -118,7 +118,7 @@ public class CSSParser {
         _URI = cssName + " property value";
         try {
             reset(new StringReader(expr));
-            List values = expr(
+            List<PropertyValue> values = expr(
                     cssName == CSSName.FONT_FAMILY ||
                     cssName == CSSName.FONT_SHORTHAND ||
                     cssName == CSSName.FS_PDF_FONT_ENCODING);
@@ -1307,7 +1307,7 @@ public class CSSParser {
                 if (t == Token.TK_COLON) {
                     skip_whitespace();
 
-                    List values = expr(
+                    List<PropertyValue> values = expr(
                             cssName == CSSName.FONT_FAMILY ||
                             cssName == CSSName.FONT_SHORTHAND ||
                             cssName == CSSName.FS_PDF_FONT_ENCODING);
@@ -1367,9 +1367,9 @@ public class CSSParser {
 //  expr
 //    : term [ operator term ]*
 //    ;
-    private List expr(boolean literal) throws IOException {
+    private List<PropertyValue> expr(boolean literal) throws IOException {
         //System.out.println("expr()");
-        List result = new ArrayList(10);
+        List<PropertyValue> result = new ArrayList<>(10);
         result.add(term(literal));
         LOOP: while (true) {
             Token t = la();
@@ -1434,8 +1434,7 @@ public class CSSParser {
 
         int offset = 0;
         char[] ch = token.toCharArray();
-        for (int i = 0; i < ch.length; i++) {
-            char c = ch[i];
+        for (char c : ch) {
             if (c < '0' || c > '9') {
                 break;
             }
@@ -1619,7 +1618,7 @@ public class CSSParser {
         if (t == Token.TK_FUNCTION) {
             String f = getTokenValue(t);
             skip_whitespace();
-            List params = expr(false);
+            List<PropertyValue> params = expr(false);
             t = next();
             if (t != Token.TK_RPAREN) {
                 push(t);
@@ -1648,7 +1647,7 @@ public class CSSParser {
         return result;
     }
 
-    private FSCMYKColor createCMYKColorFromFunction(List params) {
+    private FSCMYKColor createCMYKColorFromFunction(List<PropertyValue> params) {
         if (params.size() != 4) {
             throw new CSSParseException(
                     "The cmyk() function must have exactly four parameters",
@@ -1658,7 +1657,7 @@ public class CSSParser {
         float[] colorComponents = new float[4];
 
         for (int i = 0; i < params.size(); i++) {
-            colorComponents[i] = parseCMYKColorComponent((PropertyValue)params.get(i), (i+1)); //Warning on the truncation?
+            colorComponents[i] = parseCMYKColorComponent(params.get(i), (i+1)); //Warning on the truncation?
         }
 
         return new FSCMYKColor(colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3]);
@@ -1686,7 +1685,7 @@ public class CSSParser {
         return result;
     }
 
-    private FSRGBColor createRGBColorFromFunction(List params) {
+    private FSRGBColor createRGBColorFromFunction(List<PropertyValue> params) {
         if (params.size() != 3) {
             throw new CSSParseException(
                     "The rgb() function must have exactly three parameters",
@@ -1697,7 +1696,7 @@ public class CSSParser {
         int green = 0;
         int blue = 0;
         for (int i = 0; i < params.size(); i++) {
-            PropertyValue value = (PropertyValue)params.get(i);
+            PropertyValue value = params.get(i);
             short type = value.getPrimitiveType();
             if (type != CSSPrimitiveValue.CSS_PERCENTAGE &&
                     type != CSSPrimitiveValue.CSS_NUMBER) {
@@ -2064,7 +2063,7 @@ public class CSSParser {
         private final String _namespaceURI;
         private final String _name;
 
-        public NamespacePair(String namespaceURI, String name) {
+        private NamespacePair(String namespaceURI, String name) {
             _namespaceURI = namespaceURI;
             _name = name;
         }
