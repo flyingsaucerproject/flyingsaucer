@@ -334,22 +334,17 @@ public class Eeze {
      * @param error PARAM
      */
     private static void showUsageAndExit(String error) {
-        StringBuffer sb = new StringBuffer();
-
-        sb.append("Oops! " + error + " \n")
-                .append(" \n")
-                .append("Eeze \n")
-                .append("  A frame to walk through a set of XHTML/XML pages with Flying Saucer \n")
-                .append(" \n")
-                .append(" Usage: \n")
-                .append("    java eeze.Eeze {directory}\n")
-                .append(" \n")
-                .append(" where {directory} is a directory containing XHTML/XML files.\n")
-                .append(" \n")
-                .append(" All files ending in .*htm* are loaded in a list, in alphabetical \n")
-                .append(" order. The first is rendered. Use Alt-h to show keyboard navigation \n")
-                .append(" shortcuts.\n")
-                .append(" \n");
+        String sb = String.format("Oops! %s %n %nEeze %n  A frame to walk through a set of XHTML/XML pages with Flying Saucer %n" +
+                " %n" +
+                " Usage: %n" +
+                "    java eeze.Eeze {directory}%n" +
+                " %n" +
+                " where {directory} is a directory containing XHTML/XML files.%n" +
+                " %n" +
+                " All files ending in .*htm* are loaded in a list, in alphabetical %n" +
+                " order. The first is rendered. Use Alt-h to show keyboard navigation %n" +
+                " shortcuts.%n" +
+                " %n", error);
         System.out.println(sb);
         System.exit(-1);
     }

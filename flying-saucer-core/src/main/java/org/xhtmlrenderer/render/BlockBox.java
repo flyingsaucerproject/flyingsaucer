@@ -164,7 +164,8 @@ public class BlockBox extends Box implements InlinePaintable {
         result.append(getExtraBoxDescription());
 
         appendPositioningInfo(result);
-        result.append("(" + getAbsX() + "," + getAbsY() + ")->(" + getWidth() + " x " + getHeight() + ")");
+        result.append("(").append(getAbsX()).append(",").append(getAbsY())
+                .append(")->(").append(getWidth()).append(" x ").append(getHeight()).append(")");
         return result.toString();
     }
 
@@ -191,11 +192,11 @@ public class BlockBox extends Box implements InlinePaintable {
         result.append(this);
 
         RectPropertySet margin = getMargin(c);
-        result.append(" effMargin=[" + margin.top() + ", " + margin.right() + ", " +
-                margin.bottom() + ", " + margin.right() + "] ");
+        result.append(" effMargin=[").append(margin.top()).append(", ").append(margin.right())
+                .append(", ").append(margin.bottom()).append(", ").append(margin.right()).append("] ");
         RectPropertySet styleMargin = getStyleMargin(c);
-        result.append(" styleMargin=[" + styleMargin.top() + ", " + styleMargin.right() + ", " +
-                styleMargin.bottom() + ", " + styleMargin.right() + "] ");
+        result.append(" styleMargin=[").append(styleMargin.top()).append(", ").append(styleMargin.right())
+                .append(", ").append(styleMargin.bottom()).append(", ").append(styleMargin.right()).append("] ");
 
         if (getChildrenContentType() != CONTENT_EMPTY) {
             result.append('\n');
@@ -218,7 +219,7 @@ public class BlockBox extends Box implements InlinePaintable {
                                 result.deleteCharAt(result.length() - 1);
                             }
                         } else {
-                            result.append(indent + "  ");
+                            result.append(indent).append("  ");
                             result.append(styleable.toString());
                         }
                         if (i.hasNext()) {

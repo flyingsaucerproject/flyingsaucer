@@ -20,15 +20,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -36,12 +27,14 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.BoxCollector;
-import org.xhtmlrenderer.layout.InlineBoxing;
-import org.xhtmlrenderer.layout.InlinePaintable;
-import org.xhtmlrenderer.layout.Layer;
-import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.PaintingInfo;
+import org.xhtmlrenderer.layout.*;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A {@link Box} which contains the portion of an inline element layed out on a
@@ -799,7 +792,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     public String toString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append("InlineLayoutBox: ");
         if (getElement() != null) {
             result.append("<");
@@ -821,7 +814,8 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
         result.append("(baseline=");
         result.append(_baseline);
         result.append(") ");
-        result.append("(" + getAbsX() + "," + getAbsY() + ")->(" + getInlineWidth() + " x " + getHeight() + ")");
+        result.append("(").append(getAbsX()).append(",").append(getAbsY());
+        result.append(")->(").append(getInlineWidth()).append(" x ").append(getHeight()).append(")");
         return result.toString();
     }
 
@@ -843,7 +837,7 @@ public class InlineLayoutBox extends Box implements InlinePaintable {
                     result.deleteCharAt(result.length()-1);
                 }
             } else {
-                result.append(indent + "  ");
+                result.append(indent).append("  ");
                 result.append(obj.toString());
             }
             if (i.hasNext()) {

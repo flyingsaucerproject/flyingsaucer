@@ -42,7 +42,7 @@ public class DirectoryLister {
      * @return Returns
      */
     public static String list(File file) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("<html>");
         sb.append("<head>");
@@ -60,7 +60,7 @@ public class DirectoryLister {
         sb.append("</head>");
         sb.append("<body>");
         sb.append("<h2>Index of ");
-        sb.append(file.toString());
+        sb.append(file);
         sb.append("</h2>");
         sb.append("<hr />");
 
@@ -69,38 +69,32 @@ public class DirectoryLister {
                 File parent = file.getParentFile();
                 if ( parent != null ) {
                     String loc = GeneralUtil.htmlEscapeSpace(file.getAbsoluteFile().getParentFile().toURL().toExternalForm()).toString();
-                    sb.append("<a class='dir' href='" + loc + "'>Up to higher level directory</a>");
+                    sb.append("<a class='dir' href='").append(loc).append("'>Up to higher level directory</a>");
                 }
             } catch (MalformedURLException e) {
                 // skip
             }
             sb.append("<table style='width: 75%'>");
             File[] files = file.listFiles();
-            String img = "";
-            for (int i = 0; i < files.length; i++) {
-                File f = files[i];
-                if ( f.isHidden() ) continue;
+            for (File f : files) {
+                if (f.isHidden()) continue;
                 long len = f.length();
-                String lenDesc = ( len > 1024 ? new DecimalFormat("#,###KB").format(len / 1024) : "");
+                String lenDesc = (len > 1024 ? new DecimalFormat("#,###KB").format(len / 1024) : "");
                 String lastMod = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a").format(new Date(f.lastModified()));
                 sb.append("<tr>");
 
                 String cls;
-                if (files[i].isDirectory()) {
+                if (f.isDirectory()) {
                     cls = "dir";
                 } else {
                     cls = "file";
                 }
                 try {
-                    String loc = GeneralUtil.htmlEscapeSpace(files[i].toURL().toExternalForm()).toString();
-                    sb.append("<td><a class='" + cls + "' href='" + loc + "'>" +
-                            files[i].getName() +
-                            "</a></td>" +
-                            "<td>" + lenDesc + "</td>" +
-                            "<td>" + lastMod + "</td>"
-                    );
+                    String loc = GeneralUtil.htmlEscapeSpace(f.toURL().toExternalForm()).toString();
+                    sb.append("<td><a class='").append(cls).append("' href='").append(loc).append("'>").append(f.getName()).append("</a></td>");
+                    sb.append("<td>").append(lenDesc).append("</td>").append("<td>").append(lastMod).append("</td>");
                 } catch (MalformedURLException e) {
-                    sb.append(files[i].getAbsolutePath());
+                    sb.append(f.getAbsolutePath());
                 }
                 sb.append("</tr>");
             }
