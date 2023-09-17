@@ -24,7 +24,7 @@ import java.io.StringReader;
 public class ParserTest {
     public static void main(String[] args) throws Exception {
         String test = "div { background-image: url('something') }\n";
-        StringBuffer longTest = new StringBuffer();
+        StringBuilder longTest = new StringBuilder();
         for (int i = 0 ; i < 10000; i++) {
             longTest.append(test);
         }

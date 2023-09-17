@@ -143,7 +143,7 @@ public class XhtmlForm {
             return;
         }
 
-        StringBuffer data = new StringBuffer();
+        StringBuilder data = new StringBuilder();
         String action = _parentFormElement.getAttribute("action");
         data.append(action).append("?");
         Iterator fields = _componentCache.entrySet().iterator();
@@ -171,7 +171,7 @@ public class XhtmlForm {
     }
 
     public static String collectText(Element e) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         Node node = e.getFirstChild();
         if (node != null) {
             do {

@@ -438,7 +438,7 @@ public class InlineBox implements Styleable {
         if (_text == null) {
             return null;
         } else {
-            StringBuffer result = new StringBuffer();
+            StringBuilder result = new StringBuilder();
             for (int i = 0; i < _text.length() && i < 40; i++) {
                 char c = _text.charAt(i);
                 if (c == '\n') {

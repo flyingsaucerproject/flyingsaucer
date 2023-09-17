@@ -60,7 +60,7 @@ public class SWTTextControl extends SWTXhtmlControl {
         final Text text = new Text(parent, sty);
         text.setText(encodeDelimiter(control.getInitialValue()));
 
-        StringBuffer str = new StringBuffer(tc.getSize());
+        StringBuilder str = new StringBuilder(tc.getSize());
         for (int i = 0; i < tc.getSize(); i++) {
             str.append('M');
         }

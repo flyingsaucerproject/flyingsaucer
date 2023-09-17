@@ -45,7 +45,7 @@ public class CounterFunction {
         if (_counterValues == null) {
             return createCounterText(_listStyleType, _counterValue);
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (Iterator i = _counterValues.iterator(); i.hasNext();) {
             Integer value = (Integer) i.next();
             sb.append(createCounterText(_listStyleType, value.intValue()));
@@ -87,7 +87,7 @@ public class CounterFunction {
     private static String toRoman(int val) {
         int[] ints = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
         String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ints.length; i++) {
             int count = (int) (val / ints[i]);
             for (int j = 0; j < count; j++) {

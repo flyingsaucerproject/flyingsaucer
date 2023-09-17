@@ -19,17 +19,16 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Point;
-
+import com.lowagie.text.pdf.PdfTemplate;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.util.*;
+import org.xhtmlrenderer.util.Util;
 
-import com.lowagie.text.pdf.PdfTemplate;
+import java.awt.*;
 
 public abstract class AbstractFormField implements ITextReplacedElement {
     protected static final String DEFAULT_CHECKED_STATE = "Yes";
@@ -165,7 +164,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     }
 
     protected String spaces(int count) {
-        StringBuffer result = new StringBuffer(count);
+        StringBuilder result = new StringBuilder(count);
         for (int i = 0; i < count; i++) {
             result.append(' ');
         }

@@ -445,7 +445,7 @@ public class Util {
      * @return Returns
      */
     public static String replace(String source, String target, String replacement) {
-        StringBuffer output = new StringBuffer();
+        StringBuilder output = new StringBuilder();
         int n = 0;
         while (true) {
             //print("n = " + n);

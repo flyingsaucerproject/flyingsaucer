@@ -2000,7 +2000,7 @@ public class CSSParser {
     }
 
     private static String processEscapes(char[] ch, int start, int end) {
-        StringBuffer result = new StringBuffer(ch.length + 10);
+        StringBuilder result = new StringBuilder(ch.length + 10);
 
         for (int i = start; i < end; i++) {
             char c = ch[i];

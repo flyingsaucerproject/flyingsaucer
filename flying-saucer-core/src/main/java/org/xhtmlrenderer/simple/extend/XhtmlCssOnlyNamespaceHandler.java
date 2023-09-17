@@ -116,7 +116,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @return The elementStyling value
      */
     public String getElementStyling(org.w3c.dom.Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
             String s;
             s = getAttribute(e, "colspan");
@@ -187,7 +187,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
 
     private static String readTextContent(Element element) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         Node current = element.getFirstChild();
         while (current != null) {
             short nodeType = current.getNodeType();
@@ -201,7 +201,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
 
     private static String collapseWhiteSpace(String text) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         int l = text.length();
         for (int i = 0; i < l; i++) {
             char c = text.charAt(i);
@@ -265,7 +265,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         info.setTitle(style.getAttribute("title"));
         info.setOrigin(StylesheetInfo.AUTHOR);
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         Node current = style.getFirstChild();
         while (current != null) {
             if (current instanceof CharacterData) {
