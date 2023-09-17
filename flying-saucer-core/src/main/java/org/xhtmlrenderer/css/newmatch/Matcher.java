@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.extend.TreeResolver;
@@ -35,12 +37,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
+import static java.util.Collections.synchronizedMap;
 
 
 /**
@@ -53,7 +58,7 @@ public class Matcher {
     private org.xhtmlrenderer.css.extend.TreeResolver _treeRes;
     private org.xhtmlrenderer.css.extend.StylesheetFactory _styleFactory;
 
-    private java.util.Map _map;
+    private Map<Node, Mapper> _map;
 
     //handle dynamic
     private Set _hoverElements;
@@ -71,16 +76,16 @@ public class Matcher {
         _attRes = ar;
         _styleFactory = factory;
 
-        _pageRules = new ArrayList();
-        _fontFaceRules = new ArrayList();
+        _pageRules = new ArrayList<>();
+        _fontFaceRules = new ArrayList<>();
         docMapper = createDocumentMapper(stylesheets, medium);
     }
 
-    public void removeStyle(Object e) {
+    public void removeStyle(Element e) {
         _map.remove(e);
     }
 
-    public CascadedStyle getCascadedStyle(Object e, boolean restyle) {
+    public CascadedStyle getCascadedStyle(Element e, boolean restyle) {
         synchronized (e) {
             Mapper em;
             if (!restyle) {
@@ -96,7 +101,7 @@ public class Matcher {
      * May return null.
      * We assume that restyle has already been done by a getCascadedStyle if necessary.
      */
-    public CascadedStyle getPECascadedStyle(Object e, String pseudoElement) {
+    public CascadedStyle getPECascadedStyle(Element e, String pseudoElement) {
         synchronized (e) {
             Mapper em = getMapper(e);
             return em.getPECascadedStyle(e, pseudoElement);
@@ -140,9 +145,9 @@ public class Matcher {
         return _focusElements.contains(e);
     }
 
-    protected Mapper matchElement(Object e) {
+    protected Mapper matchElement(Node e) {
         synchronized (e) {
-            Object parent = _treeRes.getParentElement(e);
+            Node parent = _treeRes.getParentElement(e);
             Mapper child;
             if (parent != null) {
                 Mapper m = getMapper(parent);
@@ -212,20 +217,20 @@ public class Matcher {
         });
     }
 
-    private void link(Object e, Mapper m) {
+    private void link(Node e, Mapper m) {
         _map.put(e, m);
     }
 
     private void newMaps() {
-        _map = Collections.synchronizedMap(new java.util.HashMap());
-        _hoverElements = Collections.synchronizedSet(new java.util.HashSet());
-        _activeElements = Collections.synchronizedSet(new java.util.HashSet());
-        _focusElements = Collections.synchronizedSet(new java.util.HashSet());
-        _visitElements = Collections.synchronizedSet(new java.util.HashSet());
+        _map = synchronizedMap(new HashMap<>());
+        _hoverElements = Collections.synchronizedSet(new HashSet<>());
+        _activeElements = Collections.synchronizedSet(new HashSet<>());
+        _focusElements = Collections.synchronizedSet(new HashSet<>());
+        _visitElements = Collections.synchronizedSet(new HashSet<>());
     }
 
-    private Mapper getMapper(Object e) {
-        Mapper m = (Mapper) _map.get(e);
+    private Mapper getMapper(Node e) {
+        Mapper m = _map.get(e);
         if (m != null) {
             return m;
         }
@@ -314,7 +319,7 @@ public class Matcher {
      *
      * @author Torbjoern Gannholm
      */
-    class Mapper {
+    protected class Mapper {
         java.util.List axes;
         private HashMap pseudoSelectors;
         private List mappedSelectors;
@@ -335,7 +340,7 @@ public class Matcher {
          * @return The selectors that matched, sorted according to specificity
          *         (more correct: preserves the sort order from Matcher creation)
          */
-        Mapper mapChild(Object e) {
+        Mapper mapChild(Node e) {
             //Mapper childMapper = new Mapper();
             java.util.List childAxes = new ArrayList(axes.size() + 10);
             java.util.HashMap pseudoSelectors = new java.util.HashMap();

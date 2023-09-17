@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.Ruleset;
@@ -76,9 +77,9 @@ public class Selector {
      * Check if the given Element matches this selector. Note: the parser should
      * give all class
      */
-    public boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+    public boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
         if (siblingSelector != null) {
-            Object sib = siblingSelector.getAppropriateSibling(e, treeRes);
+            Node sib = siblingSelector.getAppropriateSibling(e, treeRes);
             if (sib == null) {
                 return false;
             }
@@ -89,8 +90,8 @@ public class Selector {
         if (_name == null || treeRes.matchesElement(e, _namespaceURI, _name)) {
             if (conditions != null) {
                 // all conditions need to be true
-                for (java.util.Iterator i = conditions.iterator(); i.hasNext();) {
-                    Condition c = (Condition) i.next();
+                for (Object condition : conditions) {
+                    Condition c = (Condition) condition;
                     if (!c.matches(e, attRes, treeRes)) {
                         return false;
                     }
@@ -105,9 +106,9 @@ public class Selector {
      * Check if the given Element matches this selector's dynamic properties.
      * Note: the parser should give all class
      */
-    public boolean matchesDynamic(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+    public boolean matchesDynamic(Node e, AttributeResolver attRes, TreeResolver treeRes) {
         if (siblingSelector != null) {
-            Object sib = siblingSelector.getAppropriateSibling(e, treeRes);
+            Node sib = siblingSelector.getAppropriateSibling(e, treeRes);
             if (sib == null) {
                 return false;
             }
@@ -402,8 +403,8 @@ public class Selector {
      * @param treeRes
      * @return The appropriateSibling value
      */
-    Object getAppropriateSibling(Object e, TreeResolver treeRes) {
-        Object sibling = null;
+    Node getAppropriateSibling(Node e, TreeResolver treeRes) {
+        Node sibling = null;
         switch (_axis) {
             case IMMEDIATE_SIBLING_AXIS:
                 sibling = treeRes.getPreviousSiblingElement(e);
