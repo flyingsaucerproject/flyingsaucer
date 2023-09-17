@@ -19,20 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.MarginBoxName;
@@ -48,27 +34,29 @@ import org.xhtmlrenderer.css.sheet.RulesetContainer;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
+
 public class CSSParser {
-    private static final Set SUPPORTED_PSEUDO_ELEMENTS;
-    private static final Set CSS21_PSEUDO_ELEMENTS;
-
-    static {
-        SUPPORTED_PSEUDO_ELEMENTS = new HashSet();
-        SUPPORTED_PSEUDO_ELEMENTS.add("first-line");
-        SUPPORTED_PSEUDO_ELEMENTS.add("first-letter");
-        SUPPORTED_PSEUDO_ELEMENTS.add("before");
-        SUPPORTED_PSEUDO_ELEMENTS.add("after");
-
-        CSS21_PSEUDO_ELEMENTS = new HashSet();
-        CSS21_PSEUDO_ELEMENTS.add("first-line");
-        CSS21_PSEUDO_ELEMENTS.add("first-letter");
-        CSS21_PSEUDO_ELEMENTS.add("before");
-        CSS21_PSEUDO_ELEMENTS.add("after");
-    }
+    private static final Set<String> SUPPORTED_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
+    private static final Set<String> CSS21_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
 
     private Token _saved;
     private final Lexer _lexer;
-
     private CSSErrorHandler _errorHandler;
     private String _URI;
 
@@ -2075,5 +2063,9 @@ public class CSSParser {
         public String getName() {
             return _name;
         }
+    }
+
+    private static Set<String> setOf(String... values) {
+        return unmodifiableSet(new HashSet<>(asList(values)));
     }
 }

@@ -167,9 +167,6 @@
     <inspection_tool class="SizeReplaceableByIsEmpty" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SleepWhileHoldingLock" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StaticCallOnSubclass" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="StaticCollection" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="m_ignoreWeakCollections" value="false" />
-    </inspection_tool>
     <inspection_tool class="StaticFieldReferenceOnSubclass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StaticInheritance" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StaticPseudoFunctionalStyleMethod" enabled="true" level="WARNING" enabled_by_default="true" />
