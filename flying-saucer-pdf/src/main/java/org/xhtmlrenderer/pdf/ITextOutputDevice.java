@@ -998,12 +998,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (head != null) {
             Element bookmarks = DOMUtil.getChild(head, "bookmarks");
             if (bookmarks != null) {
-                List l = DOMUtil.getChildren(bookmarks, "bookmark");
-                if (l != null) {
-                    for (Iterator i = l.iterator(); i.hasNext();) {
-                        Element e = (Element) i.next();
-                        loadBookmark(null, e);
-                    }
+                for (Element e : DOMUtil.getChildren(bookmarks, "bookmark")) {
+                    loadBookmark(null, e);
                 }
             }
         }
@@ -1016,12 +1012,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         } else {
             parent.addChild(us);
         }
-        List l = DOMUtil.getChildren(bookmark, "bookmark");
-        if (l != null) {
-            for (Iterator i = l.iterator(); i.hasNext();) {
-                Element e = (Element) i.next();
-                loadBookmark(us, e);
-            }
+        for (Element e : DOMUtil.getChildren(bookmark, "bookmark")) {
+            loadBookmark(us, e);
         }
     }
 
@@ -1151,17 +1143,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private void loadMetadata(Document doc) {
         Element head = DOMUtil.getChild(doc.getDocumentElement(), "head");
         if (head != null) {
-            List l = DOMUtil.getChildren(head, "meta");
-            if (l != null) {
-                for (Iterator i = l.iterator(); i.hasNext();) {
-                    Element e = (Element) i.next();
-                    String name = e.getAttribute("name");
-                    if (name != null) { // ignore non-name metadata data
-                        String content = e.getAttribute("content");
-                        Metadata m = new Metadata(name, content);
-                        _metadata.add(m);
-                    }
-                }
+            for (Element e : DOMUtil.getChildren(head, "meta")) {
+                String name = e.getAttribute("name");
+                String content = e.getAttribute("content");
+                Metadata m = new Metadata(name, content);
+                _metadata.add(m);
             }
             // If there is no title metadata attribute, use the document title.
             String title = getMetadataByName("title");
