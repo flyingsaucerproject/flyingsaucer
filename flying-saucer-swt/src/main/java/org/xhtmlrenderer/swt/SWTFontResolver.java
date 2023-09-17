@@ -119,7 +119,7 @@ public class SWTFontResolver implements FontResolver {
             return font;
         }
 
-        XRLog.cascade(Level.WARNING, "Falling back to default system font. " + spec.toString());
+        XRLog.cascade(Level.WARNING, "Falling back to default system font. " + spec);
 
         // last resort: use system font
         return _system_font;

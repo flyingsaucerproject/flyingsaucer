@@ -316,7 +316,7 @@ public class IdentValue implements FSDerivedValue {
     public float getFloatProportionalTo(CSSName cssName,
                                         float baseValue,
                                         CssContext ctx) {
-        throw new XRRuntimeException("Ident value (" + toString() + ") is never a length; wrong class used for derived value.");
+        throw new XRRuntimeException("Ident value (" + this + ") is never a length; wrong class used for derived value.");
     }
 
     public String asString() {

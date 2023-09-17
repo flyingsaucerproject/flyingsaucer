@@ -441,14 +441,14 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
             final char c = _text.charAt(i);
             if (needBreak && Character.isWhitespace(c)) {
-                System.out.println("Breaking: " + broken.toString());
+                System.out.println("Breaking: " + broken);
                 needBreak = false;
                 broken.append('\n');
             } else {
                 broken.append(c);
             }
         }
-        System.out.println("Broken! " + broken.toString());
+        System.out.println("Broken! " + broken);
         return broken.toString();
     }
 

@@ -246,7 +246,7 @@ public class FontGlyphTableRender {
                 selFile.getPath(),
                 BaseFont.IDENTITY_H,
                 BaseFont.EMBEDDED);
-        System.out.println("All family names reported by iText for " + selFile.getPath() + ": " + set.toString());
+        System.out.println("All family names reported by iText for " + selFile.getPath() + ": " + set);
         return (String) set.iterator().next();
     }
 

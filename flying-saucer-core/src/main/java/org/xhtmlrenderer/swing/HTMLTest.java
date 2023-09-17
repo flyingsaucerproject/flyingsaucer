@@ -159,10 +159,8 @@ public class HTMLTest extends JFrame {
                     panel.setDocument(url.toExternalForm());
 
                     long el = System.currentTimeMillis() - st;
-                    XRLog.general("loadDocument(" + url.toString() + ") in " + el + "ms, render may take longer");
-                    HTMLTest.this.setTitle(BASE_TITLE + "-  " +
-                            panel.getDocumentTitle() + "  " +
-                            "(" + url.toString() + ")");
+                    XRLog.general("loadDocument(" + url + ") in " + el + "ms, render may take longer");
+                    HTMLTest.this.setTitle(String.format("%s-  %s  (%s)", BASE_TITLE, panel.getDocumentTitle(), url));
                 } catch (Exception ex) {
                     Uu.p(ex);
                 }

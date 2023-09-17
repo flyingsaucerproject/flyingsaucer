@@ -163,7 +163,7 @@ public class TextUtil {
 
         //Uu.p("final = -"+sb.toString()+"-");
         if ( sb.toString().length() != text.length() ) {
-            Uu.p( "error! to strings arent the same length = -" + sb.toString() + "-" + text + "-" );
+            Uu.p( "error! to strings arent the same length = -" + sb + "-" + text + "-" );
         }
         return sb.toString();
     }
