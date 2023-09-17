@@ -69,13 +69,9 @@ public class ValidationHandler implements ErrorHandler {
      * @param ex  PARAM
      * @return    Returns
      */
-    public String print( SAXParseException ex ) {
-        StringBuffer sb = new StringBuffer();
-        sb.append( "Exception: " + ex.getMessage() );
-        sb.append( "failed at column : " + ex.getColumnNumber() +
-                " on line " + ex.getLineNumber() );
-        sb.append( "entity:\n" + ex.getPublicId() + "\n" + ex.getSystemId() );
-        return sb.toString();
+    public String print(SAXParseException ex) {
+        return String.format("Exception: %sfailed at column : %d on line %dentity:%n%s%n%s",
+                ex.getMessage(), ex.getColumnNumber(), ex.getLineNumber(), ex.getPublicId(), ex.getSystemId());
     }
 
     /**
