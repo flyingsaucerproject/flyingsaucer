@@ -92,7 +92,7 @@ public class SharedContext {
 
     private int dotsPerPixel = 1;
 
-    private Map styleMap;
+    private Map<Element, CalculatedStyle> styleMap;
 
     private ReplacedElementFactory replacedElementFactory;
     private Rectangle temp_canvas;
@@ -551,15 +551,15 @@ public class SharedContext {
     }
 
     public CalculatedStyle getStyle(Element e, boolean restyle) {
-        Map localMap = styleMap;
+        Map<Element, CalculatedStyle> localMap = styleMap;
 	    
         if (localMap == null) {
-            localMap = new HashMap(1024, 0.75f);
+            localMap = new HashMap<>(1024, 0.75f);
         }
 
         CalculatedStyle result = null;
         if (! restyle) {
-            result = (CalculatedStyle)localMap.get(e);
+            result = localMap.get(e);
         }
         if (result == null) {
             Node parent = e.getParentNode();
