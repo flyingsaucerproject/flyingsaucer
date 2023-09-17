@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -56,10 +57,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
  * @author Patrick Wright
  */
 public class CascadedStyle {
-    /**
-     * Map of PropertyDeclarations, keyed by {@link CSSName}
-     */
-    private Map cascadedProperties;
+    private final Map<CSSName, PropertyDeclaration> cascadedProperties;
 
     private String fingerprint;
 
@@ -135,30 +133,28 @@ public class CascadedStyle {
         addProperties(iter);
     }
 
-    private void addProperties(java.util.Iterator iter) {
+    private void addProperties(Iterator<PropertyDeclaration> iter) {
         //do a bucket-sort on importance and origin
         //properties should already be in order of specificity
-        java.util.List[] buckets = new java.util.List[PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT];
+        List<PropertyDeclaration>[] buckets = new List[PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT];
         for (int i = 0; i < buckets.length; i++) {
-            buckets[i] = new java.util.LinkedList();
+            buckets[i] = new LinkedList<>();
         }
 
         while (iter.hasNext()) {
-            PropertyDeclaration prop = (PropertyDeclaration) iter.next();
+            PropertyDeclaration prop = iter.next();
             buckets[prop.getImportanceAndOrigin()].add(prop);
         }
 
-        for (int i = 0; i < buckets.length; i++) {
-            for (java.util.Iterator it = buckets[i].iterator(); it.hasNext();) {
-                PropertyDeclaration prop = (PropertyDeclaration) it.next();
+        for (List<PropertyDeclaration> bucket : buckets) {
+            for (PropertyDeclaration prop : bucket) {
                 cascadedProperties.put(prop.getCSSName(), prop);
             }
         }
     }
 
-    private CascadedStyle(CascadedStyle startingPoint, Iterator props) {
-        cascadedProperties = new TreeMap(startingPoint.cascadedProperties);
-
+    private CascadedStyle(CascadedStyle startingPoint, Iterator<PropertyDeclaration> props) {
+        cascadedProperties = new TreeMap<>(startingPoint.cascadedProperties);
         addProperties(props);
     }
 
@@ -169,7 +165,7 @@ public class CascadedStyle {
      * properties.
      */
     private CascadedStyle() {
-        cascadedProperties = new TreeMap();
+        cascadedProperties = new TreeMap<>();
     }
 
     /**
@@ -185,7 +181,7 @@ public class CascadedStyle {
      * @return True if the property is defined in this set.
      */
     public boolean hasProperty(CSSName cssName) {
-        return cascadedProperties.get( cssName ) != null;
+        return cascadedProperties.containsKey(cssName);
     }
 
 
@@ -200,9 +196,7 @@ public class CascadedStyle {
      *         if not found.
      */
     public PropertyDeclaration propertyByName(CSSName cssName) {
-        PropertyDeclaration prop = (PropertyDeclaration)cascadedProperties.get(cssName);
-
-        return prop;
+        return cascadedProperties.get(cssName);
     }
 
     /**
@@ -226,12 +220,9 @@ public class CascadedStyle {
      *
      * @return Iterator over a set of properly cascaded PropertyDeclarations.
      */
-    public java.util.Iterator getCascadedPropertyDeclarations() {
-        List list = new ArrayList(cascadedProperties.size());
-        Iterator iter = cascadedProperties.values().iterator();
-        while ( iter.hasNext()) {
-            list.add(iter.next());
-        }
+    public Iterator<PropertyDeclaration> getCascadedPropertyDeclarations() {
+        List<PropertyDeclaration> list = new ArrayList<>(cascadedProperties.size());
+        list.addAll(cascadedProperties.values());
         return list.iterator();
     }
 
@@ -240,9 +231,8 @@ public class CascadedStyle {
     public String getFingerprint() {
         if (this.fingerprint == null) {
             StringBuilder sb = new StringBuilder();
-            Iterator iter = cascadedProperties.values().iterator();
-            while (iter.hasNext()) {
-                sb.append(((PropertyDeclaration)iter.next()).getFingerprint());
+            for (PropertyDeclaration propertyDeclaration : cascadedProperties.values()) {
+                sb.append(propertyDeclaration.getFingerprint());
             }
             this.fingerprint = sb.toString();
         }
