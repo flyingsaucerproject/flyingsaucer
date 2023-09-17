@@ -112,7 +112,7 @@ public class CSSParser {
                     cssName == CSSName.FS_PDF_FONT_ENCODING);
 
             PropertyBuilder builder = CSSName.getPropertyBuilder(cssName);
-            List props;
+            List<PropertyDeclaration> props;
             try {
                 props = builder.buildDeclarations(cssName, values, origin, false);
             } catch (CSSParseException e) {
@@ -125,9 +125,7 @@ public class CSSParser {
                         "Builder created " + props.size() + "properties, expected 1", getCurrentLine());
             }
 
-            PropertyDeclaration decl = (PropertyDeclaration)props.get(0);
-
-            return (PropertyValue)decl.getValue();
+            return (PropertyValue) props.get(0).getValue();
         } catch (IOException e) {
             // "Shouldn't" happen
             throw new RuntimeException(e.getMessage(), e);
@@ -475,7 +473,7 @@ public class CSSParser {
                 t = next();
                 if (t == Token.TK_LBRACE) {
                     // Prevent runaway threads with a max loop/counter
-                    int maxLoops = 1 * 1024 * 1024; // 1M is too much, 1K is probably too...
+                    int maxLoops = 1024 * 1024; // 1M is too much, 1K is probably too...
                     int i = 0;
                     LOOP:
                     while (true) {
@@ -791,8 +789,8 @@ public class CSSParser {
 //    ;
     private void selector(Ruleset ruleset) throws IOException {
         //System.out.println("selector()");
-        List selectors = new ArrayList();
-        List combinators = new ArrayList();
+        List<Selector> selectors = new ArrayList<>();
+        List<Token> combinators = new ArrayList<>();
         selectors.add(simple_selector(ruleset));
         LOOP:
         while (true) {
@@ -825,18 +823,18 @@ public class CSSParser {
         ruleset.addFSSelector(mergeSimpleSelectors(selectors, combinators));
     }
 
-    private Selector mergeSimpleSelectors(List selectors, List combinators) {
+    private Selector mergeSimpleSelectors(List<Selector> selectors, List<Token> combinators) {
         int count = selectors.size();
         if (count == 1) {
-            return (Selector)selectors.get(0);
+            return selectors.get(0);
         }
 
         int lastDescendantOrChildAxis = Selector.DESCENDANT_AXIS;
         Selector result = null;
         for (int i = 0; i < count - 1; i++) {
-            Selector first = (Selector)selectors.get(i);
-            Selector second = (Selector)selectors.get(i+1);
-            Token combinator = (Token)combinators.get(i);
+            Selector first = selectors.get(i);
+            Selector second = selectors.get(i+1);
+            Token combinator = combinators.get(i);
 
             if (first.getPseudoElement() != null) {
                 throw new CSSParseException(
@@ -872,7 +870,7 @@ public class CSSParser {
                 }
                 if (i > 0) {
                     for (int j = i-1; j >= 0; j--) {
-                        Selector selector = (Selector)selectors.get(j);
+                        Selector selector = selectors.get(j);
                         if (selector.getChainedSelector() == first) {
                             selector.setChainedSelector(second);
                             second.setAxis(lastDescendantOrChildAxis);
