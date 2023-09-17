@@ -166,7 +166,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     }
 
     protected String spaces(int count) {
-        StringBuffer result = new StringBuffer(count);
+        StringBuilder result = new StringBuilder(count);
         for (int i = 0; i < count; i++) {
             result.append(' ');
         }

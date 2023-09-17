@@ -52,7 +52,7 @@ public class MakeTokens {
             }
         }
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         int offset = 1;
         for (Iterator i = tokens.iterator(); i.hasNext(); offset++) {

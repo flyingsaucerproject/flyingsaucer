@@ -489,7 +489,7 @@ public class ITextRenderer {
     }
 
     private String createXPacket(String metadata) {
-        StringBuffer result = new StringBuffer(metadata.length() + 50);
+        StringBuilder result = new StringBuilder(metadata.length() + 50);
         result.append("<?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?>\n");
         result.append(metadata);
         result.append("\n<?xpacket end='r'?>");

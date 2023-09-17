@@ -77,7 +77,7 @@ public class DOMStaticXhtmlAttributeResolver implements AttributeResolver {
 
     public String getElementStyling(Object el) {
         Element e = ((Element) el);
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         if (e.getNodeName().equals("td")) {
             String s;
             if (!(s = e.getAttribute("colspan")).equals("")) {

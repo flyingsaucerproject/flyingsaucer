@@ -152,7 +152,7 @@ public class SelectFormField extends AbstractFormField {
     }
 
     private String collectText(Element e) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         Node n = e.getFirstChild();
         while (n != null) {

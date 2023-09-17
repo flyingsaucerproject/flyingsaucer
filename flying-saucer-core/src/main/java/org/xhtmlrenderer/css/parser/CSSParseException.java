@@ -65,7 +65,7 @@ public class CSSParseException extends RuntimeException {
         if (tokens.length == 1) {
             return tokens[0].getExternalName();
         } else {
-            StringBuffer result = new StringBuffer();
+            StringBuilder result = new StringBuilder();
             if (tokens.length > 2) {
                 result.append("one of ");
             }

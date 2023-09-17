@@ -926,7 +926,7 @@ public class PrimitivePropertyBuilders {
         }
 
         private String concat(List strings, char separator) {
-            StringBuffer buf = new StringBuffer(64);
+            StringBuilder buf = new StringBuilder(64);
             for (Iterator i = strings.iterator(); i.hasNext(); ) {
                 String s = (String)i.next();
                 buf.append(s);

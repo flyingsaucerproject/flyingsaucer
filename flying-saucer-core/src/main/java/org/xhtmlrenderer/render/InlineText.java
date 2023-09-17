@@ -165,7 +165,7 @@ public class InlineText {
     }
 
     public String toString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append("InlineText: ");
         if (_containedLF || isDynamicFunction()) {
             result.append("(");
@@ -261,7 +261,7 @@ public class InlineText {
 
     public String getTextExportText() {
         char[] ch = getSubstring().toCharArray();
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         if (isTrimmedLeadingSpace()) {
             result.append(' ');
         }

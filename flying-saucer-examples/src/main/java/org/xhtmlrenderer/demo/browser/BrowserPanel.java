@@ -41,10 +41,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Level;
@@ -435,7 +434,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
    }
 
     private String addLineBreaks(String _text, int maxLineLength) {
-        StringBuffer broken = new StringBuffer(_text.length() + 10);
+        StringBuilder broken = new StringBuilder(_text.length() + 10);
         boolean needBreak = false;
         for (int i = 0; i < _text.length(); i++) {
             if (i > 0 && i % maxLineLength == 0) needBreak = true;

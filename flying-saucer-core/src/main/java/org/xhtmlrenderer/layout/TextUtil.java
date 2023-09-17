@@ -139,7 +139,7 @@ public class TextUtil {
             return text;
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         //Uu.p("text = -" + text + "-");
 
         // do first letter

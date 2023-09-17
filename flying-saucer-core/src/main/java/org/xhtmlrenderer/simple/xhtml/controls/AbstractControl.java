@@ -169,7 +169,7 @@ public abstract class AbstractControl implements FormControl {
     }
 
     public static String collectText(Element e) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         Node node = e.getFirstChild();
         if (node != null) {
             do {

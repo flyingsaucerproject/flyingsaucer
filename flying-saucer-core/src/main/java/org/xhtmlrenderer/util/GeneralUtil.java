@@ -131,7 +131,7 @@ public class GeneralUtil {
      */
     public static String trackBack(int cnt) {
         Exception ex = new Exception();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         List list = new ArrayList(cnt);
         StackTraceElement[] stes = ex.getStackTrace();
         if (cnt >= stes.length) {
@@ -146,12 +146,12 @@ public class GeneralUtil {
             sb.append(ste.getMethodName());
             sb.append("(ln ").append(ste.getLineNumber()).append(")");
             list.add(sb.toString());
-            sb = new StringBuffer();
+            sb = new StringBuilder();
         }
 
         Iterator iter = list.iterator();
-        StringBuffer padding = new StringBuffer("");
-        StringBuffer trackback = new StringBuffer();
+        StringBuilder padding = new StringBuilder("");
+        StringBuilder trackback = new StringBuilder();
         while (iter.hasNext()) {
             String s = (String) iter.next();
             trackback.append(padding).append(s).append("\n");
@@ -300,7 +300,7 @@ public class GeneralUtil {
             return 0;
         }
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -342,7 +342,7 @@ public class GeneralUtil {
         if (s == null) {
             return "";
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int n = s.length();
         for (int i = 0; i < n; i++) {
             char c = s.charAt(i);

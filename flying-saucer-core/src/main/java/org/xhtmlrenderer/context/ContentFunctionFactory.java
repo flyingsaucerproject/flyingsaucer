@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.context;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
@@ -31,12 +27,11 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.layout.CounterFunction;
 import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineText;
-import org.xhtmlrenderer.render.InlineLayoutBox;
-import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.render.PageBox;
-import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.render.*;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class ContentFunctionFactory {
     private List _functions = new ArrayList();
@@ -240,7 +235,7 @@ public class ContentFunctionFactory {
             // Compute value width using 100x string to get more precise width.
             // Otherwise, there might be a small gap on the right side. This is
             // necessary because a TextRenderer usually use double/float for width.
-            StringBuffer tmp = new StringBuffer(100 * value.length());
+            StringBuilder tmp = new StringBuilder(100 * value.length());
             for (int i = 0; i < 100; i++) {
                 tmp.append(value);
             }
@@ -254,7 +249,7 @@ public class ContentFunctionFactory {
             int count = (int) ((leaderWidth - (2 * spaceWidth)) / valueWidth);
 
             // build leader string
-            StringBuffer buf = new StringBuffer(count * value.length() + 2);
+            StringBuilder buf = new StringBuilder(count * value.length() + 2);
             buf.append(' ');
             for (int i = 0; i < count; i++) {
                 buf.append(value);

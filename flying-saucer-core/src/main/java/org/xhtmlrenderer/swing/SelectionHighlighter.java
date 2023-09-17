@@ -359,7 +359,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
     private void updateHighlights() {
 
         List modified = new ArrayList();
-        StringBuffer hlText = new StringBuffer();
+        StringBuilder hlText = new StringBuilder();
         if (this.dotInfo == null) {
             getComponent().getRootBox().clearSelection(modified);
             getComponent().repaint();
@@ -457,7 +457,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
     public String normalizeSpaces(String s) {
         if (s == null)
             return null;
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         CharacterIterator iter = new StringCharacterIterator(s);
         boolean inWhitespace = false; // Flag set if we're in a second
         // consecutive whitespace
