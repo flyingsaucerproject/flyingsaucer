@@ -19,21 +19,23 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 
 
 /**
@@ -62,50 +64,50 @@ public class CascadedStyle {
     private String fingerprint;
 
     /**
-     * Creates a <code>CascadedStyle</code>, setting the display property
-     * to the value of the <code>display</code> parameter.
+     * Creates a {@code CascadedStyle}, setting the display property
+     * to the value of the {@code display} parameter.
      */
     public static CascadedStyle createAnonymousStyle(IdentValue display) {
         CSSPrimitiveValue val = new PropertyValue(display);
 
-        List props = Collections.singletonList(
+        List<PropertyDeclaration> props = singletonList(
                 new PropertyDeclaration(CSSName.DISPLAY, val, true, StylesheetInfo.USER));
 
-        return new CascadedStyle(props.iterator());
+        return new CascadedStyle(props);
     }
 
     /**
-     * Creates a <code>CascadedStyle</code> using the provided property
+     * Creates a {@code CascadedStyle} using the provided property
      * declarations.  It is used when a box requires a style that does not
      * correspond to anything in the parsed stylesheets.
-     * @param decls An array of PropertyDeclaration objects created with
+     * @param declarations An array of PropertyDeclaration objects created with
      * {@link #createLayoutPropertyDeclaration(CSSName, IdentValue)}
      * @see #createLayoutPropertyDeclaration(CSSName, IdentValue)
      */
-    public static CascadedStyle createLayoutStyle(PropertyDeclaration[] decls) {
-        return new CascadedStyle(Arrays.asList(decls).iterator());
+    public static CascadedStyle createLayoutStyle(PropertyDeclaration... declarations) {
+        return new CascadedStyle(asList(declarations));
     }
 
-    public static CascadedStyle createLayoutStyle(List decls) {
-        return new CascadedStyle(decls.iterator());
+    public static CascadedStyle createLayoutStyle(List<PropertyDeclaration> declarations) {
+        return new CascadedStyle(declarations);
     }
 
     /**
-     * Creates a <code>CascadedStyle</code> using style information from
-     * <code>startingPoint</code> and then adding the property declarations
-     * from <code>decls</code>.
+     * Creates a {@code CascadedStyle} using style information from
+     * {@code startingPoint} and then adding the property declarations
+     * from {@code decls}.
      * @param decls An array of PropertyDeclaration objects created with
      * {@link #createLayoutPropertyDeclaration(CSSName, IdentValue)}
      * @see #createLayoutPropertyDeclaration(CSSName, IdentValue)
      */
     public static CascadedStyle createLayoutStyle(
             CascadedStyle startingPoint, PropertyDeclaration[] decls) {
-        return new CascadedStyle(startingPoint, Arrays.asList(decls).iterator());
+        return new CascadedStyle(startingPoint.cascadedProperties, asList(decls).iterator());
     }
 
     /**
-     * Creates a <code>PropertyDeclaration</code> suitable for passing to
-     * {@link #createLayoutStyle(PropertyDeclaration[])} or
+     * Creates a {@code PropertyDeclaration} suitable for passing to
+     * {@link #createLayoutStyle(List)} or
      * {@link #createLayoutStyle(CascadedStyle, PropertyDeclaration[])}
      */
     public static PropertyDeclaration createLayoutPropertyDeclaration(
@@ -127,52 +129,53 @@ public class CascadedStyle {
      * @param iter An Iterator containing PropertyDeclarations in order of
      *             specificity.
      */
-    CascadedStyle(java.util.Iterator iter) {
-        this();
-
-        addProperties(iter);
+    CascadedStyle(Iterable<PropertyDeclaration> iter) {
+        this(emptyMap(), iter.iterator());
     }
 
-    private void addProperties(Iterator<PropertyDeclaration> iter) {
+    /**
+     * @deprecated Use constructor {@link #CascadedStyle(Iterable)} instead
+     */
+    @Deprecated
+    CascadedStyle(Iterator<PropertyDeclaration> iter) {
+        this(emptyMap(), iter);
+    }
+
+    private CascadedStyle(Map<CSSName, PropertyDeclaration> startingPoint, Iterator<PropertyDeclaration> iter) {
         //do a bucket-sort on importance and origin
         //properties should already be in order of specificity
-        List<PropertyDeclaration>[] buckets = new List[PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT];
-        for (int i = 0; i < buckets.length; i++) {
-            buckets[i] = new LinkedList<>();
+        List<List<PropertyDeclaration>> buckets = new ArrayList<>(PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT);
+        for (int i = 0; i < PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT; i++) {
+            buckets.add(new LinkedList<>());
         }
 
         while (iter.hasNext()) {
             PropertyDeclaration prop = iter.next();
-            buckets[prop.getImportanceAndOrigin()].add(prop);
+            buckets.get(prop.getImportanceAndOrigin()).add(prop);
         }
 
+        Map<CSSName, PropertyDeclaration> cascadedProperties = new TreeMap<>(startingPoint);
         for (List<PropertyDeclaration> bucket : buckets) {
             for (PropertyDeclaration prop : bucket) {
                 cascadedProperties.put(prop.getCSSName(), prop);
             }
         }
+        this.cascadedProperties = cascadedProperties;
     }
-
-    private CascadedStyle(CascadedStyle startingPoint, Iterator<PropertyDeclaration> props) {
-        cascadedProperties = new TreeMap<>(startingPoint.cascadedProperties);
-        addProperties(props);
-    }
-
 
     /**
      * Default constructor with no initialization. Don't use this to instantiate
      * the class, as the class is immutable and this will leave it without any
      * properties.
      */
-    private CascadedStyle() {
-        cascadedProperties = new TreeMap<>();
+    private CascadedStyle(Map<CSSName, PropertyDeclaration> cascadedProperties) {
+        this.cascadedProperties = cascadedProperties;
     }
 
     /**
      * Get an empty singleton, used to negate inheritance of properties
      */
-    public static final CascadedStyle emptyCascadedStyle = new CascadedStyle();
-
+    public static final CascadedStyle emptyCascadedStyle = new CascadedStyle(new TreeMap<>());
 
     /**
      * Returns true if property has been defined in this style.
@@ -215,7 +218,7 @@ public class CascadedStyle {
      * Returns an {@link java.util.Iterator} over the set of {@link
      * org.xhtmlrenderer.css.sheet.PropertyDeclaration}s already matched in this
      * CascadedStyle. For a given property name, there may be no match, in which
-     * case there will be no <code>PropertyDeclaration</code> for that property
+     * case there will be no {@code PropertyDeclaration} for that property
      * name in the Iterator.
      *
      * @return Iterator over a set of properly cascaded PropertyDeclarations.
@@ -229,16 +232,16 @@ public class CascadedStyle {
     public int countAssigned() { return cascadedProperties.size(); }
 
     public String getFingerprint() {
-        if (this.fingerprint == null) {
+        if (fingerprint == null) {
             StringBuilder sb = new StringBuilder();
             for (PropertyDeclaration propertyDeclaration : cascadedProperties.values()) {
                 sb.append(propertyDeclaration.getFingerprint());
             }
-            this.fingerprint = sb.toString();
+            fingerprint = sb.toString();
         }
-        return this.fingerprint;
+        return fingerprint;
     }
-}// end class
+}
 
 /*
  * $Id$

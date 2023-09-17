@@ -20,19 +20,11 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.EntityReference;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
-import org.w3c.dom.EntityReference;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -58,6 +50,16 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBoxData;
 import org.xhtmlrenderer.render.InlineBox;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import static org.xhtmlrenderer.css.newmatch.CascadedStyle.createLayoutPropertyDeclaration;
 
 /**
  * This class is responsible for creating the box tree from the DOM.  This is
@@ -146,7 +148,7 @@ public class BoxBuilder {
         CalculatedStyle pageStyle = new EmptyStyle().deriveStyle(pageInfo.getPageStyle());
 
         CalculatedStyle tableStyle = pageStyle.deriveStyle(
-                CascadedStyle.createLayoutStyle(new PropertyDeclaration[] {
+                CascadedStyle.createLayoutStyle(
                         new PropertyDeclaration(
                                 CSSName.DISPLAY,
                                 new PropertyValue(IdentValue.TABLE),
@@ -156,8 +158,8 @@ public class BoxBuilder {
                                 CSSName.WIDTH,
                                 new PropertyValue(CSSPrimitiveValue.CSS_PERCENTAGE, 100.0f, "100%"),
                                 true,
-                                StylesheetInfo.USER),
-                }));
+                                StylesheetInfo.USER)
+                ));
         TableBox result = (TableBox)createBlockBox(tableStyle, info, false);
         result.setMarginAreaRoot(true);
         result.setStyle(tableStyle);
@@ -569,11 +571,8 @@ public class BoxBuilder {
             CalculatedStyle anonStyle;
             if (table.getStyle().isFloated()) {
                 CascadedStyle cascadedStyle = CascadedStyle.createLayoutStyle(
-                        new PropertyDeclaration[]{
-                                CascadedStyle.createLayoutPropertyDeclaration(
-                                        CSSName.DISPLAY, IdentValue.BLOCK),
-                                CascadedStyle.createLayoutPropertyDeclaration(
-                                        CSSName.FLOAT, table.getStyle().getIdent(CSSName.FLOAT))});
+                        createLayoutPropertyDeclaration(CSSName.DISPLAY, IdentValue.BLOCK),
+                        createLayoutPropertyDeclaration(CSSName.FLOAT, table.getStyle().getIdent(CSSName.FLOAT)));
 
                 anonStyle = table.getStyle().deriveStyle(cascadedStyle);
             } else {
@@ -600,7 +599,7 @@ public class BoxBuilder {
                 CascadedStyle modified = CascadedStyle.createLayoutStyle(
                         original,
                         new PropertyDeclaration[]{
-                                CascadedStyle.createLayoutPropertyDeclaration(
+                                createLayoutPropertyDeclaration(
                                         CSSName.FLOAT, IdentValue.NONE)
                         });
                 table.setStyle(table.getStyle().getParent().deriveStyle(modified));
@@ -610,10 +609,9 @@ public class BoxBuilder {
         }
     }
 
-    private static ChildBoxInfo lookForBlockContent(List styleables) {
+    private static ChildBoxInfo lookForBlockContent(List<Styleable> styleables) {
         ChildBoxInfo result = new ChildBoxInfo();
-        for (Iterator i = styleables.iterator(); i.hasNext();) {
-            Styleable s = (Styleable) i.next();
+        for (Styleable s : styleables) {
             if (!s.getStyle().isLayedOutInInlineContext()) {
                 result.setContainsBlockLevelContent(true);
                 break;
@@ -911,7 +909,7 @@ public class BoxBuilder {
                 if (calculatedStyle.isTable() || calculatedStyle.isTableRow() || calculatedStyle.isTableSection()) {
                     CascadedStyle newPeStyle =
                         CascadedStyle.createLayoutStyle(peStyle, new PropertyDeclaration[] {
-                            CascadedStyle.createLayoutPropertyDeclaration(
+                            createLayoutPropertyDeclaration(
                                 CSSName.DISPLAY,
                                 IdentValue.BLOCK),
                         });

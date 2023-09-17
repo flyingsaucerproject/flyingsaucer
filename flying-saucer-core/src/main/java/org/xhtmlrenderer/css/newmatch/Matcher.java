@@ -20,6 +20,17 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import org.xhtmlrenderer.css.extend.AttributeResolver;
+import org.xhtmlrenderer.css.extend.StylesheetFactory;
+import org.xhtmlrenderer.css.extend.TreeResolver;
+import org.xhtmlrenderer.css.sheet.MediaRule;
+import org.xhtmlrenderer.css.sheet.PageRule;
+import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.Ruleset;
+import org.xhtmlrenderer.css.sheet.Stylesheet;
+import org.xhtmlrenderer.util.Util;
+import org.xhtmlrenderer.util.XRLog;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,16 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
-import org.xhtmlrenderer.css.extend.AttributeResolver;
-import org.xhtmlrenderer.css.extend.StylesheetFactory;
-import org.xhtmlrenderer.css.extend.TreeResolver;
-import org.xhtmlrenderer.css.sheet.MediaRule;
-import org.xhtmlrenderer.css.sheet.PageRule;
-import org.xhtmlrenderer.css.sheet.Ruleset;
-import org.xhtmlrenderer.css.sheet.Stylesheet;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.Util;
 
 
 /**
@@ -103,11 +104,11 @@ public class Matcher {
     }
 
     public PageInfo getPageCascadedStyle(String pageName, String pseudoPage) {
-        List props = new ArrayList();
+        List<PropertyDeclaration> props = new ArrayList<>();
         Map marginBoxes = new HashMap();
 
-        for (Iterator i = _pageRules.iterator(); i.hasNext(); ) {
-            PageRule pageRule = (PageRule)i.next();
+        for (Object rule : _pageRules) {
+            PageRule pageRule = (PageRule) rule;
 
             if (pageRule.applies(pageName, pseudoPage)) {
                 props.addAll(pageRule.getRuleset().getPropertyDeclarations());
@@ -115,7 +116,7 @@ public class Matcher {
             }
         }
 
-        CascadedStyle style = props.isEmpty() ? CascadedStyle.emptyCascadedStyle : new CascadedStyle(props.iterator());
+        CascadedStyle style = props.isEmpty() ? CascadedStyle.emptyCascadedStyle : new CascadedStyle(props);
         return new PageInfo(props, style, marginBoxes);
     }
 
@@ -195,6 +196,7 @@ public class Matcher {
         }
 
         Collections.sort(_pageRules, new Comparator() {
+            @Override
             public int compare(Object o1, Object o2) {
                 PageRule p1 = (PageRule)o1;
                 PageRule p2 = (PageRule)o2;
@@ -418,7 +420,7 @@ public class Matcher {
                 if (elementStyling != null) {
                     propList.addAll(elementStyling.getPropertyDeclarations());
                 }
-                return propList.isEmpty() ? CascadedStyle.emptyCascadedStyle : new CascadedStyle(propList.iterator());
+                return propList.isEmpty() ? CascadedStyle.emptyCascadedStyle : new CascadedStyle(propList);
             }
         }
 
@@ -443,7 +445,7 @@ public class Matcher {
             if (propList.size() == 0)
                 return CascadedStyle.emptyCascadedStyle; // already internalized
             else {
-                return new CascadedStyle(propList.iterator());
+                return new CascadedStyle(propList);
             }
         }
     }
