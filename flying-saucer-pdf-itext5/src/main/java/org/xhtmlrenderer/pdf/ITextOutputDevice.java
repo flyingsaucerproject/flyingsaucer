@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -91,8 +90,11 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfTextArray;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import static java.util.Collections.emptyList;
+import static java.util.Comparator.comparingInt;
+
 /**
- * This class is largely based on {@link com.itextpdf.text.pdf.PdfGraphics2D}.
+ * This class is largely based on `com.itextpdf.text.pdf.PdfGraphics2D`.
  * See <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/
  * projects/itext/</a> for license information.
  */
@@ -1237,18 +1239,17 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return true;
     }
 
-    public List findPagePositionsByID(CssContext c, Pattern pattern) {
-        Map idMap = _sharedContext.getIdMap();
+    public List<PagePosition> findPagePositionsByID(CssContext c, Pattern pattern) {
+        Map<String, Box> idMap = _sharedContext.getIdMap();
         if (idMap == null) {
-            return Collections.EMPTY_LIST;
+            return emptyList();
         }
 
-        List result = new ArrayList();
-        for (Iterator i = idMap.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Entry) i.next();
-            String id = (String) entry.getKey();
+        List<PagePosition> result = new ArrayList<>();
+        for (Entry<String, Box> entry : idMap.entrySet()) {
+            String id = entry.getKey();
             if (pattern.matcher(id).find()) {
-                Box box = (Box) entry.getValue();
+                Box box = entry.getValue();
                 PagePosition pos = calcPDFPagePosition(c, id, box);
                 if (pos != null) {
                     result.add(pos);
@@ -1256,14 +1257,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             }
         }
 
-        Collections.sort(result, new Comparator() {
-            public int compare(Object arg0, Object arg1) {
-                PagePosition p1 = (PagePosition) arg0;
-                PagePosition p2 = (PagePosition) arg1;
-                return p1.getPageNo() - p2.getPageNo();
-            }
-        });
-
+        result.sort(comparingInt(PagePosition::getPageNo));
         return result;
     }
 
