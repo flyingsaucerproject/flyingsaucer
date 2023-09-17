@@ -166,7 +166,7 @@ public class Breaker {
             right = previousPosition;
             lastBreakPoint = bp;
             bp = iterator.next();
-        };
+        }
 
         // add hyphen if needed
         if (bp != null && bp.getPosition() != BreakIterator.DONE // it fits

@@ -430,7 +430,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
             XRLog.render("Reload called on BasicPanel, but there is no document set on the panel yet.");
             return;
         }
-        ;
         this.doc = doc;
         setDocument(this.doc, getSharedContext().getBaseURL(), getSharedContext().getNamespaceHandler());
     }
