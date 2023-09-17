@@ -23,14 +23,14 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BoxRenderer;
 import org.xhtmlrenderer.swing.Java2DRenderer;
 import org.xhtmlrenderer.util.FSImageWriter;
-import org.xhtmlrenderer.util.IOUtil;
-import org.xhtmlrenderer.util.Zipper;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 /**
@@ -189,7 +189,7 @@ public class Regress {
         }
         FileOutputStream fos = new FileOutputStream(outputFile);
         try {
-            OutputStreamWriter fw = new OutputStreamWriter(fos, "UTF-8");
+            OutputStreamWriter fw = new OutputStreamWriter(fos, UTF_8);
             PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
             try {
                 pw.print(output);
@@ -202,8 +202,6 @@ public class Regress {
                     // swallow
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             try {
                 fos.close();

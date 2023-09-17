@@ -19,27 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -61,8 +42,15 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfWriter;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.awt.*;
+import java.io.*;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to
@@ -441,14 +429,9 @@ public class ITextRenderer {
     private void provideMetadataToPage(PdfWriter writer, PageBox page) throws IOException {
         byte[] metadata = null;
         if (page.getMetadata() != null) {
-            try {
-                String metadataBody = stringfyMetadata(page.getMetadata());
-                if (metadataBody != null) {
-                    metadata = createXPacket(stringfyMetadata(page.getMetadata())).getBytes("UTF-8");
-                }
-            } catch (UnsupportedEncodingException e) {
-                // Can't happen
-                throw new RuntimeException(e);
+            String metadataBody = stringfyMetadata(page.getMetadata());
+            if (metadataBody != null) {
+                metadata = createXPacket(stringfyMetadata(page.getMetadata())).getBytes(UTF_8);
             }
         }
 

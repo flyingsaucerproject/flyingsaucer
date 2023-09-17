@@ -161,7 +161,7 @@ public class ReferenceComparison {
 
         OutputStreamWriter fw = null;
         try {
-            fw = new OutputStreamWriter(new FileOutputStream(new File(failedDirectory, refFile.getName() + ".err" + suffix)), "UTF-8");
+            fw = new OutputStreamWriter(new FileOutputStream(new File(failedDirectory, refFile.getName() + ".err" + suffix)), UTF_8);
             BufferedWriter bw = new BufferedWriter(fw);
             try {
                 bw.write(compareTo);
