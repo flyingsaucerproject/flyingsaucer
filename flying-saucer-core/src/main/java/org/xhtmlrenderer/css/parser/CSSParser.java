@@ -60,7 +60,7 @@ public class CSSParser {
     private CSSErrorHandler _errorHandler;
     private String _URI;
 
-    private Map _namespaces = new HashMap();
+    private final Map<String, String> _namespaces = new HashMap<>();
     private boolean _supportCMYKColors;
 
     public CSSParser(CSSErrorHandler errorHandler) {
@@ -1002,13 +1002,13 @@ public class CSSParser {
 
         String namespaceURI = null;
         if (prefix != null && prefix != TreeResolver.NO_NAMESPACE) {
-            namespaceURI = (String)_namespaces.get(prefix.toLowerCase());
+            namespaceURI = _namespaces.get(prefix.toLowerCase());
             if (namespaceURI == null) {
                 throw new CSSParseException("There is no namespace with prefix " + prefix + " defined",
                         getCurrentLine());
             }
         } else if (prefix == null && ! matchAttribute) {
-            namespaceURI = (String)_namespaces.get(null);
+            namespaceURI = _namespaces.get(null);
         }
 
         if (matchAttribute && name == null) {
