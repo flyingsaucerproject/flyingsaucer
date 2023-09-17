@@ -22,9 +22,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
@@ -50,8 +51,8 @@ public class NonBreakPointsLoaderImpl implements NonBreakPointsLoader {
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
         if (is == null) return null;
         try {
-            BufferedReader r = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            List<String> result = new ArrayList<String>();
+            BufferedReader r = new BufferedReader(new InputStreamReader(is, UTF_8));
+            List<String> result = new ArrayList<>();
             String line;
             while ((line = r.readLine()) != null) {
                 if (line.isEmpty() || line.startsWith("#")) continue;
