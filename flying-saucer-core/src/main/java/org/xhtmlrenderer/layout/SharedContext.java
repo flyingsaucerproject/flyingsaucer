@@ -65,7 +65,7 @@ public class SharedContext {
 
     private boolean interactive = true;
 
-    private Map idMap;
+    private Map<String, Box> idMap;
 
     /*
      * used to adjust fonts, ems, points, into screen resolution
@@ -140,13 +140,11 @@ public class SharedContext {
     }
 
     public LayoutContext newLayoutContextInstance() {
-        LayoutContext c = new LayoutContext(this);
-        return c;
+        return new LayoutContext(this);
     }
 
     public RenderingContext newRenderingContextInstance() {
-        RenderingContext c = new RenderingContext(this);
-        return c;
+        return new RenderingContext(this);
     }
 
     /*
@@ -318,16 +316,16 @@ public class SharedContext {
 
     public void addBoxId(String id, Box box) {
         if (idMap == null) {
-            idMap = new HashMap();
+            idMap = new HashMap<>();
         }
         idMap.put(id, box);
     }
 
     public Box getBoxById(String id) {
         if (idMap == null) {
-            idMap = new HashMap();
+            idMap = new HashMap<>();
         }
-        return (Box) idMap.get(id);
+        return idMap.get(id);
     }
 
     public void removeBoxId(String id) {
@@ -336,7 +334,7 @@ public class SharedContext {
         }
     }
 
-    public Map getIdMap()
+    public Map<String, Box> getIdMap()
     {
         return idMap;
     }

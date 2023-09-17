@@ -925,18 +925,15 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     private void writeNamedDestinations(RenderingContext c) {
-        Map idMap = getSharedContext().getIdMap();
+        Map<String, Box> idMap = getSharedContext().getIdMap();
         if ((idMap != null) && (!idMap.isEmpty())) {
             PdfArray dests = new PdfArray();
             try {
-                Iterator it = idMap.entrySet().iterator();
-                while (it.hasNext()) {
-                    Entry entry = (Entry) it.next();
-
-                    Box targetBox = (Box) entry.getValue();
+                for (Entry<String, Box> entry : idMap.entrySet()) {
+                    Box targetBox = entry.getValue();
 
                     if (targetBox.getStyle().isIdent(CSSName.FS_NAMED_DESTINATION, IdentValue.CREATE)) {
-                        String anchorName = (String) entry.getKey();
+                        String anchorName = entry.getKey();
                         dests.add(new PdfString(anchorName, PdfString.TEXT_UNICODE));
 
                         PdfDestination dest = createDestination(c, targetBox);
@@ -948,9 +945,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 }
 
                 if (!dests.isEmpty()) {
-                    PdfDictionary nametree = new PdfDictionary();
-                    nametree.put(PdfName.NAMES, dests);
-                    PdfIndirectReference nameTreeRef = _writer.addToBody(nametree).getIndirectReference();
+                    PdfDictionary nameTree = new PdfDictionary();
+                    nameTree.put(PdfName.NAMES, dests);
+                    PdfIndirectReference nameTreeRef = _writer.addToBody(nameTree).getIndirectReference();
 
                     PdfDictionary names = new PdfDictionary();
                     names.put(PdfName.DESTS, nameTreeRef);
@@ -977,7 +974,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         String href = bookmark.getHRef();
         PdfDestination target = null;
         Box box = bookmark.getBox();
-        if (href.length() > 0 && href.charAt(0) == '#') {
+        if (!href.isEmpty() && href.charAt(0) == '#') {
             box = _sharedContext.getBoxById(href.substring(1));
         }
         if (box != null) {
