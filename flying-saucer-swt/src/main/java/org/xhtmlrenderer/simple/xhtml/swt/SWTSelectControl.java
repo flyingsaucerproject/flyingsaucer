@@ -19,9 +19,6 @@
  */
 package org.xhtmlrenderer.simple.xhtml.swt;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -35,6 +32,9 @@ import org.xhtmlrenderer.simple.xhtml.FormControl;
 import org.xhtmlrenderer.simple.xhtml.FormControlAdapter;
 import org.xhtmlrenderer.simple.xhtml.controls.SelectControl;
 import org.xhtmlrenderer.swt.BasicRenderer;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 public class SWTSelectControl extends SWTXhtmlControl {
 
@@ -79,6 +79,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
             });
 
             sc.addFormControlListener(new FormControlAdapter() {
+                @Override
                 public void changed(FormControl control) {
                     if (sc.isSuccessful()) {
                         if (sc.isMultiple()) {
@@ -96,6 +97,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
                     }
                 }
 
+                @Override
                 public void successful(FormControl control) {
                     changed(control);
                 }
@@ -134,6 +136,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
             });
 
             sc.addFormControlListener(new FormControlAdapter() {
+                @Override
                 public void changed(FormControl control) {
                     if (sc.isSuccessful()) {
                         combo.select(_values.indexOf(sc.getValue()));
@@ -142,6 +145,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
                     }
                 }
 
+                @Override
                 public void successful(FormControl control) {
                     changed(control);
                 }

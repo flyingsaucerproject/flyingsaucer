@@ -28,6 +28,7 @@ public class HiddenControl extends AbstractControl {
         super(form, e);
     }
 
+    @Override
     public boolean isHidden() {
         return true;
     }
