@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.context;
 
-import java.io.StringReader;
-import java.util.*;
-import java.util.logging.Level;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,7 +27,9 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.lib.DOMTreeResolver;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.newmatch.Matcher;
 import org.xhtmlrenderer.css.newmatch.PageInfo;
+import org.xhtmlrenderer.css.sheet.FontFaceRule;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
@@ -41,46 +39,32 @@ import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
 
 /**
  * @author Torbjoern Gannholm
  */
 public class StyleReference {
-    /**
-     * The Context this StyleReference operates in; used for property
-     * resolution.
-     */
-    private SharedContext _context;
-
-    /**
-     * Description of the Field
-     */
     private NamespaceHandler _nsh;
-
-    /**
-     * Description of the Field
-     */
     private Document _doc;
-
-    /**
-     * Description of the Field
-     */
-    private StylesheetFactoryImpl _stylesheetFactory;
+    private final StylesheetFactoryImpl _stylesheetFactory;
 
     /**
      * Instance of our element-styles matching class. Will be null if new rules
      * have been added since last match.
      */
-    private org.xhtmlrenderer.css.newmatch.Matcher _matcher;
+    private Matcher _matcher;
 
-    /** */
     private UserAgentCallback _uac;
 
-    /**
-     * Default constructor for initializing members.
-     *
-     * @param userAgent PARAM
-     */
     public StyleReference(UserAgentCallback userAgent) {
         _uac = userAgent;
         _stylesheetFactory = new StylesheetFactoryImpl(userAgent);
@@ -89,31 +73,29 @@ public class StyleReference {
     /**
      * Sets the documentContext attribute of the StyleReference object
      *
-     * @param context The new documentContext value
+     * @param context The Context this StyleReference operates in; used for property resolution.
      * @param nsh     The new documentContext value
      * @param doc     The new documentContext value
-     * @param ui
+     * @param ui      The new documentContext value
      */
     public void setDocumentContext(SharedContext context, NamespaceHandler nsh, Document doc, UserInterface ui) {
-        _context = context;
         _nsh = nsh;
         _doc = doc;
         AttributeResolver attRes = new StandardAttributeResolver(_nsh, _uac, ui);
 
-        List infos = getStylesheets();
-        XRLog.match("media = " + _context.getMedia());
-        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(
+        List<StylesheetInfo> infos = getStylesheets();
+        XRLog.match("media = " + context.getMedia());
+        _matcher = new Matcher(
                 new DOMTreeResolver(),
                 attRes,
                 _stylesheetFactory,
-                readAndParseAll(infos, _context.getMedia()),
-                _context.getMedia());
+                readAndParseAll(infos, context.getMedia()),
+                context.getMedia());
     }
 
-    private List readAndParseAll(List infos, String medium) {
-        List result = new ArrayList(infos.size() + 15);
-        for (Iterator i = infos.iterator(); i.hasNext(); ) {
-            StylesheetInfo info = (StylesheetInfo)i.next();
+    private List<Stylesheet> readAndParseAll(List<StylesheetInfo> infos, String medium) {
+        List<Stylesheet> result = new ArrayList<>(infos.size() + 15);
+        for (StylesheetInfo info : infos) {
             if (info.appliesToMedia(medium)) {
                 Stylesheet sheet = info.getStylesheet();
 
@@ -121,14 +103,14 @@ public class StyleReference {
                     sheet = _stylesheetFactory.getStylesheet(info);
                 }
 
-                if (sheet!=null) {
+                if (sheet != null) {
                     if (sheet.getImportRules().size() > 0) {
                         result.addAll(readAndParseAll(sheet.getImportRules(), medium));
                     }
 
                     result.add(sheet);
                 } else {
-                    XRLog.load(Level.WARNING, "Unable to load CSS from "+info.getUri());
+                    XRLog.load(Level.WARNING, "Unable to load CSS from " + info.getUri());
                 }
             }
         }
@@ -136,12 +118,6 @@ public class StyleReference {
         return result;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     * @return Returns
-     */
     public boolean isHoverStyled(Element e) {
         return _matcher.isHoverStyled(e);
     }
@@ -206,7 +182,7 @@ public class StyleReference {
     }
 
     /**
-     * Flushes any stylesheet associated with this stylereference (based on the user agent callback) that are in cache.
+     * Flushes any stylesheet associated with this style reference (based on the user agent callback) that are in cache.
      */
     public void flushStyleSheets() {
         String uri = _uac.getBaseURL();
@@ -234,8 +210,8 @@ public class StyleReference {
      *
      * @return The stylesheets value
      */
-    private List getStylesheets() {
-        List infos = new LinkedList();
+    private List<StylesheetInfo> getStylesheets() {
+        List<StylesheetInfo> infos = new ArrayList<>();
         long st = System.currentTimeMillis();
 
         StylesheetInfo defaultStylesheet = _nsh.getDefaultStylesheet(_stylesheetFactory);
@@ -246,22 +222,22 @@ public class StyleReference {
         StylesheetInfo[] refs = _nsh.getStylesheets(_doc);
         int inlineStyleCount = 0;
         if (refs != null) {
-            for (int i = 0; i < refs.length; i++) {
+            for (StylesheetInfo ref : refs) {
                 String uri;
 
-                if (! refs[i].isInline()) {
-                    uri = _uac.resolveURI(refs[i].getUri());
-                    refs[i].setUri(uri);
+                if (!ref.isInline()) {
+                    uri = _uac.resolveURI(ref.getUri());
+                    ref.setUri(uri);
                 } else {
-                    refs[i].setUri(_uac.getBaseURL() + "#inline_style_" + (++inlineStyleCount));
+                    ref.setUri(_uac.getBaseURL() + "#inline_style_" + (++inlineStyleCount));
                     Stylesheet sheet = _stylesheetFactory.parse(
-                            new StringReader(refs[i].getContent()), refs[i]);
-                    refs[i].setStylesheet(sheet);
-                    refs[i].setUri(null);
+                            new StringReader(ref.getContent()), ref);
+                    ref.setStylesheet(sheet);
+                    ref.setUri(null);
                 }
             }
+            infos.addAll(Arrays.asList(refs));
         }
-        infos.addAll(Arrays.asList(refs));
 
         // TODO: here we should also get user stylesheet from userAgent
 
@@ -277,7 +253,7 @@ public class StyleReference {
         }
     }
 
-    public List getFontFaceRules() {
+    public List<FontFaceRule> getFontFaceRules() {
         return _matcher.getFontFaceRules();
     }
 
@@ -421,7 +397,7 @@ public class StyleReference {
  * Started massaging the extension interfaces
  *
  * Revision 1.17  2005/01/04 10:19:11  tobega
- * resolve selectors to styles direcly on match, should reduce memory footprint and not affect speed very much.
+ * resolve selectors to styles directly on match, should reduce memory footprint and not affect speed very much.
  *
  * Revision 1.16  2005/01/03 23:40:40  tobega
  * Cleaned out unnecessary styling/matching code. styling/matching is now called during boxing/rendering rather than as a separate stage.
