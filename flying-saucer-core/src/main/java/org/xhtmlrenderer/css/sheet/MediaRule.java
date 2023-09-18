@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MediaRule implements RulesetContainer {
-    private List _mediaTypes = new ArrayList();
-    private List _contents = new ArrayList();
-    private int _origin;
+    private final List<String> _mediaTypes = new ArrayList<>();
+    private final List<Ruleset> _contents = new ArrayList<>();
+    private final int _origin;
 
     public MediaRule(int origin) {
         _origin = origin;
@@ -43,14 +43,16 @@ public class MediaRule implements RulesetContainer {
         }
     }
 
+    @Override
     public void addContent(Ruleset ruleset) {
         _contents.add(ruleset);
     }
 
-    public List getContents() {
+    public List<Ruleset> getContents() {
         return _contents;
     }
 
+    @Override
     public int getOrigin() {
         return _origin;
     }

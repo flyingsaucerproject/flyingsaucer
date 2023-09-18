@@ -175,8 +175,7 @@ public class Matcher {
                 } else if (obj instanceof MediaRule) {
                     MediaRule mediaRule = (MediaRule) obj;
                     if (mediaRule.matches(medium)) {
-                        for (Object object : mediaRule.getContents()) {
-                            Ruleset ruleset = (Ruleset) object;
+                        for (Ruleset ruleset : mediaRule.getContents()) {
                             for (Selector selector : ruleset.getFSSelectors()) {
                                 selector.setPos(++count);
                                 sorter.put(selector.getOrder(), selector);
