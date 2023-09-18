@@ -31,20 +31,17 @@ import org.xhtmlrenderer.simple.extend.XhtmlCssOnlyNamespaceHandler;
  * @author Torbjoern Gannholm
  */
 public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isImageElement(Element e) {
         return (e != null && e.getNodeName().equalsIgnoreCase("img"));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isFormElement(Element e) {
         return (e != null && e.getNodeName().equalsIgnoreCase("form"));
     }
 
+    @Override
     public String getImageSourceURI(Element e) {
         String uri = null;
         if (e != null) {
@@ -53,27 +50,30 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         return uri;
     }
 
+    @Override
     public String getNonCssStyling(Element e) {
-        if (e.getNodeName().equals("table")) {
-            return applyTableStyles(e);
-        } else if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
-            return applyTableCellStyles(e);
-        } else if (e.getNodeName().equals("tr")) {
-            return applyTableRowStyles(e);
-        } else if (e.getNodeName().equals("img")) {
-            return applyImgStyles(e);
+        switch (e.getNodeName()) {
+            case "table":
+                return applyTableStyles(e);
+            case "td":
+            case "th":
+                return applyTableCellStyles(e);
+            case "tr":
+                return applyTableRowStyles(e);
+            case "img":
+                return applyImgStyles(e);
         }
         return "";
     }
 
     private String applyImgStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         applyFloatingAlign(e, style);
         return style.toString();
     }
 
     private String applyTableCellStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         String s;
         //check for cellpadding
         Element table = findTable(e);
@@ -124,7 +124,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     }
 
     private String applyTableStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         String s;
         s = getAttribute(e, "width");
         if (s != null) {
@@ -167,27 +167,31 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     }
 
     private String applyTableRowStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         applyAlignment(e, style);
         return style.toString();
     }
 
-    private void applyFloatingAlign(Element e, StringBuffer style) {
+    private void applyFloatingAlign(Element e, StringBuilder style) {
         String s;
         s = getAttribute(e, "align");
         if (s != null) {
             s = s.toLowerCase().trim();
-            if (s.equals("left")) {
-                style.append("float: left;");
-            } else if (s.equals("right")) {
-                style.append("float: right;");
-            } else if (s.equals("center")) {
-                style.append("margin-left: auto; margin-right: auto;");
+            switch (s) {
+                case "left":
+                    style.append("float: left;");
+                    break;
+                case "right":
+                    style.append("float: right;");
+                    break;
+                case "center":
+                    style.append("margin-left: auto; margin-right: auto;");
+                    break;
             }
         }
     }
 
-    private void applyAlignment(Element e, StringBuffer style) {
+    private void applyAlignment(Element e, StringBuilder style) {
         String s;
         s = getAttribute(e, "align");
         if (s != null) {

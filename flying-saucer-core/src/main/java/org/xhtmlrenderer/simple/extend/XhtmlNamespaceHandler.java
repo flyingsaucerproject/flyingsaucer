@@ -30,20 +30,17 @@ import org.w3c.dom.Node;
  * @author Torbjoern Gannholm
  */
 public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isImageElement(Element e) {
         return (e != null && e.getNodeName().equalsIgnoreCase("img"));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isFormElement(Element e) {
         return (e != null && e.getNodeName().equalsIgnoreCase("form"));
     }
 
+    @Override
     public String getImageSourceURI(Element e) {
         String uri = null;
         if (e != null) {
@@ -52,35 +49,39 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         return uri;
     }
 
+    @Override
     public String getNonCssStyling(Element e) {
-        if (e.getNodeName().equals("table")) {
-            return applyTableStyles(e);
-        } else if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
-            return applyTableCellStyles(e);
-        } else if (e.getNodeName().equals("tr")) {
-            return applyTableRowStyles(e);
-        } else if (e.getNodeName().equals("img")) {
-            return applyImgStyles(e);
-        } else if (e.getNodeName().equals("p") || e.getNodeName().equals("div")) {
-            return applyBlockAlign(e);
+        switch (e.getNodeName()) {
+            case "table":
+                return applyTableStyles(e);
+            case "td":
+            case "th":
+                return applyTableCellStyles(e);
+            case "tr":
+                return applyTableRowStyles(e);
+            case "img":
+                return applyImgStyles(e);
+            case "p":
+            case "div":
+                return applyBlockAlign(e);
         }
         return "";
     }
 
     private String applyBlockAlign(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         applyTextAlign(e, style);
         return style.toString();
     }
 
     private String applyImgStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         applyFloatingAlign(e, style);
         return style.toString();
     }
 
     private String applyTableCellStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         String s;
         //check for cellpadding
         Element table = findTable(e);
@@ -131,7 +132,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     }
 
     private String applyTableStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         String s;
         s = getAttribute(e, "width");
         if (s != null) {
@@ -174,27 +175,30 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     }
 
     private String applyTableRowStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         applyTableContentAlign(e, style);
         return style.toString();
     }
 
-    private void applyFloatingAlign(Element e, StringBuffer style) {
-        String s;
-        s = getAttribute(e, "align");
+    private void applyFloatingAlign(Element e, StringBuilder style) {
+        String s = getAttribute(e, "align");
         if (s != null) {
             s = s.toLowerCase().trim();
-            if (s.equals("left")) {
-                style.append("float: left;");
-            } else if (s.equals("right")) {
-                style.append("float: right;");
-            } else if (s.equals("center")) {
-                style.append("margin-left: auto; margin-right: auto;");
+            switch (s) {
+                case "left":
+                    style.append("float: left;");
+                    break;
+                case "right":
+                    style.append("float: right;");
+                    break;
+                case "center":
+                    style.append("margin-left: auto; margin-right: auto;");
+                    break;
             }
         }
     }
 
-    private void applyTextAlign(Element e, StringBuffer style) {
+    private void applyTextAlign(Element e, StringBuilder style) {
         String s;
         s = getAttribute(e, "align");
         if (s != null) {
@@ -208,9 +212,8 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         }
     }
 
-    private void applyTableContentAlign(Element e, StringBuffer style) {
-        String s;
-        s = getAttribute(e, "align");
+    private void applyTableContentAlign(Element e, StringBuilder style) {
+        String s = getAttribute(e, "align");
         if (s != null) {
             style.append("text-align: ");
             style.append(s.toLowerCase());

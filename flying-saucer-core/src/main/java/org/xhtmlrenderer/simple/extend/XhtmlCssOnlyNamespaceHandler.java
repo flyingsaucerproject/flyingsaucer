@@ -66,6 +66,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @param e PARAM
      * @return The class value
      */
+    @Override
     public String getClass(org.w3c.dom.Element e) {
         return e.getAttribute("class");
     }
@@ -76,6 +77,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @param e PARAM
      * @return The iD value
      */
+    @Override
     public String getID(org.w3c.dom.Element e) {
         String result = e.getAttribute("id").trim();
         return result.length() == 0 ? null : result;
@@ -174,6 +176,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @param e PARAM
      * @return The linkUri value
      */
+    @Override
     public String getLinkUri(org.w3c.dom.Element e) {
         String href = null;
         if (e.getNodeName().equalsIgnoreCase("a") && e.hasAttribute("href")) {
@@ -182,6 +185,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return href;
     }
 
+    @Override
     public String getAnchorName(Element e) {
         if (e != null && e.getNodeName().equalsIgnoreCase("a") &&
                 e.hasAttribute("name")) {
@@ -458,6 +462,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return metadata;
     }
 
+    @Override
     public String getLang(org.w3c.dom.Element e) {
         if(e == null) {
             return "";
