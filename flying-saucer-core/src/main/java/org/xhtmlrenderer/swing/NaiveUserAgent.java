@@ -19,7 +19,17 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Image;
+import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.resource.CSSResource;
+import org.xhtmlrenderer.resource.ImageResource;
+import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.util.FontUtil;
+import org.xhtmlrenderer.util.ImageUtil;
+import org.xhtmlrenderer.util.XRLog;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,16 +44,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import javax.imageio.ImageIO;
-
-import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.resource.CSSResource;
-import org.xhtmlrenderer.resource.ImageResource;
-import org.xhtmlrenderer.resource.XMLResource;
-import org.xhtmlrenderer.util.FontUtil;
-import org.xhtmlrenderer.util.ImageUtil;
-import org.xhtmlrenderer.util.XRLog;
+import java.util.Map;
 
 /**
  * <p>NaiveUserAgent is a simple implementation of {@link UserAgentCallback} which places no restrictions on what
@@ -68,8 +69,8 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     /**
      * a (simple) LRU cache
      */
-    protected LinkedHashMap _imageCache;
-    private int _imageCacheCapacity;
+    protected final Map<String, ImageResource> _imageCache;
+    private final int _imageCacheCapacity;
     private String _baseURL;
 
     /**
@@ -85,11 +86,11 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @param imgCacheSize Number of images to hold in cache before LRU images are released.
      */
     public NaiveUserAgent(final int imgCacheSize) {
-        this._imageCacheCapacity = imgCacheSize;
+        _imageCacheCapacity = imgCacheSize;
 
         // note we do *not* override removeEldestEntry() here--users of this class must call shrinkImageCache().
         // that's because we don't know when is a good time to flush the cache
-        this._imageCache = new java.util.LinkedHashMap(_imageCacheCapacity, 0.75f, true);
+        _imageCache = new LinkedHashMap<>(_imageCacheCapacity, 0.75f, true);
     }
 
     /**
@@ -98,7 +99,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      */
     public void shrinkImageCache() {
         int ovr = _imageCache.size() - _imageCacheCapacity;
-        Iterator it = _imageCache.keySet().iterator();
+        Iterator<String> it = _imageCache.keySet().iterator();
         while (it.hasNext() && ovr-- > 0) {
             it.next();
             it.remove();
@@ -138,7 +139,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         return is;
     }
 
-    protected InputStream openStream(String uri) throws MalformedURLException, IOException {
+    protected InputStream openStream(String uri) throws IOException {
         return openConnection(uri).getInputStream();
     }
 
@@ -180,7 +181,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
             if (origin.getInstanceFollowRedirects()) {
                 XRLog.load("Connection is redirected to: " + newUrl);
-                // open the new connnection again
+                // open the new connection again
                 connection = new URL(newUrl).openConnection();
                 connection.setRequestProperty("Accept", "*/*");
             } else {
@@ -216,6 +217,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @param uri Location of the CSS source.
      * @return A CSSResource containing the parsed CSS.
      */
+    @Override
     public CSSResource getCSSResource(String uri) {
         return new CSSResource(resolveAndOpenStream(uri));
     }
@@ -228,6 +230,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @param uri Location of the image source.
      * @return An ImageResource containing the image.
      */
+    @Override
     public ImageResource getImageResource(String uri) {
         ImageResource ir;
         if (ImageUtil.isEmbeddedBase64Image(uri)) {
@@ -235,7 +238,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
             ir = createImageResource(null, image);
         } else {
         	String unresolvedUri = uri;
-            ir = (ImageResource) _imageCache.get(unresolvedUri);
+            ir = _imageCache.get(unresolvedUri);
             //TODO: check that cached image is still valid
             if (ir == null) {
                 uri = resolveURI(uri);
@@ -288,6 +291,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @param uri Location of the XML source.
      * @return An XMLResource containing the image.
      */
+    @Override
     public XMLResource getXMLResource(String uri) {
         InputStream inputStream = resolveAndOpenStream(uri);
         XMLResource xmlResource;
@@ -305,6 +309,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         return xmlResource;
     }
 
+    @Override
     public byte[] getBinaryResource(String uri) {
         InputStream is = resolveAndOpenStream(uri);
         if (is==null) return null;
@@ -338,6 +343,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @param uri A URI which might have been visited.
      * @return Always false; visits are not tracked in the NaiveUserAgent.
      */
+    @Override
     public boolean isVisited(String uri) {
         return false;
     }
@@ -347,6 +353,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      *
      * @param url A URI which anchors other, possibly relative URIs.
      */
+    @Override
     public void setBaseURL(String url) {
         _baseURL = url;
     }
@@ -359,6 +366,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      *
      * @return A URI as String, resolved, or null if there was an exception (for example if the URI is malformed).
      */
+    @Override
     public String resolveURI(String uri) {
         if (uri == null) return null;
 
@@ -372,7 +380,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
             if (_baseURL == null) { // still not set -> fallback to current working directory
                 try {
                     setBaseURL(new File(".").toURI().toURL().toExternalForm());
-                } catch (Exception e1) {
+                } catch (MalformedURLException e1) {
                     XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for " + uri);
                     return null;
                 }
@@ -410,18 +418,23 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     /**
      * Returns the current baseUrl for this class.
      */
+    @Override
     public String getBaseURL() {
         return _baseURL;
     }
 
+    @Override
     public void documentStarted() {
         shrinkImageCache();
     }
 
+    @Override
     public void documentLoaded() { /* ignore*/ }
 
+    @Override
     public void onLayoutException(Throwable t) { /* ignore*/ }
 
+    @Override
     public void onRenderException(Throwable t) { /* ignore*/ }
 }
 
