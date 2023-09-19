@@ -19,19 +19,6 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -39,16 +26,28 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 public class DocumentSplitter implements ContentHandler {
     private static final String HEAD_ELEMENT_NAME = "head";
 
-    private List _processingInstructions = new LinkedList();
-    private SAXEventRecorder _head = new SAXEventRecorder();
-    private boolean _inHead = false;
+    private final List<ProcessingInstruction> _processingInstructions = new LinkedList<>();
+    private final SAXEventRecorder _head = new SAXEventRecorder();
+    private boolean _inHead;
 
-    private int _depth = 0;
+    private int _depth;
 
-    private boolean _needNewNSScope = false;
+    private boolean _needNewNSScope;
     private NamespaceScope _currentNSScope = new NamespaceScope();
 
     private boolean _needNSScopePop;
@@ -56,12 +55,13 @@ public class DocumentSplitter implements ContentHandler {
     private Locator _locator;
 
     private TransformerHandler _handler;
-    private boolean _inDocument = false;
+    private boolean _inDocument;
 
-    private List _documents = new LinkedList();
+    private final List<Document> _documents = new LinkedList<>();
 
-    private boolean _replayedHead = false;
+    private boolean _replayedHead;
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (_inHead) {
             _head.characters(ch, start, length);
@@ -70,9 +70,11 @@ public class DocumentSplitter implements ContentHandler {
         }
     }
 
-    public void endDocument() throws SAXException {
+    @Override
+    public void endDocument() {
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         if (_inHead) {
             _head.endPrefixMapping(prefix);
@@ -83,6 +85,7 @@ public class DocumentSplitter implements ContentHandler {
         }
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
         if (_inHead) {
             _head.ignorableWhitespace(ch, start, length);
@@ -91,15 +94,18 @@ public class DocumentSplitter implements ContentHandler {
         }
     }
 
-    public void processingInstruction(String target, String data) throws SAXException {
+    @Override
+    public void processingInstruction(String target, String data) {
         _processingInstructions.add(new ProcessingInstruction(target, data));
 
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         _locator = locator;
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
         if (_inHead) {
             _head.skippedEntity(name);
@@ -108,28 +114,30 @@ public class DocumentSplitter implements ContentHandler {
         }
     }
 
-    public void startDocument() throws SAXException {
+    @Override
+    public void startDocument() {
     }
 
-    public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if (_inHead) {
-            _head.startElement(uri, localName, qName, atts);
+            _head.startElement(uri, localName, qName, attributes);
         } else if (_inDocument) {
             if (_depth == 2 && ! _replayedHead) {
                 if (HEAD_ELEMENT_NAME.equalsIgnoreCase(qName)) {
-                    _handler.startElement(uri, localName, qName, atts);
+                    _handler.startElement(uri, localName, qName, attributes);
                     _head.replay(_handler);
                 } else {
                     _handler.startElement("", HEAD_ELEMENT_NAME, HEAD_ELEMENT_NAME, new AttributesImpl());
                     _head.replay(_handler);
                     _handler.endElement("", HEAD_ELEMENT_NAME, HEAD_ELEMENT_NAME);
 
-                    _handler.startElement(uri, localName, qName, atts);
+                    _handler.startElement(uri, localName, qName, attributes);
                 }
 
                 _replayedHead = true;
             } else {
-                _handler.startElement(uri, localName, qName, atts);
+                _handler.startElement(uri, localName, qName, attributes);
             }
         } else {
             if (_needNewNSScope) {
@@ -152,21 +160,18 @@ public class DocumentSplitter implements ContentHandler {
                         Document doc = factory.newDocumentBuilder().newDocument();
                         _documents.add(doc);
                         _handler =
-                            ((SAXTransformerFactory)SAXTransformerFactory.newInstance()).newTransformerHandler();
+                            ((SAXTransformerFactory) TransformerFactory.newInstance()).newTransformerHandler();
                         _handler.setResult(new DOMResult(doc));
 
                         _handler.startDocument();
                         _handler.setDocumentLocator(_locator);
-                        for (Iterator i = _processingInstructions.iterator(); i.hasNext(); ) {
-                            ProcessingInstruction pI = (ProcessingInstruction)i.next();
+                        for (ProcessingInstruction pI : _processingInstructions) {
                             _handler.processingInstruction(pI.getTarget(), pI.getData());
                         }
 
                         _currentNSScope.replay(_handler, true);
-                        _handler.startElement(uri, localName, qName, atts);
-                    } catch (ParserConfigurationException e) {
-                        throw new SAXException(e.getMessage(), e);
-                    } catch (TransformerConfigurationException e) {
+                        _handler.startElement(uri, localName, qName, attributes);
+                    } catch (ParserConfigurationException | TransformerConfigurationException e) {
                         throw new SAXException(e.getMessage(), e);
                     }
                 }
@@ -176,6 +181,7 @@ public class DocumentSplitter implements ContentHandler {
         _depth++;
     }
 
+    @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         _depth--;
 
@@ -203,6 +209,7 @@ public class DocumentSplitter implements ContentHandler {
         }
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         if (_inHead) {
             _head.startPrefixMapping(prefix, uri);
@@ -214,15 +221,15 @@ public class DocumentSplitter implements ContentHandler {
         }
     }
 
-    public List getDocuments() {
+    public List<Document> getDocuments() {
         return _documents;
     }
 
     private static final class Namespace {
-        private String _prefix;
-        private String _uri;
+        private final String _prefix;
+        private final String _uri;
 
-        public Namespace(String prefix, String uri) {
+        private Namespace(String prefix, String uri) {
             _prefix = prefix;
             _uri = uri;
         }
@@ -238,12 +245,12 @@ public class DocumentSplitter implements ContentHandler {
 
     private static final class NamespaceScope {
         private NamespaceScope _parent;
-        private List _namespaces = new LinkedList();
+        private final List<Namespace> _namespaces = new LinkedList<>();
 
-        public NamespaceScope() {
+        private NamespaceScope() {
         }
 
-        public NamespaceScope(NamespaceScope parent) {
+        private NamespaceScope(NamespaceScope parent) {
             _parent = parent;
         }
 
@@ -252,15 +259,13 @@ public class DocumentSplitter implements ContentHandler {
         }
 
         public void replay(ContentHandler contentHandler, boolean start) throws SAXException {
-            replay(contentHandler, new HashSet(), start);
+            replay(contentHandler, new HashSet<>(), start);
         }
 
-        private void replay(ContentHandler contentHandler, Set seen, boolean start)
+        private void replay(ContentHandler contentHandler, Set<String> seen, boolean start)
                 throws SAXException {
-            for (Iterator i = _namespaces.iterator(); i.hasNext(); ) {
-                Namespace ns = (Namespace)i.next();
-
-                if (! seen.contains(ns.getPrefix())) {
+            for (Namespace ns : _namespaces) {
+                if (!seen.contains(ns.getPrefix())) {
                     seen.add(ns.getPrefix());
                     if (start) {
                         contentHandler.startPrefixMapping(ns.getPrefix(), ns.getUri());
@@ -281,10 +286,10 @@ public class DocumentSplitter implements ContentHandler {
     }
 
     private static class ProcessingInstruction {
-        private String _target;
-        private String _data;
+        private final String _target;
+        private final String _data;
 
-        public ProcessingInstruction(String target, String data) {
+        private ProcessingInstruction(String target, String data) {
             _target = target;
             _data = data;
         }
