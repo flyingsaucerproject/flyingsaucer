@@ -593,7 +593,7 @@ public class LineBox extends Box implements InlinePaintable {
     }
 
     @Override
-    public void collectText(RenderingContext c, StringBuffer buffer) throws IOException {
+    public void collectText(RenderingContext c, StringBuilder buffer) throws IOException {
         for (Box b : getNonFlowContent()) {
             b.collectText(c, buffer);
         }
@@ -615,7 +615,7 @@ public class LineBox extends Box implements InlinePaintable {
         }
 
         if (isContainsContent()) {
-            StringBuffer result = new StringBuffer();
+            StringBuilder result = new StringBuilder();
             collectText(c, result);
             writer.write(result.toString().trim());
             writer.write(LINE_SEPARATOR);

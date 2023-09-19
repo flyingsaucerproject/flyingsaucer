@@ -894,7 +894,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     @Override
-    public void collectText(RenderingContext c, StringBuffer buffer) throws IOException {
+    public void collectText(RenderingContext c, StringBuilder buffer) throws IOException {
         for (Object obj : getInlineChildren()) {
             if (obj instanceof InlineText) {
                 buffer.append(((InlineText) obj).getTextExportText());

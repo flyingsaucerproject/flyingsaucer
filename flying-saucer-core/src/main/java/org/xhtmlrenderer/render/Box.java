@@ -1009,9 +1009,8 @@ public abstract class Box implements Styleable {
         setHeight(dimensions.getHeight());
     }
 
-    public void collectText(RenderingContext c, StringBuffer buffer) throws IOException {
-        for (Iterator<Box> i = getChildIterator(); i.hasNext(); ) {
-            Box b = i.next();
+    public void collectText(RenderingContext c, StringBuilder buffer) throws IOException {
+        for (Box b : getChildren()) {
             b.collectText(c, buffer);
         }
     }
