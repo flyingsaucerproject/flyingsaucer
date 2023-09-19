@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DOMInspector extends JPanel {
+public final class DOMInspector extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private StyleReference styleReference;
@@ -62,11 +62,11 @@ public class DOMInspector extends JPanel {
     }
 
     public DOMInspector(Document doc, SharedContext context, StyleReference sr) {
-        this.setLayout(new java.awt.BorderLayout());
+        setLayout(new java.awt.BorderLayout());
 
         //JPanel treePanel = new JPanel();
-        this.tree = new JTree();
-        this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        tree = new JTree();
+        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         JScrollPane scroll = new JScrollPane(tree);
 
         splitPane = null;
@@ -77,13 +77,13 @@ public class DOMInspector extends JPanel {
             splitPane.setOneTouchExpandable(true);
             splitPane.setDividerLocation(150);
 
-            this.add(splitPane, "Center");
+            add(splitPane, "Center");
             splitPane.setLeftComponent(scroll);
         }
 
         JButton close = new JButton("close");
-        this.add(close, "South");
-        this.setPreferredSize(new Dimension(300, 300));
+        add(close, "South");
+        setPreferredSize(new Dimension(300, 300));
 
         setForDocument(doc, context, sr);
 
@@ -149,7 +149,7 @@ public class DOMInspector extends JPanel {
 
 //-{{{ ElementPropertiesPanel
 
-class ElementPropertiesPanel extends JPanel {
+final class ElementPropertiesPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     //private SharedContext _context;
@@ -194,7 +194,7 @@ class ElementPropertiesPanel extends JPanel {
         return new PropertiesTableModel(props);
     }
 
-    static class PropertiesJTable extends JTable {
+    static final class PropertiesJTable extends JTable {
         private static final long serialVersionUID = 1L;
 
         private final Font propLabelFont;
@@ -346,20 +346,15 @@ class DOMTreeModel implements TreeModel {
      */
     private Node root;
 
-    private final Map displayableNodes;
-    private final List listeners = new ArrayList();
+    private final Map<Object, List<Node>> displayableNodes = new HashMap<>();
+    private final List<TreeModelListener> listeners = new ArrayList<>();
 
     DOMTreeModel(Document doc) {
-        this.displayableNodes = new HashMap();
         this.doc = doc;
-        setRoot("body");
-    }
-
-    private void setRoot(String rootNodeName) {
-        Node tempRoot = doc.getDocumentElement();
+        Node tempRoot = this.doc.getDocumentElement();
         NodeList nl = tempRoot.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
-            if (nl.item(i).getNodeName().toLowerCase().equals(rootNodeName)) {
+            if (nl.item(i).getNodeName().toLowerCase().equals("body")) {
                 this.root = nl.item(i);
             }
         }
@@ -416,7 +411,7 @@ class DOMTreeModel implements TreeModel {
 
         Node node = (Node) parent;
 
-        List children = (List) this.displayableNodes.get(parent);
+        List<Node> children = this.displayableNodes.get(parent);
         if (children == null) {
             children = addDisplayable(node);
         }
@@ -434,7 +429,7 @@ class DOMTreeModel implements TreeModel {
     public int getChildCount(Object parent) {
 
         Node node = (Node) parent;
-        List children = (List) this.displayableNodes.get(parent);
+        List<Node> children = this.displayableNodes.get(parent);
         if (children == null) {
             children = addDisplayable(node);
         }
@@ -452,7 +447,7 @@ class DOMTreeModel implements TreeModel {
     public int getIndexOfChild(Object parent, Object child) {
 
         Node node = (Node) parent;
-        List children = (List) this.displayableNodes.get(parent);
+        List<Node> children = this.displayableNodes.get(parent);
         if (children == null) {
             children = addDisplayable(node);
         }
@@ -494,11 +489,11 @@ class DOMTreeModel implements TreeModel {
      *
      * @param parent The feature to be added to the Displayable attribute
      */
-    private List addDisplayable(Node parent) {
-        List children = (List) this.displayableNodes.get(parent);
+    private List<Node> addDisplayable(Node parent) {
+        List<Node> children = displayableNodes.get(parent);
         if (children == null) {
-            children = new ArrayList();
-            this.displayableNodes.put(parent, children);
+            children = new ArrayList<>();
+            displayableNodes.put(parent, children);
             NodeList nl = parent.getChildNodes();
             for (int i = 0, len = nl.getLength(); i < len; i++) {
                 Node child = nl.item(i);
@@ -510,7 +505,7 @@ class DOMTreeModel implements TreeModel {
             }
             return children;
         } else {
-            return new ArrayList();
+            return new ArrayList<>();
         }
     }
 
