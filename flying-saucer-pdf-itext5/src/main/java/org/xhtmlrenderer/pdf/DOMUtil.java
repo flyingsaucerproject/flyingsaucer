@@ -30,7 +30,7 @@ public class DOMUtil {
     public static Element getChild(Element parent, String name) {
         NodeList children = parent.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
-            Node n = (Node)children.item(i);
+            Node n = children.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE) {
                 Element elem = (Element)n;
                 if (elem.getTagName().equals(name)) {
@@ -41,11 +41,11 @@ public class DOMUtil {
         return null;
     }
 
-    public static List getChildren(Element parent, String name) {
-        List result = new ArrayList();
+    public static List<Element> getChildren(Element parent, String name) {
+        List<Element> result = new ArrayList<>();
         NodeList children = parent.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
-            Node n = (Node)children.item(i);
+            Node n = children.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE) {
                 Element elem = (Element)n;
                 if (elem.getTagName().equals(name)) {
@@ -77,7 +77,7 @@ public class DOMUtil {
     public static void getText(Element parent, StringBuilder sb) {
         NodeList children = parent.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
-            Node n = (Node)children.item(i);
+            Node n = children.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE) {
                 getText((Element)n, sb);
             } else if (n.getNodeType() == Node.TEXT_NODE) {
