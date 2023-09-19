@@ -20,18 +20,18 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Conversions {
-    private static final Map COLORS = new HashMap();
-    private static final Map NUMERIC_FONT_WEIGHTS = new HashMap();
-    private static final Map BORDER_WIDTHS = new HashMap();
+    private static final Map<String, FSRGBColor> COLORS = new HashMap<>();
+    private static final Map<Float, IdentValue> NUMERIC_FONT_WEIGHTS = new HashMap<>();
+    private static final Map<String, PropertyValue> BORDER_WIDTHS = new HashMap<>();
 
     static {
         COLORS.put("cyan", new FSRGBColor(0x00FFFF));
@@ -176,15 +176,15 @@ public class Conversions {
     }
 
     static {
-        NUMERIC_FONT_WEIGHTS.put(100f, IdentValue.FONT_WEIGHT_100);
-        NUMERIC_FONT_WEIGHTS.put(200f, IdentValue.FONT_WEIGHT_200);
-        NUMERIC_FONT_WEIGHTS.put(300f, IdentValue.FONT_WEIGHT_300);
-        NUMERIC_FONT_WEIGHTS.put(400f, IdentValue.FONT_WEIGHT_400);
-        NUMERIC_FONT_WEIGHTS.put(500f, IdentValue.FONT_WEIGHT_500);
-        NUMERIC_FONT_WEIGHTS.put(600f, IdentValue.FONT_WEIGHT_600);
-        NUMERIC_FONT_WEIGHTS.put(700f, IdentValue.FONT_WEIGHT_700);
-        NUMERIC_FONT_WEIGHTS.put(800f, IdentValue.FONT_WEIGHT_800);
-        NUMERIC_FONT_WEIGHTS.put(900f, IdentValue.FONT_WEIGHT_900);
+        NUMERIC_FONT_WEIGHTS.put(100.0f, IdentValue.FONT_WEIGHT_100);
+        NUMERIC_FONT_WEIGHTS.put(200.0f, IdentValue.FONT_WEIGHT_200);
+        NUMERIC_FONT_WEIGHTS.put(300.0f, IdentValue.FONT_WEIGHT_300);
+        NUMERIC_FONT_WEIGHTS.put(400.0f, IdentValue.FONT_WEIGHT_400);
+        NUMERIC_FONT_WEIGHTS.put(500.0f, IdentValue.FONT_WEIGHT_500);
+        NUMERIC_FONT_WEIGHTS.put(600.0f, IdentValue.FONT_WEIGHT_600);
+        NUMERIC_FONT_WEIGHTS.put(700.0f, IdentValue.FONT_WEIGHT_700);
+        NUMERIC_FONT_WEIGHTS.put(800.0f, IdentValue.FONT_WEIGHT_800);
+        NUMERIC_FONT_WEIGHTS.put(900.0f, IdentValue.FONT_WEIGHT_900);
     }
 
     static {
@@ -194,15 +194,15 @@ public class Conversions {
     }
 
     public static FSRGBColor getColor(String ident) {
-        return (FSRGBColor)COLORS.get(ident);
+        return COLORS.get(ident);
     }
 
     public static IdentValue getNumericFontWeight(float weight) {
-        return (IdentValue)NUMERIC_FONT_WEIGHTS.get(weight);
+        return NUMERIC_FONT_WEIGHTS.get(weight);
     }
 
     public static PropertyValue getBorderWidth(String ident) {
-        return (PropertyValue)BORDER_WIDTHS.get(ident);
+        return BORDER_WIDTHS.get(ident);
     }
 
 }
