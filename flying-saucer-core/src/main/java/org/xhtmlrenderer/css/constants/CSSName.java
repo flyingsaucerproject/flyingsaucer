@@ -1684,8 +1684,6 @@ public final class CSSName implements Comparable {
 
     /**
      * Returns a count of all CSS properties known to this class, shorthand and primitive.
-     *
-     * @return Returns
      */
     public static int countCSSNames() {
         return CSSName.maxAssigned;
@@ -1693,8 +1691,6 @@ public final class CSSName implements Comparable {
 
     /**
      * Returns a count of all CSS primitive (non-shorthand) properties known to this class.
-     *
-     * @return Returns
      */
     public static int countCSSPrimitiveNames() {
         return ALL_PRIMITIVE_PROPERTY_NAMES.size();
@@ -1702,8 +1698,6 @@ public final class CSSName implements Comparable {
 
     /**
      * Iterator of ALL CSS 2 visual property names.
-     *
-     * @return Returns
      */
     public static Iterator allCSS2PropertyNames() {
         return ALL_PROPERTY_NAMES.keySet().iterator();
@@ -1711,8 +1705,6 @@ public final class CSSName implements Comparable {
 
     /**
      * Iterator of ALL primitive (non-shorthand) CSS 2 visual property names.
-     *
-     * @return Returns
      */
     public static Iterator allCSS2PrimitivePropertyNames() {
         return ALL_PRIMITIVE_PROPERTY_NAMES.keySet().iterator();
@@ -1721,9 +1713,6 @@ public final class CSSName implements Comparable {
     /**
      * Returns true if the named property inherits by default, according to the
      * CSS2 spec.
-     *
-     * @param cssName PARAM
-     * @return Returns
      */
     // CLEAN: method is now unnecessary
     public static boolean propertyInherits(CSSName cssName) {
@@ -1734,9 +1723,6 @@ public final class CSSName implements Comparable {
      * Returns the initial value of the named property, according to the CSS2
      * spec, as a String. Casting must be taken care of by the caller, as there
      * is too much variation in value-types.
-     *
-     * @param cssName PARAM
-     * @return Returns
      */
     // CLEAN: method is now unnecessary
     public static String initialValue(CSSName cssName) {
@@ -1757,9 +1743,6 @@ public final class CSSName implements Comparable {
 
     /**
      * Gets the byPropertyName attribute of the CSSName class
-     *
-     * @param propName PARAM
-     * @return The byPropertyName value
      */
     public static CSSName getByPropertyName(String propName) {
 
@@ -1784,12 +1767,6 @@ public final class CSSName implements Comparable {
      * Adds a feature to the Property attribute of the CSSName class
      *
      * @param propName     The feature to be added to the Property attribute
-     * @param ‚type
-     * @param initialValue
-     * @param inherit
-     * @param implemented
-     * @param builder
-     * @return Returns
      */
     private static synchronized CSSName addProperty(
             String propName,

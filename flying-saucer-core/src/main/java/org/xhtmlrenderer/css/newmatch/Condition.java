@@ -41,9 +41,6 @@ abstract class Condition {
 
     /**
      * the CSS condition [attribute]
-     *
-     * @param name PARAM
-     * @return Returns
      */
     static Condition createAttributeExistsCondition(String namespaceURI, String name) {
         return new AttributeExistsCondition(namespaceURI, name);
@@ -79,10 +76,6 @@ abstract class Condition {
 
     /**
      * the CSS condition [attribute~=value]
-     *
-     * @param name  PARAM
-     * @param value PARAM
-     * @return Returns
      */
     static Condition createAttributeMatchesListCondition(String namespaceURI, String name, String value) {
         return new AttributeMatchesListCondition(namespaceURI, name, value);
@@ -90,10 +83,6 @@ abstract class Condition {
 
     /**
      * the CSS condition [attribute|=value]
-     *
-     * @param name  PARAM
-     * @param value PARAM
-     * @return Returns
      */
     static Condition createAttributeMatchesFirstPartCondition(String namespaceURI, String name, String value) {
         return new AttributeMatchesFirstPartCondition(namespaceURI, name, value);
@@ -101,9 +90,6 @@ abstract class Condition {
 
     /**
      * the CSS condition .class
-     *
-     * @param className PARAM
-     * @return Returns
      */
     static Condition createClassCondition(String className) {
         return new ClassCondition(className);
@@ -111,9 +97,6 @@ abstract class Condition {
 
     /**
      * the CSS condition #ID
-     *
-     * @param id PARAM
-     * @return Returns
      */
     static Condition createIDCondition(String id) {
         return new IDCondition(id);
@@ -121,9 +104,6 @@ abstract class Condition {
 
     /**
      * the CSS condition lang(Xx)
-     *
-     * @param lang PARAM
-     * @return Returns
      */
     static Condition createLangCondition(String lang) {
         return new LangCondition(lang);
@@ -131,8 +111,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :first-child
-     *
-     * @return Returns
      */
     static Condition createFirstChildCondition() {
         return new FirstChildCondition();
@@ -140,8 +118,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :last-child
-     *
-     * @return Returns
      */
     static Condition createLastChildCondition() {
         return new LastChildCondition();
@@ -149,9 +125,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :nth-child(an+b)
-     *
-     * @param number PARAM
-     * @return Returns
      */
     static Condition createNthChildCondition(String number) {
         return NthChildCondition.fromString(number);
@@ -159,8 +132,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :even
-     *
-     * @return Returns
      */
     static Condition createEvenChildCondition() {
         return new EvenChildCondition();
@@ -168,8 +139,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :odd
-     *
-     * @return Returns
      */
     static Condition createOddChildCondition() {
         return new OddChildCondition();
@@ -177,8 +146,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :link
-     *
-     * @return Returns
      */
     static Condition createLinkCondition() {
         return new LinkCondition();
@@ -186,8 +153,6 @@ abstract class Condition {
 
     /**
      * for unsupported or invalid CSS
-     *
-     * @return Returns
      */
     static Condition createUnsupportedCondition() {
         return new UnsupportedCondition();

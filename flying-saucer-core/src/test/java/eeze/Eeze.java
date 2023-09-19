@@ -437,8 +437,6 @@ public class Eeze {
 
         /**
          * Invoked when an action occurs.
-         *
-         * @param e PARAM
          */
         @Override
         public void actionPerformed(ActionEvent e) {

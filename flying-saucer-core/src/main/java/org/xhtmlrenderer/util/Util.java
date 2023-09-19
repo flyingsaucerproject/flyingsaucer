@@ -395,9 +395,6 @@ public class Util {
 
     /**
      * Gets the number attribute of the Util class
-     *
-     * @param str PARAM
-     * @return The number value
      */
     public static boolean isNumber(String str) {
         try {

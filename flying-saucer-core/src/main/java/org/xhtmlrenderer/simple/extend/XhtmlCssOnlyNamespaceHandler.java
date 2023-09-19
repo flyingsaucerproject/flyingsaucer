@@ -62,9 +62,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     /**
      * Gets the class attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e PARAM
-     * @return The class value
      */
     @Override
     public String getClass(org.w3c.dom.Element e) {
@@ -73,9 +70,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     /**
      * Gets the iD attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e PARAM
-     * @return The iD value
      */
     @Override
     public String getID(org.w3c.dom.Element e) {
@@ -172,9 +166,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     /**
      * Gets the linkUri attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e PARAM
-     * @return The linkUri value
      */
     @Override
     public String getLinkUri(org.w3c.dom.Element e) {
@@ -331,9 +322,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     /**
      * Gets the stylesheetLinks attribute of the XhtmlNamespaceHandler object
-     *
-     * @param doc PARAM
-     * @return The stylesheetLinks value
      */
     @Override
     public StylesheetInfo[] getStylesheets(Document doc) {

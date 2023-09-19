@@ -44,10 +44,6 @@ public class XLayout /*extends CustomBlockLayout*/ {
 
     /**
      * Gets the intrinsicDimensions attribute of the XLayout object
-     *
-     * @param c    PARAM
-     * @param elem PARAM
-     * @return The intrinsicDimensions value
      */
     public Dimension getIntrinsicDimensions(LayoutContext c, Element elem) {
         return new Dimension(50, 50);

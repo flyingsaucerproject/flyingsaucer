@@ -54,10 +54,6 @@ public final class ValueConstants {
 
     /**
      * A text representation of the CSS type for this value.
-     *
-     * @param cssType            PARAM
-     * @param primitiveValueType PARAM
-     * @return Returns
      */
     public static String cssType(int cssType, int primitiveValueType) {
         if (cssType == CSSValue.CSS_PRIMITIVE_VALUE) {
@@ -190,9 +186,6 @@ public final class ValueConstants {
 
     /**
      * Gets the cssValueTypeDesc attribute of the {@link CSSValue} object
-     *
-     * @param cssValue PARAM
-     * @return The cssValueTypeDesc value
      */
     public static String getCssValueTypeDesc(CSSValue cssValue) {
         switch (cssValue.getCssValueType()) {
@@ -213,9 +206,6 @@ public final class ValueConstants {
      * Returns true if the SAC primitive value type is a number unit--a unit
      * that can only contain a numeric value. This is a shorthand way of saying,
      * did the user declare this as a number unit (like px)?
-     *
-     * @param cssPrimitiveType PARAM
-     * @return See desc.
      */
     public static boolean isNumber(short cssPrimitiveType) {
         switch (cssPrimitiveType) {
@@ -296,9 +286,6 @@ public final class ValueConstants {
      * Incomplete routine to try and determine the
      * CSSPrimitiveValue short code for a given value,
      * e.g. 14pt is CSS_PT.
-     *
-     * @param value PARAM
-     * @return Returns
      */
     public static short guessType(String value) {
         short type = CSSPrimitiveValue.CSS_STRING;

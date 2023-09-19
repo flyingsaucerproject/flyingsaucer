@@ -270,7 +270,6 @@ public class IdentValue implements FSDerivedValue {
      * Adds a feature to the Value attribute of the IdentValue class
      *
      * @param ident The feature to be added to the Value attribute
-     * @return Returns
      */
     private static synchronized IdentValue addValue(String ident) {
         if (ALL_IDENT_VALUES == null) {

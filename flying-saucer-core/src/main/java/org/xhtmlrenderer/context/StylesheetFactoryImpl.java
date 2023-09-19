@@ -19,13 +19,6 @@
  */
 package org.xhtmlrenderer.context;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.parser.CSSErrorHandler;
 import org.xhtmlrenderer.css.parser.CSSParser;
@@ -37,6 +30,14 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
 
 /**
  * A Factory class for Cascading Style Sheets. Sheets are parsed using a single
@@ -87,6 +88,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     /**
      * @return Returns null if uri could not be loaded
      */
+    @Nullable
     private Stylesheet parse(StylesheetInfo info) {
         CSSResource cr = _userAgentCallback.getCSSResource(info.getUri());
         if (cr==null) return null;

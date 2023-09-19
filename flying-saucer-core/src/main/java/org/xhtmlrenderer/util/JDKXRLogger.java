@@ -21,8 +21,6 @@
  */
 package org.xhtmlrenderer.util;
 
-import static java.lang.Boolean.parseBoolean;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -35,6 +33,8 @@ import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.lang.Boolean.parseBoolean;
 
 /**
  * An {@link XRLogger} interface that uses <code>java.util.logging</code>.
@@ -70,9 +70,6 @@ public class JDKXRLogger implements XRLogger {
      * Same purpose as Logger.getLogger(), except that the static initialization
      * for XRLog will initialize the LogManager with logging levels and other
      * configuration. Use this instead of Logger.getLogger()
-     *
-     * @param log PARAM
-     * @return The logger value
      */
     private static Logger getLogger(String log) {
         return Logger.getLogger(log);

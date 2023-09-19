@@ -115,9 +115,6 @@ public class DOMInspector extends JPanel {
 
     /**
      * Gets the frame attribute of the DOMInspector object
-     *
-     * @param comp PARAM
-     * @return The frame value
      */
     public JFrame getFrame(Component comp) {
         if (comp instanceof JFrame) {
@@ -212,10 +209,6 @@ class ElementPropertiesPanel extends JPanel {
 
         /**
          * Gets the cellRenderer attribute of the PropertiesJTable object
-         *
-         * @param row PARAM
-         * @param col PARAM
-         * @return The cellRenderer value
          */
         @Override
         public TableCellRenderer getCellRenderer(int row, int col) {
@@ -251,9 +244,6 @@ class ElementPropertiesPanel extends JPanel {
 
         /**
          * Gets the columnName attribute of the PropertiesTableModel object
-         *
-         * @param col PARAM
-         * @return The columnName value
          */
         @Override
         public String getColumnName(int col) {
@@ -262,8 +252,6 @@ class ElementPropertiesPanel extends JPanel {
 
         /**
          * Gets the columnCount attribute of the PropertiesTableModel object
-         *
-         * @return The columnCount value
          */
         @Override
         public int getColumnCount() {
@@ -272,8 +260,6 @@ class ElementPropertiesPanel extends JPanel {
 
         /**
          * Gets the rowCount attribute of the PropertiesTableModel object
-         *
-         * @return The rowCount value
          */
         @Override
         public int getRowCount() {
@@ -282,10 +268,6 @@ class ElementPropertiesPanel extends JPanel {
 
         /**
          * Gets the valueAt attribute of the PropertiesTableModel object
-         *
-         * @param row PARAM
-         * @param col PARAM
-         * @return The valueAt value
          */
         @Override
         public Object getValueAt(int row, int col) {
@@ -320,19 +302,14 @@ class ElementPropertiesPanel extends JPanel {
 
         /**
          * Gets the cellEditable attribute of the PropertiesTableModel object
-         *
-         * @param row PARAM
-         * @param col PARAM
-         * @return The cellEditable value
          */
         @Override
         public boolean isCellEditable(int row, int col) {
             return false;
         }
     }
-}//}}}
+}
 
-//-{{{ DOMSelectionListener
 
 class DOMSelectionListener implements TreeSelectionListener {
 
@@ -433,10 +410,6 @@ class DOMTreeModel implements TreeModel {
 
     /**
      * Gets the child attribute of the DOMTreeModel object
-     *
-     * @param parent PARAM
-     * @param index  PARAM
-     * @return The child value
      */
     @Override
     public Object getChild(Object parent, int index) {
@@ -456,9 +429,6 @@ class DOMTreeModel implements TreeModel {
 
     /**
      * Gets the childCount attribute of the DOMTreeModel object
-     *
-     * @param parent PARAM
-     * @return The childCount value
      */
     @Override
     public int getChildCount(Object parent) {
@@ -477,10 +447,6 @@ class DOMTreeModel implements TreeModel {
 
     /**
      * Gets the indexOfChild attribute of the DOMTreeModel object
-     *
-     * @param parent PARAM
-     * @param child  PARAM
-     * @return The indexOfChild value
      */
     @Override
     public int getIndexOfChild(Object parent, Object child) {
@@ -515,9 +481,6 @@ class DOMTreeModel implements TreeModel {
 
     /**
      * Gets the leaf attribute of the DOMTreeModel object
-     *
-     * @param nd PARAM
-     * @return The leaf value
      */
     @Override
     public boolean isLeaf(Object nd) {
@@ -530,7 +493,6 @@ class DOMTreeModel implements TreeModel {
      * Adds a feature to the Displayable attribute of the DOMTreeModel object
      *
      * @param parent The feature to be added to the Displayable attribute
-     * @return Returns
      */
     private List addDisplayable(Node parent) {
         List children = (List) this.displayableNodes.get(parent);

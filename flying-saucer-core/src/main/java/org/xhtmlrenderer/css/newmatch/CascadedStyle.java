@@ -204,9 +204,6 @@ public class CascadedStyle {
 
     /**
      * Gets the ident attribute of the CascadedStyle object
-     *
-     * @param cssName PARAM
-     * @return The ident value
      */
     public IdentValue getIdent(CSSName cssName) {
         PropertyDeclaration pd = propertyByName(cssName);

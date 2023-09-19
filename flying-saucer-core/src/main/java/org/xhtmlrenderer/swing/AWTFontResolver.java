@@ -191,13 +191,6 @@ public class AWTFontResolver implements FontResolver {
 
     /**
      * Gets the fontInstanceHashName attribute of the FontResolverTest object
-     *
-     * @param ctx
-     *@param name    PARAM
-     * @param size    PARAM
-     * @param weight  PARAM
-     * @param style   PARAM
-     * @param variant PARAM @return The fontInstanceHashName value
      */
     protected static String getFontInstanceHashName(SharedContext ctx, String name, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         return name + "-" + (size * ctx.getTextRenderer().getFontScale()) + "-" + weight + "-" + style + "-" + variant;

@@ -182,9 +182,6 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
 
     /**
      * This method is used to get a float value in a specified unit.
-     *
-     * @param unitType PARAM
-     * @return The floatValue value
      */
     @Override
     public float getFloatValue(short unitType) {

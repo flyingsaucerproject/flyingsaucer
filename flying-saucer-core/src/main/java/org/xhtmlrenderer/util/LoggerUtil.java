@@ -33,9 +33,6 @@ public class LoggerUtil {
 
     /**
      * Instantiate a Logger for debug messages for a given class.
-     *
-     * @param cls PARAM
-     * @return The debugLogger value
      */
     public static Logger getDebugLogger(Class cls) {
         Logger l = Logger.getLogger(cls.getName());

@@ -22,14 +22,23 @@ package org.xhtmlrenderer.util;
 
 import org.xhtmlrenderer.DefaultCSSMarker;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 
 /**
@@ -481,7 +490,7 @@ public class Configuration {
      * conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static int valueAsByte(String key, byte defaultVal) {
@@ -508,7 +517,7 @@ public class Configuration {
      * conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static int valueAsShort(String key, short defaultVal) {
@@ -535,7 +544,7 @@ public class Configuration {
      * conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static int valueAsInt(String key, int defaultVal) {
@@ -563,7 +572,7 @@ public class Configuration {
      * character, only the first character is returned.
      *
      * @param key Name of the property
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @returnValue assigned to the key, as a character
      */
     public static char valueAsChar(String key, char defaultVal) {
@@ -587,7 +596,7 @@ public class Configuration {
      * conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static long valueAsLong(String key, long defaultVal) {
@@ -614,7 +623,7 @@ public class Configuration {
      * conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static float valueAsFloat(String key, float defaultVal) {
@@ -641,7 +650,7 @@ public class Configuration {
      * if the conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static double valueAsDouble(String key, double defaultVal) {
@@ -667,7 +676,7 @@ public class Configuration {
      * defined, and if the default is null.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static String valueFor(String key, String defaultVal) {
@@ -685,7 +694,6 @@ public class Configuration {
      * empty if no such keys are found.
      *
      * @param prefix Prefix to filter on. No regex.
-     * @return Returns Iterator, see description.
      */
     public static Iterator keysByPrefix(String prefix) {
         Configuration conf = instance();
@@ -723,7 +731,7 @@ public class Configuration {
      * is not defined, and if the default is null.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static boolean isTrue(String key, boolean defaultVal) {
@@ -748,7 +756,7 @@ public class Configuration {
      * is not defined, or the value is not a valid boolean.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static boolean isFalse(String key, boolean defaultVal) {

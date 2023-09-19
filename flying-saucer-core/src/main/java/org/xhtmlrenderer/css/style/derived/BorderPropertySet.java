@@ -161,9 +161,6 @@ public class BorderPropertySet extends RectPropertySet {
 
     /**
      * Returns the colors for brighter parts of each side for a particular decoration style
-     *
-     * @param style
-     * @return Returns
      */
     public BorderPropertySet lighten(IdentValue style) {
         BorderPropertySet bc = new BorderPropertySet(this);
@@ -176,9 +173,6 @@ public class BorderPropertySet extends RectPropertySet {
 
     /**
      * Returns the colors for brighter parts of each side for a particular decoration style
-     *
-     * @param style
-     * @return Returns
      */
     public BorderPropertySet darken(IdentValue style) {
         BorderPropertySet bc = new BorderPropertySet(this);

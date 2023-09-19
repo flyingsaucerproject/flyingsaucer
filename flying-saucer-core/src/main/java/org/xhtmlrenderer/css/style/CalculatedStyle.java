@@ -126,9 +126,6 @@ public class CalculatedStyle {
     /**
      * Constructor for the CalculatedStyle object. To get a derived style, use
      * the Styler objects getDerivedStyle which will cache styles
-     *
-     * @param parent  PARAM
-     * @param matched PARAM
      */
     private CalculatedStyle(CalculatedStyle parent, CascadedStyle matched) {
         this();
@@ -196,9 +193,7 @@ public class CalculatedStyle {
     }
 
     /**
-     * Returns the parent style.
-     *
-     * @return Returns the parent style
+     * Returns the parent style
      */
     public CalculatedStyle getParent() {
         return _parent;
@@ -256,10 +251,6 @@ public class CalculatedStyle {
 
     /**
      * Gets the ident attribute of the CalculatedStyle object
-     *
-     * @param cssName PARAM
-     * @param val     PARAM
-     * @return The ident value
      */
     public boolean isIdent(CSSName cssName, IdentValue val) {
         return valueByName(cssName) == val;
@@ -267,9 +258,6 @@ public class CalculatedStyle {
 
     /**
      * Gets the ident attribute of the CalculatedStyle object
-     *
-     * @param cssName PARAM
-     * @return The ident value
      */
     public IdentValue getIdent(CSSName cssName) {
         return valueByName(cssName).asIdentValue();
@@ -592,8 +580,6 @@ public class CalculatedStyle {
      * either of these assumptions. When this method exits, the derived property
      * list for this class will be populated with the properties defined for
      * this element, properly cascaded.</p>
-     *
-     * @param matched PARAM
      */
     private void derive(CascadedStyle matched) {
         if (matched == null) {

@@ -132,10 +132,6 @@ public class DocumentDiffTest {
 
     /**
      * Gets the diff attribute of the DocumentDiffTest object
-     *
-     * @param sb  PARAM
-     * @param box PARAM
-     * @param tab PARAM
      */
     public static void getDiff(StringBuilder sb, Box box, String tab) {
         /* sb.append(tab + box.getTestString() + "\n"); */
@@ -149,7 +145,6 @@ public class DocumentDiffTest {
      * The main program for the DocumentDiffTest class
      *
      * @param args The command line arguments
-     * @throws Exception Throws
      */
     public static void main(String[] args)
             throws Exception {

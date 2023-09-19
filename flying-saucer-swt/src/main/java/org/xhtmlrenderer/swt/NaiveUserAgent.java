@@ -19,14 +19,6 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
@@ -37,12 +29,22 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.LinkedHashMap;
+
 /**
  * Naive user agent, copy of org.xhtmlrenderer.swing.NaiveUserAgent (but
  * modified for SWT, of course).
  *
  * @author Vianney le Clément
- *
  */
 public class NaiveUserAgent implements UserAgentCallback {
 
@@ -67,7 +69,6 @@ public class NaiveUserAgent implements UserAgentCallback {
     /**
      * Gets a Reader for the resource identified
      *
-     * @param uri PARAM
      * @return The stylesheet value
      */
     // TODO implement this with nio.
@@ -86,10 +87,12 @@ public class NaiveUserAgent implements UserAgentCallback {
         return is;
     }
 
+    @Override
     public CSSResource getCSSResource(String uri) {
         return new CSSResource(getInputStream(uri));
     }
 
+    @Override
     public ImageResource getImageResource(String uri) {
         ImageResource ir;
         if (ImageUtil.isEmbeddedBase64Image(uri)) {
@@ -152,6 +155,7 @@ public class NaiveUserAgent implements UserAgentCallback {
         return new ImageResource(null, null);
     }
 
+    @Override
     public XMLResource getXMLResource(String uri) {
         if (uri == null) {
             XRLog.exception("null uri requested");
@@ -182,18 +186,18 @@ public class NaiveUserAgent implements UserAgentCallback {
 
     /**
      * Gets the visited attribute of the NaiveUserAgent object
-     *
-     * @param uri PARAM
-     * @return The visited value
      */
+    @Override
     public boolean isVisited(String uri) {
         return false;
     }
 
+    @Override
     public void setBaseURL(String url) {
         _baseURL = url;
     }
 
+    @Override
     public String resolveURI(String uri) {
         if (uri == null) return null;
 
@@ -242,6 +246,7 @@ public class NaiveUserAgent implements UserAgentCallback {
         return null;
     }
 
+    @Override
     public String getBaseURL() {
         return _baseURL;
     }
@@ -250,13 +255,14 @@ public class NaiveUserAgent implements UserAgentCallback {
      * Dispose all images in cache and clean the cache.
      */
     public void disposeCache() {
-        for (Iterator iter = _imageCache.values().iterator(); iter.hasNext();) {
-            ImageResource ir = (ImageResource) iter.next();
+        for (Object o : _imageCache.values()) {
+            ImageResource ir = (ImageResource) o;
             ((SWTFSImage) ir.getImage()).getImage().dispose();
         }
         _imageCache.clear();
     }
 
+    @Override
     public byte[] getBinaryResource(String uri) {
         InputStream is = getInputStream(uri);
         if (is==null) return null;

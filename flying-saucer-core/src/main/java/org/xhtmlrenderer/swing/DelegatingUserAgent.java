@@ -83,9 +83,6 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
 
     /**
      * Gets a Reader for the resource identified
-     *
-     * @param uri PARAM
-     * @return The stylesheet value
      */
     protected InputStream resolveAndOpenStream(String uri) {
         return IOUtil.openStreamAtUrl(_uriResolver.resolve(uri));

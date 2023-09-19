@@ -149,10 +149,6 @@ public class StyleReference {
 
     /**
      * Gets the pseudoElementStyle attribute of the StyleReference object
-     *
-     * @param node          PARAM
-     * @param pseudoElement PARAM
-     * @return The pseudoElementStyle value
      */
     public CascadedStyle getPseudoElementStyle(Node node, String pseudoElement) {
         Element e;

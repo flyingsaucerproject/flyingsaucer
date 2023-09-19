@@ -87,8 +87,6 @@ public class GeneralUtil {
     /**
      * Dumps an exception to the console, only the last 5 lines of the stack
      * trace.
-     *
-     * @param ex PARAM
      */
     public static void dumpShortException(Exception ex) {
         String s = ex.getMessage();
@@ -161,9 +159,6 @@ public class GeneralUtil {
 
     /**
      * Given an Object instance, returns just the classname with no package
-     *
-     * @param o PARAM
-     * @return Returns
      */
     public static String classNameOnly(Object o) {
         String s = "[null object ref]";
@@ -175,9 +170,6 @@ public class GeneralUtil {
 
     /**
      * Given a String classname, returns just the classname with no package
-     *
-     * @param cname PARAM
-     * @return Returns
      */
     public static String classNameOnly(String cname) {
         String s = "[null object ref]";

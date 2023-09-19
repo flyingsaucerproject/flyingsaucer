@@ -57,10 +57,8 @@ public class XRSimpleLogFormatter extends Formatter {
 
     /**
      * Format the given log record and return the formatted string.
-     *
-     * @param record PARAM
-     * @return Returns
      */
+    @Override
     public String format(LogRecord record) {
         Throwable th = record.getThrown();
         String thName = "";
@@ -93,20 +91,14 @@ public class XRSimpleLogFormatter extends Formatter {
 
     /**
      * Localize and format the message string from a log record.
-     *
-     * @param record PARAM
-     * @return Returns
      */
     @Override
-    public String formatMessage(LogRecord record) {
+    public synchronized String formatMessage(LogRecord record) {
         return super.formatMessage(record);
     }
 
     /**
      * Return the header string for a set of formatted records.
-     *
-     * @param h PARAM
-     * @return The head value
      */
     @Override
     public String getHead(Handler h) {
@@ -115,16 +107,13 @@ public class XRSimpleLogFormatter extends Formatter {
 
     /**
      * Return the tail string for a set of formatted records.
-     *
-     * @param h PARAM
-     * @return The tail value
      */
     @Override
     public String getTail(Handler h) {
         return super.getTail(h);
     }
 
-}// end class
+}
 
 /*
  * $Id$

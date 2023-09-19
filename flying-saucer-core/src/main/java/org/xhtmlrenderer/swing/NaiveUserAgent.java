@@ -115,9 +115,6 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     /**
      * Gets a Reader for the resource identified
-     *
-     * @param uri PARAM
-     * @return The stylesheet value
      */
     //TOdO:implement this with nio.
     protected InputStream resolveAndOpenStream(final String uri) {
