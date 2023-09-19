@@ -19,12 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.geom.Area;
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -43,9 +37,13 @@ import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
+import java.awt.*;
+import java.awt.geom.Area;
+import java.util.List;
+
 /**
  * An abstract implementation of an {@link OutputDevice}.  It provides complete
- * implementations for many <code>OutputDevice</code> methods.
+ * implementations for many {@code OutputDevice} methods.
  */
 public abstract class AbstractOutputDevice implements OutputDevice {
 
@@ -53,6 +51,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
 
     protected abstract void drawLine(int x1, int y1, int x2, int y2);
 
+    @Override
     public void drawText(RenderingContext c, InlineText inlineText) {
         InlineLayoutBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
@@ -111,6 +110,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         drawLine(x, y, x + width, y);
     }
 
+    @Override
     public void drawTextDecoration(
             RenderingContext c, InlineLayoutBox iB, TextDecoration decoration) {
         setColor(iB.getStyle().getColor());
@@ -121,28 +121,29 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                     edge.width, decoration.getThickness());
     }
 
+    @Override
     public void drawTextDecoration(RenderingContext c, LineBox lineBox) {
         setColor(lineBox.getStyle().getColor());
         Box parent = lineBox.getParent();
-        List decorations = lineBox.getTextDecorations();
-        for (Iterator i = decorations.iterator(); i.hasNext(); ) {
-            TextDecoration textDecoration = (TextDecoration)i.next();
+        List<TextDecoration> decorations = lineBox.getTextDecorations();
+        for (TextDecoration textDecoration : decorations) {
             if (parent.getStyle().isIdent(
                     CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
                 fillRect(
-                    lineBox.getAbsX(),
-                    lineBox.getAbsY() + textDecoration.getOffset(),
-                    parent.getAbsX() + parent.getTx() + parent.getContentWidth() - lineBox.getAbsX(),
-                    textDecoration.getThickness());
+                        lineBox.getAbsX(),
+                        lineBox.getAbsY() + textDecoration.getOffset(),
+                        parent.getAbsX() + parent.getTx() + parent.getContentWidth() - lineBox.getAbsX(),
+                        textDecoration.getThickness());
             } else {
                 fillRect(
-                    lineBox.getAbsX(), lineBox.getAbsY() + textDecoration.getOffset(),
-                    lineBox.getContentWidth(),
-                    textDecoration.getThickness());
+                        lineBox.getAbsX(), lineBox.getAbsY() + textDecoration.getOffset(),
+                        lineBox.getContentWidth(),
+                        textDecoration.getThickness());
             }
         }
     }
 
+    @Override
     public void drawDebugOutline(RenderingContext c, Box box, FSColor color) {
         setColor(color);
         Rectangle rect = box.getMarginEdge(box.getAbsX(), box.getAbsY(), c, 0, 0);
@@ -151,11 +152,13 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         drawRect(rect.x, rect.y, rect.width, rect.height);
     }
 
+    @Override
     public void paintCollapsedBorder(
             RenderingContext c, BorderPropertySet border, Rectangle bounds, int side) {
         BorderPainter.paint(bounds, side, border, c, 0, false);
     }
 
+    @Override
     public void paintBorder(RenderingContext c, Box box) {
         if (! box.getStyle().isVisible()) {
             return;
@@ -166,6 +169,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         BorderPainter.paint(borderBounds, box.getBorderSides(), box.getBorder(c), c, 0, true);
     }
 
+    @Override
     public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
         BorderPainter.paint(edge, sides, style.getBorder(c), c, 0, true);
     }
@@ -182,12 +186,14 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         return null;
     }
 
+    @Override
     public void paintBackground(
             RenderingContext c, CalculatedStyle style,
             Rectangle bounds, Rectangle bgImageContainer, BorderPropertySet border) {
         paintBackground0(c, style, bounds, bgImageContainer, border);
     }
 
+    @Override
     public void paintBackground(RenderingContext c, Box box) {
         if (! box.getStyle().isVisible()) {
             return;
@@ -210,7 +216,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         FSImage backgroundImage = getBackgroundImage(c, style);
 
         // If the image width or height is zero, then there's nothing to draw.
-        // Also prevents infinte loop when trying to tile an image with zero size.
+        // Also prevents infinite loop when trying to tile an image with zero size.
         if (backgroundImage == null || backgroundImage.getHeight() == 0 || backgroundImage.getWidth() == 0) {
             backgroundImage = null;
         }
