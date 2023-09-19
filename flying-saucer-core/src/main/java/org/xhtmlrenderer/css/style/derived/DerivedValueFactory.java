@@ -20,9 +20,6 @@
  */
 package org.xhtmlrenderer.css.style.derived;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -30,8 +27,11 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DerivedValueFactory {
-    private static final Map CACHED_COLORS = new HashMap();
+    private static final Map<String, FSDerivedValue> CACHED_COLORS = new HashMap<>();
 
     public static FSDerivedValue newDerivedValue(
             CalculatedStyle style, CSSName cssName, PropertyValue value) {
@@ -52,7 +52,7 @@ public class DerivedValueFactory {
             case PropertyValue.VALUE_TYPE_NUMBER:
                 return new NumberValue(cssName, value);
             case PropertyValue.VALUE_TYPE_COLOR:
-                FSDerivedValue color = (FSDerivedValue)CACHED_COLORS.get(value.getCssText());
+                FSDerivedValue color = CACHED_COLORS.get(value.getCssText());
                 if (color == null) {
                     color = new ColorValue(cssName, value);
                     CACHED_COLORS.put(value.getCssText(), color);
