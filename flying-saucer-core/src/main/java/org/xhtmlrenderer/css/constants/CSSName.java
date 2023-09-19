@@ -20,7 +20,6 @@
  */
 package org.xhtmlrenderer.css.constants;
 
-import org.xhtmlrenderer.css.parser.CSSErrorHandler;
 import org.xhtmlrenderer.css.parser.CSSParser;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.property.BackgroundPropertyBuilder;
@@ -55,7 +54,7 @@ import java.util.TreeMap;
  *
  * @author Patrick Wright
  */
-public final class CSSName implements Comparable {
+public final class CSSName implements Comparable<CSSName> {
     /**
      * marker var, used for initialization
      */
@@ -77,7 +76,7 @@ public final class CSSName implements Comparable {
     private static final Integer NOT_INHERITED = 3;
 
     /**
-     * Used to assing unique int id values to new CSSNames created in this class
+     * Used to assign unique int id values to new CSSNames created in this class
      */
     private static int maxAssigned;
 
@@ -115,18 +114,18 @@ public final class CSSName implements Comparable {
     /**
      * Map of all CSS properties
      */
-    private static final Map ALL_PROPERTY_NAMES = new TreeMap();
+    private static final Map<String, CSSName> ALL_PROPERTY_NAMES = new TreeMap<>();
 
     /**
      * Map of all non-shorthand CSS properties
      */
-    private static final Map ALL_PRIMITIVE_PROPERTY_NAMES = new TreeMap();
+    private static final Map<String, CSSName> ALL_PRIMITIVE_PROPERTY_NAMES = new TreeMap<>();
 
     /**
      * Unique CSSName instance for CSS2 property.
      * TODO: UA dependent
      */
-    public final static CSSName COLOR =
+    public static final CSSName COLOR =
             addProperty(
                     "color",
                     PRIMITIVE,
@@ -138,7 +137,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_COLOR =
+    public static final CSSName BACKGROUND_COLOR =
             addProperty(
                     "background-color",
                     PRIMITIVE,
@@ -150,7 +149,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_IMAGE =
+    public static final CSSName BACKGROUND_IMAGE =
             addProperty(
                     "background-image",
                     PRIMITIVE,
@@ -162,7 +161,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_REPEAT =
+    public static final CSSName BACKGROUND_REPEAT =
             addProperty(
                     "background-repeat",
                     PRIMITIVE,
@@ -174,7 +173,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_ATTACHMENT =
+    public static final CSSName BACKGROUND_ATTACHMENT =
             addProperty(
                     "background-attachment",
                     PRIMITIVE,
@@ -186,7 +185,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_POSITION =
+    public static final CSSName BACKGROUND_POSITION =
             addProperty(
                     "background-position",
                     PRIMITIVE,
@@ -195,7 +194,7 @@ public final class CSSName implements Comparable {
                     new PrimitivePropertyBuilders.BackgroundPosition()
             );
 
-    public final static CSSName BACKGROUND_SIZE =
+    public static final CSSName BACKGROUND_SIZE =
         addProperty(
                 "background-size",
                 PRIMITIVE,
@@ -207,7 +206,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLLAPSE =
+    public static final CSSName BORDER_COLLAPSE =
             addProperty(
                     "border-collapse",
                     PRIMITIVE,
@@ -219,7 +218,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for fictitious property.
      */
-    public final static CSSName FS_BORDER_SPACING_HORIZONTAL =
+    public static final CSSName FS_BORDER_SPACING_HORIZONTAL =
             addProperty(
                     "-fs-border-spacing-horizontal",
                     PRIMITIVE,
@@ -231,7 +230,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_BORDER_SPACING_VERTICAL =
+    public static final CSSName FS_BORDER_SPACING_VERTICAL =
             addProperty(
                     "-fs-border-spacing-vertical",
                     PRIMITIVE,
@@ -243,7 +242,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_DYNAMIC_AUTO_WIDTH =
+    public static final CSSName FS_DYNAMIC_AUTO_WIDTH =
             addProperty(
                     "-fs-dynamic-auto-width",
                     PRIMITIVE,
@@ -255,7 +254,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_FONT_METRIC_SRC =
+    public static final CSSName FS_FONT_METRIC_SRC =
             addProperty(
                     "-fs-font-metric-src",
                     PRIMITIVE,
@@ -267,7 +266,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_KEEP_WITH_INLINE =
+    public static final CSSName FS_KEEP_WITH_INLINE =
             addProperty(
                     "-fs-keep-with-inline",
                     PRIMITIVE,
@@ -279,7 +278,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_PAGE_WIDTH =
+    public static final CSSName FS_PAGE_WIDTH =
             addProperty(
                     "-fs-page-width",
                     PRIMITIVE,
@@ -291,7 +290,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_PAGE_HEIGHT =
+    public static final CSSName FS_PAGE_HEIGHT =
             addProperty(
                     "-fs-page-height",
                     PRIMITIVE,
@@ -303,7 +302,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_PAGE_SEQUENCE =
+    public static final CSSName FS_PAGE_SEQUENCE =
             addProperty(
                     "-fs-page-sequence",
                     PRIMITIVE,
@@ -315,7 +314,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_PDF_FONT_EMBED =
+    public static final CSSName FS_PDF_FONT_EMBED =
             addProperty(
                     "-fs-pdf-font-embed",
                     PRIMITIVE,
@@ -327,7 +326,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_PDF_FONT_ENCODING =
+    public static final CSSName FS_PDF_FONT_ENCODING =
             addProperty(
                     "-fs-pdf-font-encoding",
                     PRIMITIVE,
@@ -339,7 +338,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_PAGE_ORIENTATION =
+    public static final CSSName FS_PAGE_ORIENTATION =
             addProperty(
                     "-fs-page-orientation",
                     PRIMITIVE,
@@ -351,7 +350,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_TABLE_PAGINATE =
+    public static final CSSName FS_TABLE_PAGINATE =
             addProperty(
                     "-fs-table-paginate",
                     PRIMITIVE,
@@ -363,7 +362,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_TEXT_DECORATION_EXTENT =
+    public static final CSSName FS_TEXT_DECORATION_EXTENT =
             addProperty(
                     "-fs-text-decoration-extent",
                     PRIMITIVE,
@@ -375,7 +374,7 @@ public final class CSSName implements Comparable {
     /**
      * Used for forcing images to scale to a certain width
      */
-    public final static CSSName FS_FIT_IMAGES_TO_WIDTH =
+    public static final CSSName FS_FIT_IMAGES_TO_WIDTH =
         addProperty(
                 "-fs-fit-images-to-width",
                 PRIMITIVE,
@@ -387,7 +386,7 @@ public final class CSSName implements Comparable {
     /**
      * Used to control creation of named destinations for boxes having the id attribute set.
      */
-    public final static CSSName FS_NAMED_DESTINATION =
+    public static final CSSName FS_NAMED_DESTINATION =
             addProperty(
                     "-fs-named-destination",
                     PRIMITIVE,
@@ -399,7 +398,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BOTTOM =
+    public static final CSSName BOTTOM =
             addProperty(
                     "bottom",
                     PRIMITIVE,
@@ -411,7 +410,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName CAPTION_SIDE =
+    public static final CSSName CAPTION_SIDE =
             addProperty(
                     "caption-side",
                     PRIMITIVE,
@@ -423,7 +422,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName CLEAR =
+    public static final CSSName CLEAR =
             addProperty(
                     "clear",
                     PRIMITIVE,
@@ -435,7 +434,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName CLIP =
+    public static final CSSName CLIP =
             addProperty(
                     "clip",
                     PRIMITIVE,
@@ -448,7 +447,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName CONTENT =
+    public static final CSSName CONTENT =
             addProperty(
                     "content",
                     PRIMITIVE,
@@ -460,7 +459,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName COUNTER_INCREMENT =
+    public static final CSSName COUNTER_INCREMENT =
             addProperty(
                     "counter-increment",
                     PRIMITIVE,
@@ -473,7 +472,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName COUNTER_RESET =
+    public static final CSSName COUNTER_RESET =
             addProperty(
                     "counter-reset",
                     PRIMITIVE,
@@ -486,7 +485,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName CURSOR =
+    public static final CSSName CURSOR =
             addProperty(
                     "cursor",
                     PRIMITIVE,
@@ -499,7 +498,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName DIRECTION =
+    public static final CSSName DIRECTION =
             addProperty(
                     "direction",
                     PRIMITIVE,
@@ -512,7 +511,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName DISPLAY =
+    public static final CSSName DISPLAY =
             addProperty(
                     "display",
                     PRIMITIVE,
@@ -524,7 +523,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName EMPTY_CELLS =
+    public static final CSSName EMPTY_CELLS =
             addProperty(
                     "empty-cells",
                     PRIMITIVE,
@@ -536,7 +535,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FLOAT =
+    public static final CSSName FLOAT =
             addProperty(
                     "float",
                     PRIMITIVE,
@@ -548,7 +547,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_STYLE =
+    public static final CSSName FONT_STYLE =
             addProperty(
                     "font-style",
                     PRIMITIVE,
@@ -560,7 +559,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_VARIANT =
+    public static final CSSName FONT_VARIANT =
             addProperty(
                     "font-variant",
                     PRIMITIVE,
@@ -572,7 +571,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_WEIGHT =
+    public static final CSSName FONT_WEIGHT =
             addProperty(
                     "font-weight",
                     PRIMITIVE,
@@ -584,7 +583,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_SIZE =
+    public static final CSSName FONT_SIZE =
             addProperty(
                     "font-size",
                     PRIMITIVE,
@@ -596,7 +595,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LINE_HEIGHT =
+    public static final CSSName LINE_HEIGHT =
             addProperty(
                     "line-height",
                     PRIMITIVE,
@@ -609,7 +608,7 @@ public final class CSSName implements Comparable {
      * Unique CSSName instance for CSS2 property.
      * TODO: UA dependent
      */
-    public final static CSSName FONT_FAMILY =
+    public static final CSSName FONT_FAMILY =
             addProperty(
                     "font-family",
                     PRIMITIVE,
@@ -621,7 +620,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_COLSPAN =
+    public static final CSSName FS_COLSPAN =
             addProperty(
                     "-fs-table-cell-colspan",
                     PRIMITIVE,
@@ -633,7 +632,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_ROWSPAN =
+    public static final CSSName FS_ROWSPAN =
             addProperty(
                     "-fs-table-cell-rowspan",
                     PRIMITIVE,
@@ -645,7 +644,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName HEIGHT =
+    public static final CSSName HEIGHT =
             addProperty(
                     "height",
                     PRIMITIVE,
@@ -657,7 +656,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LEFT =
+    public static final CSSName LEFT =
             addProperty(
                     "left",
                     PRIMITIVE,
@@ -669,7 +668,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LETTER_SPACING =
+    public static final CSSName LETTER_SPACING =
             addProperty(
                     "letter-spacing",
                     PRIMITIVE,
@@ -682,7 +681,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LIST_STYLE_TYPE =
+    public static final CSSName LIST_STYLE_TYPE =
             addProperty(
                     "list-style-type",
                     PRIMITIVE,
@@ -694,7 +693,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LIST_STYLE_POSITION =
+    public static final CSSName LIST_STYLE_POSITION =
             addProperty(
                     "list-style-position",
                     PRIMITIVE,
@@ -706,7 +705,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LIST_STYLE_IMAGE =
+    public static final CSSName LIST_STYLE_IMAGE =
             addProperty(
                     "list-style-image",
                     PRIMITIVE,
@@ -718,7 +717,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MAX_HEIGHT =
+    public static final CSSName MAX_HEIGHT =
             addProperty(
                     "max-height",
                     PRIMITIVE,
@@ -730,7 +729,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MAX_WIDTH =
+    public static final CSSName MAX_WIDTH =
             addProperty(
                     "max-width",
                     PRIMITIVE,
@@ -742,7 +741,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MIN_HEIGHT =
+    public static final CSSName MIN_HEIGHT =
             addProperty(
                     "min-height",
                     PRIMITIVE,
@@ -755,7 +754,7 @@ public final class CSSName implements Comparable {
      * Unique CSSName instance for CSS2 property.
      * TODO: UA dependent
      */
-    public final static CSSName MIN_WIDTH =
+    public static final CSSName MIN_WIDTH =
             addProperty(
                     "min-width",
                     PRIMITIVE,
@@ -767,7 +766,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName ORPHANS =
+    public static final CSSName ORPHANS =
             addProperty(
                     "orphans",
                     PRIMITIVE,
@@ -780,7 +779,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName OUTLINE_COLOR =
+    public static final CSSName OUTLINE_COLOR =
             addProperty(
                     "outline-color",
                     PRIMITIVE,
@@ -793,7 +792,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName OUTLINE_STYLE =
+    public static final CSSName OUTLINE_STYLE =
             addProperty(
                     "outline-style",
                     PRIMITIVE,
@@ -806,7 +805,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName OUTLINE_WIDTH =
+    public static final CSSName OUTLINE_WIDTH =
             addProperty(
                     "outline-width",
                     PRIMITIVE,
@@ -819,7 +818,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName OVERFLOW =
+    public static final CSSName OVERFLOW =
             addProperty(
                     "overflow",
                     PRIMITIVE,
@@ -831,7 +830,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PAGE =
+    public static final CSSName PAGE =
             addProperty(
                     "page",
                     PRIMITIVE,
@@ -843,7 +842,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PAGE_BREAK_AFTER =
+    public static final CSSName PAGE_BREAK_AFTER =
             addProperty(
                     "page-break-after",
                     PRIMITIVE,
@@ -855,7 +854,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PAGE_BREAK_BEFORE =
+    public static final CSSName PAGE_BREAK_BEFORE =
             addProperty(
                     "page-break-before",
                     PRIMITIVE,
@@ -867,7 +866,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PAGE_BREAK_INSIDE =
+    public static final CSSName PAGE_BREAK_INSIDE =
             addProperty(
                     "page-break-inside",
                     PRIMITIVE,
@@ -879,7 +878,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName POSITION =
+    public static final CSSName POSITION =
             addProperty(
                     "position",
                     PRIMITIVE,
@@ -892,7 +891,7 @@ public final class CSSName implements Comparable {
      * Unique CSSName instance for CSS2 property.
      * TODO: UA dependent
      */
-    public final static CSSName QUOTES =
+    public static final CSSName QUOTES =
             addProperty(
                     "quotes",
                     PRIMITIVE,
@@ -904,7 +903,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName RIGHT =
+    public static final CSSName RIGHT =
             addProperty(
                     "right",
                     PRIMITIVE,
@@ -916,7 +915,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName SRC =
+    public static final CSSName SRC =
             addProperty(
                     "src",
                     PRIMITIVE,
@@ -926,9 +925,9 @@ public final class CSSName implements Comparable {
             );
 
     /**
-     * Used for controlling tab size in pre tags. See http://dev.w3.org/csswg/css3-text/#tab-size
+     * Used for controlling tab size in pre tags. See <a href="http://dev.w3.org/csswg/css3-text/#tab-size">...</a>
      */
-    public final static CSSName TAB_SIZE =
+    public static final CSSName TAB_SIZE =
             addProperty(
                     "tab-size",
                     PRIMITIVE,
@@ -940,7 +939,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TABLE_LAYOUT =
+    public static final CSSName TABLE_LAYOUT =
             addProperty(
                     "table-layout",
                     PRIMITIVE,
@@ -953,7 +952,7 @@ public final class CSSName implements Comparable {
      * Unique CSSName instance for CSS2 property.
      * TODO: UA dependent
      */
-    public final static CSSName TEXT_ALIGN =
+    public static final CSSName TEXT_ALIGN =
             addProperty(
                     "text-align",
                     PRIMITIVE,
@@ -965,7 +964,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TEXT_DECORATION =
+    public static final CSSName TEXT_DECORATION =
             addProperty(
                     "text-decoration",
                     PRIMITIVE,
@@ -977,7 +976,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TEXT_INDENT =
+    public static final CSSName TEXT_INDENT =
             addProperty(
                     "text-indent",
                     PRIMITIVE,
@@ -989,7 +988,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TEXT_TRANSFORM =
+    public static final CSSName TEXT_TRANSFORM =
             addProperty(
                     "text-transform",
                     PRIMITIVE,
@@ -1001,7 +1000,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TOP =
+    public static final CSSName TOP =
             addProperty(
                     "top",
                     PRIMITIVE,
@@ -1013,7 +1012,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName UNICODE_BIDI =
+    public static final CSSName UNICODE_BIDI =
             addProperty(
                     "unicode-bidi",
                     PRIMITIVE,
@@ -1026,7 +1025,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName VERTICAL_ALIGN =
+    public static final CSSName VERTICAL_ALIGN =
             addProperty(
                     "vertical-align",
                     PRIMITIVE,
@@ -1038,7 +1037,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName VISIBILITY =
+    public static final CSSName VISIBILITY =
             addProperty(
                     "visibility",
                     PRIMITIVE,
@@ -1050,7 +1049,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName WHITE_SPACE =
+    public static final CSSName WHITE_SPACE =
             addProperty(
                     "white-space",
                     PRIMITIVE,
@@ -1062,7 +1061,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS3 property.
      */
-    public final static CSSName WORD_WRAP =
+    public static final CSSName WORD_WRAP =
             addProperty(
                     "word-wrap",
                     PRIMITIVE,
@@ -1074,7 +1073,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS3 property.
      */
-    public final static CSSName HYPHENS =
+    public static final CSSName HYPHENS =
             addProperty(
                     "hyphens",
                     PRIMITIVE,
@@ -1086,7 +1085,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName WIDOWS =
+    public static final CSSName WIDOWS =
             addProperty(
                     "widows",
                     PRIMITIVE,
@@ -1099,7 +1098,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName WIDTH =
+    public static final CSSName WIDTH =
             addProperty(
                     "width",
                     PRIMITIVE,
@@ -1111,7 +1110,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName WORD_SPACING =
+    public static final CSSName WORD_SPACING =
             addProperty(
                     "word-spacing",
                     PRIMITIVE,
@@ -1124,7 +1123,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName Z_INDEX =
+    public static final CSSName Z_INDEX =
             addProperty(
                     "z-index",
                     PRIMITIVE,
@@ -1136,7 +1135,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_TOP_COLOR =
+    public static final CSSName BORDER_TOP_COLOR =
             addProperty(
                     "border-top-color",
                     PRIMITIVE,
@@ -1147,7 +1146,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_RIGHT_COLOR =
+    public static final CSSName BORDER_RIGHT_COLOR =
             addProperty(
                     "border-right-color",
                     PRIMITIVE,
@@ -1158,7 +1157,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_BOTTOM_COLOR =
+    public static final CSSName BORDER_BOTTOM_COLOR =
             addProperty(
                     "border-bottom-color",
                     PRIMITIVE,
@@ -1169,7 +1168,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_LEFT_COLOR =
+    public static final CSSName BORDER_LEFT_COLOR =
             addProperty(
                     "border-left-color",
                     PRIMITIVE,
@@ -1181,7 +1180,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_TOP_STYLE =
+    public static final CSSName BORDER_TOP_STYLE =
             addProperty(
                     "border-top-style",
                     PRIMITIVE,
@@ -1192,7 +1191,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_RIGHT_STYLE =
+    public static final CSSName BORDER_RIGHT_STYLE =
             addProperty(
                     "border-right-style",
                     PRIMITIVE,
@@ -1203,7 +1202,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_BOTTOM_STYLE =
+    public static final CSSName BORDER_BOTTOM_STYLE =
             addProperty(
                     "border-bottom-style",
                     PRIMITIVE,
@@ -1214,7 +1213,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_LEFT_STYLE =
+    public static final CSSName BORDER_LEFT_STYLE =
             addProperty(
                     "border-left-style",
                     PRIMITIVE,
@@ -1226,7 +1225,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_TOP_WIDTH =
+    public static final CSSName BORDER_TOP_WIDTH =
             addProperty(
                     "border-top-width",
                     PRIMITIVE,
@@ -1237,7 +1236,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_RIGHT_WIDTH =
+    public static final CSSName BORDER_RIGHT_WIDTH =
             addProperty(
                     "border-right-width",
                     PRIMITIVE,
@@ -1248,7 +1247,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_BOTTOM_WIDTH =
+    public static final CSSName BORDER_BOTTOM_WIDTH =
             addProperty(
                     "border-bottom-width",
                     PRIMITIVE,
@@ -1259,7 +1258,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_LEFT_WIDTH =
+    public static final CSSName BORDER_LEFT_WIDTH =
             addProperty(
                     "border-left-width",
                     PRIMITIVE,
@@ -1271,7 +1270,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS3 property.
      */
-    public final static CSSName BORDER_TOP_LEFT_RADIUS =
+    public static final CSSName BORDER_TOP_LEFT_RADIUS =
             addProperty(
                     "border-top-left-radius",
                     PRIMITIVE,
@@ -1284,7 +1283,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS3 property.
      */
-    public final static CSSName BORDER_TOP_RIGHT_RADIUS =
+    public static final CSSName BORDER_TOP_RIGHT_RADIUS =
             addProperty(
                     "border-top-right-radius",
                     PRIMITIVE,
@@ -1297,7 +1296,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS3 property.
      */
-    public final static CSSName BORDER_BOTTOM_RIGHT_RADIUS =
+    public static final CSSName BORDER_BOTTOM_RIGHT_RADIUS =
             addProperty(
                     "border-bottom-right-radius",
                     PRIMITIVE,
@@ -1310,7 +1309,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS3 property.
      */
-    public final static CSSName BORDER_BOTTOM_LEFT_RADIUS =
+    public static final CSSName BORDER_BOTTOM_LEFT_RADIUS =
             addProperty(
                     "border-bottom-left-radius",
                     PRIMITIVE,
@@ -1323,7 +1322,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARGIN_TOP =
+    public static final CSSName MARGIN_TOP =
             addProperty(
                     "margin-top",
                     PRIMITIVE,
@@ -1334,7 +1333,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARGIN_RIGHT =
+    public static final CSSName MARGIN_RIGHT =
             addProperty(
                     "margin-right",
                     PRIMITIVE,
@@ -1345,7 +1344,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARGIN_BOTTOM =
+    public static final CSSName MARGIN_BOTTOM =
             addProperty(
                     "margin-bottom",
                     PRIMITIVE,
@@ -1356,7 +1355,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARGIN_LEFT =
+    public static final CSSName MARGIN_LEFT =
             addProperty(
                     "margin-left",
                     PRIMITIVE,
@@ -1368,7 +1367,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PADDING_TOP =
+    public static final CSSName PADDING_TOP =
             addProperty(
                     "padding-top",
                     PRIMITIVE,
@@ -1379,7 +1378,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PADDING_RIGHT =
+    public static final CSSName PADDING_RIGHT =
             addProperty(
                     "padding-right",
                     PRIMITIVE,
@@ -1390,7 +1389,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PADDING_BOTTOM =
+    public static final CSSName PADDING_BOTTOM =
             addProperty(
                     "padding-bottom",
                     PRIMITIVE,
@@ -1401,7 +1400,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PADDING_LEFT =
+    public static final CSSName PADDING_LEFT =
             addProperty(
                     "padding-left",
                     PRIMITIVE,
@@ -1413,7 +1412,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_SHORTHAND =
+    public static final CSSName BACKGROUND_SHORTHAND =
             addProperty(
                     "background",
                     SHORTHAND,
@@ -1426,7 +1425,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS3 property.
      */
-    public final static CSSName BORDER_RADIUS_SHORTHAND =
+    public static final CSSName BORDER_RADIUS_SHORTHAND =
             addProperty(
                     "border-radius",
                     SHORTHAND,
@@ -1439,7 +1438,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_WIDTH_SHORTHAND =
+    public static final CSSName BORDER_WIDTH_SHORTHAND =
             addProperty(
                     "border-width",
                     SHORTHAND,
@@ -1451,7 +1450,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_STYLE_SHORTHAND =
+    public static final CSSName BORDER_STYLE_SHORTHAND =
             addProperty(
                     "border-style",
                     SHORTHAND,
@@ -1463,7 +1462,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_SHORTHAND =
+    public static final CSSName BORDER_SHORTHAND =
             addProperty(
                     "border",
                     SHORTHAND,
@@ -1474,7 +1473,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_TOP_SHORTHAND =
+    public static final CSSName BORDER_TOP_SHORTHAND =
             addProperty(
                     "border-top",
                     SHORTHAND,
@@ -1485,7 +1484,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_RIGHT_SHORTHAND =
+    public static final CSSName BORDER_RIGHT_SHORTHAND =
             addProperty(
                     "border-right",
                     SHORTHAND,
@@ -1496,7 +1495,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_BOTTOM_SHORTHAND =
+    public static final CSSName BORDER_BOTTOM_SHORTHAND =
             addProperty(
                     "border-bottom",
                     SHORTHAND,
@@ -1507,7 +1506,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_LEFT_SHORTHAND =
+    public static final CSSName BORDER_LEFT_SHORTHAND =
             addProperty(
                     "border-left",
                     SHORTHAND,
@@ -1519,7 +1518,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLOR_SHORTHAND =
+    public static final CSSName BORDER_COLOR_SHORTHAND =
             addProperty(
                     "border-color",
                     SHORTHAND,
@@ -1531,7 +1530,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_SPACING =
+    public static final CSSName BORDER_SPACING =
             addProperty(
                     "border-spacing",
                     SHORTHAND,
@@ -1543,7 +1542,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_SHORTHAND =
+    public static final CSSName FONT_SHORTHAND =
             addProperty(
                     "font",
                     SHORTHAND,
@@ -1555,7 +1554,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LIST_STYLE_SHORTHAND =
+    public static final CSSName LIST_STYLE_SHORTHAND =
             addProperty(
                     "list-style",
                     SHORTHAND,
@@ -1567,7 +1566,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARGIN_SHORTHAND =
+    public static final CSSName MARGIN_SHORTHAND =
             addProperty(
                     "margin",
                     SHORTHAND,
@@ -1579,7 +1578,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName OUTLINE_SHORTHAND =
+    public static final CSSName OUTLINE_SHORTHAND =
             addProperty(
                     "outline",
                     SHORTHAND,
@@ -1592,7 +1591,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PADDING_SHORTHAND =
+    public static final CSSName PADDING_SHORTHAND =
             addProperty(
                     "padding",
                     SHORTHAND,
@@ -1604,7 +1603,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName SIZE_SHORTHAND =
+    public static final CSSName SIZE_SHORTHAND =
             addProperty(
                     "size",
                     SHORTHAND,
@@ -1616,7 +1615,7 @@ public final class CSSName implements Comparable {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BOX_SIZING =
+    public static final CSSName BOX_SIZING =
             addProperty(
                     "box-sizing",
                     PRIMITIVE,
@@ -1625,35 +1624,35 @@ public final class CSSName implements Comparable {
                     new PrimitivePropertyBuilders.BoxSizing()
             );
 
-    public final static CSSSideProperties MARGIN_SIDE_PROPERTIES =
+    public static final CSSSideProperties MARGIN_SIDE_PROPERTIES =
             new CSSSideProperties(
                     CSSName.MARGIN_TOP,
                     CSSName.MARGIN_RIGHT,
                     CSSName.MARGIN_BOTTOM,
                     CSSName.MARGIN_LEFT);
 
-    public final static CSSSideProperties PADDING_SIDE_PROPERTIES =
+    public static final CSSSideProperties PADDING_SIDE_PROPERTIES =
             new CSSSideProperties(
                     CSSName.PADDING_TOP,
                     CSSName.PADDING_RIGHT,
                     CSSName.PADDING_BOTTOM,
                     CSSName.PADDING_LEFT);
 
-    public final static CSSSideProperties BORDER_SIDE_PROPERTIES =
+    public static final CSSSideProperties BORDER_SIDE_PROPERTIES =
             new CSSSideProperties(
                     CSSName.BORDER_TOP_WIDTH,
                     CSSName.BORDER_RIGHT_WIDTH,
                     CSSName.BORDER_BOTTOM_WIDTH,
                     CSSName.BORDER_LEFT_WIDTH);
 
-    public final static CSSSideProperties BORDER_STYLE_PROPERTIES =
+    public static final CSSSideProperties BORDER_STYLE_PROPERTIES =
             new CSSSideProperties(
                     CSSName.BORDER_TOP_STYLE,
                     CSSName.BORDER_RIGHT_STYLE,
                     CSSName.BORDER_BOTTOM_STYLE,
                     CSSName.BORDER_LEFT_STYLE);
 
-    public final static CSSSideProperties BORDER_COLOR_PROPERTIES =
+    public static final CSSSideProperties BORDER_COLOR_PROPERTIES =
             new CSSSideProperties(
                     CSSName.BORDER_TOP_COLOR,
                     CSSName.BORDER_RIGHT_COLOR,
@@ -1699,14 +1698,14 @@ public final class CSSName implements Comparable {
     /**
      * Iterator of ALL CSS 2 visual property names.
      */
-    public static Iterator allCSS2PropertyNames() {
+    public static Iterator<String> allCSS2PropertyNames() {
         return ALL_PROPERTY_NAMES.keySet().iterator();
     }
 
     /**
      * Iterator of ALL primitive (non-shorthand) CSS 2 visual property names.
      */
-    public static Iterator allCSS2PrimitivePropertyNames() {
+    public static Iterator<String> allCSS2PrimitivePropertyNames() {
         return ALL_PRIMITIVE_PROPERTY_NAMES.keySet().iterator();
     }
 
@@ -1745,8 +1744,7 @@ public final class CSSName implements Comparable {
      * Gets the byPropertyName attribute of the CSSName class
      */
     public static CSSName getByPropertyName(String propName) {
-
-        return (CSSName) ALL_PROPERTY_NAMES.get(propName);
+        return ALL_PROPERTY_NAMES.get(propName);
     }
 
     public static CSSName getByID(int id) {
@@ -1789,22 +1787,15 @@ public final class CSSName implements Comparable {
     }
 
     static {
-        Iterator iter = ALL_PROPERTY_NAMES.values().iterator();
         ALL_PROPERTIES = new CSSName[ALL_PROPERTY_NAMES.size()];
-        while (iter.hasNext()) {
-            CSSName name = (CSSName) iter.next();
+        for (CSSName name : ALL_PROPERTY_NAMES.values()) {
             ALL_PROPERTIES[name.FS_ID] = name;
         }
     }
 
     static {
-        CSSParser parser = new CSSParser(new CSSErrorHandler() {
-            public void error(String uri, String message) {
-                XRLog.cssParse("(" + uri + ") " + message);
-            }
-        });
-        for (Iterator i = ALL_PRIMITIVE_PROPERTY_NAMES.values().iterator(); i.hasNext(); ) {
-            CSSName cssName = (CSSName)i.next();
+        CSSParser parser = new CSSParser((uri, message) -> XRLog.cssParse("(" + uri + ") " + message));
+        for (CSSName cssName : ALL_PRIMITIVE_PROPERTY_NAMES.values()) {
             if (cssName.initialValue.charAt(0) != '=' && cssName.implemented) {
                 PropertyValue value = parser.parsePropertyValue(
                         cssName, StylesheetInfo.USER_AGENT, cssName.initialValue);
@@ -1822,9 +1813,10 @@ public final class CSSName implements Comparable {
     }
 
     //Assumed to be consistent with equals because CSSName is in essence an enum
-    public int compareTo(Object object) {
+    @Override
+    public int compareTo(CSSName object) {
         if (object == null) throw new NullPointerException();//required by Comparable
-        return FS_ID - ((CSSName) object).FS_ID;//will throw ClassCastException according to Comparable if not a CSSName
+        return FS_ID - object.FS_ID;//will throw ClassCastException according to Comparable if not a CSSName
     }
 
     // FIXME equals, hashcode
