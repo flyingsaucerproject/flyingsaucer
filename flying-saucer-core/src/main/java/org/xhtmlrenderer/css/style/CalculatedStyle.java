@@ -20,12 +20,6 @@
  */
 package org.xhtmlrenderer.css.style;
 
-import java.awt.Cursor;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -47,6 +41,14 @@ import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
 
 /**
@@ -91,7 +93,7 @@ public class CalculatedStyle {
     /**
      * Cache child styles of this style that have the same cascaded properties
      */
-    private final java.util.HashMap _childCache = new java.util.HashMap();
+    private final Map<String, CalculatedStyle> _childCache = new HashMap<>();
     /*private java.util.HashMap _childCache = new java.util.LinkedHashMap(5, 0.75f, true) {
         private static final int MAX_ENTRIES = 10;
 
@@ -176,7 +178,7 @@ public class CalculatedStyle {
      */
     public synchronized CalculatedStyle deriveStyle(CascadedStyle matched) {
         String fingerprint = matched.getFingerprint();
-        CalculatedStyle cs = (CalculatedStyle) _childCache.get(fingerprint);
+        CalculatedStyle cs = _childCache.get(fingerprint);
 
         if (cs == null) {
             cs = new CalculatedStyle(this, matched);
@@ -187,8 +189,8 @@ public class CalculatedStyle {
 
     public int countAssigned() {
         int c = 0;
-        for (int i = 0; i < _derivedValuesById.length; i++) {
-            if (_derivedValuesById[i] != null) c++;
+        for (FSDerivedValue fsDerivedValue : _derivedValuesById) {
+            if (fsDerivedValue != null) c++;
         }
         return c;
     }
@@ -319,14 +321,14 @@ public class CalculatedStyle {
             }
         } else {
             ListValue valueList = (ListValue)value;
-            List values = valueList.getValues();
-            boolean firstAuto = ((PropertyValue)values.get(0)).getIdentValue() == IdentValue.AUTO;
-            boolean secondAuto = ((PropertyValue)values.get(1)).getIdentValue() == IdentValue.AUTO;
+            List<PropertyValue> values = valueList.getValues();
+            boolean firstAuto = values.get(0).getIdentValue() == IdentValue.AUTO;
+            boolean secondAuto = values.get(1).getIdentValue() == IdentValue.AUTO;
 
             if (firstAuto && secondAuto) {
                 return new BackgroundSize(false, false, true);
             } else {
-                return new BackgroundSize((PropertyValue)values.get(0), (PropertyValue)values.get(1));
+                return new BackgroundSize(values.get(0), values.get(1));
             }
         }
 
@@ -335,13 +337,12 @@ public class CalculatedStyle {
 
     public BackgroundPosition getBackgroundPosition() {
         ListValue result = (ListValue) valueByName(CSSName.BACKGROUND_POSITION);
-        List values = result.getValues();
+        List<PropertyValue> values = result.getValues();
 
-        return new BackgroundPosition(
-                (PropertyValue) values.get(0), (PropertyValue) values.get(1));
+        return new BackgroundPosition(values.get(0), values.get(1));
     }
 
-    public List getCounterReset() {
+    public List<PropertyValue> getCounterReset() {
         FSDerivedValue value = valueByName(CSSName.COUNTER_RESET);
 
         if (value == IdentValue.NONE) {
@@ -351,7 +352,7 @@ public class CalculatedStyle {
         }
     }
 
-    public List getCounterIncrement() {
+    public List<PropertyValue> getCounterIncrement() {
         FSDerivedValue value = valueByName(CSSName.COUNTER_INCREMENT);
 
         if (value == IdentValue.NONE) {
@@ -365,8 +366,7 @@ public class CalculatedStyle {
         if (! _bordersAllowed) {
             return BorderPropertySet.EMPTY_BORDER;
         } else {
-            BorderPropertySet b = getBorderProperty(this, ctx);
-            return b;
+            return getBorderProperty(this, ctx);
         }
     }
 
@@ -1161,16 +1161,16 @@ public class CalculatedStyle {
                 isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE));
     }
 
-    public List getTextDecorations() {
+    public List<FSDerivedValue> getTextDecorations() {
         FSDerivedValue value = valueByName(CSSName.TEXT_DECORATION);
         if (value == IdentValue.NONE) {
             return null;
         } else {
-            List idents = ((ListValue) value).getValues();
-            List result = new ArrayList(idents.size());
-            for (Iterator i = idents.iterator(); i.hasNext();) {
+            List<PropertyValue> idents = ((ListValue) value).getValues();
+            List<FSDerivedValue> result = new ArrayList<>(idents.size());
+            for (PropertyValue ident : idents) {
                 result.add(DerivedValueFactory.newDerivedValue(
-                        this, CSSName.TEXT_DECORATION, (PropertyValue) i.next()));
+                        this, CSSName.TEXT_DECORATION, ident));
             }
             return result;
         }
@@ -1250,7 +1250,7 @@ public class CalculatedStyle {
         return isInlineBlock() || isFloated() || isAbsolute() || isFixed();
     }
 
-}// end class
+}
 
 /*
  * $Id$
@@ -1352,7 +1352,7 @@ public class CalculatedStyle {
  * Implement complete support for background-position and background-attachment
  *
  * Revision 1.83  2007/02/23 16:54:38  peterbrant
- * Allow special ident -fs-intial-value to reset a property value to its initial value (used by border related shorthand properties as 'color' won't be known at property construction time)
+ * Allow special ident -fs-initial-value to reset a property value to its initial value (used by border related shorthand properties as 'color' won't be known at property construction time)
  *
  * Revision 1.82  2007/02/22 18:21:20  peterbrant
  * Add support for overflow: visible/hidden
@@ -1491,7 +1491,7 @@ public class CalculatedStyle {
  * set  initial capacity for cached rects.
  *
  * Revision 1.37  2005/10/21 18:10:50  pdoubleya
- * Support for cachable borders. Still buggy on some pages, but getting there.
+ * Support for cacheable borders. Still buggy on some pages, but getting there.
  *
  * Revision 1.36  2005/10/21 13:02:20  pdoubleya
  * Changed to cache padding in RectPropertySet.
@@ -1503,7 +1503,7 @@ public class CalculatedStyle {
  * Removed use of MarginPropertySet; using RectPS  now.
  *
  * Revision 1.33  2005/10/21 12:01:13  pdoubleya
- * Added cachable rect property for margin, cleanup minor in styling.
+ * Added cacheable rect property for margin, cleanup minor in styling.
  *
  * Revision 1.32  2005/10/21 10:02:54  pdoubleya
  * Cleanup, removed unneeded vars, reorg code in CS.

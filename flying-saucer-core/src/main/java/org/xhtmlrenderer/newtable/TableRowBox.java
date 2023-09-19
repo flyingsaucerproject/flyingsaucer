@@ -19,11 +19,6 @@
  */
 package org.xhtmlrenderer.newtable;
 
-import java.awt.Rectangle;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Iterator;
-import java.util.List;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -35,6 +30,12 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ContentLimitContainer;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
+
+import java.awt.*;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Iterator;
+import java.util.List;
 
 public class TableRowBox extends BlockBox {
     private int _baseline;
@@ -48,6 +49,7 @@ public class TableRowBox extends BlockBox {
     public TableRowBox() {
     }
 
+    @Override
     public BlockBox copyOf() {
         TableRowBox result = new TableRowBox();
         result.setStyle(getStyle());
@@ -56,6 +58,7 @@ public class TableRowBox extends BlockBox {
         return result;
     }
 
+    @Override
     public boolean isAutoHeight() {
         return getStyle().isAutoHeight() || ! getStyle().hasAbsoluteUnit(CSSName.HEIGHT);
     }
@@ -69,6 +72,7 @@ public class TableRowBox extends BlockBox {
         return (TableSectionBox)getParent();
     }
 
+    @Override
     public void layout(LayoutContext c, int contentStart) {
         boolean running = c.isPrint() && getTable().getStyle().isPaginateTable();
         int prevExtraTop = 0;
@@ -110,7 +114,7 @@ public class TableRowBox extends BlockBox {
             return false;
         }
 
-        for (Iterator i = getChildIterator(); i.hasNext(); ) {
+        for (Iterator i = getChildren().iterator(); i.hasNext(); ) {
             TableCellBox cell = (TableCellBox)i.next();
             int baseline = cell.calcBlockBaseline(c);
             if (baseline != BlockBox.NO_BASELINE && baseline < page.getBottom()) {
@@ -121,6 +125,7 @@ public class TableRowBox extends BlockBox {
         return true;
     }
 
+    @Override
     public void analyzePageBreaks(LayoutContext c, ContentLimitContainer container) {
         if (getTable().getStyle().isPaginateTable()) {
             _contentLimitContainer = new ContentLimitContainer(c, getAbsY());
@@ -131,8 +136,7 @@ public class TableRowBox extends BlockBox {
                 container.updateBottom(c, getAbsY() + getHeight());
             }
 
-            for (Iterator i = getChildIterator(); i.hasNext(); ) {
-                Box b = (Box)i.next();
+            for (Box b : getChildren()) {
                 b.analyzePageBreaks(c, _contentLimitContainer);
             }
 
@@ -147,10 +151,10 @@ public class TableRowBox extends BlockBox {
     private void calcExtraSpaceTop(LayoutContext c) {
         int maxBorderAndPadding = 0;
 
-        for (Iterator i = getChildIterator(); i.hasNext(); ) {
-            TableCellBox cell = (TableCellBox)i.next();
+        for (Box box : getChildren()) {
+            TableCellBox cell = (TableCellBox) box;
 
-            int borderAndPadding = (int)cell.getPadding(c).top() + (int)cell.getBorder(c).top();
+            int borderAndPadding = (int) cell.getPadding(c).top() + (int) cell.getBorder(c).top();
             if (borderAndPadding > maxBorderAndPadding) {
                 maxBorderAndPadding = borderAndPadding;
             }
@@ -187,6 +191,7 @@ public class TableRowBox extends BlockBox {
         _extraSpaceBottom = maxBorderAndPadding;
     }
 
+    @Override
     protected void layoutChildren(LayoutContext c, int contentStart) {
         setState(Box.CHILDREN_FLUX);
         ensureChildren(c);
@@ -199,7 +204,7 @@ public class TableRowBox extends BlockBox {
 
         if (getChildrenContentType() != CONTENT_EMPTY) {
             int cCol = 0;
-            for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            for (Iterator i = getChildren().iterator(); i.hasNext(); ) {
                 TableCellBox cell = (TableCellBox)i.next();
 
                 layoutCell(c, cell, 0);
@@ -307,6 +312,7 @@ public class TableRowBox extends BlockBox {
         }
     }
 
+    @Override
     protected void calcLayoutHeight(
             LayoutContext c, BorderPropertySet border,
             RectPropertySet margin, RectPropertySet padding) {
@@ -452,6 +458,7 @@ public class TableRowBox extends BlockBox {
         cell.layout(c, contentStart);
     }
 
+    @Override
     public void initStaticPos(LayoutContext c, BlockBox parent, int childOffset) {
         setX(0);
 
@@ -468,18 +475,22 @@ public class TableRowBox extends BlockBox {
         _baseline = baseline;
     }
 
+    @Override
     protected boolean isSkipWhenCollapsingMargins() {
         return true;
     }
 
+    @Override
     public void paintBorder(RenderingContext c) {
         // rows never have borders
     }
 
+    @Override
     public void paintBackground(RenderingContext c) {
         // painted at the cell level
     }
 
+    @Override
     public void reset(LayoutContext c) {
         super.reset(c);
         setHaveBaseline(false);
@@ -495,6 +506,7 @@ public class TableRowBox extends BlockBox {
         _haveBaseline = haveBaseline;
     }
 
+    @Override
     protected String getExtraBoxDescription() {
         if (isHaveBaseline()) {
             return "(baseline=" + getBaseline() + ") ";
@@ -511,6 +523,7 @@ public class TableRowBox extends BlockBox {
         _heightOverride = heightOverride;
     }
 
+    @Override
     public void exportText(RenderingContext c, Writer writer) throws IOException {
         if (getTable().isMarginAreaRoot()) {
             super.exportText(c, writer);
@@ -520,7 +533,7 @@ public class TableRowBox extends BlockBox {
                 exportPageBoxText(c, writer, yPos);
             }
 
-            for (Iterator i = getChildIterator(); i.hasNext(); ) {
+            for (Iterator i = getChildren().iterator(); i.hasNext(); ) {
                 TableCellBox cell = (TableCellBox)i.next();
                 StringBuffer buffer =  new StringBuffer();
                 cell.collectText(c, buffer);
@@ -559,8 +572,9 @@ public class TableRowBox extends BlockBox {
         _extraSpaceBottom = extraSpaceBottom;
     }
 
+    @Override
     public int forcePageBreakBefore(LayoutContext c, IdentValue pageBreakValue,
-            boolean pendingPageName) {
+                                    boolean pendingPageName) {
         int currentDelta = super.forcePageBreakBefore(c, pageBreakValue, pendingPageName);
 
         // additional calculations for collapsed borders.
@@ -571,7 +585,7 @@ public class TableRowBox extends BlockBox {
 
                 // calculate max spill from the collapsed top borders of each child
                 int spill = 0;
-                for (Iterator i = getChildIterator(); i.hasNext(); ) {
+                for (Iterator i = getChildren().iterator(); i.hasNext(); ) {
                     TableCellBox cell = (TableCellBox)i.next();
                     BorderPropertySet collapsed = cell.getCollapsedPaintingBorder();
                     if (collapsed != null) {

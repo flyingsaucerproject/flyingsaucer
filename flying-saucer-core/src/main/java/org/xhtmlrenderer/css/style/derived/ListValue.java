@@ -19,15 +19,15 @@
  */
 package org.xhtmlrenderer.css.style.derived;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.DerivedValue;
 
+import java.util.List;
+
 public class ListValue extends DerivedValue {
-    private List _values;
+    public static final String[] NO_VALUES = new String[0];
+    private final List<PropertyValue> _values;
 
     public ListValue(CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
@@ -35,20 +35,21 @@ public class ListValue extends DerivedValue {
         _values = value.getValues();
     }
 
-    public List getValues() {
+    public List<PropertyValue> getValues() {
         return _values;
     }
 
+    @Override
     public String[] asStringArray() {
         if (_values == null || _values.isEmpty()) {
-            return new String[0];
+            return NO_VALUES;
         }
 
         String[] arr = new String[_values.size()];
         int i = 0;
 
-        for (Iterator iter = _values.iterator(); iter.hasNext();) {
-            arr[i++] = iter.next().toString();
+        for (PropertyValue value : _values) {
+            arr[i++] = value.toString();
         }
 
         return arr;
