@@ -125,10 +125,12 @@ public class PropertyValue implements CSSPrimitiveValue {
         _propertyValueType = VALUE_TYPE_FUNCTION;
     }
 
+    @Override
     public Counter getCounterValue() throws DOMException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public float getFloatValue(short unitType) throws DOMException {
         return _floatValue;
     }
@@ -137,38 +139,47 @@ public class PropertyValue implements CSSPrimitiveValue {
         return _floatValue;
     }
 
+    @Override
     public short getPrimitiveType() {
         return _type;
     }
 
+    @Override
     public RGBColor getRGBColorValue() throws DOMException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Rect getRectValue() throws DOMException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getStringValue() throws DOMException {
         return _stringValue;
     }
 
+    @Override
     public void setFloatValue(short unitType, float floatValue) throws DOMException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setStringValue(short stringType, String stringValue) throws DOMException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getCssText() {
         return _cssText;
     }
 
+    @Override
     public short getCssValueType() {
         return _cssValueType;
     }
 
+    @Override
     public void setCssText(String cssText) throws DOMException {
         throw new UnsupportedOperationException();
     }
@@ -211,7 +222,7 @@ public class PropertyValue implements CSSPrimitiveValue {
 
     public <T> List<T> getValues() {
         //noinspection unchecked
-        return new ArrayList<T>((List<T>) _values);
+        return new ArrayList<>((List<T>) _values);
     }
 
     public FSFunction getFunction() {

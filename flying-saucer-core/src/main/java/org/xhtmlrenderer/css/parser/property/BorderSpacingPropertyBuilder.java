@@ -19,20 +19,23 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 public class BorderSpacingPropertyBuilder extends AbstractPropertyBuilder {
-    private static final CSSName[] ALL = new CSSName[] {
+    private static final CSSName[] ALL = {
         CSSName.FS_BORDER_SPACING_HORIZONTAL, CSSName.FS_BORDER_SPACING_VERTICAL };
 
-    public List buildDeclarations(CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-        List result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
+    @Override
+    public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+        List<PropertyDeclaration> result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
         if (result != null) {
             return result;
         }
@@ -70,10 +73,6 @@ public class BorderSpacingPropertyBuilder extends AbstractPropertyBuilder {
                     CSSName.FS_BORDER_SPACING_VERTICAL, vertical, important, origin);
         }
 
-        result = new ArrayList(2);
-        result.add(horizontalSpacing);
-        result.add(verticalSpacing);
-
-        return result;
+        return asList(horizontalSpacing, verticalSpacing);
     }
 }

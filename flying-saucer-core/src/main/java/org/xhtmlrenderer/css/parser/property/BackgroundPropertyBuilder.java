@@ -19,9 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -29,6 +26,11 @@ import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
     // [<'background-color'> || <'background-image'> || <'background-repeat'> ||
@@ -51,9 +53,10 @@ public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
         }
     }
 
-    public List buildDeclarations(
-            CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-        List result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
+    @Override
+    public List<PropertyDeclaration> buildDeclarations(
+            CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+        final List<PropertyDeclaration> result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
         if (result != null) {
             return result;
         }
@@ -146,7 +149,7 @@ public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
                     throw new CSSParseException("A background-position value cannot be set twice", -1);
                 }
 
-                List v = new ArrayList(2);
+                List<PropertyValue> v = new ArrayList<>(2);
                 v.add(value);
                 if (i < values.size() - 1) {
                     PropertyValue next = (PropertyValue)values.get(i+1);
@@ -157,7 +160,7 @@ public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
                 }
 
                 PropertyBuilder builder = CSSName.getPropertyBuilder(CSSName.BACKGROUND_POSITION);
-                backgroundPosition = (PropertyDeclaration)builder.buildDeclarations(
+                backgroundPosition = builder.buildDeclarations(
                         CSSName.BACKGROUND_POSITION, v, origin, important).get(0);
             }
         }
@@ -184,20 +187,13 @@ public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
         }
 
         if (backgroundPosition == null) {
-            List v = new ArrayList(2);
+            List<PropertyValue> v = new ArrayList<>(2);
             v.add(new PropertyValue(CSSPrimitiveValue.CSS_PERCENTAGE, 0.0f, "0%"));
             v.add(new PropertyValue(CSSPrimitiveValue.CSS_PERCENTAGE, 0.0f, "0%"));
             backgroundPosition = new PropertyDeclaration(
                     CSSName.BACKGROUND_POSITION, new PropertyValue(v), important, origin);
         }
 
-        result = new ArrayList(5);
-        result.add(backgroundColor);
-        result.add(backgroundImage);
-        result.add(backgroundRepeat);
-        result.add(backgroundAttachment);
-        result.add(backgroundPosition);
-
-        return result;
+        return asList(backgroundColor, backgroundImage, backgroundRepeat, backgroundAttachment, backgroundPosition);
     }
 }

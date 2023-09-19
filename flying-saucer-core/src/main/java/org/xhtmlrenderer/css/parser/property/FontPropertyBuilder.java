@@ -19,11 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -32,14 +27,20 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.Token;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+
 public class FontPropertyBuilder extends AbstractPropertyBuilder {
     // [ [ <'font-style'> || <'font-variant'> || <'font-weight'> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'> ]
     private static final CSSName[] ALL = new CSSName[] {
         CSSName.FONT_STYLE, CSSName.FONT_VARIANT, CSSName.FONT_WEIGHT,
         CSSName.FONT_SIZE, CSSName.LINE_HEIGHT, CSSName.FONT_FAMILY };
 
-    public List buildDeclarations(
-            CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+    @Override
+    public List<PropertyDeclaration> buildDeclarations(
+            CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
         List result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
         if (result != null) {
             return result;
