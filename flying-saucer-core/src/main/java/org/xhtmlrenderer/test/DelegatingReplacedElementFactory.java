@@ -25,36 +25,33 @@ import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
-
-import java.util.*;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author patrick
  */
 public class DelegatingReplacedElementFactory implements ReplacedElementFactory {
-    private final List replacers;
-    private final Map byNameReplacers;
-    private final List elementReplacements;
+    private final List<ElementReplacer> replacers = new ArrayList<>();
+    private final Map<String, ElementReplacer> byNameReplacers = new HashMap<>();
+    private final List<ERItem> elementReplacements = new ArrayList<>();
 
-    public DelegatingReplacedElementFactory() {
-        replacers = new ArrayList();
-        elementReplacements = new ArrayList();
-        byNameReplacers = new HashMap();
-    }
-
+    @Override
     public ReplacedElement createReplacedElement(final LayoutContext context,
                                                  final BlockBox box,
                                                  final UserAgentCallback uac,
                                                  final int cssWidth,
                                                  final int cssHeight
     ) {
-        final ElementReplacer nameReplacer = (ElementReplacer) byNameReplacers.get(box.getElement().getNodeName());
+        final ElementReplacer nameReplacer = byNameReplacers.get(box.getElement().getNodeName());
         if (nameReplacer != null) {
             return replaceUsing(context, box, uac, cssWidth, cssHeight, nameReplacer);
         }
-        for (Iterator iterator = replacers.iterator(); iterator.hasNext();) {
-            ElementReplacer replacer = (ElementReplacer) iterator.next();
+        for (ElementReplacer replacer : replacers) {
             if (replacer.accept(context, box.getElement())) {
                 return replaceUsing(context, box, uac, cssWidth, cssHeight, replacer);
             }
@@ -64,54 +61,53 @@ public class DelegatingReplacedElementFactory implements ReplacedElementFactory 
 
     private ReplacedElement replaceUsing(LayoutContext context, BlockBox box, UserAgentCallback uac, int cssWidth, int cssHeight, ElementReplacer replacer) {
         final ReplacedElement re = replacer.replace(context, box, uac, cssWidth, cssHeight);
-        elementReplacements.add(new ERItem(box.getElement(), re, replacer));
+        elementReplacements.add(new ERItem(box.getElement(), replacer));
         return re;
     }
 
+    @Override
     public void reset() {
         System.out.println("\n\n***Factory reset()");
         elementReplacements.clear();
-        for (Iterator iterator = replacers.iterator(); iterator.hasNext();) {
-            ElementReplacer elementReplacer = (ElementReplacer) iterator.next();
+        for (ElementReplacer elementReplacer : replacers) {
             elementReplacer.reset();
         }
-        for (Iterator iterator = byNameReplacers.values().iterator(); iterator.hasNext();) {
-            ((ElementReplacer)iterator.next()).reset();
+        for (ElementReplacer elementReplacer : byNameReplacers.values()) {
+            elementReplacer.reset();
         }
     }
 
+    @Override
     public void remove(final Element element) {
         final int idx = elementReplacements.indexOf(element);
-        ERItem item = (ERItem) elementReplacements.get(idx);
+        ERItem item = elementReplacements.get(idx);
         elementReplacements.remove(idx);
         item.elementReplacer.clear(element);
     }
 
-    public ElementReplacer addReplacer(final ElementReplacer replacer) {
+    public void addReplacer(final ElementReplacer replacer) {
         if (replacer.isElementNameMatch()) {
             byNameReplacers.put(replacer.getElementNameMatch(), replacer);
         } else {
             replacers.add(replacer);
         }
-        return replacer;
     }
 
     public void removeReplacer(final ElementReplacer replacer) {
         replacers.remove(replacer);
     }
 
+    @Override
     public void setFormSubmissionListener(FormSubmissionListener listener) {
         // maybe there is nothing to do...
     }
 
     private static class ERItem {
         private final Element element;
-        private final ReplacedElement replacedElement;
         private final ElementReplacer elementReplacer;
 
-        private ERItem(final Element e, final ReplacedElement re, final ElementReplacer er) {
+        private ERItem(final Element e, final ElementReplacer er) {
             element = e;
-            replacedElement = re;
             elementReplacer = er;
         }
 
