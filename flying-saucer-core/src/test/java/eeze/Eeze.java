@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.awt.Frame.NORMAL;
 import static java.awt.event.InputEvent.ALT_MASK;
 import static java.awt.event.InputEvent.CTRL_MASK;
 
@@ -54,7 +55,7 @@ import static java.awt.event.InputEvent.CTRL_MASK;
  * @author Who?
  */
 public class Eeze {
-    private List testFiles;
+    private List<File> testFiles;
     private JFrame eezeFrame;
     private File currentDisplayed;
     private Action growAction;
@@ -124,10 +125,10 @@ public class Eeze {
         }
     }
 
-    private List buildFileList() {
-        List fileList = null;
+    private List<File> buildFileList() {
+        List<File> fileList = null;
         try {
-            File list[] = directory.listFiles(HTML_FILE_FILTER);
+            File[] list = directory.listFiles(HTML_FILE_FILTER);
             fileList = Arrays.asList(list);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -139,7 +140,7 @@ public class Eeze {
         try {
             eezeFrame = new JFrame("FS Eeze");
             final JFrame frame = eezeFrame;
-            frame.setExtendedState(JFrame.NORMAL);
+            frame.setExtendedState(NORMAL);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             SwingUtilities.invokeLater(() -> {
@@ -335,6 +336,7 @@ public class Eeze {
             return img;
         }
 
+        @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
@@ -359,7 +361,7 @@ public class Eeze {
         }
     }
 
-    static class GridGlassPane extends JPanel {
+    static final class GridGlassPane extends JPanel {
         private static final long serialVersionUID = 1L;
 
         private final Color mainUltraLightColor = new Color(128, 192, 255);
@@ -378,6 +380,7 @@ public class Eeze {
             this.setOpaque(false);
         }
 
+        @Override
         protected void paintComponent(Graphics g) {
             Graphics2D graphics = (Graphics2D) g;
             BufferedImage oddLine = createGradientLine(this.getWidth(), mainLightColor,
@@ -404,7 +407,7 @@ public class Eeze {
             int iOpacity = (int) (255 * opacity);
 
             for (int col = 0; col < width; col++) {
-                double coef = (double) col / (double) width;
+                double coef = col / (double) width;
                 int r = (int) (leftColor.getRed() + coef
                         * (rightColor.getRed() - leftColor.getRed()));
                 int g = (int) (leftColor.getGreen() + coef
@@ -572,19 +575,19 @@ public class Eeze {
         @Override
         public void actionPerformed(ActionEvent e) {
             File nextPage = null;
-            for (Iterator iter = testFiles.iterator(); iter.hasNext();) {
-                File f = (File) iter.next();
+            for (Iterator<File> iter = testFiles.iterator(); iter.hasNext();) {
+                File f = iter.next();
                 if (f.equals(currentDisplayed)) {
                     if (iter.hasNext()) {
-                        nextPage = (File) iter.next();
+                        nextPage = iter.next();
                         break;
                     }
                 }
             }
             if (nextPage == null) {
                 // go to first page
-                Iterator iter = testFiles.iterator();
-                nextPage = (File) iter.next();
+                Iterator<File> iter = testFiles.iterator();
+                nextPage = iter.next();
             }
 
             try {
@@ -712,7 +715,7 @@ public class Eeze {
         @Override
         public void actionPerformed(ActionEvent e) {
             testFiles = buildFileList();
-            currentDisplayed = (File) testFiles.get(0);
+            currentDisplayed = testFiles.get(0);
             reloadPageAction.actionPerformed(null);
         }
     }
