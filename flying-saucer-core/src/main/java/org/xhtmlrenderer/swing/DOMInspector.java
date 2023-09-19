@@ -236,9 +236,9 @@ final class ElementPropertiesPanel extends JPanel {
         //String _colNames[] = {"Property Name", "Text", "Value", "Important-Inherit"};
         String[] _colNames = {"Property Name", "Text", "Value"};
 
-        Map _properties;
+        Map<String, CSSPrimitiveValue> _properties;
 
-        PropertiesTableModel(Map cssProperties) {
+        PropertiesTableModel(Map<String, CSSPrimitiveValue> cssProperties) {
             _properties = cssProperties;
         }
 
@@ -271,8 +271,8 @@ final class ElementPropertiesPanel extends JPanel {
          */
         @Override
         public Object getValueAt(int row, int col) {
-            Map.Entry me = (Map.Entry) _properties.entrySet().toArray()[row];
-            CSSPrimitiveValue cpv = (CSSPrimitiveValue) me.getValue();
+            Map.Entry<String, CSSPrimitiveValue> me = (Map.Entry<String, CSSPrimitiveValue>) _properties.entrySet().toArray()[row];
+            CSSPrimitiveValue cpv = me.getValue();
 
             Object val = null;
             switch (col) {
@@ -339,8 +339,6 @@ class DOMSelectionListener implements TreeSelectionListener {
 
 class DOMTreeModel implements TreeModel {
 
-    private final Document doc;
-
     /**
      * Our root for display
      */
@@ -350,8 +348,7 @@ class DOMTreeModel implements TreeModel {
     private final List<TreeModelListener> listeners = new ArrayList<>();
 
     DOMTreeModel(Document doc) {
-        this.doc = doc;
-        Node tempRoot = this.doc.getDocumentElement();
+        Node tempRoot = doc.getDocumentElement();
         NodeList nl = tempRoot.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             if (nl.item(i).getNodeName().toLowerCase().equals("body")) {
