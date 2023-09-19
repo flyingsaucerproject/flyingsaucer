@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.simple;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-
 import org.eclipse.swt.widgets.Composite;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,6 +32,10 @@ import org.xhtmlrenderer.swt.CursorListener;
 import org.xhtmlrenderer.swt.HoverListener;
 import org.xhtmlrenderer.swt.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
+
+import java.io.File;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 
 /**
  * Simplified {@link BasicRenderer}, for use with XHTML documents.
@@ -71,6 +71,7 @@ public class SWTXHTMLRenderer extends BasicRenderer {
      *
      * @param uri
      */
+    @Override
     public void setDocument(String uri) {
         setDocument(loadDocument(uri), uri);
     }
@@ -91,6 +92,7 @@ public class SWTXHTMLRenderer extends BasicRenderer {
      * @param doc The new document value
      * @param url The new document value
      */
+    @Override
     public void setDocument(Document doc, String url) {
         super.setDocument(doc, url, new XhtmlNamespaceHandler());
     }
@@ -102,6 +104,7 @@ public class SWTXHTMLRenderer extends BasicRenderer {
      * @param stream The stream to read the Document from.
      * @param url The URL used to resolve relative path references.
      */
+    @Override
     public void setDocument(InputStream stream, String url) {
         super.setDocument(stream, url, new XhtmlNamespaceHandler());
     }
