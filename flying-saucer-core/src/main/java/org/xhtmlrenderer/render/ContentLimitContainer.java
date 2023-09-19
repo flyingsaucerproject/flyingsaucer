@@ -19,16 +19,16 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.layout.LayoutContext;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.xhtmlrenderer.layout.LayoutContext;
 
 public class ContentLimitContainer {
     private ContentLimitContainer _parent;
 
-    private int _initialPageNo;
-    private List _contentLimits = new ArrayList();
+    private final int _initialPageNo;
+    private final List<ContentLimit> _contentLimits = new ArrayList<>();
 
     private PageBox _lastPage;
 
@@ -57,7 +57,7 @@ public class ContentLimitContainer {
 
         int target = pageNo - _initialPageNo;
         if (target >= 0 && target < _contentLimits.size()) {
-            return (ContentLimit)_contentLimits.get(pageNo - _initialPageNo);
+            return _contentLimits.get(pageNo - _initialPageNo);
         } else {
             return null;
         }

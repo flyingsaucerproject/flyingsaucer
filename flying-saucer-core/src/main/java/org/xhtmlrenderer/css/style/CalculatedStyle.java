@@ -23,6 +23,7 @@ package org.xhtmlrenderer.css.style;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.parser.CounterData;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -330,7 +331,7 @@ public class CalculatedStyle {
         return new BackgroundPosition(values.get(0), values.get(1));
     }
 
-    public List<PropertyValue> getCounterReset() {
+    public List<CounterData> getCounterReset() {
         FSDerivedValue value = valueByName(CSSName.COUNTER_RESET);
 
         if (value == IdentValue.NONE) {
@@ -340,7 +341,7 @@ public class CalculatedStyle {
         }
     }
 
-    public List<PropertyValue> getCounterIncrement() {
+    public List<CounterData> getCounterIncrement() {
         FSDerivedValue value = valueByName(CSSName.COUNTER_INCREMENT);
 
         if (value == IdentValue.NONE) {

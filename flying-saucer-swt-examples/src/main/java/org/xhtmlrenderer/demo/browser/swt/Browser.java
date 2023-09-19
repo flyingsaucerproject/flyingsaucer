@@ -19,26 +19,57 @@
  */
 package org.xhtmlrenderer.demo.browser.swt;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.CoolBar;
+import org.eclipse.swt.widgets.CoolItem;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.xhtmlrenderer.demo.browser.swt.DemosNavigation.Demo;
-import org.xhtmlrenderer.demo.browser.swt.actions.*;
+import org.xhtmlrenderer.demo.browser.swt.actions.AboutAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.Action;
+import org.xhtmlrenderer.demo.browser.swt.actions.BackAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.DebugBoxesAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.DebugInlineBoxesAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.DebugLineBoxesAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.DebugMetricsAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.DemoAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.FontSizeDecreaseAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.FontSizeIncreaseAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.FontSizeNormalAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.ForwardAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.LoadAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.OpenAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.PrintPreviewAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.QuitAction;
+import org.xhtmlrenderer.demo.browser.swt.actions.ReloadAction;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.simple.SWTXHTMLRenderer;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Browser implements DisposeListener, DocumentListener {
 
@@ -47,9 +78,12 @@ public class Browser implements DisposeListener, DocumentListener {
     private final BrowserStatus _status;
     private Text _url;
 
-    private Map _imageCache = new HashMap();
+    private final Map<String, Image> _imageCache = new HashMap<>();
 
-    private Action _backAction, _forwardAction, _reloadAction, _homeAction;
+    private final Action _backAction;
+    private final Action _forwardAction;
+    private final Action _reloadAction;
+    private final Action _homeAction;
     private MenuItem _miBack, _miForward;
     private ToolItem _tiBack, _tiForward;
 
@@ -125,11 +159,7 @@ public class Browser implements DisposeListener, DocumentListener {
         // register listeners
         _shell.addDisposeListener(this);
         _xhtml.addDocumentListener(this);
-        coolbar.addListener(SWT.Resize, new Listener() {
-            public void handleEvent(Event event) {
-                _shell.layout();
-            }
-        });
+        coolbar.addListener(SWT.Resize, event -> _shell.layout());
 
         // execute default home action
         _homeAction.run(this, null);
@@ -158,6 +188,7 @@ public class Browser implements DisposeListener, DocumentListener {
         go.setLayoutData(fd);
         // events
         _url.addKeyListener(new KeyAdapter() {
+            @Override
             public void keyReleased(KeyEvent e) {
                 if (e.character == '\r') {
                     load(_url.getText());
@@ -166,6 +197,7 @@ public class Browser implements DisposeListener, DocumentListener {
             }
         });
         go.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 load(_url.getText());
             }
@@ -202,9 +234,8 @@ public class Browser implements DisposeListener, DocumentListener {
         addActionToMenu(demos, new LoadAction("demoNav:back",
             "&Prior Demo Page\tCtrl+P", SWT.CTRL | 'P'));
         addSeparatorToMenu(demos);
-        Iterator iter = getUac().getDemos().iterate();
-        while (iter.hasNext()) {
-            addActionToMenu(demos, new DemoAction((Demo) iter.next()));
+        for (Demo demo : getUac().getDemos().demos()) {
+            addActionToMenu(demos, new DemoAction(demo));
         }
 
         Menu debug = createMenu(menu, "Deb&ug");
@@ -231,7 +262,7 @@ public class Browser implements DisposeListener, DocumentListener {
         if (icon == null) {
             return null;
         }
-        Image img = (Image) _imageCache.get(icon);
+        Image img = _imageCache.get(icon);
         if (img != null) {
             return img;
         }
@@ -270,6 +301,7 @@ public class Browser implements DisposeListener, DocumentListener {
         mi.setAccelerator(action.getShortcut());
         mi.setImage(loadImage(action.getIcon()));
         mi.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 action.run(Browser.this, mi);
             }
@@ -277,8 +309,8 @@ public class Browser implements DisposeListener, DocumentListener {
         return mi;
     }
 
-    private MenuItem addSeparatorToMenu(Menu menu) {
-        return new MenuItem(menu, SWT.SEPARATOR);
+    private void addSeparatorToMenu(Menu menu) {
+        new MenuItem(menu, SWT.SEPARATOR);
     }
 
     private ToolItem addActionToToolbar(ToolBar toolbar, final Action action) {
@@ -291,6 +323,7 @@ public class Browser implements DisposeListener, DocumentListener {
             ti.setToolTipText(action.getText());
         }
         ti.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 action.run(Browser.this, null);
             }
@@ -310,7 +343,7 @@ public class Browser implements DisposeListener, DocumentListener {
                 e.printStackTrace();
                 MessageBox box = new MessageBox(_shell, SWT.ICON_ERROR | SWT.OK);
                 box.setText("Error");
-                box.setMessage("An error has occured."
+                box.setMessage("An error has occurred."
                         + " See console for details.\n\n"
                         + "Note: the application might be"
                         + " in an inconsistent state.");
@@ -347,13 +380,15 @@ public class Browser implements DisposeListener, DocumentListener {
         load(getUac().getHistory().forward());
     }
 
+    @Override
     public void widgetDisposed(DisposeEvent e) {
         // clean image cache
-        for (Iterator iter = _imageCache.values().iterator(); iter.hasNext();) {
-            ((Image) iter.next()).dispose();
+        for (Image image : _imageCache.values()) {
+            image.dispose();
         }
     }
 
+    @Override
     public void documentLoaded() {
         BrowserUserAgent uac = getUac();
         History history = uac.getHistory();
@@ -393,12 +428,15 @@ public class Browser implements DisposeListener, DocumentListener {
         _status.refreshMemory();
     }
 
+    @Override
     public void documentStarted() {
     }
 
+    @Override
     public void onLayoutException(Throwable t) {
     }
 
+    @Override
     public void onRenderException(Throwable t) {
     }
 

@@ -27,14 +27,17 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.layout.CounterFunction;
 import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineLayoutBox;
+import org.xhtmlrenderer.render.InlineText;
+import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.RenderingContext;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class ContentFunctionFactory {
-    private List _functions = new ArrayList();
+    private final List<ContentFunction> _functions = new ArrayList<>();
 
     {
         _functions.add(new PageCounterFunction());
@@ -44,8 +47,7 @@ public class ContentFunctionFactory {
     }
 
     public ContentFunction lookupFunction(LayoutContext c, FSFunction function) {
-        for (Iterator i = _functions.iterator(); i.hasNext(); ) {
-            ContentFunction f = (ContentFunction)i.next();
+        for (ContentFunction f : _functions) {
             if (f.canHandle(c, function)) {
                 return f;
             }
@@ -57,15 +59,18 @@ public class ContentFunctionFactory {
         _functions.add(function);
     }
 
-    private static abstract class PageNumberFunction implements ContentFunction {
+    private abstract static class PageNumberFunction implements ContentFunction {
+        @Override
         public boolean isStatic() {
             return false;
         }
 
+        @Override
         public String calculate(LayoutContext c, FSFunction function) {
             return null;
         }
 
+        @Override
         public String getLayoutReplacementText() {
             return "999";
         }
@@ -97,9 +102,7 @@ public class ContentFunctionFactory {
 
                     if (parameters.size() == 2) {
                         param = parameters.get(1);
-                        if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
-                            return false;
-                        }
+                        return param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
                     }
 
                     return true;
@@ -111,22 +114,26 @@ public class ContentFunctionFactory {
     }
 
     private static class PageCounterFunction extends PageNumberFunction implements ContentFunction {
+        @Override
         public String calculate(RenderingContext c, FSFunction function, InlineText text) {
             int value = c.getRootLayer().getRelativePageNo(c) + 1;
             return CounterFunction.createCounterText(getListStyleType(function), value);
         }
 
+        @Override
         public boolean canHandle(LayoutContext c, FSFunction function) {
             return c.isPrint() && isCounter(function, "page");
         }
     }
 
     private static class PagesCounterFunction extends PageNumberFunction implements ContentFunction {
+        @Override
         public String calculate(RenderingContext c, FSFunction function, InlineText text) {
             int value = c.getRootLayer().getRelativePageCount(c);
             return CounterFunction.createCounterText(getListStyleType(function), value);
         }
 
+        @Override
         public boolean canHandle(LayoutContext c, FSFunction function) {
             return c.isPrint() && isCounter(function, "pages");
         }
@@ -134,16 +141,18 @@ public class ContentFunctionFactory {
 
     /**
      * Partially implements target counter as specified here:
-     * http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#cross-references
+     * <a href="http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#cross-references">...</a>
      */
     private static class TargetCounterFunction implements ContentFunction {
+        @Override
         public boolean isStatic() {
             return false;
         }
 
+        @Override
         public String calculate(RenderingContext c, FSFunction function, InlineText text) {
             String uri = text.getParent().getElement().getAttribute("href");
-            if (uri != null && uri.startsWith("#")) {
+            if (uri.startsWith("#")) {
                 String anchor = uri.substring(1);
                 Box target = c.getBoxById(anchor);
                 if (target != null) {
@@ -154,14 +163,17 @@ public class ContentFunctionFactory {
             return "";
         }
 
+        @Override
         public String calculate(LayoutContext c, FSFunction function) {
             return null;
         }
 
+        @Override
         public String getLayoutReplacementText() {
             return "999";
         }
 
+        @Override
         public boolean canHandle(LayoutContext c, FSFunction function) {
             if (c.isPrint() && function.getName().equals("target-counter")) {
                 List<PropertyValue> parameters = function.getParameters();
@@ -175,12 +187,8 @@ public class ContentFunctionFactory {
                     }
 
                     PropertyValue param = parameters.get(1);
-                    if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
-                            ! param.getStringValue().equals("page")) {
-                        return false;
-                    }
-
-                    return true;
+                    return param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT &&
+                            param.getStringValue().equals("page");
                 }
             }
 
@@ -190,13 +198,15 @@ public class ContentFunctionFactory {
 
     /**
      * Partially implements leaders as specified here:
-     * http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#leaders
+     * <a href="http://www.w3.org/TR/2007/WD-css3-gcpm-20070504/#leaders">...</a>
      */
     private static class LeaderFunction implements ContentFunction {
+        @Override
         public boolean isStatic() {
             return false;
         }
 
+        @Override
         public String calculate(RenderingContext c, FSFunction function, InlineText text) {
             InlineLayoutBox iB = text.getParent();
             LineBox lineBox = iB.getLineBox();
@@ -205,13 +215,11 @@ public class ContentFunctionFactory {
             // Because the leader should fill up the line, we need the correct
             // width and must first compute the target-counter function.
             boolean dynamic = false;
-            Iterator childIterator = lineBox.getChildIterator();
-            while (childIterator.hasNext()) {
-                Box child = (Box)childIterator.next();
+            for (Box child : lineBox.getChildren()) {
                 if (child == iB) {
                     dynamic = true;
                 } else if (dynamic && child instanceof InlineLayoutBox) {
-                    ((InlineLayoutBox)child).lookForDynamicFunctions(c);
+                    ((InlineLayoutBox) child).lookForDynamicFunctions(c);
                 }
             }
             if (dynamic) {
@@ -240,7 +248,7 @@ public class ContentFunctionFactory {
                 tmp.append(value);
             }
             float valueWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), tmp.toString()) / 100f;
+                    iB.getStyle().getFSFont(c), tmp.toString()) / 100.0f;
             int spaceWidth = c.getTextRenderer().getWidth(c.getFontContext(),
                     iB.getStyle().getFSFont(c), " ");
 
@@ -265,14 +273,17 @@ public class ContentFunctionFactory {
             return leaderString;
         }
 
+        @Override
         public String calculate(LayoutContext c, FSFunction function) {
             return null;
         }
 
+        @Override
         public String getLayoutReplacementText() {
             return " . ";
         }
 
+        @Override
         public boolean canHandle(LayoutContext c, FSFunction function) {
             if (c.isPrint() && function.getName().equals("leader")) {
                 List<PropertyValue> parameters = function.getParameters();

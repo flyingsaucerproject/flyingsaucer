@@ -19,15 +19,15 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.css.constants.IdentValue;
+
 import java.util.Iterator;
 import java.util.List;
 
-import org.xhtmlrenderer.css.constants.IdentValue;
-
 public class CounterFunction {
-    private IdentValue _listStyleType;
+    private final IdentValue _listStyleType;
     private int _counterValue;
-    private List _counterValues;
+    private List<Integer> _counterValues;
     private String _separator;
 
     public CounterFunction(int counterValue, IdentValue listStyleType) {
@@ -35,7 +35,7 @@ public class CounterFunction {
         _listStyleType = listStyleType;
     }
 
-    public CounterFunction(List counterValues, String separator, IdentValue listStyleType) {
+    public CounterFunction(List<Integer> counterValues, String separator, IdentValue listStyleType) {
         _counterValues = counterValues;
         _separator = separator;
         _listStyleType = listStyleType;
@@ -46,9 +46,9 @@ public class CounterFunction {
             return createCounterText(_listStyleType, _counterValue);
         }
         StringBuilder sb = new StringBuilder();
-        for (Iterator i = _counterValues.iterator(); i.hasNext();) {
-            Integer value = (Integer) i.next();
-            sb.append(createCounterText(_listStyleType, value.intValue()));
+        for (Iterator<Integer> i = _counterValues.iterator(); i.hasNext();) {
+            Integer value = i.next();
+            sb.append(createCounterText(_listStyleType, value));
             if (i.hasNext()) sb.append(_separator);
         }
         return sb.toString();
@@ -89,7 +89,7 @@ public class CounterFunction {
         String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ints.length; i++) {
-            int count = (int) (val / ints[i]);
+            int count = val / ints[i];
             for (int j = 0; j < count; j++) {
                 sb.append(nums[i]);
             }

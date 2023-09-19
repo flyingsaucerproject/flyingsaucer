@@ -89,13 +89,9 @@ public class BoxRenderer {
     private int width;
     private int height;
     private static final int NO_HEIGHT = -1;
-    private Map renderingHints;
+    private Map<Object, Object> renderingHints;
     private LayoutContext layoutContext;
 
-
-    /**
-     * Base constructor
-     */
     private BoxRenderer() {
     }
 
@@ -200,7 +196,7 @@ public class BoxRenderer {
      *
      * @param hints values to override in default rendering hints for Graphics2D we are rendering to
      */
-    public void setRenderingHints(Map hints) {
+    public void setRenderingHints(Map<Object, Object> hints) {
         renderingHints = hints;
     }
 

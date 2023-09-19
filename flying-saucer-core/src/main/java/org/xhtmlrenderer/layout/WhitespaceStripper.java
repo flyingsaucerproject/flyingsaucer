@@ -19,15 +19,15 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author Torbjoern Gannholm
@@ -48,27 +48,23 @@ public class WhitespaceStripper {
      * because "whitespage" does not ally to :first-line and :first-letter. For
      * dynamic pseudo-classes we are allowed to choose which properties apply.
      *
-     * <b>NOTE:</b> The <code>inlineContent</code> parameter may be modified
-     *
-     * @param inlineContent
+     * <b>NOTE:</b> The {@code inlineContent} parameter may be modified
      */
-    public static void stripInlineContent(List inlineContent) {
+    public static void stripInlineContent(List<Styleable> inlineContent) {
         boolean collapse = false;
         boolean allWhitespace = true;
 
-        for (Iterator i = inlineContent.iterator(); i.hasNext();) {
-            Styleable node = (Styleable)i.next();
-
+        for (Styleable node : inlineContent) {
             if (node.getStyle().isInline()) {
-                InlineBox iB = (InlineBox)node;
+                InlineBox iB = (InlineBox) node;
                 boolean collapseNext = stripWhitespace(iB, collapse);
-                if (! iB.isRemovableWhitespace()) {
+                if (!iB.isRemovableWhitespace()) {
                     allWhitespace = false;
                 }
 
                 collapse = collapseNext;
             } else {
-                if (! canCollapseThrough(node)) {
+                if (!canCollapseThrough(node)) {
                     allWhitespace = false;
                     collapse = false;
                 }
