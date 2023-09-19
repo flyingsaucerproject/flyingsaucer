@@ -30,6 +30,7 @@ public class GenerateDiffAction extends AbstractAction {
      *
      * @param evt Description of the Parameter
      */
+    @Override
     public void actionPerformed(ActionEvent evt) {
         try {
 

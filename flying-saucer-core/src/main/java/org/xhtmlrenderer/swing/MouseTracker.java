@@ -19,16 +19,15 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.xhtmlrenderer.render.Box;
+
+import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.event.MouseInputAdapter;
-
-import org.xhtmlrenderer.render.Box;
 
 
 /**
@@ -103,48 +102,35 @@ public class MouseTracker extends MouseInputAdapter {
      * Returns a (new) list of all listeners currently tracked for receiving events.
      * @return a (new) list of all listeners currently tracked for receiving events.
      */
-    public List getListeners() {
-        return new ArrayList(_handlers.keySet());
+    public List<FSMouseListener> getListeners() {
+        return new ArrayList<>(_handlers.keySet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void mouseEntered(MouseEvent e) {
         handleMouseMotion(_panel.find(e));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void mouseExited(MouseEvent e) {
         handleMouseMotion(_panel.find(e));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void mouseMoved(MouseEvent e) {
         handleMouseMotion(_panel.find(e));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void mouseReleased(MouseEvent e) {
         handleMouseUp(_panel.find(e));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void mousePressed(MouseEvent e) {
         fireMousePressed(e);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void mouseDragged(MouseEvent e) {
         fireMouseDragged(e);
     }

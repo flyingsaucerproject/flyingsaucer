@@ -216,6 +216,10 @@ public abstract class Box implements Styleable {
         }
     }
 
+    /**
+     * @deprecated Use {@link #getChildren()} instead
+     */
+    @Deprecated
     public Iterator<Box> getChildIterator() {
         return _boxes == null ? emptyIterator() : _boxes.iterator();
     }

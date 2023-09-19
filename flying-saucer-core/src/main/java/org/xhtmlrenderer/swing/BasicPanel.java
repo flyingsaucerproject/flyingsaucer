@@ -19,27 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.LayoutManager;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.print.PrinterGraphics;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -57,6 +36,17 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.print.PrinterGraphics;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.logging.Level;
 
 
 
@@ -77,32 +67,30 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     private boolean centeredPagedView;
     protected FormSubmissionListener formSubmissionListener;
 
-    public BasicPanel() {
+    protected BasicPanel() {
         this(new NaiveUserAgent());
     }
 
-    public BasicPanel(UserAgentCallback uac) {
+    protected BasicPanel(UserAgentCallback uac) {
         sharedContext = new SharedContext(uac);
         mouseTracker = new MouseTracker(this);
-        formSubmissionListener = new FormSubmissionListener() {
-            public void submit(String query) {
-                System.out.println("Form Submitted!");
-                System.out.println("Data: " + query);
+        formSubmissionListener = query -> {
+            System.out.println("Form Submitted!");
+            System.out.println("Data: " + query);
 
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Form submit called; check console to see the query string" +
-                        " that would have been submitted.",
-                        "Form Submission",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-            }
-
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Form submit called; check console to see the query string" +
+                    " that would have been submitted.",
+                    "Form Submission",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
         };
         sharedContext.setFormSubmissionListener(formSubmissionListener);
         init();
     }
 
+    @Override
     public void paintComponent(Graphics g) {
         if (doc == null) {
             paintDefaultBackground(g);
@@ -208,10 +196,10 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         Graphics2D g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();
         Shape working = g.getClip();
 
-        List pages = root.getPages();
+        List<PageBox> pages = root.getPages();
         c.setPageCount(pages.size());
         for (int i = 0; i < pages.size(); i++) {
-            PageBox page = (PageBox)pages.get(i);
+            PageBox page = pages.get(i);
             c.setPage(i, page);
 
             g.setClip(working);
@@ -274,7 +262,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
         RenderingContext c = newRenderingContext(g);
 
-        PageBox page = (PageBox)root.getPages().get(pageNo);
+        PageBox page = root.getPages().get(pageNo);
         c.setPageCount(root.getPages().size());
         c.setPage(pageNo, page);
 
@@ -310,9 +298,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
     private void printTree(Box box, String tab) {
         XRLog.layout(Level.FINEST, tab + "Box = " + box);
-        Iterator it = box.getChildIterator();
-        while (it.hasNext()) {
-            Box bx = (Box) it.next();
+        for (Box bx : box.getChildren()) {
             printTree(bx, tab + " ");
         }
     }
@@ -325,13 +311,15 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
      *
      * @param l The new layout value
      */
+    @Override
     public void setLayout(LayoutManager l) {
     }
 
     public void setSharedContext(SharedContext ctx) {
-        this.sharedContext = ctx;
+        sharedContext = ctx;
     }
 
+    @Override
     public void setSize(Dimension d) {
         XRLog.layout(Level.FINEST, "set size called");
         super.setSize(d);
@@ -465,26 +453,28 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     /**
-     * Returns whether the background of this <code>BasicPanel</code> will
+     * Returns whether the background of this {@code BasicPanel} will
      * be painted when it is rendered.
      *
-     * @return <code>true</code> if the background of this
-     *         <code>BasicPanel</code> will be painted, <code>false</code> if it
+     * @return {@code true} if the background of this
+     *         {@code BasicPanel} will be painted, {@code false} if it
      *         will not.
      */
+    @Override
     public boolean isOpaque() {
         checkOpacityMethodClient();
         return explicitlyOpaque;
     }
 
     /**
-     * Specifies whether the background of this <code>BasicPanel</code> will
+     * Specifies whether the background of this {@code BasicPanel} will
      * be painted when it is rendered.
      *
-     * @param opaque <code>true</code> if the background of this
-     *               <code>BasicPanel</code> should be painted, <code>false</code> if it
+     * @param opaque {@code true} if the background of this
+     *               {@code BasicPanel} should be painted, {@code false} if it
      *               should not.
      */
+    @Override
     public void setOpaque(boolean opaque) {
         checkOpacityMethodClient();
         explicitlyOpaque = opaque;
@@ -509,16 +499,12 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         }
     }
 
-    public SharedContext getSharedContext() {
-        return sharedContext;
-    }
-
     private boolean isAnchorInCurrentDocument(String str) {
         return str.charAt(0) == '#';
     }
 
     private String getAnchorId(String url) {
-        return url.substring(1, url.length());
+        return url.substring(1);
     }
 
     /**
@@ -537,11 +523,11 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
 
     public boolean isInteractive() {
-        return this.getSharedContext().isInteractive();
+        return getSharedContext().isInteractive();
     }
 
     public void setInteractive(boolean interactive) {
-        this.getSharedContext().setInteractive(interactive);
+        getSharedContext().setInteractive(interactive);
     }
 
     public void addMouseTrackingListener(FSMouseListener l) {
@@ -552,7 +538,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         mouseTracker.removeListener(l);
     }
 
-    public List getMouseTrackingListeners() {
+    public List<FSMouseListener> getMouseTrackingListeners() {
         return mouseTracker.getListeners();
     }
 
@@ -567,11 +553,12 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     public void setCenteredPagedView(boolean centeredPagedView) {
         this.centeredPagedView = centeredPagedView;
     }
+    @Override
     public void submit(String url) {
         formSubmissionListener.submit(url);
     }
     public void setFormSubmissionListener(FormSubmissionListener fsl) {
-        this.formSubmissionListener =fsl;
+        formSubmissionListener =fsl;
         sharedContext.setFormSubmissionListener(formSubmissionListener);
     }
 }

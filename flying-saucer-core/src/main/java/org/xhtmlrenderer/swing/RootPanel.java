@@ -19,26 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.logging.Level;
-import javax.swing.CellRendererPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.Scrollable;
-import javax.swing.SwingConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -66,14 +46,19 @@ import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+
 
 public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCanvas, RepaintListener {
-    static final long serialVersionUID = 1L;
-
-    private Box rootBox = null;
-    private boolean needRelayout = false;
+    private Box rootBox;
+    private boolean needRelayout;
     private CellRendererPane cellRendererPane;
-    private final Set<DocumentListener> documentListeners = new HashSet<DocumentListener>();
+    private final Set<DocumentListener> documentListeners = new HashSet<>();
     private boolean defaultFontFromComponent;
     protected SharedContext sharedContext;
     private volatile LayoutContext layoutContext;
@@ -83,20 +68,20 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     // initialize to JViewport default mode
     private int default_scroll_mode = JViewport.BLIT_SCROLL_MODE;
 
-    protected Document doc = null;
+    protected Document doc;
 
     /*
      * ========= UserInterface implementation ===============
      */
-    public Element hovered_element = null;
-    public Element active_element = null;
-    public Element focus_element = null;
+    public Element hovered_element;
+    public Element active_element;
+    public Element focus_element;
 
     // On-demand repaint requests for async image loading
     private long lastRepaintRunAt = System.currentTimeMillis();
     private final long maxRepaintRequestWaitMs = 50;
-    private boolean repaintRequestPending = false;
-    private long pendingRepaintCount = 0;
+    private boolean repaintRequestPending;
+    private long pendingRepaintCount;
 
     public RootPanel() {
     }
@@ -135,9 +120,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     // loading before the box ever shows on screen
     private void requestBGImages(final Box box) {
         if (box.getChildCount() == 0) return;
-        Iterator ci = box.getChildIterator();
-        while (ci.hasNext()) {
-            final Box cb = (Box) ci.next();
+        for (Box cb : box.getChildren()) {
             CalculatedStyle style = cb.getStyle();
             if (!style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
                 String uri = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
@@ -191,6 +174,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
      *
      * @return The fixedRectangle value
      */
+    @Override
     public Rectangle getFixedRectangle() {
         if (enclosingScrollPane != null) {
             return enclosingScrollPane.getViewportBorderBounds();
@@ -203,6 +187,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
      * Overrides the default implementation to test for and configure any {@link
      * JScrollPane} parent.
      */
+    @Override
     public void addNotify() {
         super.addNotify();
         XRLog.general(Level.FINE, "add notify called");
@@ -219,12 +204,13 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
      * Overrides the default implementation unconfigure any {@link JScrollPane}
      * parent.
      */
+    @Override
     public void removeNotify() {
         super.removeNotify();
         setEnclosingScrollPane(null);
     }
 
-    protected void init() {
+    protected final void init() {
         setBackground(Color.white);
         super.setLayout(null);
     }
@@ -302,7 +288,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
 
     public void doDocumentLayout(Graphics g) {
         try {
-            this.removeAll();
+            removeAll();
             if (g == null) {
                 return;
             }
@@ -384,7 +370,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
                 }
             }
 
-            this.fireDocumentLoaded();
+            fireDocumentLoaded();
             /* FIXME
             if (Configuration.isTrue("xr.image.background.greedy", false)) {
                 EventQueue.invokeLater(new Runnable() {
@@ -522,14 +508,17 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     }
 
 
+    @Override
     public boolean isHover(org.w3c.dom.Element e) {
         return e == hovered_element;
     }
 
+    @Override
     public boolean isActive(org.w3c.dom.Element e) {
         return e == active_element;
     }
 
+    @Override
     public boolean isFocus(org.w3c.dom.Element e) {
         return e == focus_element;
     }
@@ -577,6 +566,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         return null;
     }
 
+    @Override
     public void doLayout() {
         if (isExtentsHaveChanged()) {
             setNeedRelayout(true);
@@ -584,6 +574,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         super.doLayout();
     }
 
+    @Override
     public void validate() {
         super.validate();
 
@@ -597,11 +588,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             return true;
         } else {
             Rectangle oldExtents = ((ViewportBox)rootBox.getContainingBlock()).getExtents();
-            if (! oldExtents.equals(getScreenExtents())) {
-                return true;
-            } else {
-                return false;
-            }
+            return !oldExtents.equals(getScreenExtents());
         }
     }
 
@@ -613,6 +600,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         this.needRelayout = needRelayout;
     }
 
+    @Override
     public void repaintRequested(final boolean doLayout) {
         final long now = System.currentTimeMillis();
         final long el = now - lastRepaintRunAt;
@@ -630,20 +618,16 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             if (!repaintRequestPending) {
                 XRLog.general(Level.FINE, "... Queueing new repaint request, el: " + el + " < " + maxRepaintRequestWaitMs);
                 repaintRequestPending = true;
-                new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            Thread.currentThread().sleep(Math.min(maxRepaintRequestWaitMs, Math.abs(maxRepaintRequestWaitMs - el)));
-                            EventQueue.invokeLater(new Runnable() {
-                                public void run() {
-                                    XRLog.general(Level.FINE, "--> running queued repaint request");
-                                    repaintRequested(doLayout);
-                                    repaintRequestPending = false;
-                                }
-                            });
-                        } catch (InterruptedException e) {
-                            // swallow
-                        }
+                new Thread(() -> {
+                    try {
+                        Thread.currentThread().sleep(Math.min(maxRepaintRequestWaitMs, Math.abs(maxRepaintRequestWaitMs - el)));
+                        EventQueue.invokeLater(() -> {
+                            XRLog.general(Level.FINE, "--> running queued repaint request");
+                            repaintRequested(doLayout);
+                            repaintRequestPending = false;
+                        });
+                    } catch (InterruptedException e) {
+                        // swallow
                     }
                 }).start();
             } else {
@@ -663,10 +647,12 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
 
     // ----- Scrollable interface -----
 
+    @Override
     public Dimension getPreferredScrollableViewportSize() {
       return getPreferredSize();
     }
 
+    @Override
     public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
       int dif = 1;
       if (orientation == SwingConstants.VERTICAL) {
@@ -678,6 +664,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
       return Math.min(35, dif);
     }
 
+    @Override
     public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
       int dif = 1;
       if (orientation == SwingConstants.VERTICAL) {
@@ -689,12 +676,14 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
       return dif;
     }
 
+    @Override
     public boolean getScrollableTracksViewportWidth() {
         // If the last layout successfully filled the desired width then
         // viewport should match the component size.
         return viewportMatchWidth;
     }
 
+    @Override
     public boolean getScrollableTracksViewportHeight() {
         // If the last layout height of this component is <= the viewport
         // height then we make the viewport height match the component size.

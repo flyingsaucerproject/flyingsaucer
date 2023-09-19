@@ -20,12 +20,6 @@
 
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.print.PrinterGraphics;
-import java.io.InputStream;
-import java.util.ArrayList;
-
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
@@ -33,6 +27,12 @@ import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.XHTMLPanel;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.print.PrinterGraphics;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * ScalableXHTMLPanel extends {@see XHTMLPanel} to allow zoom on output.
@@ -81,6 +81,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * @param doc The new document value
      * @param url The new document value
      */
+    @Override
     public void setDocument(Document doc, String url) {
         resetScaleAccordingToPolicy();
         lastLayoutSize = null;
@@ -94,6 +95,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * @param stream The stream to read the Document from.
      * @param url	The URL used to resolve relative path references.
      */
+    @Override
     public void setDocument(InputStream stream, String url) throws Exception {
         resetScaleAccordingToPolicy();
         lastLayoutSize = null;
@@ -110,6 +112,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * @param x The displayed x position
      * @param y the displayed y position
      */
+    @Override
     public Box find(int x, int y) {
         Point p = convertFromScaled(x, y);
         Layer l = getRootLayer();
@@ -160,6 +163,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * @param c	the RenderingContext to use
      * @param root The Layer to render
      */
+    @Override
     protected void doRender(RenderingContext c, Layer root) {
         Graphics2D g = ((Java2DOutputDevice) c.getOutputDevice()).getGraphics();
         if (!(g instanceof PrinterGraphics) && isOpaque()) {
