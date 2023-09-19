@@ -105,7 +105,7 @@ public abstract class Box implements Styleable {
 
     protected void dumpBoxes(
             LayoutContext c, String indent, List<Box> boxes,
-            int which, StringBuffer result) {
+            int which, StringBuilder result) {
         for (Iterator<Box> i = boxes.iterator(); i.hasNext(); ) {
             Box b = i.next();
             result.append(b.dump(c, indent + "  ", which));

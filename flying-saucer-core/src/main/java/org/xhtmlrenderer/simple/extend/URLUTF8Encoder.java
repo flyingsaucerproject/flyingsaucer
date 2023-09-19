@@ -13,7 +13,7 @@ package org.xhtmlrenderer.simple.extend;
 public class URLUTF8Encoder {
 
     /** Description of the Field */
-    final static String[] hex = {
+    private static final String[] hex = {
             "%00", "%01", "%02", "%03", "%04", "%05", "%06", "%07",
             "%08", "%09", "%0a", "%0b", "%0c", "%0d", "%0e", "%0f",
             "%10", "%11", "%12", "%13", "%14", "%15", "%16", "%17",
@@ -89,13 +89,13 @@ public class URLUTF8Encoder {
      * @return   The encoded string
      */
     public static String encode( String s ) {
-        StringBuffer sbuf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int len = s.length();
         for ( int i = 0; i < len; i++ ) {
             int ch = s.charAt( i );
-            append( sbuf, ch );
+            append( buf, ch );
         }
-        return sbuf.toString();
+        return buf.toString();
     }
 
     /**
@@ -105,45 +105,37 @@ public class URLUTF8Encoder {
      * @return       Returns
      */
     public static String encode( char[] chars ) {
-        StringBuffer sbuf = new StringBuffer();
-        int len = chars.length;
-        for ( int i = 0; i < len; i++ ) {
-            int ch = chars[i];
-            append( sbuf, ch );
+        StringBuilder buf = new StringBuilder();
+        for (int ch : chars) {
+            append(buf, ch);
         }
-        return sbuf.toString();
+        return buf.toString();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param sbuf  PARAM
-     * @param ch    PARAM
-     */
-    private static void append( StringBuffer sbuf, int ch ) {
+    private static void append( StringBuilder buf, int ch ) {
         if ( 'A' <= ch && ch <= 'Z' ) {// 'A'..'Z'
-            sbuf.append( (char)ch );
+            buf.append( (char)ch );
         } else if ( 'a' <= ch && ch <= 'z' ) {// 'a'..'z'
-            sbuf.append( (char)ch );
+            buf.append( (char)ch );
         } else if ( '0' <= ch && ch <= '9' ) {// '0'..'9'
-            sbuf.append( (char)ch );
+            buf.append( (char)ch );
         } else if ( ch == ' ' ) {// space
-            sbuf.append( '+' );
+            buf.append( '+' );
         } else if ( ch == '-' || ch == '_' // unreserved
                 || ch == '.' || ch == '!'
                 || ch == '~' || ch == '*'
                 || ch == '\'' || ch == '('
                 || ch == ')' ) {
-            sbuf.append( (char)ch );
+            buf.append( (char)ch );
         } else if ( ch <= 0x007f ) {// other ASCII
-            sbuf.append( hex[ch] );
+            buf.append( hex[ch] );
         } else if ( ch <= 0x07FF ) {// non-ASCII <= 0x7FF
-            sbuf.append( hex[0xc0 | ( ch >> 6 )] );
-            sbuf.append( hex[0x80 | ( ch & 0x3F )] );
+            buf.append( hex[0xc0 | ( ch >> 6 )] );
+            buf.append( hex[0x80 | ( ch & 0x3F )] );
         } else {// 0x7FF < ch <= 0xFFFF
-            sbuf.append( hex[0xe0 | ( ch >> 12 )] );
-            sbuf.append( hex[0x80 | ( ( ch >> 6 ) & 0x3F )] );
-            sbuf.append( hex[0x80 | ( ch & 0x3F )] );
+            buf.append( hex[0xe0 | ( ch >> 12 )] );
+            buf.append( hex[0x80 | ( ( ch >> 6 ) & 0x3F )] );
+            buf.append( hex[0x80 | ( ch & 0x3F )] );
         }
     }
 

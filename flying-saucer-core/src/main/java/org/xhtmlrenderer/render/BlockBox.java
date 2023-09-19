@@ -121,7 +121,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     public String toString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         String className = getClass().getName();
         result.append(className.substring(className.lastIndexOf('.') + 1));
         result.append(": ");
@@ -168,7 +168,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return result.toString();
     }
 
-    protected void appendPositioningInfo(StringBuffer result) {
+    protected void appendPositioningInfo(StringBuilder result) {
         if (getStyle().isRelative()) {
             result.append("(relative) ");
         }
@@ -185,7 +185,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
     @Override
     public String dump(LayoutContext c, String indent, int which) {
-        StringBuffer result = new StringBuffer(indent);
+        StringBuilder result = new StringBuilder(indent);
 
         ensureChildren(c);
 
@@ -1006,8 +1006,8 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private void justifyText() {
-        for (Iterator<Box> i = getChildIterator(); i.hasNext(); ) {
-            LineBox line = (LineBox)i.next();
+        for (Box box : getChildren()) {
+            LineBox line = (LineBox) box;
             line.justify();
         }
     }
@@ -1193,8 +1193,8 @@ public class BlockBox extends Box implements InlinePaintable {
                 if (isMayCollapseMarginsWithChildren() && isNoTopPaddingOrBorder(c)) {
                     ensureChildren(c);
                     if (getChildrenContentType() == CONTENT_BLOCK) {
-                        for (Iterator<Box> i = getChildIterator(); i.hasNext();) {
-                            BlockBox child = (BlockBox) i.next();
+                        for (Box box : getChildren()) {
+                            BlockBox child = (BlockBox) box;
                             child.collapseTopMargin(c, false, result);
 
                             if (child.isSkipWhenCollapsingMargins()) {
@@ -1276,8 +1276,8 @@ public class BlockBox extends Box implements InlinePaintable {
 
         ensureChildren(c);
         if (getChildrenContentType() == CONTENT_BLOCK) {
-            for (Iterator<Box> i = getChildIterator(); i.hasNext();) {
-                BlockBox child = (BlockBox) i.next();
+            for (Box box : getChildren()) {
+                BlockBox child = (BlockBox) box;
                 child.collapseEmptySubtreeMargins(c, result);
             }
         }
@@ -1301,9 +1301,9 @@ public class BlockBox extends Box implements InlinePaintable {
         if (getChildrenContentType() == CONTENT_INLINE) {
             return false;
         } else if (getChildrenContentType() == CONTENT_BLOCK) {
-            for (Iterator<Box> i = getChildIterator(); i.hasNext();) {
-                BlockBox child = (BlockBox) i.next();
-                if (child.isSkipWhenCollapsingMargins() || ! child.isVerticalMarginsAdjoin(c)) {
+            for (Box box : getChildren()) {
+                BlockBox child = (BlockBox) box;
+                if (child.isSkipWhenCollapsingMargins() || !child.isVerticalMarginsAdjoin(c)) {
                     return false;
                 }
             }
@@ -1613,8 +1613,8 @@ public class BlockBox extends Box implements InlinePaintable {
         int childMinWidth = 0;
         int childMaxWidth = 0;
 
-        for (Iterator<Box> i = getChildIterator(); i.hasNext();) {
-            BlockBox child = (BlockBox) i.next();
+        for (Box box : getChildren()) {
+            BlockBox child = (BlockBox) box;
             child.calcMinMaxWidth(c);
             if (child.getMinWidth() > childMinWidth) {
                 childMinWidth = child.getMinWidth();
@@ -2094,8 +2094,8 @@ public class BlockBox extends Box implements InlinePaintable {
             case CONTENT_EMPTY:
                 return false;
             case CONTENT_BLOCK:
-                for (Iterator<Box> i = getChildIterator(); i.hasNext(); ) {
-                    BlockBox box = (BlockBox)i.next();
+                for (Box value : getChildren()) {
+                    BlockBox box = (BlockBox) value;
                     if (box.isContainsInlineContent(c)) {
                         return true;
                     }

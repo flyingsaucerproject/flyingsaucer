@@ -133,7 +133,7 @@ public class Review {
 
     private void setContent(JEditorPane codeEditor) {
         codeEditor.setContentType("text/xml");
-        StringBuffer sb = new StringBuffer(256);
+        StringBuilder sb = new StringBuilder(256);
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\">\n");
         sb.append("<head>\n");

@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DOMUtil {
     public static Element getChild(Element parent, String name) {
@@ -69,7 +69,7 @@ public class DOMUtil {
     }
 
     /**
-     * Appends all text content in all offspring of an element to a StringBuffer.
+     * Appends all text content in all offspring of an element to a StringBuilder.
      * Ignores all attributes, comments and processing instructions.
      *
      * @return a String with the text content of an element (maybe an empty string but will not be null).

@@ -38,7 +38,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -84,7 +83,7 @@ public class LineBox extends Box implements InlinePaintable {
             throw new IllegalArgumentException();
         }
 
-        StringBuffer result = new StringBuffer(indent);
+        StringBuilder result = new StringBuilder(indent);
         result.append(this);
         result.append('\n');
 
@@ -251,12 +250,11 @@ public class LineBox extends Box implements InlinePaintable {
 
     private void adjustChildren(JustificationInfo info) {
         float adjust = 0.0f;
-        for (Iterator<Box> i = getChildIterator(); i.hasNext(); ) {
-            Box b = i.next();
+        for (Box b : getChildren()) {
             b.setX(b.getX() + Math.round(adjust));
 
             if (b instanceof InlineLayoutBox) {
-                adjust += ((InlineLayoutBox)b).adjustHorizontalPosition(info, adjust);
+                adjust += ((InlineLayoutBox) b).adjustHorizontalPosition(info, adjust);
             }
         }
 
@@ -280,10 +278,9 @@ public class LineBox extends Box implements InlinePaintable {
     private CharCounts countJustifiableChars() {
         CharCounts result = new CharCounts();
 
-        for (Iterator<Box> i = getChildIterator(); i.hasNext(); ) {
-            Box b = i.next();
+        for (Box b : getChildren()) {
             if (b instanceof InlineLayoutBox) {
-                ((InlineLayoutBox)b).countJustifiableChars(result);
+                ((InlineLayoutBox) b).countJustifiableChars(result);
             }
         }
 

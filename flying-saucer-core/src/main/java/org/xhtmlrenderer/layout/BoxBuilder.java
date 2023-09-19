@@ -1184,7 +1184,7 @@ public class BoxBuilder {
                     Text textNode = (Text)working;
 
                     /*
-                    StringBuffer text = new StringBuffer(textNode.getData());
+                    StringBuilder text = new StringBuilder(textNode.getData());
 
                     Node maybeText = textNode;
                     while (true) {
