@@ -37,8 +37,6 @@ import java.util.List;
 
 
 /**
- * Description of the Class
- *
  * @author Patrick Wright
  */
 public class GeneralUtil {
@@ -49,13 +47,6 @@ public class GeneralUtil {
      */
     public static final DecimalFormat PADDED_HASH_FORMAT = new DecimalFormat("0000000000");
 
-    /**
-     * Description of the Method
-     *
-     * @param obj      PARAM
-     * @param resource PARAM
-     * @return Returns
-     */
     public static InputStream openStreamFromClasspath(Object obj, String resource) {
         InputStream readStream = null;
         try {
@@ -196,12 +187,6 @@ public class GeneralUtil {
         return s;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param o PARAM
-     * @return Returns
-     */
     public static String paddedHashCode(Object o) {
         String s = "0000000000";
         if (o != null) {

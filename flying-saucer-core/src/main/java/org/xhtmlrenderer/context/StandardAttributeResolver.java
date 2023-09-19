@@ -32,26 +32,10 @@ import org.xhtmlrenderer.extend.UserInterface;
  * @author Torbjoern Gannholm
  */
 public class StandardAttributeResolver implements AttributeResolver {
-    /**
-     * Description of the Field
-     */
-    private NamespaceHandler nsh;
-    /**
-     * Description of the Field
-     */
-    private UserAgentCallback uac;
-    /**
-     * Description of the Field
-     */
-    private UserInterface ui;
+    private final NamespaceHandler nsh;
+    private final UserAgentCallback uac;
+    private final UserInterface ui;
 
-    /**
-     * Constructor for the StandardAttributeResolver object
-     *
-     * @param nsh PARAM
-     * @param uac PARAM
-     * @param ui  PARAM
-     */
     public StandardAttributeResolver(NamespaceHandler nsh, UserAgentCallback uac, UserInterface ui) {
         this.nsh = nsh;
         this.uac = uac;

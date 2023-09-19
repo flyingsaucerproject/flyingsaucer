@@ -49,99 +49,37 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class BrowserPanel extends JPanel implements DocumentListener {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Description of the Field
-     */
     JButton forward;
-    /**
-     * Description of the Field
-     */
     JButton backward;
-    /**
-     * Description of the Field
-     */
     JButton stop;
-    /**
-     * Description of the Field
-     */
     JButton reload;
-    /**
-     * Description of the Field
-     */
     JButton goHome;
-    /**
-     * Description of the Field
-     */
     JButton font_inc;
-    /**
-     * Description of the Field
-     */
     JButton font_rst;
-    /**
-     * Description of the Field
-     */
     JButton font_dec;
     JButton print;
-    /**
-     * Description of the Field
-     */
     JTextField url;
-    /**
-     * Description of the Field
-     */
     BrowserStatus status;
-    /**
-     * Description of the Field
-     */
     public ScalableXHTMLPanel view;
-    /**
-     * Description of the Field
-     */
     JScrollPane scroll;
-    /**
-     * Description of the Field
-     */
     BrowserStartup root;
-    /**
-     * Description of the Field
-     */
     BrowserPanelListener listener;
-
     JButton print_preview;
-
-    /**
-     * Description of the Field
-     */
-    public static final Logger logger = Logger.getLogger("app.browser");
+    
+    private static final Logger logger = Logger.getLogger("app.browser");
 
     private PanelManager manager;
     JButton goToPage;
-    public JToolBar toolbar;
+    JToolBar toolbar;
 
-    /**
-     * Constructor for the BrowserPanel object
-     *
-     * @param root	 PARAM
-     * @param listener PARAM
-     */
     public BrowserPanel(BrowserStartup root, BrowserPanelListener listener) {
-        super();
         this.root = root;
         this.listener = listener;
     }
 
-    /**
-     * Description of the Method
-     */
     public void init() {
         forward = new JButton();
         backward = new JButton();
@@ -152,11 +90,13 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
         url = new JTextField();
         url.addFocusListener(new FocusAdapter() {
+            @Override
             public void focusGained(FocusEvent e) {
                 super.focusGained(e);
                 url.selectAll();
             }
 
+            @Override
             public void focusLost(FocusEvent e) {
                 super.focusLost(e);
                 url.select(0, 0);
@@ -216,9 +156,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         }
     }
 
-    /**
-     * Description of the Method
-     */
     public void createLayout() {
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
@@ -289,9 +226,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
     }
 
-    /**
-     * Description of the Method
-     */
     public void createActions() {
         // set text to "" to avoid showing action text in button--
         // we only want it in menu items
@@ -312,27 +246,18 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     }
 
 
-    /**
-     * Description of the Method
-     */
     public void goForward() {
         String uri = manager.getForward();
         view.setDocument(uri);
         updateButtons();
     }
 
-    /**
-     * Description of the Method
-     */
     public void goBack() {
         String uri = manager.getBack();
         view.setDocument(uri);
         updateButtons();
     }
 
-    /**
-     * Description of the Method
-     */
     public void reloadPage() {
         logger.info("Reloading Page: ");
         if (manager.getBaseURL() != null) {
@@ -340,18 +265,13 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param url_text PARAM
-     */
     //TODO: make this part of an implementation of UserAgentCallback instead
     public void loadPage(final String url_text) {
         try {
             logger.info("Loading Page: " + url_text);
             view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             view.setDocument(url_text);
-            view.addDocumentListener(BrowserPanel.this);
+            view.addDocumentListener(this);
 
             updateButtons();
 
@@ -426,11 +346,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                         "</html>";
 
         xr = XMLResource.load(new StringReader(notFound));
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                root.panel.view.setDocument(xr.getDocument(), null);
-            }
-        });
+        SwingUtilities.invokeLater(() -> root.panel.view.setDocument(xr.getDocument(), null));
    }
 
     private String addLineBreaks(String _text, int maxLineLength) {
@@ -462,13 +378,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         return cause == null ? ex.getMessage() : cause.getMessage();
     }
 
+    @Override
     public void documentStarted() {
         // TODO...
     }
 
-    /**
-     * Description of the Method
-     */
+    @Override
     public void documentLoaded() {
         view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
@@ -482,9 +397,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         status.text.setText(txt);
     }
 
-    /**
-     * Description of the Method
-     */
     protected void updateButtons() {
         if (manager.hasBack()) {
             root.actions.backward.setEnabled(true);
@@ -501,11 +413,13 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     }
 
 
+    @Override
     public void onLayoutException(Throwable t) {
         // TODO: clean
         t.printStackTrace();
     }
 
+    @Override
     public void onRenderException(Throwable t) {
         // TODO: clean
         t.printStackTrace();

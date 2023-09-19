@@ -20,10 +20,6 @@
  */
 package org.xhtmlrenderer.css.constants;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.xhtmlrenderer.css.parser.CSSErrorHandler;
 import org.xhtmlrenderer.css.parser.CSSParser;
 import org.xhtmlrenderer.css.parser.PropertyValue;
@@ -43,6 +39,10 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 import org.xhtmlrenderer.util.XRLog;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 /**
@@ -1661,15 +1661,6 @@ public final class CSSName implements Comparable {
                     CSSName.BORDER_LEFT_COLOR);
 
 
-    /**
-     * Constructor for the CSSName object
-     *
-     * @param propName     PARAM
-     * @param initialValue
-     * @param inherits
-     * @param implemented
-     * @param builder
-     */
     private CSSName(
             String propName, String initialValue, boolean inherits,
             boolean implemented, PropertyBuilder builder) {

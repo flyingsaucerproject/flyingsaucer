@@ -32,23 +32,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class DocumentDiffTest {
     public static final int width = 500;
     public static final int height = 500;
 
-    /**
-     * Description of the Method
-     *
-     * @param dir    PARAM
-     * @param width  PARAM
-     * @param height PARAM
-     * @throws Exception Throws
-     */
     public void runTests(File dir, int width, int height) {
         File[] files = dir.listFiles();
         for (File file : files) {
@@ -73,14 +60,6 @@ public class DocumentDiffTest {
 
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param dir    PARAM
-     * @param width  PARAM
-     * @param height PARAM
-     * @throws Exception Throws
-     */
     public void generateDiffs(File dir, int width, int height)
             throws Exception {
         File[] files = dir.listFiles();
@@ -100,15 +79,6 @@ public class DocumentDiffTest {
 
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param test   PARAM
-     * @param diff   PARAM
-     * @param width  PARAM
-     * @param height PARAM
-     * @throws Exception Throws
-     */
     public static void generateTestFile(String test, String diff, int width, int height)
             throws Exception {
         Uu.p("test = " + test);
@@ -117,15 +87,6 @@ public class DocumentDiffTest {
         Uu.string_to_file(out, new File(diff));
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param xhtml  PARAM
-     * @param width  PARAM
-     * @param height PARAM
-     * @return Returns
-     * @throws Exception Throws
-     */
     public static String xhtmlToDiff(String xhtml, int width, int height)
             throws Exception {
         Document doc = XMLUtil.documentFromFile(xhtml);
@@ -144,16 +105,6 @@ public class DocumentDiffTest {
         return sb.toString();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param test   PARAM
-     * @param diff   PARAM
-     * @param width  PARAM
-     * @param height PARAM
-     * @return Returns
-     * @throws Exception Throws
-     */
     public boolean compareTestFile(String test, String diff, int width, int height)
             throws Exception {
         String tin = xhtmlToDiff(test, width, height);

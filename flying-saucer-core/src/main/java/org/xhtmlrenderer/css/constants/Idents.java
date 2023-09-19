@@ -77,57 +77,19 @@ public final class Idents {
     /**
      * Pattern instance for functions (not quite right [e.g no escapes], but good enough)
      */
-    private final static Pattern FUNCTION_PATTERN = Pattern.compile("^-?[_a-z][_a-z0-9-]+\\(");
+    private static final Pattern FUNCTION_PATTERN = Pattern.compile("^-?[_a-z][_a-z0-9-]+\\(");
 
-    /**
-     * Description of the Field
-     */
-    private final static Map COLOR_MAP;
-    /**
-     * Description of the Field
-     */
-    private final static Map FONT_SIZES;
-    /**
-     * Description of the Field
-     */
-    private final static Map FONT_WEIGHTS;
-    /**
-     * Description of the Field
-     */
-    private final static Map BORDER_WIDTHS;
-    /**
-     * Description of the Field
-     */
-    private final static Map BACKGROUND_POSITIONS;
-    /**
-     * Description of the Field
-     */
-    private final static List BACKGROUND_REPEATS;
-    /**
-     * Description of the Field
-     */
-    private final static List BORDER_STYLES;
-    /**
-     * Description of the Field
-     */
-    private final static List LIST_TYPES;
-    /**
-     * Description of the Field
-     */
-    private final static List FONT_STYLES;
+    private static final Map COLOR_MAP;
+    private static final Map FONT_SIZES;
+    private static final Map FONT_WEIGHTS;
+    private static final Map BORDER_WIDTHS;
+    private static final Map BACKGROUND_POSITIONS;
+    private static final List BACKGROUND_REPEATS;
+    private static final List BORDER_STYLES;
+    private static final List LIST_TYPES;
+    private static final List FONT_STYLES;
+    private static final List BACKGROUND_POSITIONS_IDENTS;
 
-    /**
-     * Description of the Field
-     */
-    private final static List BACKGROUND_POSITIONS_IDENTS;
-
-    /**
-     * Description of the Method
-     *
-     * @param cssName PARAM
-     * @param ident   PARAM
-     * @return Returns
-     */
     public static String convertIdent(CSSName cssName, String ident) {
         if (ident.equals("inherit")) {
             return ident;
@@ -176,43 +138,19 @@ public final class Idents {
         return val;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeABorderStyle(String val) {
         return BORDER_STYLES.contains(val);
     }
 
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAColor(String val) {
         return COLOR_MAP.get(val) != null || (val.startsWith("#") && (val.length() == 7 || val.length() == 4)) || val.startsWith("rgb");
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeALength(String val) {
         return CSS_LENGTH_PATTERN.matcher(val).matches();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAURI(String val) {
         return val.startsWith("url(") && val.endsWith(")");
     }
@@ -221,102 +159,42 @@ public final class Idents {
         return FUNCTION_PATTERN.matcher(value).find();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeABGRepeat(String val) {
         return BACKGROUND_REPEATS.indexOf(val) >= 0;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeABGAttachment(String val) {
         return "scroll".equals(val) || "fixed".equals(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeABGPosition(String val) {
         return BACKGROUND_POSITIONS_IDENTS.contains(val) || looksLikeALength(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAListStyleType(String val) {
         return LIST_TYPES.indexOf(val) >= 0;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAListStyleImage(String val) {
         return "none".equals(val) || looksLikeAURI(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAListStylePosition(String val) {
         return "inside".equals(val) || "outside".equals(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAFontStyle(String val) {
         return FONT_STYLES.indexOf(val) >= 0;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAFontVariant(String val) {
         return "normal".equals(val) || "small-caps".equals(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAFontWeight(String val) {
         return FONT_WEIGHTS.get(val) != null;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAFontSize(String val) {
         // TODO
         return FONT_SIZES.get(val) != null ||
@@ -324,12 +202,6 @@ public final class Idents {
                 "larger".equals(val) || "smaller".equals(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeALineHeight(String val) {
         return "normal".equals(val) || looksLikeALength(val) || looksLikeANumber(val);
     }

@@ -49,9 +49,6 @@ public class XRSimpleLogFormatter extends Formatter {
         EXMSG_FMT = Configuration.valueFor("xr.simple-log-format-throwable", "{1}:\n  {5}\n{8}").trim() + "\n";
     }
 
-    /**
-     * Constructor for the XRSimpleLogFormatter object
-     */
     public XRSimpleLogFormatter() {
         super();
         mformat = new MessageFormat(MSG_FMT);

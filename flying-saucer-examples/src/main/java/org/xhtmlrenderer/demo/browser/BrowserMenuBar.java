@@ -43,11 +43,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class BrowserMenuBar extends JMenuBar {
     private final BrowserStartup root;
     private JMenu file;
@@ -101,9 +96,6 @@ public class BrowserMenuBar extends JMenuBar {
     }
 
 
-    /**
-     * Description of the Method
-     */
     public void createLayout() {
         final ScalableXHTMLPanel panel = root.panel.view;
 
@@ -257,9 +249,6 @@ public class BrowserMenuBar extends JMenuBar {
     }
 
 
-    /**
-     * Description of the Method
-     */
     public void createActions() {
         if (Configuration.isTrue("xr.use.listeners", true)) {
             List<FSMouseListener> l = root.panel.view.getMouseTrackingListeners();
@@ -304,34 +293,15 @@ public class BrowserMenuBar extends JMenuBar {
         return scales;
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
     final class ShowDOMInspectorAction extends AbstractAction {
-        /**
-         * Description of the Field
-         */
         private DOMInspector inspector;
-        /**
-         * Description of the Field
-         */
         private JFrame inspectorFrame;
 
-        /**
-         * Constructor for the ShowDOMInspectorAction object
-         */
         ShowDOMInspectorAction() {
             super("DOM Tree Inspector");
             putValue(MNEMONIC_KEY, KeyEvent.VK_D);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
         @Override
         public void actionPerformed(ActionEvent evt) {
             if (inspectorFrame == null) {
@@ -352,25 +322,12 @@ public class BrowserMenuBar extends JMenuBar {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
     final class BoxOutlinesAction extends AbstractAction {
-        /**
-         * Constructor for the BoxOutlinesAction object
-         */
         BoxOutlinesAction() {
             super("Show Box Outlines");
             putValue(MNEMONIC_KEY, KeyEvent.VK_B);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
         @Override
         public void actionPerformed(ActionEvent evt) {
             root.panel.view.getSharedContext().setDebug_draw_boxes(!root.panel.view.getSharedContext().debugDrawBoxes());
@@ -378,25 +335,12 @@ public class BrowserMenuBar extends JMenuBar {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
     final class LineBoxOutlinesAction extends AbstractAction {
-        /**
-         * Constructor for the LineBoxOutlinesAction object
-         */
         LineBoxOutlinesAction() {
             super("Show Line Box Outlines");
             putValue(MNEMONIC_KEY, KeyEvent.VK_L);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
         @Override
         public void actionPerformed(ActionEvent evt) {
             root.panel.view.getSharedContext().setDebug_draw_line_boxes(!root.panel.view.getSharedContext().debugDrawLineBoxes());
@@ -404,25 +348,12 @@ public class BrowserMenuBar extends JMenuBar {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
     final class InlineBoxesAction extends AbstractAction {
-        /**
-         * Constructor for the InlineBoxesAction object
-         */
         InlineBoxesAction() {
             super("Show Inline Boxes");
             putValue(MNEMONIC_KEY, KeyEvent.VK_I);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
         @Override
         public void actionPerformed(ActionEvent evt) {
             root.panel.view.getSharedContext().setDebug_draw_inline_boxes(!root.panel.view.getSharedContext().debugDrawInlineBoxes());
@@ -431,19 +362,11 @@ public class BrowserMenuBar extends JMenuBar {
     }
 
     final class FontMetricsAction extends AbstractAction {
-        /**
-         * Constructor for the InlineBoxesAction object
-         */
         FontMetricsAction() {
             super("Show Font Metrics");
             putValue(MNEMONIC_KEY, KeyEvent.VK_F);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
         @Override
         public void actionPerformed(ActionEvent evt) {
             root.panel.view.getSharedContext().setDebug_draw_font_metrics(!root.panel.view.getSharedContext().debugDrawFontMetrics());
@@ -533,36 +456,16 @@ public class BrowserMenuBar extends JMenuBar {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
     class LoadAction extends AbstractAction {
-        /**
-         * Description of the Field
-         */
-        protected String url;
-
+        private final String url;
         private final String pageName;
 
-        /**
-         * Constructor for the LoadAction object
-         *
-         * @param name PARAM
-         * @param url  PARAM
-         */
         LoadAction(String name, String url) {
             super(name);
             pageName = name;
             this.url = url;
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
         @Override
         public void actionPerformed(ActionEvent evt) {
             try {
@@ -593,11 +496,6 @@ public class BrowserMenuBar extends JMenuBar {
 }
 
 
-/**
- * Description of the Class
- *
- * @author empty
- */
 class EmptyAction extends AbstractAction {
     EmptyAction(String name, Icon icon) {
         this(name, "", icon);
@@ -608,12 +506,6 @@ class EmptyAction extends AbstractAction {
         putValue(Action.SHORT_DESCRIPTION, shortDesc);
     }
 
-    /**
-     * Constructor for the EmptyAction object
-     *
-     * @param name  PARAM
-     * @param accel PARAM
-     */
     EmptyAction(String name, int accel) {
         this(name);
         putValue(Action.ACCELERATOR_KEY,
@@ -621,11 +513,6 @@ class EmptyAction extends AbstractAction {
                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     }
 
-    /**
-     * Constructor for the EmptyAction object
-     *
-     * @param name PARAM
-     */
     EmptyAction(String name) {
         super(name);
     }

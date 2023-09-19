@@ -35,8 +35,6 @@ import static java.util.Arrays.asList;
 
 
 /**
- * Description of the Class
- *
  * @author Joshua Marinacci
  */
 public class AWTFontResolver implements FontResolver {
@@ -44,9 +42,6 @@ public class AWTFontResolver implements FontResolver {
     private final Map<String, Font> instance_hash = new HashMap<>();
     private final Map<String, Font> available_fonts_hash = new HashMap<>();
 
-    /**
-     * Constructor for the FontResolverTest object
-     */
     public AWTFontResolver() {
         init();
     }
@@ -74,17 +69,6 @@ public class AWTFontResolver implements FontResolver {
         init();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param ctx
-     * @param families PARAM
-     * @param size     PARAM
-     * @param weight   PARAM
-     * @param style    PARAM
-     * @param variant  PARAM
-     * @return Returns
-     */
     public FSFont resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         if (families != null) {
             for (String family : families) {
@@ -118,17 +102,6 @@ public class AWTFontResolver implements FontResolver {
         available_fonts_hash.put(name, font.deriveFont(1.0f));
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param ctx
-     * @param root_font PARAM
-     * @param size      PARAM
-     * @param weight    PARAM
-     * @param style     PARAM
-     * @param variant   PARAM
-     * @return Returns
-     */
     protected static Font createFont(SharedContext ctx, Font root_font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         int font_const = Font.PLAIN;
         if (weight != null &&
@@ -156,17 +129,6 @@ public class AWTFontResolver implements FontResolver {
         return fnt;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param ctx
-     * @param font    PARAM
-     * @param size    PARAM
-     * @param weight  PARAM
-     * @param style   PARAM
-     * @param variant PARAM
-     * @return Returns
-     */
     protected Font resolveFont(SharedContext ctx, String font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("here");
         // strip off the "s if they are there

@@ -28,7 +28,14 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 
@@ -42,11 +49,8 @@ public final class ValueConstants {
      * Type descriptions--a crude approximation taken by scanning CSSValue
      * statics
      */
-    private final static List TYPE_DESCRIPTIONS;
-    /**
-     * Description of the Field
-     */
-    private final static Map sacTypesStrings;
+    private static final List TYPE_DESCRIPTIONS;
+    private static final Map sacTypesStrings;
 
     /**
      * A text representation of the CSS type for this value.
@@ -68,12 +72,6 @@ public final class ValueConstants {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param type PARAM
-     * @return Returns
-     */
     public static short sacPrimitiveTypeForString(String type) {
         if ("em".equals(type)) {
             return CSSPrimitiveValue.CSS_EMS;
@@ -101,12 +99,6 @@ public final class ValueConstants {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param type PARAM
-     * @return Returns
-     */
     public static String stringForSACPrimitiveType(short type) {
         return (String) sacTypesStrings.get(type);
     }

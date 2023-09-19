@@ -26,27 +26,20 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.swing.AWTFSFont;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.util.*;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 
-
-/**
- * Description of the Class
- *
- * @author Joshua Marinacci
- */
 public class AWTFontResolver implements FontResolver {
     private final Map<String, Font> fontsCache = new HashMap<>();
 
     private final Set<String> availableFontNames = new HashSet<>();
     private final Map<String, Font> availableFonts = new HashMap<>();
 
-    /**
-     * Constructor for the FontResolverTest object
-     */
     public AWTFontResolver() {
         init();
     }

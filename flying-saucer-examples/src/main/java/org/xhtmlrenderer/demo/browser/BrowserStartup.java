@@ -19,65 +19,29 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import java.awt.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.*;
-import javax.swing.border.EtchedBorder;
-
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-/**
- * Description of the Class
- *
- * @author empty
- */
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class BrowserStartup {
-    /**
-     * Description of the Field
-     */
     public BrowserPanel panel;
-    /**
-     * Description of the Field
-     */
     protected BrowserMenuBar menu;
-    /**
-     * Description of the Field
-     */
     protected JFrame frame;
-    /**
-     * Description of the Field
-     */
     protected JFrame validation_console = null;
-    /**
-     * Description of the Field
-     */
     protected BrowserActions actions;
-    /**
-     * Page to view at startup
-     */
     protected String startPage;
-
-    /**
-     * Description of the Field
-     */
     protected ValidationHandler error_handler = new ValidationHandler();
-    /**
-     * Description of the Field
-     */
-    public static final Logger logger = Logger.getLogger("app.browser");
+    private static final Logger logger = Logger.getLogger("app.browser");
 
-    /**
-     * Constructor for the BrowserStartup object
-     */
     public BrowserStartup() {
         this("demo:demos/splash/splash.html");
     }
 
-    /**
-     * Constructor for the BrowserStartup object
-     */
     public BrowserStartup(String startPage) {
         logger.info("starting up");
         this.startPage = startPage;
@@ -93,7 +57,7 @@ public class BrowserStartup {
                 System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FS Browser");
             } catch (Exception ex) {
                 try {
-                    logger.log(Level.SEVERE, "error initalizing the mac properties", ex);
+                    logger.log(Level.SEVERE, "error initializing the mac properties", ex);
                 } catch (Exception ex2) {
                     //System.out.println("error writing to the log file!" + ex2);
                     //ex2.printStackTrace();
@@ -135,12 +99,10 @@ public class BrowserStartup {
      * @param args The command line arguments
      */
     public static void main(final String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                final BrowserStartup bs = new BrowserStartup();
-                bs.initUI();
-                bs.launch();
-            }
+        EventQueue.invokeLater(() -> {
+            final BrowserStartup bs = new BrowserStartup();
+            bs.initUI();
+            bs.launch();
         });
     }
 
@@ -174,18 +136,8 @@ public class BrowserStartup {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
     class FrameBrowserPanelListener implements BrowserPanelListener {
-        /**
-         * Description of the Method
-         *
-         * @param url   PARAM
-         * @param title PARAM
-         */
+        @Override
         public void pageLoadSuccess(String url, String title) {
             frame.setTitle(title + (title.length() > 0 ? " - " : "") + "Flying Saucer");
         }

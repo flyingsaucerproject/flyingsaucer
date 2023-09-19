@@ -62,9 +62,6 @@ public class FSEntityResolver implements EntityResolver2 {
     private final Map entities = new HashMap();
 
     // fill the list with URLs
-    /**
-     * Constructor for the FSEntityResolver object
-     */
     private FSEntityResolver() {
         FSCatalog catalog = new FSCatalog();
 
@@ -86,14 +83,6 @@ public class FSEntityResolver implements EntityResolver2 {
         // The XHTML 1.1 element sets
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param publicID PARAM
-     * @param systemID PARAM
-     * @return Returns
-     * @throws SAXException Throws
-     */
     public InputSource resolveEntity(String publicID,
                                      String systemID)
             throws SAXException {
