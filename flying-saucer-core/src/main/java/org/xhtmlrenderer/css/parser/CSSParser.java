@@ -19,20 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.MarginBoxName;
@@ -47,6 +33,20 @@ import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.RulesetContainer;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CSSParser {
     private static final Set SUPPORTED_PSEUDO_ELEMENTS;
@@ -1943,12 +1943,12 @@ public class CSSParser {
                 String uriResult = processEscapes(ch, start, end+1);
 
                 // Relative URIs are resolved relative to CSS file, not XHTML file
-                if (isRelativeURI(uriResult)) {
+                if (isRelativeURI(uriResult) && _URI != null) {
                     int lastSlash = _URI.lastIndexOf('/');
                     if (lastSlash != -1) {
                         uriResult = _URI.substring(0, lastSlash+1) + uriResult;
                     }
-                } else if (isServerRelativeURI(uriResult)) {
+                } else if (isServerRelativeURI(uriResult) && _URI != null) {
                     int uriOffset = _URI.indexOf("://") + 3;
                     int firstSlashAfterProtocol = _URI.substring(uriOffset).indexOf('/');
                     if (firstSlashAfterProtocol != -1) {
