@@ -53,10 +53,10 @@ import java.util.Map;
  * @author Patrick Wright
  */
 public class IdentValue implements FSDerivedValue {
+    private static final Map<String, IdentValue> ALL_IDENT_VALUES = new HashMap<>();
     private static int maxAssigned;
 
     private final String ident;
-
     public final int FS_ID;
 
     public static final IdentValue ABSOLUTE = addValue("absolute");
@@ -217,11 +217,9 @@ public class IdentValue implements FSDerivedValue {
     public static final IdentValue XX_SMALL = addValue("xx-small");
     public static final IdentValue MANUAL = addValue("manual");
 
-    private static Map ALL_IDENT_VALUES;
-
     private IdentValue(String ident) {
         this.ident = ident;
-        this.FS_ID = IdentValue.maxAssigned++;
+        this.FS_ID = maxAssigned++;
     }
 
     /**
@@ -244,22 +242,19 @@ public class IdentValue implements FSDerivedValue {
      * @return see desc.
      */
     public static IdentValue getByIdentString(String ident) {
-        IdentValue val = (IdentValue) ALL_IDENT_VALUES.get(ident);
+        IdentValue val = ALL_IDENT_VALUES.get(ident);
         if (val == null) {
             throw new XRRuntimeException("Ident named " + ident + " has no IdentValue instance assigned to it.");
         }
         return val;
     }
 
-    /**
-     * TODO: doc
-     */
     public static boolean looksLikeIdent(String ident) {
-        return (IdentValue) ALL_IDENT_VALUES.get(ident) != null;
+        return ALL_IDENT_VALUES.get(ident) != null;
     }
 
     public static IdentValue valueOf(String ident) {
-        return (IdentValue)ALL_IDENT_VALUES.get(ident);
+        return ALL_IDENT_VALUES.get(ident);
     }
 
     public static int getIdentCount() {
@@ -272,9 +267,6 @@ public class IdentValue implements FSDerivedValue {
      * @param ident The feature to be added to the Value attribute
      */
     private static synchronized IdentValue addValue(String ident) {
-        if (ALL_IDENT_VALUES == null) {
-            ALL_IDENT_VALUES = new HashMap();
-        }
         IdentValue val = new IdentValue(ident);
         ALL_IDENT_VALUES.put(ident, val);
         return val;
@@ -285,6 +277,7 @@ public class IdentValue implements FSDerivedValue {
      * Most of these throw exceptions--makes use of the interface easier in CS (avoids casting)
      */
 
+    @Override
     public boolean isDeclaredInherit() {
         return this == INHERIT;
     }
@@ -293,42 +286,51 @@ public class IdentValue implements FSDerivedValue {
         return this;
     }
 
+    @Override
     public float asFloat() {
         throw new XRRuntimeException("Ident value is never a float; wrong class used for derived value.");
     }
 
+    @Override
     public FSColor asColor() {
         throw new XRRuntimeException("Ident value is never a color; wrong class used for derived value.");
     }
 
+    @Override
     public float getFloatProportionalTo(CSSName cssName,
                                         float baseValue,
                                         CssContext ctx) {
         throw new XRRuntimeException("Ident value (" + this + ") is never a length; wrong class used for derived value.");
     }
 
+    @Override
     public String asString() {
         return toString();
     }
 
+    @Override
     public String[] asStringArray() {
         throw new XRRuntimeException("Ident value is never a string array; wrong class used for derived value.");
     }
 
+    @Override
     public IdentValue asIdentValue() {
         return this;
     }
 
+    @Override
     public boolean hasAbsoluteUnit() {
         // log and return false
         throw new XRRuntimeException("Ident value is never an absolute unit; wrong class used for derived value; this " +
                 "ident value is a " + this.asString());
     }
 
+    @Override
     public boolean isIdent() {
         return true;
     }
 
+    @Override
     public boolean isDependentOnFontSize() {
         return false;
     }
@@ -371,7 +373,7 @@ public class IdentValue implements FSDerivedValue {
  * Implement complete support for background-position and background-attachment
  *
  * Revision 1.28  2007/02/23 16:54:38  peterbrant
- * Allow special ident -fs-intial-value to reset a property value to its initial value (used by border related shorthand properties as 'color' won't be known at property construction time)
+ * Allow special ident -fs-initial-value to reset a property value to its initial value (used by border related shorthand properties as 'color' won't be known at property construction time)
  *
  * Revision 1.27  2007/02/20 20:05:40  peterbrant
  * Complete support for absolute and relative font sizes
@@ -417,7 +419,7 @@ public class IdentValue implements FSDerivedValue {
  * Added some missing idents.
  *
  * Revision 1.13  2005/10/21 12:01:13  pdoubleya
- * Added cachable rect property for margin, cleanup minor in styling.
+ * Added cacheable rect property for margin, cleanup minor in styling.
  *
  * Revision 1.12  2005/10/21 10:02:53  pdoubleya
  * Cleanup, removed unneeded vars, reorg code in CS.
