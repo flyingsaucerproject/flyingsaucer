@@ -10,7 +10,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General P.ublic License for more details.
+ * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
@@ -19,17 +19,23 @@
  */
 package org.xhtmlrenderer.util;
 
+import javax.annotation.Nonnull;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 
+import static java.nio.file.Files.newOutputStream;
+
 /**
- * <p>Writes out BufferedImages to some outputstream, like a file. Allows image writer parameters to be specified and
+ * <p>Writes out BufferedImages to some output stream, like a file. Allows image writer parameters to be specified and
  * thus controlled. Uses the java ImageIO libraries--see {@link javax.imageio.ImageIO} and related classes,
  * especially {@link javax.imageio.ImageWriter}.</p>
  * <p/>
@@ -39,7 +45,7 @@ import java.util.Iterator;
  * writer.write(img, new File("image.png"));
  * </pre>
  * <p/>
- * <p>You can set the image format in the constructore ({@link org.xhtmlrenderer.util.FSImageWriter#FSImageWriter(String)},
+ * <p>You can set the image format in the constructor ({@link org.xhtmlrenderer.util.FSImageWriter#FSImageWriter(String)},
  * and can set compression settings using various setters; this lets you create writer to reuse across a number
  * of images, all output at the same compression level. Note that not all image formats support compression. For
  * those that do, you may need to set more than one compression setting, in combination, for it to work. For JPG,
@@ -54,11 +60,12 @@ import java.util.Iterator;
  * output quality. Note that for the JPG format, your image or BufferedImage shouldn't be ARGB.</p>
  */
 public class FSImageWriter {
-    private String imageFormat;
+    public static final String DEFAULT_IMAGE_FORMAT = "png";
+
+    private final String imageFormat;
     private float writeCompressionQuality;
     private int writeCompressionMode;
     private String writeCompressionType;
-    public static final String DEFAULT_IMAGE_FORMAT = "png";
 
 
     /**
@@ -99,12 +106,12 @@ public class FSImageWriter {
      * Writes the image out to the target file, creating the file if necessary, or overwriting if it already
      * exists.
      *
-     * @param bimg     Image to write.
+     * @param image     Image to write.
      * @param filePath Path for file to write. The extension for the file name is not changed; it is up to the
      *                 caller to make sure this corresponds to the image format.
      * @throws IOException If the file could not be written.
      */
-    public void write(BufferedImage bimg, String filePath) throws IOException {
+    public void write(BufferedImage image, String filePath) throws IOException {
         File file = new File(filePath);
         if (file.exists()) {
             if (!file.delete()) {
@@ -118,52 +125,31 @@ public class FSImageWriter {
             }
         }
 
-        OutputStream fos = new BufferedOutputStream(new FileOutputStream(file));
-        try {
-            write(bimg, fos);
-        } finally {
-            try {
-                fos.close();
-            } catch (IOException e) {
-                // ignore
-            }
+        try (OutputStream fos = new BufferedOutputStream(newOutputStream(file.toPath()))) {
+            write(image, fos);
         }
+        // ignore
     }
 
     /**
      * Writes the image out to the target file, creating the file if necessary, or overwriting if it already
      * exists.
      *
-     * @param bimg     Image to write.
-     * @param os outputstream to write to
+     * @param image     Image to write.
+     * @param os output stream to write to
      * @throws IOException If the file could not be written.
      */
-    public void write(BufferedImage bimg, OutputStream os) throws IOException {
-        ImageWriter writer = null;
-        ImageOutputStream ios = null;
-        try {
-            writer = lookupImageWriterForFormat(imageFormat);
-            ios = ImageIO.createImageOutputStream(os);
-            writer.setOutput(ios);
-            ImageWriteParam iwparam = getImageWriteParameters(writer);
+    public void write(BufferedImage image, OutputStream os) throws IOException {
+        ImageWriter writer = lookupImageWriterForFormat(imageFormat);
 
-            writer.write(null, new IIOImage(bimg, null, null), iwparam);
+        try (ImageOutputStream ios = ImageIO.createImageOutputStream(os)) {
+            writer.setOutput(ios);
+            ImageWriteParam parameters = getImageWriteParameters(writer);
+
+            writer.write(null, new IIOImage(image, null, null), parameters);
+            ios.flush();
         } finally {
-            if (ios != null) {
-                try {
-                    ios.flush();
-                } catch (IOException e) {
-                    // ignore
-                }
-                try {
-                    ios.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
-            if (writer != null) {
-                writer.dispose();
-            }
+            writer.dispose();
         }
     }
 
@@ -227,17 +213,17 @@ public class FSImageWriter {
     }
 
     /**
-     * Utility method to find an imagewriter.
+     * Utility method to find an image writer.
      *
      * @param imageFormat String informal format name, "jpg"
-     * @return ImageWriter corresponding to that format, null if not found.
+     * @return ImageWriter corresponding to that format
      */
+    @Nonnull
     private ImageWriter lookupImageWriterForFormat(String imageFormat) {
-        ImageWriter writer = null;
-        Iterator iter = ImageIO.getImageWritersByFormatName(imageFormat);
+        Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName(imageFormat);
         if (iter.hasNext()) {
-            writer = (ImageWriter) iter.next();
+            return iter.next();
         }
-        return writer;
+        throw new IllegalArgumentException("Image writer not found for format " + imageFormat);
     }
 }
