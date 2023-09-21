@@ -1928,12 +1928,12 @@ public class CSSParser {
                 String uriResult = processEscapes(ch, start, end+1);
 
                 // Relative URIs are resolved relative to CSS file, not XHTML file
-                if (isRelativeURI(uriResult)) {
+                if (isRelativeURI(uriResult) && _URI != null) {
                     int lastSlash = _URI.lastIndexOf('/');
                     if (lastSlash != -1) {
                         uriResult = _URI.substring(0, lastSlash+1) + uriResult;
                     }
-                } else if (isServerRelativeURI(uriResult)) {
+                } else if (isServerRelativeURI(uriResult) && _URI != null) {
                     int uriOffset = _URI.indexOf("://") + 3;
                     int firstSlashAfterProtocol = _URI.substring(uriOffset).indexOf('/');
                     if (firstSlashAfterProtocol != -1) {

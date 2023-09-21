@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.lowagie.text.DocumentException;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import com.lowagie.text.DocumentException;
 
 public class ToPDF
 {
@@ -44,7 +44,7 @@ public class ToPDF
         createPDF(url, args[1]);
     }
 
-    public static void createPDF(String url, String pdf)
+    private static void createPDF(String url, String pdf)
             throws IOException, DocumentException {
         OutputStream os = null;
         try {
