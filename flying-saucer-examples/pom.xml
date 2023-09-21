@@ -28,6 +28,7 @@
     <itext.version>2.1.7</itext.version>
     <slf4j.version>2.0.9</slf4j.version>
     <assertj.version>3.24.2</assertj.version>
+    <pdftest.version>1.8.1</pdftest.version>
   </properties>
 
   <dependencies>
@@ -56,6 +57,12 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>${assertj.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.codeborne</groupId>
+      <artifactId>pdf-test</artifactId>
+      <version>${pdftest.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -1,12 +1,16 @@
 package org.xhtmlrenderer.pdf;
 
+import com.codeborne.pdftest.PDF;
+import com.lowagie.text.DocumentException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 
+import static com.codeborne.pdftest.assertj.Assertions.assertThat;
 import static java.nio.file.Files.newOutputStream;
 
 /**
@@ -18,9 +22,15 @@ public class PDFRenderToMultiplePagesTest {
     @Test
     public void testGenerateSinglePdfFromMultipleInputDocuments() throws Exception {
         File output = File.createTempFile("flying-saucer-" + getClass().getSimpleName(), ".pdf");
-
         String[] inputs = createSimpleFakeDocuments();
+        generatePDF(inputs, output);
+        log.info("Sample file with {} documents rendered as PDF to {}", inputs.length, output.toURI());
+        
+        PDF pdf = new PDF(output);
+        assertThat(pdf).containsText("Page1", "Page2", "Page3");
+    }
 
+    private static void generatePDF(String[] inputs, File output) throws IOException, DocumentException {
         try (OutputStream os = newOutputStream(output.toPath())) {
             ITextRenderer renderer = new ITextRenderer();
 
@@ -40,8 +50,6 @@ public class PDFRenderToMultiplePagesTest {
             // complete the PDF
             renderer.finishPDF();
         }
-
-        log.info("Sample file with {} documents rendered as PDF to {}", inputs.length, output.toURI());
     }
 
     private static String[] createSimpleFakeDocuments() {
