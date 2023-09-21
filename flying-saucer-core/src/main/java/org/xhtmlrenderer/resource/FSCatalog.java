@@ -22,16 +22,25 @@ package org.xhtmlrenderer.resource;
 
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * <p>FSCatalog loads an XML catalog file to read mappings of public IDs for
@@ -67,19 +76,21 @@ public class FSCatalog {
      *
      * @param catalogURI A String URI to a catalog XML file on the classpath.
      */
-    public Map parseCatalog(String catalogURI) {
-        URL url;
-        Map map;
+    public Map<String, String> parseCatalog(String catalogURI) {
         try {
-            url = FSCatalog.class.getClassLoader().getResource(catalogURI);
-            try (InputStream s = new BufferedInputStream(url.openStream())) {
-                map = parseCatalog(new InputSource(s));
-            }
+            URL url = requireNonNull(FSCatalog.class.getClassLoader().getResource(catalogURI),
+                    () -> "Catalog not found in classpath: " + catalogURI);
+            return parseCatalog(url);
         } catch (Exception ex) {
             XRLog.xmlEntities(Level.WARNING, "Could not open XML catalog from URI '" + catalogURI + "'", ex);
-            map = new HashMap();
+            return new HashMap<>();
         }
-        return map;
+    }
+
+    private Map<String, String> parseCatalog(URL url) throws IOException {
+        try (InputStream s = new BufferedInputStream(url.openStream())) {
+            return parseCatalog(new InputSource(s));
+        }
     }
 
     /**
@@ -88,7 +99,7 @@ public class FSCatalog {
      *
      * @param inputSource A SAX InputSource to a catalog XML file on the classpath.
      */
-    public Map parseCatalog(InputSource inputSource) {
+    public Map<String, String> parseCatalog(InputSource inputSource) {
         XMLReader xmlReader = XMLResource.newXMLReader();
 
         CatalogContentHandler ch = new CatalogContentHandler();
@@ -112,18 +123,21 @@ public class FSCatalog {
             // add our own entity resolver
             xmlReader.setContentHandler(ch);
             xmlReader.setErrorHandler(new ErrorHandler() {
+                @Override
                 public void error(SAXParseException ex) {
                     if (XRLog.isLoggingEnabled()) {
                         XRLog.xmlEntities(Level.WARNING, ex.getMessage());
                     }
                 }
 
+                @Override
                 public void fatalError(SAXParseException ex) {
                     if (XRLog.isLoggingEnabled()) {
                         XRLog.xmlEntities(Level.WARNING, ex.getMessage());
                     }
                 }
 
+                @Override
                 public void warning(SAXParseException ex) {
                     if (XRLog.isLoggingEnabled()) {
                         XRLog.xmlEntities(Level.WARNING, ex.getMessage());
@@ -142,16 +156,12 @@ public class FSCatalog {
      * parse, then call getEntityMap().
      */
     private static class CatalogContentHandler extends DefaultHandler {
-        private Map entityMap;
-
-        public CatalogContentHandler() {
-            this.entityMap = new HashMap();
-        }
+        private final Map<String, String> entityMap = new HashMap<>();
 
         /**
          * Returns a Map of public Ids to local URIs
          */
-        public Map getEntityMap() {
+        public Map<String, String> getEntityMap() {
             return entityMap;
         }
 
@@ -159,10 +169,11 @@ public class FSCatalog {
          * Receive notification of the beginning of an element; here used to pick up the mappings
          * for public IDs to local URIs in the catalog.
          */
-        public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+        @Override
+        public void startElement(String namespaceURI, String localName, String qName, Attributes attributes) {
             if (localName.equalsIgnoreCase("public") ||
-                    (localName.equals("") && qName.equalsIgnoreCase("public"))) {
-                entityMap.put(atts.getValue("publicId"), atts.getValue("uri"));
+                    (localName.isEmpty() && qName.equalsIgnoreCase("public"))) {
+                entityMap.put(attributes.getValue("publicId"), attributes.getValue("uri"));
             }
         }
     }
@@ -188,5 +199,5 @@ public class FSCatalog {
                     featureUri + ". Feature may be properly named, but not recognized by this parser.");
         }
     }
-}// end class
+}
 
