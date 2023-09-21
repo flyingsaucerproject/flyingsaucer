@@ -32,9 +32,9 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Represents a form object
@@ -47,16 +47,14 @@ public class XhtmlForm {
 
     private static int _defaultGroupCount = 1;
 
-    private UserAgentCallback _userAgentCallback;
-    private Map _componentCache;
-    private Map _buttonGroups;
-    private Element _parentFormElement;
-    private FormSubmissionListener _formSubmissionListener;
+    private final UserAgentCallback _userAgentCallback;
+    private final Map<Element, FormField> _componentCache = new LinkedHashMap<>();
+    private final Map<String, ButtonGroupWrapper> _buttonGroups = new HashMap<>();
+    private final Element _parentFormElement;
+    private final FormSubmissionListener _formSubmissionListener;
 
     public XhtmlForm(UserAgentCallback uac, Element e, FormSubmissionListener fsListener) {
         _userAgentCallback = uac;
-        _buttonGroups = new HashMap();
-        _componentCache = new LinkedHashMap();
         _parentFormElement = e;
         _formSubmissionListener = fsListener;
     }
@@ -74,13 +72,7 @@ public class XhtmlForm {
             groupName = createNewDefaultGroupName();
         }
 
-        ButtonGroupWrapper group = (ButtonGroupWrapper) _buttonGroups.get(groupName);
-
-        if (group == null) {
-            group = new ButtonGroupWrapper();
-
-            _buttonGroups.put(groupName, group);
-        }
+        ButtonGroupWrapper group = _buttonGroups.computeIfAbsent(groupName, (name) -> new ButtonGroupWrapper());
 
         group.add(button);
     }
@@ -92,17 +84,13 @@ public class XhtmlForm {
     private static boolean isFormField(Element e) {
         String nodeName = e.getNodeName();
 
-        if (nodeName.equals("input") || nodeName.equals("select") || nodeName.equals("textarea")) {
-            return true;
-        }
-
-        return false;
+        return nodeName.equals("input") || nodeName.equals("select") || nodeName.equals("textarea");
     }
 
     public FormField addComponent(Element e, LayoutContext context, BlockBox box) {
 
         if (_componentCache.containsKey(e)) {
-            return (FormField) _componentCache.get(e);
+            return _componentCache.get(e);
         } else {
             if (!isFormField(e)) {
                 return null;
@@ -121,14 +109,12 @@ public class XhtmlForm {
     }
 
     public void reset() {
-        Iterator buttonGroups = _buttonGroups.values().iterator();
-        while (buttonGroups.hasNext()) {
-            ((ButtonGroupWrapper) buttonGroups.next()).clearSelection();
+        for (ButtonGroupWrapper buttonGroupWrapper : _buttonGroups.values()) {
+            buttonGroupWrapper.clearSelection();
         }
 
-        Iterator fields = _componentCache.values().iterator();
-        while (fields.hasNext()) {
-            ((FormField) fields.next()).reset();
+        for (FormField formField : _componentCache.values()) {
+            formField.reset();
         }
     }
 
@@ -142,21 +128,19 @@ public class XhtmlForm {
         StringBuilder data = new StringBuilder();
         String action = _parentFormElement.getAttribute("action");
         data.append(action).append("?");
-        Iterator fields = _componentCache.entrySet().iterator();
-        boolean first=true;
-        while (fields.hasNext()) {
-            Map.Entry entry = (Map.Entry) fields.next();
-
-            FormField field = (FormField) entry.getValue();
+        
+        AtomicBoolean first = new AtomicBoolean(true);
+        for (Map.Entry<Element, FormField> entry : _componentCache.entrySet()) {
+            FormField field = entry.getValue();
 
             if (field.includeInSubmission(source)) {
                 for (String value : field.getFormDataStrings()) {
-                    if (!first) {
+                    if (!first.get()) {
                         data.append('&');
                     }
 
                     data.append(value);
-                    first=false;
+                    first.set(false);
                 }
             }
         }
@@ -180,13 +164,10 @@ public class XhtmlForm {
     }
 
     private static class ButtonGroupWrapper {
-        private ButtonGroup _group;
-        private AbstractButton _dummy;
+        private final ButtonGroup _group = new ButtonGroup();
+        private final AbstractButton _dummy = new JRadioButton();
 
-        public ButtonGroupWrapper() {
-            _group = new ButtonGroup();
-            _dummy = new JRadioButton();
-
+        private ButtonGroupWrapper() {
             // We need a dummy button to have the appearance of all 
             // the radio buttons being in an unselected state.
             //
