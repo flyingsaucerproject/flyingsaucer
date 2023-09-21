@@ -219,9 +219,9 @@ final class ElementPropertiesPanel extends JPanel {
                 // BUG: not working?
                 label.setFont(propLabelFont);
             } else if (col == 2) {
-                PropertiesTableModel pmodel = (PropertiesTableModel) this.getModel();
-                Map.Entry me = (Map.Entry) pmodel._properties.entrySet().toArray()[row];
-                CSSPrimitiveValue cpv = (CSSPrimitiveValue) me.getValue();
+                PropertiesTableModel pmodel = (PropertiesTableModel) getModel();
+                Map.Entry<String, CSSPrimitiveValue> me = (Map.Entry<String, CSSPrimitiveValue>) pmodel._properties.entrySet().toArray()[row];
+                CSSPrimitiveValue cpv = me.getValue();
                 if (cpv.getCssText().startsWith("rgb")) {
                     label.setBackground(org.xhtmlrenderer.css.util.ConversionUtil.rgbToColor(cpv.getRGBColorValue()));
                 }
