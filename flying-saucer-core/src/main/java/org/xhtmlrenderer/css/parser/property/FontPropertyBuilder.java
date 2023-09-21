@@ -34,14 +34,14 @@ import java.util.ListIterator;
 
 public class FontPropertyBuilder extends AbstractPropertyBuilder {
     // [ [ <'font-style'> || <'font-variant'> || <'font-weight'> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'> ]
-    private static final CSSName[] ALL = new CSSName[] {
+    private static final CSSName[] ALL = {
         CSSName.FONT_STYLE, CSSName.FONT_VARIANT, CSSName.FONT_WEIGHT,
         CSSName.FONT_SIZE, CSSName.LINE_HEIGHT, CSSName.FONT_FAMILY };
 
     @Override
     public List<PropertyDeclaration> buildDeclarations(
             CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
-        List result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
+        List<PropertyDeclaration> result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
         if (result != null) {
             return result;
         }
@@ -55,7 +55,7 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
 
         boolean keepGoing = false;
 
-        ListIterator i = values.listIterator();
+        ListIterator<? extends CSSPrimitiveValue> i = values.listIterator();
         while (i.hasNext()) {
             PropertyValue value = (PropertyValue)i.next();
             int type = value.getPrimitiveType();
@@ -120,10 +120,10 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
             }
 
             PropertyBuilder fontSizeBuilder = CSSName.getPropertyBuilder(CSSName.FONT_SIZE);
-            List l = fontSizeBuilder.buildDeclarations(
+            List<PropertyDeclaration> l = fontSizeBuilder.buildDeclarations(
                     CSSName.FONT_SIZE, Collections.singletonList(value), origin, important);
 
-            fontSize = (PropertyDeclaration)l.get(0);
+            fontSize = l.get(0);
 
             if (i.hasNext()) {
                 value = (PropertyValue)i.next();
@@ -131,21 +131,21 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
                     PropertyBuilder lineHeightBuilder = CSSName.getPropertyBuilder(CSSName.LINE_HEIGHT);
                     l = lineHeightBuilder.buildDeclarations(
                             CSSName.LINE_HEIGHT, Collections.singletonList(value), origin, important);
-                    lineHeight = (PropertyDeclaration)l.get(0);
+                    lineHeight = l.get(0);
                 } else {
                     i.previous();
                 }
             }
 
             if (i.hasNext()) {
-                List families = new ArrayList();
+                List<CSSPrimitiveValue> families = new ArrayList<>();
                 while (i.hasNext()) {
                     families.add(i.next());
                 }
                 PropertyBuilder fontFamilyBuilder = CSSName.getPropertyBuilder(CSSName.FONT_FAMILY);
                 l = fontFamilyBuilder.buildDeclarations(
                         CSSName.FONT_FAMILY, families, origin, important);
-                fontFamily = (PropertyDeclaration)l.get(0);
+                fontFamily = l.get(0);
             }
         }
 
@@ -175,7 +175,7 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
 
         // XXX font-family should be reset too (although, does this really make sense?)
 
-        result = new ArrayList(ALL.length);
+        result = new ArrayList<>(ALL.length);
         result.add(fontStyle);
         result.add(fontVariant);
         result.add(fontWeight);
