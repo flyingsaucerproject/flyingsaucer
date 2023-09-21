@@ -22,14 +22,23 @@ package org.xhtmlrenderer.util;
 
 import org.xhtmlrenderer.DefaultCSSMarker;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 
 /**
@@ -698,22 +707,6 @@ public class Configuration {
             }
         }
         return l.iterator();
-    }
-
-
-    /**
-     * Command-line execution for testing. No arguments.
-     *
-     * @param args Ignored
-     */
-    public static void main(String[] args) {
-        System.out.println("byte: " + Configuration.valueAsByte("xr.test-config-byte", (byte) 15));
-        System.out.println("short: " + Configuration.valueAsShort("xr.test-config-short", (short) 20));
-        System.out.println("int: " + Configuration.valueAsInt("xr.test-config-int", 25));
-        System.out.println("long: " + Configuration.valueAsLong("xr.test-config-long", 30L));
-        System.out.println("float: " + Configuration.valueAsFloat("xr.test-config-float", 45.5F));
-        System.out.println("double: " + Configuration.valueAsDouble("xr.test-config-double", 50.75D));
-        System.out.println("boolean: " + Configuration.isTrue("xr.test-config-boolean", false));
     }
 
     /**
