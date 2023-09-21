@@ -19,12 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -40,6 +34,13 @@ import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
+
+import java.awt.*;
+import java.awt.RenderingHints.Key;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * <p>Renders an XML files, formatted with CSS, as an image. Input is a document in the form of file or URL,
@@ -81,7 +82,6 @@ public class Java2DRenderer {
     private Document doc;
     private Box root;
 
-    private float dotsPerPoint;
     private BufferedImage outputImage;
     private int bufferedImageType;
 
@@ -95,7 +95,7 @@ public class Java2DRenderer {
     private int width;
     private int height;
     private static final int NO_HEIGHT = -1;
-    private Map renderingHints;
+    private Map<Key, Object> renderingHints;
 
 
     /**
@@ -106,7 +106,7 @@ public class Java2DRenderer {
     }
 
     /**
-     * Creates a new instance with specific scaling paramters; these are currently ignored.
+     * Creates a new instance with specific scaling parameters; these are currently ignored.
      *
      * @param dotsPerPoint Layout XML at so many dots per point
      * @param dotsPerPixel Layout XML at so many dots per pixel
@@ -189,7 +189,7 @@ public class Java2DRenderer {
      *
      * @param file The file to be rendered.
      * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-     * Heght is calculated based on content
+     * Height is calculated based on content
      */
     public Java2DRenderer(File file, int width) throws IOException {
         this(file.toURI().toURL().toExternalForm(), width);
@@ -202,7 +202,7 @@ public class Java2DRenderer {
      *
      * @param url The location of the document to be rendered.
      * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-     * Heght is calculated based on content
+     * Height is calculated based on content
      */
     public Java2DRenderer(String url, int width) {
         this(url, url, width, NO_HEIGHT);
@@ -215,7 +215,7 @@ public class Java2DRenderer {
      * @param url The location of the document to be rendered.
      * @param baseurl The base url for the document, against which  relative paths are resolved.
      * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-     * Heght is calculated based on content
+     * Height is calculated based on content
      */
     public Java2DRenderer(String url, String baseurl, int width) {
         this(url, baseurl, width, NO_HEIGHT);
@@ -241,7 +241,7 @@ public class Java2DRenderer {
      *
      * @param hints values to override in default rendering hints for Graphics2D we are rendering to
      */
-    public void setRenderingHints(Map hints) {
+    public void setRenderingHints(Map<Key, Object> hints) {
         renderingHints = hints;
     }
 
@@ -361,7 +361,6 @@ public class Java2DRenderer {
     }
 
     private void init(float dotsPerPoint, int dotsPerPixel) {
-        this.dotsPerPoint = dotsPerPoint;
 
         outputImage = ImageUtil.createCompatibleBufferedImage(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_POINT);
         outputDevice = new Java2DOutputDevice(outputImage);
@@ -376,7 +375,7 @@ public class Java2DRenderer {
         sharedContext.setReplacedElementFactory(replacedElementFactory);
 
         sharedContext.setTextRenderer(new Java2DTextRenderer());
-        sharedContext.setDPI(72 * this.dotsPerPoint);
+        sharedContext.setDPI(72 * dotsPerPoint);
         sharedContext.setDotsPerPixel(dotsPerPixel);
         sharedContext.setPrint(false);
         sharedContext.setInteractive(false);
@@ -384,14 +383,17 @@ public class Java2DRenderer {
 
     private static final class NullUserInterface implements UserInterface {
 
+        @Override
         public boolean isHover(Element e) {
             return false;
         }
 
+        @Override
         public boolean isActive(Element e) {
             return false;
         }
 
+        @Override
         public boolean isFocus(Element e) {
             return false;
         }

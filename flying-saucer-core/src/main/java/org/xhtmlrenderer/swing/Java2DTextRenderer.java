@@ -19,15 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.font.GlyphVector;
-import java.awt.geom.Point2D;
-import java.util.Map;
-
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -37,6 +28,11 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.LineMetricsAdapter;
 import org.xhtmlrenderer.util.Configuration;
+
+import java.awt.*;
+import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
+import java.util.Map;
 
 
 /**
@@ -60,12 +56,13 @@ public class Java2DTextRenderer implements TextRenderer {
         Object aaHint = Configuration.valueFromClassConstant("xr.text.aa-rendering-hint", dummy);
         if (aaHint == dummy) {
             try {
-                Map map;
                 // we should be able to look up the "recommended" AA settings (that correspond to the user's
                 // desktop preferences and machine capabilities
                 // see: http://java.sun.com/javase/6/docs/api/java/awt/doc-files/DesktopProperties.html
                 Toolkit tk = Toolkit.getDefaultToolkit();
-                map = (Map) (tk.getDesktopProperty("awt.font.desktophints"));
+                
+                @SuppressWarnings("unchecked")
+                Map<RenderingHints.Key, Object> map = (Map<RenderingHints.Key, Object>) (tk.getDesktopProperty("awt.font.desktophints"));
                 antiAliasRenderingHint = map.get(RenderingHints.KEY_TEXT_ANTIALIASING);
             } catch (Exception e) {
                 // conceivably could get an exception in a webstart environment? not sure
@@ -81,7 +78,7 @@ public class Java2DTextRenderer implements TextRenderer {
         }
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void drawString(OutputDevice outputDevice, String string, float x, float y ) {
         Object aaHint = null;
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
@@ -98,6 +95,7 @@ public class Java2DTextRenderer implements TextRenderer {
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fracHint);
     }
 
+    @Override
     public void drawString(
             OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
         Object aaHint = null;
@@ -140,6 +138,7 @@ public class Java2DTextRenderer implements TextRenderer {
         }
     }
 
+    @Override
     public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector fsGlyphVector, float x, float y ) {
         Object aaHint = null;
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
@@ -159,23 +158,27 @@ public class Java2DTextRenderer implements TextRenderer {
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fracHint);
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void setup(FontContext fontContext) {
         //Uu.p("setup graphics called");
 //        ((Java2DFontContext)fontContext).getGraphics().setRenderingHint(
 //                RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF );
     }
 
-    public void setFontScale( float scale ) {
+    @Override
+    public void setFontScale(float scale ) {
         this.scale = scale;
     }
 
-    public void setSmoothingThreshold( float fontsize ) {
+    @Override
+    public void setSmoothingThreshold(float fontsize ) {
         threshold = fontsize;
     }
 
-    public void setSmoothingLevel( int level ) { /* no-op */ }
+    @Override
+    public void setSmoothingLevel(int level ) { /* no-op */ }
 
+    @Override
     public FSFontMetrics getFSFontMetrics(FontContext fc, FSFont font, String string ) {
         Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();
         Object fracHint = graphics.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS);
@@ -187,6 +190,7 @@ public class Java2DTextRenderer implements TextRenderer {
         return adapter;
     }
 
+    @Override
     public int getWidth(FontContext fc, FSFont font, String string) {
         Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();
         Object fracHint = graphics.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS);
@@ -204,10 +208,12 @@ public class Java2DTextRenderer implements TextRenderer {
         return width;
     }
 
+    @Override
     public float getFontScale() {
         return this.scale;
     }
 
+    @Override
     public int getSmoothingLevel() {
         return 0;
     }
@@ -257,6 +263,7 @@ public class Java2DTextRenderer implements TextRenderer {
         return result;
     }
 
+    @Override
     public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
         Object aaHint = null;
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
@@ -281,6 +288,7 @@ public class Java2DTextRenderer implements TextRenderer {
         return result;
     }
 
+    @Override
     public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector) {
         Object aaHint = null;
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
@@ -305,6 +313,7 @@ public class Java2DTextRenderer implements TextRenderer {
         return result;
     }
 
+    @Override
     public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String text) {
         Object aaHint = null;
         Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();

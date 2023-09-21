@@ -144,7 +144,7 @@ public class BoxRenderer {
      *
      * @param file The file to be rendered.
      * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-     * Heght is calculated based on content
+     * Height is calculated based on content
      */
     public BoxRenderer(File file, int width) throws IOException {
         this(file.toURI().toURL().toExternalForm(), width);
@@ -157,7 +157,7 @@ public class BoxRenderer {
      *
      * @param url The location of the document to be rendered.
      * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-     * Heght is calculated based on content
+     * Height is calculated based on content
      */
     public BoxRenderer(String url, int width) {
         this(url, url, width, NO_HEIGHT);
@@ -170,7 +170,7 @@ public class BoxRenderer {
      * @param url The location of the document to be rendered.
      * @param baseurl The base url for the document, against which  relative paths are resolved.
      * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-     * Heght is calculated based on content
+     * Height is calculated based on content
      */
     public BoxRenderer(String url, String baseurl, int width) {
         this(url, baseurl, width, NO_HEIGHT);
