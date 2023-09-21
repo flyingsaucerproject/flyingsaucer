@@ -19,12 +19,6 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import java.awt.*;
-
-import javax.swing.*;
-import javax.swing.plaf.basic.BasicTextAreaUI;
-import javax.swing.plaf.basic.BasicTextUI;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -37,13 +31,19 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.GeneralUtil;
 
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicTextAreaUI;
+import javax.swing.plaf.basic.BasicTextUI;
+import java.awt.*;
+
 class TextAreaField extends FormField {
     private TextAreaFieldJTextArea _textarea;
 
-    public TextAreaField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    TextAreaField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
+    @Override
     public JComponent create() {
         int rows = 4;
         int cols = 10;
@@ -79,7 +79,7 @@ class TextAreaField extends FormField {
     }
 
     protected void applyComponentStyle(TextAreaFieldJTextArea textArea, JScrollPane scrollpane) {
-        super.applyComponentStyle(textArea);
+        applyComponentStyle(textArea);
 
         CalculatedStyle style = getBox().getStyle();
         BorderPropertySet border = style.getBorder(null);
@@ -124,15 +124,18 @@ class TextAreaField extends FormField {
     }
 
 
+    @Override
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromString(
                 XhtmlForm.collectText(getElement()));
     }
 
+    @Override
     protected void applyOriginalState() {
         _textarea.setText(getOriginalState().getValue());
     }
 
+    @Override
     protected String[] getFieldValues() {
         JTextArea textarea = (JTextArea) ((JScrollPane) getComponent()).getViewport().getView();
 
@@ -143,12 +146,13 @@ class TextAreaField extends FormField {
 
 
     private static class TextAreaFieldJTextArea extends JTextArea {
-        int columnWidth = 0;
+        int columnWidth;
 
-        public TextAreaFieldJTextArea(int rows, int columns) {
+        private TextAreaFieldJTextArea(int rows, int columns) {
             super(rows, columns);
         }
         //override getColumnWidth to base on 'o' instead of 'm'.  more like other browsers
+        @Override
         protected int getColumnWidth() {
             if (columnWidth == 0) {
                 FontMetrics metrics = getFontMetrics(getFont());
@@ -158,6 +162,7 @@ class TextAreaField extends FormField {
         }
 
         //Avoid Swing bug #5042886.   This bug was fixed in java6
+        @Override
         public Dimension getPreferredScrollableViewportSize() {
             Dimension size = super.getPreferredScrollableViewportSize();
             size = (size == null) ? new Dimension(400,400) : size;

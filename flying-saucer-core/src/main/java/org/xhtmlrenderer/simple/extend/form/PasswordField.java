@@ -19,20 +19,20 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import javax.swing.JComponent;
-import javax.swing.JPasswordField;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.GeneralUtil;
 
+import javax.swing.*;
+
 class PasswordField extends InputField {
-    public PasswordField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    PasswordField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
+    @Override
     public JComponent create() {
         JPasswordField password = new JPasswordField();
 
@@ -63,12 +63,14 @@ class PasswordField extends InputField {
         return password;
     }
 
+    @Override
     protected void applyOriginalState() {
         JPasswordField password = (JPasswordField) getComponent();
 
         password.setText(getOriginalState().getValue());
     }
 
+    @Override
     protected String[] getFieldValues() {
         JPasswordField textfield = (JPasswordField) getComponent();
 

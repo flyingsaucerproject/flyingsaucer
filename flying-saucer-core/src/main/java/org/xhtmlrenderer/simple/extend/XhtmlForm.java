@@ -20,16 +20,6 @@
  */
 package org.xhtmlrenderer.simple.extend;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
-import javax.swing.JRadioButton;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -39,6 +29,12 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.form.FormField;
 import org.xhtmlrenderer.simple.extend.form.FormFieldFactory;
 import org.xhtmlrenderer.util.XRLog;
+
+import javax.swing.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Represents a form object
@@ -154,14 +150,12 @@ public class XhtmlForm {
             FormField field = (FormField) entry.getValue();
 
             if (field.includeInSubmission(source)) {
-                String [] dataStrings = field.getFormDataStrings();
-
-                for (int i = 0; i < dataStrings.length; i++) {
+                for (String value : field.getFormDataStrings()) {
                     if (!first) {
                         data.append('&');
                     }
 
-                    data.append(dataStrings[i]);
+                    data.append(value);
                     first=false;
                 }
             }

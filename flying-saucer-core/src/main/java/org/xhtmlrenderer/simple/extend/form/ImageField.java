@@ -19,11 +19,6 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import java.awt.*;
-
-import javax.swing.*;
-import javax.swing.plaf.basic.BasicButtonUI;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -36,11 +31,16 @@ import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicButtonUI;
+import java.awt.*;
+
 class ImageField extends InputField {
-    public ImageField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    ImageField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
+    @Override
     public JComponent create() {
         JButton button;
         Image image = null;
@@ -59,11 +59,13 @@ class ImageField extends InputField {
             final ImageIcon imgIcon = new ImageIcon(image, getAttribute("alt"));
             final Image img = imgIcon.getImage();
             button = new JButton() {
+                @Override
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
                     g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
                 }
 
+                @Override
                 public Dimension getPreferredSize() {
                     return new Dimension(imgIcon.getIconWidth(), imgIcon.getIconHeight());
                 }
