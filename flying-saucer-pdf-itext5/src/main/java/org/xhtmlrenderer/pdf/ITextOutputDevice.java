@@ -317,7 +317,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
 
         Point2D docCorner = new Point2D.Double(bounds.x, bounds.y + bounds.height);
-        Point2D pdfCorner = new Point.Double();
+        Point2D pdfCorner = new Point2D.Double();
         _transform.transform(docCorner, pdfCorner);
         pdfCorner.setLocation(pdfCorner.getX(), normalizeY((float) pdfCorner.getY()));
 
@@ -636,9 +636,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         int traces = 0;
         while (!points.isDone()) {
             ++traces;
-            int segtype = points.currentSegment(coords);
+            int segmentType = points.currentSegment(coords);
             normalizeY(coords);
-            switch (segtype) {
+            switch (segmentType) {
             case PathIterator.SEG_CLOSE:
                 cb.closePath();
                 break;
@@ -1055,7 +1055,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
      *
      * @param name
      *            the name of the metadata element to add.
-     * @return the content value for this metadata.
      */
     public void addMetadata(String name, String value) {
         if ((name != null) && (value != null)) {
@@ -1148,8 +1147,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
      *
      * @param name
      *            the metadata element name to locate.
-     * @return the new content value for this metadata (null to remove all
-     *         instances).
      */
     public void setMetadata(String name, String value) {
         if (name != null) {
