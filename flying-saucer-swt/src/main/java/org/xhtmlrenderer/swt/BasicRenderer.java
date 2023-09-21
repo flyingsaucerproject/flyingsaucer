@@ -645,7 +645,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         // update scrollbars
         Dimension intrinsic_size = rootLayer.getPaintingDimension(_layout_context);
         if (_layout_context.isPrint()) {
-            rootLayer.trimEmptyPages(_layout_context, intrinsic_size.height);
+            rootLayer.trimEmptyPages(intrinsic_size.height);
             if (rootLayer.getLastPage() != null) {
                 rootLayer.assignPagePaintingPositions(_layout_context, Layer.PAGED_MODE_SCREEN,
                         PAGE_PAINTING_CLEARANCE);

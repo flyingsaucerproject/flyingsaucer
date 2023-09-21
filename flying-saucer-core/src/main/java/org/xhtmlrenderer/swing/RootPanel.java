@@ -340,7 +340,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             Dimension intrinsic_size = root.getLayer().getPaintingDimension(c);
 
             if (c.isPrint()) {
-                root.getLayer().trimEmptyPages(c, intrinsic_size.height);
+                root.getLayer().trimEmptyPages(intrinsic_size.height);
                 root.getLayer().layoutPages(c);
             }
 

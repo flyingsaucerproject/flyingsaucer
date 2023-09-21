@@ -42,11 +42,22 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -79,7 +90,7 @@ public class ITextRenderer {
     private Dimension _dim;
     private boolean scaleToFit;
 
-    private final char[] validPdfVersions = new char[] { PdfWriter.VERSION_1_2, PdfWriter.VERSION_1_3, PdfWriter.VERSION_1_4,
+    private final char[] validPdfVersions = { PdfWriter.VERSION_1_2, PdfWriter.VERSION_1_3, PdfWriter.VERSION_1_4,
             PdfWriter.VERSION_1_5, PdfWriter.VERSION_1_6, PdfWriter.VERSION_1_7 };
 
     private PDFCreationListener _listener;
@@ -139,7 +150,7 @@ public class ITextRenderer {
         setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
     }
 
-    public void setDocument(byte[] bytes) throws IOException {
+    public void setDocument(byte[] bytes) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
         Document dom = XMLResource.load(inputStream).getDocument();
         setDocument(dom, "");
@@ -182,8 +193,8 @@ public class ITextRenderer {
     }
 
     public void setPDFVersion(char _v) {
-        for (int i = 0; i < validPdfVersions.length; i++) {
-            if (_v == validPdfVersions[i]) {
+        for (char validPdfVersion : validPdfVersions) {
+            if (_v == validPdfVersion) {
                 _pdfVersion = _v;
                 return;
             }
@@ -193,7 +204,7 @@ public class ITextRenderer {
     }
 
     public char getPDFVersion() {
-        return _pdfVersion == null ? '0' : _pdfVersion.charValue();
+        return _pdfVersion == null ? '0' : _pdfVersion;
     }
 
     public void layout() {
@@ -202,7 +213,7 @@ public class ITextRenderer {
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
         _dim = root.getLayer().getPaintingDimension(c);
-        root.getLayer().trimEmptyPages(c, _dim.height);
+        root.getLayer().trimEmptyPages(_dim.height);
         root.getLayer().layoutPages(c);
         _root = root;
     }
@@ -243,12 +254,12 @@ public class ITextRenderer {
         writeNextDocument(0);
     }
 
-    public void writeNextDocument(int initialPageNo) throws DocumentException, IOException {
-        List pages = _root.getLayer().getPages();
+    public void writeNextDocument(int initialPageNo) throws IOException {
+        List<PageBox> pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
         c.setInitialPageNo(initialPageNo);
-        PageBox firstPage = (PageBox) pages.get(0);
+        PageBox firstPage = pages.get(0);
         com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
                 firstPage.getHeight(c) / _dotsPerPoint);
 
@@ -274,15 +285,13 @@ public class ITextRenderer {
     /**
      * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream if
      * something goes wrong.
-     *
-     * @throws IOException
      */
     public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, IOException {
-        List pages = _root.getLayer().getPages();
+        List<PageBox> pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
         c.setInitialPageNo(initialPageNo);
-        PageBox firstPage = (PageBox) pages.get(0);
+        PageBox firstPage = pages.get(0);
         int pageWidth = calculateWidth(c, firstPage);
         com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
                 firstPage.getHeight(c) / _dotsPerPoint);
@@ -291,7 +300,7 @@ public class ITextRenderer {
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document(firstPageSize, 0, 0, 0, 0);
         PdfWriter writer = PdfWriter.getInstance(doc, os);
         if (_pdfVersion != null) {
-            writer.setPdfVersion(_pdfVersion.charValue());
+            writer.setPdfVersion(_pdfVersion);
         }
         if (_pdfEncryption != null) {
             writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
@@ -343,8 +352,8 @@ public class ITextRenderer {
         }
     }
 
-    private void writePDF(List pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc,
-            PdfWriter writer) throws DocumentException, IOException {
+    private void writePDF(List<PageBox> pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc,
+            PdfWriter writer) throws IOException {
         _outputDevice.setRoot(_root);
 
         _outputDevice.start(_doc);
@@ -358,12 +367,12 @@ public class ITextRenderer {
         firePreWrite(pageCount); // opportunity to adjust meta data
         setDidValues(doc); // set PDF header fields from meta data
         for (int i = 0; i < pageCount; i++) {
-            PageBox currentPage = (PageBox) pages.get(i);
+            PageBox currentPage = pages.get(i);
             c.setPage(i, currentPage);
             paintPage(c, writer, currentPage);
             _outputDevice.finishPage();
             if (i != pageCount - 1) {
-                PageBox nextPage = (PageBox) pages.get(i + 1);
+                PageBox nextPage = pages.get(i + 1);
                 int pageWidth = calculateWidth(c, nextPage);
 
                 com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
@@ -429,9 +438,9 @@ public class ITextRenderer {
     private void provideMetadataToPage(PdfWriter writer, PageBox page) throws IOException {
         byte[] metadata = null;
         if (page.getMetadata() != null) {
-            String metadataBody = stringfyMetadata(page.getMetadata());
+            String metadataBody = stringifyMetadata(page.getMetadata());
             if (metadataBody != null) {
-                metadata = createXPacket(stringfyMetadata(page.getMetadata())).getBytes(UTF_8);
+                metadata = createXPacket(stringifyMetadata(page.getMetadata())).getBytes(UTF_8);
             }
         }
 
@@ -440,7 +449,7 @@ public class ITextRenderer {
         }
     }
 
-    private String stringfyMetadata(Element element) {
+    private String stringifyMetadata(Element element) {
         Element target = getFirstChildElement(element);
         if (target == null) {
             return null;
@@ -510,14 +519,17 @@ public class ITextRenderer {
     }
 
     private static final class NullUserInterface implements UserInterface {
+        @Override
         public boolean isHover(Element e) {
             return false;
         }
 
+        @Override
         public boolean isActive(Element e) {
             return false;
         }
 
+        @Override
         public boolean isFocus(Element e) {
             return false;
         }

@@ -80,7 +80,7 @@ public class Layer {
     private boolean _inline;
     private boolean _requiresLayout;
 
-    private List<PageBox> _pages;
+    private final List<PageBox> _pages = new ArrayList<>();
     private PageBox _lastRequestedPage;
 
     private Set<BlockBox> _pageSequences;
@@ -728,11 +728,7 @@ public class Layer {
     }
 
     public List<PageBox> getPages() {
-        return _pages == null ? emptyList() : _pages;
-    }
-
-    public void setPages(List<PageBox> pages) {
-        _pages = pages;
+        return _pages;
     }
 
     public boolean isLastPage(PageBox pageBox) {
@@ -740,10 +736,6 @@ public class Layer {
     }
 
     public void addPage(CssContext c) {
-        if (_pages == null) {
-            _pages = new ArrayList();
-        }
-
         String pseudoPage;
         List<PageBox> pages = getPages();
         if (pages.size() == 0) {
@@ -869,7 +861,7 @@ public class Layer {
         }
     }
 
-    public void trimEmptyPages(CssContext c, int maxYHeight) {
+    public void trimEmptyPages(int maxYHeight) {
         // Empty pages may result when a "keep together" constraint
         // cannot be satisfied and is dropped
         List<PageBox> pages = getPages();

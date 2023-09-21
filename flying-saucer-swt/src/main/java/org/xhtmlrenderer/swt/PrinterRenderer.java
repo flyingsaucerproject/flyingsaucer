@@ -19,12 +19,6 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.Printer;
@@ -47,6 +41,10 @@ import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
+
+import java.awt.*;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * A renderer for an SWT Printer. Instances must be disposed with
@@ -162,7 +160,7 @@ public class PrinterRenderer implements UserInterface {
 
             Layer root = rootBox.getLayer();
             Dimension intrinsic_size = root.getPaintingDimension(layout);
-            root.trimEmptyPages(layout, intrinsic_size.height);
+            root.trimEmptyPages(intrinsic_size.height);
             root.assignPagePaintingPositions(layout, Layer.PAGED_MODE_PRINT);
 
             // RENDER
