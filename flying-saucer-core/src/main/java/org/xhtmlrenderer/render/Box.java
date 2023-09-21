@@ -156,7 +156,7 @@ public abstract class Box implements Styleable {
     public void removeChild(Box target) {
         if (_boxes != null) {
             boolean found = false;
-            for (Iterator<Box> i = getChildIterator(); i.hasNext(); ) {
+            for (Iterator<Box> i = getChildren().iterator(); i.hasNext(); ) {
                 Box child = i.next();
                 if (child.equals(target)) {
                     i.remove();
@@ -210,7 +210,7 @@ public abstract class Box implements Styleable {
 
     public Box getChild(int i) {
         if (_boxes == null) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException(String.format("No child with index %s, size: %s", i, 0));
         } else {
             return _boxes.get(i);
         }
@@ -1020,8 +1020,7 @@ public abstract class Box implements Styleable {
             c.setPage(0, c.getRootLayer().getPages().get(0));
             c.getPage().exportLeadingText(c, writer);
         }
-        for (Iterator<Box> i = getChildIterator(); i.hasNext(); ) {
-            Box b = i.next();
+        for (Box b : getChildren()) {
             b.exportText(c, writer);
         }
         if (c.isPrint() && isRoot()) {
@@ -1072,8 +1071,7 @@ public abstract class Box implements Styleable {
 
     public void analyzePageBreaks(LayoutContext c, ContentLimitContainer container) {
         container.updateTop(c, getAbsY());
-        for (Iterator<Box> i = getChildIterator(); i.hasNext(); ) {
-            Box b = i.next();
+        for (Box b : getChildren()) {
             b.analyzePageBreaks(c, container);
         }
         container.updateBottom(c, getAbsY() + getHeight());
