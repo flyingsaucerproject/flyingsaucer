@@ -19,10 +19,12 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Rectangle;
-import java.util.Iterator;
-import java.util.List;
-
+import com.lowagie.text.pdf.PdfAnnotation;
+import com.lowagie.text.pdf.PdfAppearance;
+import com.lowagie.text.pdf.PdfBorderDictionary;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfFormField;
+import com.lowagie.text.pdf.PdfWriter;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -32,19 +34,16 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import com.lowagie.text.pdf.PdfAnnotation;
-import com.lowagie.text.pdf.PdfAppearance;
-import com.lowagie.text.pdf.PdfBorderDictionary;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfFormField;
-import com.lowagie.text.pdf.PdfWriter;
+import java.awt.*;
+import java.util.List;
 
-public class RadioButtonFormField extends AbstractFormField {
+public final class RadioButtonFormField extends AbstractFormField {
     private static final String FIELD_TYPE = "RadioButton";
 
-    private ITextReplacedElementFactory _factory;
-    private Box _box;
+    private final ITextReplacedElementFactory _factory;
+    private final Box _box;
 
+    @Override
     protected String getFieldType() {
         return FIELD_TYPE;
     }
@@ -57,9 +56,10 @@ public class RadioButtonFormField extends AbstractFormField {
         initDimensions(c, box, cssWidth, cssHeight);
     }
 
+    @Override
     public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
         String fieldName = getFieldName(outputDevice, box.getElement());
-        List radioBoxes = _factory.getRadioButtons(fieldName);
+        List<RadioButtonFormField> radioBoxes = _factory.getRadioButtons(fieldName);
 
         // iText wants all radio buttons in a group added at once across all pages
 
@@ -79,9 +79,7 @@ public class RadioButtonFormField extends AbstractFormField {
             group.setValueAsString(getValue(checked.getBox().getElement()));
         }
 
-        for (Iterator i = radioBoxes.iterator(); i.hasNext(); ) {
-            RadioButtonFormField fieldElem = (RadioButtonFormField)i.next();
-
+        for (RadioButtonFormField fieldElem : radioBoxes) {
             createField(c, outputDevice, cb, writer, group, fieldElem, checked);
         }
 
@@ -90,16 +88,13 @@ public class RadioButtonFormField extends AbstractFormField {
         _factory.remove(fieldName);
     }
 
-    private RadioButtonFormField getChecked(List fields) {
-        RadioButtonFormField result = null;
-        for (Iterator i = fields.iterator(); i.hasNext(); ) {
-            RadioButtonFormField f = (RadioButtonFormField)i.next();
+    private RadioButtonFormField getChecked(List<RadioButtonFormField> fields) {
+        for (RadioButtonFormField f : fields) {
             if (isChecked(f.getBox().getElement())) {
-                result = f;
+                return f;
             }
         }
-
-        return result;
+        return null;
     }
 
     private void createField(RenderingContext c,
@@ -130,7 +125,7 @@ public class RadioButtonFormField extends AbstractFormField {
         // won't have enough radio buttons to matter
         Rectangle bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
         PageBox page = c.getRootLayer().getPage(c, bounds.y);
-        field.setPlaceInPage(page.getPageNo()+1);
+        field.setPlaceInPage(page.getPageNo() + 1);
 
         field.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
 
@@ -199,6 +194,7 @@ public class RadioButtonFormField extends AbstractFormField {
         return Math.min(value, Math.max(1.0f, 0.05f*value));
     }
 
+    @Override
     public void detach(LayoutContext c) {
         super.detach(c);
 
@@ -209,10 +205,12 @@ public class RadioButtonFormField extends AbstractFormField {
         return _box;
     }
 
+    @Override
     public int getBaseline() {
         return 0;
     }
 
+    @Override
     public boolean hasBaseline() {
         return false;
     }
