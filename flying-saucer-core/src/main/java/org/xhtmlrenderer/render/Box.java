@@ -78,7 +78,7 @@ public abstract class Box implements Styleable {
     private List<Box> _boxes;
 
     /**
-     * Keeps track of the start of children containing block.
+     * Keeps track of the start of children's containing block.
      */
     private int _tx;
     private int _ty;
@@ -392,8 +392,7 @@ public abstract class Box implements Styleable {
         return getRelativeOffset();
     }
 
-    protected boolean isInlineBlock()
-    {
+    protected boolean isInlineBlock() {
         return false;
     }
 
@@ -829,7 +828,7 @@ public abstract class Box implements Styleable {
             case CalculatedStyle.BOTTOM:
                 return (int)(margin.bottom() + border.bottom() + padding.bottom());
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unsupported margin style: " + which);
         }
     }
 

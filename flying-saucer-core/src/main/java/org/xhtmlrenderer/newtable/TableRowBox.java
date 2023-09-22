@@ -240,7 +240,7 @@ public class TableRowBox extends BlockBox {
                         if (c.isPrint() && cell.isPageBreaksChange(c, deltaY)) {
                             relayoutCell(c, cell, deltaY);
                         } else {
-                            cell.moveContent(c, deltaY);
+                            cell.moveContent(deltaY);
                             cell.setHeight(cell.getHeight() + deltaY);
                         }
                     }
@@ -281,7 +281,7 @@ public class TableRowBox extends BlockBox {
                                 needRowHeightRecalc = true;
                             }
                         } else {
-                            cell.moveContent(c, deltaY);
+                            cell.moveContent(deltaY);
                             // Set a provisional height in case we need to calculate
                             // a default baseline
                             cell.setHeight(cell.getHeight() + deltaY);

@@ -65,7 +65,7 @@ public class BoxCollector {
                     BlockBox bb = (BlockBox) b;
                     if (bb.isInline()) {
                         if (intersectsAny(c, clip, b)) {
-                            inlineContent.add(b);
+                            inlineContent.add(bb);
                         }
                     } else {
                         collect(c, clip, layer, bb, blockContent, inlineContent, rangeLists);

@@ -215,7 +215,7 @@ public class TableCellBox extends BlockBox {
         return super.calcBaseline(c);
     }
 
-    public void moveContent(LayoutContext c, final int deltaY) {
+    public void moveContent(final int deltaY) {
         for (int i = 0; i < getChildCount(); i++) {
             Box b = getChild(i);
             b.setY(b.getY() + deltaY);

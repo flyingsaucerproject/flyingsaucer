@@ -38,7 +38,6 @@ import org.xhtmlrenderer.render.ViewportBox;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +47,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Comparator.comparingInt;
 
@@ -62,7 +62,7 @@ import static java.util.Comparator.comparingInt;
  * out absolute content (which is laid out after its containing block has
  * completed layout).
  */
-public class Layer {
+public final class Layer {
     public static final short PAGED_MODE_SCREEN = 1;
     public static final short PAGED_MODE_PRINT = 2;
 
@@ -182,10 +182,8 @@ public class Layer {
         }
 
         List<Layer> children = getChildren();
-        for (int i = 0; i < children.size(); i++) {
-            Layer child = (Layer)children.get(i);
-
-            if (! child.isStackingContext()) {
+        for (Layer child : children) {
+            if (!child.isStackingContext()) {
                 if (which == AUTO) {
                     result.add(child);
                 }
@@ -230,18 +228,18 @@ public class Layer {
     }
 
     private void paintBackgroundsAndBorders(
-            RenderingContext c, List<BlockBox> blocks,
+            RenderingContext c, List<Box> blocks,
             Map<TableCellBox, List<CollapsedBorderSide>> collapsedTableBorders, BoxRangeLists rangeLists) {
         BoxRangeHelper helper = new BoxRangeHelper(c.getOutputDevice(), rangeLists.getBlock());
 
         for (int i = 0; i < blocks.size(); i++) {
             helper.popClipRegions(c, i);
 
-            BlockBox box = blocks.get(i);
+            Box box = blocks.get(i);
             box.paintBackground(c);
             box.paintBorder(c);
-            if (c.debugDrawBoxes()) {
-                box.paintDebugOutline(c);
+            if (c.debugDrawBoxes() && box instanceof BlockBox) {
+                ((BlockBox) box).paintDebugOutline(c);
             }
 
             if (collapsedTableBorders != null && box instanceof TableCellBox) {
@@ -260,27 +258,24 @@ public class Layer {
         helper.popClipRegions(c, blocks.size());
     }
 
-    private void paintInlineContent(RenderingContext c, List lines, BoxRangeLists rangeLists) {
+    private void paintInlineContent(RenderingContext c, List<Box> lines, BoxRangeLists rangeLists) {
         BoxRangeHelper helper = new BoxRangeHelper(
                 c.getOutputDevice(), rangeLists.getInline());
 
         for (int i = 0; i < lines.size(); i++) {
             helper.popClipRegions(c, i);
             helper.pushClipRegion(c, i);
-
-            InlinePaintable paintable = (InlinePaintable)lines.get(i);
-            paintable.paintInline(c);
+            ((InlinePaintable) lines.get(i)).paintInline(c);
         }
 
         helper.popClipRegions(c, lines.size());
     }
 
-    private void paintSelection(RenderingContext c, List lines) {
+    private void paintSelection(RenderingContext c, List<Box> lines) {
         if (c.getOutputDevice().isSupportsSelection()) {
-            for (Iterator i = lines.iterator(); i.hasNext();) {
-                InlinePaintable paintable = (InlinePaintable) i.next();
+            for (Box paintable : lines) {
                 if (paintable instanceof InlineLayoutBox) {
-                    ((InlineLayoutBox)paintable).paintSelection(c);
+                    ((InlineLayoutBox) paintable).paintSelection(c);
                 }
             }
         }
@@ -305,8 +300,8 @@ public class Layer {
         } else {
             BoxRangeLists rangeLists = new BoxRangeLists();
 
-            List blocks = new ArrayList();
-            List lines = new ArrayList();
+            List<Box> blocks = new ArrayList<>();
+            List<Box> lines = new ArrayList<>();
 
             BoxCollector collector = new BoxCollector();
             collector.collect(c, c.getOutputDevice().getClip(), this, blocks, lines, rangeLists);
@@ -322,7 +317,7 @@ public class Layer {
                 paintLayers(c, getSortedLayers(NEGATIVE));
             }
 
-            Map collapsedTableBorders = collectCollapsedTableBorders(c, blocks);
+            Map<TableCellBox, List<CollapsedBorderSide>> collapsedTableBorders = collectCollapsedTableBorders(blocks);
 
             paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
             paintFloats(c);
@@ -340,8 +335,8 @@ public class Layer {
         }
     }
 
-    private List getFloats() {
-        return _floats == null ? Collections.EMPTY_LIST : _floats;
+    private List<BlockBox> getFloats() {
+        return _floats == null ? emptyList() : _floats;
     }
 
     public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
@@ -363,7 +358,7 @@ public class Layer {
         }
 
         for (int i = 0; i < getFloats().size(); i++) {
-            Box floater = (Box)getFloats().get(i);
+            Box floater = getFloats().get(i);
             Box result = floater.find(cssCtx, absX, absY, findAnonymous);
             if (result != null) {
                 return result;
@@ -377,35 +372,32 @@ public class Layer {
 
         if (isRootLayer() || isStackingContext()) {
             result = find(cssCtx, absX, absY, getSortedLayers(NEGATIVE), findAnonymous);
-            if (result != null) {
-                return result;
-            }
+            return result;
         }
 
         return null;
     }
 
-    private Box find(CssContext cssCtx, int absX, int absY, List layers, boolean findAnonymous) {
-        Box result = null;
+    private Box find(CssContext cssCtx, int absX, int absY, List<Layer> layers, boolean findAnonymous) {
         // Work backwards since layers are painted forwards and we're looking
         // for the top-most box
         for (int i = layers.size()-1; i >= 0; i--) {
-            Layer l = (Layer)layers.get(i);
-            result = l.find(cssCtx, absX, absY, findAnonymous);
+            Layer l = layers.get(i);
+            Box result = l.find(cssCtx, absX, absY, findAnonymous);
             if (result != null) {
                 return result;
             }
         }
-        return result;
+        return null;
     }
 
     // A bit of a kludge here.  We need to paint collapsed table borders according
     // to priority so (for example) wider borders float to the top and aren't
-    // overpainted by thinner borders.  This method scans the block boxes
+    // over-painted by thinner borders.  This method scans the block boxes
     // we're about to draw and returns a map with the last cell in a given table
     // we'll paint as a key and a sorted list of borders as values.  These are
     // then painted after we've drawn the background for this cell.
-    private Map<TableCellBox, List<CollapsedBorderSide>> collectCollapsedTableBorders(RenderingContext c, List<Box> blocks) {
+    private Map<TableCellBox, List<CollapsedBorderSide>> collectCollapsedTableBorders(List<Box> blocks) {
         Map<TableBox, List<CollapsedBorderSide>> cellBordersByTable = new HashMap<>();
         Map<TableBox, TableCellBox> triggerCellsByTable = new HashMap<>();
 
@@ -428,7 +420,7 @@ public class Layer {
 
             for (TableCellBox cell : triggerCellsByTable.values()) {
                 List<CollapsedBorderSide> borders = cellBordersByTable.get(cell.getTable());
-                Collections.sort(borders);
+                sort(borders);
                 result.put(cell, borders);
             }
 
@@ -445,14 +437,14 @@ public class Layer {
     public void paintAsLayer(RenderingContext c, BlockBox startingPoint) {
         BoxRangeLists rangeLists = new BoxRangeLists();
 
-        List blocks = new ArrayList();
-        List lines = new ArrayList();
+        List<Box> blocks = new ArrayList<>();
+        List<Box> lines = new ArrayList<>();
 
         BoxCollector collector = new BoxCollector();
         collector.collect(c, c.getOutputDevice().getClip(),
                 this, startingPoint, blocks, lines, rangeLists);
 
-        Map<TableCellBox, List<CollapsedBorderSide>> collapsedTableBorders = collectCollapsedTableBorders(c, blocks);
+        Map<TableCellBox, List<CollapsedBorderSide>> collapsedTableBorders = collectCollapsedTableBorders(blocks);
 
         paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
         paintListMarkers(c, blocks, rangeLists);
@@ -461,7 +453,7 @@ public class Layer {
         paintReplacedElements(c, blocks, rangeLists);
     }
 
-    private void paintListMarkers(RenderingContext c, List blocks, BoxRangeLists rangeLists) {
+    private void paintListMarkers(RenderingContext c, List<Box> blocks, BoxRangeLists rangeLists) {
         BoxRangeHelper helper = new BoxRangeHelper(c.getOutputDevice(), rangeLists.getBlock());
 
         for (int i = 0; i < blocks.size(); i++) {
@@ -476,7 +468,7 @@ public class Layer {
         helper.popClipRegions(c, blocks.size());
     }
 
-    private void paintReplacedElements(RenderingContext c, List blocks, BoxRangeLists rangeLists) {
+    private void paintReplacedElements(RenderingContext c, List<Box> blocks, BoxRangeLists rangeLists) {
         BoxRangeHelper helper = new BoxRangeHelper(c.getOutputDevice(), rangeLists.getBlock());
 
         for (int i = 0; i < blocks.size(); i++) {
@@ -546,12 +538,10 @@ public class Layer {
 
     private PaintingInfo calcPaintingDimension(LayoutContext c) {
         getMaster().calcPaintingInfo(c, true);
-        PaintingInfo result = (PaintingInfo)getMaster().getPaintingInfo().copyOf();
+        PaintingInfo result = getMaster().getPaintingInfo().copyOf();
 
-        List children = getChildren();
-        for (int i = 0; i < children.size(); i++) {
-            Layer child = (Layer)children.get(i);
-
+        List<Layer> children = getChildren();
+        for (Layer child : children) {
             if (child.getMaster().getStyle().isFixed()) {
                 continue;
             } else if (child.getMaster().getStyle().isAbsolute()) {
@@ -564,9 +554,7 @@ public class Layer {
     }
 
     public void positionChildren(LayoutContext c) {
-        for (Iterator i = getChildren().iterator(); i.hasNext();) {
-            Layer child = (Layer) i.next();
-
+        for (Layer child : getChildren()) {
             child.position(c);
         }
     }
@@ -587,9 +575,7 @@ public class Layer {
     }
 
     private boolean containsFixedLayer() {
-        for (Iterator i = getChildren().iterator(); i.hasNext();) {
-            Layer child = (Layer) i.next();
-
+        for (Layer child : getChildren()) {
             if (child.getMaster().getStyle().isFixed() || child.containsFixedLayer()) {
                 return true;
             }

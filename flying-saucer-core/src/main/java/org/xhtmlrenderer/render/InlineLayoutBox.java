@@ -40,8 +40,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
-
 /**
  * A {@link Box} which contains the portion of an inline element laid out on a
  * single line.  It may contain content from several {@link InlineBox} objects
@@ -58,7 +56,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     private boolean _startsHere;
     private boolean _endsHere;
 
-    private List<Object> _inlineChildren;
+    private final List<Object> _inlineChildren = new ArrayList<>(1);
 
     private boolean _pending;
 
@@ -116,7 +114,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     public int getInlineChildCount() {
-        return _inlineChildren == null ? 0 : _inlineChildren.size();
+        return _inlineChildren.size();
     }
 
     public void addInlineChild(LayoutContext c, Object child) {
@@ -124,10 +122,6 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     public void addInlineChild(LayoutContext c, Object child, boolean callUnmarkPending) {
-        if (_inlineChildren == null) {
-            _inlineChildren = new ArrayList<>();
-        }
-
         _inlineChildren.add(child);
 
         if (callUnmarkPending && isPending()) {
@@ -141,23 +135,19 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         } else if (child instanceof InlineText) {
             ((InlineText)child).setParent(this);
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Inline child of type " + child.getClass().getName() + " not supported");
         }
     }
 
     public List<Object> getInlineChildren() {
-        return _inlineChildren == null ? emptyList() : _inlineChildren;
+        return _inlineChildren;
     }
 
     public Object getInlineChild(int i) {
-        if (_inlineChildren == null) {
-            throw new ArrayIndexOutOfBoundsException();
-        } else {
-            return _inlineChildren.get(i);
-        }
+        return _inlineChildren.get(i);
     }
 
-    public int getInlineWidth(CssContext cssCtx) {
+    public int getInlineWidth(CssContext cssContext) {
         return _inlineWidth;
     }
 
@@ -535,9 +525,9 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     private boolean containsEnd(List<Box> result) {
-        for (Box b : result) {
-            if (b instanceof InlineLayoutBox) {
-                InlineLayoutBox iB = (InlineLayoutBox) b;
+        for (Box box : result) {
+            if (box instanceof InlineLayoutBox) {
+                InlineLayoutBox iB = (InlineLayoutBox) box;
                 if (getElement() == iB.getElement() && iB.isEndsHere()) {
                     return true;
                 }
@@ -612,24 +602,16 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
 
     @Override
     public void removeChild(Box child) {
-        if (_inlineChildren != null) {
-            _inlineChildren.remove(child);
-        }
+        _inlineChildren.remove(child);
     }
 
     @Override
     public void removeChild(int i) {
-        if (_inlineChildren != null) {
-            _inlineChildren.remove(i);
-        }
+        _inlineChildren.remove(i);
     }
 
     @Override
     protected Box getPrevious(Box child) {
-        if (_inlineChildren == null) {
-            return null;
-        }
-
         for (int i = 0; i < _inlineChildren.size() - 1; i++) {
             Object obj = _inlineChildren.get(i);
             if (obj == child) {
@@ -647,10 +629,6 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
 
     @Override
     protected Box getNext(Box child) {
-        if (_inlineChildren == null) {
-            return null;
-        }
-
         for (int i = 0; i < _inlineChildren.size() - 1; i++) {
             Object obj = _inlineChildren.get(i);
             if (obj == child) {
@@ -689,7 +667,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
             if (obj instanceof Box) {
                 ((Box)obj).clearSelection(modified);
             } else {
-                changed |= ((InlineText)obj).clearSelection();
+                changed = changed || ((InlineText) obj).clearSelection();
             }
         }
 
@@ -839,7 +817,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     @Override
     public String dump(LayoutContext c, String indent, int which) {
         if (which != Box.DUMP_RENDER) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Which " + which + " not supported");
         }
 
         StringBuilder result = new StringBuilder(indent);
