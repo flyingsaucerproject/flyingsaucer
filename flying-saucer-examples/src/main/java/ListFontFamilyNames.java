@@ -3,13 +3,14 @@ import org.xhtmlrenderer.pdf.ITextFontResolver;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-/**
- */
+import static java.util.Arrays.asList;
+import static java.util.Objects.requireNonNull;
+
 public class ListFontFamilyNames {
     public static void main(String[] args) {
         if (args.length == 0) {
@@ -17,36 +18,27 @@ public class ListFontFamilyNames {
             System.exit(1);
         }
         File fod = new File(args[0]);
-        List fontFiles = new ArrayList();
+        List<File> fontFiles = new ArrayList<>();
         if (fod.isDirectory()) {
-            fontFiles.addAll(Arrays.asList(fod.listFiles(new FilenameFilter() {
-                public boolean accept(File file, String s) {
-                    return s.endsWith(".ttf");
-                }
-            })));
+            fontFiles.addAll(asList(requireNonNull(fod.listFiles((file, s) -> s.endsWith(".ttf")))));
         } else {
             fontFiles.add(fod);
         }
-        //System.out.println("font files " + fontFiles);
-        List errors = new ArrayList();
-        for (Iterator fit = fontFiles.iterator(); fit.hasNext();) {
-            File f = (File) fit.next();
-            Font awtf = null;
+        
+        List<String> errors = new ArrayList<>();
+        for (File f : fontFiles) {
+            final Font awtFont;
             try {
-                awtf = Font.createFont(Font.TRUETYPE_FONT, f);
-            } catch (FontFormatException e) {
-                System.err.println("Trying to load font via AWT: " + e.getMessage());
-                System.exit(1);
-            } catch (IOException e) {
-                System.err.println("Trying to load font via AWT: " + e.getMessage());
-                System.exit(1);
+                awtFont = Font.createFont(Font.TRUETYPE_FONT, f);
+            } catch (FontFormatException | IOException e) {
+                throw new IllegalStateException("Failed to load font from " + f + ": " + e.getMessage(), e);
             }
-            Set set;
+            Set<String> set;
             try {
                 set = ITextFontResolver.getDistinctFontFamilyNames(f.getAbsolutePath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
                 System.out.println(
                         "Font located at " + f.getPath() + "\n" +
-                                "  family name (reported by AWT): " + awtf.getFamily() + "\n" +
+                                "  family name (reported by AWT): " + awtFont.getFamily() + "\n" +
                                 "  family name (reported by iText): " + set.iterator().next() + "\n"
                 );
             } catch (RuntimeException e) {
@@ -64,8 +56,8 @@ public class ListFontFamilyNames {
         if (errors.size() > 0) {
             if (args.length == 2 && args[1].equals("-e")) {
                 System.err.println("Errors were reported on reading some font files.");
-                for (Iterator eit = errors.iterator(); eit.hasNext();) {
-                    System.err.println((String) eit.next());
+                for (String error : errors) {
+                    System.err.println(error);
                 }
             } else {
                 System.err.println("Errors were reported on reading some font files. Pass -e as argument to show them, and re-run.");

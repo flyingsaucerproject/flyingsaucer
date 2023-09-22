@@ -20,37 +20,39 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
 
+import java.util.List;
+
 /**
  * An anonymous block box as defined in the CSS spec.  This class is only used
  * when wrapping inline content in a block box in order to ensure that a block
  * box only ever contains either block or inline content.  Other anonymous block
- * boxes create a <code>BlockBox</code> directly with the anonymous property is
+ * boxes create a {@code BlockBox} directly with the anonymous property is
  * true.
  */
 public class AnonymousBlockBox extends BlockBox {
-    private List _openInlineBoxes;
+    private List<InlineBox> _openInlineBoxes;
 
     public AnonymousBlockBox(Element element) {
         setElement(element);
     }
 
+    @Override
     public void layout(LayoutContext c) {
         layoutInlineChildren(c, 0, calcInitialBreakAtLine(c), true);
     }
 
+    @Override
     public int getContentWidth() {
         return getContainingBlock().getContentWidth();
     }
 
+    @Override
     public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         Box result = super.find(cssCtx, absX, absY, findAnonymous);
         if (! findAnonymous && result == this) {
@@ -60,20 +62,20 @@ public class AnonymousBlockBox extends BlockBox {
         }
     }
 
-    public List getOpenInlineBoxes() {
+    public List<InlineBox> getOpenInlineBoxes() {
         return _openInlineBoxes;
     }
 
-    public void setOpenInlineBoxes(List openInlineBoxes) {
+    public void setOpenInlineBoxes(List<InlineBox> openInlineBoxes) {
         _openInlineBoxes = openInlineBoxes;
     }
 
+    @Override
     public boolean isSkipWhenCollapsingMargins() {
         // An anonymous block will already have its children provided to it
-        for (Iterator i = getInlineContent().iterator(); i.hasNext(); ) {
-            Styleable styleable = (Styleable)i.next();
+        for (Styleable styleable : getInlineContent()) {
             CalculatedStyle style = styleable.getStyle();
-            if (! (style.isFloated() || style.isAbsolute() || style.isFixed() || style.isRunning())) {
+            if (!(style.isFloated() || style.isAbsolute() || style.isFixed() || style.isRunning())) {
                 return false;
             }
         }
@@ -81,10 +83,9 @@ public class AnonymousBlockBox extends BlockBox {
     }
 
     public void provideSiblingMarginToFloats(int margin) {
-        for (Iterator i = getInlineContent().iterator(); i.hasNext(); ) {
-            Styleable styleable = (Styleable)i.next();
+        for (Styleable styleable : getInlineContent()) {
             if (styleable instanceof BlockBox) {
-                BlockBox b = (BlockBox)styleable;
+                BlockBox b = (BlockBox) styleable;
                 if (b.isFloated()) {
                     b.getFloatedBoxData().setMarginFromSibling(margin);
                 }
@@ -92,14 +93,17 @@ public class AnonymousBlockBox extends BlockBox {
         }
     }
 
+    @Override
     public boolean isMayCollapseMarginsWithChildren() {
         return false;
     }
 
+    @Override
     public void styleText(LayoutContext c) {
         styleText(c, getParent().getStyle());
     }
 
+    @Override
     public BlockBox copyOf() {
         throw new IllegalArgumentException("cannot be copied");
     }
@@ -141,7 +145,7 @@ public class AnonymousBlockBox extends BlockBox {
  *
  * Revision 1.20  2006/09/08 15:41:57  peterbrant
  * Calculate containing block width accurately when collapsing margins / Provide collapsed bottom
- * margin to floats / Revive :first-line and :first-letter / Minor simplication in InlineBoxing
+ * margin to floats / Revive :first-line and :first-letter / Minor simplification in InlineBoxing
  * (get rid of now-superfluous InlineBoxInfo)
  *
  * Revision 1.19  2006/09/01 23:49:38  peterbrant

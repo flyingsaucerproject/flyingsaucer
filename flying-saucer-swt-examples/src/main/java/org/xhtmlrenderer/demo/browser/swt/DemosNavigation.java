@@ -31,13 +31,13 @@ public class DemosNavigation {
 
     private static final String FILE_LIST_URL = "demo:/demos/file-list.txt";
 
-    private List _demos;
+    private final List<Demo> _demos;
     private int _current;
-    private boolean _lock = false;
+    private boolean _lock;
 
     public DemosNavigation(BrowserUserAgent uac) {
         BufferedReader reader = null;
-        _demos = new ArrayList();
+        _demos = new ArrayList<>();
         try {
             URL url = new URL(uac.resolveFullURI(FILE_LIST_URL));
             reader = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -63,7 +63,11 @@ public class DemosNavigation {
         return _demos.size();
     }
 
-    public Iterator iterate() {
+    public Iterable<Demo> demos() {
+        return _demos;
+    }
+
+    public Iterator<Demo> iterate() {
         return _demos.iterator();
     }
 
@@ -71,7 +75,7 @@ public class DemosNavigation {
         if (_current == -1) {
             return null;
         }
-        return (Demo) _demos.get(_current);
+        return _demos.get(_current);
     }
 
     public void setCurrent(int index) {
@@ -124,7 +128,8 @@ public class DemosNavigation {
     }
 
     public static class Demo {
-        String _url, _name;
+        private final String _url;
+        private final String _name;
 
         public Demo(String url, String name) {
             _url = url;

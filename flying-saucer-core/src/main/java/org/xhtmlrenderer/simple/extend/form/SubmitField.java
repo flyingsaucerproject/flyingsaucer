@@ -19,23 +19,20 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.swing.*;
+
 class SubmitField extends AbstractButtonField {
-    public SubmitField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    SubmitField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
+    @Override
     public JComponent create() {
         JButton button = new JButton();
 
@@ -53,21 +50,21 @@ class SubmitField extends AbstractButtonField {
 
         button.setText(value);
 
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                XRLog.layout("Submit pressed: Submit");
+        button.addActionListener(event -> {
+            XRLog.layout("Submit pressed: Submit");
 
-                getParentForm().submit(getComponent());
-            }
+            getParentForm().submit(getComponent());
         });
 
         return button;
     }
 
+    @Override
     public boolean includeInSubmission(JComponent source) {
         return (source == getComponent());
     }
 
+    @Override
     protected String[] getFieldValues() {
         return new String[] {
                 hasAttribute("value") ? getAttribute("value") : "Submit" // TODO: Don't hardcode

@@ -22,11 +22,6 @@ package org.xhtmlrenderer.test;
 import java.io.File;
 
 
-/**
- * Description of the Class
- *
- * @author   empty
- */
 public class DocumentDiffGenerate {
     /**
      * The main program for the DocumentDiffGenerate class

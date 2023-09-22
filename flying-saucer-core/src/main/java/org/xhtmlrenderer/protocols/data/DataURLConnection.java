@@ -22,7 +22,6 @@ package org.xhtmlrenderer.protocols.data;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
@@ -32,19 +31,22 @@ import java.util.Map;
 
 public class DataURLConnection extends URLConnection {
 
-    private Map _headers = new HashMap();
+    private static final byte[] EMPTY_BYTE_ARRAY = {};
+    private final Map<String, String> _headers = new HashMap<>();
     private byte [] _data;
 
     DataURLConnection(URL u) {
         super(u);
     }
 
-    public void connect() throws IOException {
+    @Override
+    public void connect() {
         parseURL();
     }
 
+    @Override
     public String getContentType() {
-        String type = (String) _headers.get("Content-Type");
+        String type = _headers.get("Content-Type");
 
         if (type == null) {
             return "Content-Type: text/plain; charset=US-ASCII";
@@ -53,6 +55,7 @@ public class DataURLConnection extends URLConnection {
         return type;
     }
 
+    @Override
     public int getContentLength() {
         if (_data == null)
             return 0;
@@ -60,16 +63,17 @@ public class DataURLConnection extends URLConnection {
         return _data.length;
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         connect();
 
         if (_data == null)
-            return new ByteArrayInputStream(new byte [] {});
+            return new ByteArrayInputStream(EMPTY_BYTE_ARRAY);
 
         return new ByteArrayInputStream(_data);
     }
 
-    protected void parseURL() throws UnsupportedEncodingException {
+    protected void parseURL() {
         String sub = getURL().getPath();
 
         int comma = sub.indexOf(',');
@@ -82,7 +86,7 @@ public class DataURLConnection extends URLConnection {
         String data = sub.substring(comma + 1);
 
         boolean isBase64 = false;
-        Map properties = new HashMap();
+        Map<String, String> properties = new HashMap<>();
 
         properties.put("charset", "US-ASCII");
 
@@ -99,7 +103,7 @@ public class DataURLConnection extends URLConnection {
                 }
 
                 for (; index < parts.length; index++) {
-                    if (parts[index].indexOf("=") >= 0) {
+                    if (parts[index].contains("=")) {
                         String [] nameValuePair = parts[index].split("=");
 
                         if (nameValuePair.length > 1) {
@@ -114,7 +118,7 @@ public class DataURLConnection extends URLConnection {
             }
         }
 
-        String charset = (String) properties.get("charset");
+        String charset = properties.get("charset");
 
         // Make sure we have a supported charset
         if (!Charset.isSupported(charset)) {
@@ -171,17 +175,18 @@ class URLByteDecoder {
 
 class Base64 {
 
-    private static String _map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    private static final byte[] EMPTY_BYTE_ARRAY = {};
+    private static final String _map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
     public static byte [] decode(String s) {
 
         if (s == null || s.length() < 4)
-            return new byte [] {};
+            return EMPTY_BYTE_ARRAY;
 
-        s = s.replaceAll("[^A-Za-z0-9\\+\\/\\=]+", "");
+        s = s.replaceAll("[^A-Za-z0-9+/=]+", "");
 
         if (s.length() < 4)
-            return new byte [] {};
+            return EMPTY_BYTE_ARRAY;
 
         int padding = 0;
 

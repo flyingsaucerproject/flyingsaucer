@@ -19,43 +19,25 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.net.URL;
-
-import javax.swing.*;
-
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.net.URL;
 
-/**
- * Description of the Class
- *
- * @author empty
- */
+import static java.awt.event.KeyEvent.VK_F5;
+
+
 public class HTMLTest extends JFrame {
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Description of the Field
-     */
     private final XHTMLPanel panel;
-    /** Description of the Field */
-    //public final static int text_width = 600;
-    /**
-     * Description of the Field
-     */
-    private final static String BASE_TITLE = "Flying Saucer";
+    private static final String BASE_TITLE = "Flying Saucer";
 
-    /**
-     * Constructor for the HTMLTest object
-     *
-     * @param args PARAM
-     */
     public HTMLTest(String[] args) {
         super(BASE_TITLE);
         panel = new XHTMLPanel();
@@ -132,6 +114,7 @@ public class HTMLTest extends JFrame {
         menu.add(new AbstractAction(display) {
             private static final long serialVersionUID = 1L;
 
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 loadDocument(file);
             }
@@ -139,33 +122,29 @@ public class HTMLTest extends JFrame {
     }
 
     /**
-     * Description of the Method
-     *
      * @param uri taken to be a file, if not beginning with http://
      */
     private void loadDocument(final String uri) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    long st = System.currentTimeMillis();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                long st = System.currentTimeMillis();
 
-                    final URL url;
-                    if (uri.startsWith("http://"))
-                        url = new URL(uri);
-                    else
-                        url = new File(uri).toURL();
+                final URL url;
+                if (uri.startsWith("http://"))
+                    url = new URL(uri);
+                else
+                    url = new File(uri).toURL();
 
-                    System.err.println("loading " + url.toString() + "!");
-                    panel.setDocument(url.toExternalForm());
+                System.err.println("loading " + url.toString() + "!");
+                panel.setDocument(url.toExternalForm());
 
-                    long el = System.currentTimeMillis() - st;
-                    XRLog.general("loadDocument(" + url + ") in " + el + "ms, render may take longer");
-                    HTMLTest.this.setTitle(String.format("%s-  %s  (%s)", BASE_TITLE, panel.getDocumentTitle(), url));
-                } catch (Exception ex) {
-                    Uu.p(ex);
-                }
-                panel.repaint();
+                long el = System.currentTimeMillis() - st;
+                XRLog.general("loadDocument(" + url + ") in " + el + "ms, render may take longer");
+                setTitle(String.format("%s-  %s  (%s)", BASE_TITLE, panel.getDocumentTitle(), url));
+            } catch (Exception ex) {
+                Uu.p(ex);
             }
+            panel.repaint();
         });
     }
 
@@ -186,129 +165,74 @@ public class HTMLTest extends JFrame {
         frame.setVisible(true);
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
-    static class QuitAction extends AbstractAction {
+    static final class QuitAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the QuitAction object
-         */
         QuitAction() {
             super("Quit");
             putValue(MNEMONIC_KEY, KeyEvent.VK_Q);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
+        @Override
         public void actionPerformed(final ActionEvent evt) {
             System.exit(0);
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
-    class BoxOutlinesAction extends AbstractAction {
+    final class BoxOutlinesAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the BoxOutlinesAction object
-         */
         BoxOutlinesAction() {
             super("Show Box Outlines");
             putValue(MNEMONIC_KEY, KeyEvent.VK_B);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent evt) {
             panel.getSharedContext().setDebug_draw_boxes(!panel.getSharedContext().debugDrawBoxes());
             panel.repaint();
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
-    class LineBoxOutlinesAction extends AbstractAction {
+    final class LineBoxOutlinesAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the LineBoxOutlinesAction object
-         */
         LineBoxOutlinesAction() {
             super("Show Line Box Outlines");
             putValue(MNEMONIC_KEY, KeyEvent.VK_L);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent evt) {
             panel.getSharedContext().setDebug_draw_line_boxes(!panel.getSharedContext().debugDrawLineBoxes());
             panel.repaint();
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
-    class InlineBoxesAction extends AbstractAction {
+    final class InlineBoxesAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the InlineBoxesAction object
-         */
         InlineBoxesAction() {
             super("Show Inline Boxes");
             putValue(MNEMONIC_KEY, KeyEvent.VK_I);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent evt) {
             panel.getSharedContext().setDebug_draw_inline_boxes(!panel.getSharedContext().debugDrawInlineBoxes());
             panel.repaint();
         }
     }
 
-    class FontMetricsAction extends AbstractAction {
+    final class FontMetricsAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the InlineBoxesAction object
-         */
         FontMetricsAction() {
             super("Show Font Metrics");
             putValue(MNEMONIC_KEY, KeyEvent.VK_F);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent evt) {
             panel.getSharedContext().setDebug_draw_font_metrics(!panel.getSharedContext().debugDrawFontMetrics());
             panel.repaint();
@@ -325,42 +249,25 @@ public class HTMLTest extends JFrame {
             this.fontSizeThreshold = fontSizeThreshold;
         }
 
+        @Override
         public void actionPerformed(ActionEvent evt) {
             panel.getSharedContext().getTextRenderer().setSmoothingThreshold(fontSizeThreshold);
             panel.repaint();
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
-    class ShowDOMInspectorAction extends AbstractAction {
+    final class ShowDOMInspectorAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Description of the Field
-         */
         private DOMInspector inspector;
-        /**
-         * Description of the Field
-         */
         private JFrame inspectorFrame;
 
-        /**
-         * Constructor for the ShowDOMInspectorAction object
-         */
         ShowDOMInspectorAction() {
             super("DOM Tree Inspector");
             putValue(MNEMONIC_KEY, KeyEvent.VK_D);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent evt) {
             if (inspectorFrame == null) {
                 inspectorFrame = new JFrame("DOM Tree Inspector");
@@ -382,17 +289,9 @@ public class HTMLTest extends JFrame {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
-    static class RefreshPageAction extends AbstractAction {
+    static final class RefreshPageAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the RefreshPageAction object
-         */
         RefreshPageAction() {
             super("Refresh Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_R);
@@ -400,54 +299,29 @@ public class HTMLTest extends JFrame {
                     KeyStroke.getKeyStroke("F5"));
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent evt) {
             // TODO
             System.out.println("Refresh Page triggered");
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
-    static class ReloadPageAction extends AbstractAction {
+    static final class ReloadPageAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ReloadPageAction object
-         */
         ReloadPageAction() {
             super("Reload Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_P);
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_F5,
-                            ActionEvent.CTRL_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(VK_F5, InputEvent.CTRL_MASK));
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent evt) {
             // TODO
             System.out.println("Reload Page triggered");
         }
     }
 }
-
-
-/**
- * Description of the Class
- *
- * @author   empty
- */
 
 /*
  * $Id$

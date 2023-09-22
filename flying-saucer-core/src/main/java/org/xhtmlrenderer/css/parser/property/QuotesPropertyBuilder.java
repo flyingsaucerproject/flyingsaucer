@@ -19,11 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -32,13 +27,20 @@ import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static java.util.Collections.emptyList;
+
 public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
 
-    public List buildDeclarations(CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+    @Override
+    public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
         if (values.size() == 1) {
             PropertyValue value = (PropertyValue)values.get(0);
             if (value.getCssValueType() == CSSValue.CSS_INHERIT) {
-                return Collections.EMPTY_LIST;
+                return emptyList();
             } else if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                 IdentValue ident = checkIdent(CSSName.QUOTES, value);
                 if (ident == IdentValue.NONE) {
@@ -53,15 +55,15 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
                     "Mismatched quotes " + values, -1);
         }
         
-        List resultValues = new ArrayList();
-        for (Iterator i = values.iterator(); i.hasNext(); ) {
-            PropertyValue value = (PropertyValue)i.next();
-            
+        List<String> resultValues = new ArrayList<>();
+        for (CSSPrimitiveValue cssPrimitiveValue : values) {
+            PropertyValue value = (PropertyValue) cssPrimitiveValue;
+
             if (value.getOperator() != null) {
                 throw new CSSParseException(
                         "Found unexpected operator, " + value.getOperator().getExternalName(), -1);
             }
-            
+
             short type = value.getPrimitiveType();
             if (type == CSSPrimitiveValue.CSS_STRING) {
                 resultValues.add(value.getStringValue());
@@ -84,7 +86,7 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
             return Collections.singletonList(
                     new PropertyDeclaration(CSSName.QUOTES, new PropertyValue(resultValues), important, origin));
         } else {
-            return Collections.EMPTY_LIST;
+            return emptyList();
         }
     }
 }

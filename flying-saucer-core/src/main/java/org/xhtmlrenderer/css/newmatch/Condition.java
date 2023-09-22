@@ -19,14 +19,15 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.extend.AttributeResolver;
+import org.xhtmlrenderer.css.extend.TreeResolver;
+import org.xhtmlrenderer.css.parser.CSSParseException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.xhtmlrenderer.css.extend.AttributeResolver;
-import org.xhtmlrenderer.css.extend.TreeResolver;
-import org.xhtmlrenderer.css.parser.CSSParseException;
 
 
 /**
@@ -36,13 +37,10 @@ import org.xhtmlrenderer.css.parser.CSSParseException;
  */
 abstract class Condition {
 
-    abstract boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes);
+    abstract boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes);
 
     /**
      * the CSS condition [attribute]
-     *
-     * @param name PARAM
-     * @return Returns
      */
     static Condition createAttributeExistsCondition(String namespaceURI, String name) {
         return new AttributeExistsCondition(namespaceURI, name);
@@ -78,10 +76,6 @@ abstract class Condition {
 
     /**
      * the CSS condition [attribute~=value]
-     *
-     * @param name  PARAM
-     * @param value PARAM
-     * @return Returns
      */
     static Condition createAttributeMatchesListCondition(String namespaceURI, String name, String value) {
         return new AttributeMatchesListCondition(namespaceURI, name, value);
@@ -89,10 +83,6 @@ abstract class Condition {
 
     /**
      * the CSS condition [attribute|=value]
-     *
-     * @param name  PARAM
-     * @param value PARAM
-     * @return Returns
      */
     static Condition createAttributeMatchesFirstPartCondition(String namespaceURI, String name, String value) {
         return new AttributeMatchesFirstPartCondition(namespaceURI, name, value);
@@ -100,9 +90,6 @@ abstract class Condition {
 
     /**
      * the CSS condition .class
-     *
-     * @param className PARAM
-     * @return Returns
      */
     static Condition createClassCondition(String className) {
         return new ClassCondition(className);
@@ -110,9 +97,6 @@ abstract class Condition {
 
     /**
      * the CSS condition #ID
-     *
-     * @param id PARAM
-     * @return Returns
      */
     static Condition createIDCondition(String id) {
         return new IDCondition(id);
@@ -120,9 +104,6 @@ abstract class Condition {
 
     /**
      * the CSS condition lang(Xx)
-     *
-     * @param lang PARAM
-     * @return Returns
      */
     static Condition createLangCondition(String lang) {
         return new LangCondition(lang);
@@ -130,8 +111,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :first-child
-     *
-     * @return Returns
      */
     static Condition createFirstChildCondition() {
         return new FirstChildCondition();
@@ -139,8 +118,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :last-child
-     *
-     * @return Returns
      */
     static Condition createLastChildCondition() {
         return new LastChildCondition();
@@ -148,9 +125,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :nth-child(an+b)
-     *
-     * @param number PARAM
-     * @return Returns
      */
     static Condition createNthChildCondition(String number) {
         return NthChildCondition.fromString(number);
@@ -158,8 +132,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :even
-     *
-     * @return Returns
      */
     static Condition createEvenChildCondition() {
         return new EvenChildCondition();
@@ -167,8 +139,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :odd
-     *
-     * @return Returns
      */
     static Condition createOddChildCondition() {
         return new OddChildCondition();
@@ -176,8 +146,6 @@ abstract class Condition {
 
     /**
      * the CSS condition that element has pseudo-class :link
-     *
-     * @return Returns
      */
     static Condition createLinkCondition() {
         return new LinkCondition();
@@ -185,17 +153,15 @@ abstract class Condition {
 
     /**
      * for unsupported or invalid CSS
-     *
-     * @return Returns
      */
     static Condition createUnsupportedCondition() {
         return new UnsupportedCondition();
     }
 
-    private static abstract class AttributeCompareCondition extends Condition {
-        private String _namespaceURI;
-        private String _name;
-        private String _value;
+    private abstract static class AttributeCompareCondition extends Condition {
+        private final String _namespaceURI;
+        private final String _name;
+        private final String _value;
 
         protected abstract boolean compare(String attrValue, String conditionValue);
 
@@ -205,7 +171,8 @@ abstract class Condition {
             _value = value;
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
             }
@@ -223,6 +190,7 @@ abstract class Condition {
             super(namespaceURI, name, null);
         }
 
+        @Override
         protected boolean compare(String attrValue, String conditionValue) {
             return ! attrValue.equals("");
         }
@@ -233,6 +201,7 @@ abstract class Condition {
             super(namespaceURI, name, value);
         }
 
+        @Override
         protected boolean compare(String attrValue, String conditionValue) {
             return attrValue.equals(conditionValue);
         }
@@ -243,6 +212,7 @@ abstract class Condition {
             super(namespaceURI, name, value);
         }
 
+        @Override
         protected boolean compare(String attrValue, String conditionValue) {
             return attrValue.startsWith(conditionValue);
         }
@@ -253,6 +223,7 @@ abstract class Condition {
             super(namespaceURI, name, value);
         }
 
+        @Override
         protected boolean compare(String attrValue, String conditionValue) {
             return attrValue.endsWith(conditionValue);
         }
@@ -263,8 +234,9 @@ abstract class Condition {
             super(namespaceURI, name, value);
         }
 
+        @Override
         protected boolean compare(String attrValue, String conditionValue) {
-            return attrValue.indexOf(conditionValue) > -1;
+            return attrValue.contains(conditionValue);
         }
     }
 
@@ -273,12 +245,14 @@ abstract class Condition {
             super(namespaceURI, name, value);
         }
 
+        @Override
         protected boolean compare(String attrValue, String conditionValue) {
             String[] ca = split(attrValue, ' ');
             boolean matched = false;
-            for (int j = 0; j < ca.length; j++) {
-                if (conditionValue.equals(ca[j])) {
+            for (String s : ca) {
+                if (conditionValue.equals(s)) {
                     matched = true;
+                    break;
                 }
             }
             return matched;
@@ -290,24 +264,23 @@ abstract class Condition {
             super(namespaceURI, name, value);
         }
 
+        @Override
         protected boolean compare(String attrValue, String conditionValue) {
             String[] ca = split(attrValue, '-');
-            if (conditionValue.equals(ca[0])) {
-                return true;
-            }
-            return false;
+            return conditionValue.equals(ca[0]);
         }
     }
 
     private static class ClassCondition extends Condition {
 
-        private String _paddedClassName;
+        private final String _paddedClassName;
 
         ClassCondition(String className) {
             _paddedClassName = " " + className + " ";
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
             }
@@ -319,39 +292,38 @@ abstract class Condition {
             // This is much faster than calling `split()` and comparing individual values in a loop.
             // NOTE: In jQuery, for example, the attribute value first has whitespace normalized to spaces. But
             // in an XML DOM, space normalization in attributes is supposed to have happened already.
-            return (" " + c + " ").indexOf(_paddedClassName) != -1;
+            return (" " + c + " ").contains(_paddedClassName);
         }
 
     }
 
     private static class IDCondition extends Condition {
 
-        private String _id;
+        private final String _id;
 
         IDCondition(String id) {
             _id = id;
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
             }
-            if (!_id.equals(attRes.getID(e))) {
-                return false;
-            }
-            return true;
+            return _id.equals(attRes.getID(e));
         }
 
     }
 
     private static class LangCondition extends Condition {
-        private String _lang;
+        private final String _lang;
 
         LangCondition(String lang) {
             _lang = lang;
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             if (attRes == null) {
                 return false;
             }
@@ -363,10 +335,7 @@ abstract class Condition {
                 return true;
             }
             String[] ca = split(lang, '-');
-            if (_lang.equalsIgnoreCase(ca[0])) {
-                return true;
-            }
-            return false;
+            return _lang.equalsIgnoreCase(ca[0]);
         }
 
     }
@@ -376,7 +345,8 @@ abstract class Condition {
         FirstChildCondition() {
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             return treeRes.isFirstChildElement(e);
         }
 
@@ -387,7 +357,8 @@ abstract class Condition {
         LastChildCondition() {
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             return treeRes.isLastChildElement(e);
         }
 
@@ -405,7 +376,8 @@ abstract class Condition {
             this.b = b;
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             // getPositionOfElement() starts at 0, CSS spec starts at 1
             int position = treeRes.getPositionOfElement(e)+1;
 
@@ -495,7 +467,8 @@ abstract class Condition {
         EvenChildCondition() {
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             int position = treeRes.getPositionOfElement(e);
             return position >= 0 && position % 2 == 0;
         }
@@ -506,7 +479,8 @@ abstract class Condition {
         OddChildCondition() {
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             int position = treeRes.getPositionOfElement(e);
             return position >= 0 && position % 2 == 1;
         }
@@ -517,7 +491,8 @@ abstract class Condition {
         LinkCondition() {
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             return attRes.isLink(e);
         }
 
@@ -531,7 +506,8 @@ abstract class Condition {
         UnsupportedCondition() {
         }
 
-        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             return false;
         }
 
@@ -541,7 +517,7 @@ abstract class Condition {
         if (s.indexOf(ch) == -1) {
             return new String[] { s };
         } else {
-            List result = new ArrayList();
+            List<String> result = new ArrayList<>();
 
             int last = 0;
             int next;
@@ -557,7 +533,7 @@ abstract class Condition {
                 result.add(s.substring(last));
             }
 
-            return (String[])result.toArray(new String[result.size()]);
+            return result.toArray(new String[result.size()]);
         }
     }
 }

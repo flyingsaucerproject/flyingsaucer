@@ -27,8 +27,12 @@ public class TextControl extends AbstractControl {
     public static final int DEFAULT_SIZE = 20;
     public static final int DEFAULT_ROWS = 3;
 
-    private boolean _password, _readonly, _multiline;
-    private int _size, _rows, _maxlength;
+    private final boolean _password;
+    private final boolean _readonly;
+    private final boolean _multiline;
+    private final int _size;
+    private final int _rows;
+    private final int _maxlength;
 
     public TextControl(XhtmlForm form, Element e) {
         super(form, e);
@@ -71,7 +75,7 @@ public class TextControl extends AbstractControl {
     }
 
     /**
-     * @return the maximum length or <code>-1</code> if not defined
+     * @return the maximum length or {@code -1} if not defined
      */
     public int getMaxLength() {
         return _maxlength;

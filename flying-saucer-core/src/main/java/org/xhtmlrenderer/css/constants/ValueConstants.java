@@ -28,7 +28,14 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 
@@ -42,18 +49,11 @@ public final class ValueConstants {
      * Type descriptions--a crude approximation taken by scanning CSSValue
      * statics
      */
-    private final static List TYPE_DESCRIPTIONS;
-    /**
-     * Description of the Field
-     */
-    private final static Map sacTypesStrings;
+    private static final List TYPE_DESCRIPTIONS;
+    private static final Map sacTypesStrings;
 
     /**
      * A text representation of the CSS type for this value.
-     *
-     * @param cssType            PARAM
-     * @param primitiveValueType PARAM
-     * @return Returns
      */
     public static String cssType(int cssType, int primitiveValueType) {
         if (cssType == CSSValue.CSS_PRIMITIVE_VALUE) {
@@ -68,12 +68,6 @@ public final class ValueConstants {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param type PARAM
-     * @return Returns
-     */
     public static short sacPrimitiveTypeForString(String type) {
         if ("em".equals(type)) {
             return CSSPrimitiveValue.CSS_EMS;
@@ -101,12 +95,6 @@ public final class ValueConstants {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param type PARAM
-     * @return Returns
-     */
     public static String stringForSACPrimitiveType(short type) {
         return (String) sacTypesStrings.get(type);
     }
@@ -198,9 +186,6 @@ public final class ValueConstants {
 
     /**
      * Gets the cssValueTypeDesc attribute of the {@link CSSValue} object
-     *
-     * @param cssValue PARAM
-     * @return The cssValueTypeDesc value
      */
     public static String getCssValueTypeDesc(CSSValue cssValue) {
         switch (cssValue.getCssValueType()) {
@@ -221,9 +206,6 @@ public final class ValueConstants {
      * Returns true if the SAC primitive value type is a number unit--a unit
      * that can only contain a numeric value. This is a shorthand way of saying,
      * did the user declare this as a number unit (like px)?
-     *
-     * @param cssPrimitiveType PARAM
-     * @return See desc.
      */
     public static boolean isNumber(short cssPrimitiveType) {
         switch (cssPrimitiveType) {
@@ -304,9 +286,6 @@ public final class ValueConstants {
      * Incomplete routine to try and determine the
      * CSSPrimitiveValue short code for a given value,
      * e.g. 14pt is CSS_PT.
-     *
-     * @param value PARAM
-     * @return Returns
      */
     public static short guessType(String value) {
         short type = CSSPrimitiveValue.CSS_STRING;

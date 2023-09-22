@@ -20,19 +20,11 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.EntityReference;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
-import org.w3c.dom.EntityReference;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -59,13 +51,24 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBoxData;
 import org.xhtmlrenderer.render.InlineBox;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.xhtmlrenderer.css.newmatch.CascadedStyle.createLayoutPropertyDeclaration;
+
 /**
  * This class is responsible for creating the box tree from the DOM.  This is
- * mostly just a one-to-one translation from the <code>Element</code> to an
- * <code>InlineBox</code> or a <code>BlockBox</code> (or some subclass of
- * <code>BlockBox</code>), but the tree is reorganized according to the CSS rules.
+ * mostly just a one-to-one translation from the {@code Element} to an
+ * {@code InlineBox} or a {@code BlockBox} (or some subclass of
+ * {@code BlockBox}), but the tree is reorganized according to the CSS rules.
  * This includes inserting anonymous block and inline boxes, anonymous table
- * content, and <code>:before</code> and <code>:after</code> content.  White
+ * content, and {@code :before} and {@code :after} content.  White
  * space is also normalized at this point.  Table columns and table column groups
  * are added to the table which owns them, but are not created as regular boxes.
  * Floated and absolutely positioned content is always treated as inline
@@ -109,7 +112,7 @@ public class BoxBuilder {
 
     public static void createChildren(LayoutContext c, BlockBox parent) {
 
-        List children = new ArrayList();
+        List<Styleable> children = new ArrayList<>();
 
         ChildBoxInfo info = new ChildBoxInfo();
 
@@ -146,7 +149,7 @@ public class BoxBuilder {
         CalculatedStyle pageStyle = new EmptyStyle().deriveStyle(pageInfo.getPageStyle());
 
         CalculatedStyle tableStyle = pageStyle.deriveStyle(
-                CascadedStyle.createLayoutStyle(new PropertyDeclaration[] {
+                CascadedStyle.createLayoutStyle(
                         new PropertyDeclaration(
                                 CSSName.DISPLAY,
                                 new PropertyValue(IdentValue.TABLE),
@@ -156,8 +159,8 @@ public class BoxBuilder {
                                 CSSName.WIDTH,
                                 new PropertyValue(CSSPrimitiveValue.CSS_PERCENTAGE, 100.0f, "100%"),
                                 true,
-                                StylesheetInfo.USER),
-                }));
+                                StylesheetInfo.USER)
+                ));
         TableBox result = (TableBox)createBlockBox(tableStyle, info, false);
         result.setMarginAreaRoot(true);
         result.setStyle(tableStyle);
@@ -191,14 +194,14 @@ public class BoxBuilder {
         int cellCount = 0;
         boolean alwaysCreate = names.length > 1 && direction == MARGIN_BOX_HORIZONTAL;
 
-        for (int i = 0; i < names.length; i++) {
-            CascadedStyle cellStyle = pageInfo.createMarginBoxStyle(names[i], alwaysCreate);
+        for (MarginBoxName name : names) {
+            CascadedStyle cellStyle = pageInfo.createMarginBoxStyle(name, alwaysCreate);
             if (cellStyle != null) {
                 TableCellBox cell = createMarginBox(c, cellStyle, alwaysCreate);
                 if (cell != null) {
                     if (direction == MARGIN_BOX_VERTICAL) {
                         CalculatedStyle tableRowStyle = pageStyle.createAnonymousStyle(IdentValue.TABLE_ROW);
-                        row = (TableRowBox)createBlockBox(tableRowStyle, info, false);
+                        row = (TableRowBox) createBlockBox(tableRowStyle, info, false);
                         row.setStyle(tableRowStyle);
                         row.setElement(source);
                         row.setAnonymous(true);
@@ -216,13 +219,13 @@ public class BoxBuilder {
 
         if (direction == MARGIN_BOX_VERTICAL && cellCount > 0) {
             int rHeight = 0;
-            for (Iterator i = section.getChildIterator(); i.hasNext(); ) {
-                TableRowBox r = (TableRowBox)i.next();
+            for (Box box : section.getChildren()) {
+                TableRowBox r = (TableRowBox) box;
                 r.setHeightOverride(height / cellCount);
                 rHeight += r.getHeightOverride();
             }
 
-            for (Iterator i = section.getChildIterator(); i.hasNext() && rHeight < height; ) {
+            for (Iterator<Box> i = section.getChildren().iterator(); i.hasNext() && rHeight < height; ) {
                 TableRowBox r = (TableRowBox)i.next();
                 r.setHeightOverride(r.getHeightOverride()+1);
                 rHeight++;
@@ -255,7 +258,7 @@ public class BoxBuilder {
             return null;
         }
 
-        List children = new ArrayList();
+        List<Styleable> children = new ArrayList<>();
 
         ChildBoxInfo info = new ChildBoxInfo();
         info.setContainsTableContent(true);
@@ -287,7 +290,7 @@ public class BoxBuilder {
     }
 
     private static void resolveChildren(
-            LayoutContext c, BlockBox owner, List children, ChildBoxInfo info) {
+            LayoutContext c, BlockBox owner, List<Styleable> children, ChildBoxInfo info) {
         if (children.size() > 0) {
             if (info.isContainsBlockLevelContent()) {
                 insertAnonymousBlocks(
@@ -307,9 +310,8 @@ public class BoxBuilder {
         }
     }
 
-    private static boolean isAllProperTableNesting(IdentValue parentDisplay, List children) {
-        for (Iterator i = children.iterator(); i.hasNext();) {
-            Styleable child = (Styleable) i.next();
+    private static boolean isAllProperTableNesting(IdentValue parentDisplay, List<Styleable> children) {
+        for (Styleable child : children) {
             if (!isProperTableNesting(parentDisplay, child.getStyle().getIdent(CSSName.DISPLAY))) {
                 return false;
             }
@@ -320,22 +322,20 @@ public class BoxBuilder {
 
     /**
      * Handles the situation when we find table content, but our parent is not
-     * table related.  For example, <code>div</code> -> <code>td</td></code>.
+     * table related.  For example, {@code div} -> {@code td</td>}.
      * Anonymous tables are then constructed by repeatedly pulling together
      * consecutive same-table-level siblings and wrapping them in the next
-     * highest table level (e.g. consecutive <code>td</code> elements will
-     * be wrapped in an anonymous <code>tr</code>, then a <code>tbody</code>, and
-     * finally a <code>table</code>).
+     * highest table level (e.g. consecutive {@code td} elements will
+     * be wrapped in an anonymous {@code tr}, then a {@code tbody}, and
+     * finally a {@code table}).
      */
     private static void resolveChildTableContent(
-            LayoutContext c, BlockBox parent, List children, ChildBoxInfo info, IdentValue target) {
-        List childrenForAnonymous = new ArrayList();
-        List childrenWithAnonymous = new ArrayList();
+            LayoutContext c, BlockBox parent, List<Styleable> children, ChildBoxInfo info, IdentValue target) {
+        List<Styleable> childrenForAnonymous = new ArrayList<>();
+        List<Styleable> childrenWithAnonymous = new ArrayList<>();
 
         IdentValue nextUp = getPreviousTableNestingLevel(target);
-        for (Iterator i = children.iterator(); i.hasNext();) {
-            Styleable styleable = (Styleable) i.next();
-
+        for (Styleable styleable : children) {
             if (matchesTableLevel(target, styleable.getStyle().getIdent(CSSName.DISPLAY))) {
                 childrenForAnonymous.add(styleable);
             } else {
@@ -343,7 +343,7 @@ public class BoxBuilder {
                     createAnonymousTableContent(c, (BlockBox) childrenForAnonymous.get(0), nextUp,
                             childrenForAnonymous, childrenWithAnonymous);
 
-                    childrenForAnonymous = new ArrayList();
+                    childrenForAnonymous = new ArrayList<>();
                 }
                 childrenWithAnonymous.add(styleable);
             }
@@ -373,15 +373,14 @@ public class BoxBuilder {
     }
 
     /**
-     * Makes sure that any <code>InlineBox</code> in <code>content</code>
-     * both starts and ends within <code>content</code>. Used to ensure that
+     * Makes sure that any {@code InlineBox} in {@code content}
+     * both starts and ends within {@code content}. Used to ensure that
      * it is always possible to construct anonymous blocks once an element's
      * children has been distributed among anonymous table objects.
      */
-    private static void rebalanceInlineContent(List content) {
-        Map boxesByElement = new HashMap();
-        for (Iterator i = content.iterator(); i.hasNext();) {
-            Styleable styleable = (Styleable) i.next();
+    private static void rebalanceInlineContent(List<Styleable> content) {
+        Map<Element, InlineBox> boxesByElement = new HashMap<>();
+        for (Styleable styleable : content) {
             if (styleable instanceof InlineBox) {
                 InlineBox iB = (InlineBox) styleable;
                 Element elem = iB.getElement();
@@ -394,18 +393,17 @@ public class BoxBuilder {
             }
         }
 
-        for (Iterator i = boxesByElement.values().iterator(); i.hasNext();) {
-            InlineBox iB = (InlineBox) i.next();
+        for (InlineBox iB : boxesByElement.values()) {
             iB.setEndsHere(true);
         }
     }
 
-    private static void stripAllWhitespace(List content) {
+    private static void stripAllWhitespace(List<Styleable> content) {
         int start = 0;
         int current;
         boolean started = false;
         for (current = 0; current < content.size(); current++) {
-            Styleable styleable = (Styleable) content.get(current);
+            Styleable styleable = content.get(current);
             if (! styleable.getStyle().isLayedOutInInlineContext()) {
                 if (started) {
                     int before = content.size();
@@ -429,12 +427,12 @@ public class BoxBuilder {
 
     /**
      * Handles the situation when our current parent is table related.  If
-     * everything is properly nested (e.g. a <code>tr</code> contains only
-     * <code>td</code> elements), nothing is done.  Otherwise, anonymous boxes
+     * everything is properly nested (e.g. a {@code tr} contains only
+     * {@code td} elements), nothing is done.  Otherwise, anonymous boxes
      * are inserted to ensure the integrity of the table model.
      */
     private static void resolveTableContent(
-            LayoutContext c, BlockBox parent, List children, ChildBoxInfo info) {
+            LayoutContext c, BlockBox parent, List<Styleable> children, ChildBoxInfo info) {
         IdentValue parentDisplay = parent.getStyle().getIdent(CSSName.DISPLAY);
         IdentValue next = getNextTableNestingLevel(parentDisplay);
         if (next == null && parent.isAnonymous() && containsOrphanedTableContent(children)) {
@@ -445,10 +443,9 @@ public class BoxBuilder {
             }
             resolveChildren(c, parent, children, info);
         } else {
-            List childrenForAnonymous = new ArrayList();
-            List childrenWithAnonymous = new ArrayList();
-            for (Iterator i = children.iterator(); i.hasNext();) {
-                Styleable child = (Styleable) i.next();
+            List<Styleable> childrenForAnonymous = new ArrayList<>();
+            List<Styleable> childrenWithAnonymous = new ArrayList<>();
+            for (Styleable child : children) {
                 IdentValue childDisplay = child.getStyle().getIdent(CSSName.DISPLAY);
 
                 if (isProperTableNesting(parentDisplay, childDisplay)) {
@@ -456,7 +453,7 @@ public class BoxBuilder {
                         createAnonymousTableContent(c, parent, next, childrenForAnonymous,
                                 childrenWithAnonymous);
 
-                        childrenForAnonymous = new ArrayList();
+                        childrenForAnonymous = new ArrayList<>();
                     }
                     childrenWithAnonymous.add(child);
                 } else {
@@ -474,9 +471,8 @@ public class BoxBuilder {
         }
     }
 
-    private static boolean containsOrphanedTableContent(List children) {
-        for (Iterator i = children.iterator(); i.hasNext();) {
-            Styleable child = (Styleable) i.next();
+    private static boolean containsOrphanedTableContent(List<Styleable> children) {
+        for (Styleable child : children) {
             IdentValue display = child.getStyle().getIdent(CSSName.DISPLAY);
             if (display == IdentValue.TABLE_HEADER_GROUP ||
                     display == IdentValue.TABLE_ROW_GROUP ||
@@ -495,7 +491,9 @@ public class BoxBuilder {
     }
 
     private static void createAnonymousTableContent(LayoutContext c, BlockBox source,
-                                                    IdentValue next, List childrenForAnonymous, List childrenWithAnonymous) {
+                                                    IdentValue next, 
+                                                    List<Styleable> childrenForAnonymous, 
+                                                    List<Styleable> childrenWithAnonymous) {
         ChildBoxInfo nested = lookForBlockContent(childrenForAnonymous);
         IdentValue anonDisplay;
         if (isParentInline(source) && next == IdentValue.TABLE) {
@@ -525,14 +523,13 @@ public class BoxBuilder {
      * If not, the table is returned.
      */
     private static BlockBox reorderTableContent(LayoutContext c, TableBox table) {
-        List topCaptions = new LinkedList();
+        List<Box> topCaptions = new LinkedList<>();
         Box header = null;
-        List bodies = new LinkedList();
+        List<Box> bodies = new LinkedList<>();
         Box footer = null;
-        List bottomCaptions = new LinkedList();
+        List<Box> bottomCaptions = new LinkedList<>();
 
-        for (Iterator i = table.getChildIterator(); i.hasNext();) {
-            Box b = (Box) i.next();
+        for (Box b : table.getChildren()) {
             IdentValue display = b.getStyle().getIdent(CSSName.DISPLAY);
             if (display == IdentValue.TABLE_CAPTION) {
                 IdentValue side = b.getStyle().getIdent(CSSName.CAPTION_SIDE);
@@ -569,11 +566,8 @@ public class BoxBuilder {
             CalculatedStyle anonStyle;
             if (table.getStyle().isFloated()) {
                 CascadedStyle cascadedStyle = CascadedStyle.createLayoutStyle(
-                        new PropertyDeclaration[]{
-                                CascadedStyle.createLayoutPropertyDeclaration(
-                                        CSSName.DISPLAY, IdentValue.BLOCK),
-                                CascadedStyle.createLayoutPropertyDeclaration(
-                                        CSSName.FLOAT, table.getStyle().getIdent(CSSName.FLOAT))});
+                        createLayoutPropertyDeclaration(CSSName.DISPLAY, IdentValue.BLOCK),
+                        createLayoutPropertyDeclaration(CSSName.FLOAT, table.getStyle().getIdent(CSSName.FLOAT)));
 
                 anonStyle = table.getStyle().deriveStyle(cascadedStyle);
             } else {
@@ -600,7 +594,7 @@ public class BoxBuilder {
                 CascadedStyle modified = CascadedStyle.createLayoutStyle(
                         original,
                         new PropertyDeclaration[]{
-                                CascadedStyle.createLayoutPropertyDeclaration(
+                                createLayoutPropertyDeclaration(
                                         CSSName.FLOAT, IdentValue.NONE)
                         });
                 table.setStyle(table.getStyle().getParent().deriveStyle(modified));
@@ -610,10 +604,9 @@ public class BoxBuilder {
         }
     }
 
-    private static ChildBoxInfo lookForBlockContent(List styleables) {
+    private static ChildBoxInfo lookForBlockContent(List<Styleable> styleables) {
         ChildBoxInfo result = new ChildBoxInfo();
-        for (Iterator i = styleables.iterator(); i.hasNext();) {
-            Styleable s = (Styleable) i.next();
+        for (Styleable s : styleables) {
             if (!s.getStyle().isLayedOutInInlineContext()) {
                 result.setContainsBlockLevelContent(true);
                 break;
@@ -674,9 +667,9 @@ public class BoxBuilder {
 
     private static boolean isAttrFunction(FSFunction function) {
         if (function.getName().equals("attr")) {
-            List params = function.getParameters();
+            List<PropertyValue> params = function.getParameters();
             if (params.size() == 1) {
-                PropertyValue value = (PropertyValue) params.get(0);
+                PropertyValue value = params.get(0);
                 return value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
             }
         }
@@ -686,14 +679,14 @@ public class BoxBuilder {
 
     public static boolean isElementFunction(FSFunction function) {
         if (function.getName().equals("element")) {
-            List params = function.getParameters();
+            List<PropertyValue> params = function.getParameters();
             if (params.size() < 1 || params.size() > 2) {
                 return false;
             }
-            PropertyValue value1 = (PropertyValue) params.get(0);
+            PropertyValue value1 = params.get(0);
             boolean ok = value1.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
             if (ok && params.size() == 2) {
-                PropertyValue value2 = (PropertyValue) params.get(1);
+                PropertyValue value2 = params.get(1);
                 ok = value2.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
             }
 
@@ -705,12 +698,12 @@ public class BoxBuilder {
 
     private static CounterFunction makeCounterFunction(FSFunction function, LayoutContext c, CalculatedStyle style) {
         if (function.getName().equals("counter")) {
-            List params = function.getParameters();
+            List<PropertyValue> params = function.getParameters();
             if (params.size() < 1 || params.size() > 2) {
                 return null;
             }
 
-            PropertyValue value = (PropertyValue) params.get(0);
+            PropertyValue value = params.get(0);
             if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                 return null;
             }
@@ -724,7 +717,7 @@ public class BoxBuilder {
             String counter = value.getStringValue();
             IdentValue listStyleType = IdentValue.DECIMAL;
             if (params.size() == 2) {
-                value = (PropertyValue) params.get(1);
+                value = params.get(1);
                 if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                     return null;
                 }
@@ -740,19 +733,19 @@ public class BoxBuilder {
 
             return new CounterFunction(counterValue, listStyleType);
         } else if (function.getName().equals("counters")) {
-            List params = function.getParameters();
+            List<PropertyValue> params = function.getParameters();
             if (params.size() < 2 || params.size() > 3) {
                 return null;
             }
 
-            PropertyValue value = (PropertyValue) params.get(0);
+            PropertyValue value = params.get(0);
             if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                 return null;
             }
 
             String counter = value.getStringValue();
 
-            value = (PropertyValue) params.get(1);
+            value = params.get(1);
             if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_STRING) {
                 return null;
             }
@@ -761,7 +754,7 @@ public class BoxBuilder {
 
             IdentValue listStyleType = IdentValue.DECIMAL;
             if (params.size() == 3) {
-                value = (PropertyValue) params.get(2);
+                value = params.get(2);
                 if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                     return null;
                 }
@@ -773,7 +766,7 @@ public class BoxBuilder {
                 }
             }
 
-            List counterValues = c.getCounterContext(style).getCurrentCounterValues(counter);
+            List<Integer> counterValues = c.getCounterContext(style).getCurrentCounterValues(counter);
 
             return new CounterFunction(counterValues, separator, listStyleType);
         } else {
@@ -782,25 +775,23 @@ public class BoxBuilder {
     }
 
     private static String getAttributeValue(FSFunction attrFunc, Element e) {
-        PropertyValue value = (PropertyValue) attrFunc.getParameters().get(0);
+        PropertyValue value = attrFunc.getParameters().get(0);
         return e.getAttribute(value.getStringValue());
     }
 
-    private static List createGeneratedContentList(
+    private static List<Styleable> createGeneratedContentList(
             LayoutContext c, Element element, PropertyValue propValue,
             String peName, CalculatedStyle style, int mode, ChildBoxInfo info) {
-        List values = propValue.getValues();
+        List<PropertyValue> values = propValue.getValues();
 
         if (values == null) {
             // content: normal or content: none
-            return Collections.EMPTY_LIST;
+            return emptyList();
         }
 
-        List result = new ArrayList(values.size());
+        List<Styleable> result = new ArrayList<>(values.size());
 
-        for (Iterator i = values.iterator(); i.hasNext();) {
-            PropertyValue value = (PropertyValue) i.next();
-
+        for (PropertyValue value : values) {
             ContentFunction contentFunction = null;
             FSFunction function = null;
 
@@ -879,23 +870,21 @@ public class BoxBuilder {
     }
 
     public static BlockBox getRunningBlock(LayoutContext c, PropertyValue value) {
-        List params = value.getFunction().getParameters();
-        String ident = ((PropertyValue)params.get(0)).getStringValue();
+        List<PropertyValue> params = value.getFunction().getParameters();
+        String ident = params.get(0).getStringValue();
         PageElementPosition position = null;
         if (params.size() == 2) {
-            position = PageElementPosition.valueOf(
-                    ((PropertyValue)params.get(1)).getStringValue());
+            position = PageElementPosition.valueOf(params.get(1).getStringValue());
         }
         if (position == null) {
             position = PageElementPosition.FIRST;
         }
-        BlockBox target = c.getRootDocumentLayer().getRunningBlock(ident, c.getPage(), position);
-        return target;
+        return c.getRootDocumentLayer().getRunningBlock(ident, c.getPage(), position);
     }
 
     private static void insertGeneratedContent(
             LayoutContext c, Element element, CalculatedStyle parentStyle,
-            String peName, List children, ChildBoxInfo info) {
+            String peName, List<Styleable> children, ChildBoxInfo info) {
         CascadedStyle peStyle = c.getCss().getPseudoElementStyle(element, peName);
         if (peStyle != null) {
             PropertyDeclaration contentDecl = peStyle.propertyByName(CSSName.CONTENT);
@@ -913,7 +902,7 @@ public class BoxBuilder {
                 if (calculatedStyle.isTable() || calculatedStyle.isTableRow() || calculatedStyle.isTableSection()) {
                     CascadedStyle newPeStyle =
                         CascadedStyle.createLayoutStyle(peStyle, new PropertyDeclaration[] {
-                            CascadedStyle.createLayoutPropertyDeclaration(
+                            createLayoutPropertyDeclaration(
                                 CSSName.DISPLAY,
                                 IdentValue.BLOCK),
                         });
@@ -930,28 +919,28 @@ public class BoxBuilder {
         }
     }
 
-    private static List createGeneratedContent(
+    private static List<Styleable> createGeneratedContent(
             LayoutContext c, Element element, String peName,
             CalculatedStyle style, PropertyValue property, ChildBoxInfo info) {
         if (style.isDisplayNone() || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN)
                 || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN_GROUP)) {
-            return Collections.EMPTY_LIST;
+            return emptyList();
         }
 
-        List inlineBoxes = createGeneratedContentList(
+        List<Styleable> inlineBoxes = createGeneratedContentList(
                 c, element, property, peName, style, CONTENT_LIST_DOCUMENT, null);
 
         if (style.isInline()) {
-            for (Iterator i = inlineBoxes.iterator(); i.hasNext();) {
-                InlineBox iB = (InlineBox) i.next();
+            for (Styleable inlineBox : inlineBoxes) {
+                InlineBox iB = (InlineBox) inlineBox;
                 iB.setStyle(style);
                 iB.applyTextTransform();
             }
             return inlineBoxes;
         } else {
             CalculatedStyle anon = style.createAnonymousStyle(IdentValue.INLINE);
-            for (Iterator i = inlineBoxes.iterator(); i.hasNext();) {
-                InlineBox iB = (InlineBox) i.next();
+            for (Styleable inlineBox : inlineBoxes) {
+                InlineBox iB = (InlineBox) inlineBox;
                 iB.setStyle(anon);
                 iB.applyTextTransform();
                 iB.setElement(null);
@@ -968,21 +957,20 @@ public class BoxBuilder {
                 info.setContainsBlockLevelContent(true);
             }
 
-            return new ArrayList(Collections.singletonList(result));
+            return new ArrayList<>(singletonList(result));
         }
     }
 
-    private static List createGeneratedMarginBoxContent(
+    private static List<Styleable> createGeneratedMarginBoxContent(
             LayoutContext c, Element element, PropertyValue property,
             CalculatedStyle style, ChildBoxInfo info) {
-        List result = createGeneratedContentList(
+        List<Styleable> result = createGeneratedContentList(
                 c, element, property, null, style, CONTENT_LIST_MARGIN_BOX, info);
 
         CalculatedStyle anon = style.createAnonymousStyle(IdentValue.INLINE);
-        for (Iterator i = result.iterator(); i.hasNext();) {
-            Styleable s = (Styleable) i.next();
+        for (Styleable s : result) {
             if (s instanceof InlineBox) {
-                InlineBox iB = (InlineBox)s;
+                InlineBox iB = (InlineBox) s;
                 iB.setElement(null);
                 iB.setStyle(anon);
                 iB.applyTextTransform();
@@ -1075,7 +1063,7 @@ public class BoxBuilder {
 
     private static void createChildren(
             LayoutContext c, BlockBox blockParent, Element parent,
-            List children, ChildBoxInfo info, boolean inline) {
+            List<Styleable> children, ChildBoxInfo info, boolean inline) {
         SharedContext sharedContext = c.getSharedContext();
 
         CalculatedStyle parentStyle = sharedContext.getStyle(parent);
@@ -1188,7 +1176,7 @@ public class BoxBuilder {
                     Text textNode = (Text)working;
 
                     /*
-                    StringBuffer text = new StringBuffer(textNode.getData());
+                    StringBuilder text = new StringBuilder(textNode.getData());
 
                     Node maybeText = textNode;
                     while (true) {
@@ -1250,16 +1238,15 @@ public class BoxBuilder {
     }
 
     private static void insertAnonymousBlocks(
-            SharedContext c, Box parent, List children, boolean layoutRunningBlocks) {
-        List inline = new ArrayList();
+            SharedContext c, Box parent, List<Styleable> children, boolean layoutRunningBlocks) {
+        List<Styleable> inline = new ArrayList<>();
 
-        LinkedList parents = new LinkedList();
-        List savedParents = null;
+        LinkedList<InlineBox> parents = new LinkedList<>();
+        List<InlineBox> savedParents = null;
 
-        for (Iterator i = children.iterator(); i.hasNext();) {
-            Styleable child = (Styleable) i.next();
+        for (Styleable child : children) {
             if (child.getStyle().isLayedOutInInlineContext() &&
-                    ! (layoutRunningBlocks && child.getStyle().isRunning())) {
+                    !(layoutRunningBlocks && child.getStyle().isRunning())) {
                 inline.add(child);
 
                 if (child.getStyle().isInline()) {
@@ -1273,19 +1260,18 @@ public class BoxBuilder {
                 }
             } else {
                 if (inline.size() > 0) {
-                    createAnonymousBlock(c, parent, inline, savedParents);
-                    inline = new ArrayList();
-                    savedParents = new ArrayList(parents);
+                    createAnonymousBlock(parent, inline, savedParents);
+                    inline = new ArrayList<>();
+                    savedParents = new ArrayList<>(parents);
                 }
                 parent.addChild((Box) child);
             }
         }
 
-        createAnonymousBlock(c, parent, inline, savedParents);
+        createAnonymousBlock(parent, inline, savedParents);
     }
 
-    private static void createAnonymousBlock(SharedContext c, Box parent, List inline,
-                                             List savedParents) {
+    private static void createAnonymousBlock(Box parent, List<Styleable> inline, List<InlineBox> savedParents) {
         WhitespaceStripper.stripInlineContent(inline);
         if (inline.size() > 0) {
             AnonymousBlockBox anon = new AnonymousBlockBox(parent.getElement());
@@ -1305,7 +1291,7 @@ public class BoxBuilder {
         private boolean _containsTableContent;
         private boolean _layoutRunningBlocks;
 
-        public ChildBoxInfo() {
+        private ChildBoxInfo() {
         }
 
         public boolean isContainsBlockLevelContent() {

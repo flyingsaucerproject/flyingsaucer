@@ -21,11 +21,9 @@
  */
 package org.xhtmlrenderer.util;
 
-import static java.lang.Boolean.parseBoolean;
-
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,8 +34,10 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.lang.Boolean.parseBoolean;
+
 /**
- * An {@link XRLogger} interface that uses <code>java.util.logging</code>.
+ * An {@link XRLogger} interface that uses {@code java.util.logging}.
  */
 public class JDKXRLogger implements XRLogger {
 
@@ -70,9 +70,6 @@ public class JDKXRLogger implements XRLogger {
      * Same purpose as Logger.getLogger(), except that the static initialization
      * for XRLog will initialize the LogManager with logging levels and other
      * configuration. Use this instead of Logger.getLogger()
-     *
-     * @param log PARAM
-     * @return The logger value
      */
     private static Logger getLogger(String log) {
         return Logger.getLogger(log);
@@ -107,13 +104,13 @@ public class JDKXRLogger implements XRLogger {
         // pull logging properties from configuration
         // they are all prefixed as shown
         String prefix = "xr.util-logging.";
-        Iterator iter = Configuration.keysByPrefix(prefix);
         Properties props = new Properties();
+        Iterator<String> iter = Configuration.keysByPrefix(prefix);
         while (iter.hasNext()) {
-            String fullkey = (String) iter.next();
-            String lmkey = fullkey.substring(prefix.length());
-            String value = Configuration.valueFor(fullkey);
-            props.setProperty(lmkey, value);
+            String fullKey = iter.next();
+            String key = fullKey.substring(prefix.length());
+            String value = Configuration.valueFor(fullKey);
+            props.setProperty(key, value);
         }
         return props;
     }
@@ -124,12 +121,11 @@ public class JDKXRLogger implements XRLogger {
         configureLoggerHandlerForwarding(fsLoggingProperties, loggers);
 
         // load our properties into our log manager
-        Enumeration keys = fsLoggingProperties.keys();
-        Map<String, Handler> handlers = new HashMap<String, Handler>();
-        Map<String, String> handlerFormatterMap = new HashMap<String, String>();
+        Map<String, Handler> handlers = new HashMap<>();
+        Map<String, String> handlerFormatterMap = new HashMap<>();
 
-        while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
+        for (Object k : fsLoggingProperties.keySet()) {
+            String key = (String) k;
             String prop = fsLoggingProperties.getProperty(key);
             if (key.endsWith("level")) {
                 configureLogLevel(key.substring(0, key.lastIndexOf('.')), prop);
@@ -143,9 +139,9 @@ public class JDKXRLogger implements XRLogger {
 
         // formatters apply to a specific handler we have initialized previously,
         // hence we need to wait until we've parsed the handler class
-        for (String handlerClassName : handlerFormatterMap.keySet()) {
-            String formatterClassName = handlerFormatterMap.get(handlerClassName);
-            assignFormatter(handlers, handlerClassName, formatterClassName);
+        for (Map.Entry<String, String> entry : handlerFormatterMap.entrySet()) {
+            String formatterClassName = entry.getValue();
+            assignFormatter(handlers, entry.getKey(), formatterClassName);
         }
     }
 
@@ -163,18 +159,13 @@ public class JDKXRLogger implements XRLogger {
 
         if (handler != null) {
             try {
-                Class fclass = Class.forName(formatterClassName);
-                Formatter formatter = (Formatter) fclass.newInstance();
+                @SuppressWarnings("unchecked")
+                Class<Formatter> fclass = (Class<Formatter>) Class.forName(formatterClassName);
+                Formatter formatter = fclass.getConstructor().newInstance();
                 handler.setFormatter(formatter);
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                 throw new XRRuntimeException("Could not initialize logging properties; " +
-                        "Formatter class not found: " + formatterClassName);
-            } catch (IllegalAccessException e) {
-                throw new XRRuntimeException("Could not initialize logging properties; " +
-                        "Can't instantiate Formatter class (IllegalAccessException): " + formatterClassName);
-            } catch (InstantiationException e) {
-                throw new XRRuntimeException("Could not initialize logging properties; " +
-                        "Can't instantiate Formatter class (InstantiationException): " + formatterClassName);
+                        "Can't instantiate Formatter class " + formatterClassName + ": " + e.getClass().getSimpleName(), e);
             }
         }
     }
@@ -209,20 +200,15 @@ public class JDKXRLogger implements XRLogger {
 
         for (final String name : names) {
             try {
-                Class handlerClass = Class.forName(name);
-                Handler handler = (Handler) handlerClass.newInstance();
+                @SuppressWarnings("unchecked")
+                Class<Handler> handlerClass = (Class<Handler>) Class.forName(name);
+                Handler handler = handlerClass.getConstructor().newInstance();
                 handlers.put(name, handler);
                 String hl = Configuration.valueFor("xr.util-logging." + name + ".level", "INFO");
                 handler.setLevel(LoggerUtil.parseLogLevel(hl, Level.INFO));
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                 throw new XRRuntimeException("Could not initialize logging properties; " +
-                        "Handler class not found: " + name);
-            } catch (IllegalAccessException e) {
-                throw new XRRuntimeException("Could not initialize logging properties; " +
-                        "Can't instantiate Handler class (IllegalAccessException): " + name);
-            } catch (InstantiationException e) {
-                throw new XRRuntimeException("Could not initialize logging properties; " +
-                        "Can't instantiate Handler class (InstantiationException): " + name);
+                        "Can't instantiate Handler class " + name + ": " + e.getClass().getSimpleName(), e);
             }
         }
 

@@ -19,8 +19,8 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -32,7 +32,7 @@ import java.util.HashMap;
 // made a separate class only to reduce size of ImageUtil
 public class DownscaleQuality {
     /** Internal map string type to DQ instance */
-    private static Map constList;
+    private static final Map<String, DownscaleQuality> constList = new HashMap<>();
 
     /**
      * Highest-quality downscaling; probably slowest as well.
@@ -56,7 +56,6 @@ public class DownscaleQuality {
      * @return The constant for that type
      */
     private static DownscaleQuality addConstant(String type) {
-        init();
         if ( constList.containsKey(type)) {
             throw new RuntimeException("Type strings for DownscaleQuality should be unique; " + type +
             " is declared twice");
@@ -64,10 +63,6 @@ public class DownscaleQuality {
         DownscaleQuality q = new DownscaleQuality(type);
         constList.put(type, q);
         return q;
-    }
-
-    private static void init() {
-        if ( constList == null ) constList = new HashMap();
     }
 
     private DownscaleQuality(String type) {
@@ -86,7 +81,7 @@ public class DownscaleQuality {
      * @return The constant quality instance for the type, or the default if not found.
      */
     public static DownscaleQuality forString(String type, DownscaleQuality dflt) {
-        DownscaleQuality q = (DownscaleQuality) constList.get(type);
+        DownscaleQuality q = constList.get(type);
 
         return q == null ? dflt : q;
     }

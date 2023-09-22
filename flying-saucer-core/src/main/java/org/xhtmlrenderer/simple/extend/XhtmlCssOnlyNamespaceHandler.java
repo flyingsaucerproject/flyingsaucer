@@ -18,16 +18,8 @@
  */
 package org.xhtmlrenderer.simple.extend;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.w3c.dom.CharacterData;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -39,47 +31,47 @@ import org.xhtmlrenderer.simple.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Handles xhtml but only css styling is honored,
  * no presentational html attributes (see css 2.1 spec, 6.4.4)
  */
 public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
-    /**
-     * Description of the Field
-     */
-    final static String _namespace = "http://www.w3.org/1999/xhtml";
-
+    private static final String _namespace = "http://www.w3.org/1999/xhtml";
     private static StylesheetInfo _defaultStylesheet;
-    private static boolean _defaultStylesheetError = false;
-
-    private final Map _metadata = null;
+    private static boolean _defaultStylesheetError;
 
     /**
      * Gets the namespace attribute of the XhtmlNamespaceHandler object
      *
      * @return The namespace value
      */
+    @Override
     public String getNamespace() {
         return _namespace;
     }
 
     /**
      * Gets the class attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e PARAM
-     * @return The class value
      */
+    @Override
     public String getClass(org.w3c.dom.Element e) {
         return e.getAttribute("class");
     }
 
     /**
      * Gets the iD attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e PARAM
-     * @return The iD value
      */
+    @Override
     public String getID(org.w3c.dom.Element e) {
         String result = e.getAttribute("id").trim();
         return result.length() == 0 ? null : result;
@@ -111,53 +103,61 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     /**
      * Gets the elementStyling attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e PARAM
      * @return The elementStyling value
      */
+    @Override
     public String getElementStyling(org.w3c.dom.Element e) {
         StringBuilder style = new StringBuilder();
-        if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
-            String s;
-            s = getAttribute(e, "colspan");
-            if (s != null) {
-                style.append("-fs-table-cell-colspan: ");
-                style.append(s);
-                style.append(";");
+        switch (e.getNodeName()) {
+            case "td":
+            case "th": {
+                String s;
+                s = getAttribute(e, "colspan");
+                if (s != null) {
+                    style.append("-fs-table-cell-colspan: ");
+                    style.append(s);
+                    style.append(";");
+                }
+                s = getAttribute(e, "rowspan");
+                if (s != null) {
+                    style.append("-fs-table-cell-rowspan: ");
+                    style.append(s);
+                    style.append(";");
+                }
+                break;
             }
-            s = getAttribute(e, "rowspan");
-            if (s != null) {
-                style.append("-fs-table-cell-rowspan: ");
-                style.append(s);
-                style.append(";");
+            case "img": {
+                String s;
+                s = getAttribute(e, "width");
+                if (s != null) {
+                    style.append("width: ");
+                    style.append(convertToLength(s));
+                    style.append(";");
+                }
+                s = getAttribute(e, "height");
+                if (s != null) {
+                    style.append("height: ");
+                    style.append(convertToLength(s));
+                    style.append(";");
+                }
+                break;
             }
-        } else if (e.getNodeName().equals("img")) {
-            String s;
-            s = getAttribute(e, "width");
-            if (s != null) {
-                style.append("width: ");
-                style.append(convertToLength(s));
-                style.append(";");
-            }
-            s = getAttribute(e, "height");
-            if (s != null) {
-                style.append("height: ");
-                style.append(convertToLength(s));
-                style.append(";");
-            }
-        } else if (e.getNodeName().equals("colgroup") || e.getNodeName().equals("col")) {
-            String s;
-            s = getAttribute(e, "span");
-            if (s != null) {
-                style.append("-fs-table-cell-colspan: ");
-                style.append(s);
-                style.append(";");
-            }
-            s = getAttribute(e, "width");
-            if (s != null) {
-                style.append("width: ");
-                style.append(convertToLength(s));
-                style.append(";");
+            case "colgroup":
+            case "col": {
+                String s;
+                s = getAttribute(e, "span");
+                if (s != null) {
+                    style.append("-fs-table-cell-colspan: ");
+                    style.append(s);
+                    style.append(";");
+                }
+                s = getAttribute(e, "width");
+                if (s != null) {
+                    style.append("width: ");
+                    style.append(convertToLength(s));
+                    style.append(";");
+                }
+                break;
             }
         }
         style.append(e.getAttribute("style"));
@@ -166,10 +166,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     /**
      * Gets the linkUri attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e PARAM
-     * @return The linkUri value
      */
+    @Override
     public String getLinkUri(org.w3c.dom.Element e) {
         String href = null;
         if (e.getNodeName().equalsIgnoreCase("a") && e.hasAttribute("href")) {
@@ -178,6 +176,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return href;
     }
 
+    @Override
     public String getAnchorName(Element e) {
         if (e != null && e.getNodeName().equalsIgnoreCase("a") &&
                 e.hasAttribute("name")) {
@@ -227,7 +226,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @param doc the document to search for a title
      * @return The document's title, or "" if none found
      */
-    public String getDocumentTitle(org.w3c.dom.Document doc) {
+    @Override
+    public String getDocumentTitle(Document doc) {
         String title = "";
 
         Element html = doc.getDocumentElement();
@@ -276,7 +276,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
         String css = buf.toString().trim();
         if (css.length() > 0) {
-            info.setContent(css.toString());
+            info.setContent(css);
 
             return info;
         } else {
@@ -286,10 +286,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     protected StylesheetInfo readLinkElement(Element link) {
         String rel = link.getAttribute("rel").toLowerCase();
-        if (rel.indexOf("alternate") != -1) {
+        if (rel.contains("alternate")) {
             return null;
         }//DON'T get alternate stylesheets
-        if (rel.indexOf("stylesheet") == -1) {
+        if (!rel.contains("stylesheet")) {
             return null;
         }
 
@@ -322,14 +322,11 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     /**
      * Gets the stylesheetLinks attribute of the XhtmlNamespaceHandler object
-     *
-     * @param doc PARAM
-     * @return The stylesheetLinks value
      */
-    public StylesheetInfo[] getStylesheets(org.w3c.dom.Document doc) {
-        List result = new ArrayList();
+    @Override
+    public StylesheetInfo[] getStylesheets(Document doc) {
         //get the processing-instructions (actually for XmlDocuments)
-        result.addAll(Arrays.asList(super.getStylesheets(doc)));
+        List<StylesheetInfo> result = new ArrayList<>(Arrays.asList(super.getStylesheets(doc)));
 
         //get the link elements
         Element html = doc.getDocumentElement();
@@ -358,9 +355,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             }
         }
 
-        return (StylesheetInfo[])result.toArray(new StylesheetInfo[result.size()]);
+        return result.toArray(new StylesheetInfo[result.size()]);
     }
 
+    @Override
     public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
         synchronized (XhtmlCssOnlyNamespaceHandler.class) {
             if (_defaultStylesheet != null) {
@@ -390,7 +388,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
                 is.close();
                 is = null;
-            } catch (Exception e) {
+            } catch (IOException e) {
                 _defaultStylesheetError = true;
                 XRLog.exception("Could not parse default stylesheet", e);
             } finally {
@@ -411,7 +409,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     private InputStream getDefaultStylesheetStream() {
         String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
-        InputStream stream = this.getClass().getResourceAsStream(defaultStyleSheet);
+        InputStream stream = getClass().getResourceAsStream(defaultStyleSheet);
         if (stream == null) {
             XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
                     "This file must be on your CLASSPATH. Please check before continuing.");
@@ -421,12 +419,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return stream;
     }
 
-    private Map getMetaInfo(org.w3c.dom.Document doc) {
-        if(this._metadata != null) {
-            return this._metadata;
-        }
-
-        Map metadata = new HashMap();
+    private Map<String, String> getMetaInfo(Document doc) {
+        Map<String, String> metadata = new HashMap<>();
 
         Element html = doc.getDocumentElement();
         Element head = findFirstChild(html, "head");
@@ -456,13 +450,14 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return metadata;
     }
 
+    @Override
     public String getLang(org.w3c.dom.Element e) {
         if(e == null) {
             return "";
         }
         String lang = e.getAttribute("lang");
         if("".equals(lang)) {
-            lang = (String) this.getMetaInfo(e.getOwnerDocument()).get("Content-Language");
+            lang = getMetaInfo(e.getOwnerDocument()).get("Content-Language");
             if(lang == null) {
                 lang = "";
             }

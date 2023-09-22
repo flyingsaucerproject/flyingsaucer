@@ -19,15 +19,14 @@
  */
 package org.xhtmlrenderer.simple.xhtml.controls;
 
-import java.util.Iterator;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.xhtml.FormControl;
 import org.xhtmlrenderer.simple.xhtml.XhtmlForm;
 
 public class CheckControl extends AbstractControl {
 
-    private boolean _initialValue, _radio;
+    private final boolean _initialValue;
+    private final boolean _radio;
 
     public CheckControl(XhtmlForm form, Element e) {
         super(form, e);
@@ -38,17 +37,16 @@ public class CheckControl extends AbstractControl {
         _radio = e.getAttribute("type").equals("radio");
     }
 
-    public void setSuccessful(boolean successful) {
+    @Override
+    public final void setSuccessful(boolean successful) {
         super.setSuccessful(successful);
         if (_radio && successful) {
-            // mark all other radio with the same name as unsucessful
+            // mark all other radio with the same name as unsuccessful
             XhtmlForm form = getForm();
             if (form == null) {
                 return;
             }
-            for (Iterator iter = form.getAllControls(getName()).iterator(); iter
-                .hasNext();) {
-                FormControl control = (FormControl) iter.next();
+            for (FormControl control : form.getAllControls(getName())) {
                 if (control instanceof CheckControl) {
                     CheckControl check = (CheckControl) control;
                     if (check.isRadio() && check != this) {
@@ -63,6 +61,7 @@ public class CheckControl extends AbstractControl {
         return _radio;
     }
 
+    @Override
     public void reset() {
         setSuccessful(_initialValue);
     }

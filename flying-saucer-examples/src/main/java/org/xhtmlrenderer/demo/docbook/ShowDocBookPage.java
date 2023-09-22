@@ -1,25 +1,17 @@
 package org.xhtmlrenderer.demo.docbook;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.io.InputStream;
-import java.net.URL;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  *
@@ -28,6 +20,7 @@ public class ShowDocBookPage {
     public JFrame frame;
 
     private static class ResourceLoadingUserAgent extends NaiveUserAgent {
+        @Override
         protected InputStream resolveAndOpenStream(String uri) {
             InputStream result = super.resolveAndOpenStream(uri);
             if (result == null && uri != null && uri.startsWith("file:")) {
@@ -39,13 +32,11 @@ public class ShowDocBookPage {
     }
 
     public static void main(final String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                String uri = "/docbook/xml/plugin-implement.xml";
-                if (args.length > 0) uri = args[0];
+        SwingUtilities.invokeLater(() -> {
+            String uri = "/docbook/xml/plugin-implement.xml";
+            if (args.length > 0) uri = args[0];
 
-                new ShowDocBookPage().run(uri);
-            }
+            new ShowDocBookPage().run(uri);
         });
     }
 
@@ -79,15 +70,13 @@ public class ShowDocBookPage {
         frame.setSize(1024, 768);
         frame.setVisible(true);
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                URL url = ShowDocBookPage.class.getResource(uri);
-                String urls = url.toExternalForm();
-                XRLog.general("Loading URI: " + urls);
-                panel.setDocument(urls);
+        SwingUtilities.invokeLater(() -> {
+            URL url = ShowDocBookPage.class.getResource(uri);
+            String urls = url.toExternalForm();
+            XRLog.general("Loading URI: " + urls);
+            panel.setDocument(urls);
 
-                showAboutDialog();
-            }
+            showAboutDialog();
         });
     }
 
@@ -110,6 +99,7 @@ public class ShowDocBookPage {
         JPanel outer = new JPanel(new BorderLayout());
         outer.add(panel, BorderLayout.CENTER);
         final JButton btn = new JButton(new AbstractAction("OK") {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 aboutDlg.dispose();
             }
@@ -127,15 +117,7 @@ public class ShowDocBookPage {
         int yy = (frame.getHeight() - aboutDlg.getHeight()) / 2;
         aboutDlg.setLocation(xx, yy);
         aboutDlg.setModal(true);
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                aboutDlg.setVisible(true);
-            }
-        });
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                btn.requestFocusInWindow();
-            }
-        });
+        SwingUtilities.invokeLater(() -> aboutDlg.setVisible(true));
+        SwingUtilities.invokeLater(() -> btn.requestFocusInWindow());
     }
 }

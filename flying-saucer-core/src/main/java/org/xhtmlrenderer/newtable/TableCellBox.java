@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.newtable;
 
-import java.awt.Rectangle;
-import java.util.List;
-import java.util.Set;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -31,7 +27,6 @@ import org.xhtmlrenderer.css.style.Length;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.CollapsedBorderSide;
-import org.xhtmlrenderer.layout.FloatManager;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;
@@ -40,6 +35,10 @@ import org.xhtmlrenderer.render.ContentLimit;
 import org.xhtmlrenderer.render.ContentLimitContainer;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
+
+import java.awt.*;
+import java.util.List;
+import java.util.Set;
 
 public class TableCellBox extends BlockBox {
     public static final TableCellBox SPANNING_CELL = new TableCellBox();
@@ -81,6 +80,7 @@ public class TableCellBox extends BlockBox {
     public TableCellBox() {
     }
 
+    @Override
     public BlockBox copyOf() {
         TableCellBox result = new TableCellBox();
         result.setStyle(getStyle());
@@ -89,6 +89,7 @@ public class TableCellBox extends BlockBox {
         return result;
     }
 
+    @Override
     public BorderPropertySet getBorder(CssContext cssCtx) {
         if (getTable().getStyle().isCollapseBorders()) {
             // Should always be non-null, but might not be if layout code crashed
@@ -137,6 +138,7 @@ public class TableCellBox extends BlockBox {
         _row = row;
     }
 
+    @Override
     public void layout(LayoutContext c) {
         super.layout(c);
     }
@@ -193,10 +195,12 @@ public class TableCellBox extends BlockBox {
         setContentWidth(width - getLeftMBP() - getRightMBP());
     }
 
+    @Override
     public boolean isAutoHeight() {
         return getStyle().isAutoHeight() || ! getStyle().hasAbsoluteUnit(CSSName.HEIGHT);
     }
 
+    @Override
     public int calcBaseline(LayoutContext c) {
         int result = super.calcBaseline(c);
         if (result != NO_BASELINE) {
@@ -211,18 +215,14 @@ public class TableCellBox extends BlockBox {
         return super.calcBaseline(c);
     }
 
-    public void moveContent(LayoutContext c, final int deltaY) {
+    public void moveContent(final int deltaY) {
         for (int i = 0; i < getChildCount(); i++) {
             Box b = getChild(i);
             b.setY(b.getY() + deltaY);
         }
 
         getPersistentBFC().getFloatManager().performFloatOperation(
-                new FloatManager.FloatOperation() {
-                    public void operate(Box floater) {
-                        floater.setY(floater.getY() + deltaY);
-                    }
-                });
+                floater -> floater.setY(floater.getY() + deltaY));
 
         calcChildLocations();
     }
@@ -259,6 +259,7 @@ public class TableCellBox extends BlockBox {
 
     }
 
+    @Override
     public void paintBackground(RenderingContext c) {
         if (isPaintBackgroundsAndBorders() && getStyle().isVisible()) {
             Rectangle bounds;
@@ -311,6 +312,7 @@ public class TableCellBox extends BlockBox {
         c.getOutputDevice().paintBackground(c, getStyle(), bounds, getPaintingBorderEdge(c), border);
     }
 
+    @Override
     public void paintBorder(RenderingContext c) {
         if (isPaintBackgroundsAndBorders() && ! hasCollapsedPaintingBorder()) {
             // Collapsed table borders are painted separately
@@ -370,6 +372,7 @@ public class TableCellBox extends BlockBox {
         }
     }
 
+    @Override
     public Rectangle getChildrenClipEdge(RenderingContext c) {
         if (c.isPrint() && getTable().getStyle().isPaginateTable()) {
             Rectangle bounds = getContentLimitedBorderEdge(c);
@@ -385,10 +388,12 @@ public class TableCellBox extends BlockBox {
         return super.getChildrenClipEdge(c);
     }
 
+    @Override
     protected boolean isFixedWidthAdvisoryOnly() {
         return getTable().getStyle().isIdent(CSSName.TABLE_LAYOUT, IdentValue.AUTO);
     }
 
+    @Override
     protected boolean isSkipWhenCollapsingMargins() {
         return true;
     }
@@ -777,6 +782,7 @@ public class TableCellBox extends BlockBox {
         return bounds;
     }
 
+    @Override
     public Rectangle getPaintingClipEdge(CssContext c) {
         if (hasCollapsedPaintingBorder()) {
             return getCollapsedBorderBounds(c);
@@ -809,7 +815,7 @@ public class TableCellBox extends BlockBox {
         return _collapsedBorderTop;
     }
 
-    public void addCollapsedBorders(Set all, List borders) {
+    public void addCollapsedBorders(Set<CollapsedBorderValue> all, List<CollapsedBorderSide> borders) {
         if (_collapsedBorderTop.exists() && !all.contains(_collapsedBorderTop)) {
             all.add(_collapsedBorderTop);
             borders.add(new CollapsedBorderSide(this, BorderPainter.TOP));
@@ -835,6 +841,7 @@ public class TableCellBox extends BlockBox {
     // box-sizing: border-box in CSS3).  There doesn't seem to be any
     // justification in the spec for this, but everybody does it
     // (in standards mode) so I guess we will too
+    @Override
     protected int getCSSHeight(CssContext c) {
         if (getStyle().isAutoHeight()) {
             return -1;
@@ -852,10 +859,12 @@ public class TableCellBox extends BlockBox {
         }
     }
 
+    @Override
     protected boolean isAllowHeightToShrink() {
         return false;
     }
 
+    @Override
     public boolean isNeedsClipOnPaint(RenderingContext c) {
         boolean result = super.isNeedsClipOnPaint(c);
         if (result) {

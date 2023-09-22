@@ -24,14 +24,14 @@ import org.xhtmlrenderer.util.ArrayUtil;
 import java.util.List;
 
 public class FormFieldState {
-    private String _value;
-    private boolean _checked;
-    private int [] _selected;
-
-    private FormFieldState() {
-        _value = "";
-        _checked = false;
-        _selected = null;
+    private final String _value;
+    private final boolean _checked;
+    private final int[] _selected;
+    
+    private FormFieldState(String value, boolean checked, int[] selected) {
+        _value = value;
+        _checked = checked;
+        _selected = selected;
     }
 
     public String getValue() {
@@ -47,32 +47,19 @@ public class FormFieldState {
     }
 
     public static FormFieldState fromString(String s) {
-        FormFieldState stateObject = new FormFieldState();
-
-        stateObject._value = s;
-
-        return stateObject;
+        return new FormFieldState(s, false, null);
     }
 
     public static FormFieldState fromBoolean(boolean b) {
-        FormFieldState stateObject = new FormFieldState();
-
-        stateObject._checked = b;
-
-        return stateObject;
+        return new FormFieldState("", b, null);
     }
 
-    public static FormFieldState fromList(List list) {
-        FormFieldState stateObject = new FormFieldState();
-
-        int [] indices = new int [list.size()];
-
+    public static FormFieldState fromList(List<Integer> list) {
+        int[] indices = new int[list.size()];
         for (int i = 0; i < list.size(); i++) {
-            indices[i] = ((Integer) list.get(i)).intValue();
+            indices[i] = list.get(i);
         }
 
-        stateObject._selected = indices;
-
-        return stateObject;
+        return new FormFieldState("", false, indices);
     }
 }

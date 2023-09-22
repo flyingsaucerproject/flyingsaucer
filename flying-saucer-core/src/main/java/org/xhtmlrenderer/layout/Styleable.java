@@ -26,10 +26,10 @@ import org.xhtmlrenderer.render.InlineLayoutBox;
 /**
  * All objects appearing the layout tree must implement this interface.  It
  * can roughly be thought of as a styled element (although an {@link InlineLayoutBox}
- * may be split across many lines) and some <code>Styleable</code> objects may not
+ * may be split across many lines) and some {@code Styleable} objects may not
  * define an element at all (e.g. anonymous inline boxes) and some
- * <code>Styleable</code> objects don't correspond to a real element
- * (e.g. <code>:before</code> and <code>:after</code> pseudo-elements)
+ * {@code Styleable} objects don't correspond to a real element
+ * (e.g. {@code :before} and {@code :after} pseudo-elements)
  */
 public interface Styleable {
     CalculatedStyle getStyle();

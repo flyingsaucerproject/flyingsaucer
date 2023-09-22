@@ -28,12 +28,6 @@ package org.xhtmlrenderer.demo.browser;
  * @author   empty
  */
 public interface BrowserPanelListener {
-    /**
-     * Description of the Method
-     *
-     * @param url    PARAM
-     * @param title  PARAM
-     */
     void pageLoadSuccess( String url, String title );
 }
 

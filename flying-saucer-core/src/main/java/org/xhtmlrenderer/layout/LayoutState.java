@@ -19,9 +19,9 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.LinkedList;
-
 import org.xhtmlrenderer.render.MarkerData;
+
+import java.util.LinkedList;
 
 /**
  * A bean which captures all state necessary to lay out an arbitrary box.
@@ -35,18 +35,18 @@ public class LayoutState {
 
     private MarkerData _currentMarkerData;
 
-    private LinkedList _BFCs;
+    private LinkedList<BlockFormattingContext> _BFCs;
 
     private String _pageName;
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
     private int _noPageBreak;
 
-    public LinkedList getBFCs() {
+    public LinkedList<BlockFormattingContext> getBFCs() {
         return _BFCs;
     }
 
-    public void setBFCs(LinkedList s) {
+    public void setBFCs(LinkedList<BlockFormattingContext> s) {
         _BFCs = s;
     }
 

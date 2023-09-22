@@ -23,13 +23,15 @@ import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BorderPainter;
 
+import javax.annotation.Nonnull;
+
 /**
  * A class that contains a single border side of a collapsed cell.  Collapsed
  * border sides are painted in order of priority (so for example, wider borders
  * always paint over narrower borders regardless of the relative tree order of
  * the cells in question).
  */
-public class CollapsedBorderSide implements Comparable {
+public class CollapsedBorderSide implements Comparable<CollapsedBorderSide> {
     private TableCellBox _cell;
     private int _side;
 
@@ -54,9 +56,9 @@ public class CollapsedBorderSide implements Comparable {
         _side = side;
     }
 
-    public int compareTo(Object obj) {
+    @Override
+    public int compareTo(@Nonnull CollapsedBorderSide c2) {
         CollapsedBorderSide c1 = this;
-        CollapsedBorderSide c2 = (CollapsedBorderSide)obj;
 
         CollapsedBorderValue v1 = null;
         CollapsedBorderValue v2 = null;

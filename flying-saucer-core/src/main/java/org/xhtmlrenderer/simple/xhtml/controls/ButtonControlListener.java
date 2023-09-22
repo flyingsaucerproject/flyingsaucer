@@ -29,9 +29,9 @@ public interface ButtonControlListener {
      * The button has been pressed.
      *
      * @param button
-     * @return <code>true</code> if the following listeners should be notified
+     * @return {@code true} if the following listeners should be notified
      *         and/or the action (submit or reset) of the button should be
-     *         executed, <code>false</code> to stop the handling of this
+     *         executed, {@code false} to stop the handling of this
      *         button
      */
     boolean pressed(ButtonControl button);

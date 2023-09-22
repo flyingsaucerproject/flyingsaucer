@@ -19,11 +19,6 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.plaf.basic.BasicTextFieldUI;
-import javax.swing.plaf.basic.BasicTextUI;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -36,13 +31,18 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.GeneralUtil;
 
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicTextFieldUI;
+import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
 
 class TextField extends InputField {
-    public TextField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    TextField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
+    @Override
     public JComponent create() {
         TextFieldJTextField textfield = new TextFieldJTextField();
 
@@ -75,6 +75,7 @@ class TextField extends InputField {
         return textfield;
     }
 
+    @Override
     protected void applyComponentStyle(JComponent component) {
         super.applyComponentStyle(component);
 
@@ -127,6 +128,7 @@ class TextField extends InputField {
 
 
 
+    @Override
     protected void applyOriginalState() {
         JTextField textfield = (JTextField) getComponent();
 
@@ -136,6 +138,7 @@ class TextField extends InputField {
         textfield.setCaretPosition(0);
     }
 
+    @Override
     protected String[] getFieldValues() {
         JTextField textfield = (JTextField) getComponent();
 

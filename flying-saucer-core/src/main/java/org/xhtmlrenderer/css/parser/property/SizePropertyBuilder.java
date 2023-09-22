@@ -19,9 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -30,12 +27,16 @@ import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SizePropertyBuilder extends AbstractPropertyBuilder {
     private static final CSSName[] ALL = { CSSName.FS_PAGE_ORIENTATION, CSSName.FS_PAGE_HEIGHT, CSSName.FS_PAGE_WIDTH };
 
-    public List buildDeclarations(
-            CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-        List result = new ArrayList(3);
+    @Override
+    public List<PropertyDeclaration> buildDeclarations(
+            CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+        List<PropertyDeclaration> result = new ArrayList<>(3);
         checkValueCount(cssName, 1, 2, values.size());
 
         if (values.size() == 1) {

@@ -76,6 +76,7 @@ public class SWTTextControl extends SWTXhtmlControl {
         }
 
         tc.addFormControlListener(new FormControlAdapter() {
+            @Override
             public void changed(FormControl control) {
                 if (!_noChangeText) {
                     text.setText(encodeDelimiter(control.getValue()));

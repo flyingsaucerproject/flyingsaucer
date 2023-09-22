@@ -19,11 +19,11 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import org.xhtmlrenderer.css.constants.MarginBoxName;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.xhtmlrenderer.css.constants.MarginBoxName;
 
 public class PageRule implements RulesetContainer {
     private String _name;
@@ -31,7 +31,7 @@ public class PageRule implements RulesetContainer {
     private Ruleset _ruleset;
     private int _origin;
 
-    private Map _marginBoxes = new HashMap();
+    private final Map<MarginBoxName, List<PropertyDeclaration>> _marginBoxes = new HashMap<>();
 
     private int _pos;
 
@@ -64,6 +64,7 @@ public class PageRule implements RulesetContainer {
         _ruleset = ruleset;
     }
 
+    @Override
     public void addContent(Ruleset ruleset) {
         if (_ruleset != null) {
             throw new IllegalStateException("Ruleset has already been set");
@@ -71,6 +72,7 @@ public class PageRule implements RulesetContainer {
         _ruleset = ruleset;
     }
 
+    @Override
     public int getOrigin() {
         return _origin;
     }
@@ -88,15 +90,15 @@ public class PageRule implements RulesetContainer {
         _specificityF = 1;
     }
 
-    public List getMarginBoxProperties(MarginBoxName name) {
-        return (List)_marginBoxes.get(name);
+    public List<PropertyDeclaration> getMarginBoxProperties(MarginBoxName name) {
+        return _marginBoxes.get(name);
     }
 
-    public void addMarginBoxProperties(MarginBoxName name, List props) {
+    public void addMarginBoxProperties(MarginBoxName name, List<PropertyDeclaration> props) {
         _marginBoxes.put(name, props);
     }
 
-    public Map getMarginBoxes() {
+    public Map<MarginBoxName, List<PropertyDeclaration>> getMarginBoxes() {
         return _marginBoxes;
     }
 
@@ -114,18 +116,13 @@ public class PageRule implements RulesetContainer {
     public boolean applies(String pageName, String pseudoPage) {
         if (_name == null && _pseudoPage == null) {
             return true;
-        } else if (_name == null && _pseudoPage != null &&
+        } else if (_name == null && 
                 (_pseudoPage.equals(pseudoPage) ||
                         (_pseudoPage.equals("right") && pseudoPage != null && pseudoPage.equals("first")))) { // assume first page is a right page
             return true;
         } else if (_name != null && _name.equals(pageName) && _pseudoPage == null) {
             return true;
-        } else if (_name != null && _name.equals(pageName) &&
-                    _pseudoPage != null && _pseudoPage.equals(pseudoPage)) {
-            return true;
-        }
-
-        return false;
+        } else return _name != null && _name.equals(pageName) && _pseudoPage.equals(pseudoPage);
     }
 
     public int getPos() {

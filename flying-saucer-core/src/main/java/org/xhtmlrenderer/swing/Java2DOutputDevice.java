@@ -19,20 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.RenderingHints.Key;
-import java.awt.font.GlyphVector;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-
-import javax.swing.*;
-
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.extend.FSGlyphVector;
@@ -41,12 +27,18 @@ import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.BorderPainter;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.RenderingContext;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.RenderingHints.Key;
+import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 
 public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDevice {
     private Graphics2D _graphics;
@@ -203,6 +195,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         }
     }
 
+    @Override
     protected void drawLine(int x1, int y1, int x2, int y2) {
         _graphics.drawLine(x1, y1, x2, y2);
     }

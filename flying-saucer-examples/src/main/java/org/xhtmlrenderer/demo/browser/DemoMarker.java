@@ -19,16 +19,7 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-
-
-/**
- * Description of the Class
- *
- * @author   empty
- */
 public class DemoMarker {
-
-    /** Constructor for the DemoMarker object */
     public DemoMarker() { }
 }
 

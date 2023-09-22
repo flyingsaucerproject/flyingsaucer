@@ -19,6 +19,13 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
+import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.Uu;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
@@ -27,33 +34,13 @@ import java.io.File;
 import java.net.URL;
 import java.util.logging.Logger;
 
-import javax.swing.*;
+import static java.awt.event.InputEvent.ALT_MASK;
+import static java.awt.event.KeyEvent.VK_LEFT;
 
-import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
-import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
-import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.Uu;
-
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class BrowserActions {
-    /**
-     * Description of the Field
-     */
     public Action open_file, export_pdf , quit, print;
-    /**
-     * Description of the Field
-     */
     public Action forward, backward, refresh, reload, load, stop, print_preview, goHome;
-
     public Action generate_diff, usersManual, aboutPage;
-    /**
-     * Description of the Field
-     */
     public BrowserStartup root;
 
     public Action increase_font, decrease_font, reset_font;
@@ -65,21 +52,14 @@ public class BrowserActions {
      */
     public static final Logger logger = Logger.getLogger("app.browser");
 
-    /**
-     * Constructor for the BrowserActions object
-     *
-     * @param root PARAM
-     */
     public BrowserActions(BrowserStartup root) {
         this.root = root;
     }
 
-    /**
-     * Description of the Method
-     */
     public void init() {
         URL url = getImageUrl("images/process-stop.png");
         stop = new AbstractAction("Stop", new ImageIcon(url)) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 // TODO: stop not coded
                 System.out.println("stop called");
@@ -90,8 +70,8 @@ public class BrowserActions {
         //stop.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE));
         stop.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
 
-        open_file =
-                new AbstractAction() {
+        open_file = new AbstractAction() {
+                    @Override
                     public void actionPerformed(ActionEvent evt) {
                         openAndShowFile();
                     }
@@ -101,8 +81,8 @@ public class BrowserActions {
         setMnemonic(open_file, KeyEvent.VK_O);
 
 
-        export_pdf =
-            new AbstractAction() {
+        export_pdf = new AbstractAction() {
+                @Override
                 public void actionPerformed(ActionEvent evt) {
                     exportToPdf();
                 }
@@ -126,8 +106,8 @@ public class BrowserActions {
         setMnemonic(print, new Integer(KeyEvent.VK_P));
         */
 
-        quit =
-                new AbstractAction() {
+        quit = new AbstractAction() {
+                    @Override
                     public void actionPerformed(ActionEvent evt) {
                         System.exit(0);
                     }
@@ -139,6 +119,7 @@ public class BrowserActions {
 
         url = getImageUrl("images/go-previous.png");
         backward = new EmptyAction("Back", "Go back one page", new ImageIcon(url)) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.goBack();
@@ -150,13 +131,12 @@ public class BrowserActions {
         };
 
         backward.setEnabled(false);
-        backward.putValue(Action.ACCELERATOR_KEY,
-                KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,
-                        KeyEvent.ALT_MASK));
+        backward.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(VK_LEFT, ALT_MASK));
 
 
         url = getImageUrl("images/go-next.png");
         forward = new EmptyAction("Forward", "Go forward one page", new ImageIcon(url)) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.goForward();
@@ -169,10 +149,11 @@ public class BrowserActions {
         forward.setEnabled(false);
         forward.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
-                        KeyEvent.ALT_MASK));
+                        ALT_MASK));
 
         url = getImageUrl("images/view-refresh.png");
         refresh = new EmptyAction("Refresh", "Refresh page", new ImageIcon(url)) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.view.invalidate();
@@ -187,6 +168,7 @@ public class BrowserActions {
 
         url = getImageUrl("images/view-refresh.png");
         reload = new EmptyAction("Reload", "Reload page", new ImageIcon(url)) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.reloadPage();
@@ -202,6 +184,7 @@ public class BrowserActions {
         reload.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
 
         print_preview = new EmptyAction("Print Preview", "Print preview mode", null) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 togglePrintPreview();
             }
@@ -209,6 +192,7 @@ public class BrowserActions {
         print_preview.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_V);
 
         load = new AbstractAction("Load") {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
                     String url_text = root.panel.url.getText();
@@ -222,6 +206,7 @@ public class BrowserActions {
 
         url = getImageUrl("images/media-playback-start_16x16.png");
         goToPage = new EmptyAction("Go", "Go to URL in address bar", new ImageIcon(url)) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
                     String url_text = root.panel.url.getText();
@@ -235,6 +220,7 @@ public class BrowserActions {
 
         url = getImageUrl("images/go-home.png");
         goHome = new EmptyAction("Go Home", "Browser homepage", new ImageIcon(url)) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.loadPage(root.startPage);
@@ -246,6 +232,7 @@ public class BrowserActions {
         };
 
         usersManual = new EmptyAction("FS User's Guide", "Flying Saucer User's Guide", null) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.loadPage("/users-guide-r8.html");
@@ -257,6 +244,7 @@ public class BrowserActions {
         };
 
         aboutPage = new EmptyAction("About", "About the Browser Demo", null) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
                     showAboutDialog();
@@ -305,6 +293,7 @@ public class BrowserActions {
         JPanel outer = new JPanel(new BorderLayout());
         outer.add(panel, BorderLayout.CENTER);
         final JButton btn = new JButton(new AbstractAction("OK") {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 aboutDlg.dispose();
             }
@@ -350,7 +339,7 @@ public class BrowserActions {
     private void openAndShowFile() {
         try {
             FileDialog fd = new FileDialog(root.frame, "Open a local file", FileDialog.LOAD);
-            fd.show();
+            fd.setVisible(true);
             if (fd.getFile() != null) {
                 final String url = new File(fd.getDirectory(), fd.getFile()).toURI().toURL().toString();
                 root.panel.loadPage(url);

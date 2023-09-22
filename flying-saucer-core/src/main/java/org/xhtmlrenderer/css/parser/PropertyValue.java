@@ -19,9 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import org.w3c.dom.DOMException;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
@@ -30,6 +27,9 @@ import org.w3c.dom.css.RGBColor;
 import org.w3c.dom.css.Rect;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.util.ArrayUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PropertyValue implements CSSPrimitiveValue {
     public static final short VALUE_TYPE_NUMBER = 1;
@@ -40,24 +40,24 @@ public class PropertyValue implements CSSPrimitiveValue {
     public static final short VALUE_TYPE_LIST = 6;
     public static final short VALUE_TYPE_FUNCTION = 7;
 
-    private short _type;
-    private short _cssValueType;
+    private final short _type;
+    private final short _cssValueType;
 
     private String _stringValue;
     private float _floatValue;
     private String[] _stringArrayValue;
 
-    private String _cssText;
+    private final String _cssText;
 
     private FSColor _FSColor;
 
     private IdentValue _identValue;
 
-    private short _propertyValueType;
+    private final short _propertyValueType;
 
     private Token _operator;
 
-    private List _values;
+    private List<?> _values;
     private FSFunction _function;
 
     public PropertyValue(short type, float floatValue, String cssText) {
@@ -107,7 +107,7 @@ public class PropertyValue implements CSSPrimitiveValue {
         _identValue = ident;
     }
 
-    public PropertyValue(List values) {
+    public PropertyValue(List<?> values) {
         _type = CSSPrimitiveValue.CSS_UNKNOWN; // HACK
         _cssValueType = CSSValue.CSS_CUSTOM;
         _cssText = values.toString(); // HACK
@@ -125,10 +125,12 @@ public class PropertyValue implements CSSPrimitiveValue {
         _propertyValueType = VALUE_TYPE_FUNCTION;
     }
 
+    @Override
     public Counter getCounterValue() throws DOMException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public float getFloatValue(short unitType) throws DOMException {
         return _floatValue;
     }
@@ -137,38 +139,47 @@ public class PropertyValue implements CSSPrimitiveValue {
         return _floatValue;
     }
 
+    @Override
     public short getPrimitiveType() {
         return _type;
     }
 
+    @Override
     public RGBColor getRGBColorValue() throws DOMException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Rect getRectValue() throws DOMException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getStringValue() throws DOMException {
         return _stringValue;
     }
 
+    @Override
     public void setFloatValue(short unitType, float floatValue) throws DOMException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setStringValue(short stringType, String stringValue) throws DOMException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getCssText() {
         return _cssText;
     }
 
+    @Override
     public short getCssValueType() {
         return _cssValueType;
     }
 
+    @Override
     public void setCssText(String cssText) throws DOMException {
         throw new UnsupportedOperationException();
     }
@@ -209,8 +220,9 @@ public class PropertyValue implements CSSPrimitiveValue {
         return _cssText;
     }
 
-    public List getValues() {
-        return new ArrayList(_values);
+    public <T> List<T> getValues() {
+        //noinspection unchecked
+        return new ArrayList<>((List<T>) _values);
     }
 
     public FSFunction getFunction() {

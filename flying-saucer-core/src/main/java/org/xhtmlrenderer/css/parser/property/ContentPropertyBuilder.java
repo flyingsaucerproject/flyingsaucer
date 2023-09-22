@@ -19,11 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -33,14 +28,21 @@ import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static java.util.Collections.emptyList;
+
 public class ContentPropertyBuilder extends AbstractPropertyBuilder {
 
-    public List buildDeclarations(
-            CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+    @Override
+    public List<PropertyDeclaration> buildDeclarations(
+            CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
         if (values.size() == 1) {
             PropertyValue value = (PropertyValue)values.get(0);
             if (value.getCssValueType() == CSSValue.CSS_INHERIT) {
-                return Collections.EMPTY_LIST;
+                return emptyList();
             } else if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                 IdentValue ident = checkIdent(CSSName.CONTENT, value);
                 if (ident == IdentValue.NONE || ident == IdentValue.NORMAL) {
@@ -50,9 +52,9 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
             }
         }
 
-        List resultValues = new ArrayList();
-        for (Iterator i = values.iterator(); i.hasNext(); ) {
-            PropertyValue value = (PropertyValue)i.next();
+        List<PropertyValue> resultValues = new ArrayList<>();
+        for (CSSPrimitiveValue cssPrimitiveValue : values) {
+            PropertyValue value = (PropertyValue) cssPrimitiveValue;
 
             if (value.getOperator() != null) {
                 throw new CSSParseException(
@@ -65,7 +67,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
             } else if (type == CSSPrimitiveValue.CSS_STRING) {
                 resultValues.add(value);
             } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
-                if (! isFunctionAllowed(value.getFunction())) {
+                if (!isFunctionAllowed(value.getFunction())) {
                     throw new CSSParseException(
                             "Function " + value.getFunction().getName() + " is not allowed here", -1);
                 }
@@ -89,7 +91,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
             return Collections.singletonList(
                     new PropertyDeclaration(CSSName.CONTENT, new PropertyValue(resultValues), important, origin));
         } else {
-            return Collections.EMPTY_LIST;
+            return emptyList();
         }
     }
 

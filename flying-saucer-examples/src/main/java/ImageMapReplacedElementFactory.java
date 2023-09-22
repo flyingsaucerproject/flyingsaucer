@@ -22,10 +22,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xhtmlrenderer.extend.FSCanvas;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.extend.FSCanvas;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.swing.AWTFSImage;
@@ -40,7 +40,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 
@@ -73,6 +76,7 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
       this.listener = listener;
    }
 
+   @Override
    public ReplacedElement createReplacedElement(LayoutContext context, BlockBox box, UserAgentCallback uac, int cssWidth, int cssHeight) {
       Element e = box.getElement();
       if (e == null) {
@@ -157,38 +161,37 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
         return (str1 == null && str2 == null) || (str1 != null && str1.equalsIgnoreCase(str2));
     }
 
-    private static class ImageMapReplacedElement extends SwingReplacedElement {
-      private final Map areas;
+    private static final class ImageMapReplacedElement extends SwingReplacedElement {
+      private final Map<Shape, String> areas;
 
-      public ImageMapReplacedElement(Image image, Node map, int targetWidth, int targetHeight, final ImageMapListener listener) {
+      private ImageMapReplacedElement(Image image, Node map, int targetWidth, int targetHeight, final ImageMapListener listener) {
          super(create(image, targetWidth, targetHeight));
          areas = parseMap(map);
          getJComponent().addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
-               final Point point = e.getPoint();
-                final Set set = areas.entrySet();
-                for (Iterator iterator = set.iterator(); iterator.hasNext();) {
-                    Map.Entry entry = (Map.Entry) iterator.next();
-
-                    if (((Shape) entry.getKey()).contains(point)) {
-                        listener.areaClicked(new ImageMapEvent(this, (String) entry.getValue()));
+                Point point = e.getPoint();
+                Set<Map.Entry<Shape, String>> set = areas.entrySet();
+                for (Map.Entry<Shape, String> entry : set) {
+                    if (entry.getKey().contains(point)) {
+                        listener.areaClicked(new ImageMapEvent(this, entry.getValue()));
                     }
                 }
             }
 
+            @Override
             public void mouseExited(MouseEvent e) {
                getJComponent().setCursor(Cursor.getDefaultCursor());
             }
          });
          getJComponent().addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
             public void mouseMoved(MouseEvent e) {
-               final JComponent c = getJComponent();
-               final Point point = e.getPoint();
-                final Set set = areas.entrySet();
-                for (Iterator iterator = set.iterator(); iterator.hasNext();) {
-                    Map.Entry entry = (Map.Entry) iterator.next();
-
-                    if (((Shape) entry.getKey()).contains(point)) {
+               JComponent c = getJComponent();
+               Point point = e.getPoint();
+               Set<Map.Entry<Shape, String>> set = areas.entrySet();
+                for (Map.Entry<Shape, String> entry : set) {
+                    if (entry.getKey().contains(point)) {
                         updateCursor(c, Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                         return;
                     }
@@ -204,12 +207,12 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
          }
       }
 
-      private static Map parseMap(Node map) {
+      private static Map<Shape, String> parseMap(Node map) {
          if (null == map) {
             return Collections.emptyMap();
          } else if (map.hasChildNodes()) {
             final NodeList children = map.getChildNodes();
-            final Map areas = new HashMap(children.getLength());
+            final Map<Shape, String> areas = new HashMap<>(children.getLength());
             for (int i = 0; i < children.getLength(); i++) {
                final Node area = children.item(i);
                if (areEqualIgnoreCase(AREA_ELT, area.getNodeName())) {
@@ -256,8 +259,7 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
          if ((-1 == length && 0 == coordValues.length % 2) || length == coordValues.length) {
             int[] coords = new int[coordValues.length];
             int i = 0;
-             for (int i1 = 0; i1 < coordValues.length; i1++) {
-                 String coord = coordValues[i1];
+             for (String coord : coordValues) {
                  try {
                      coords[i++] = Integer.parseInt(coord.trim());
                  } catch (NumberFormatException e) {

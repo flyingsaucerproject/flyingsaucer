@@ -19,48 +19,56 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Rectangle;
-
 import org.xhtmlrenderer.css.style.CssContext;
+
+import java.awt.*;
 
 /**
  * A dummy box representing one side of the margin area of a page.
  */
 public class MarginBox extends BlockBox {
-    private Rectangle _bounds;
+    private final Rectangle _bounds;
 
     public MarginBox(Rectangle bounds) {
         _bounds = bounds;
     }
 
+    @Override
     public int getWidth() {
         return _bounds.width;
     }
 
+    @Override
     public int getHeight() {
         return _bounds.height;
     }
 
+    @Override
     public int getContentWidth() {
         return _bounds.width;
     }
 
+    @Override
     public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
         return new Rectangle(-_bounds.x, -_bounds.y, _bounds.width, _bounds.height);
     }
 
+    @Override
     public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         return new Rectangle(-_bounds.x, -_bounds.y, _bounds.width, _bounds.height);
     }
 
+    @Override
     protected int getContainingBlockWidth() {
         return _bounds.width;
     }
 
+    @Override
     protected int getPaddingWidth(CssContext cssCtx) {
         return _bounds.width;
     }
 
+    @Override
     public BlockBox copyOf() {
         throw new IllegalArgumentException("cannot be copied");
     }

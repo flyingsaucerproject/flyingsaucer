@@ -19,13 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Font;
-import java.awt.HeadlessException;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -53,46 +46,46 @@ import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.awt.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+
 /**
  * The SharedContext is that which is kept between successive layout and render runs.
  *
  * @author empty
  */
-public class SharedContext {
+public final class SharedContext {
+    private static final Set<String> PAGED_MEDIA_TYPES =
+            new HashSet<>(asList("print", "projection", "embossed", "handheld", "tv"));
+
     private TextRenderer text_renderer;
     private String media;
     private UserAgentCallback uac;
-
     private boolean interactive = true;
-
-    private Map idMap;
+    private final Map<String, Box> idMap = new HashMap<>();
 
     /*
      * used to adjust fonts, ems, points, into screen resolution
      */
-    /**
-     * Description of the Field
-     */
     private float dpi;
-    /**
-     * Description of the Field
-     */
-    private final static int MM__PER__CM = 10;
-    /**
-     * Description of the Field
-     */
-    private final static float CM__PER__IN = 2.54F;
+    private static final int MM__PER__CM = 10;
+    private static final float CM__PER__IN = 2.54F;
     /**
      * dpi in a more usable way
      */
     private float mm_per_dot;
 
-    private final static float DEFAULT_DPI = 72;
+    private static final float DEFAULT_DPI = 72;
     private boolean print;
 
     private int dotsPerPixel = 1;
 
-    private Map styleMap;
+    private Map<Element, CalculatedStyle> styleMap;
 
     private ReplacedElementFactory replacedElementFactory;
     private Rectangle temp_canvas;
@@ -102,9 +95,6 @@ public class SharedContext {
     public SharedContext() {
     }
 
-    /**
-     * Constructor for the Context object
-     */
     public SharedContext(UserAgentCallback uac) {
         font_resolver = new AWTFontResolver();
         replacedElementFactory = new SwingReplacedElementFactory();
@@ -121,9 +111,6 @@ public class SharedContext {
     }
 
 
-    /**
-     * Constructor for the Context object
-     */
     public SharedContext(UserAgentCallback uac, FontResolver fr, ReplacedElementFactory ref, TextRenderer tr, float dpi) {
         font_resolver = fr;
         replacedElementFactory = ref;
@@ -140,13 +127,11 @@ public class SharedContext {
     }
 
     public LayoutContext newLayoutContextInstance() {
-        LayoutContext c = new LayoutContext(this);
-        return c;
+        return new LayoutContext(this);
     }
 
     public RenderingContext newRenderingContextInstance() {
-        RenderingContext c = new RenderingContext(this);
-        return c;
+        return new RenderingContext(this);
     }
 
     /*
@@ -165,10 +150,7 @@ public class SharedContext {
         font_resolver.flushCache();
     }
 
-    /**
-     * Description of the Field
-     */
-    protected FontResolver font_resolver;
+    private FontResolver font_resolver;
 
     /**
      * The media for this context
@@ -177,74 +159,26 @@ public class SharedContext {
         return media;
     }
 
-    /**
-     * Description of the Field
-     */
-    protected StyleReference css;
+    private StyleReference css;
+    private boolean debug_draw_boxes;
+    private boolean debug_draw_line_boxes;
+    private boolean debug_draw_inline_boxes;
+    private boolean debug_draw_font_metrics;
 
-    /**
-     * Description of the Field
-     */
-    protected boolean debug_draw_boxes;
-
-    /**
-     * Description of the Field
-     */
-    protected boolean debug_draw_line_boxes;
-    protected boolean debug_draw_inline_boxes;
-    protected boolean debug_draw_font_metrics;
-
-    /**
-     * Description of the Field
-     */
-    protected FSCanvas canvas;
-
-    /*
-     * selection management code
-     */
-    /**
-     * Description of the Field
-     */
-    protected Box selection_start, selection_end;
-
-    /**
-     * Description of the Field
-     */
-    protected int selection_end_x, selection_start_x;
-
-
-    /**
-     * Description of the Field
-     */
-    protected boolean in_selection = false;
+    private FSCanvas canvas;
 
     public TextRenderer getTextRenderer() {
         return text_renderer;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
     public boolean debugDrawBoxes() {
         return debug_draw_boxes;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
     public boolean debugDrawLineBoxes() {
         return debug_draw_line_boxes;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
     public boolean debugDrawInlineBoxes() {
         return debug_draw_inline_boxes;
     }
@@ -291,14 +225,14 @@ public class SharedContext {
     }
 
     public void set_TempCanvas(Rectangle rect) {
-        this.temp_canvas = rect;
+        temp_canvas = rect;
     }
 
 
     public Rectangle getFixedRectangle() {
         //Uu.p("this = " + canvas);
         if (getCanvas() == null) {
-            return this.temp_canvas;
+            return temp_canvas;
         } else {
             Rectangle rect = getCanvas().getFixedRectangle();
             rect.translate(getCanvas().getX(), getCanvas().getY());
@@ -317,26 +251,18 @@ public class SharedContext {
     }
 
     public void addBoxId(String id, Box box) {
-        if (idMap == null) {
-            idMap = new HashMap();
-        }
         idMap.put(id, box);
     }
 
     public Box getBoxById(String id) {
-        if (idMap == null) {
-            idMap = new HashMap();
-        }
-        return (Box) idMap.get(id);
+        return idMap.get(id);
     }
 
     public void removeBoxId(String id) {
-        if (idMap != null) {
-            idMap.remove(id);
-        }
+        idMap.remove(id);
     }
 
-    public Map getIdMap()
+    public Map<String, Box> getIdMap()
     {
         return idMap;
     }
@@ -391,13 +317,13 @@ public class SharedContext {
      * @return The dPI value
      */
     public float getDPI() {
-        return this.dpi;
+        return dpi;
     }
 
     /**
      * Sets the effective DPI (Dots Per Inch) of the screen. You should normally
      * never need to override the dpi, as it is already set to the system
-     * default by <code>Toolkit.getDefaultToolkit().getScreenResolution()</code>
+     * default by {@code Toolkit.getDefaultToolkit().getScreenResolution()}
      * . You can override the value if you want to scale the fonts for
      * accessibility or printing purposes. Currently, the DPI setting only
      * affects font sizing.
@@ -406,7 +332,7 @@ public class SharedContext {
      */
     public void setDPI(float dpi) {
         this.dpi = dpi;
-        this.mm_per_dot = (CM__PER__IN * MM__PER__CM) / dpi;
+        mm_per_dot = (CM__PER__IN * MM__PER__CM) / dpi;
     }
 
     /**
@@ -415,7 +341,7 @@ public class SharedContext {
      * @return The dPI value
      */
     public float getMmPerPx() {
-        return this.mm_per_dot;
+        return mm_per_dot;
     }
 
     public FSFont getFont(FontSpecification spec) {
@@ -459,22 +385,7 @@ public class SharedContext {
      * @return The paged value
      */
     public boolean isPaged() {
-        if (media.equals("print")) {
-            return true;
-        }
-        if (media.equals("projection")) {
-            return true;
-        }
-        if (media.equals("embossed")) {
-            return true;
-        }
-        if (media.equals("handheld")) {
-            return true;
-        }
-        if (media.equals("tv")) {
-            return true;
-        }
-        return false;
+        return PAGED_MEDIA_TYPES.contains(media);
     }
 
     public boolean isInteractive() {
@@ -553,15 +464,15 @@ public class SharedContext {
     }
 
     public CalculatedStyle getStyle(Element e, boolean restyle) {
-        Map localMap = styleMap;
+        Map<Element, CalculatedStyle> localMap = styleMap;
 	    
         if (localMap == null) {
-            localMap = new HashMap(1024, 0.75f);
+            localMap = new HashMap<>(1024, 0.75f);
         }
 
         CalculatedStyle result = null;
         if (! restyle) {
-            result = (CalculatedStyle)localMap.get(e);
+            result = localMap.get(e);
         }
         if (result == null) {
             Node parent = e.getParentNode();
@@ -584,7 +495,7 @@ public class SharedContext {
 
     public void reset() {
        styleMap = null;
-       idMap = null;
+       idMap.clear();
        replacedElementFactory.reset();
     }
 

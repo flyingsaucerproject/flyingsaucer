@@ -19,8 +19,21 @@
  */
 package eeze;
 
+import org.xhtmlrenderer.simple.FSScrollPane;
+import org.xhtmlrenderer.simple.Graphics2DRenderer;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.XRLog;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
@@ -29,13 +42,10 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import javax.imageio.ImageIO;
-import javax.swing.*;
 
-import org.xhtmlrenderer.simple.FSScrollPane;
-import org.xhtmlrenderer.simple.Graphics2DRenderer;
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.XRLog;
+import static java.awt.Frame.NORMAL;
+import static java.awt.event.InputEvent.ALT_MASK;
+import static java.awt.event.InputEvent.CTRL_MASK;
 
 
 /**
@@ -45,61 +55,22 @@ import org.xhtmlrenderer.util.XRLog;
  * @author Who?
  */
 public class Eeze {
-    /**
-     * Description of the Field
-     */
-    List testFiles;
-    /**
-     * Description of the Field
-     */
-    JFrame eezeFrame;
-
-    /**
-     * Description of the Field
-     */
-    File currentDisplayed;
-    /**
-     * Description of the Field
-     */
-    Action growAction;
-    /**
-     * Description of the Field
-     */
-    Action shrinkAction;
-    /**
-     * Description of the Field
-     */
-    Action nextDemoAction;
-
-    Action chooseDemoAction;
-
-    /**
-     * Description of the Field
-     */
-    Action increase_font, reset_font, decrease_font, showHelp, showGrid, saveAsImg, overlayImage;
-
-    /**
-     * Description of the Field
-     */
+    private List<File> testFiles;
+    private JFrame eezeFrame;
+    private File currentDisplayed;
+    private Action growAction;
+    private Action shrinkAction;
+    private Action nextDemoAction;
+    private Action chooseDemoAction;
+    private Action increase_font, reset_font, decrease_font, showHelp, showGrid, saveAsImg, overlayImage;
     private XHTMLPanel html;
-
     private FSScrollPane scroll;
-
     private JSplitPane split;
-
     private ImagePanel imagePanel;
-
     private boolean comparingWithImage;
-
-    /**
-     * Description of the Field
-     */
     private File directory;
-
-    /**
-     * Description of the Field
-     */
-    private final static FileFilter HTML_FILE_FILTER = f ->
+    
+    private static final FileFilter HTML_FILE_FILTER = f ->
       f.getName().endsWith(".html") ||
         f.getName().endsWith(".htm") ||
         f.getName().endsWith(".xhtml") ||
@@ -107,15 +78,11 @@ public class Eeze {
     private ReloadPageAction reloadPageAction;
     private ReloadFileListAction reloadFileList;
 
-    /**
-     * Constructor for the Eeze object
-     */
     private Eeze() {
     }
 
     /**
      * Main processing method for the Eeze object
-     *
      */
     private void run() {
         buildFrame();
@@ -141,9 +108,7 @@ public class Eeze {
     }
 
     private void parseArgs(String[] args) {
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
-
+        for (String arg : args) {
             File f = new File(arg);
 
             if (!f.exists()) {
@@ -160,15 +125,10 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
-    private List buildFileList() {
-        List fileList = null;
+    private List<File> buildFileList() {
+        List<File> fileList = null;
         try {
-            File list[] = directory.listFiles(HTML_FILE_FILTER);
+            File[] list = directory.listFiles(HTML_FILE_FILTER);
             fileList = Arrays.asList(list);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -176,14 +136,11 @@ public class Eeze {
         return fileList;
     }
 
-    /**
-     * Description of the Method
-     */
     private void buildFrame() {
         try {
             eezeFrame = new JFrame("FS Eeze");
             final JFrame frame = eezeFrame;
-            frame.setExtendedState(JFrame.NORMAL);
+            frame.setExtendedState(NORMAL);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             SwingUtilities.invokeLater(() -> {
@@ -195,6 +152,7 @@ public class Eeze {
                 frame.setVisible(true);
 
                 frame.addComponentListener(new ComponentAdapter() {
+                    @Override
                     public void componentResized(ComponentEvent e) {
                         html.relayout();
                     }
@@ -206,9 +164,9 @@ public class Eeze {
                 growAction = new GrowAction();
                 shrinkAction = new ShrinkAction();
 
-                increase_font = new FontSizeAction(FontSizeAction.INCREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
-                reset_font = new FontSizeAction(FontSizeAction.RESET, KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_MASK));
-                decrease_font = new FontSizeAction(FontSizeAction.DECREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+                increase_font = new FontSizeAction(FontSizeAction.INCREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_I, CTRL_MASK));
+                reset_font = new FontSizeAction(FontSizeAction.RESET, KeyStroke.getKeyStroke(KeyEvent.VK_0, CTRL_MASK));
+                decrease_font = new FontSizeAction(FontSizeAction.DECREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_D, CTRL_MASK));
 
                 reloadFileList = new ReloadFileListAction();
                 showGrid = new ShowGridAction();
@@ -240,11 +198,6 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param file PARAM
-     */
     private void switchPage(File file, boolean reload) {
         eezeFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
@@ -268,9 +221,6 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Method
-     */
     private void showHelpPage() {
         eezeFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
@@ -284,41 +234,20 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param hdelta PARAM
-     * @param vdelta PARAM
-     */
     private void resizeFrame(float hdelta, float vdelta) {
         Dimension d = eezeFrame.getSize();
         eezeFrame.setSize((int) (d.getWidth() * hdelta),
                 (int) (d.getHeight() * vdelta));
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param newPage PARAM
-     */
     private void changeTitle(String newPage) {
         eezeFrame.setTitle("Eeze:  " + html.getDocumentTitle() + "  (" + newPage + ")");
     }
 
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
     private URL eezeHelp() {
         return this.getClass().getClassLoader().getResource("eeze/eeze_help.html");
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param args PARAM
-     */
     public static void main(String[] args) {
         if (args.length == 0) {
             showUsageAndExit("Eeze needs some information to work.");
@@ -328,11 +257,6 @@ public class Eeze {
         eeze.run();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param error PARAM
-     */
     private static void showUsageAndExit(String error) {
         String sb = String.format("Oops! %s %n %nEeze %n  A frame to walk through a set of XHTML/XML pages with Flying Saucer %n" +
                 " %n" +
@@ -349,20 +273,12 @@ public class Eeze {
         System.exit(-1);
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
     class ImagePanel extends JPanel {
         private static final long serialVersionUID = 1L;
 
         Image currentPageImg;
 
-        /**
-         * Constructor for the GridGlassPane object
-         */
-        public ImagePanel() {
+        ImagePanel() {
             // intercept mouse and keyboard events and do nothing
             this.addMouseListener(new MouseAdapter() {
             });
@@ -420,11 +336,7 @@ public class Eeze {
             return img;
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param g PARAM
-         */
+        @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
@@ -449,35 +361,15 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    static class GridGlassPane extends JPanel {
+    static final class GridGlassPane extends JPanel {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Description of the Field
-         */
         private final Color mainUltraLightColor = new Color(128, 192, 255);
-        /**
-         * Description of the Field
-         */
         private final Color mainLightColor = new Color(0, 128, 255);
-        /**
-         * Description of the Field
-         */
         private final Color mainMidColor = new Color(0, 64, 196);
-        /**
-         * Description of the Field
-         */
         private final Color mainDarkColor = new Color(0, 0, 128);
 
-        /**
-         * Constructor for the GridGlassPane object
-         */
-        public GridGlassPane() {
+        GridGlassPane() {
             // intercept mouse and keyboard events and do nothing
             this.addMouseListener(new MouseAdapter() {
             });
@@ -488,11 +380,7 @@ public class Eeze {
             this.setOpaque(false);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param g PARAM
-         */
+        @Override
         protected void paintComponent(Graphics g) {
             Graphics2D graphics = (Graphics2D) g;
             BufferedImage oddLine = createGradientLine(this.getWidth(), mainLightColor,
@@ -512,15 +400,6 @@ public class Eeze {
         }
 
 
-        /**
-         * Description of the Method
-         *
-         * @param width      PARAM
-         * @param leftColor  PARAM
-         * @param rightColor PARAM
-         * @param opacity    PARAM
-         * @return Returns
-         */
         public BufferedImage createGradientLine(int width, Color leftColor,
                                                 Color rightColor, double opacity) {
             BufferedImage image = new BufferedImage(width, 1,
@@ -528,7 +407,7 @@ public class Eeze {
             int iOpacity = (int) (255 * opacity);
 
             for (int col = 0; col < width; col++) {
-                double coef = (double) col / (double) width;
+                double coef = col / (double) width;
                 int r = (int) (leftColor.getRed() + coef
                         * (rightColor.getRed() - leftColor.getRed()));
                 int g = (int) (leftColor.getGreen() + coef
@@ -548,28 +427,21 @@ public class Eeze {
      *
      * @author Who?
      */
-    class GrowAction extends AbstractAction {
+    final class GrowAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Description of the Field
-         */
         private final float increment = 1.1F;
 
-        /**
-         * Constructor for the GrowAction object
-         */
-        public GrowAction() {
+        GrowAction() {
             super("Grow Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_L, ALT_MASK));
         }
 
         /**
          * Invoked when an action occurs.
-         *
-         * @param e PARAM
          */
+        @Override
         public void actionPerformed(ActionEvent e) {
             resizeFrame(increment, increment);
         }
@@ -580,27 +452,20 @@ public class Eeze {
      *
      * @author Who?
      */
-    class ShowGridAction extends AbstractAction {
+    final class ShowGridAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
         private boolean on;
         private Component originalGlassPane;
         private final GridGlassPane gridGlassPane = new GridGlassPane();
 
-        /**
-         * Constructor for the ShowGridAction object
-         */
-        public ShowGridAction() {
+        ShowGridAction() {
             super("Show Grid");
             putValue(MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_G, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (on) {
                 eezeFrame.setGlassPane(originalGlassPane);
@@ -619,24 +484,17 @@ public class Eeze {
      *
      * @author Who?
      */
-    class CompareImageAction extends AbstractAction {
+    final class CompareImageAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ShowGridAction object
-         */
-        public CompareImageAction() {
+        CompareImageAction() {
             super("Compare to Reference Image");
             putValue(MNEMONIC_KEY, KeyEvent.VK_C);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, CTRL_MASK));
             imagePanel = new ImagePanel();
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             comparingWithImage = !comparingWithImage;
 
@@ -674,97 +532,62 @@ public class Eeze {
      *
      * @author Who?
      */
-    class ShrinkAction extends AbstractAction {
+    final class ShrinkAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Description of the Field
-         */
-        private final float increment = 1 / 1.1F;
-
-        /**
-         * Constructor for the ShrinkAction object
-         */
-        public ShrinkAction() {
+        ShrinkAction() {
             super("Shrink Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_S);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
+            float increment = 1 / 1.1F;
             resizeFrame(increment, increment);
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    class ShowHelpAction extends AbstractAction {
+    final class ShowHelpAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ShowHelpAction object
-         */
-        public ShowHelpAction() {
+        ShowHelpAction() {
             super("Show Help Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_H);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_H, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             showHelpPage();
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    class NextDemoAction extends AbstractAction {
+    final class NextDemoAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ReloadPageAction object
-         */
-        public NextDemoAction() {
+        NextDemoAction() {
             super("Next Demo Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             File nextPage = null;
-            for (Iterator iter = testFiles.iterator(); iter.hasNext();) {
-                File f = (File) iter.next();
+            for (Iterator<File> iter = testFiles.iterator(); iter.hasNext();) {
+                File f = iter.next();
                 if (f.equals(currentDisplayed)) {
                     if (iter.hasNext()) {
-                        nextPage = (File) iter.next();
+                        nextPage = iter.next();
                         break;
                     }
                 }
             }
             if (nextPage == null) {
                 // go to first page
-                Iterator iter = testFiles.iterator();
-                nextPage = (File) iter.next();
+                Iterator<File> iter = testFiles.iterator();
+                nextPage = iter.next();
             }
 
             try {
@@ -775,23 +598,16 @@ public class Eeze {
         }
     }
 
-    class SaveAsImageAction extends AbstractAction {
+    final class SaveAsImageAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the SaveAsImageAction object
-         */
-        public SaveAsImageAction() {
+        SaveAsImageAction() {
             super("Save Page as PNG Image");
             putValue(MNEMONIC_KEY, KeyEvent.VK_S);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, CTRL_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             try {
                 File file = currentDisplayed;
@@ -841,28 +657,16 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    class ReloadPageAction extends AbstractAction {
+    final class ReloadPageAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ReloadPageAction object
-         */
-        public ReloadPageAction() {
+        ReloadPageAction() {
             super("Reload Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_R);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             try {
                 switchPage(currentDisplayed, true);
@@ -872,28 +676,16 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    class ChooseDemoAction extends AbstractAction {
+    final class ChooseDemoAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ReloadPageAction object
-         */
-        public ChooseDemoAction() {
+        ChooseDemoAction() {
             super("Choose Demo Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_C);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             File nextPage = (File) JOptionPane.showInputDialog(eezeFrame,
                     "Choose a demo file",
@@ -911,77 +703,41 @@ public class Eeze {
         }
     }
 
-    class ReloadFileListAction extends AbstractAction {
+    final class ReloadFileListAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        public ReloadFileListAction() {
+        ReloadFileListAction() {
             super("Reload File List Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_F);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, ALT_MASK));
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             testFiles = buildFileList();
-            currentDisplayed = (File) testFiles.get(0);
+            currentDisplayed = testFiles.get(0);
             reloadPageAction.actionPerformed(null);
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    class FontSizeAction extends AbstractAction {
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Description of the Field
-         */
+    final class FontSizeAction extends AbstractAction {
         private final int whichDirection;
+        static final int DECREMENT = 0;
+        static final int INCREMENT = 1;
+        static final int RESET = 2;
 
-        /**
-         * Description of the Field
-         */
-        final static int DECREMENT = 0;
-        /**
-         * Description of the Field
-         */
-        final static int INCREMENT = 1;
-        /**
-         * Description of the Field
-         */
-        final static int RESET = 2;
-
-        /**
-         * Constructor for the FontSizeAction object
-         *
-         * @param which PARAM
-         * @param ks    PARAM
-         */
-        public FontSizeAction(int which, KeyStroke ks) {
+        FontSizeAction(int which, KeyStroke ks) {
             super("FontSize");
-            this.whichDirection = which;
-            this.putValue(Action.ACCELERATOR_KEY, ks);
+            whichDirection = which;
+            putValue(Action.ACCELERATOR_KEY, ks);
         }
 
-        /**
-         * Constructor for the FontSizeAction object
-         *
-         * @param scale PARAM
-         * @param which PARAM
-         * @param ks    PARAM
-         */
-        public FontSizeAction(float scale, int which, KeyStroke ks) {
+        FontSizeAction(float scale, int which, KeyStroke ks) {
             this(which, ks);
             html.setFontScalingFactor(scale);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent evt) {
             switch (whichDirection) {
                 case INCREMENT:
@@ -996,5 +752,4 @@ public class Eeze {
             }
         }
     }
-}// end class
-
+}

@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.List;
-
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.newtable.TableBox;
 import org.xhtmlrenderer.render.BlockBox;
@@ -30,6 +26,9 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.RenderingContext;
+
+import java.awt.*;
+import java.util.List;
 
 /**
  * A class to collect boxes which intersect a given clip region.  If available,
@@ -39,7 +38,7 @@ import org.xhtmlrenderer.render.RenderingContext;
 public class BoxCollector {
     public void collect(
             CssContext c, Shape clip, Layer layer,
-            List blockContent, List inlineContent, BoxRangeLists rangeLists) {
+            List<Box> blockContent, List<Box> inlineContent, BoxRangeLists rangeLists) {
         if (layer.isInline()) {
             collectInlineLayer(c, clip, layer, blockContent, inlineContent, rangeLists);
         } else {
@@ -54,21 +53,19 @@ public class BoxCollector {
 
     private void collectInlineLayer(
             CssContext c, Shape clip, Layer layer,
-            List blockContent, List inlineContent, BoxRangeLists rangeLists) {
+            List<Box> blockContent, List<Box> inlineContent, BoxRangeLists rangeLists) {
         InlineLayoutBox iB = (InlineLayoutBox)layer.getMaster();
-        List content = iB.getElementWithContent();
+        List<Box> content = iB.getElementWithContent();
 
-        for (int i = 0; i < content.size(); i++) {
-            Box b = (Box)content.get(i);
-
+        for (Box b : content) {
             if (b.intersects(c, clip)) {
                 if (b instanceof InlineLayoutBox) {
                     inlineContent.add(b);
                 } else {
-                    BlockBox bb = (BlockBox)b;
+                    BlockBox bb = (BlockBox) b;
                     if (bb.isInline()) {
                         if (intersectsAny(c, clip, b)) {
-                            inlineContent.add(b);
+                            inlineContent.add(bb);
                         }
                     } else {
                         collect(c, clip, layer, bb, blockContent, inlineContent, rangeLists);
@@ -92,7 +89,7 @@ public class BoxCollector {
 
     public void collect(
             CssContext c, Shape clip, Layer layer, Box container,
-            List blockContent, List inlineContent, BoxRangeLists rangeLists) {
+            List<Box> blockContent, List<Box> inlineContent, BoxRangeLists rangeLists) {
         if (layer != container.getContainingLayer()) {
             return;
         }
@@ -124,6 +121,7 @@ public class BoxCollector {
                         (container.getPaintingInfo() == null && container.intersects(c, clip))) {
                     blockContent.add(container);
                     if (container.getStyle().isTable() && c instanceof RenderingContext) {  // HACK
+                        assert container instanceof TableBox;
                         TableBox table = (TableBox)container;
                         if (table.hasContentLimitContainer()) {
                             table.updateHeaderFooterPosition((RenderingContext)c);
@@ -149,7 +147,7 @@ public class BoxCollector {
     }
 
     private void saveRangeData(
-            CssContext c, Box container, List blockContent, List inlineContent,
+            CssContext c, Box container, List<Box> blockContent, List<Box> inlineContent,
             BoxRangeLists rangeLists, boolean isBlock, int blockStart, int inlineStart,
             int blockRangeStart, int inlineRangeStart) {
         if (isBlock && c instanceof RenderingContext) {
@@ -174,9 +172,7 @@ public class BoxCollector {
             CssContext c, Shape clip,
             Box master, Box container) {
         if (container instanceof LineBox) {
-            if (container.intersects(c, clip)) {
-                return true;
-            }
+            return container.intersects(c, clip);
         } else {
             if (container.getLayer() == null || !(container instanceof BlockBox)) {
                 if (container.intersects(c, clip)) {

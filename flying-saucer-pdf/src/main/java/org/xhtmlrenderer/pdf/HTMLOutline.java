@@ -19,22 +19,21 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.NodeIterator;
-
 import org.xhtmlrenderer.pdf.ITextOutputDevice.Bookmark;
 import org.xhtmlrenderer.render.Box;
+
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class HTMLOutline {
 
@@ -151,7 +150,7 @@ class HTMLOutline {
 
         HTMLOutline root = new HTMLOutline();
         HTMLOutline current = root;
-        Map<Element,Bookmark> map = new IdentityHashMap();
+        Map<Element, Bookmark> map = new IdentityHashMap<>();
 
         for (Element element = (Element) iterator.nextNode();
                 element != null; element = (Element) iterator.nextNode()) {

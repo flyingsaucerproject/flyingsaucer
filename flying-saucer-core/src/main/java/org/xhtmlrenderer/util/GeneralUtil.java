@@ -20,16 +20,23 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 
 /**
- * Description of the Class
- *
  * @author Patrick Wright
  */
 public class GeneralUtil {
@@ -38,15 +45,8 @@ public class GeneralUtil {
      * Used to format an Object's hashcode into a 0-padded 10 char String, e.g.
      * for 24993066 returns "0024993066"
      */
-    public final static java.text.DecimalFormat PADDED_HASH_FORMAT = new java.text.DecimalFormat("0000000000");
+    public static final DecimalFormat PADDED_HASH_FORMAT = new DecimalFormat("0000000000");
 
-    /**
-     * Description of the Method
-     *
-     * @param obj      PARAM
-     * @param resource PARAM
-     * @return Returns
-     */
     public static InputStream openStreamFromClasspath(Object obj, String resource) {
         InputStream readStream = null;
         try {
@@ -87,8 +87,6 @@ public class GeneralUtil {
     /**
      * Dumps an exception to the console, only the last 5 lines of the stack
      * trace.
-     *
-     * @param ex PARAM
      */
     public static void dumpShortException(Exception ex) {
         String s = ex.getMessage();
@@ -96,9 +94,9 @@ public class GeneralUtil {
             s = "{no ex. message}";
         }
         System.out.println(s + ", " + ex.getClass());
-        StackTraceElement[] stes = ex.getStackTrace();
-        for (int i = 0; i < stes.length && i < 5; i++) {
-            StackTraceElement ste = stes[i];
+        StackTraceElement[] stackTrace = ex.getStackTrace();
+        for (int i = 0; i < stackTrace.length && i < 5; i++) {
+            StackTraceElement ste = stackTrace[i];
             System.out.println("  " + ste.getClassName() + "." + ste.getMethodName() + "(ln " + ste.getLineNumber() + ")");
         }
     }
@@ -106,7 +104,7 @@ public class GeneralUtil {
     /**
      * Returns a String tracking the last n method calls, from oldest to most
      * recent. You can use this as a simple tracing mechanism to find out the
-     * calls that got to where you execute the <code>trackBack()</code> call
+     * calls that got to where you execute the {@code trackBack()} call
      * from. Example:</p>
      * <pre>
      * // called from Box.calcBorders(), line 639
@@ -121,7 +119,7 @@ public class GeneralUtil {
      * Box.totalLeftPadding(ln 306)
      * Box.calcBorders(ln 639)
      * </pre>
-     * The <code>trackBack()</code> method itself is always excluded from the dump.
+     * The {@code trackBack()} method itself is always excluded from the dump.
      * Note the output may not be useful if HotSpot has been optimizing the
      * code.
      *
@@ -132,16 +130,16 @@ public class GeneralUtil {
     public static String trackBack(int cnt) {
         Exception ex = new Exception();
         StringBuilder sb = new StringBuilder();
-        List list = new ArrayList(cnt);
-        StackTraceElement[] stes = ex.getStackTrace();
-        if (cnt >= stes.length) {
-            cnt = stes.length - 1;
+        List<String> list = new ArrayList<>(cnt);
+        StackTraceElement[] stackTrace = ex.getStackTrace();
+        if (cnt >= stackTrace.length) {
+            cnt = stackTrace.length - 1;
         }
 
         // >= 1 to not include this method
         for (int i = cnt; i >= 1; i--) {
-            StackTraceElement ste = stes[i];
-            sb.append(GeneralUtil.classNameOnly(ste.getClassName()));
+            StackTraceElement ste = stackTrace[i];
+            sb.append(classNameOnly(ste.getClassName()));
             sb.append(".");
             sb.append(ste.getMethodName());
             sb.append("(ln ").append(ste.getLineNumber()).append(")");
@@ -149,11 +147,9 @@ public class GeneralUtil {
             sb = new StringBuilder();
         }
 
-        Iterator iter = list.iterator();
-        StringBuilder padding = new StringBuilder("");
+        StringBuilder padding = new StringBuilder();
         StringBuilder trackback = new StringBuilder();
-        while (iter.hasNext()) {
-            String s = (String) iter.next();
+        for (String s : list) {
             trackback.append(padding).append(s).append("\n");
             padding.append("   ");
         }
@@ -163,9 +159,6 @@ public class GeneralUtil {
 
     /**
      * Given an Object instance, returns just the classname with no package
-     *
-     * @param o PARAM
-     * @return Returns
      */
     public static String classNameOnly(Object o) {
         String s = "[null object ref]";
@@ -177,9 +170,6 @@ public class GeneralUtil {
 
     /**
      * Given a String classname, returns just the classname with no package
-     *
-     * @param cname PARAM
-     * @return Returns
      */
     public static String classNameOnly(String cname) {
         String s = "[null object ref]";
@@ -189,12 +179,6 @@ public class GeneralUtil {
         return s;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param o PARAM
-     * @return Returns
-     */
     public static String paddedHashCode(Object o) {
         String s = "0000000000";
         if (o != null) {
@@ -214,8 +198,8 @@ public class GeneralUtil {
         return false;
     }
 
-    public static StringBuffer htmlEscapeSpace(String uri) {
-        StringBuffer sbURI = new StringBuffer((int) (uri.length() * 1.5));
+    public static StringBuilder htmlEscapeSpace(String uri) {
+        StringBuilder sbURI = new StringBuilder((int) (uri.length() * 1.5));
         char ch;
         for (int i = 0; i < uri.length(); ++i) {
             ch = uri.charAt(i);
@@ -243,7 +227,7 @@ public class GeneralUtil {
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         StringWriter sw = new StringWriter();
-        char c[] = new char[1024];
+        char[] c = new char[1024];
         while (true) {
             int n = br.read(c, 0, c.length);
             if (n < 0) break;
@@ -256,31 +240,19 @@ public class GeneralUtil {
     public static void writeStringToFile(String content, String encoding, String fileName)
             throws IOException {
         File f = new File(fileName);
-        FileOutputStream fos = new FileOutputStream(f);
-        try {
+        try (FileOutputStream fos = new FileOutputStream(f)) {
             OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
             BufferedWriter bw = new BufferedWriter(osw);
-            PrintWriter pw = new PrintWriter(bw);
-            try {
+            try (PrintWriter pw = new PrintWriter(bw)) {
                 pw.print(content);
                 pw.flush();
                 bw.flush();
-            } finally {
-                try {
-                    pw.close();
-                } catch (Exception e) {
-                    // ignore
-                }
             }
+            // ignore
         } catch (IOException e) {
             throw e;
-        } finally {
-            try {
-                fos.close();
-            } catch (Exception e) {
-                // ignore
-            }
         }
+        // ignore
         System.out.println("Wrote file: " + f.getAbsolutePath());
     }
 
@@ -333,7 +305,7 @@ public class GeneralUtil {
      * by character test, so you may consider other approaches for large documents. Make sure you declare the
      * entities that might appear in this replacement, e.g. the latin-1 entities
      * This method was taken from a code-samples website, written and hosted by Real Gagnon, at
-     * http://www.rgagnon.com/javadetails/java-0306.html.
+     * <a href="http://www.rgagnon.com/javadetails/java-0306.html">...</a>.
      *
      * @param s The String which may contain characters to escape.
      * @return The string with the characters as HTML entities.
@@ -399,7 +371,7 @@ public class GeneralUtil {
              case 'ÔøΩ': sb.append("&copy;");break;
              case 'ÔøΩ': sb.append("&euro;"); break;
                 */
-                // be carefull with this one (non-breaking whitee space)
+                // be careful with this one (non-breaking white space)
                 case ' ':
                     sb.append("&nbsp;");
                     break;
@@ -478,7 +450,7 @@ public class GeneralUtil {
  * removed some extraneous files
  * update the home page to point to the new jnlp files
  * updated the resource loader to use the marker class
- * updated the text of the about box
+ * updated the text of the "about" box
  *
  * Issue number:
  * Obtained from:

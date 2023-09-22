@@ -19,20 +19,19 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import javax.swing.JComponent;
-import javax.swing.JRadioButton;
-import javax.swing.JToggleButton;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
+import javax.swing.*;
+
 class RadioButtonField extends InputField {
-    public RadioButtonField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    RadioButtonField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
+    @Override
     public JComponent create() {
         JToggleButton radio = new JRadioButton();
 
@@ -51,17 +50,20 @@ class RadioButtonField extends InputField {
         return radio;
     }
 
+    @Override
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromBoolean(
                 getAttribute("checked").equalsIgnoreCase("checked"));
     }
 
+    @Override
     protected void applyOriginalState() {
         JToggleButton button = (JToggleButton) getComponent();
 
         button.setSelected(getOriginalState().isChecked());
     }
 
+    @Override
     protected String[] getFieldValues() {
         JToggleButton button = (JToggleButton) getComponent();
 

@@ -21,15 +21,23 @@ package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.DelegatingUserAgent;
+import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.GeneralUtil;
 import org.xml.sax.InputSource;
 
 import javax.xml.transform.sax.SAXSource;
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -43,12 +51,13 @@ import java.util.ArrayList;
  */
 public class PanelManager extends DelegatingUserAgent {
     private int index = -1;
-    private ArrayList history = new ArrayList();
+    private final List<String> history = new ArrayList<>();
 
 
     /**
      * {@inheritdoc}.
      */
+    @Override
     public String resolveURI(String uri) {
         final String burl = getBaseURL();
 
@@ -100,12 +109,13 @@ public class PanelManager extends DelegatingUserAgent {
     /**
      * {@inheritDoc}
      */
+    @Override
     public XMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);
         if (uri != null && uri.startsWith("file:")) {
             File file;
             try {
-                StringBuffer sbURI = GeneralUtil.htmlEscapeSpace(uri);
+                StringBuilder sbURI = GeneralUtil.htmlEscapeSpace(uri);
 
                 XRLog.general("Encoded URI: " + sbURI);
                 file = new File(new URI(sbURI.toString()));
@@ -114,8 +124,8 @@ public class PanelManager extends DelegatingUserAgent {
                 return getNotFoundDocument(uri);
             }
             if (file.isDirectory()) {
-                String dirlist = DirectoryLister.list(file);
-                return XMLResource.load(new StringReader(dirlist));
+                String dirList = DirectoryLister.list(file);
+                return XMLResource.load(new StringReader(dirList));
             }
         }
         XMLResource xr = null;
@@ -178,13 +188,15 @@ public class PanelManager extends DelegatingUserAgent {
     /**
      * Returns true if the link has been visited by the user in this session. Visit tracking is not persisted.
      */
+    @Override
     public boolean isVisited(String uri) {
         if (uri == null) return false;
         uri = resolveURI(uri);
         return history.contains(uri);
     }
 
-    public void setBaseURL (String url) {
+    @Override
+    public void setBaseURL(String url) {
         String burl = resolveURI(url);
         if (burl == null) burl = "error:FileNotFound";
 
@@ -192,7 +204,7 @@ public class PanelManager extends DelegatingUserAgent {
 
         // setBaseURL is called by view when document is loaded
         if (index >= 0) {
-            String historic = (String) history.get(index);
+            String historic = history.get(index);
             if (historic.equals(burl)) return; //moved in history
         }
         index++;
@@ -207,7 +219,7 @@ public class PanelManager extends DelegatingUserAgent {
      */
     public String getForward() {
         index++;
-        return (String) history.get(index);
+        return history.get(index);
     }
 
     /**
@@ -216,7 +228,7 @@ public class PanelManager extends DelegatingUserAgent {
      */
     public String getBack() {
         index--;
-        return (String) history.get(index);
+        return history.get(index);
     }
 
     /**
@@ -224,11 +236,7 @@ public class PanelManager extends DelegatingUserAgent {
      * if multiple URIs were visited and the getBack() had been called at least once.
      */
     public boolean hasForward() {
-        if (index + 1 < history.size() && index >= 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return index + 1 < history.size() && index >= 0;
     }
 
     /**
@@ -236,10 +244,6 @@ public class PanelManager extends DelegatingUserAgent {
      * if multiple URIs were visited and the current URI pointer was not at the beginning of the visited URI list.
      */
     public boolean hasBack() {
-        if (index > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return index > 0;
     }
 }

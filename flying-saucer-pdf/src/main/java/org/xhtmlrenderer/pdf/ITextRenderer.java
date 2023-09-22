@@ -41,11 +41,21 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -76,7 +86,7 @@ public class ITextRenderer {
     // use one of the values in PDFWriter.VERSION...
     private Character _pdfVersion;
 
-    private final char[] validPdfVersions = new char[] { PdfWriter.VERSION_1_2, PdfWriter.VERSION_1_3, PdfWriter.VERSION_1_4,
+    private final char[] validPdfVersions = { PdfWriter.VERSION_1_2, PdfWriter.VERSION_1_3, PdfWriter.VERSION_1_4,
             PdfWriter.VERSION_1_5, PdfWriter.VERSION_1_6, PdfWriter.VERSION_1_7 };
 
     private Integer _pdfXConformance;
@@ -186,8 +196,8 @@ public class ITextRenderer {
     }
 
     public void setPDFVersion(char _v) {
-        for (int i = 0; i < validPdfVersions.length; i++) {
-            if (_v == validPdfVersions[i]) {
+        for (char validPdfVersion : validPdfVersions) {
+            if (_v == validPdfVersion) {
                 _pdfVersion = _v;
                 return;
             }
@@ -197,7 +207,7 @@ public class ITextRenderer {
     }
 
     public char getPDFVersion() {
-        return _pdfVersion == null ? '0' : _pdfVersion.charValue();
+        return _pdfVersion == null ? '0' : _pdfVersion;
     }
 
     public void setPDFXConformance(int pdfXConformance){
@@ -205,7 +215,7 @@ public class ITextRenderer {
     }
 
     public int getPDFXConformance(){
-        return _pdfXConformance == null ? '0' : _pdfXConformance.intValue();
+        return _pdfXConformance == null ? '0' : _pdfXConformance;
     }
 
 
@@ -215,7 +225,7 @@ public class ITextRenderer {
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
         Dimension dim = root.getLayer().getPaintingDimension(c);
-        root.getLayer().trimEmptyPages(c, dim.height);
+        root.getLayer().trimEmptyPages(dim.height);
         root.getLayer().layoutPages(c);
         _root = root;
     }
@@ -256,12 +266,12 @@ public class ITextRenderer {
         writeNextDocument(0);
     }
 
-    public void writeNextDocument(int initialPageNo) throws DocumentException {
-        List pages = _root.getLayer().getPages();
+    public void writeNextDocument(int initialPageNo) {
+        List<PageBox> pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
         c.setInitialPageNo(initialPageNo);
-        PageBox firstPage = (PageBox) pages.get(0);
+        PageBox firstPage = pages.get(0);
         com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
                 firstPage.getHeight(c) / _dotsPerPoint);
 
@@ -289,22 +299,22 @@ public class ITextRenderer {
      * something goes wrong.
      */
     public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException {
-        List pages = _root.getLayer().getPages();
+        List<PageBox> pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
         c.setInitialPageNo(initialPageNo);
-        PageBox firstPage = (PageBox) pages.get(0);
+        PageBox firstPage = pages.get(0);
         com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
                 firstPage.getHeight(c) / _dotsPerPoint);
 
         com.lowagie.text.Document doc = new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
         PdfWriter writer = PdfWriter.getInstance(doc, os);
         if (_pdfVersion != null) {
-            writer.setPdfVersion(_pdfVersion.charValue());
+            writer.setPdfVersion(_pdfVersion);
         }
 
         if (_pdfXConformance != null) {
-            writer.setPDFXConformance(_pdfXConformance.intValue());
+            writer.setPDFXConformance(_pdfXConformance);
         }
 
         if (_pdfEncryption != null) {
@@ -343,8 +353,8 @@ public class ITextRenderer {
         }
     }
 
-    private void writePDF(List pages, RenderingContext c, com.lowagie.text.Rectangle firstPageSize, com.lowagie.text.Document doc,
-            PdfWriter writer) throws DocumentException {
+    private void writePDF(List<PageBox> pages, RenderingContext c, com.lowagie.text.Rectangle firstPageSize, com.lowagie.text.Document doc,
+            PdfWriter writer) {
         _outputDevice.setRoot(_root);
 
         _outputDevice.start(_doc);
@@ -360,14 +370,14 @@ public class ITextRenderer {
         for (int i = 0; i < pageCount; i++) {
 
             if (isTimeouted() || Thread.currentThread().isInterrupted())
-                throw new RuntimeException("Timeout occured");
+                throw new RuntimeException("Timeout occurred");
 
-            PageBox currentPage = (PageBox) pages.get(i);
+            PageBox currentPage = pages.get(i);
             c.setPage(i, currentPage);
             paintPage(c, writer, currentPage);
             _outputDevice.finishPage();
             if (i != pageCount - 1) {
-                PageBox nextPage = (PageBox) pages.get(i + 1);
+                PageBox nextPage = pages.get(i + 1);
                 com.lowagie.text.Rectangle nextPageSize = new com.lowagie.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
                         nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
@@ -425,9 +435,9 @@ public class ITextRenderer {
     private void provideMetadataToPage(PdfWriter writer, PageBox page) {
         byte[] metadata = null;
         if (page.getMetadata() != null) {
-            String metadataBody = stringfyMetadata(page.getMetadata());
+            String metadataBody = stringifyMetadata(page.getMetadata());
             if (metadataBody != null) {
-                metadata = createXPacket(stringfyMetadata(page.getMetadata())).getBytes(UTF_8);
+                metadata = createXPacket(stringifyMetadata(page.getMetadata())).getBytes(UTF_8);
             }
         }
 
@@ -436,7 +446,7 @@ public class ITextRenderer {
         }
     }
 
-    private String stringfyMetadata(Element element) {
+    private String stringifyMetadata(Element element) {
         Element target = getFirstChildElement(element);
         if (target == null) {
             return null;
@@ -501,19 +511,22 @@ public class ITextRenderer {
         return _dotsPerPoint;
     }
 
-    public List findPagePositionsByID(Pattern pattern) {
+    public List<PagePosition> findPagePositionsByID(Pattern pattern) {
         return _outputDevice.findPagePositionsByID(newLayoutContext(), pattern);
     }
 
     private static final class NullUserInterface implements UserInterface {
+        @Override
         public boolean isHover(Element e) {
             return false;
         }
 
+        @Override
         public boolean isActive(Element e) {
             return false;
         }
 
+        @Override
         public boolean isFocus(Element e) {
             return false;
         }

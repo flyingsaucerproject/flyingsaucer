@@ -19,58 +19,28 @@
  */
 package org.xhtmlrenderer.demo.aboutbox;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.Uu;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.Uu;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 
 
-/**
- * Description of the Class
- *
- * @author empty
- */
-public class AboutBox extends JDialog implements Runnable {
+public final class AboutBox extends JDialog implements Runnable {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Description of the Field
-     */
-    JScrollPane scroll;
-    /**
-     * Description of the Field
-     */
-    JButton close_button;
-    /**
-     * Description of the Field
-     */
-    boolean go = false;
+    private final JScrollPane scroll;
+    private final JButton close_button;
+    private boolean go;
+    private Thread thread;
 
-    /**
-     * Description of the Field
-     */
-    Thread thread;
-
-    /**
-     * Constructor for the AboutBox object
-     *
-     * @param text PARAM
-     * @param url  PARAM
-     */
     public AboutBox(String text, String url) {
-        super();
         Uu.p("starting the about box");
         setTitle(text);
         XHTMLPanel panel = new XHTMLPanel(new DemoUserAgent());
@@ -79,19 +49,17 @@ public class AboutBox extends JDialog implements Runnable {
         panel.setPreferredSize(new Dimension(w, h));
 
         scroll = new JScrollPane(panel);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setPreferredSize(new Dimension(w, h));
         //panel.setViewportComponent(scroll);
         //panel.setJScrollPane(scroll);
         getContentPane().add(scroll, "Center");
         close_button = new JButton("Close");
         getContentPane().add(close_button, "South");
-        close_button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                setVisible(false);
-                go = false;
-            }
+        close_button.addActionListener(evt -> {
+            setVisible(false);
+            go = false;
         });
 
         try {
@@ -105,12 +73,6 @@ public class AboutBox extends JDialog implements Runnable {
         setLocation((screen.width - w) / 2, (screen.height - h) / 2);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param url_text PARAM
-     * @param panel    PARAM
-     */
     public void loadPage(String url_text, XHTMLPanel panel) throws MalformedURLException {
 URL ref = null;
 
@@ -136,9 +98,6 @@ Uu.p("ref = " + ref);
 Uu.p("url_text = " + url_text);
 }
 
-    /**
-     * Description of the Method
-     */
     public void startScrolling() {
         go = true;
         thread = new Thread(this);
@@ -148,6 +107,7 @@ Uu.p("url_text = " + url_text);
     /**
      * Main processing method for the AboutBox object
      */
+    @Override
     public void run() {
         while (go) {
             try {
@@ -165,9 +125,10 @@ Uu.p("url_text = " + url_text);
      *
      * @param vis The new visible value
      */
+    @Override
     public void setVisible(boolean vis) {
         super.setVisible(vis);
-        if (vis == true) {
+        if (vis) {
             startScrolling();
         }
     }
@@ -185,11 +146,9 @@ Uu.p("url_text = " + url_text);
         frame.pack();
         frame.setVisible(true);
 
-        launch.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                AboutBox ab = new AboutBox("About Flying Saucer", "demo:demos/index.xhtml");
-                ab.setVisible(true);
-            }
+        launch.addActionListener(evt -> {
+            AboutBox ab = new AboutBox("About Flying Saucer", "demo:demos/index.xhtml");
+            ab.setVisible(true);
         });
     }
 }

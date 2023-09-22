@@ -25,20 +25,8 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.util.Uu;
 
 
-/**
- * Description of the Class
- *
- * @author   empty
- */
 public class TextUtil {
 
-    /**
-     * Description of the Method
-     *
-     * @param text   PARAM
-     * @param style
-     * @return       Returns
-     */
     public static String transformText( String text, CalculatedStyle style ) {
         IdentValue transform = style.getIdent( CSSName.TEXT_TRANSFORM );
         if ( transform == IdentValue.LOWERCASE ) {
@@ -57,13 +45,6 @@ public class TextUtil {
         return text;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param text   PARAM
-     * @param style
-     * @return       Returns
-     */
     public static String transformFirstLetterText( String text, CalculatedStyle style ) {
         if (text.length() > 0) {
             IdentValue transform = style.getIdent( CSSName.TEXT_TRANSFORM );
@@ -106,12 +87,6 @@ public class TextUtil {
         return b.toString();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @return      Returns
-     */
     public static boolean isFirstLetterSeparatorChar( char c ) {
         switch (Character.getType(c)) {
             case Character.START_PUNCTUATION:
@@ -127,12 +102,6 @@ public class TextUtil {
     }
 
 
-    /**
-     * Description of the Method
-     *
-     * @param text  PARAM
-     * @return      Returns
-     */
     private static String capitalizeWords( String text ) {
         //Uu.p("start = -"+text+"-");
         if ( text.length() == 0 ) {

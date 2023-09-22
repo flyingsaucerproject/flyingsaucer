@@ -22,9 +22,9 @@ package org.xhtmlrenderer.simple.xhtml.swt;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.widgets.Control;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.simple.xhtml.FormControl;
@@ -64,6 +64,7 @@ public abstract class SWTXhtmlControl implements SWTFormControl {
         }
         // enable/disable handler
         control.addFormControlListener(new FormControlAdapter() {
+            @Override
             public void enabled(FormControl control) {
                 _swtControl.setEnabled(control.isEnabled());
             }

@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -30,8 +26,16 @@ import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_NUMBER;
+import static org.w3c.dom.css.CSSValue.CSS_INHERIT;
+
 public abstract class AbstractPropertyBuilder implements PropertyBuilder {
-    public List buildDeclarations(CSSName cssName, List values, int origin, boolean important) {
+    @Override
+    public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important) {
         return buildDeclarations(cssName, values, origin, important, true);
     }
 
@@ -72,20 +76,18 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
     protected void checkIdentOrIntegerType(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
         if ((type != CSSPrimitiveValue.CSS_IDENT &&
-                type != CSSPrimitiveValue.CSS_NUMBER) ||
-            (type == CSSPrimitiveValue.CSS_NUMBER &&
-                    (int)value.getFloatValue(CSSPrimitiveValue.CSS_NUMBER) !=
-                        Math.round(value.getFloatValue(CSSPrimitiveValue.CSS_NUMBER)))) {
+                type != CSS_NUMBER) ||
+            (type == CSS_NUMBER &&
+                    (int)value.getFloatValue(CSS_NUMBER) !=
+                        Math.round(value.getFloatValue(CSS_NUMBER)))) {
             throw new CSSParseException("Value for " + cssName + " must be an identifier or an integer", -1);
         }
     }
 
     protected void checkInteger(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
-        if (type != CSSPrimitiveValue.CSS_NUMBER ||
-                (type == CSSPrimitiveValue.CSS_NUMBER &&
-                    (int)value.getFloatValue(CSSPrimitiveValue.CSS_NUMBER) !=
-                        Math.round(value.getFloatValue(CSSPrimitiveValue.CSS_NUMBER)))) {
+        if (type != CSS_NUMBER || 
+                (int) value.getFloatValue(CSS_NUMBER) != Math.round(value.getFloatValue(CSS_NUMBER))) {
             throw new CSSParseException("Value for " + cssName + " must be an integer", -1);
         }
     }
@@ -99,7 +101,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
 
     protected void checkIdentOrNumberType(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
-        if (type != CSSPrimitiveValue.CSS_IDENT && type != CSSPrimitiveValue.CSS_NUMBER) {
+        if (type != CSSPrimitiveValue.CSS_IDENT && type != CSS_NUMBER) {
             throw new CSSParseException("Value for " + cssName + " must be an identifier or a length", -1);
         }
     }
@@ -125,7 +127,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
     }
 
     protected void checkNumberType(CSSName cssName, CSSPrimitiveValue value) {
-        if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_NUMBER) {
+        if (value.getPrimitiveType() != CSS_NUMBER) {
             throw new CSSParseException("Value for " + cssName + " must be a number", -1);
         }
     }
@@ -148,7 +150,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
         if (type != CSSPrimitiveValue.CSS_IDENT &&
                 ! isLength(value) &&
                 type != CSSPrimitiveValue.CSS_PERCENTAGE &&
-                type != CSSPrimitiveValue.CSS_NUMBER) {
+                type != CSS_NUMBER) {
             throw new CSSParseException("Value for " + cssName + " must be an identifier, length, or percentage", -1);
         }
     }
@@ -159,7 +161,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
                 || unit == CSSPrimitiveValue.CSS_PX || unit == CSSPrimitiveValue.CSS_IN
                 || unit == CSSPrimitiveValue.CSS_CM || unit == CSSPrimitiveValue.CSS_MM
                 || unit == CSSPrimitiveValue.CSS_PT || unit == CSSPrimitiveValue.CSS_PC
-                || (unit == CSSPrimitiveValue.CSS_NUMBER && value.getFloatValue(CSSPrimitiveValue.CSS_IN) == 0.0f);
+                || (unit == CSS_NUMBER && value.getFloatValue(CSSPrimitiveValue.CSS_IN) == 0.0f);
     }
 
     protected void checkValidity(CSSName cssName, BitSet validValues, IdentValue value) {
@@ -182,20 +184,19 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
     }
 
     protected void checkInheritAllowed(CSSPrimitiveValue value, boolean inheritAllowed) {
-        if (value.getCssValueType() == CSSPrimitiveValue.CSS_INHERIT && ! inheritAllowed) {
+        if (value.getCssValueType() == CSS_INHERIT && ! inheritAllowed) {
             throw new CSSParseException("Invalid use of inherit", -1);
         }
     }
 
-    protected List checkInheritAll(CSSName[] all, List values, int origin, boolean important, boolean inheritAllowed) {
+    protected List<PropertyDeclaration> checkInheritAll(CSSName[] all, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
         if (values.size() == 1) {
-            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+            CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() == CSSPrimitiveValue.CSS_INHERIT) {
-                List result = new ArrayList(all.length);
-                for (int i = 0; i < all.length; i++) {
-                    result.add(
-                            new PropertyDeclaration(all[i], value, important, origin));
+            if (value.getCssValueType() == CSS_INHERIT) {
+                List<PropertyDeclaration> result = new ArrayList<>(all.length);
+                for (CSSName cssName : all) {
+                    result.add(new PropertyDeclaration(cssName, value, important, origin));
                 }
                 return result;
             }

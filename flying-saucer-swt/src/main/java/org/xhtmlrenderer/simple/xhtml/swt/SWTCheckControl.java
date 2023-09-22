@@ -60,6 +60,7 @@ public class SWTCheckControl extends SWTXhtmlControl {
         });
 
         cc.addFormControlListener(new FormControlAdapter() {
+            @Override
             public void successful(FormControl control) {
                 button.setSelection(control.isSuccessful());
             }

@@ -22,22 +22,11 @@ package org.xhtmlrenderer.test;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 
-import java.awt.Dimension;
+import java.awt.*;
 
 
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class XLayout /*extends CustomBlockLayout*/ {
 
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
     /* not used public void paintComponent(Context c, Box box) {
         int w = box.getWidth() - box.totalHorizontalPadding(c.getCurrentStyle(), c);
         int h = box.getHeight() - box.totalVerticalPadding(c.getCurrentStyle(), c);
@@ -55,10 +44,6 @@ public class XLayout /*extends CustomBlockLayout*/ {
 
     /**
      * Gets the intrinsicDimensions attribute of the XLayout object
-     *
-     * @param c    PARAM
-     * @param elem PARAM
-     * @return The intrinsicDimensions value
      */
     public Dimension getIntrinsicDimensions(LayoutContext c, Element elem) {
         return new Dimension(50, 50);

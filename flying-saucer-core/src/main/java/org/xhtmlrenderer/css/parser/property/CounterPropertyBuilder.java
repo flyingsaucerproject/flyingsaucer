@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -31,6 +27,10 @@ import org.xhtmlrenderer.css.parser.CounterData;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public abstract class CounterPropertyBuilder extends AbstractPropertyBuilder {
     // [ <identifier> <integer>? ]+ | none | inherit
 
@@ -38,7 +38,8 @@ public abstract class CounterPropertyBuilder extends AbstractPropertyBuilder {
 
     // XXX returns a PropertyValue of type VALUE_TYPE_LIST, but the List contains
     // CounterData objects and not PropertyValue objects
-    public List buildDeclarations(CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+    @Override
+    public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
         if (values.size() == 1) {
             PropertyValue value = (PropertyValue)values.get(0);
 
@@ -62,7 +63,7 @@ public abstract class CounterPropertyBuilder extends AbstractPropertyBuilder {
 
             throw new CSSParseException("The syntax of the " + cssName + " property is invalid", -1);
         } else {
-            List result = new ArrayList();
+            List<CounterData> result = new ArrayList<>();
             for (int i = 0; i < values.size(); i++) {
                 PropertyValue value = (PropertyValue)values.get(i);
 
@@ -100,12 +101,14 @@ public abstract class CounterPropertyBuilder extends AbstractPropertyBuilder {
     }
 
     public static class CounterReset extends CounterPropertyBuilder {
+        @Override
         protected int getDefaultValue() {
             return 0;
         }
     }
 
     public static class CounterIncrement extends CounterPropertyBuilder {
+        @Override
         protected int getDefaultValue() {
             return 1;
         }

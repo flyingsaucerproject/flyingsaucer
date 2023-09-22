@@ -37,29 +37,22 @@ import java.util.List;
  */
 public class StylesheetInfo {
 
-    /** Description of the Field */
     private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also, might save a lookup if it's already looked up
-            /** Description of the Field */
     private String title;
-    /** Description of the Field */
     private String uri;
-    /** Description of the Field */
     private int origin = USER_AGENT;
-    /** Description of the Field */
     private String type;
-
     private List mediaTypes = new ArrayList();
-
     private String content;
 
     /** Origin of stylesheet - user agent  */
-    public final static int USER_AGENT = 0;
+    public static final int USER_AGENT = 0;
 
     /** Origin of stylesheet - user  */
-    public final static int USER = 1;
+    public static final int USER = 1;
 
     /** Origin of stylesheet - author  */
-    public final static int AUTHOR = 2;
+    public static final int AUTHOR = 2;
 
 
     /**

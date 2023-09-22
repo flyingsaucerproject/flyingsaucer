@@ -23,24 +23,13 @@ import org.xhtmlrenderer.util.GeneralUtil;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class DirectoryLister {
 
-    /**
-     * Description of the Method
-     *
-     * @param file PARAM
-     * @return Returns
-     */
     public static String list(File file) {
         StringBuilder sb = new StringBuilder();
 

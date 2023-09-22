@@ -37,72 +37,54 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
  * @author Patrick Wright
  */
 public class PropertyDeclaration {
-    /**
-     * Description of the Field
-     */
-    private String propName;
-
-    /**
-     * Description of the Field
-     */
-    private CSSName cssName;
-    /**
-     * Description of the Field
-     */
-    private org.w3c.dom.css.CSSPrimitiveValue cssPrimitiveValue;
+    private final String propName;
+    private final CSSName cssName;
+    private final CSSPrimitiveValue cssPrimitiveValue;
 
     /**
      * Whether the property was declared as important! by the user.
      */
-    private boolean important;
+    private final boolean important;
 
     /**
      * Origin constant from the list defined in {@link Stylesheet}. See {@link
      * StylesheetInfo#USER_AGENT}, {@link StylesheetInfo#USER}, and {@link
      * StylesheetInfo#AUTHOR}.
      */
-    private int origin;
-    /**
-     * Description of the Field
-     */
+    private final int origin;
     private IdentValue _identVal;
-
-    /**
-     * Description of the Field
-     */
     private boolean identIsSet;
-
     private String _fingerprint;
 
     /**
      * ImportanceAndOrigin of stylesheet - how many different
      */
-    public final static int IMPORTANCE_AND_ORIGIN_COUNT = 6;
+    public static final int IMPORTANCE_AND_ORIGIN_COUNT = 6;
 
     /**
      * ImportanceAndOrigin of stylesheet - user agent
      */
-    private final static int USER_AGENT = 1;
+    private static final int USER_AGENT = 1;
 
     /**
      * ImportanceAndOrigin of stylesheet - user normal
      */
-    private final static int USER_NORMAL = 2;
+    private static final int USER_NORMAL = 2;
 
     /**
      * ImportanceAndOrigin of stylesheet - author normal
      */
-    private final static int AUTHOR_NORMAL = 3;
+    private static final int AUTHOR_NORMAL = 3;
 
     /**
      * ImportanceAndOrigin of stylesheet - author important
      */
-    private final static int AUTHOR_IMPORTANT = 4;
+    private static final int AUTHOR_IMPORTANT = 4;
 
     /**
      * ImportanceAndOrigin of stylesheet - user important
      */
-    private final static int USER_IMPORTANT = 5;
+    private static final int USER_IMPORTANT = 5;
 
     /**
      * Creates a new instance of PropertyDeclaration from an {@link
@@ -118,7 +100,7 @@ public class PropertyDeclaration {
      *                StylesheetInfo#USER}, and {@link StylesheetInfo#AUTHOR}.
      */
     public PropertyDeclaration(CSSName cssName,
-                               org.w3c.dom.css.CSSPrimitiveValue value,
+                               CSSPrimitiveValue value,
                                boolean imp,
                                int orig) {
         this.propName = cssName.toString();
@@ -137,11 +119,6 @@ public class PropertyDeclaration {
         return getPropertyName() + ": " + getValue().toString();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
     public IdentValue asIdentValue() {
         if (!identIsSet) {
             _identVal = IdentValue.getByIdentString(cssPrimitiveValue.getCssText());
@@ -218,7 +195,7 @@ public class PropertyDeclaration {
      *
      * @return See desc.
      */
-    public org.w3c.dom.css.CSSPrimitiveValue getValue() {
+    public CSSPrimitiveValue getValue() {
         return cssPrimitiveValue;
     }
 
@@ -229,7 +206,7 @@ public class PropertyDeclaration {
     public int getOrigin() {
         return origin;
     }
-}// end class
+}
 
 /*
  * $Id$

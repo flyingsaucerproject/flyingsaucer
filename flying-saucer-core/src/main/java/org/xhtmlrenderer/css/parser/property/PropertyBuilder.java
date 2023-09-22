@@ -20,18 +20,20 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.List;
-
+import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+
+import java.util.List;
 
 public interface PropertyBuilder {
     /**
-     * Builds a list of <code>PropertyDeclaration</code> objects for the CSS
-     * property <code>cssName</code>. <code>values</code> must contain
-     * <code>CSSPrimitiveValue</code> objects.
+     * Builds a list of {@code PropertyDeclaration} objects for the CSS
+     * property {@code cssName}. {@code values} must contain
+     * {@code CSSPrimitiveValue} objects.
      */
-    public List buildDeclarations(
-            CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed);
+    List<PropertyDeclaration> buildDeclarations(
+            CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed);
 
-    public List buildDeclarations(CSSName cssName, List values, int origin, boolean important);
+    List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important);
 }
