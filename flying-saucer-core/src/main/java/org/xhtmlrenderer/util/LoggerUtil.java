@@ -34,7 +34,7 @@ public class LoggerUtil {
     /**
      * Instantiate a Logger for debug messages for a given class.
      */
-    public static Logger getDebugLogger(Class cls) {
+    public static Logger getDebugLogger(Class<?> cls) {
         Logger l = Logger.getLogger(cls.getName());
         l.setLevel(Level.ALL);
         return l;
