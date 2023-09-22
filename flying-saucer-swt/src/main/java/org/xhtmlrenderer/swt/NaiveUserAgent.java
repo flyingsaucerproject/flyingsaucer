@@ -39,6 +39,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Naive user agent, copy of org.xhtmlrenderer.swing.NaiveUserAgent (but
@@ -51,9 +52,8 @@ public class NaiveUserAgent implements UserAgentCallback {
     /**
      * an LRU cache
      */
-    private int _imageCacheCapacity = 16;
-    private LinkedHashMap _imageCache = new LinkedHashMap(_imageCacheCapacity,
-            0.75f, true);
+    private final int _imageCacheCapacity = 16;
+    private final Map<String, ImageResource> _imageCache = new LinkedHashMap<>(_imageCacheCapacity, 0.75f, true);
 
     private String _baseURL;
 
@@ -99,7 +99,7 @@ public class NaiveUserAgent implements UserAgentCallback {
             ir = loadEmbeddedBase64ImageResource(uri);
         } else {
             uri = resolveURI(uri);
-            ir = (ImageResource) _imageCache.get(uri);
+            ir = _imageCache.get(uri);
             // TODO: check that cached image is still valid
             if (ir == null) {
                 InputStream is = getInputStream(uri);
@@ -108,7 +108,7 @@ public class NaiveUserAgent implements UserAgentCallback {
                         ir = createImageResource(uri, is);
                         if (_imageCache.size() >= _imageCacheCapacity) {
                             // prevent the cache from growing too big
-                            ImageResource old = (ImageResource) _imageCache
+                            ImageResource old = _imageCache
                                     .remove(_imageCache.keySet().iterator().next());
                             ((SWTFSImage) old.getImage()).getImage().dispose();
                         }
@@ -161,27 +161,16 @@ public class NaiveUserAgent implements UserAgentCallback {
             XRLog.exception("null uri requested");
             return null;
         }
-        InputStream inputStream = getInputStream(uri);
-        if (inputStream == null) {
-            XRLog.exception("couldn't get InputStream for " + uri);
-            return null;
-        }
-        XMLResource xmlResource;
-        try {
-            xmlResource = XMLResource.load(inputStream);
+        try (InputStream inputStream = getInputStream(uri)) {
+            if (inputStream == null) {
+                XRLog.exception("couldn't get InputStream for " + uri);
+                return null;
+            }
+            return XMLResource.load(inputStream);
         } catch (Exception e) {
             XRLog.exception("unable to load xml resource: " + uri, e);
             return null;
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // swallow
-                }
-            }
         }
-        return xmlResource;
     }
 
     /**
@@ -255,8 +244,7 @@ public class NaiveUserAgent implements UserAgentCallback {
      * Dispose all images in cache and clean the cache.
      */
     public void disposeCache() {
-        for (Object o : _imageCache.values()) {
-            ImageResource ir = (ImageResource) o;
+        for (ImageResource ir : _imageCache.values()) {
             ((SWTFSImage) ir.getImage()).getImage().dispose();
         }
         _imageCache.clear();
