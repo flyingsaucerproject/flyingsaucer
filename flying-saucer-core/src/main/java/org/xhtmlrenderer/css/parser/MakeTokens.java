@@ -20,43 +20,36 @@
 package org.xhtmlrenderer.css.parser;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static java.nio.file.Files.newInputStream;
 
 public class MakeTokens {
     private static final String EOL = System.getProperty("line.separator");
     private static final String INPUT = "C:/eclipseWorkspaceQT/xhtmlrenderer/src/java/org/xhtmlrenderer/css/parser/tokens.txt";
 
-    public static final void main(String[] args) throws IOException {
-        List tokens = new ArrayList();
+    public static void main(String[] args) throws IOException {
+        List<String> tokens = new ArrayList<>();
 
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(
-                        new FileInputStream(INPUT)));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                newInputStream(Paths.get(INPUT))))) {
             String s;
-            while ( (s = reader.readLine()) != null) {
+            while ((s = reader.readLine()) != null) {
                 tokens.add(s);
             }
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
+        // ignore
 
         StringBuilder buf = new StringBuilder();
 
         int offset = 1;
-        for (Iterator i = tokens.iterator(); i.hasNext(); offset++) {
-            String s = (String)i.next();
+        for (Iterator<String> i = tokens.iterator(); i.hasNext(); offset++) {
+            String s = i.next();
             String id = s.substring(0, s.indexOf(','));
 
             buf.append("\tpublic static final int ");
@@ -69,10 +62,10 @@ public class MakeTokens {
 
         buf.append(EOL);
 
-        for (Iterator i = tokens.iterator(); i.hasNext(); offset++) {
-            String s = (String)i.next();
+        for (Iterator<String> i = tokens.iterator(); i.hasNext(); offset++) {
+            String s = i.next();
             String id = s.substring(0, s.indexOf(','));
-            String descr = s.substring(s.indexOf(',')+1);
+            String description = s.substring(s.indexOf(',')+1);
 
             buf.append("\tpublic static final Token TK_");
             buf.append(id);
@@ -81,7 +74,7 @@ public class MakeTokens {
             buf.append(", \"");
             buf.append(id);
             buf.append("\", \"");
-            buf.append(descr);
+            buf.append(description);
             buf.append("\");");
             buf.append(EOL);
         }
