@@ -20,12 +20,12 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.List;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
+
+import java.util.List;
 
 /**
  * Contains utility methods to layout floated and absolute content.
@@ -60,7 +60,7 @@ public class LayoutUtil {
 
     public static FloatLayoutResult layoutFloated(
             final LayoutContext c, LineBox currentLine, BlockBox block,
-            int avail, List pendingFloats) {
+            int avail, List<FloatLayoutResult> pendingFloats) {
         FloatLayoutResult result = new FloatLayoutResult();
 
         MarkerData markerData = c.getCurrentMarkerData();
