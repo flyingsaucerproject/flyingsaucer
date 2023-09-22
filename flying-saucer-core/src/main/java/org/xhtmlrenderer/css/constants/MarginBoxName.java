@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MarginBoxName {
-    private static final Map ALL = new HashMap();
-    private static int _maxAssigned = 0;
+    private static final Map<String, MarginBoxName> ALL = new HashMap<>();
+    private static int _maxAssigned;
 
     public final int FS_ID;
 
@@ -62,7 +62,7 @@ public class MarginBoxName {
         this.FS_ID = _maxAssigned++;
     }
 
-    private final static MarginBoxName addValue(String ident, IdentValue textAlign, IdentValue verticalAlign) {
+    private static MarginBoxName addValue(String ident, IdentValue textAlign, IdentValue verticalAlign) {
         MarginBoxName val = new MarginBoxName(ident, textAlign, verticalAlign);
         ALL.put(ident, val);
         return val;
@@ -73,7 +73,7 @@ public class MarginBoxName {
     }
 
     public static MarginBoxName valueOf(String ident) {
-        return (MarginBoxName)ALL.get(ident);
+        return ALL.get(ident);
     }
 
     public int hashCode() {
@@ -81,7 +81,7 @@ public class MarginBoxName {
     }
 
     public boolean equals(Object o) {
-        if (o == null || ! (o instanceof MarginBoxName)) {
+        if (!(o instanceof MarginBoxName)) {
             return false;
         }
 
