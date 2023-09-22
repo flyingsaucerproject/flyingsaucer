@@ -48,7 +48,11 @@ import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
 
 /**
  * The SharedContext is that which is kept between successive layout and render runs.
@@ -56,13 +60,14 @@ import java.util.Map;
  * @author empty
  */
 public final class SharedContext {
+    private static final Set<String> PAGED_MEDIA_TYPES =
+            new HashSet<>(asList("print", "projection", "embossed", "handheld", "tv"));
+
     private TextRenderer text_renderer;
     private String media;
     private UserAgentCallback uac;
-
     private boolean interactive = true;
-
-    private Map<String, Box> idMap;
+    private final Map<String, Box> idMap = new HashMap<>();
 
     /*
      * used to adjust fonts, ems, points, into screen resolution
@@ -162,13 +167,6 @@ public final class SharedContext {
 
     private FSCanvas canvas;
 
-    /*
-     * selection management code
-     */
-    private Box selection_start, selection_end;
-    private int selection_end_x, selection_start_x;
-    private boolean in_selection = false;
-
     public TextRenderer getTextRenderer() {
         return text_renderer;
     }
@@ -253,23 +251,15 @@ public final class SharedContext {
     }
 
     public void addBoxId(String id, Box box) {
-        if (idMap == null) {
-            idMap = new HashMap<>();
-        }
         idMap.put(id, box);
     }
 
     public Box getBoxById(String id) {
-        if (idMap == null) {
-            idMap = new HashMap<>();
-        }
         return idMap.get(id);
     }
 
     public void removeBoxId(String id) {
-        if (idMap != null) {
-            idMap.remove(id);
-        }
+        idMap.remove(id);
     }
 
     public Map<String, Box> getIdMap()
@@ -395,22 +385,7 @@ public final class SharedContext {
      * @return The paged value
      */
     public boolean isPaged() {
-        if (media.equals("print")) {
-            return true;
-        }
-        if (media.equals("projection")) {
-            return true;
-        }
-        if (media.equals("embossed")) {
-            return true;
-        }
-        if (media.equals("handheld")) {
-            return true;
-        }
-        if (media.equals("tv")) {
-            return true;
-        }
-        return false;
+        return PAGED_MEDIA_TYPES.contains(media);
     }
 
     public boolean isInteractive() {
@@ -520,7 +495,7 @@ public final class SharedContext {
 
     public void reset() {
        styleMap = null;
-       idMap = null;
+       idMap.clear();
        replacedElementFactory.reset();
     }
 
