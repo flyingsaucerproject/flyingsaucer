@@ -22,7 +22,6 @@ package org.xhtmlrenderer.util;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,13 +33,13 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+
+import static java.util.Arrays.asList;
 
 public class Util {
     private PrintWriter pw;
@@ -90,11 +89,11 @@ public class Util {
             return;
         }
         if (o instanceof Vector) {
-            print_vector((Vector) o);
+            print_vector((Vector<?>) o);
             return;
         }
-        if (o instanceof Hashtable) {
-            print_hashtable((Hashtable) o);
+        if (o instanceof Map<?,?>) {
+            print_map((Map<?,?>) o);
             return;
         }
         if (o instanceof Date) {
@@ -113,7 +112,7 @@ public class Util {
     /*
      * --- data type specific print functions ----
      */
-    public void print_vector(Vector v) {
+    public void print_vector(Vector<?> v) {
         ps("vector: size=" + v.size());
         for (int i = 0; i < v.size(); i++) {
             ps(v.elementAt(i).toString());
@@ -145,11 +144,9 @@ public class Util {
         }
     }
 
-    public void print_hashtable(Hashtable h) {
+    public void print_map(Map<?,?> h) {
         print("hashtable size=" + h.size());
-        Enumeration keys = h.keys();
-        while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
+        for (Object key : h.keySet()) {
             print(key + " = ");
             print(h.get(key).toString());
         }
@@ -225,8 +222,7 @@ public class Util {
     /*
      * ----- other stuff ----
      */
-    public static String file_to_string(String filename)
-            throws FileNotFoundException, IOException {
+    public static String file_to_string(String filename) throws IOException {
         File file = new File(filename);
         return file_to_string(file);
     }
@@ -328,7 +324,7 @@ public class Util {
         return output.toString();
     }
 
-    public static String[] vector_to_strings(Vector v) {
+    public static String[] vector_to_strings(Vector<?> v) {
         int len = v.size();
         String[] ret = new String[len];
         for (int i = 0; i < len; i++) {
@@ -337,7 +333,7 @@ public class Util {
         return ret;
     }
 
-    public static String[] list_to_strings(List l) {
+    public static String[] list_to_strings(List<?> l) {
         int len = l.size();
         String[] ret = new String[len];
         for (int i = 0; i < len; i++) {
@@ -346,16 +342,12 @@ public class Util {
         return ret;
     }
 
-    public static List toList(Object[] array) {
+    public static List<?> toList(Object[] array) {
         return to_list(array);
     }
 
-    public static List to_list(Object[] array) {
-        List list = new ArrayList();
-        for (int i = 0; i < array.length; i++) {
-            list.add(array[i]);
-        }
-        return list;
+    public static List<Object> to_list(Object[] array) {
+        return asList(array);
     }
 
     /*
@@ -406,11 +398,11 @@ public class Util {
     }
 
     public static boolean isNullOrEmpty(String str) {
-        return str == null || str.length() == 0;
+        return str == null || str.isEmpty();
     }
 
     public static boolean isNullOrEmpty(String str, boolean trim) {
-        return str == null || str.length() == 0 || (trim && str.trim().length() == 0);
+        return str == null || str.isEmpty() || (trim && str.trim().isEmpty());
     }
 
     public static boolean isEqual(String str1, String str2) {
@@ -444,7 +436,7 @@ public class Util {
 // *
 // * Revision 1.3  2004/10/23 14:06:57  pdoubleya
 // * Re-formatted using JavaStyle tool.
-// * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+// * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
 // * Added CVS log comments at bottom.
 // *
 // *
