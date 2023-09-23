@@ -80,7 +80,7 @@ public class LineBox extends Box implements InlinePaintable {
     @Override
     public String dump(LayoutContext c, String indent, int which) {
         if (which != Box.DUMP_RENDER) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(String.format("Unsupported which: %d (expected: %d)", which, Box.DUMP_RENDER));
         }
 
         StringBuilder result = new StringBuilder(indent);

@@ -128,7 +128,7 @@ public class GeneralUtil {
      * @return see desc
      */
     public static String trackBack(int cnt) {
-        Exception ex = new Exception();
+        Exception ex = new Exception("Getting stack trace...");
         StringBuilder sb = new StringBuilder();
         List<String> list = new ArrayList<>(cnt);
         StackTraceElement[] stackTrace = ex.getStackTrace();

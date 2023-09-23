@@ -177,7 +177,7 @@ public final class ValueConstants {
             case CSSPrimitiveValue.CSS_UNKNOWN:
                 XRLog.cascade(Level.WARNING, "Asked whether type was absolute, given CSS_UNKNOWN as the type. " +
                         "Might be one of those funny values like background-position.");
-                GeneralUtil.dumpShortException(new Exception());
+                GeneralUtil.dumpShortException(new Exception("Taking a thread dump..."));
                 // fall-through
             default:
                 return false;

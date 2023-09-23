@@ -1261,7 +1261,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     @Override
     public void drawSelection(RenderingContext c, InlineText inlineText) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: drawSelection");
     }
 
     @Override

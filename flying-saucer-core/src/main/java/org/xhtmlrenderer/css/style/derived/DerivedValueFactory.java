@@ -63,7 +63,7 @@ public class DerivedValueFactory {
             case PropertyValue.VALUE_TYPE_FUNCTION:
                 return new FunctionValue(cssName, value);
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unsupported property value type: " + value.getPropertyValueType());
         }
     }
 }

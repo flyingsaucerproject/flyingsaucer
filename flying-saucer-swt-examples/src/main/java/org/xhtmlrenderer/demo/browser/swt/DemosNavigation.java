@@ -80,7 +80,7 @@ public class DemosNavigation {
 
     public void setCurrent(int index) {
         if (index < 0 || index >= _demos.size()) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException(String.format("Index %s is out of range [%s, %s)", index, 0, _demos.size()));
         }
         if (!_lock) {
             _current = index;

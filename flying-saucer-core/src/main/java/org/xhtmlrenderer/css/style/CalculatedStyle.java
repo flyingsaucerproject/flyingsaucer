@@ -735,7 +735,7 @@ public class CalculatedStyle {
             case BOTTOM:
                 return (int) (margin.bottom() + border.bottom() + padding.bottom());
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unsupported margin calculation style: " + which);
         }
     }
 
