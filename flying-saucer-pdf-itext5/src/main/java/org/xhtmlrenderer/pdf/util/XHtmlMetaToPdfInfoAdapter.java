@@ -19,11 +19,9 @@
 
 package org.xhtmlrenderer.pdf.util;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfObject;
+import com.itextpdf.text.pdf.PdfString;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -32,9 +30,9 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.PDFCreationListener;
 import org.xhtmlrenderer.util.XRLog;
 
-import com.itextpdf.text.pdf.PdfName;
-import com.itextpdf.text.pdf.PdfObject;
-import com.itextpdf.text.pdf.PdfString;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 
 /**
@@ -69,7 +67,7 @@ import com.itextpdf.text.pdf.PdfString;
  * <p>
  * Valid PDF meta names are defined in Adobe's PDF Reference (Sixth Edition),
  * section "10.2.1 - Document Information Dictionary", table 10.2, pg.844
- * http://www.adobe.com/devnet/pdf/pdf_reference.html
+ * <a href="http://www.adobe.com/devnet/pdf/pdf_reference.html">...</a>
  * </p>
  *
  * <h1>Usage</h1>
@@ -103,7 +101,6 @@ import com.itextpdf.text.pdf.PdfString;
  * by Jesse Keller <jesse.keller@roche.com>.
  *
  * @author Tim Telcik <tim.telcik@permeance.com.au>
- *
  * @see DefaultPDFCreationListener
  * @see PDFCreationListener
  * @see ITextRenderer
@@ -125,7 +122,7 @@ public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
     private static final String HTML_META_ATTR_NAME = "name";
     private static final String HTML_META_ATTR_CONTENT = "content";
 
-    private java.util.Map pdfInfoValues = new HashMap();
+    private final Map<PdfName, PdfString> pdfInfoValues = new HashMap<>();
 
 
     /**
@@ -191,7 +188,7 @@ public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
             String metaName = thisNode.getAttribute( HTML_META_ATTR_NAME );
             String metaContent = thisNode.getAttribute( HTML_META_ATTR_CONTENT );
             XRLog.render(Level.FINEST, "metaName=" + metaName + ", metaContent=" + metaContent );
-            if (metaName.length() != 0 && metaContent.length() != 0) {
+            if (!metaName.isEmpty() && !metaContent.isEmpty()) {
 
                 if ( HTML_META_KEY_TITLE.equalsIgnoreCase( metaName )
                         || HTML_META_KEY_DC_TITLE.equalsIgnoreCase( metaName ) ) {
@@ -225,13 +222,10 @@ public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
      */
     private void addPdfMetaValuesToPdfDocument( ITextRenderer renderer ) {
 
-        Iterator pdfNameIter = this.pdfInfoValues.keySet().iterator();
-
-        while (pdfNameIter.hasNext()) {
-            PdfName pdfName = (PdfName) pdfNameIter.next();
-            PdfString pdfString = (PdfString) pdfInfoValues.get( pdfName );
-            XRLog.render(Level.FINEST, "pdfName=" + pdfName + ", pdfString=" + pdfString );
-            renderer.getOutputDevice().getWriter().getInfo().put( pdfName, pdfString );
+        for (PdfName pdfName : this.pdfInfoValues.keySet()) {
+            PdfString pdfString = pdfInfoValues.get(pdfName);
+            XRLog.render(Level.FINEST, "pdfName=" + pdfName + ", pdfString=" + pdfString);
+            renderer.getOutputDevice().getWriter().getInfo().put(pdfName, pdfString);
         }
         if ( XRLog.isLoggingEnabled() ) {
             XRLog.render(Level.FINEST, "added " + renderer.getOutputDevice().getWriter().getInfo().getKeys() );
