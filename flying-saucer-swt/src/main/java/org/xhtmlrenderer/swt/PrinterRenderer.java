@@ -55,7 +55,7 @@ import java.util.logging.Level;
 public class PrinterRenderer implements UserInterface {
 
     private final Printer _printer;
-    private SharedContext _sharedContext;
+    private final SharedContext _sharedContext;
 
     public PrinterRenderer(Printer printer) {
         this(printer, new NaiveUserAgent(printer));
@@ -99,10 +99,6 @@ public class PrinterRenderer implements UserInterface {
         return result;
     }
 
-    /**
-     * @param gc
-     * @return a new {@link RenderingContext}
-     */
     protected RenderingContext newRenderingContext(GC gc) {
         RenderingContext result = _sharedContext.newRenderingContextInstance();
 
@@ -165,7 +161,7 @@ public class PrinterRenderer implements UserInterface {
 
             // RENDER
             c = newRenderingContext(gc);
-            List pages = root.getPages();
+            List<PageBox> pages = root.getPages();
             c.setPageCount(pages.size());
             if (startPage < 0) {
                 startPage = 0;
@@ -179,7 +175,7 @@ public class PrinterRenderer implements UserInterface {
             Shape working = c.getOutputDevice().getClip();
 
             for (int i = startPage; i <= endPage; i++) {
-                PageBox page = (PageBox) pages.get(i);
+                PageBox page = pages.get(i);
                 c.setPage(i, page);
 
                 if (!_printer.startPage()) {
