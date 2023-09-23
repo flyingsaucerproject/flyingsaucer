@@ -29,7 +29,7 @@ import java.util.List;
  * find the stylesheet by uri, first from the StylesheetFactory cache, then by
  * loading the uri if it is not cached. <p>
  *
- * Therefore, either a stylesheet must be set, or a uri must be set <p>
+ * Therefore, either a stylesheet must be set, or an uri must be set <p>
  *
  * Origin defaults to USER_AGENT and media defaults to "all"
  *
@@ -42,7 +42,7 @@ public class StylesheetInfo {
     private String uri;
     private int origin = USER_AGENT;
     private String type;
-    private List mediaTypes = new ArrayList();
+    private List<String> mediaTypes = new ArrayList<>();
     private String content;
 
     /** Origin of stylesheet - user agent  */
@@ -60,8 +60,9 @@ public class StylesheetInfo {
      * @return   true if the stylesheet referenced applies to the medium
      */
     public boolean appliesToMedia(String m) {
-        return m.toLowerCase().equals("all") ||
-            mediaTypes.contains("all") || mediaTypes.contains(m.toLowerCase());
+        String mLowerCase = m.toLowerCase();
+        return mLowerCase.equals("all") ||
+            mediaTypes.contains("all") || mediaTypes.contains(mLowerCase);
     }
 
     /**
@@ -80,14 +81,14 @@ public class StylesheetInfo {
      */
     public void setMedia( String media ) {
         String[] mediaTypes = media.split(",");
-        List l = new ArrayList(mediaTypes.length);
-        for (int i = 0; i < mediaTypes.length; i++) {
-            l.add(mediaTypes[i].trim().toLowerCase());
+        List<String> l = new ArrayList<>(mediaTypes.length);
+        for (String mediaType : mediaTypes) {
+            l.add(mediaType.trim().toLowerCase());
         }
         this.mediaTypes = l;
     }
 
-    public void setMedia(List mediaTypes) {
+    public void setMedia(List<String> mediaTypes) {
         this.mediaTypes = mediaTypes;
     }
 
@@ -145,7 +146,7 @@ public class StylesheetInfo {
      *
      * @return   The media value
      */
-    public List getMedia() {
+    public List<String> getMedia() {
         return mediaTypes;
     }
 
