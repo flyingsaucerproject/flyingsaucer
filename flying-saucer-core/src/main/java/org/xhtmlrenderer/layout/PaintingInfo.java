@@ -23,7 +23,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 
 /**
- * A bean which every box uses to provide its aggregate bounds (which may be 
+ * A bean which every box uses to provide its aggregate bounds (which may be
  * larger than the bounds of the box itself when there is overhanging content)
  * and its outer margin corner (which is used to calculate the size of the
  * canvas).  The aggregate bounds calculation does not take the value of the
@@ -32,34 +32,34 @@ import java.awt.Rectangle;
 public class PaintingInfo {
     private Dimension _outerMarginCorner;
     private Rectangle _aggregateBounds;
-    
+
     public PaintingInfo() {
     }
-    
+
     public Rectangle getAggregateBounds() {
         return _aggregateBounds;
     }
-    
+
     public void setAggregateBounds(Rectangle aggregateBounds) {
         _aggregateBounds = aggregateBounds;
     }
-    
+
     public Dimension getOuterMarginCorner() {
         return _outerMarginCorner;
     }
-    
+
     public void setOuterMarginCorner(Dimension outerMarginCorner) {
         _outerMarginCorner = outerMarginCorner;
     }
-    
+
     public PaintingInfo copyOf() {
         PaintingInfo result = new PaintingInfo();
         result.setOuterMarginCorner(new Dimension(_outerMarginCorner));
         result.setAggregateBounds(new Rectangle(_aggregateBounds));
-        
+
         return result;
     }
-    
+
     public void translate(int tx, int ty) {
         _aggregateBounds.translate(tx, ty);
         _outerMarginCorner.setSize(

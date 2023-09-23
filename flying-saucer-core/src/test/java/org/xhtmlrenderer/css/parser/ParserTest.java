@@ -19,46 +19,55 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import junit.framework.TestCase;
+import org.junit.Assert;
+import org.xhtmlrenderer.css.newmatch.Selector;
+import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.Ruleset;
+import org.xhtmlrenderer.css.sheet.Stylesheet;
+
+import java.io.IOException;
 import java.io.StringReader;
 
-public class ParserTest {
-    public static void main(String[] args) throws Exception {
-        String test = "div { background-image: url('something') }\n";
-        StringBuffer longTest = new StringBuffer();
-        for (int i = 0 ; i < 10000; i++) {
+public class ParserTest extends TestCase {
+    private final String test = String.format("div { background-image: url('something') }%n");
+    private final CSSErrorHandler errorHandler = (uri, message) -> System.out.println(message);
+
+    public void test_cssParsingPerformance() throws IOException {
+        int count = 10_000;
+        StringBuilder longTest = new StringBuilder();
+        for (int i = 0 ; i < count; i++) {
             longTest.append(test);
         }
-        
-        CSSErrorHandler errorHandler = new CSSErrorHandler() {
-            public void error(String uri, String message) {
-                System.out.println(message);
-            }
-        };
+        Assert.assertEquals("Long enough input", test.length() * count, longTest.length());
         
         long total = 0;
         for (int i = 0; i < 40; i++) {
             long start = System.currentTimeMillis();
             CSSParser p = new CSSParser(errorHandler);
-            p.parseStylesheet(null, 0, new StringReader(longTest.toString()));
+            Stylesheet stylesheet = p.parseStylesheet(null, 0, new StringReader(longTest.toString()));
             long end = System.currentTimeMillis();
             // System.out.println("Took " + (end-start) + " ms");
             total += (end-start);
+
+            assertEquals(count, stylesheet.getContents().size());
         }
         System.out.println("Average " + (total/10) + " ms");
-        
+
         total = 0;
         for (int i = 0; i < 10; i++) {
             long start = System.currentTimeMillis();
             CSSParser p = new CSSParser(errorHandler);
-            p.parseStylesheet(null, 0, new StringReader(longTest.toString()));
+            Stylesheet stylesheet = p.parseStylesheet(null, 0, new StringReader(longTest.toString()));
             long end = System.currentTimeMillis();
             // System.out.println("Took " + (end-start) + " ms");
             total += (end-start);
+            assertEquals(count, stylesheet.getContents().size());
         }
         System.out.println("Average " + (total/10) + " ms");
-        
+
         CSSParser p = new CSSParser(errorHandler);
-        
+
         total = 0;
         for (int i = 0; i < 10; i++) {
             long start = System.currentTimeMillis();
@@ -70,5 +79,20 @@ public class ParserTest {
             total += (end-start);
         }
         System.out.println("Average " + (total/10) + " ms");
+    }
+
+    public void test_parseCss() throws IOException {
+        CSSParser p = new CSSParser(errorHandler);
+        
+        Stylesheet stylesheet = p.parseStylesheet(null, 0, new StringReader(test));
+        assertEquals(1, stylesheet.getContents().size());
+        Ruleset ruleset = (Ruleset) stylesheet.getContents().get(0);
+        assertEquals(1, ruleset.getFSSelectors().size());
+        assertEquals(Selector.class, ruleset.getFSSelectors().get(0).getClass());
+        assertEquals(1, ruleset.getPropertyDeclarations().size());
+        PropertyDeclaration propertyDeclaration = (PropertyDeclaration) ruleset.getPropertyDeclarations().get(0);
+        assertEquals("background-image", propertyDeclaration.getPropertyName());
+        assertEquals("background-image", propertyDeclaration.getCSSName().toString());
+        assertEquals("url('something')", propertyDeclaration.getValue().getCssText());
     }
 }

@@ -19,29 +19,23 @@
  */
 package org.xhtmlrenderer.simple;
 
-import java.awt.Component;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
 
 /**
- * <p><code>FSScrollPane</code> is a JScrollPane set up to support keyboard navigation of an XHTML/XML
- * document rendered with Flying Saucer. In particular, it assigns key bindings to the view's {@link InputMap} 
+ * <p>{@code FSScrollPane} is a JScrollPane set up to support keyboard navigation of an XHTML/XML
+ * document rendered with Flying Saucer. In particular, it assigns key bindings to the view's {@link javax.swing.InputMap}
  * for page-up, page-down, line-up/down, page-start and page-end.
  * The amount the document scrolls is based on the current viewport and the current line height.
- * If the view is resized, the scroll increment is automatically adjusted. Using FSScrollPane 
+ * If the view is resized, the scroll increment is automatically adjusted. Using FSScrollPane
  * to display an {@link XHTMLPanel} should save you time as your users
  * will have standard keyboard navigation out of the box.</p>
- * 
- * <p>To use <code>FSScrollPane</code>, just instantiate it and add your XHTMLPanel on instantiation:
+ *
+ * <p>To use {@code FSScrollPane}, just instantiate it and add your XHTMLPanel on instantiation:
  * <pre>
  * XHTMLPanel panel = new XHTMLPanel();
  * FSScrollPane scroll = new FSScrollPane(view);
@@ -56,8 +50,8 @@ import javax.swing.KeyStroke;
  * <dt>Scroll Down 1 Line<dt><dd>DOWN-ARROW</dd>
  * </dl>
  * This class declares six constant strings you can use if you want to override one of these default
- * settings on the <code>InputMap</code>; these Strings will be trigger the relevant <code>Action</code>
- * associated with the scrolling. To change the key binding for "Scroll to Top" to <code>Alt-Home</code>,
+ * settings on the {@code InputMap}; these Strings will be trigger the relevant {@code Action}
+ * associated with the scrolling. To change the key binding for "Scroll to Top" to {@code Alt-Home},
  * do this:
  * <pre>
  * panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
@@ -87,22 +81,22 @@ public class FSScrollPane extends JScrollPane {
 
     /** Constant used for mapping a key binding to "scroll to top of document" */
     public static final String PAGE_START = "page-start";
-    
+
 
     public FSScrollPane() {
         this(null);
     }
-        
+
 
     /** Instantiates a new FSScrollPane around the given Panel; see class documentation. */
-    public FSScrollPane(JPanel aview) {
-        super(aview, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_ALWAYS);
+    public FSScrollPane(JPanel view) {
+        super(view, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_ALWAYS);
 
         // TODO: need to get line-height, I think; this should not be fixed (PWW 28-01-05)
         getVerticalScrollBar().setUnitIncrement(15);
     }
-    
-    /* @Override */
+
+    @Override
     public void setViewportView(Component view)
     {
         setPreferredSize(new Dimension((int)view.getSize().getWidth(), (int)view.getSize().getHeight()));
@@ -113,7 +107,7 @@ public class FSScrollPane extends JScrollPane {
         addResizeListener(view);
         super.setViewportView(view);
     }
-    
+
     /** Assigns the default keyboard bindings on the view for document navigation. */
     private void setDefaultInputMap(JComponent view) {
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
@@ -132,15 +126,16 @@ public class FSScrollPane extends JScrollPane {
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_MASK), PAGE_START);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), PAGE_START);
-        
+
     }
-    
+
     /** Assigns the default Actions for document navigation on the view. */
     private void setDefaultActionMap(JComponent view) {
         view.getActionMap().put(PAGE_DOWN,
                 new AbstractAction() {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
                         sb.getModel().setValue(sb.getModel().getValue() + sb.getBlockIncrement(1));
@@ -150,6 +145,7 @@ public class FSScrollPane extends JScrollPane {
                 new AbstractAction() {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
                         sb.getModel().setValue(sb.getModel().getMaximum());
@@ -159,6 +155,7 @@ public class FSScrollPane extends JScrollPane {
                 new AbstractAction() {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
                         sb.getModel().setValue(sb.getModel().getValue() - sb.getBlockIncrement(-1));
@@ -168,6 +165,7 @@ public class FSScrollPane extends JScrollPane {
                 new AbstractAction() {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
                         sb.getModel().setValue(0);
@@ -177,6 +175,7 @@ public class FSScrollPane extends JScrollPane {
                 new AbstractAction() {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
                         sb.getModel().setValue(sb.getModel().getValue() + sb.getUnitIncrement(1));
@@ -186,30 +185,32 @@ public class FSScrollPane extends JScrollPane {
                 new AbstractAction() {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
                         sb.getModel().setValue(sb.getModel().getValue() - sb.getUnitIncrement(-1));
                     }
                 });
     }
-    
+
     /** Adds a component listener on the view for resize events, to adjust the scroll increment. */
     private void addResizeListener(Component view) {
         view.addComponentListener( new ComponentAdapter() {
             /** Invoked when the component's size changes. Reset scrollable increment, because
              * page-down/up is relative to current view size.
              */
+            @Override
             public void componentResized(ComponentEvent e) {
                 JScrollBar bar = getVerticalScrollBar();
-                
+
                 // NOTE: use the scroll pane size--the XHTMLPanel size is a virtual size of the entire
                 // page
-                
+
                 // want to page down leaving the current line at the bottom be the first at the top
                 // TODO: this will only work once unit increment is set correctly; multiplier is a workaround (PWW 28-01-05)
                 int incr = (int)(getSize().getHeight() - (bar.getUnitIncrement(1) * 3));
                 getVerticalScrollBar().setBlockIncrement(incr);
             }
-        });        
+        });
     }
 }

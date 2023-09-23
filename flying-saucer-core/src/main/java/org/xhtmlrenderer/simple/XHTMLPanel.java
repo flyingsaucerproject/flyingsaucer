@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.simple;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -34,6 +30,10 @@ import org.xhtmlrenderer.swing.CursorListener;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
+
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * <p/>
@@ -144,17 +144,19 @@ public class XHTMLPanel extends BasicPanel {
     /**
      * Lays out the current document again, and re-renders.
      */
+    @Override
     public void relayout() {
         sharedContext.flushFonts();
         super.relayout();
     }
 
     /**
-     * Loads and renders a Document given a uri.
+     * Loads and renders a Document given an uri.
      * The uri is resolved by the UserAgentCallback
      *
      * @param uri
      */
+    @Override
     public void setDocument(String uri) {
         setDocument(loadDocument(uri), uri);
     }
@@ -176,6 +178,7 @@ public class XHTMLPanel extends BasicPanel {
      * @param doc The new document value
      * @param url The new document value
      */
+    @Override
     public void setDocument(Document doc, String url) {
         resetListeners();
         setDocument(doc, url, new XhtmlNamespaceHandler());
@@ -189,6 +192,7 @@ public class XHTMLPanel extends BasicPanel {
      * @param url    The URL used to resolve relative path references.
      */
     // TODO: should throw more specific exception (PWW 25/07/2006)
+    @Override
     public void setDocument(InputStream stream, String url)
             throws Exception {
         resetListeners();
@@ -223,6 +227,7 @@ public class XHTMLPanel extends BasicPanel {
      *
      * @param ctx A new RenderingContext to use for rendering.
      */
+    @Override
     public void setSharedContext(SharedContext ctx) {
         super.setSharedContext(ctx);
     }

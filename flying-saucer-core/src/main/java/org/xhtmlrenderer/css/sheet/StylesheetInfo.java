@@ -29,7 +29,7 @@ import java.util.List;
  * find the stylesheet by uri, first from the StylesheetFactory cache, then by
  * loading the uri if it is not cached. <p>
  *
- * Therefore, either a stylesheet must be set, or a uri must be set <p>
+ * Therefore, either a stylesheet must be set, or an uri must be set <p>
  *
  * Origin defaults to USER_AGENT and media defaults to "all"
  *
@@ -37,38 +37,32 @@ import java.util.List;
  */
 public class StylesheetInfo {
 
-    /** Description of the Field */
-    private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also might save a lookup if it's already looked up
-            /** Description of the Field */
+    private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also, might save a lookup if it's already looked up
     private String title;
-    /** Description of the Field */
     private String uri;
-    /** Description of the Field */
     private int origin = USER_AGENT;
-    /** Description of the Field */
     private String type;
-    
-    private List mediaTypes = new ArrayList();
-    
+    private List<String> mediaTypes = new ArrayList<>();
     private String content;
 
     /** Origin of stylesheet - user agent  */
-    public final static int USER_AGENT = 0;
+    public static final int USER_AGENT = 0;
 
     /** Origin of stylesheet - user  */
-    public final static int USER = 1;
+    public static final int USER = 1;
 
     /** Origin of stylesheet - author  */
-    public final static int AUTHOR = 2;
-    
+    public static final int AUTHOR = 2;
+
 
     /**
      * @param m  a single media identifier
      * @return   true if the stylesheet referenced applies to the medium
      */
     public boolean appliesToMedia(String m) {
-        return m.toLowerCase().equals("all") || 
-            mediaTypes.contains("all") || mediaTypes.contains(m.toLowerCase());
+        String mLowerCase = m.toLowerCase();
+        return mLowerCase.equals("all") ||
+            mediaTypes.contains("all") || mediaTypes.contains(mLowerCase);
     }
 
     /**
@@ -87,17 +81,17 @@ public class StylesheetInfo {
      */
     public void setMedia( String media ) {
         String[] mediaTypes = media.split(",");
-        List l = new ArrayList(mediaTypes.length);
-        for (int i = 0; i < mediaTypes.length; i++) {
-            l.add(mediaTypes[i].trim().toLowerCase());
+        List<String> l = new ArrayList<>(mediaTypes.length);
+        for (String mediaType : mediaTypes) {
+            l.add(mediaType.trim().toLowerCase());
         }
         this.mediaTypes = l;
     }
-    
-    public void setMedia(List mediaTypes) {
+
+    public void setMedia(List<String> mediaTypes) {
         this.mediaTypes = mediaTypes;
     }
-    
+
     public void addMedium(String medium) {
         mediaTypes.add(medium);
     }
@@ -152,7 +146,7 @@ public class StylesheetInfo {
      *
      * @return   The media value
      */
-    public List getMedia() {
+    public List<String> getMedia() {
         return mediaTypes;
     }
 
@@ -199,7 +193,7 @@ public class StylesheetInfo {
     public void setContent(String content) {
         this.content = content;
     }
-    
+
     public boolean isInline() {
         return this.content != null;
     }

@@ -111,7 +111,7 @@ can I use Flying Saucer for?</h2>
 <p>Flying Saucer can be used for any Java application
   that requires some sort of styled text. This can be as simple as a chat program
   or as complicated as a complete ebook reader with dynamic stylesheets. Flying
-  Saucer is very forward thinking and is designed to be a part of the next
+  Saucer is very forward-thinking and is designed to be a part of the next
   generation of applications that combine rich desktop clients with web content.
   Some examples of application types are:</p>
 
@@ -164,7 +164,7 @@ can I use Flying Saucer for?</h2>
 <h2>How do I make my program follow hyperlinks?</h2>
 
 <p>You need a mouse listener that detects link clicks and does the 
-HTTP request.  The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish.</p>
+HTTP request.  The XHTMLPanel includes a built-in mouse listener to do this, but you can override it if you wish.</p>
 
 <a name="forms_and_swing"></a>
 <h2>How do I get access to the Swing components that make up my form fields?</h2>
@@ -182,7 +182,7 @@ HTTP request.  The XHTMLPanel includes a built in mouse listener to do this, but
 
 <a name="classpath"></a>
 <h2>How do I set up my CLASSPATH?</h2>
-<p>You only need the <code>core-renderer.jar</code> and the <code>ss_css2.jar</code>. That is all you need for your own programs. You also need an XML parser to be in your classpath, but this already included in recent versions of the JRE. To run the browser or use any of it's support classes you will need the <code>browser.jar</code> file.</p>
+<p>You only need the <code>core-renderer.jar</code> and the <code>ss_css2.jar</code>. That is all you need for your own programs. You also need an XML parser to be in your classpath, but this already included in recent versions of the JRE. To run the browser or use any of its support classes you will need the <code>browser.jar</code> file.</p>
 
 
 
@@ -246,7 +246,7 @@ loaded or available for lookup. Logging output is also controlled in this
 Configuration file.</p>
 
 <p>If you think an override is not taking, you can change the logging behavior
-of the Configuration class. Because of inter-dependencies between Configuration
+of the Configuration class. Because of interdependencies between Configuration
 and the logging system, this is a special-case key, using the System property
 <code>show-config</code>. The allowed values are from the 
 <code>java.util.logging.Level</code> class. Use ALL to show a lot of detail about
@@ -291,7 +291,7 @@ any other configuration properties.</p>
 <p>We log to a set of hierarchies. The internal code--everything between a request to load
 a page and the page rendering--is logged to a subhierarchy of "plumbing", e.g. plumbing.load.
 Our convention is that WARNING and SEVERE levels are very important and should always be
-logged. INFO messages are useful and but can be excluded if you want a quiet ride. Anything
+logged. INFO messages are useful but can be excluded if you want a quiet ride. Anything
 below INFO (FINE, FINER, FINEST) is generally only interesting for core renderer developers.
 We don't guarrantee that anything below INFO will be useful, correct, practical or informative.
 You can usually leave log levels at INFO for most purposes.</p>

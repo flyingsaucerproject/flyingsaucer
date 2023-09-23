@@ -20,24 +20,23 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfReader;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper;
+import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfReader;
-
-import org.xhtmlrenderer.util.ImageUtil;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 
 public class ITextUserAgent extends NaiveUserAgent {
     private static final int IMAGE_CACHE_CAPACITY = 32;
@@ -62,12 +61,13 @@ public class ITextUserAgent extends NaiveUserAgent {
         return out.toByteArray();
     }
 
+    @Override
     public ImageResource getImageResource(String uriStr) {
         ImageResource resource;
         if (!ImageUtil.isEmbeddedBase64Image(uriStr)) {
             uriStr = resolveURI(uriStr);
         }
-        resource = (ImageResource) _imageCache.get(uriStr);
+        resource = _imageCache.get(uriStr);
 
         if (resource == null) {
             if (ImageUtil.isEmbeddedBase64Image(uriStr)) {
@@ -116,14 +116,14 @@ public class ITextUserAgent extends NaiveUserAgent {
         }
         return resource;
     }
-    
+
     private ImageResource loadEmbeddedBase64ImageResource(final String uri) {
         try {
             byte[] buffer = ImageUtil.getEmbeddedBase64Image(uri);
             Image image = Image.getInstance(buffer);
             scaleToOutputResolution(image);
             return new ImageResource(null, new ITextFSImage(image));
-        } catch (Exception e) {
+        } catch (BadElementException | IOException e) {
             XRLog.exception("Can't read XHTML embedded image.", e);
         }
         return new ImageResource(null, null);

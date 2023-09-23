@@ -26,16 +26,16 @@ import org.xhtmlrenderer.extend.FSImage;
  * font information from the block (for selecting the correct font when drawing
  * a text marker) or the data necessary to draw other types of markers.  It
  * also includes a reference to the first line box in the block box (which in
- * turn may be nested inside of other block boxes).  All markers are drawn 
+ * turn may be nested inside of other block boxes).  All markers are drawn
  * relative to the baseline of this line box.
  */
 public class MarkerData {
     private StrutMetrics _structMetrics;
-    
+
     private TextMarker _textMarker;
     private GlyphMarker _glyphMarker;
     private ImageMarker _imageMarker;
-    
+
     private LineBox _referenceLine;
     private LineBox _previousReferenceLine;
 
@@ -70,7 +70,7 @@ public class MarkerData {
     public void setStructMetrics(StrutMetrics structMetrics) {
         _structMetrics = structMetrics;
     }
-    
+
     public int getLayoutWidth() {
         if (_textMarker != null) {
             return _textMarker.getLayoutWidth();
@@ -91,17 +91,17 @@ public class MarkerData {
         _previousReferenceLine = _referenceLine;
         _referenceLine = referenceLine;
     }
-    
+
     public void restorePreviousReferenceLine(LineBox current) {
         if (current == _referenceLine) {
             _referenceLine = _previousReferenceLine;
         }
     }
-    
+
     public static class ImageMarker {
         private int _layoutWidth;
         private FSImage _image;
-        
+
         public FSImage getImage() {
             return _image;
         }
@@ -115,32 +115,32 @@ public class MarkerData {
             _layoutWidth = layoutWidth;
         }
     }
-    
+
     public static class GlyphMarker {
         private int _diameter;
         private int _layoutWidth;
-        
+
         public int getDiameter() {
             return _diameter;
         }
-        
+
         public void setDiameter(int diameter) {
             _diameter = diameter;
         }
-        
+
         public int getLayoutWidth() {
             return _layoutWidth;
         }
-        
+
         public void setLayoutWidth(int layoutWidth) {
             _layoutWidth = layoutWidth;
         }
     }
-    
+
     public static class TextMarker {
         private String _text;
         private int _layoutWidth;
-        
+
         public TextMarker() {
         }
 
@@ -159,5 +159,5 @@ public class MarkerData {
         public void setLayoutWidth(int width) {
             _layoutWidth = width;
         }
-    }    
+    }
 }

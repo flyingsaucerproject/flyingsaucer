@@ -11,7 +11,7 @@ import org.xhtmlrenderer.css.style.CssContext;
 public class RectPropertySet {
     //                                                                  HACK
     public static final RectPropertySet ALL_ZEROS = new RectPropertySet(CSSName.MARGIN_SHORTHAND, 0, 0, 0, 0);
-    
+
     protected float _top;
     protected float _right;
     protected float _bottom;
@@ -110,15 +110,15 @@ public class RectPropertySet {
         newRect._left = _left;
         return newRect;
     }
-    
+
     public boolean isAllZeros() {
         return _top == 0.0f && _right == 0.0f && _bottom == 0.0f && _left == 0.0f;
     }
-    
+
     public boolean hasNegativeValues() {
         return _top < 0 || _right < 0 || _bottom < 0 || _left < 0;
     }
-    
+
     public void resetNegativeValues() {
         if (top() < 0) {
             setTop(0);

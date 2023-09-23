@@ -9,7 +9,7 @@ import javax.swing.SwingUtilities;
 
 public class BrowserStatus extends JPanel {
     private static final long serialVersionUID = 1L;
-    
+
     public JLabel text, memory;
 
     public void init() {
@@ -28,7 +28,7 @@ public class BrowserStatus extends JPanel {
         add("Center", text);
         add("East", memory);
     }
-    
+
     public Insets getInsets() {
         return new Insets(3, 4, 3, 4);
     }

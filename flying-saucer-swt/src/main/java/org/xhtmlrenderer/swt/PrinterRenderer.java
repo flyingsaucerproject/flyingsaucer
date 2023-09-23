@@ -19,12 +19,6 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.Printer;
@@ -48,16 +42,20 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.awt.*;
+import java.util.List;
+import java.util.logging.Level;
+
 /**
- * A renderer for a SWT Printer. Instances must be disposed with
+ * A renderer for an SWT Printer. Instances must be disposed with
  * {@link PrinterRenderer#dispose()}.
- * 
+ *
  * @author Vianney le Clément
  */
 public class PrinterRenderer implements UserInterface {
 
     private final Printer _printer;
-    private SharedContext _sharedContext;
+    private final SharedContext _sharedContext;
 
     public PrinterRenderer(Printer printer) {
         this(printer, new NaiveUserAgent(printer));
@@ -101,10 +99,6 @@ public class PrinterRenderer implements UserInterface {
         return result;
     }
 
-    /**
-     * @param gc
-     * @return a new {@link RenderingContext}
-     */
     protected RenderingContext newRenderingContext(GC gc) {
         RenderingContext result = _sharedContext.newRenderingContextInstance();
 
@@ -162,12 +156,12 @@ public class PrinterRenderer implements UserInterface {
 
             Layer root = rootBox.getLayer();
             Dimension intrinsic_size = root.getPaintingDimension(layout);
-            root.trimEmptyPages(layout, intrinsic_size.height);
+            root.trimEmptyPages(intrinsic_size.height);
             root.assignPagePaintingPositions(layout, Layer.PAGED_MODE_PRINT);
 
             // RENDER
             c = newRenderingContext(gc);
-            List pages = root.getPages();
+            List<PageBox> pages = root.getPages();
             c.setPageCount(pages.size());
             if (startPage < 0) {
                 startPage = 0;
@@ -181,13 +175,13 @@ public class PrinterRenderer implements UserInterface {
             Shape working = c.getOutputDevice().getClip();
 
             for (int i = startPage; i <= endPage; i++) {
-                PageBox page = (PageBox) pages.get(i);
+                PageBox page = pages.get(i);
                 c.setPage(i, page);
 
                 if (!_printer.startPage()) {
                     return;
                 }
-                
+
                 page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
                 page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
                 page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);

@@ -38,52 +38,52 @@ import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class FOPLineBreakingStrategy implements LineBreakingStrategy {
-	
-	private static final int SOFT_HYPHEN = '\u00AD';
-	
-	private TreeSet<BreakPoint> getPoints(String text, String lang, CalculatedStyle style) {
-		text = new NonBreakPointsEnhancer().enhance(text, lang);
-		BreakIterator breakIt = new UrlAwareLineBreakIterator();
-		breakIt.setText(text);
-		TreeSet<BreakPoint> points = new TreeSet<BreakPoint>();
-		int p = BreakIterator.DONE;
-		while ((p = breakIt.next()) != BreakIterator.DONE) {
-			points.add(new BreakPoint(p));
-		}
-		if (style.getHyphens() == IdentValue.NONE) {
-			return points;
-		}
-		if (style.getHyphens() == IdentValue.MANUAL) {
-			int index = text.indexOf(SOFT_HYPHEN);
-			while (index >= 0) {
-				BreakPoint point = new BreakPoint(index);
-				addHyphen(point);
-				points.add(point);
-			    index = text.indexOf(SOFT_HYPHEN, index + 1);
-			}
-			return points;
-		}
-		if (style.getHyphens() == IdentValue.AUTO) {
-			HyphenationTree tree = Hyphenator.getFopHyphenationTree(lang);
-			Hyphenation s = tree.hyphenate(text, 2, 2);
-			if (s == null) return points;
-			for (int i = 0; i < s.getHyphenationPoints().length; i++) {
-				int position = s.getHyphenationPoints()[i];
-				BreakPoint point = new BreakPoint(position);
-				addHyphen(point);
-				points.add(point);
-			}
-		}
-		return points;
-	}
 
-	@Override
-	public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
-		return new ListBreakPointsProvider(Arrays.asList(getPoints(text, lang, style).toArray(new BreakPoint[0])));
-	}
-	
-	private void addHyphen(BreakPoint p) {
-		p.setHyphen("\u002D");
-	}
-	
+    private static final int SOFT_HYPHEN = '\u00AD';
+
+    private TreeSet<BreakPoint> getPoints(String text, String lang, CalculatedStyle style) {
+        text = new NonBreakPointsEnhancer().enhance(text, lang);
+        BreakIterator breakIt = new UrlAwareLineBreakIterator();
+        breakIt.setText(text);
+        TreeSet<BreakPoint> points = new TreeSet<BreakPoint>();
+        int p;
+        while ((p = breakIt.next()) != BreakIterator.DONE) {
+            points.add(new BreakPoint(p));
+        }
+        if (style.getHyphens() == IdentValue.NONE) {
+            return points;
+        }
+        if (style.getHyphens() == IdentValue.MANUAL) {
+            int index = text.indexOf(SOFT_HYPHEN);
+            while (index >= 0) {
+                BreakPoint point = new BreakPoint(index);
+                addHyphen(point);
+                points.add(point);
+                index = text.indexOf(SOFT_HYPHEN, index + 1);
+            }
+            return points;
+        }
+        if (style.getHyphens() == IdentValue.AUTO) {
+            HyphenationTree tree = Hyphenator.getFopHyphenationTree(lang);
+            Hyphenation s = tree.hyphenate(text, 2, 2);
+            if (s == null) return points;
+            for (int i = 0; i < s.getHyphenationPoints().length; i++) {
+                int position = s.getHyphenationPoints()[i];
+                BreakPoint point = new BreakPoint(position);
+                addHyphen(point);
+                points.add(point);
+            }
+        }
+        return points;
+    }
+
+    @Override
+    public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
+        return new ListBreakPointsProvider(Arrays.asList(getPoints(text, lang, style).toArray(new BreakPoint[0])));
+    }
+
+    private void addHyphen(BreakPoint p) {
+        p.setHyphen("-");
+    }
+
 }

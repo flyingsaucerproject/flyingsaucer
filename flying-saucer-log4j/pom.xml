@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.2.2</version>
+    <version>9.2.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>flying-saucer-log4j</artifactId>
@@ -72,7 +72,7 @@
           <instructions>
             <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.log4j</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <!-- Dependency resolution seems not to work properly with default 
+            <!-- Dependency resolution seems not to work properly with default
               behavior of importing the exported packages. -->
             <Import-Package>!org.xhtmlrenderer.*,*</Import-Package>
             <Export-Package>org.xhtmlrenderer.*</Export-Package>

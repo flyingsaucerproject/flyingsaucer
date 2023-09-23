@@ -19,16 +19,16 @@
  */
 package org.xhtmlrenderer.css.extend;
 
-import java.io.Reader;
-
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
+import java.io.Reader;
+
 
 /**
  * A Factory class for Cascading Style Sheets. Sheets are parsed using a single
- * parser instance for all sheets. Sheets are cached by URI using a LRU test,
+ * parser instance for all sheets. Sheets are cached by URI using an LRU test,
  * but timestamp of file is not checked.
  *
  * @author Torbjoern Gannholm

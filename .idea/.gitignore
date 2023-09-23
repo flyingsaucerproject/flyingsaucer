@@ -1,0 +1,6 @@
+# Default ignored files
+/*
+
+# things we want to be shared
+!/inspectionProfiles
+!/.gitignore

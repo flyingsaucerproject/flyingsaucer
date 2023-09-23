@@ -2,7 +2,6 @@ build
 *.iml
 **/**.iml
 *.ipr
-.idea
 dist
 target
 **/*.releaseBackup

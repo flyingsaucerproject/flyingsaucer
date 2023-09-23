@@ -19,20 +19,23 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 
 
 /**
@@ -56,58 +59,55 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
  * @author Patrick Wright
  */
 public class CascadedStyle {
-    /**
-     * Map of PropertyDeclarations, keyed by {@link CSSName}
-     */
-    private Map cascadedProperties;
-    
+    private final Map<CSSName, PropertyDeclaration> cascadedProperties;
+
     private String fingerprint;
-    
+
     /**
-     * Creates a <code>CascadedStyle</code>, setting the display property to
-     * to the value of the <code>display</code> parameter.  
+     * Creates a {@code CascadedStyle}, setting the display property
+     * to the value of the {@code display} parameter.
      */
     public static CascadedStyle createAnonymousStyle(IdentValue display) {
         CSSPrimitiveValue val = new PropertyValue(display);
-        
-        List props = Collections.singletonList(
+
+        List<PropertyDeclaration> props = singletonList(
                 new PropertyDeclaration(CSSName.DISPLAY, val, true, StylesheetInfo.USER));
-        
-        return new CascadedStyle(props.iterator());
+
+        return new CascadedStyle(props);
     }
-    
+
     /**
-     * Creates a <code>CascadedStyle</code> using the provided property
+     * Creates a {@code CascadedStyle} using the provided property
      * declarations.  It is used when a box requires a style that does not
      * correspond to anything in the parsed stylesheets.
-     * @param decls An array of PropertyDeclaration objects created with 
+     * @param declarations An array of PropertyDeclaration objects created with
      * {@link #createLayoutPropertyDeclaration(CSSName, IdentValue)}
      * @see #createLayoutPropertyDeclaration(CSSName, IdentValue)
      */
-    public static CascadedStyle createLayoutStyle(PropertyDeclaration[] decls) {
-        return new CascadedStyle(Arrays.asList(decls).iterator());
+    public static CascadedStyle createLayoutStyle(PropertyDeclaration... declarations) {
+        return new CascadedStyle(asList(declarations));
     }
-    
-    public static CascadedStyle createLayoutStyle(List decls) {
-        return new CascadedStyle(decls.iterator());
-    }    
-    
+
+    public static CascadedStyle createLayoutStyle(List<PropertyDeclaration> declarations) {
+        return new CascadedStyle(declarations);
+    }
+
     /**
-     * Creates a <code>CascadedStyle</code> using style information from
-     * <code>startingPoint</code> and then adding the property declarations
-     * from <code>decls</code>.
-     * @param decls An array of PropertyDeclaration objects created with 
+     * Creates a {@code CascadedStyle} using style information from
+     * {@code startingPoint} and then adding the property declarations
+     * from {@code decls}.
+     * @param decls An array of PropertyDeclaration objects created with
      * {@link #createLayoutPropertyDeclaration(CSSName, IdentValue)}
      * @see #createLayoutPropertyDeclaration(CSSName, IdentValue)
      */
     public static CascadedStyle createLayoutStyle(
             CascadedStyle startingPoint, PropertyDeclaration[] decls) {
-        return new CascadedStyle(startingPoint, Arrays.asList(decls).iterator());
+        return new CascadedStyle(startingPoint.cascadedProperties, asList(decls).iterator());
     }
 
     /**
-     * Creates a <code>PropertyDeclaration</code> suitable for passing to
-     * {@link #createLayoutStyle(PropertyDeclaration[])} or
+     * Creates a {@code PropertyDeclaration} suitable for passing to
+     * {@link #createLayoutStyle(List)} or
      * {@link #createLayoutStyle(CascadedStyle, PropertyDeclaration[])}
      */
     public static PropertyDeclaration createLayoutPropertyDeclaration(
@@ -129,54 +129,53 @@ public class CascadedStyle {
      * @param iter An Iterator containing PropertyDeclarations in order of
      *             specificity.
      */
-    CascadedStyle(java.util.Iterator iter) {
-        this();
-
-        addProperties(iter);
+    CascadedStyle(Iterable<PropertyDeclaration> iter) {
+        this(emptyMap(), iter.iterator());
     }
 
-    private void addProperties(java.util.Iterator iter) {
+    /**
+     * @deprecated Use constructor {@link #CascadedStyle(Iterable)} instead
+     */
+    @Deprecated
+    CascadedStyle(Iterator<PropertyDeclaration> iter) {
+        this(emptyMap(), iter);
+    }
+
+    private CascadedStyle(Map<CSSName, PropertyDeclaration> startingPoint, Iterator<PropertyDeclaration> iter) {
         //do a bucket-sort on importance and origin
         //properties should already be in order of specificity
-        java.util.List[] buckets = new java.util.List[PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT];
-        for (int i = 0; i < buckets.length; i++) {
-            buckets[i] = new java.util.LinkedList();
+        List<List<PropertyDeclaration>> buckets = new ArrayList<>(PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT);
+        for (int i = 0; i < PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT; i++) {
+            buckets.add(new LinkedList<>());
         }
 
         while (iter.hasNext()) {
-            PropertyDeclaration prop = (PropertyDeclaration) iter.next();
-            buckets[prop.getImportanceAndOrigin()].add(prop);
+            PropertyDeclaration prop = iter.next();
+            buckets.get(prop.getImportanceAndOrigin()).add(prop);
         }
 
-        for (int i = 0; i < buckets.length; i++) {
-            for (java.util.Iterator it = buckets[i].iterator(); it.hasNext();) {
-                PropertyDeclaration prop = (PropertyDeclaration) it.next();
+        Map<CSSName, PropertyDeclaration> cascadedProperties = new TreeMap<>(startingPoint);
+        for (List<PropertyDeclaration> bucket : buckets) {
+            for (PropertyDeclaration prop : bucket) {
                 cascadedProperties.put(prop.getCSSName(), prop);
             }
         }
+        this.cascadedProperties = cascadedProperties;
     }
-    
-    private CascadedStyle(CascadedStyle startingPoint, Iterator props) {
-        cascadedProperties = new TreeMap(startingPoint.cascadedProperties);
-        
-        addProperties(props);
-    }
-
 
     /**
      * Default constructor with no initialization. Don't use this to instantiate
      * the class, as the class is immutable and this will leave it without any
      * properties.
      */
-    private CascadedStyle() {
-        cascadedProperties = new TreeMap();
+    private CascadedStyle(Map<CSSName, PropertyDeclaration> cascadedProperties) {
+        this.cascadedProperties = cascadedProperties;
     }
 
     /**
      * Get an empty singleton, used to negate inheritance of properties
      */
-    public static final CascadedStyle emptyCascadedStyle = new CascadedStyle();
-
+    public static final CascadedStyle emptyCascadedStyle = new CascadedStyle(new TreeMap<>());
 
     /**
      * Returns true if property has been defined in this style.
@@ -185,7 +184,7 @@ public class CascadedStyle {
      * @return True if the property is defined in this set.
      */
     public boolean hasProperty(CSSName cssName) {
-        return cascadedProperties.get( cssName ) != null;
+        return cascadedProperties.containsKey(cssName);
     }
 
 
@@ -200,16 +199,11 @@ public class CascadedStyle {
      *         if not found.
      */
     public PropertyDeclaration propertyByName(CSSName cssName) {
-        PropertyDeclaration prop = (PropertyDeclaration)cascadedProperties.get(cssName);
-
-        return prop;
+        return cascadedProperties.get(cssName);
     }
 
     /**
      * Gets the ident attribute of the CascadedStyle object
-     *
-     * @param cssName PARAM
-     * @return The ident value
      */
     public IdentValue getIdent(CSSName cssName) {
         PropertyDeclaration pd = propertyByName(cssName);
@@ -221,34 +215,30 @@ public class CascadedStyle {
      * Returns an {@link java.util.Iterator} over the set of {@link
      * org.xhtmlrenderer.css.sheet.PropertyDeclaration}s already matched in this
      * CascadedStyle. For a given property name, there may be no match, in which
-     * case there will be no <code>PropertyDeclaration</code> for that property
+     * case there will be no {@code PropertyDeclaration} for that property
      * name in the Iterator.
      *
      * @return Iterator over a set of properly cascaded PropertyDeclarations.
      */
-    public java.util.Iterator getCascadedPropertyDeclarations() {
-        List list = new ArrayList(cascadedProperties.size());
-        Iterator iter = cascadedProperties.values().iterator();
-        while ( iter.hasNext()) {
-            list.add(iter.next());
-        }
+    public Iterator<PropertyDeclaration> getCascadedPropertyDeclarations() {
+        List<PropertyDeclaration> list = new ArrayList<>(cascadedProperties.size());
+        list.addAll(cascadedProperties.values());
         return list.iterator();
     }
 
     public int countAssigned() { return cascadedProperties.size(); }
 
     public String getFingerprint() {
-        if (this.fingerprint == null) {
-            StringBuffer sb = new StringBuffer();
-            Iterator iter = cascadedProperties.values().iterator();
-            while (iter.hasNext()) {
-                sb.append(((PropertyDeclaration)iter.next()).getFingerprint());
+        if (fingerprint == null) {
+            StringBuilder sb = new StringBuilder();
+            for (PropertyDeclaration propertyDeclaration : cascadedProperties.values()) {
+                sb.append(propertyDeclaration.getFingerprint());
             }
-            this.fingerprint = sb.toString();
+            fingerprint = sb.toString();
         }
-        return this.fingerprint;
+        return fingerprint;
     }
-}// end class
+}
 
 /*
  * $Id$
@@ -285,7 +275,7 @@ public class CascadedStyle {
  * Fixe inline border mismatch and started on styling problem in switching between blocks and inlines
  *
  * Revision 1.9  2005/05/08 15:37:26  tobega
- * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ * Fixed up style caching, so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
  *
  * Revision 1.8  2005/05/08 13:02:36  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.

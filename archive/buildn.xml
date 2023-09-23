@@ -82,7 +82,7 @@
         <zip basedir="${basedir}" zipfile="../flyingsaucer.zip"/>
     </target>
 
-    
+
     <!-- =================================================
          Documentation
          ================================================= -->
@@ -183,7 +183,7 @@
         </copy>
     </target>
 
-    
+
     <!-- =======================================
          General
          ======================================= -->
@@ -269,7 +269,7 @@
 
 <!-- ========== this is the CVS log. Don't delete! ========== -->
 
-<!-- 
+<!--
 $Id$
 
 $Log$
@@ -368,7 +368,7 @@ Exclude abstract FSCssTestCase from junit test suite.
 
 Revision 1.72  2004/11/16 14:37:48  pdoubleya
 Added support for JUnit tests.
-Renamed test- targets to test. to be like other names.
+Renamed "test-*" targets to "test". to be like other names.
 
 Revision 1.71  2004/11/15 13:41:02  pdoubleya
 Renamed javadoc target to _javadoc, as it is meant for internal use; use 'docs' target to generate javadocs for the project.
@@ -408,7 +408,7 @@ Reviewed by:
 
 Revision 1.66  2004/11/07 23:24:18  joshy
 added menu item to generate diffs
-added diffs for multi-colored borders and inline borders
+added diffs for multicolored borders and inline borders
 
 Issue number:
 Obtained from:
@@ -576,7 +576,7 @@ updated the build file
 removed some extraneous files
 update the home page to point to the new jnlp files
 updated the resource loader to use the marker class
-updated the text of the about box
+updated the text of the "about" box
 
 Issue number:
 Obtained from:
@@ -642,6 +642,6 @@ Revision 1.40  2004/10/18 10:08:19  pdoubleya
 Moved default property settings into build file itself. Now looks for build.properties as override, and a local properties file in userhome/.flyingsaucer/flyingsaucer.build.properties.
 
 Revision 1.39  2004/10/13 22:55:36  pdoubleya
-Added system property to auto-load configuration for logging system.
+Added system property to autoload configuration for logging system.
 
 -->

@@ -31,7 +31,7 @@ import java.awt.event.ActionEvent;
  * This example shows rendering a page where the font size can be adjusted dynamically once the page is loaded using
  * a font scaling factor. Note that scaling up or down once the page is rendered requires it to be re-rendered
  * and re-layed out, which takes a small (possibly insignificant) amount of time, but which may be noticeable for
- * larger pages..
+ * larger pages.
  *
  *
  * @author Patrick Wright

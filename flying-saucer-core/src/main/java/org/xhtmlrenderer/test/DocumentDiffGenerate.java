@@ -22,11 +22,6 @@ package org.xhtmlrenderer.test;
 import java.io.File;
 
 
-/**
- * Description of the Class
- *
- * @author   empty
- */
 public class DocumentDiffGenerate {
     /**
      * The main program for the DocumentDiffGenerate class
@@ -37,11 +32,11 @@ public class DocumentDiffGenerate {
     public static void main( String[] args )
         throws Exception {
         DocumentDiffTest ddt = new DocumentDiffTest();
-		if(args.length == 2) {
-			DocumentDiffTest.generateTestFile(args[0],args[1],500,500);
-		} else {
-			ddt.generateDiffs( new File( "tests/diff" ), 500, 500 );
-		}
+        if(args.length == 2) {
+            DocumentDiffTest.generateTestFile(args[0],args[1],500,500);
+        } else {
+            ddt.generateDiffs( new File( "tests/diff" ), 500, 500 );
+        }
     }
 }
 
@@ -68,7 +63,7 @@ public class DocumentDiffGenerate {
  *
  * Revision 1.3  2004/10/23 14:01:42  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

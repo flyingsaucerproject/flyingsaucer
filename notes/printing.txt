@@ -3,7 +3,7 @@ printing notes
 
 the printing subsystem should
 
-be in it's own package
+be in its own package
 affect the rest of the core as little as possible
 support as much native features of printers as possible
 print to color if possible
@@ -28,11 +28,11 @@ support pages of different sizes
 
 support various printing and breaking css properties
 
-browser should be able to add it's own printing enhancments
+browser should be able to add its own printing enhancements
     url at bottom
     date
     margin and border adjustments
-    duplex/mulit-plex printing
+    duplex/multi-plex printing
     turn on and off header repeats
 
 (should we be moving to font glyphs and vectors?)

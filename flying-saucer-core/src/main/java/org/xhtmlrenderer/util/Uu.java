@@ -23,49 +23,24 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class Uu extends Util {
-    /**
-     * Description of the Field
-     */
     private static Util util;
-    /**
-     * Description of the Field
-     */
     private static Util utilAsString;
 
-    /**
-     * Constructor for the Uu object
-     */
     private Uu() {
         super(System.out);
     }
 
-    /**
-     * Description of the Method
-     */
     public static void on() {
         init();
         util.setOn(true);
     }
 
-    /**
-     * Description of the Method
-     */
     public static void off() {
         init();
         util.setOn(false);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param object PARAM
-     */
     public static void p(Object object) {
         init();
         StringWriter sw = new StringWriter();
@@ -78,11 +53,6 @@ public class Uu extends Util {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param object PARAM
-     */
     public static void pr(Object object) {
         init();
         StringWriter sw = new StringWriter();
@@ -96,38 +66,18 @@ public class Uu extends Util {
         //util.print( object );
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param msec PARAM
-     */
     public static void sleep(int msec) throws InterruptedException {
         Thread.sleep(msec);
     }
 
-    /**
-     * Description of the Method
-     */
     public static void dump_stack() {
-        p(stack_to_string(new Exception()));
+        p(stack_to_string(new Exception("Taking a thread dump...")));
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param args PARAM
-     */
-    public static void main(String args[]) {
-        try {
-            Uu.p(new Object());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    public static void main(String[] args) {
+        Uu.p(new Object());
     }
 
-    /**
-     * Description of the Method
-     */
     private static void init() {
         if (util == null) {
             util = new Util(System.out);
@@ -135,7 +85,7 @@ public class Uu extends Util {
         if (utilAsString == null) {
             utilAsString = new Util(System.out);
         }
-    }// end main()
+    }
 }
 
 /*
@@ -184,7 +134,7 @@ public class Uu extends Util {
  *
  * Revision 1.3  2004/10/23 14:06:57  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

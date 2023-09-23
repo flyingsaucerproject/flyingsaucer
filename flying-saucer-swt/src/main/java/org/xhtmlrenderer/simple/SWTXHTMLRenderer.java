@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.simple;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-
 import org.eclipse.swt.widgets.Composite;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,11 +33,15 @@ import org.xhtmlrenderer.swt.HoverListener;
 import org.xhtmlrenderer.swt.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+
 /**
  * Simplified {@link BasicRenderer}, for use with XHTML documents.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTXHTMLRenderer extends BasicRenderer {
 
@@ -68,9 +68,10 @@ public class SWTXHTMLRenderer extends BasicRenderer {
     /**
      * Loads and renders a Document given a uri. The uri is resolved by the
      * UserAgentCallback
-     * 
+     *
      * @param uri
      */
+    @Override
     public void setDocument(String uri) {
         setDocument(loadDocument(uri), uri);
     }
@@ -78,7 +79,7 @@ public class SWTXHTMLRenderer extends BasicRenderer {
     /**
      * Renders an XML Document instance. Make sure that no relative resources
      * are needed
-     * 
+     *
      * @param doc The document to render.
      */
     public void setDocument(Document doc) {
@@ -87,10 +88,11 @@ public class SWTXHTMLRenderer extends BasicRenderer {
 
     /**
      * Renders a Document using a URL as a base URL for relative paths.
-     * 
+     *
      * @param doc The new document value
      * @param url The new document value
      */
+    @Override
     public void setDocument(Document doc, String url) {
         super.setDocument(doc, url, new XhtmlNamespaceHandler());
     }
@@ -98,10 +100,11 @@ public class SWTXHTMLRenderer extends BasicRenderer {
     /**
      * Renders a Document read from an InputStream using a URL as a base URL for
      * relative paths.
-     * 
+     *
      * @param stream The stream to read the Document from.
      * @param url The URL used to resolve relative path references.
      */
+    @Override
     public void setDocument(InputStream stream, String url) {
         super.setDocument(stream, url, new XhtmlNamespaceHandler());
     }
@@ -109,7 +112,7 @@ public class SWTXHTMLRenderer extends BasicRenderer {
     /**
      * Renders a Document read from an InputStream using a URL as a base URL for
      * relative paths.
-     * 
+     *
      * @param file The file to read the Document from. Relative paths will be
      *            resolved based on the file's parent directory.
      * @throws MalformedURLException

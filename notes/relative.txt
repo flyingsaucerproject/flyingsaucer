@@ -6,8 +6,8 @@ x and y offsets on the box which are then used when doing the rendering
 
 calc the offset by looking at left right and top bottom.
 if neither has a number then use 0
-if one has a number and the other doesnt then use the number
-if both have a number and they aren't opposites, then use left / top
+if one has a number and the other doesn't then use the number
+if both have a number, and they aren't opposites, then use left / top
 
 step 2: add the defaults of auto to the css. this means to all elements. it
 doesn't inherit.

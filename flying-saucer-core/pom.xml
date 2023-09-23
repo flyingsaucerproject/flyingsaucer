@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.2.2</version>
+    <version>9.2.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>flying-saucer-core</artifactId>
@@ -28,6 +28,23 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.w3c</groupId>
+      <artifactId>dom</artifactId>
+      <version>2.3.0-jaxb-1.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.24.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.9</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -70,11 +87,19 @@
           <instructions>
             <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.core</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <!-- Dependency resolution seems not to work properly with default 
+            <!-- Dependency resolution seems not to work properly with default
               behavior of importing the exported packages. -->
             <Import-Package>!org.xhtmlrenderer.*</Import-Package>
             <Export-Package>org.xhtmlrenderer.*</Export-Package>
           </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>8</source>
+          <target>8</target>
         </configuration>
       </plugin>
     </plugins>

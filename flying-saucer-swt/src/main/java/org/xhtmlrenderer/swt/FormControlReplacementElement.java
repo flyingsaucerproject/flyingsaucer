@@ -28,7 +28,7 @@ import org.xhtmlrenderer.simple.xhtml.swt.SWTFormControl;
 
 /**
  * ReplacementElement for a FormControl.
- * 
+ *
  * @author Vianney le Clément
  */
 public class FormControlReplacementElement implements ReplacedElement {
@@ -59,7 +59,7 @@ public class FormControlReplacementElement implements ReplacedElement {
     /**
      * Recalculate the size of the control based on the css lenghts. These
      * lengths can be -1 if the size has to be determined automatically.
-     * 
+     *
      * @param c
      * @param style
      * @param cssWidth

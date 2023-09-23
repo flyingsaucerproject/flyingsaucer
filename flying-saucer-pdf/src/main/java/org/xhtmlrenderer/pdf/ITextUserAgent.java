@@ -20,11 +20,10 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Image;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfReader;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.resource.ImageResource;
@@ -34,9 +33,11 @@ import org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import com.lowagie.text.Image;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class ITextUserAgent extends NaiveUserAgent {
     private static final int IMAGE_CACHE_CAPACITY = 32;
@@ -61,17 +62,19 @@ public class ITextUserAgent extends NaiveUserAgent {
         return out.toByteArray();
     }
 
+    @Override
     public ImageResource getImageResource(String uriStr) {
+        String unresolvedUri = uriStr;
         ImageResource resource;
         if (!ImageUtil.isEmbeddedBase64Image(uriStr)) {
             uriStr = resolveURI(uriStr);
         }
-        resource = (ImageResource) _imageCache.get(uriStr);
+        resource = _imageCache.get(unresolvedUri);
 
         if (resource == null) {
             if (ImageUtil.isEmbeddedBase64Image(uriStr)) {
                 resource = loadEmbeddedBase64ImageResource(uriStr);
-                _imageCache.put(uriStr, resource);
+                _imageCache.put(unresolvedUri, resource);
             } else {
                 InputStream is = resolveAndOpenStream(uriStr);
                 if (is != null) {
@@ -91,8 +94,8 @@ public class ITextUserAgent extends NaiveUserAgent {
                             scaleToOutputResolution(image);
                             resource = new ImageResource(uriStr, new ITextFSImage(image));
                         }
-                        _imageCache.put(uriStr, resource);
-                    } catch (Exception e) {
+                        _imageCache.put(unresolvedUri, resource);
+                    } catch (BadElementException | IOException | URISyntaxException e) {
                         XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
                     } finally {
                         try {
@@ -115,14 +118,14 @@ public class ITextUserAgent extends NaiveUserAgent {
         }
         return resource;
     }
-    
+
     private ImageResource loadEmbeddedBase64ImageResource(final String uri) {
         try {
             byte[] buffer = ImageUtil.getEmbeddedBase64Image(uri);
             Image image = Image.getInstance(buffer);
             scaleToOutputResolution(image);
             return new ImageResource(null, new ITextFSImage(image));
-        } catch (Exception e) {
+        } catch (BadElementException | IOException e) {
             XRLog.exception("Can't read XHTML embedded image.", e);
         }
         return new ImageResource(null, null);

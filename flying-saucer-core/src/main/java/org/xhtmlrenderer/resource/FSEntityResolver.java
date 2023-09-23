@@ -23,7 +23,6 @@ package org.xhtmlrenderer.resource;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xml.sax.ext.EntityResolver2;
 
 import java.io.IOException;
@@ -45,7 +44,7 @@ import java.util.logging.Level;
  * </p>
  * <p>
  * The basic form of this class comes from Elliot Rusty Harold, on
- * http://www.cafeconleche.org/books/xmljava/chapters/ch07s02.html
+ * <a href="http://www.cafeconleche.org/books/xmljava/chapters/ch07s02.html">...</a>
  * </p>
  * <p>
  * This class is a Singleton; use {@link #instance} to retrieve it.
@@ -59,47 +58,35 @@ public class FSEntityResolver implements EntityResolver2 {
      */
     private static FSEntityResolver instance;
 
-    private final Map entities = new HashMap();
+    private final Map<String, String> entities = new HashMap<>();
 
-    // fill the list of URLs
-    /**
-     * Constructor for the FSEntityResolver object
-     */
+    // fill the list with URLs
     private FSEntityResolver() {
         FSCatalog catalog = new FSCatalog();
-        
+
         // The HTML 4.01 DTDs; includes entities. Load from catalog file.
         entities.putAll(catalog.parseCatalog("resources/schema/html-4.01/catalog-html-4.01.xml"));
-        
+
         // XHTML common (shared declarations)
         entities.putAll(catalog.parseCatalog("resources/schema/xhtml/catalog-xhtml-common.xml"));
 
         // The XHTML 1.0 DTDs
         entities.putAll(catalog.parseCatalog("resources/schema/xhtml/catalog-xhtml-1.0.xml"));
-        
+
         // The XHMTL 1.1 DTD
         entities.putAll(catalog.parseCatalog("resources/schema/xhtml/catalog-xhtml-1.1.xml"));
-        
+
         // DocBook DTDs
         entities.putAll(catalog.parseCatalog("resources/schema/docbook/catalog-docbook.xml"));
 
         // The XHTML 1.1 element sets
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param publicID PARAM
-     * @param systemID PARAM
-     * @return Returns
-     * @throws SAXException Throws
-     */
-    public InputSource resolveEntity(String publicID,
-                                     String systemID)
-            throws SAXException {
+    @Override
+    public InputSource resolveEntity(String publicID, String systemID) {
 
         InputSource local = null;
-        String url = (String) getEntities().get(publicID);
+        String url = getEntity(publicID);
         if (url != null) {
             URL realUrl = GeneralUtil.getURLFromClasspath(this, url);
             InputStream is = null;
@@ -120,8 +107,7 @@ public class FSEntityResolver implements EntityResolver2 {
             }
             local = new InputSource(is);
             local.setSystemId(realUrl.toExternalForm());
-            XRLog.xmlEntities(Level.FINE, "Entity public: " + publicID + " -> " + url +
-                    (local == null ? ", NOT FOUND" : " (local)"));
+            XRLog.xmlEntities(Level.FINE, "Entity public: " + publicID + " -> " + url + " (local)");
         } else if ("about:legacy-compat".equals(systemID)) {
             // https://www.w3.org/TR/html5/syntax.html#doctype-legacy-string
             // https://www.w3.org/TR/html51/syntax.html#doctype-legacy-string
@@ -132,16 +118,16 @@ public class FSEntityResolver implements EntityResolver2 {
         return (local == null) ? newEmptySource() : local;
     }
 
+    @Override
     public InputSource resolveEntity(String name,
                                      String publicId,
                                      String baseURI,
-                                     String systemId)
-            throws SAXException, IOException {
+                                     String systemId) {
         return resolveEntity(publicId, systemId);
     }
 
-    public InputSource getExternalSubset(String name, String baseURI)
-            throws SAXException, IOException {
+    @Override
+    public InputSource getExternalSubset(String name, String baseURI) {
         return name.equalsIgnoreCase("html") ? newHTML5DoctypeSource() : null;
     }
 
@@ -173,10 +159,13 @@ public class FSEntityResolver implements EntityResolver2 {
 
     /**
      * Returns a map of entities parsed by this resolver.
-     * @return a map of entities parsed by this resolver. 
      */
-    public Map getEntities() {
-        return new HashMap(entities);
+    public Map<String, String> getEntities() {
+        return new HashMap<>(entities);
+    }
+    
+    public String getEntity(String url) {
+        return entities.get(url);
     }
 }
 

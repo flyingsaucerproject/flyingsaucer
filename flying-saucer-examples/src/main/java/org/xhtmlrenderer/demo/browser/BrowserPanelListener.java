@@ -23,17 +23,11 @@ package org.xhtmlrenderer.demo.browser;
 
 /**
  * Talkback interface between BrowserPanel and anyone interested in what is
- * happening with it.
+ * happening to it.
  *
  * @author   empty
  */
 public interface BrowserPanelListener {
-    /**
-     * Description of the Method
-     *
-     * @param url    PARAM
-     * @param title  PARAM
-     */
     void pageLoadSuccess( String url, String title );
 }
 
@@ -43,7 +37,7 @@ public interface BrowserPanelListener {
  * $Log$
  * Revision 1.2  2004/10/23 14:38:58  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.)
  * Added CVS log comments at bottom.
  *
  *

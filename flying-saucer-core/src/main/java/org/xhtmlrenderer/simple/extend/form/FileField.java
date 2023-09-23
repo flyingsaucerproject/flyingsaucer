@@ -19,34 +19,28 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 class FileField extends InputField implements ActionListener {
     private JTextField _pathTextField;
     private JButton _browseButton;
 
-    public FileField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    FileField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
+    @Override
     public JComponent create() {
         JPanel panel = new JPanel(new GridBagLayout());
-        
+
         panel.setOpaque(false);
 
         _pathTextField = new JTextField();
@@ -75,13 +69,15 @@ class FileField extends InputField implements ActionListener {
 
         return panel;
     }
-    
+
+    @Override
     protected void applyOriginalState() {
         // This is always the default, since you can't set a default
         // value for this in the HTML
         _pathTextField.setText("");
     }
-    
+
+    @Override
     protected String[] getFieldValues() {
         return new String [] {
                 // TODO: This will have to be special once we aren't
@@ -89,18 +85,19 @@ class FileField extends InputField implements ActionListener {
                 _pathTextField.getText()
         };
     }
-    
+
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == _browseButton) {
             JFileChooser chooser = new JFileChooser();
-            
+
             // TODO: We should probably use the BasicPanel as the parent
             int result = chooser.showOpenDialog(_browseButton);
-            
+
             if (result == JFileChooser.APPROVE_OPTION) {
                 _pathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
                 _pathTextField.setCaretPosition(0);
-                
+
                 _browseButton.requestFocus();
             }
         }

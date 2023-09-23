@@ -33,7 +33,7 @@
      before their respective ELEMENT declarations in other
      modules, there may be a dependency on this module that
      should be considered if any of the parameter entities used
-     for element type names (eg., %a.qname;) are redeclared.
+     for element type names (e.g., %a.qname;) are redeclared.
 -->
 
 <!ENTITY % Events.attrib

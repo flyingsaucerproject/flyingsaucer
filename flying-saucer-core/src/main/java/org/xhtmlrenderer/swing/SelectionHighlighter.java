@@ -19,31 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-import java.util.logging.Level;
-
-import javax.swing.AbstractAction;
-import javax.swing.SwingUtilities;
-import javax.swing.TransferHandler;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.EventListenerList;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -63,6 +38,27 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Util;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.EventListenerList;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.logging.Level;
+
 /**
  * <p>
  * A simple Selection and Highlighter class for
@@ -81,9 +77,9 @@ import org.xhtmlrenderer.util.XRLog;
  * href="#install(org.xhtmlrenderer.simple.XHTMLPanel)">install</a>. See also:
  * /demos/samples/src/SelectionHighlighterTest.java
  * </p>
- * 
- * With thanks to Swing's <code>DefaultCaret</code>
- * 
+ *
+ * With thanks to Swing's {@code DefaultCaret}
+ *
  * @author Nick Reddel
  */
 public class SelectionHighlighter implements MouseMotionListener, MouseListener {
@@ -98,19 +94,19 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     protected EventListenerList listenerList = new EventListenerList();
 
-    protected transient ChangeEvent changeEvent = null;
+    protected transient ChangeEvent changeEvent;
 
     private DocumentRange docRange;
 
     // private List lastModified = new ArrayList();
 
-    private Range lastSelectionRange = null;
+    private Range lastSelectionRange;
 
     private DocumentTraversal docTraversal;
 
-    private Map elementBoxMap;
+    private Map<Element, Box> elementBoxMap;
 
-    private Map textInlineMap;
+    private Map<Node, List<InlineText>> textInlineMap;
 
     private String lastHighlightedString = "";
 
@@ -200,6 +196,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         if ((!e.isConsumed()) && SwingUtilities.isLeftMouseButton(e)) {
             moveCaret(convertMouseEventToScale(e));
@@ -207,19 +204,24 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
     }
 
+    @Override
     public void mouseClicked(MouseEvent e) {
         // TODO: double-triple click handler
     }
 
+    @Override
     public void mouseEntered(MouseEvent e) {
     }
 
+    @Override
     public void mouseExited(MouseEvent e) {
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         int nclicks = e.getClickCount();
 
@@ -262,7 +264,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     /**
      * Adjusts the focus, if necessary.
-     * 
+     *
      * @param inWindow
      *            if true indicates requestFocusInWindow should be used
      */
@@ -281,6 +283,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         // TODO Auto-generated method stub
 
@@ -325,8 +328,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
         Range r = docRange.createRange();
         r.setStart(firstText, 0);
-        ViewModelInfo firstPoint = new ViewModelInfo(r, (InlineText) ((List) textInlineMap
-                .get(firstText)).get(0));
+        ViewModelInfo firstPoint = new ViewModelInfo(r, textInlineMap.get(firstText).get(0));
         r = docRange.createRange();
         try {
             // possibly some dom impls don't handle this?
@@ -334,9 +336,9 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         } catch (Exception e) {
             r.setStart(lastText, Math.max(0, lastText.getLength() - 1));
         }
-        List l = (List) textInlineMap.get(firstText);
+        List<InlineText> l = textInlineMap.get(firstText);
 
-        ViewModelInfo lastPoint = new ViewModelInfo(r, (InlineText) l.get(l.size() - 1));
+        ViewModelInfo lastPoint = new ViewModelInfo(r, l.get(l.size() - 1));
         setDot(firstPoint);
         moveDot(lastPoint);
 
@@ -358,8 +360,8 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     private void updateHighlights() {
 
-        List modified = new ArrayList();
-        StringBuffer hlText = new StringBuffer();
+        List<Box> modified = new ArrayList<>();
+        StringBuilder hlText = new StringBuilder();
         if (this.dotInfo == null) {
             getComponent().getRootBox().clearSelection(modified);
             getComponent().repaint();
@@ -393,21 +395,18 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
             final Range acceptRange = docRange.createRange();
             final Range tr = range;
-            NodeFilter f = new NodeFilter() {
-                public short acceptNode(Node n) {
-                    acceptRange.setStart(n, 0);
-                    if (tr.getStartContainer() == n) {
-                        return FILTER_ACCEPT;
-                    }
-                    if ((acceptRange.compareBoundaryPoints(Range.START_TO_START, tr) < 0 || acceptRange
-                            .compareBoundaryPoints(Range.END_TO_START, tr) > 0)
-                            && n != tr.getStartContainer() && n != tr.getEndContainer()) {
-                        return NodeFilter.FILTER_SKIP;
-                    }
-
+            NodeFilter f = n -> {
+                acceptRange.setStart(n, 0);
+                if (tr.getStartContainer() == n) {
                     return NodeFilter.FILTER_ACCEPT;
                 }
+                if ((acceptRange.compareBoundaryPoints(Range.START_TO_START, tr) < 0 || acceptRange
+                        .compareBoundaryPoints(Range.END_TO_START, tr) > 0)
+                        && n != tr.getStartContainer() && n != tr.getEndContainer()) {
+                    return NodeFilter.FILTER_SKIP;
+                }
 
+                return NodeFilter.FILTER_ACCEPT;
             };
             NodeIterator nodeIterator = this.docTraversal.createNodeIterator(range
                     .getCommonAncestorContainer(), NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT
@@ -426,7 +425,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                 } else {
                     lastNodeWasBox = false;
                     Text t = (Text) n;
-                    List iTs = getInlineTextsForText(t);
+                    List<InlineText> iTs = getInlineTextsForText(t);
                     if (iTs == null) {
                         // shouldn't happen
                         continue;
@@ -436,9 +435,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                             .getNodeValue().length();
 
                     hlText.append(t.getNodeValue().substring(selTxtSt, selTxtEnd));
-                    for (Iterator itr = iTs.iterator(); itr.hasNext();) {
-                        InlineText iT = (InlineText) itr.next();
-
+                    for (InlineText iT : iTs) {
                         iT.setSelectionStart((short) Math.max(0, Math.min(selTxtSt, iT.getEnd())
                                 - iT.getStart()));
                         iT.setSelectionEnd((short) Math.max(0, Math.min(iT.getEnd(), selTxtEnd)
@@ -457,7 +454,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
     public String normalizeSpaces(String s) {
         if (s == null)
             return null;
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         CharacterIterator iter = new StringCharacterIterator(s);
         boolean inWhitespace = false; // Flag set if we're in a second
         // consecutive whitespace
@@ -487,35 +484,33 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         if (panel.getRootBox() == null) {
             return false;
         }
-        textInlineMap = new LinkedHashMap();
-        elementBoxMap = new HashMap();
-        Stack s = new Stack();
+        textInlineMap = new LinkedHashMap<>();
+        elementBoxMap = new HashMap<>();
+        Stack<Box> s = new Stack<>();
         s.push(panel.getRootBox());
         while (!s.empty()) {
-            Box b = (Box) s.pop();
+            Box b = s.pop();
             Element element = b.getElement();
             if (element != null && !elementBoxMap.containsKey(element)) {
                 elementBoxMap.put(element, b);
             }
             if (b instanceof InlineLayoutBox) {
                 InlineLayoutBox ilb = (InlineLayoutBox) b;
-                for (Iterator it = ilb.getInlineChildren().iterator(); it.hasNext();) {
-                    Object o = it.next();
+                for (Object o : ilb.getInlineChildren()) {
                     if (o instanceof InlineText) {
                         InlineText t = (InlineText) o;
                         Text txt = t.getTextNode();
                         if (!textInlineMap.containsKey(txt)) {
-                            textInlineMap.put(txt, new ArrayList());
+                            textInlineMap.put(txt, new ArrayList<>());
                         }
-                        ((List) textInlineMap.get(txt)).add(t);
+                        textInlineMap.get(txt).add(t);
                     } else {
                         s.push((Box) o);
                     }
                 }
             } else {
-                Iterator childIterator = b.getChildIterator();
-                while (childIterator.hasNext()) {
-                    s.push(childIterator.next());
+                for (Box box : b.getChildren()) {
+                    s.push(box);
                 }
             }
         }
@@ -523,12 +518,12 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     }
 
-    private List getInlineTextsForText(Text t) {
-        return (List) textInlineMap.get(t);
+    private List<InlineText> getInlineTextsForText(Text t) {
+        return textInlineMap.get(t);
     }
 
     private Box getBoxForElement(Element elt) {
-        return (Box) elementBoxMap.get(elt);
+        return elementBoxMap.get(elt);
     }
 
     private void updateSystemSelection() {
@@ -566,24 +561,23 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
     }
 
-    List getInlineLayoutBoxes(Box b, boolean ignoreChildElements) {
-        Stack boxes = new Stack();
-        List ilbs = new ArrayList();
+    List<InlineLayoutBox> getInlineLayoutBoxes(Box b, boolean ignoreChildElements) {
+        Stack<Box> boxes = new Stack<>();
+        List<InlineLayoutBox> inlineLayoutBoxes = new ArrayList<>();
         boxes.push(b);
         while (!boxes.empty()) {
-            b = (Box) boxes.pop();
+            b = boxes.pop();
             if (b instanceof InlineLayoutBox) {
-                ilbs.add((InlineLayoutBox) b);
+                inlineLayoutBoxes.add((InlineLayoutBox) b);
             } else {
-                for (Iterator it = b.getChildIterator(); it.hasNext();) {
-                    Box child = (Box) it.next();
+                for (Box child : b.getChildren()) {
                     if (!ignoreChildElements || child.getElement() == null) {
                         boxes.push(child);
                     }
                 }
             }
         }
-        return ilbs;
+        return inlineLayoutBoxes;
     }
 
     ViewModelInfo infoFromPoint(MouseEvent e) {
@@ -594,17 +588,15 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         if (box == null) {
             return null;
         }
-        Element elt = null;
-        int offset = 0;
         InlineLayoutBox ilb = null;
         boolean containsWholeIlb = false;
         if (box instanceof InlineLayoutBox) {
             ilb = (InlineLayoutBox) box;
         } else {
             for (; ilb == null;) {
-                List ilbs = getInlineLayoutBoxes(box, false);
+                List<InlineLayoutBox> ilbs = getInlineLayoutBoxes(box, false);
                 for (int i = ilbs.size() - 1; i >= 0; i--) {
-                    InlineLayoutBox ilbt = (InlineLayoutBox) ilbs.get(i);
+                    InlineLayoutBox ilbt = ilbs.get(i);
                     if (ilbt.getAbsY() <= e.getY() && ilbt.getAbsX() <= e.getX()) {
                         if (ilb == null || (ilbt.getAbsY() > ilb.getAbsY())
                                 || (ilbt.getAbsY() == ilb.getAbsY() && ilbt.getX() > ilb.getX())) {
@@ -613,9 +605,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                                 boolean hasDecentTextNode = false;
                                 int x = ilbt.getAbsX();
 
-                                for (Iterator it = ilbt.getInlineChildren().iterator(); it
-                                        .hasNext();) {
-                                    Object o = it.next();
+                                for (Object o : ilbt.getInlineChildren()) {
                                     if (o instanceof InlineText) {
                                         InlineText txt = (InlineText) o;
                                         if (txt.getTextNode() != null) {
@@ -642,8 +632,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
         int x = ilb.getAbsX();
         InlineText lastItxt = null;
-        for (Iterator it = ilb.getInlineChildren().iterator(); it.hasNext();) {
-            Object o = it.next();
+        for (Object o : ilb.getInlineChildren()) {
             if (o instanceof InlineText) {
                 InlineText txt = (InlineText) o;
                 if (txt.getTextNode() != null) {
@@ -653,7 +642,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                         break;
                     } else {
                         if (e.getX() < x + txt.getX()) {
-                            // assume inline image or somesuch
+                            // assume inline image or some such
                             if (lastItxt != null) {
                                 fndTxt = lastItxt;
                                 break;
@@ -678,6 +667,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
         String txt = fndTxt.getMasterText();
 
+        int offset;
         CalculatedStyle style = ilb.getStyle();
         if (containsWholeIlb) {
             offset = fndTxt.getEnd();
@@ -691,12 +681,12 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             }
         }
 
-        Node node = fndTxt.getTextNode();
+        Text node = fndTxt.getTextNode();
         try {
             r.setStart(node, offset);
         } catch (Exception ex) {
             // maybe differs for dom impl? anyway, fix for issue 216
-            r.setStart(node, ((Text) node).getLength() - 1);
+            r.setStart(node, node.getLength() - 1);
         }
         return new ViewModelInfo(r, fndTxt);
 
@@ -760,9 +750,8 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
     }
 
     public class ViewModelInfo {
-        Range range;
-
-        InlineText text;
+        final Range range;
+        final InlineText text;
 
         ViewModelInfo(Range range, InlineText text) {
             this.range = range;
@@ -780,10 +769,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
             ViewModelInfo that = (ViewModelInfo) o;
 
-            if (!range.equals(that.range)) return false;
-            if (!text.equals(that.text)) return false;
-
-            return true;
+            return range.equals(that.range) && text.equals(that.text);
         }
 
         public int hashCode() {
@@ -816,10 +802,11 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
         /**
          * The operation to perform when this action is triggered.
-         * 
+         *
          * @param e
          *            the action event
          */
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (caret != null) {
                 caret.copy();
@@ -833,6 +820,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             this.r = r;
         }
 
+        @Override
         public void run() {
             if (panel != null) {
                 panel.scrollRectToVisible(r);

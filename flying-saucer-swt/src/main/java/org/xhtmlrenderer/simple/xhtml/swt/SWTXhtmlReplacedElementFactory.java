@@ -1,9 +1,5 @@
 package org.xhtmlrenderer.simple.xhtml.swt;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -21,29 +17,29 @@ import org.xhtmlrenderer.swt.BasicRenderer;
 import org.xhtmlrenderer.swt.FormControlReplacementElement;
 import org.xhtmlrenderer.swt.SWTReplacedElementFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
     private final BasicRenderer _parent;
-
-    private Map _forms = new HashMap();
-    private Map _controls = null;
+    private final Map<Element, XhtmlForm> _forms = new HashMap<>();
+    private final Map<Element, ReplacedElement> _controls = new HashMap<>();
 
     public SWTXhtmlReplacedElementFactory(BasicRenderer parent) {
         _parent = parent;
     }
 
     /**
-     * @param e
      * @return the form corresponding to element <code>e</code> or
      *         <code>null</code> if none
      */
     public XhtmlForm getForm(Element e) {
-        return (XhtmlForm) _forms.get(e);
+        return _forms.get(e);
     }
 
     public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight) {
-        ReplacedElement re = super.createReplacedElement(c, box, uac, cssWidth,
-            cssHeight);
+        ReplacedElement re = super.createReplacedElement(c, box, uac, cssWidth, cssHeight);
         if (re == null
                 && c.getNamespaceHandler() instanceof XhtmlNamespaceHandler
                 && !c.isPrint()) {
@@ -55,10 +51,7 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
             }
 
             // form controls
-            // first check if the control already exists
-            if (_controls != null) {
-                re = (ReplacedElement) _controls.get(e);
-            }
+            re = _controls.get(e);
             if (re != null) {
                 if (re instanceof FormControlReplacementElement) {
                     // update the size
@@ -71,7 +64,7 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
             // not found, try to create one
             Element parentForm = getParentForm(e, c);
             // parentForm may be null, this is not a problem
-            XhtmlForm form = (XhtmlForm) _forms.get(parentForm);
+            XhtmlForm form = _forms.get(parentForm);
             if (form == null) {
                 form = nsh.createForm(parentForm);
                 _forms.put(parentForm, form);
@@ -82,32 +75,25 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
                 // this is not a form control
                 return null;
             }
-            SWTFormControl swtControl = null;
+            final SWTFormControl swtControl;
             if (control instanceof TextControl) {
-                swtControl = new SWTTextControl(control, _parent, c, box
-                    .getStyle(), uac);
+                swtControl = new SWTTextControl(control, _parent, c, box.getStyle(), uac);
             } else if (control instanceof ButtonControl) {
-                swtControl = new SWTButtonControl(control, _parent, c, box
-                    .getStyle(), uac);
+                swtControl = new SWTButtonControl(control, _parent, c, box.getStyle(), uac);
             } else if (control instanceof CheckControl) {
-                swtControl = new SWTCheckControl(control, _parent, c, box
-                    .getStyle(), uac);
+                swtControl = new SWTCheckControl(control, _parent, c, box.getStyle(), uac);
             } else if (control instanceof SelectControl) {
-                swtControl = new SWTSelectControl(control, _parent, c, box
-                    .getStyle(), uac);
+                swtControl = new SWTSelectControl(control, _parent, c, box.getStyle(), uac);
             } else {
                 // no replacement found
                 return null;
             }
             swtControl.getSWTControl().setVisible(false);
 
-            FormControlReplacementElement fcre = new FormControlReplacementElement(
+            FormControlReplacementElement element = new FormControlReplacementElement(
                 swtControl);
-            fcre.calculateSize(c, box.getStyle(), cssWidth, cssHeight);
-            re = fcre;
-            if (_controls == null) {
-                _controls = new HashMap();
-            }
+            element.calculateSize(c, box.getStyle(), cssWidth, cssHeight);
+            re = element;
             _controls.put(e, re);
         }
         return re;
@@ -115,40 +101,32 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
 
     public void remove(Element e) {
         super.remove(e);
-        if (_controls != null) {
-            ReplacedElement re = (ReplacedElement) _controls.get(e);
-            if (re instanceof FormControlReplacementElement) {
-                SWTFormControl control = ((FormControlReplacementElement) re)
-                    .getControl();
-                if (control != null) {
-                    control.dispose();
-                }
+        ReplacedElement re = _controls.get(e);
+        if (re instanceof FormControlReplacementElement) {
+            SWTFormControl control = ((FormControlReplacementElement) re)
+                .getControl();
+            if (control != null) {
+                control.dispose();
             }
-            _controls.remove(e);
         }
+        _controls.remove(e);
     }
 
     public void reset() {
         super.reset();
-        _forms = new HashMap();
-        if (_controls != null) {
-            for (Iterator iter = _controls.values().iterator(); iter.hasNext();) {
-                ReplacedElement re = (ReplacedElement) iter.next();
-                if (re instanceof FormControlReplacementElement) {
-                    SWTFormControl control = ((FormControlReplacementElement) re)
+        _forms.clear();
+        for (ReplacedElement re : _controls.values()) {
+            if (re instanceof FormControlReplacementElement) {
+                SWTFormControl control = ((FormControlReplacementElement) re)
                         .getControl();
-                    if (control != null) {
-                        control.dispose();
-                    }
+                if (control != null) {
+                    control.dispose();
                 }
             }
-            _controls = null;
         }
+        _controls.clear();
     }
 
-    /**
-     * @param e
-     */
     protected Element getParentForm(Element e, LayoutContext context) {
         Node node = e;
         XhtmlNamespaceHandler nsh = (XhtmlNamespaceHandler) context

@@ -917,7 +917,7 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 		|%ndxterm.class;
 		%local.bibliocomponent.mix;">
 
-<!-- I don't think this is well placed, but it needs to be here because of -->
+<!-- I don't think this is well-placed, but it needs to be here because of -->
 <!-- the reference to bibliocomponent.mix -->
 <!ENTITY % local.info.class "">
 <!ENTITY % info.class

@@ -21,12 +21,8 @@
 
 package org.xhtmlrenderer.simple;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -37,6 +33,11 @@ import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Handles a general XML document
  *
@@ -46,14 +47,17 @@ public class NoNamespaceHandler implements NamespaceHandler {
 
     static final String _namespace = "http://www.w3.org/XML/1998/namespace";
 
+    @Override
     public String getNamespace() {
         return _namespace;
     }
 
+    @Override
     public String getAttributeValue(org.w3c.dom.Element e, String attrName) {
         return e.getAttribute(attrName);
     }
-    
+
+    @Override
     public String getAttributeValue(Element e, String namespaceURI, String attrName) {
         if (namespaceURI == TreeResolver.NO_NAMESPACE) {
             return e.getAttribute(attrName);
@@ -69,7 +73,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
                         return attr.getValue();
                     }
                 }
-                
+
                 return "";
             }
         } else {
@@ -77,14 +81,17 @@ public class NoNamespaceHandler implements NamespaceHandler {
         }
     }
 
+    @Override
     public String getClass(org.w3c.dom.Element e) {
         return null;
     }
 
+    @Override
     public String getID(org.w3c.dom.Element e) {
         return null;
     }
 
+    @Override
     public String getLang(org.w3c.dom.Element e) {
         if(e == null) {
             return "";
@@ -92,46 +99,55 @@ public class NoNamespaceHandler implements NamespaceHandler {
         return e.getAttribute("lang");
     }
 
+    @Override
     public String getElementStyling(org.w3c.dom.Element e) {
         return null;
     }
 
+    @Override
     public String getNonCssStyling(Element e) {
         return null;
     }
 
+    @Override
     public String getLinkUri(org.w3c.dom.Element e) {
         return null;
     }
 
-    public String getDocumentTitle(org.w3c.dom.Document doc) {
+    @Override
+    public String getDocumentTitle(Document doc) {
         return null;
     }
-    
+
+    @Override
     public String getAnchorName(Element e) {
         return null;
     }
 
+    @Override
     public boolean isImageElement(Element e) {
         return false;
     }
 
+    @Override
     public String getImageSourceURI(Element e) {
         return null;
     }
-    
+
+    @Override
     public boolean isFormElement(Element e) {
         return false;
     }
 
-    private Pattern _typePattern = Pattern.compile("type\\s?=\\s?");
-    private Pattern _hrefPattern = Pattern.compile("href\\s?=\\s?");
-    private Pattern _titlePattern = Pattern.compile("title\\s?=\\s?");
-    private Pattern _alternatePattern = Pattern.compile("alternate\\s?=\\s?");
-    private Pattern _mediaPattern = Pattern.compile("media\\s?=\\s?");
+    private static final Pattern _typePattern = Pattern.compile("type\\s?=\\s?");
+    private static final Pattern _hrefPattern = Pattern.compile("href\\s?=\\s?");
+    private static final Pattern _titlePattern = Pattern.compile("title\\s?=\\s?");
+    private static final Pattern _alternatePattern = Pattern.compile("alternate\\s?=\\s?");
+    private static final Pattern _mediaPattern = Pattern.compile("media\\s?=\\s?");
 
-    public StylesheetInfo[] getStylesheets(org.w3c.dom.Document doc) {
-        List list = new ArrayList();
+    @Override
+    public StylesheetInfo[] getStylesheets(Document doc) {
+        List<StylesheetInfo> list = new ArrayList<>();
         //get the processing-instructions (actually for XmlDocuments)
         //type and href are required to be set
         NodeList nl = doc.getChildNodes();
@@ -140,8 +156,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
             if (node.getNodeType() != Node.PROCESSING_INSTRUCTION_NODE) continue;
             ProcessingInstruction piNode = (ProcessingInstruction) node;
             if (!piNode.getTarget().equals("xml-stylesheet")) continue;
-            StylesheetInfo info;
-            info = new StylesheetInfo();
+            StylesheetInfo info = new StylesheetInfo();
             info.setOrigin(StylesheetInfo.AUTHOR);
             String pi = piNode.getData();
             Matcher m = _alternatePattern.matcher(pi);
@@ -182,9 +197,10 @@ public class NoNamespaceHandler implements NamespaceHandler {
             list.add(info);
         }
 
-        return (StylesheetInfo[])list.toArray(new StylesheetInfo[list.size()]);
+        return list.toArray(new StylesheetInfo[list.size()]);
     }
 
+    @Override
     public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
         return null;
     }

@@ -28,24 +28,24 @@ import java.util.List;
  * colspans, rowspans, or missing cells, the grid row will exactly correspond
  * to the row in the original markup.  On the other hand, colspans may force
  * spanning cells to be inserted, rowspans will mean cells appear in more than
- * one grid row, and positions may be <code>null</code> if no cell occupies that
+ * one grid row, and positions may be {@code null} if no cell occupies that
  * position in the grid.
  */
 public class RowData {
-    private List _row = new ArrayList();
-    
-    public List getRow() {
+    private final List<TableCellBox> _row = new ArrayList<>();
+
+    public List<TableCellBox> getRow() {
         return _row;
     }
-    
+
     public void extendToColumnCount(int columnCount) {
         while (_row.size() < columnCount) {
             _row.add(null);
         }
     }
-    
+
     public void splitColumn(int pos) {
-        TableCellBox current = (TableCellBox)_row.get(pos);
+        TableCellBox current = _row.get(pos);
         _row.add(pos+1, current == null ? null : TableCellBox.SPANNING_CELL);
     }
 }

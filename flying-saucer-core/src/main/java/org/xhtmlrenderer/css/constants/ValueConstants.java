@@ -28,7 +28,13 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 
@@ -39,45 +45,27 @@ import java.util.logging.Level;
  */
 public final class ValueConstants {
     /**
-     * Type descriptions--a crude approximation taken by scanning CSSValue
-     * statics
+     * Type descriptions--a crude approximation taken by scanning CSSValue statics
      */
-    private final static List TYPE_DESCRIPTIONS;
-    /**
-     * Description of the Field
-     */
-    private final static Map sacTypesStrings;
+    private static final List<String> TYPE_DESCRIPTIONS = new ArrayList<>();
+    private static final Map<Short, String> sacTypesStrings = new HashMap<>(25);
 
     /**
      * A text representation of the CSS type for this value.
-     *
-     * @param cssType            PARAM
-     * @param primitiveValueType PARAM
-     * @return Returns
      */
     public static String cssType(int cssType, int primitiveValueType) {
-        String desc = null;
         if (cssType == CSSValue.CSS_PRIMITIVE_VALUE) {
             if (primitiveValueType >= TYPE_DESCRIPTIONS.size()) {
-                desc = "{unknown: " + primitiveValueType + "}";
+                return "{unknown: " + primitiveValueType + "}";
             } else {
-                desc = (String) TYPE_DESCRIPTIONS.get(primitiveValueType);
-                if (desc == null) {
-                    desc = "{UNKNOWN VALUE TYPE}";
-                }
+                String desc = TYPE_DESCRIPTIONS.get(primitiveValueType);
+                return desc == null ? "{UNKNOWN VALUE TYPE}" : desc;
             }
         } else {
-            desc = "{value list}";
+            return "{value list}";
         }
-        return desc;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param type PARAM
-     * @return Returns
-     */
     public static short sacPrimitiveTypeForString(String type) {
         if ("em".equals(type)) {
             return CSSPrimitiveValue.CSS_EMS;
@@ -105,14 +93,8 @@ public final class ValueConstants {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param type PARAM
-     * @return Returns
-     */
     public static String stringForSACPrimitiveType(short type) {
-        return (String) sacTypesStrings.get(new Short(type));
+        return sacTypesStrings.get(type);
     }
 
     /**
@@ -126,8 +108,7 @@ public final class ValueConstants {
      */
     //TODO: method may be unnecessary (tobe)
     public static boolean isAbsoluteUnit(CSSPrimitiveValue primitive) {
-        short type = 0;
-        type = ((CSSPrimitiveValue) primitive).getPrimitiveType();
+        short type = primitive.getPrimitiveType();
         return isAbsoluteUnit(type);
     }
 
@@ -194,7 +175,7 @@ public final class ValueConstants {
             case CSSPrimitiveValue.CSS_UNKNOWN:
                 XRLog.cascade(Level.WARNING, "Asked whether type was absolute, given CSS_UNKNOWN as the type. " +
                         "Might be one of those funny values like background-position.");
-                GeneralUtil.dumpShortException(new Exception());
+                GeneralUtil.dumpShortException(new Exception("Taking a thread dump..."));
                 // fall-through
             default:
                 return false;
@@ -203,9 +184,6 @@ public final class ValueConstants {
 
     /**
      * Gets the cssValueTypeDesc attribute of the {@link CSSValue} object
-     *
-     * @param cssValue PARAM
-     * @return The cssValueTypeDesc value
      */
     public static String getCssValueTypeDesc(CSSValue cssValue) {
         switch (cssValue.getCssValueType()) {
@@ -226,13 +204,10 @@ public final class ValueConstants {
      * Returns true if the SAC primitive value type is a number unit--a unit
      * that can only contain a numeric value. This is a shorthand way of saying,
      * did the user declare this as a number unit (like px)?
-     *
-     * @param cssPrimitiveType PARAM
-     * @return See desc.
      */
     public static boolean isNumber(short cssPrimitiveType) {
         switch (cssPrimitiveType) {
-            // fall thru on all these
+            // fall through on all these
             // relative length or size
             case CSSPrimitiveValue.CSS_EMS:
             case CSSPrimitiveValue.CSS_EXS:
@@ -253,12 +228,10 @@ public final class ValueConstants {
     }
 
     static {
-        SortedMap map = new TreeMap();
-        TYPE_DESCRIPTIONS = new ArrayList();
+        SortedMap<Short, String> map = new TreeMap<>();
         try {
-            Field fields[] = CSSPrimitiveValue.class.getFields();
-            for (int i = 0; i < fields.length; i++) {
-                Field f = fields[i];
+            Field[] fields = CSSPrimitiveValue.class.getFields();
+            for (Field f : fields) {
                 int mod = f.getModifiers();
                 if (Modifier.isFinal(mod) &&
                         Modifier.isStatic(mod) &&
@@ -278,40 +251,35 @@ public final class ValueConstants {
                 }
             }
             // now sort by the key--the short constant for the public fields
-            List keys = new ArrayList(map.keySet());
+            List<Short> keys = new ArrayList<>(map.keySet());
             Collections.sort(keys);
 
             // then add to our static list, in the order the keys appear. this means
             // list.get(index) will return the item at index, which should be the description
             // for that constant
-            Iterator iter = keys.iterator();
-            while (iter.hasNext()) {
-                TYPE_DESCRIPTIONS.add(map.get(iter.next()));
+            for (Short key : keys) {
+                TYPE_DESCRIPTIONS.add(map.get(key));
             }
         } catch (Exception ex) {
             throw new XRRuntimeException("Could not build static list of CSS type descriptions.", ex);
         }
 
         // HACK: this is a quick way to perform the lookup, but dumb if the short assigned are > 100; but the compiler will tell us that (PWW 21-01-05)
-        sacTypesStrings = new HashMap(25);
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_EMS), "em");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_EXS), "ex");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PX), "px");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PERCENTAGE), "%");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_IN), "in");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_CM), "cm");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_MM), "mm");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PT), "pt");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PC), "pc");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_EMS, "em");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_EXS, "ex");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_PX, "px");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_PERCENTAGE, "%");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_IN, "in");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_CM, "cm");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_MM, "mm");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_PT, "pt");
+        sacTypesStrings.put(CSSPrimitiveValue.CSS_PC, "pc");
     }
 
     /**
      * Incomplete routine to try and determine the
      * CSSPrimitiveValue short code for a given value,
      * e.g. 14pt is CSS_PT.
-     *
-     * @param value PARAM
-     * @return Returns
      */
     public static short guessType(String value) {
         short type = CSSPrimitiveValue.CSS_STRING;
@@ -386,7 +354,7 @@ public final class ValueConstants {
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards
  * except for common packages
- * (java.io, java.util, etc).
+ * (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

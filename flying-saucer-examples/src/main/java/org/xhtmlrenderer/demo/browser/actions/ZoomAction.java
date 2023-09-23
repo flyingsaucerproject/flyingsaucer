@@ -12,15 +12,16 @@ import java.awt.event.ActionEvent;
 public class ZoomAction extends AbstractAction {
     private static boolean needsWarning = true;
 
-    private ScaleFactor scalingFactor;
+    private final ScaleFactor scalingFactor;
     private final ScalableXHTMLPanel view;
 
     public ZoomAction(ScalableXHTMLPanel panel, ScaleFactor factor) {
         super(factor.getZoomLabel());
-        this.scalingFactor = factor;
-        this.view = panel;
+        scalingFactor = factor;
+        view = panel;
     }
 
+    @Override
     public void actionPerformed(ActionEvent evt) {
         if (needsWarning) {
             String msg = "The \"zoom\" feature is experimental, and some pages\n" +

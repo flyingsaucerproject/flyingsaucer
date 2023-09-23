@@ -19,35 +19,25 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.RenderingHints.Key;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
-
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
+import com.lowagie.text.pdf.CMYKColor;
+import com.lowagie.text.pdf.PdfAction;
+import com.lowagie.text.pdf.PdfAnnotation;
+import com.lowagie.text.pdf.PdfArray;
+import com.lowagie.text.pdf.PdfBorderArray;
+import com.lowagie.text.pdf.PdfBorderDictionary;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfDestination;
+import com.lowagie.text.pdf.PdfDictionary;
+import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfIndirectReference;
+import com.lowagie.text.pdf.PdfName;
+import com.lowagie.text.pdf.PdfOutline;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfString;
+import com.lowagie.text.pdf.PdfTextArray;
+import com.lowagie.text.pdf.PdfWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -76,25 +66,30 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Image;
-import com.lowagie.text.pdf.CMYKColor;
-import com.lowagie.text.pdf.PdfAction;
-import com.lowagie.text.pdf.PdfAnnotation;
-import com.lowagie.text.pdf.PdfArray;
-import com.lowagie.text.pdf.PdfBorderArray;
-import com.lowagie.text.pdf.PdfBorderDictionary;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfDestination;
-import com.lowagie.text.pdf.PdfDictionary;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfIndirectReference;
-import com.lowagie.text.pdf.PdfName;
-import com.lowagie.text.pdf.PdfOutline;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfString;
-import com.lowagie.text.pdf.PdfTextArray;
-import com.lowagie.text.pdf.PdfWriter;
+import java.awt.*;
+import java.awt.RenderingHints.Key;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
+
+import static com.lowagie.text.pdf.PdfObject.TEXT_UNICODE;
+import static java.util.Collections.emptyList;
+import static java.util.Comparator.comparingInt;
 
 /**
  * This class is largely based on {@link com.lowagie.text.pdf.PdfGraphics2D}.
@@ -106,7 +101,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private static final int STROKE = 2;
     private static final int CLIP = 3;
 
-    private static AffineTransform IDENTITY = new AffineTransform();
+    private static final AffineTransform IDENTITY = new AffineTransform();
 
     private static final BasicStroke STROKE_ONE = new BasicStroke(1);
 
@@ -124,24 +119,24 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private Color _fillColor;
     private Color _strokeColor;
 
-    private Stroke _stroke = null;
-    private Stroke _originalStroke = null;
-    private Stroke _oldStroke = null;
+    private Stroke _stroke;
+    private Stroke _originalStroke;
+    private Stroke _oldStroke;
 
     private Area _clip;
 
     private SharedContext _sharedContext;
-    private float _dotsPerPoint;
+    private final float _dotsPerPoint;
 
     private PdfWriter _writer;
 
-    private Map _readerCache = new HashMap();
+    private final Map<URI, PdfReader> _readerCache = new HashMap<>();
 
     private PdfDestination _defaultDestination;
 
-    private List _bookmarks = new ArrayList();
+    private List<Bookmark> _bookmarks = new ArrayList<>();
 
-    private List _metadata = new ArrayList();
+    private final List<Metadata> _metadata = new ArrayList<>();
 
     private Box _root;
 
@@ -149,7 +144,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private int _nextFormFieldIndex;
 
-    private Set _linkTargetAreas;
+    private Set<String> _linkTargetAreas;
 
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
@@ -187,18 +182,20 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             _defaultDestination.addPage(_writer.getPageReference(1));
         }
 
-        _linkTargetAreas = new HashSet();
+        _linkTargetAreas = new HashSet<>();
     }
 
     public void finishPage() {
         _currentPage.restoreState();
     }
 
+    @Override
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
         ITextReplacedElement element = (ITextReplacedElement) box.getReplacedElement();
         element.paint(c, this, box);
     }
 
+    @Override
     public void paintBackground(RenderingContext c, Box box) {
         super.paintBackground(c, box);
 
@@ -320,13 +317,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
 
         Point2D docCorner = new Point2D.Double(bounds.x, bounds.y + bounds.height);
-        Point2D pdfCorner = new Point.Double();
+        Point2D pdfCorner = new Point2D.Double();
         _transform.transform(docCorner, pdfCorner);
         pdfCorner.setLocation(pdfCorner.getX(), normalizeY((float) pdfCorner.getY()));
 
-        com.lowagie.text.Rectangle result = new com.lowagie.text.Rectangle((float) pdfCorner.getX(), (float) pdfCorner.getY(),
+        return new com.lowagie.text.Rectangle((float) pdfCorner.getX(), (float) pdfCorner.getY(),
                 (float) pdfCorner.getX() + getDeviceLength(bounds.width), (float) pdfCorner.getY() + getDeviceLength(bounds.height));
-        return result;
     }
 
     public com.lowagie.text.Rectangle createTargetArea(RenderingContext c, Box box) {
@@ -343,9 +339,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     + page.getMarginBorderPadding(c, CalculatedStyle.BOTTOM));
             float left = getDeviceLength(page.getMarginBorderPadding(c, CalculatedStyle.LEFT) + bounds.x);
 
-            com.lowagie.text.Rectangle result = new com.lowagie.text.Rectangle(left, bottom, left + getDeviceLength(bounds.width), bottom
+            return new com.lowagie.text.Rectangle(left, bottom, left + getDeviceLength(bounds.width), bottom
                     + getDeviceLength(bounds.height));
-            return result;
         }
     }
 
@@ -367,6 +362,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return result;
     }
 
+    @Override
     public void drawBorderLine(Shape bounds, int side, int lineWidth, boolean solid) {
        /*( float x = bounds.x;
         float y = bounds.y;
@@ -401,6 +397,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         draw(bounds);
     }
 
+    @Override
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor) {
             FSRGBColor rgb = (FSRGBColor) color;
@@ -413,28 +410,34 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
 
+    @Override
     public void draw(Shape s) {
         followPath(s, STROKE);
     }
 
+    @Override
     protected void drawLine(int x1, int y1, int x2, int y2) {
         Line2D line = new Line2D.Double(x1, y1, x2, y2);
         draw(line);
     }
 
+    @Override
     public void drawRect(int x, int y, int width, int height) {
         draw(new Rectangle(x, y, width, height));
     }
 
+    @Override
     public void drawOval(int x, int y, int width, int height) {
         Ellipse2D oval = new Ellipse2D.Float(x, y, width, height);
         draw(oval);
     }
 
+    @Override
     public void fill(Shape s) {
         followPath(s, FILL);
     }
 
+    @Override
     public void fillRect(int x, int y, int width, int height) {
         if (ROUND_RECT_DIMENSIONS_DOWN) {
             fill(new Rectangle(x, y, width - 1, height - 1));
@@ -443,22 +446,27 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
 
+    @Override
     public void fillOval(int x, int y, int width, int height) {
         Ellipse2D oval = new Ellipse2D.Float(x, y, width, height);
         fill(oval);
     }
 
+    @Override
     public void translate(double tx, double ty) {
         _transform.translate(tx, ty);
     }
 
+    @Override
     public Object getRenderingHint(Key key) {
         return null;
     }
 
+    @Override
     public void setRenderingHint(Key key, Object value) {
     }
 
+    @Override
     public void setFont(FSFont font) {
         _font = ((ITextFSFont) font);
     }
@@ -626,9 +634,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         int traces = 0;
         while (!points.isDone()) {
             ++traces;
-            int segtype = points.currentSegment(coords);
+            int segmentType = points.currentSegment(coords);
             normalizeY(coords);
-            switch (segtype) {
+            switch (segmentType) {
             case PathIterator.SEG_CLOSE:
                 cb.closePath();
                 break;
@@ -646,7 +654,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 break;
 
             case PathIterator.SEG_QUADTO:
-            	System.out.println("Quad to " + coords[0] + " " + coords[1] + " " + coords[2] + " " + coords[3]);
+                System.out.println("Quad to " + coords[0] + " " + coords[1] + " " + coords[2] + " " + coords[3]);
                 cb.curveTo(coords[0], coords[1], coords[2], coords[3]);
                 break;
             }
@@ -743,14 +751,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             makeDash = true;
         }
         if (makeDash) {
-            float dash[] = nStroke.getDashArray();
+            float[] dash = nStroke.getDashArray();
             if (dash == null)
                 cb.setLiteral("[]0 d\n");
             else {
                 cb.setLiteral('[');
-                int lim = dash.length;
-                for (int k = 0; k < lim; ++k) {
-                    cb.setLiteral(dash[k]);
+                for (float v : dash) {
+                    cb.setLiteral(v);
                     cb.setLiteral(' ');
                 }
                 cb.setLiteral(']');
@@ -760,6 +767,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
 
+    @Override
     public void setStroke(Stroke s) {
         _originalStroke = s;
         this._stroke = transformStroke(s);
@@ -770,7 +778,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             return stroke;
         BasicStroke st = (BasicStroke) stroke;
         float scale = (float) Math.sqrt(Math.abs(_transform.getDeterminant()));
-        float dash[] = st.getDashArray();
+        float[] dash = st.getDashArray();
         if (dash != null) {
             for (int k = 0; k < dash.length; ++k)
                 dash[k] *= scale;
@@ -779,6 +787,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 * scale);
     }
 
+    @Override
     public void clip(Shape s) {
         if (s != null) {
             s = _transform.createTransformedShape(s);
@@ -792,6 +801,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
 
+    @Override
     public Shape getClip() {
         try {
             return _transform.createInverse().createTransformedShape(_clip);
@@ -800,6 +810,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
 
+    @Override
     public void setClip(Shape s) {
         PdfContentByte cb = _currentPage;
         cb.restoreState();
@@ -817,10 +828,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _oldStroke = null;
     }
 
+    @Override
     public Stroke getStroke() {
         return _originalStroke;
     }
 
+    @Override
     public void drawImage(FSImage fsImage, int x, int y) {
         if (fsImage instanceof PDFAsImage) {
             drawPDFAsImage((PDFAsImage) fsImage, x, y);
@@ -853,7 +866,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {
         URI uri = image.getURI();
-        PdfReader reader = null;
+        PdfReader reader;
 
         try {
             reader = getReader(uri);
@@ -884,7 +897,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     public PdfReader getReader(URI uri) throws IOException {
-        PdfReader result = (PdfReader) _readerCache.get(uri);
+        PdfReader result = _readerCache.get(uri);
         if (result == null) {
             result = new PdfReader(getSharedContext().getUserAgentCallback().getBinaryResource(uri.toString()));
             _readerCache.put(uri, result);
@@ -917,40 +930,36 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
 
-    private void writeBookmarks(RenderingContext c, Box root, PdfOutline parent, List bookmarks) {
-        for (Iterator i = bookmarks.iterator(); i.hasNext();) {
-            Bookmark bookmark = (Bookmark) i.next();
+    private void writeBookmarks(RenderingContext c, Box root, PdfOutline parent, List<Bookmark> bookmarks) {
+        for (Bookmark bookmark : bookmarks) {
             writeBookmark(c, root, parent, bookmark);
         }
     }
 
     private void writeNamedDestinations(RenderingContext c) {
-        Map idMap = getSharedContext().getIdMap();
+        Map<String, Box> idMap = getSharedContext().getIdMap();
         if ((idMap != null) && (!idMap.isEmpty())) {
-            PdfArray dests = new PdfArray();
+            PdfArray destinations = new PdfArray();
             try {
-                Iterator it = idMap.entrySet().iterator();
-                while (it.hasNext()) {
-                    Entry entry = (Entry) it.next();
-
-                    Box targetBox = (Box) entry.getValue();
+                for (Entry<String, Box> entry : idMap.entrySet()) {
+                    Box targetBox = entry.getValue();
 
                     if (targetBox.getStyle().isIdent(CSSName.FS_NAMED_DESTINATION, IdentValue.CREATE)) {
-                        String anchorName = (String) entry.getKey();
-                        dests.add(new PdfString(anchorName, PdfString.TEXT_UNICODE));
+                        String anchorName = entry.getKey();
+                        destinations.add(new PdfString(anchorName, TEXT_UNICODE));
 
                         PdfDestination dest = createDestination(c, targetBox);
                         if (dest != null) {
                             PdfIndirectReference ref = _writer.addToBody(dest).getIndirectReference();
-                            dests.add(ref);
+                            destinations.add(ref);
                         }
                     }
                 }
 
-                if (!dests.isEmpty()) {
-                    PdfDictionary nametree = new PdfDictionary();
-                    nametree.put(PdfName.NAMES, dests);
-                    PdfIndirectReference nameTreeRef = _writer.addToBody(nametree).getIndirectReference();
+                if (!destinations.isEmpty()) {
+                    PdfDictionary nameTree = new PdfDictionary();
+                    nameTree.put(PdfName.NAMES, destinations);
+                    PdfIndirectReference nameTreeRef = _writer.addToBody(nameTree).getIndirectReference();
 
                     PdfDictionary names = new PdfDictionary();
                     names.put(PdfName.DESTS, nameTreeRef);
@@ -977,7 +986,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         String href = bookmark.getHRef();
         PdfDestination target = null;
         Box box = bookmark.getBox();
-        if (href.length() > 0 && href.charAt(0) == '#') {
+        if (!href.isEmpty() && href.charAt(0) == '#') {
             box = _sharedContext.getBoxById(href.substring(1));
         }
         if (box != null) {
@@ -999,12 +1008,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (head != null) {
             Element bookmarks = DOMUtil.getChild(head, "bookmarks");
             if (bookmarks != null) {
-                List l = DOMUtil.getChildren(bookmarks, "bookmark");
-                if (l != null) {
-                    for (Iterator i = l.iterator(); i.hasNext();) {
-                        Element e = (Element) i.next();
-                        loadBookmark(null, e);
-                    }
+                for (Element e : DOMUtil.getChildren(bookmarks, "bookmark")) {
+                    loadBookmark(null, e);
                 }
             }
         }
@@ -1017,12 +1022,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         } else {
             parent.addChild(us);
         }
-        List l = DOMUtil.getChildren(bookmark, "bookmark");
-        if (l != null) {
-            for (Iterator i = l.iterator(); i.hasNext();) {
-                Element e = (Element) i.next();
-                loadBookmark(us, e);
-            }
+        for (Element e : DOMUtil.getChildren(bookmark, "bookmark")) {
+            loadBookmark(us, e);
         }
     }
 
@@ -1031,12 +1032,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         private String _HRef;
         private Box    _box;
 
-        private List _children;
+        private List<Bookmark> _children;
 
-        public Bookmark() {
+        Bookmark() {
         }
 
-        public Bookmark(String name, String href) {
+        Bookmark(String name, String href) {
             _name = name;
             _HRef = href;
         }
@@ -1067,13 +1068,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
         public void addChild(Bookmark child) {
             if (_children == null) {
-                _children = new ArrayList();
+                _children = new ArrayList<>();
             }
             _children.add(child);
         }
 
-        public List getChildren() {
-            return _children == null ? Collections.EMPTY_LIST : _children;
+        public List<Bookmark> getChildren() {
+            return _children == null ? emptyList() : _children;
         }
     }
 
@@ -1087,7 +1088,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
      *
      * @param name
      *            the name of the metadata element to add.
-     * @return the content value for this metadata.
      */
     public void addMetadata(String name, String value) {
         if ((name != null) && (value != null)) {
@@ -1099,7 +1099,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     /**
      * Searches the metadata name/content pairs of the current document and
      * returns the content value from the first pair with a matching name. The
-     * search is case insensitive.
+     * search is case-insensitive.
      *
      * @param name
      *            the metadata element name to locate.
@@ -1108,8 +1108,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
      */
     public String getMetadataByName(String name) {
         if (name != null) {
-            for (int i = 0, len = _metadata.size(); i < len; i++) {
-                Metadata m = (Metadata) _metadata.get(i);
+            for (Metadata m : _metadata) {
                 if ((m != null) && m.getName().equalsIgnoreCase(name)) {
                     return m.getContent();
                 }
@@ -1121,18 +1120,17 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     /**
      * Searches the metadata name/content pairs of the current document and
      * returns any content values with a matching name in an ArrayList. The
-     * search is case insensitive.
+     * search is case-insensitive.
      *
      * @param name
      *            the metadata element name to locate.
      * @return an ArrayList with matching content values; otherwise an empty
      *         list.
      */
-    public ArrayList getMetadataListByName(String name) {
-        ArrayList result = new ArrayList();
+    public List<String> getMetadataListByName(String name) {
+        List<String> result = new ArrayList<>();
         if (name != null) {
-            for (int i = 0, len = _metadata.size(); i < len; i++) {
-                Metadata m = (Metadata) _metadata.get(i);
+            for (Metadata m : _metadata) {
                 if ((m != null) && m.getName().equalsIgnoreCase(name)) {
                     result.add(m.getContent());
                 }
@@ -1152,19 +1150,13 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private void loadMetadata(Document doc) {
         Element head = DOMUtil.getChild(doc.getDocumentElement(), "head");
         if (head != null) {
-            List l = DOMUtil.getChildren(head, "meta");
-            if (l != null) {
-                for (Iterator i = l.iterator(); i.hasNext();) {
-                    Element e = (Element) i.next();
-                    String name = e.getAttribute("name");
-                    if (name != null) { // ignore non-name metadata data
-                        String content = e.getAttribute("content");
-                        Metadata m = new Metadata(name, content);
-                        _metadata.add(m);
-                    }
-                }
+            for (Element e : DOMUtil.getChildren(head, "meta")) {
+                String name = e.getAttribute("name");
+                String content = e.getAttribute("content");
+                Metadata m = new Metadata(name, content);
+                _metadata.add(m);
             }
-            // If there is no title meta data attribute, use the document title.
+            // If there is no title metadata attribute, use the document title.
             String title = getMetadataByName("title");
             if (title == null) {
                 Element t = DOMUtil.getChild(head, "title");
@@ -1178,22 +1170,20 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     /**
-     * Replaces all copies of the named metadata with a single value. A a new
+     * Replaces all copies of the named metadata with a single value. A new
      * value of null will result in the removal of all copies of the named
-     * metadata. Use <code>addMetadata</code> to append additional values with
+     * metadata. Use {@code addMetadata} to append additional values with
      * the same name.
      *
      * @param name
      *            the metadata element name to locate.
-     * @return the new content value for this metadata (null to remove all
-     *         instances).
      */
     public void setMetadata(String name, String value) {
         if (name != null) {
             boolean remove = (value == null); // removing all instances of name?
             int free = -1; // first open slot in array
             for (int i = 0, len = _metadata.size(); i < len; i++) {
-                Metadata m = (Metadata) _metadata.get(i);
+                Metadata m = _metadata.get(i);
                 if (m != null) {
                     if (m.getName().equalsIgnoreCase(name)) {
                         if (!remove) {
@@ -1224,7 +1214,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         private String _name;
         private String _content;
 
-        public Metadata(String name, String content) {
+        private Metadata(String name, String content) {
             _name = name;
             _content = content;
         }
@@ -1269,30 +1259,32 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _startPageNo = startPageNo;
     }
 
+    @Override
     public void drawSelection(RenderingContext c, InlineText inlineText) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: drawSelection");
     }
 
+    @Override
     public boolean isSupportsSelection() {
         return false;
     }
 
+    @Override
     public boolean isSupportsCMYKColors() {
         return true;
     }
 
-    public List findPagePositionsByID(CssContext c, Pattern pattern) {
-        Map idMap = _sharedContext.getIdMap();
+    public List<PagePosition> findPagePositionsByID(CssContext c, Pattern pattern) {
+        Map<String, Box> idMap = _sharedContext.getIdMap();
         if (idMap == null) {
-            return Collections.EMPTY_LIST;
+            return emptyList();
         }
 
-        List result = new ArrayList();
-        for (Iterator i = idMap.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Entry) i.next();
-            String id = (String) entry.getKey();
+        List<PagePosition> result = new ArrayList<>();
+        for (Entry<String, Box> entry : idMap.entrySet()) {
+            String id = entry.getKey();
             if (pattern.matcher(id).find()) {
-                Box box = (Box) entry.getValue();
+                Box box = entry.getValue();
                 PagePosition pos = calcPDFPagePosition(c, id, box);
                 if (pos != null) {
                     result.add(pos);
@@ -1300,14 +1292,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             }
         }
 
-        Collections.sort(result, new Comparator() {
-            public int compare(Object arg0, Object arg1) {
-                PagePosition p1 = (PagePosition) arg0;
-                PagePosition p2 = (PagePosition) arg1;
-                return p1.getPageNo() - p2.getPageNo();
-            }
-        });
-
+        result.sort(comparingInt(PagePosition::getPageNo));
         return result;
     }
 

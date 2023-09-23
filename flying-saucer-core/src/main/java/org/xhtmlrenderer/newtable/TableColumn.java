@@ -30,33 +30,38 @@ import org.xhtmlrenderer.layout.Styleable;
 public class TableColumn implements Styleable {
     private Element _element;
     private CalculatedStyle _style;
-    
+
     private TableColumn _parent;
-    
+
     public TableColumn() {
     }
-    
+
     public TableColumn(Element element, CalculatedStyle style) {
         _element = element;
         _style = style;
     }
-    
+
+    @Override
     public Element getElement() {
         return _element;
     }
 
+    @Override
     public String getPseudoElementOrClass() {
         return null;
     }
 
+    @Override
     public CalculatedStyle getStyle() {
         return _style;
     }
 
+    @Override
     public void setElement(Element e) {
         _element = e;
     }
 
+    @Override
     public void setStyle(CalculatedStyle style) {
         _style = style;
     }

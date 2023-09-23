@@ -19,39 +19,35 @@
  */
 package org.xhtmlrenderer.simple.xhtml.controls;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.simple.xhtml.XhtmlForm;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class SelectControl extends AbstractControl {
 
-    private int _size;
-    private boolean _multiple;
-    private List _values;
+    private final int _size;
+    private final boolean _multiple;
+    private final List<String> _values = new ArrayList<>(1);
 
     private String _initialValue;
     private String[] _initialValues;
 
-    private Map _options;
+    private final Map<String, String> _options = new LinkedHashMap<>();
 
     public SelectControl(XhtmlForm form, Element e) {
         super(form, e);
 
         _size = getIntAttribute(e, "size", 1);
         _multiple = e.getAttribute("multiple").length() != 0;
-        if (_multiple) {
-            _values = new ArrayList();
-        }
         super.setValue(null);
         setSuccessful(false);
-
-        _options = new LinkedHashMap();
         traverseOptions(e, "");
 
         if (_multiple) {
@@ -85,7 +81,7 @@ public class SelectControl extends AbstractControl {
                     if (label.length() == 0) {
                         label = content;
                     } else {
-                        label = prefix.concat(label);
+                        label = prefix + label;
                     }
                     _options.put(value, label);
                     if (child.getAttribute("selected").length() != 0) {
@@ -106,14 +102,16 @@ public class SelectControl extends AbstractControl {
         return _size;
     }
 
+    @Override
     public boolean isMultiple() {
         return _multiple;
     }
 
-    public Map getOptions() {
-        return new LinkedHashMap(_options);
+    public Map<String, String> getOptions() {
+        return new LinkedHashMap<>(_options);
     }
 
+    @Override
     public void setValue(String value) {
         if (!isMultiple()) {
             if (_options.containsKey(value)) {
@@ -126,32 +124,31 @@ public class SelectControl extends AbstractControl {
         }
     }
 
-    public String[] getMultipleValues() {
+    @Override
+    @Nullable
+    public final String[] getMultipleValues() {
         if (isMultiple()) {
-            return (String[]) _values.toArray(new String[_values.size()]);
+            return _values.toArray(new String[0]);
         } else {
             return null;
         }
     }
 
+    @Override
     public void setMultipleValues(String[] values) {
         if (isMultiple()) {
             _values.clear();
-            for (int i = 0; i < values.length; i++) {
-                if (_options.get(values[i]) != null
-                        && !_values.contains(values[i])) {
-                    _values.add(values[i]);
+            for (String value : values) {
+                if (_options.get(value) != null && !_values.contains(value)) {
+                    _values.add(value);
                 }
             }
-            if (_values.isEmpty()) {
-                setSuccessful(false);
-            } else {
-                setSuccessful(true);
-            }
+            setSuccessful(!_values.isEmpty());
             fireChanged();
         }
     }
 
+    @Override
     public void reset() {
         if (isMultiple()) {
             setMultipleValues(_initialValues);

@@ -24,7 +24,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public interface LineBreakingStrategy {
-	
-	BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style);
+
+    BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style);
 
 }

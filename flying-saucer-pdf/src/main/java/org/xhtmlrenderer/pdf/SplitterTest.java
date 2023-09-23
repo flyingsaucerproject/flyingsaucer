@@ -19,24 +19,22 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.util.Iterator;
-
-import javax.xml.parsers.SAXParserFactory;
-
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
+import javax.xml.parsers.SAXParserFactory;
+
 public class SplitterTest {
     public static void main(String[] args) throws Exception {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setValidating(false);
-        
+
         XMLReader reader = factory.newSAXParser().getXMLReader();
-        
+
         reader.setErrorHandler(new ErrorHandler() {
             public void error(SAXParseException exception) throws SAXException {
                 throw exception;
@@ -50,14 +48,13 @@ public class SplitterTest {
                 throw exception;
             }
         });
-        
+
         DocumentSplitter splitter = new DocumentSplitter();
         reader.setContentHandler(splitter);
-        
+
         reader.parse(args[0]);
-        
-        for (Iterator i = splitter.getDocuments().iterator(); i.hasNext(); ) {
-            Document doc = (Document)i.next();
+
+        for (Document doc : splitter.getDocuments()) {
             System.out.println(doc.getDocumentElement());
         }
     }

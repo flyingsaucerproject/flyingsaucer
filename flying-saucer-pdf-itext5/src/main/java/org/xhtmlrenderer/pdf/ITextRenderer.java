@@ -19,29 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -63,8 +42,26 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfWriter;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to
@@ -93,7 +90,7 @@ public class ITextRenderer {
     private Dimension _dim;
     private boolean scaleToFit;
 
-    private final char[] validPdfVersions = new char[] { PdfWriter.VERSION_1_2, PdfWriter.VERSION_1_3, PdfWriter.VERSION_1_4,
+    private final char[] validPdfVersions = { PdfWriter.VERSION_1_2, PdfWriter.VERSION_1_3, PdfWriter.VERSION_1_4,
             PdfWriter.VERSION_1_5, PdfWriter.VERSION_1_6, PdfWriter.VERSION_1_7 };
 
     private PDFCreationListener _listener;
@@ -153,7 +150,7 @@ public class ITextRenderer {
         setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
     }
 
-    public void setDocument(byte[] bytes) throws IOException {
+    public void setDocument(byte[] bytes) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
         Document dom = XMLResource.load(inputStream).getDocument();
         setDocument(dom, "");
@@ -196,9 +193,9 @@ public class ITextRenderer {
     }
 
     public void setPDFVersion(char _v) {
-        for (int i = 0; i < validPdfVersions.length; i++) {
-            if (_v == validPdfVersions[i]) {
-                _pdfVersion = new Character(_v);
+        for (char validPdfVersion : validPdfVersions) {
+            if (_v == validPdfVersion) {
+                _pdfVersion = _v;
                 return;
             }
         }
@@ -207,7 +204,7 @@ public class ITextRenderer {
     }
 
     public char getPDFVersion() {
-        return _pdfVersion == null ? '0' : _pdfVersion.charValue();
+        return _pdfVersion == null ? '0' : _pdfVersion;
     }
 
     public void layout() {
@@ -216,7 +213,7 @@ public class ITextRenderer {
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
         _dim = root.getLayer().getPaintingDimension(c);
-        root.getLayer().trimEmptyPages(c, _dim.height);
+        root.getLayer().trimEmptyPages(_dim.height);
         root.getLayer().layoutPages(c);
         _root = root;
     }
@@ -257,12 +254,12 @@ public class ITextRenderer {
         writeNextDocument(0);
     }
 
-    public void writeNextDocument(int initialPageNo) throws DocumentException, IOException {
-        List pages = _root.getLayer().getPages();
+    public void writeNextDocument(int initialPageNo) throws IOException {
+        List<PageBox> pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
         c.setInitialPageNo(initialPageNo);
-        PageBox firstPage = (PageBox) pages.get(0);
+        PageBox firstPage = pages.get(0);
         com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
                 firstPage.getHeight(c) / _dotsPerPoint);
 
@@ -288,24 +285,22 @@ public class ITextRenderer {
     /**
      * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream if
      * something goes wrong.
-     * 
-     * @throws IOException
      */
     public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException, IOException {
-        List pages = _root.getLayer().getPages();
+        List<PageBox> pages = _root.getLayer().getPages();
 
         RenderingContext c = newRenderingContext();
         c.setInitialPageNo(initialPageNo);
-        PageBox firstPage = (PageBox) pages.get(0);
+        PageBox firstPage = pages.get(0);
         int pageWidth = calculateWidth(c, firstPage);
         com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
-        		firstPage.getHeight(c) / _dotsPerPoint);
+                firstPage.getHeight(c) / _dotsPerPoint);
 //        com.itextpdf.text.Rectangle firstPageSize = new com.itextpdf.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
 //                firstPage.getHeight(c) / _dotsPerPoint);
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document(firstPageSize, 0, 0, 0, 0);
         PdfWriter writer = PdfWriter.getInstance(doc, os);
         if (_pdfVersion != null) {
-            writer.setPdfVersion(_pdfVersion.charValue());
+            writer.setPdfVersion(_pdfVersion);
         }
         if (_pdfEncryption != null) {
             writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
@@ -324,19 +319,19 @@ public class ITextRenderer {
             doc.close();
         }
     }
-    
+
     private int calculateWidth(RenderingContext c, PageBox firstPage) {
-    	if (isScaleToFit()) {
-	    	int pageWidth = firstPage.getWidth(c);
-	        Rectangle pageRec = firstPage.getPrintClippingBounds(c);
-	        if(_dim.getWidth() > pageRec.getWidth()) {
-	            RectPropertySet margin = firstPage.getMargin(c);
-	            pageWidth = (int) (_dim.getWidth() + margin.left() + margin.right());
-	        }
-	        return pageWidth;
-    	} else {
-    		return firstPage.getWidth(c);
-    	}
+        if (isScaleToFit()) {
+            int pageWidth = firstPage.getWidth(c);
+            Rectangle pageRec = firstPage.getPrintClippingBounds(c);
+            if(_dim.getWidth() > pageRec.getWidth()) {
+                RectPropertySet margin = firstPage.getMargin(c);
+                pageWidth = (int) (_dim.getWidth() + margin.left() + margin.right());
+            }
+            return pageWidth;
+        } else {
+            return firstPage.getWidth(c);
+        }
     }
 
     private void firePreOpen() {
@@ -357,8 +352,8 @@ public class ITextRenderer {
         }
     }
 
-    private void writePDF(List pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc,
-            PdfWriter writer) throws DocumentException, IOException {
+    private void writePDF(List<PageBox> pages, RenderingContext c, com.itextpdf.text.Rectangle firstPageSize, com.itextpdf.text.Document doc,
+            PdfWriter writer) throws IOException {
         _outputDevice.setRoot(_root);
 
         _outputDevice.start(_doc);
@@ -372,16 +367,16 @@ public class ITextRenderer {
         firePreWrite(pageCount); // opportunity to adjust meta data
         setDidValues(doc); // set PDF header fields from meta data
         for (int i = 0; i < pageCount; i++) {
-            PageBox currentPage = (PageBox) pages.get(i);
+            PageBox currentPage = pages.get(i);
             c.setPage(i, currentPage);
             paintPage(c, writer, currentPage);
             _outputDevice.finishPage();
             if (i != pageCount - 1) {
-                PageBox nextPage = (PageBox) pages.get(i + 1);
+                PageBox nextPage = pages.get(i + 1);
                 int pageWidth = calculateWidth(c, nextPage);
-                
+
                 com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
-                		nextPage.getHeight(c) / _dotsPerPoint);
+                        nextPage.getHeight(c) / _dotsPerPoint);
 //              com.itextpdf.text.Rectangle nextPageSize = new com.itextpdf.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
 //                        nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
@@ -421,11 +416,11 @@ public class ITextRenderer {
         page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
 
         Shape working = _outputDevice.getClip();
-        
+
         Rectangle content = page.getPrintClippingBounds(c);
         if (isScaleToFit()) {
-        	int pageWidth = calculateWidth(c, page);
-        	content.setSize(pageWidth, (int) content.getSize().getHeight());//RTD - to change
+            int pageWidth = calculateWidth(c, page);
+            content.setSize(pageWidth, (int) content.getSize().getHeight());//RTD - to change
         }
         _outputDevice.clip(content);
 
@@ -443,14 +438,9 @@ public class ITextRenderer {
     private void provideMetadataToPage(PdfWriter writer, PageBox page) throws IOException {
         byte[] metadata = null;
         if (page.getMetadata() != null) {
-            try {
-                String metadataBody = stringfyMetadata(page.getMetadata());
-                if (metadataBody != null) {
-                    metadata = createXPacket(stringfyMetadata(page.getMetadata())).getBytes("UTF-8");
-                }
-            } catch (UnsupportedEncodingException e) {
-                // Can't happen
-                throw new RuntimeException(e);
+            String metadataBody = stringifyMetadata(page.getMetadata());
+            if (metadataBody != null) {
+                metadata = createXPacket(stringifyMetadata(page.getMetadata())).getBytes(UTF_8);
             }
         }
 
@@ -459,7 +449,7 @@ public class ITextRenderer {
         }
     }
 
-    private String stringfyMetadata(Element element) {
+    private String stringifyMetadata(Element element) {
         Element target = getFirstChildElement(element);
         if (target == null) {
             return null;
@@ -494,7 +484,7 @@ public class ITextRenderer {
     }
 
     private String createXPacket(String metadata) {
-        StringBuffer result = new StringBuffer(metadata.length() + 50);
+        StringBuilder result = new StringBuilder(metadata.length() + 50);
         result.append("<?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?>\n");
         result.append(metadata);
         result.append("\n<?xpacket end='r'?>");
@@ -524,19 +514,22 @@ public class ITextRenderer {
         return _dotsPerPoint;
     }
 
-    public List findPagePositionsByID(Pattern pattern) {
+    public List<PagePosition> findPagePositionsByID(Pattern pattern) {
         return _outputDevice.findPagePositionsByID(newLayoutContext(), pattern);
     }
 
     private static final class NullUserInterface implements UserInterface {
+        @Override
         public boolean isHover(Element e) {
             return false;
         }
 
+        @Override
         public boolean isActive(Element e) {
             return false;
         }
 
+        @Override
         public boolean isFocus(Element e) {
             return false;
         }
@@ -553,12 +546,12 @@ public class ITextRenderer {
     public PdfWriter getWriter() {
         return _writer;
     }
-    
+
     public boolean isScaleToFit() {
-    	return scaleToFit;
+        return scaleToFit;
     }
-    
+
     public boolean setScaleToFit(boolean scaleToFit) {
-    	return this.scaleToFit = scaleToFit;
+        return this.scaleToFit = scaleToFit;
     }
 }

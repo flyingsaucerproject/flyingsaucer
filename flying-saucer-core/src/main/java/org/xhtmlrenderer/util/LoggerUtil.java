@@ -33,11 +33,8 @@ public class LoggerUtil {
 
     /**
      * Instantiate a Logger for debug messages for a given class.
-     *
-     * @param cls PARAM
-     * @return The debugLogger value
      */
-    public static Logger getDebugLogger(Class cls) {
+    public static Logger getDebugLogger(Class<?> cls) {
         Logger l = Logger.getLogger(cls.getName());
         l.setLevel(Level.ALL);
         return l;
@@ -87,7 +84,7 @@ public class LoggerUtil {
  *
  * Revision 1.2  2004/10/23 14:06:57  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

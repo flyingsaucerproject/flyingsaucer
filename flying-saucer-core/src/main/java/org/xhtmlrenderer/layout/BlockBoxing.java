@@ -20,12 +20,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.RandomAccess;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.render.BlockBox;
@@ -33,13 +27,18 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.PageBox;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.RandomAccess;
+
 /**
  * Utility class for laying block content.  It is called when a block box
  * contains block level content.  {@link BoxBuilder} will have made sure that
  * the block we're working on will either contain only inline or block content.
  * If we're in a paged media environment, the various page break related
  * properties are also handled here.  If a rule is violated, the affected run
- * of boxes will be layed out again.  If the rule still cannot be satisfied,
+ * of boxes will be laid out again.  If the rule still cannot be satisfied,
  * the rule will be dropped.
  */
 public class BlockBoxing {
@@ -51,9 +50,9 @@ public class BlockBoxing {
     public static void layoutContent(LayoutContext c, BlockBox block, int contentStart) {
         int offset = -1;
 
-        List localChildren = block.getChildren();
+        List<Box> localChildren = block.getChildren();
         if (c.isPrint() && ! (localChildren instanceof RandomAccess)) {
-            localChildren = new ArrayList(localChildren);
+            localChildren = new ArrayList<>(localChildren);
         }
 
         int childOffset = block.getHeight() + contentStart;
@@ -65,8 +64,8 @@ public class BlockBoxing {
 
         int pageCount = NO_PAGE_TRIM;
         BlockBox previousChildBox = null;
-        for (Iterator i = localChildren.iterator(); i.hasNext();) {
-            BlockBox child = (BlockBox) i.next();
+        for (Box localChild : localChildren) {
+            BlockBox child = (BlockBox) localChild;
             offset++;
 
             RelayoutData relayoutData = null;
@@ -103,7 +102,7 @@ public class BlockBoxing {
                         layoutBlockChild(
                                 c, block, child, true, childOffset, pageCount, relayoutData.getLayoutState());
 
-                        if (tryToAvoidPageBreak && child.crossesPageBreak(c) && ! keepWithInline) {
+                        if (tryToAvoidPageBreak && child.crossesPageBreak(c) && !keepWithInline) {
                             c.restoreStateForRelayout(relayoutData.getLayoutState());
                             child.reset(c);
                             layoutBlockChild(
@@ -140,7 +139,7 @@ public class BlockBoxing {
 
                 RelayoutRunResult runResult =
                         processPageBreakAvoidRun(
-                                c, block, localChildren, offset, relayoutDataList, relayoutData, child);
+                                c, block, localChildren, offset, relayoutDataList, relayoutData);
                 if (runResult.isChanged()) {
                     childOffset = runResult.getChildOffset();
                     if (childOffset > block.getHeight()) {
@@ -154,9 +153,8 @@ public class BlockBoxing {
     }
 
     private static RelayoutRunResult processPageBreakAvoidRun(final LayoutContext c, final BlockBox block,
-                                                              List localChildren, int offset,
-                                                              RelayoutDataList relayoutDataList, RelayoutData relayoutData,
-                                                              BlockBox childBox) {
+                                                              List<Box> localChildren, int offset,
+                                                              RelayoutDataList relayoutDataList, RelayoutData relayoutData) {
         RelayoutRunResult result = new RelayoutRunResult();
         if (offset > 0) {
             boolean mightNeedRelayout = false;
@@ -173,12 +171,12 @@ public class BlockBoxing {
             }
             if (mightNeedRelayout) {
                 int runStart = relayoutDataList.getRunStart(runEnd);
-                if ( isPageBreakBetweenChildBoxes(relayoutDataList, runStart, runEnd, c, block) ) {
+                if ( isPageBreakBetweenChildBoxes(runStart, runEnd, c, block) ) {
                     result.setChanged(true);
                     block.resetChildren(c, runStart, offset);
                     result.setChildOffset(relayoutRun(c, localChildren, block,
                             relayoutDataList, runStart, offset, true));
-                    if ( isPageBreakBetweenChildBoxes(relayoutDataList, runStart, runEnd, c, block) ) {
+                    if ( isPageBreakBetweenChildBoxes(runStart, runEnd, c, block) ) {
                         block.resetChildren(c, runStart, offset);
                         result.setChildOffset(relayoutRun(c, localChildren, block,
                                 relayoutDataList, runStart, offset, false));
@@ -189,8 +187,7 @@ public class BlockBoxing {
         return result;
     }
 
-    private static boolean isPageBreakBetweenChildBoxes(RelayoutDataList relayoutDataList,
-            int runStart, int runEnd, LayoutContext c, BlockBox block) {
+    private static boolean isPageBreakBetweenChildBoxes(int runStart, int runEnd, LayoutContext c, BlockBox block) {
         for ( int i = runStart; i < runEnd; i++ ) {
             Box prevChild = block.getChild(i);
             Box nextChild = block.getChild(i+1);
@@ -216,12 +213,12 @@ public class BlockBoxing {
     }
 
     private static int relayoutRun(
-            LayoutContext c, List localChildren, BlockBox block,
+            LayoutContext c, List<Box> localChildren, BlockBox block,
             RelayoutDataList relayoutDataList, int start, int end, boolean onNewPage) {
         int childOffset = relayoutDataList.get(start).getChildOffset();
 
         if (onNewPage) {
-            Box startBox = (Box) localChildren.get(start);
+            Box startBox = localChildren.get(start);
             PageBox startPageBox = c.getRootLayer().getFirstPage(c, startBox);
             childOffset += startPageBox.getBottom() - startBox.getAbsY();
         }
@@ -354,17 +351,17 @@ public class BlockBoxing {
     }
 
     private static class RelayoutDataList {
-        private List _hints;
+        private final List<RelayoutData> _hints;
 
-        public RelayoutDataList(int size) {
-            _hints = new ArrayList(size);
+        private RelayoutDataList(int size) {
+            _hints = new ArrayList<>(size);
             for (int i = 0; i < size; i++) {
                 _hints.add(new RelayoutData());
             }
         }
 
         public RelayoutData get(int index) {
-            return (RelayoutData) _hints.get(index);
+            return _hints.get(index);
         }
 
         public void markRun(int offset, BlockBox previous, BlockBox current) {
@@ -439,7 +436,7 @@ public class BlockBoxing {
 
         private int _childOffset;
 
-        public RelayoutData() {
+        private RelayoutData() {
         }
 
         public boolean isEndsRun() {
@@ -573,7 +570,7 @@ public class BlockBoxing {
  * Provide LayoutContext when calling detach() and friends
  *
  * Revision 1.47  2006/02/07 00:02:51  peterbrant
- * If "keep together" cannot be satisified, drop rule vs. pushing to next page / Fix bug with incorrect positioning of content following relative block layers
+ * If "keep together" cannot be satisfied, drop rule vs. pushing to next page / Fix bug with incorrect positioning of content following relative block layers
  *
  * Revision 1.46  2006/01/27 01:15:31  peterbrant
  * Start on better support for different output devices
@@ -671,7 +668,7 @@ public class BlockBoxing {
  * Only do incremental rendering if we are in an interactive context
  *
  * Revision 1.15  2005/10/02 21:29:58  tobega
- * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also, some house-cleaning.
  *
  * Revision 1.14  2005/09/29 21:34:02  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
@@ -716,7 +713,7 @@ public class BlockBoxing {
  * Reviewed by:
  *
  * Revision 1.8  2005/06/15 16:49:48  joshy
- * inital clear support
+ * initial clear support
  * Issue number:
  * Obtained from:
  * Submitted by:
@@ -869,7 +866,7 @@ public class BlockBoxing {
  * More cleaning of use of Node, more preparation for Content-based inline generation.
  *
  * Revision 1.32  2004/12/05 05:00:39  joshy
- * fixed bug that prevented explict box heights from working.
+ * fixed bug that prevented explicit box heights from working.
  *
  *
  * Issue number:
@@ -914,7 +911,7 @@ public class BlockBoxing {
  * Reviewed by:
  *
  * Revision 1.26  2004/11/18 19:10:04  joshy
- * added bottom support to absolute positioning
+ * added bottom support for absolute positioning
  *
  *
  * Issue number:
@@ -986,7 +983,7 @@ public class BlockBoxing {
  *
  * Revision 1.16  2004/11/09 15:53:48  joshy
  * initial support for hover (currently disabled)
- * moved justification code into it's own class in a new subpackage for inline
+ * moved justification code into its own class in a new subpackage for inline
  * layout (because it's so blooming complicated)
  *
  * Issue number:
@@ -1068,7 +1065,7 @@ public class BlockBoxing {
  * Reviewed by:
  *
  * Revision 1.8  2004/11/03 15:17:04  joshy
- * added intial support for absolute positioning
+ * added initial support for absolute positioning
  *
  * Issue number:
  * Obtained from:
@@ -1102,7 +1099,7 @@ public class BlockBoxing {
  *
  * Revision 1.4  2004/10/23 13:46:46  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

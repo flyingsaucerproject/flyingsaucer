@@ -65,7 +65,7 @@ public class AddNodeToDocument {
 
                         // alternately, this will work as well--doDocumentLayout() followed by repaint()
                         // setDocument() is still the recommended approach in this case, as it's a top-level entry
-                        // point which ensures that proper setup takes place for the layout and render 
+                        // point which ensures that proper setup takes place for the layout and render
                         // panel.doDocumentLayout(panel.getGraphics());
                         // panel.repaint();
                     }

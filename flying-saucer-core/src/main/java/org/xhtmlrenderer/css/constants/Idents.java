@@ -54,95 +54,57 @@ public final class Idents {
     /**
      * Regex pattern, a CSS number--either integer or float
      */
-    private final static String RCSS_NUMBER = "(-)?((\\d){1,10}((\\.)(\\d){1,10})?)";
+    private static final String RCSS_NUMBER = "(-)?((\\d){1,10}((\\.)(\\d){1,10})?)";
     /**
      * Regex pattern, CSS lengths, a length must have a unit, unless it is zero
      */
-    private final static String RCSS_LENGTH = "((0$)|((" + RCSS_NUMBER + ")+" + "((em)|(ex)|(px)|(cm)|(mm)|(in)|(pt)|(pc)|(%))))";
+    private static final String RCSS_LENGTH = "((0$)|((" + RCSS_NUMBER + ")+" + "((em)|(ex)|(px)|(cm)|(mm)|(in)|(pt)|(pc)|(%))))";
 
     /**
      * Pattern instance, for CSS lengths
      */
-    private final static Pattern CSS_NUMBER_PATTERN = Pattern.compile(RCSS_NUMBER);
+    private static final Pattern CSS_NUMBER_PATTERN = Pattern.compile(RCSS_NUMBER);
     /**
      * Pattern instance, for CSS lengths
      */
-    private final static Pattern CSS_LENGTH_PATTERN = Pattern.compile(RCSS_LENGTH);
+    private static final Pattern CSS_LENGTH_PATTERN = Pattern.compile(RCSS_LENGTH);
 
     /**
      * Pattern instance, for Hex-colors
      */
-    private final static Pattern COLOR_HEX_PATTERN = Pattern.compile("#((((\\d)|[a-fA-F]){6})|(((\\d)|[a-fA-F]){3}))");
-    
+    private static final Pattern COLOR_HEX_PATTERN = Pattern.compile("#((((\\d)|[a-fA-F]){6})|(((\\d)|[a-fA-F]){3}))");
+
     /**
      * Pattern instance for functions (not quite right [e.g no escapes], but good enough)
      */
-    private final static Pattern FUNCTION_PATTERN = Pattern.compile("^-?[_a-z][_a-z0-9-]+\\(");
+    private static final Pattern FUNCTION_PATTERN = Pattern.compile("^-?[_a-z][_a-z0-9-]+\\(");
 
-    /**
-     * Description of the Field
-     */
-    private final static Map COLOR_MAP;
-    /**
-     * Description of the Field
-     */
-    private final static Map FONT_SIZES;
-    /**
-     * Description of the Field
-     */
-    private final static Map FONT_WEIGHTS;
-    /**
-     * Description of the Field
-     */
-    private final static Map BORDER_WIDTHS;
-    /**
-     * Description of the Field
-     */
-    private final static Map BACKGROUND_POSITIONS;
-    /**
-     * Description of the Field
-     */
-    private final static List BACKGROUND_REPEATS;
-    /**
-     * Description of the Field
-     */
-    private final static List BORDER_STYLES;
-    /**
-     * Description of the Field
-     */
-    private final static List LIST_TYPES;
-    /**
-     * Description of the Field
-     */
-    private final static List FONT_STYLES;
+    private static final Map<String, String> COLOR_MAP;
+    private static final Map<String, String> FONT_SIZES;
+    private static final Map<String, String> FONT_WEIGHTS;
+    private static final Map<String, String> BORDER_WIDTHS;
+    private static final Map<String, String> BACKGROUND_POSITIONS;
+    private static final List<String> BACKGROUND_REPEATS;
+    private static final List<String> BORDER_STYLES;
+    private static final List<String> LIST_TYPES;
+    private static final List<String> FONT_STYLES;
+    private static final List<String> BACKGROUND_POSITIONS_IDENTS;
 
-    /**
-     * Description of the Field
-     */
-    private final static List BACKGROUND_POSITIONS_IDENTS;
-
-    /**
-     * Description of the Method
-     *
-     * @param cssName PARAM
-     * @param ident   PARAM
-     * @return Returns
-     */
     public static String convertIdent(CSSName cssName, String ident) {
         if (ident.equals("inherit")) {
             return ident;
         }
-        
+
         String val = ident;
 
         if (cssName == CSSName.FONT_SIZE) {
-            String size = (String) FONT_SIZES.get(ident);
+            String size = FONT_SIZES.get(ident);
             val = (size == null ? ident : size);
         } else if (cssName == CSSName.FONT_WEIGHT) {
-            String size = (String) FONT_WEIGHTS.get(ident);
+            String size = FONT_WEIGHTS.get(ident);
             val = (size == null ? ident : size);
         } else if (cssName == CSSName.BACKGROUND_POSITION) {
-            String pos = (String) BACKGROUND_POSITIONS.get(ident);
+            String pos = BACKGROUND_POSITIONS.get(ident);
             val = (pos == null ? ident : pos);
         } else if (
                 cssName == CSSName.BORDER_BOTTOM_WIDTH ||
@@ -151,7 +113,7 @@ public final class Idents {
                 cssName == CSSName.BORDER_WIDTH_SHORTHAND ||
                 cssName == CSSName.BORDER_TOP_WIDTH) {
 
-            String size = (String) BORDER_WIDTHS.get(ident);
+            String size = BORDER_WIDTHS.get(ident);
             val = (size == null ? ident : size);
         } else if (
                 cssName == CSSName.BORDER_BOTTOM_COLOR ||
@@ -176,147 +138,63 @@ public final class Idents {
         return val;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeABorderStyle(String val) {
         return BORDER_STYLES.contains(val);
     }
 
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAColor(String val) {
         return COLOR_MAP.get(val) != null || (val.startsWith("#") && (val.length() == 7 || val.length() == 4)) || val.startsWith("rgb");
     }
-    
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
+
     public static boolean looksLikeALength(String val) {
         return CSS_LENGTH_PATTERN.matcher(val).matches();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAURI(String val) {
         return val.startsWith("url(") && val.endsWith(")");
     }
-    
+
     public static boolean looksLikeAFunction(String value) {
         return FUNCTION_PATTERN.matcher(value).find();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeABGRepeat(String val) {
-        return BACKGROUND_REPEATS.indexOf(val) >= 0;
+        return BACKGROUND_REPEATS.contains(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeABGAttachment(String val) {
         return "scroll".equals(val) || "fixed".equals(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeABGPosition(String val) {
         return BACKGROUND_POSITIONS_IDENTS.contains(val) || looksLikeALength(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAListStyleType(String val) {
-        return LIST_TYPES.indexOf(val) >= 0;
+        return LIST_TYPES.contains(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAListStyleImage(String val) {
         return "none".equals(val) || looksLikeAURI(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAListStylePosition(String val) {
         return "inside".equals(val) || "outside".equals(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAFontStyle(String val) {
-        return FONT_STYLES.indexOf(val) >= 0;
+        return FONT_STYLES.contains(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAFontVariant(String val) {
         return "normal".equals(val) || "small-caps".equals(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAFontWeight(String val) {
         return FONT_WEIGHTS.get(val) != null;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeAFontSize(String val) {
         // TODO
         return FONT_SIZES.get(val) != null ||
@@ -324,12 +202,6 @@ public final class Idents {
                 "larger".equals(val) || "smaller".equals(val);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     public static boolean looksLikeALineHeight(String val) {
         return "normal".equals(val) || looksLikeALength(val) || looksLikeANumber(val);
     }
@@ -340,7 +212,7 @@ public final class Idents {
 
     /**
      * Given a String, returns either the rgb declaration for the color, or the
-     * hex declaration; used to cleanup assignments like "red" or "green".
+     * hex declaration; used to clean up assignments like "red" or "green".
      *
      * @param value A String which contains a Color identifier, an rgb
      *              assignment or a Color hex value.
@@ -350,7 +222,7 @@ public final class Idents {
         if (value == null) {
             throw new XRRuntimeException("value is null on getColorHex()");
         }
-        String retval = (String) COLOR_MAP.get(value.toLowerCase());
+        String retval = COLOR_MAP.get(value.toLowerCase());
         if (retval == null) {
             if (value.trim().startsWith("rgb(")) {
                 retval = value;
@@ -365,7 +237,7 @@ public final class Idents {
     }
 
     static {
-        COLOR_MAP = new HashMap();
+        COLOR_MAP = new HashMap<>();
         /* From CSS 2.1- 4.3.6: Colors
         aqua #00ffff
         black #000000
@@ -405,7 +277,7 @@ public final class Idents {
         COLOR_MAP.put("yellow", "#ffff00");
 
         //TODO: FONT_SIZES should be determined by the User Interface!
-        FONT_SIZES = new HashMap();
+        FONT_SIZES = new HashMap<>();
         FONT_SIZES.put("xx-small", "6.9pt");
         FONT_SIZES.put("x-small", "8.3pt");
         FONT_SIZES.put("small", "10pt");
@@ -413,12 +285,12 @@ public final class Idents {
         FONT_SIZES.put("large", "14.4pt");
         FONT_SIZES.put("x-large", "17.3pt");
         FONT_SIZES.put("xx-large", "20.7pt");
-        
+
         // HACK
         FONT_SIZES.put("smaller", "0.8em");
         FONT_SIZES.put("larger", "1.2em");
 
-        FONT_WEIGHTS = new HashMap();
+        FONT_WEIGHTS = new HashMap<>();
         FONT_WEIGHTS.put("normal", "400");
         FONT_WEIGHTS.put("bold", "700");
         FONT_WEIGHTS.put("100", "100");
@@ -434,18 +306,18 @@ public final class Idents {
         FONT_WEIGHTS.put("lighter", "lighter");
         // NOTE: 'bolder' and 'lighter' need to be handled programmatically
 
-        BORDER_WIDTHS = new HashMap();
+        BORDER_WIDTHS = new HashMap<>();
         BORDER_WIDTHS.put("thin", "1px");
         BORDER_WIDTHS.put("medium", "2px");
         BORDER_WIDTHS.put("thick", "3px");
 
-        BACKGROUND_POSITIONS_IDENTS = new ArrayList();
+        BACKGROUND_POSITIONS_IDENTS = new ArrayList<>();
         BACKGROUND_POSITIONS_IDENTS.add("top");
         BACKGROUND_POSITIONS_IDENTS.add("center");
         BACKGROUND_POSITIONS_IDENTS.add("bottom");
         BACKGROUND_POSITIONS_IDENTS.add("right");
         BACKGROUND_POSITIONS_IDENTS.add("left");
-        BACKGROUND_POSITIONS = new HashMap();
+        BACKGROUND_POSITIONS = new HashMap<>();
 
         // NOTE: combinations of idents for background-positions, are specified in the CSS
         // spec; some are disallowed, for example, there is no "top" all by itself. Check
@@ -478,13 +350,13 @@ public final class Idents {
         BACKGROUND_POSITIONS.put("bottom right", "100% 100%");
         BACKGROUND_POSITIONS.put("right bottom", "100% 100%");
 
-        BACKGROUND_REPEATS = new ArrayList();
+        BACKGROUND_REPEATS = new ArrayList<>();
         BACKGROUND_REPEATS.add("repeat");
         BACKGROUND_REPEATS.add("repeat-x");
         BACKGROUND_REPEATS.add("repeat-y");
         BACKGROUND_REPEATS.add("no-repeat");
 
-        BORDER_STYLES = new ArrayList();
+        BORDER_STYLES = new ArrayList<>();
         BORDER_STYLES.add("none");
         BORDER_STYLES.add("hidden");
         BORDER_STYLES.add("dotted");
@@ -496,7 +368,7 @@ public final class Idents {
         BORDER_STYLES.add("inset");
         BORDER_STYLES.add("outset");
 
-        LIST_TYPES = new ArrayList();
+        LIST_TYPES = new ArrayList<>();
         LIST_TYPES.add("disc");
         LIST_TYPES.add("circle");
         LIST_TYPES.add("square");
@@ -519,7 +391,7 @@ public final class Idents {
         LIST_TYPES.add("katakana-iroha");
         LIST_TYPES.add("none");
 
-        FONT_STYLES = new ArrayList();
+        FONT_STYLES = new ArrayList<>();
         FONT_STYLES.add("normal");
         FONT_STYLES.add("italic");
         FONT_STYLES.add("oblique");
@@ -533,7 +405,7 @@ public final class Idents {
     public static boolean looksLikeASkipQuote(String content) {
         return content.equals("no-open-quote") || content.equals("no-close-quote");
     }
-}// end class
+}
 
 /*
  * $Id$

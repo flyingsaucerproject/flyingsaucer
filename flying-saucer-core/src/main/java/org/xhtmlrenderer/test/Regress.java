@@ -23,14 +23,19 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BoxRenderer;
 import org.xhtmlrenderer.swing.Java2DRenderer;
 import org.xhtmlrenderer.util.FSImageWriter;
-import org.xhtmlrenderer.util.IOUtil;
-import org.xhtmlrenderer.util.Zipper;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.List;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 
 /**
@@ -59,7 +64,7 @@ import java.util.List;
  * </pre>
  */
 public class Regress {
-    public static final List EXTENSIONS = Arrays.asList(new String[]{"htm", "html", "xht", "xhtml", "xml",});
+    public static final List<String> EXTENSIONS = asList("htm", "html", "xht", "xhtml", "xml");
     public static final String RENDER_SFX = ".render.txt";
     public static final String LAYOUT_SFX = ".layout.txt";
     public static final String PNG_SFX = ".png";
@@ -82,11 +87,10 @@ public class Regress {
 
     public static void main(String[] args) throws Exception {
         final File sourceDir = getArgSourceDir(args);
-        final File outputDir = sourceDir;
         final int width = 1024;
 
         System.out.println("Running regression against files in " + sourceDir);
-        Regress regress = new Regress(sourceDir, outputDir, width);
+        Regress regress = new Regress(sourceDir, sourceDir, width);
         regress.snapshot();
         System.out.println("Ran regressions against " + regress.getFileCount() + " files in source directory; " + regress.getFailedCount() + " failed to generate");
     }
@@ -96,7 +100,7 @@ public class Regress {
      *
      * @param sourceDir directory to read from
      * @param outputDir directory to write to
-     * @param width     width to constrain layou to
+     * @param width     width to constrain layout to
      */
     public Regress(File sourceDir, File outputDir, int width) {
         this.sourceDir = sourceDir;
@@ -126,9 +130,7 @@ public class Regress {
         failedCount = 0;
         final boolean wasLogging = enableLogging(false);
         try {
-            Iterator iter = listInputFiles(sourceDir);
-            while (iter.hasNext()) {
-                File file = (File) iter.next();
+            for (File file : listInputFiles(sourceDir)) {
                 saveBoxModel(file, outputDir, width);
                 saveImage(file, outputDir, width);
             }
@@ -137,7 +139,7 @@ public class Regress {
         }
     }
 
-    private void saveImage(File page, File outputDir, int width) throws IOException {
+    private void saveImage(File page, File outputDir, int width) {
         try {
             Java2DRenderer j2d = new Java2DRenderer(page, width);
 
@@ -187,28 +189,12 @@ public class Regress {
                     "On rendering, could not delete new output file (.delete failed) " + outputFile.getAbsolutePath()
             );
         }
-        FileOutputStream fos = new FileOutputStream(outputFile);
-        try {
-            OutputStreamWriter fw = new OutputStreamWriter(fos, "UTF-8");
-            PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
-            try {
+        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+            OutputStreamWriter fw = new OutputStreamWriter(fos, UTF_8);
+            try (PrintWriter pw = new PrintWriter(new BufferedWriter(fw))) {
                 pw.print(output);
                 pw.print(LINE_SEPARATOR);
                 pw.flush();
-            } finally {
-                try {
-                    pw.close();
-                } catch (Exception e) {
-                    // swallow
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();  
-        } finally {
-            try {
-                fos.close();
-            } catch (IOException e) {
-                // swallow
             }
         }
     }
@@ -246,18 +232,14 @@ public class Regress {
 
     private boolean enableLogging(final boolean isEnabled) {
         final String prop = "xr.util-logging.loggingEnabled";
-        final boolean orgVal = Boolean.valueOf(System.getProperty(prop)).booleanValue();
+        final boolean orgVal = Boolean.parseBoolean(System.getProperty(prop));
         System.setProperty(prop, Boolean.valueOf(isEnabled).toString());
         return orgVal;
     }
 
-    private Iterator listInputFiles(final File sourceDir) {
-        File[] f = sourceDir.listFiles(new FilenameFilter() {
-            public boolean accept(File file, String s) {
-                return EXTENSIONS.contains(s.substring(s.lastIndexOf(".") + 1));
-            }
-        });
-        return Arrays.asList(f).iterator();
+    private Iterable<File> listInputFiles(final File sourceDir) {
+        File[] f = sourceDir.listFiles((dir, name) -> EXTENSIONS.contains(name.substring(name.lastIndexOf(".") + 1)));
+        return f == null ? emptyList() : asList(f);
     }
 
     private static void usageAndExit(String msg) {

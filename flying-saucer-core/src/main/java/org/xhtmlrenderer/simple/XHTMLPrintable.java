@@ -56,7 +56,7 @@ public class XHTMLPrintable implements Printable {
         try {
 
             Graphics2D g2 = (Graphics2D) g;
-            
+
             if (g2r == null) {
                 g2r = new Graphics2DRenderer();
                 g2r.getSharedContext().setPrint(true);
@@ -69,14 +69,14 @@ public class XHTMLPrintable implements Printable {
                 g2r.layout(g2, null);
                 g2r.getPanel().assignPagePrintPositions(g2);
             }
-            
+
             if (page >= g2r.getPanel().getRootLayer().getPages().size()) {
                 return Printable.NO_SUCH_PAGE;
             }
-            
+
             // render the document
             g2r.getPanel().paintPage(g2, page);
-            
+
             return Printable.PAGE_EXISTS;
         } catch (Exception ex) {
             Uu.p(ex);

@@ -44,8 +44,7 @@ public class XRRuntimeException extends RuntimeException {
      * Instantiates a new Exception with a "reason" message.
      *
      * @param msg    Reason the exception is being thrown.
-     * @param cause  Throwable that caused this exception to be thrown (e.g.
-     *      IOException.
+     * @param cause  Throwable that caused this exception to be thrown, e.g. IOException.
      */
     public XRRuntimeException( String msg, Throwable cause ) {
         super( msg, cause );
@@ -66,8 +65,7 @@ public class XRRuntimeException extends RuntimeException {
      * exception to be thrown.
      *
      * @param msg    Message for the log.
-     * @param cause  Throwable that caused this exception to be thrown (e.g.
-     *      IOException.
+     * @param cause  Throwable that caused this exception to be thrown, e.g. IOException.
      */
     private void log( String msg, Throwable cause ) {
         XRLog.exception( "Unhandled exception. " + msg, cause );
@@ -88,7 +86,7 @@ public class XRRuntimeException extends RuntimeException {
  *
  * Revision 1.3  2004/10/23 14:06:57  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  * Revision 1.2  2004/10/14 12:54:54  pdoubleya

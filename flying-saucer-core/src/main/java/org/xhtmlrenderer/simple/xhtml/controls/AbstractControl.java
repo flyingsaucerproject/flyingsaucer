@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.simple.xhtml.controls;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -31,26 +27,26 @@ import org.xhtmlrenderer.simple.xhtml.FormControlListener;
 import org.xhtmlrenderer.simple.xhtml.FormListener;
 import org.xhtmlrenderer.simple.xhtml.XhtmlForm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class AbstractControl implements FormControl {
 
-    private XhtmlForm _form;
-    private Element _element;
-    private String _name;
+    private final XhtmlForm _form;
+    private final Element _element;
+    private final String _name;
 
     private String _initialValue;
     private String _value;
     private boolean _successful;
     private boolean _enabled;
 
-    private List _listeners = new ArrayList();
+    private final List<FormControlListener> _listeners = new ArrayList<>();
 
-    public AbstractControl(XhtmlForm form, Element e) {
+    protected AbstractControl(XhtmlForm form, Element e) {
         _form = form;
         _element = e;
-        _name = e.getAttribute("name");
-        if (_name.length() == 0) {
-            _name = e.getAttribute("id");
-        }
+        _name = getNameOrId(e);
         _initialValue = e.getAttribute("value");
         _value = _initialValue;
         _enabled = (e.getAttribute("disabled").length() == 0);
@@ -58,64 +54,78 @@ public abstract class AbstractControl implements FormControl {
 
         if (form != null) {
             form.addFormListener(new FormListener() {
+                @Override
                 public void submitted(XhtmlForm form) {
                 }
 
+                @Override
                 public void resetted(XhtmlForm form) {
                     reset();
                 }
             });
         }
     }
+    
+    private static String getNameOrId(Element e) {
+        String name = e.getAttribute("name");
+        return name.isEmpty() ? e.getAttribute("id") : name;
+    }
 
     protected void fireChanged() {
-        for (Iterator iter = _listeners.iterator(); iter.hasNext();) {
-            ((FormControlListener) iter.next()).changed(this);
+        for (FormControlListener listener : _listeners) {
+            listener.changed(this);
         }
     }
 
     protected void fireSuccessful() {
-        for (Iterator iter = _listeners.iterator(); iter.hasNext();) {
-            ((FormControlListener) iter.next()).successful(this);
+        for (FormControlListener listener : _listeners) {
+            listener.successful(this);
         }
     }
 
     protected void fireEnabled() {
-        for (Iterator iter = _listeners.iterator(); iter.hasNext();) {
-            ((FormControlListener) iter.next()).enabled(this);
+        for (FormControlListener listener : _listeners) {
+            listener.enabled(this);
         }
     }
 
+    @Override
     public void addFormControlListener(FormControlListener listener) {
         _listeners.add(listener);
     }
 
+    @Override
     public void removeFormControlListener(FormControlListener listener) {
         _listeners.remove(listener);
     }
 
+    @Override
     public Element getElement() {
         return _element;
     }
 
+    @Override
     public XhtmlForm getForm() {
         return _form;
     }
 
+    @Override
     public String getName() {
         return _name;
     }
 
+    @Override
     public String getInitialValue() {
         return _initialValue;
     }
-    
-    protected void setInitialValue(String value) {
+
+    protected final void setInitialValue(String value) {
         _initialValue = value;
         _value = value;
     }
 
-    public String getValue() {
+    @Override
+    public final String getValue() {
         if (isMultiple()) {
             return null;
         } else {
@@ -123,6 +133,7 @@ public abstract class AbstractControl implements FormControl {
         }
     }
 
+    @Override
     public void setValue(String value) {
         if (!isMultiple()) {
             _value = value;
@@ -130,10 +141,12 @@ public abstract class AbstractControl implements FormControl {
         }
     }
 
+    @Override
     public String[] getMultipleValues() {
         return null;
     }
 
+    @Override
     public void setMultipleValues(String[] values) {
         // do nothing
     }
@@ -142,34 +155,40 @@ public abstract class AbstractControl implements FormControl {
         return false;
     }
 
+    @Override
     public boolean isEnabled() {
         return _enabled;
     }
 
+    @Override
     public boolean isSuccessful() {
         return _successful && _enabled;
     }
 
+    @Override
     public boolean isMultiple() {
         return false;
     }
 
+    @Override
     public void setSuccessful(boolean successful) {
         _successful = successful;
         fireSuccessful();
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         _enabled = enabled;
         fireEnabled();
     }
 
+    @Override
     public void reset() {
         setValue(_initialValue);
     }
 
     public static String collectText(Element e) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         Node node = e.getFirstChild();
         if (node != null) {
             do {

@@ -29,12 +29,11 @@ public class FormFieldFactory {
     }
 
     public static FormField create(XhtmlForm form, LayoutContext context, BlockBox box) {
-        String typeKey = null;
-
         Element e = box.getElement();
 
+        String typeKey;
         if (e.getNodeName().equals("input")) {
-            typeKey = e.getAttribute("type");  
+            typeKey = e.getAttribute("type");
         } else if (e.getNodeName().equals("textarea")) {
             typeKey = "textarea";
         } else if (e.getNodeName().equals("select")) {

@@ -19,8 +19,21 @@
  */
 package eeze;
 
+import org.xhtmlrenderer.simple.FSScrollPane;
+import org.xhtmlrenderer.simple.Graphics2DRenderer;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.XRLog;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
@@ -29,13 +42,10 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import javax.imageio.ImageIO;
-import javax.swing.*;
 
-import org.xhtmlrenderer.simple.FSScrollPane;
-import org.xhtmlrenderer.simple.Graphics2DRenderer;
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.XRLog;
+import static java.awt.Frame.NORMAL;
+import static java.awt.event.InputEvent.ALT_MASK;
+import static java.awt.event.InputEvent.CTRL_MASK;
 
 
 /**
@@ -45,143 +55,80 @@ import org.xhtmlrenderer.util.XRLog;
  * @author Who?
  */
 public class Eeze {
-    /**
-     * Description of the Field
-     */
-    List testFiles;
-    /**
-     * Description of the Field
-     */
-    JFrame eezeFrame;
-
-    /**
-     * Description of the Field
-     */
-    File currentDisplayed;
-    /**
-     * Description of the Field
-     */
-    Action growAction;
-    /**
-     * Description of the Field
-     */
-    Action shrinkAction;
-    /**
-     * Description of the Field
-     */
-    Action nextDemoAction;
-
-    Action chooseDemoAction;
-
-    /**
-     * Description of the Field
-     */
-    Action increase_font, reset_font, decrease_font, showHelp, showGrid, saveAsImg, overlayImage;
-
-    /**
-     * Description of the Field
-     */
+    private List<File> testFiles;
+    private JFrame eezeFrame;
+    private File currentDisplayed;
+    private Action growAction;
+    private Action shrinkAction;
+    private Action nextDemoAction;
+    private Action chooseDemoAction;
+    private Action increase_font, reset_font, decrease_font, showHelp, showGrid, saveAsImg, overlayImage;
     private XHTMLPanel html;
-
     private FSScrollPane scroll;
-
     private JSplitPane split;
-
     private ImagePanel imagePanel;
-
     private boolean comparingWithImage;
-
-    /**
-     * Description of the Field
-     */
     private File directory;
-
-    /**
-     * Description of the Field
-     */
-    private final static FileFilter HTML_FILE_FILTER =
-            new FileFilter() {
-                public boolean accept(File f) {
-                    return f.getName().endsWith(".html") ||
-                            f.getName().endsWith(".htm") ||
-                            f.getName().endsWith(".xhtml") ||
-                            f.getName().endsWith(".xml");
-                }
-            };
+    
+    private static final FileFilter HTML_FILE_FILTER = f ->
+      f.getName().endsWith(".html") ||
+        f.getName().endsWith(".htm") ||
+        f.getName().endsWith(".xhtml") ||
+        f.getName().endsWith(".xml");
     private ReloadPageAction reloadPageAction;
     private ReloadFileListAction reloadFileList;
 
-    /**
-     * Constructor for the Eeze object
-     */
     private Eeze() {
     }
 
     /**
      * Main processing method for the Eeze object
-     *
-     * @param args PARAM
      */
-    private void run(String args[]) {
+    private void run() {
         buildFrame();
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    File fontFile = new File(directory + "/support/AHEM____.TTF");
-                    if (fontFile.exists()) {
-                        html.getSharedContext().setFontMapping("Ahem",
-                                Font.createFont(Font.TRUETYPE_FONT, fontFile.toURL().openStream()));
-                    }
-                } catch (FontFormatException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        SwingUtilities.invokeLater(() -> {
+            try {
+                File fontFile = new File(directory + "/support/AHEM____.TTF");
+                if (fontFile.exists()) {
+                    html.getSharedContext().setFontMapping("Ahem",
+                            Font.createFont(Font.TRUETYPE_FONT, fontFile.toURL().openStream()));
                 }
+            } catch (FontFormatException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         });
         testFiles = buildFileList();
         try {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    showHelpPage();
-                }
-            });
+            SwingUtilities.invokeLater(this::showHelpPage);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     private void parseArgs(String[] args) {
-        File f = null;
-
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
-
-            f = new File(arg);
+        for (String arg : args) {
+            File f = new File(arg);
 
             if (!f.exists()) {
-                showUsageAndExit("Does not exist: " + arg, -1);
+                showUsageAndExit("Does not exist: " + arg);
             }
             if (!f.isDirectory()) {
-                showUsageAndExit("You specified a file, not a directory: " + arg, -1);
+                showUsageAndExit("You specified a file, not a directory: " + arg);
             }
 
             this.directory = f;
         }
         if ( this.directory == null ) {
-            showUsageAndExit("Please specify a directory", -1);
+            showUsageAndExit("Please specify a directory");
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
-    private List buildFileList() {
-        List fileList = null;
+    private List<File> buildFileList() {
+        List<File> fileList = null;
         try {
-            File list[] = directory.listFiles(HTML_FILE_FILTER);
+            File[] list = directory.listFiles(HTML_FILE_FILTER);
             fileList = Arrays.asList(list);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -189,65 +136,61 @@ public class Eeze {
         return fileList;
     }
 
-    /**
-     * Description of the Method
-     */
     private void buildFrame() {
         try {
             eezeFrame = new JFrame("FS Eeze");
             final JFrame frame = eezeFrame;
-            frame.setExtendedState(JFrame.NORMAL);
+            frame.setExtendedState(NORMAL);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    html = new XHTMLPanel();
-                    scroll = new FSScrollPane(html);
-                    frame.getContentPane().add(scroll);
-                    frame.pack();
-                    frame.setSize(1024, 768);
-                    frame.setVisible(true);
+            SwingUtilities.invokeLater(() -> {
+                html = new XHTMLPanel();
+                scroll = new FSScrollPane(html);
+                frame.getContentPane().add(scroll);
+                frame.pack();
+                frame.setSize(1024, 768);
+                frame.setVisible(true);
 
-                    frame.addComponentListener(new ComponentAdapter() {
-                        public void componentResized(ComponentEvent e) {
-                            html.relayout();
-                        }
-                    });
+                frame.addComponentListener(new ComponentAdapter() {
+                    @Override
+                    public void componentResized(ComponentEvent e) {
+                        html.relayout();
+                    }
+                });
 
-                    nextDemoAction = new NextDemoAction();
-                    reloadPageAction = new ReloadPageAction();
-                    chooseDemoAction = new ChooseDemoAction();
-                    growAction = new GrowAction();
-                    shrinkAction = new ShrinkAction();
+                nextDemoAction = new NextDemoAction();
+                reloadPageAction = new ReloadPageAction();
+                chooseDemoAction = new ChooseDemoAction();
+                growAction = new GrowAction();
+                shrinkAction = new ShrinkAction();
 
-                    increase_font = new FontSizeAction(FontSizeAction.INCREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
-                    reset_font = new FontSizeAction(FontSizeAction.RESET, KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_MASK));
-                    decrease_font = new FontSizeAction(FontSizeAction.DECREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+                increase_font = new FontSizeAction(FontSizeAction.INCREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_I, CTRL_MASK));
+                reset_font = new FontSizeAction(FontSizeAction.RESET, KeyStroke.getKeyStroke(KeyEvent.VK_0, CTRL_MASK));
+                decrease_font = new FontSizeAction(FontSizeAction.DECREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_D, CTRL_MASK));
 
-                    reloadFileList = new ReloadFileListAction();
-                    showGrid = new ShowGridAction();
-                    showHelp = new ShowHelpAction();
-                    saveAsImg = new SaveAsImageAction();
-                    overlayImage = new CompareImageAction();
+                reloadFileList = new ReloadFileListAction();
+                showGrid = new ShowGridAction();
+                showHelp = new ShowHelpAction();
+                saveAsImg = new SaveAsImageAction();
+                overlayImage = new CompareImageAction();
 
-                    frame.setJMenuBar(new JMenuBar());
-                    JMenu doMenu = new JMenu("Do");
-                    doMenu.add(reloadPageAction);
-                    doMenu.add(nextDemoAction);
-                    doMenu.add(chooseDemoAction);
-                    doMenu.add(growAction);
-                    doMenu.add(shrinkAction);
-                    doMenu.add(increase_font);
-                    doMenu.add(reset_font);
-                    doMenu.add(decrease_font);
-                    doMenu.add(showGrid);
-                    doMenu.add(saveAsImg);
-                    doMenu.add(overlayImage);
-                    doMenu.add(reloadFileList);
-                    doMenu.add(showHelp);
-                    doMenu.setVisible(false);
-                    frame.getJMenuBar().add(doMenu);
-                }
+                frame.setJMenuBar(new JMenuBar());
+                JMenu doMenu = new JMenu("Do");
+                doMenu.add(reloadPageAction);
+                doMenu.add(nextDemoAction);
+                doMenu.add(chooseDemoAction);
+                doMenu.add(growAction);
+                doMenu.add(shrinkAction);
+                doMenu.add(increase_font);
+                doMenu.add(reset_font);
+                doMenu.add(decrease_font);
+                doMenu.add(showGrid);
+                doMenu.add(saveAsImg);
+                doMenu.add(overlayImage);
+                doMenu.add(reloadFileList);
+                doMenu.add(showHelp);
+                doMenu.setVisible(false);
+                frame.getJMenuBar().add(doMenu);
             });
 
         } catch (Exception ex) {
@@ -255,11 +198,6 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param file PARAM
-     */
     private void switchPage(File file, boolean reload) {
         eezeFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
@@ -272,11 +210,9 @@ public class Eeze {
             }
             currentDisplayed = file;
             changeTitle(file.toURL().toString());
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    imagePanel.imageWasLoaded();
-                    imagePanel.repaint();
-                }
+            SwingUtilities.invokeLater(() -> {
+                imagePanel.imageWasLoaded();
+                imagePanel.repaint();
             });
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -285,9 +221,6 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Method
-     */
     private void showHelpPage() {
         eezeFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
@@ -301,95 +234,51 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param hdelta PARAM
-     * @param vdelta PARAM
-     */
     private void resizeFrame(float hdelta, float vdelta) {
         Dimension d = eezeFrame.getSize();
         eezeFrame.setSize((int) (d.getWidth() * hdelta),
                 (int) (d.getHeight() * vdelta));
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param newPage PARAM
-     */
     private void changeTitle(String newPage) {
         eezeFrame.setTitle("Eeze:  " + html.getDocumentTitle() + "  (" + newPage + ")");
     }
 
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
     private URL eezeHelp() {
         return this.getClass().getClassLoader().getResource("eeze/eeze_help.html");
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param args PARAM
-     */
-    public static void main(String args[]) {
-        try {
-            if (args.length == 0) {
-                showUsageAndExit("Eeze needs some information to work.", -1);
-            }
-            Eeze eeze = new Eeze();
-            eeze.parseArgs(args);
-            eeze.run(args);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    public static void main(String[] args) {
+        if (args.length == 0) {
+            showUsageAndExit("Eeze needs some information to work.");
         }
+        Eeze eeze = new Eeze();
+        eeze.parseArgs(args);
+        eeze.run();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param error PARAM
-     * @param i
-     */
-    private static void showUsageAndExit(String error, int i) {
-        StringBuffer sb = new StringBuffer();
-
-        sb.append("Oops! " + error + " \n")
-                .append(" \n")
-                .append("Eeze \n")
-                .append("  A frame to walk through a set of XHTML/XML pages with Flying Saucer \n")
-                .append(" \n")
-                .append(" Usage: \n")
-                .append("    java eeze.Eeze {directory}\n")
-                .append(" \n")
-                .append(" where {directory} is a directory containing XHTML/XML files.\n")
-                .append(" \n")
-                .append(" All files ending in .*htm* are loaded in a list, in alphabetical \n")
-                .append(" order. The first is rendered. Use Alt-h to show keyboard navigation \n")
-                .append(" shortcuts.\n")
-                .append(" \n");
-        System.out.println(sb.toString());
+    private static void showUsageAndExit(String error) {
+        String sb = String.format("Oops! %s %n %nEeze %n  A frame to walk through a set of XHTML/XML pages with Flying Saucer %n" +
+                " %n" +
+                " Usage: %n" +
+                "    java eeze.Eeze {directory}%n" +
+                " %n" +
+                " where {directory} is a directory containing XHTML/XML files.%n" +
+                " %n" +
+                " All files ending in .*htm* are loaded in a list, in alphabetical %n" +
+                " order. The first is rendered. Use Alt-h to show keyboard navigation %n" +
+                " shortcuts.%n" +
+                " %n", error);
+        System.out.println(sb);
         System.exit(-1);
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
     class ImagePanel extends JPanel {
         private static final long serialVersionUID = 1L;
 
         Image currentPageImg;
 
-        /**
-         * Constructor for the GridGlassPane object
-         */
-        public ImagePanel() {
+        ImagePanel() {
             // intercept mouse and keyboard events and do nothing
             this.addMouseListener(new MouseAdapter() {
             });
@@ -406,9 +295,9 @@ public class Eeze {
         }
 
         public boolean imageWasLoaded() {
-            if ( Eeze.this.comparingWithImage == false )
+            if (!Eeze.this.comparingWithImage)
                 return false;
-            
+
             currentPageImg = loadImageForPage();
             if (currentPageImg != null) {
                 this.setPreferredSize(new Dimension(currentPageImg.getWidth(null), currentPageImg.getHeight(null)));
@@ -447,11 +336,7 @@ public class Eeze {
             return img;
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param g PARAM
-         */
+        @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
@@ -476,35 +361,15 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    static class GridGlassPane extends JPanel {
+    static final class GridGlassPane extends JPanel {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Description of the Field
-         */
         private final Color mainUltraLightColor = new Color(128, 192, 255);
-        /**
-         * Description of the Field
-         */
         private final Color mainLightColor = new Color(0, 128, 255);
-        /**
-         * Description of the Field
-         */
         private final Color mainMidColor = new Color(0, 64, 196);
-        /**
-         * Description of the Field
-         */
         private final Color mainDarkColor = new Color(0, 0, 128);
 
-        /**
-         * Constructor for the GridGlassPane object
-         */
-        public GridGlassPane() {
+        GridGlassPane() {
             // intercept mouse and keyboard events and do nothing
             this.addMouseListener(new MouseAdapter() {
             });
@@ -515,11 +380,7 @@ public class Eeze {
             this.setOpaque(false);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param g PARAM
-         */
+        @Override
         protected void paintComponent(Graphics g) {
             Graphics2D graphics = (Graphics2D) g;
             BufferedImage oddLine = createGradientLine(this.getWidth(), mainLightColor,
@@ -539,15 +400,6 @@ public class Eeze {
         }
 
 
-        /**
-         * Description of the Method
-         *
-         * @param width      PARAM
-         * @param leftColor  PARAM
-         * @param rightColor PARAM
-         * @param opacity    PARAM
-         * @return Returns
-         */
         public BufferedImage createGradientLine(int width, Color leftColor,
                                                 Color rightColor, double opacity) {
             BufferedImage image = new BufferedImage(width, 1,
@@ -555,7 +407,7 @@ public class Eeze {
             int iOpacity = (int) (255 * opacity);
 
             for (int col = 0; col < width; col++) {
-                double coef = (double) col / (double) width;
+                double coef = col / (double) width;
                 int r = (int) (leftColor.getRed() + coef
                         * (rightColor.getRed() - leftColor.getRed()));
                 int g = (int) (leftColor.getGreen() + coef
@@ -575,28 +427,21 @@ public class Eeze {
      *
      * @author Who?
      */
-    class GrowAction extends AbstractAction {
+    final class GrowAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Description of the Field
-         */
-        private float increment = 1.1F;
+        private final float increment = 1.1F;
 
-        /**
-         * Constructor for the GrowAction object
-         */
-        public GrowAction() {
+        GrowAction() {
             super("Grow Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_G));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.ALT_MASK));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_G);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_L, ALT_MASK));
         }
 
         /**
          * Invoked when an action occurs.
-         *
-         * @param e PARAM
          */
+        @Override
         public void actionPerformed(ActionEvent e) {
             resizeFrame(increment, increment);
         }
@@ -607,28 +452,20 @@ public class Eeze {
      *
      * @author Who?
      */
-    class ShowGridAction extends AbstractAction {
+    final class ShowGridAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
         private boolean on;
         private Component originalGlassPane;
-        private GridGlassPane gridGlassPane;
+        private final GridGlassPane gridGlassPane = new GridGlassPane();
 
-        /**
-         * Constructor for the ShowGridAction object
-         */
-        public ShowGridAction() {
+        ShowGridAction() {
             super("Show Grid");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_G));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.ALT_MASK));
-            gridGlassPane = new GridGlassPane();
+            putValue(MNEMONIC_KEY, KeyEvent.VK_G);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_G, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (on) {
                 eezeFrame.setGlassPane(originalGlassPane);
@@ -647,24 +484,17 @@ public class Eeze {
      *
      * @author Who?
      */
-    class CompareImageAction extends AbstractAction {
+    final class CompareImageAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ShowGridAction object
-         */
-        public CompareImageAction() {
+        CompareImageAction() {
             super("Compare to Reference Image");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_C));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_C);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, CTRL_MASK));
             imagePanel = new ImagePanel();
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             comparingWithImage = !comparingWithImage;
 
@@ -685,12 +515,10 @@ public class Eeze {
                 // HACK: content pane is not repainting unless frame is resized once
                 // split is added. This workaround causes a flicker, but only when image
                 // is first loaded
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        Dimension d = eezeFrame.getSize();
-                        eezeFrame.setSize((int) d.getWidth(), (int) d.getHeight() + 1);
-                        eezeFrame.setSize(d);
-                    }
+                SwingUtilities.invokeLater(() -> {
+                    Dimension d = eezeFrame.getSize();
+                    eezeFrame.setSize((int) d.getWidth(), (int) d.getHeight() + 1);
+                    eezeFrame.setSize(d);
                 });
             } else {
                 eezeFrame.getContentPane().remove(split);
@@ -704,97 +532,62 @@ public class Eeze {
      *
      * @author Who?
      */
-    class ShrinkAction extends AbstractAction {
+    final class ShrinkAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Description of the Field
-         */
-        private float increment = 1 / 1.1F;
-
-        /**
-         * Constructor for the ShrinkAction object
-         */
-        public ShrinkAction() {
+        ShrinkAction() {
             super("Shrink Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_S);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
+            float increment = 1 / 1.1F;
             resizeFrame(increment, increment);
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    class ShowHelpAction extends AbstractAction {
+    final class ShowHelpAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ShowHelpAction object
-         */
-        public ShowHelpAction() {
+        ShowHelpAction() {
             super("Show Help Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_H));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.ALT_MASK));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_H);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_H, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             showHelpPage();
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    class NextDemoAction extends AbstractAction {
+    final class NextDemoAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ReloadPageAction object
-         */
-        public NextDemoAction() {
+        NextDemoAction() {
             super("Next Demo Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_N));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_N);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             File nextPage = null;
-            for (Iterator iter = testFiles.iterator(); iter.hasNext();) {
-                File f = (File) iter.next();
+            for (Iterator<File> iter = testFiles.iterator(); iter.hasNext();) {
+                File f = iter.next();
                 if (f.equals(currentDisplayed)) {
                     if (iter.hasNext()) {
-                        nextPage = (File) iter.next();
+                        nextPage = iter.next();
                         break;
                     }
                 }
             }
             if (nextPage == null) {
                 // go to first page
-                Iterator iter = testFiles.iterator();
-                nextPage = (File) iter.next();
+                Iterator<File> iter = testFiles.iterator();
+                nextPage = iter.next();
             }
 
             try {
@@ -805,23 +598,16 @@ public class Eeze {
         }
     }
 
-    class SaveAsImageAction extends AbstractAction {
+    final class SaveAsImageAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the SaveAsImageAction object
-         */
-        public SaveAsImageAction() {
+        SaveAsImageAction() {
             super("Save Page as PNG Image");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_S);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, CTRL_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             try {
                 File file = currentDisplayed;
@@ -871,28 +657,16 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    class ReloadPageAction extends AbstractAction {
+    final class ReloadPageAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ReloadPageAction object
-         */
-        public ReloadPageAction() {
+        ReloadPageAction() {
             super("Reload Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_R));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.ALT_MASK));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_R);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             try {
                 switchPage(currentDisplayed, true);
@@ -902,28 +676,16 @@ public class Eeze {
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    class ChooseDemoAction extends AbstractAction {
+    final class ChooseDemoAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Constructor for the ReloadPageAction object
-         */
-        public ChooseDemoAction() {
+        ChooseDemoAction() {
             super("Choose Demo Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_C));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.ALT_MASK));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_C);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, ALT_MASK));
         }
 
-        /**
-         * Invoked when an action occurs.
-         *
-         * @param e PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             File nextPage = (File) JOptionPane.showInputDialog(eezeFrame,
                     "Choose a demo file",
@@ -941,77 +703,41 @@ public class Eeze {
         }
     }
 
-    class ReloadFileListAction extends AbstractAction {
+    final class ReloadFileListAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        public ReloadFileListAction() {
+        ReloadFileListAction() {
             super("Reload File List Page");
-            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_F));
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.ALT_MASK));
+            putValue(MNEMONIC_KEY, KeyEvent.VK_F);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, ALT_MASK));
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             testFiles = buildFileList();
-            currentDisplayed = (File) testFiles.get(0);
+            currentDisplayed = testFiles.get(0);
             reloadPageAction.actionPerformed(null);
         }
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author Who?
-     */
-    class FontSizeAction extends AbstractAction {
-        private static final long serialVersionUID = 1L;
+    final class FontSizeAction extends AbstractAction {
+        private final int whichDirection;
+        static final int DECREMENT = 0;
+        static final int INCREMENT = 1;
+        static final int RESET = 2;
 
-        /**
-         * Description of the Field
-         */
-        private int whichDirection;
-
-        /**
-         * Description of the Field
-         */
-        final static int DECREMENT = 0;
-        /**
-         * Description of the Field
-         */
-        final static int INCREMENT = 1;
-        /**
-         * Description of the Field
-         */
-        final static int RESET = 2;
-
-        /**
-         * Constructor for the FontSizeAction object
-         *
-         * @param which PARAM
-         * @param ks    PARAM
-         */
-        public FontSizeAction(int which, KeyStroke ks) {
+        FontSizeAction(int which, KeyStroke ks) {
             super("FontSize");
-            this.whichDirection = which;
-            this.putValue(Action.ACCELERATOR_KEY, ks);
+            whichDirection = which;
+            putValue(Action.ACCELERATOR_KEY, ks);
         }
 
-        /**
-         * Constructor for the FontSizeAction object
-         *
-         * @param scale PARAM
-         * @param which PARAM
-         * @param ks    PARAM
-         */
-        public FontSizeAction(float scale, int which, KeyStroke ks) {
+        FontSizeAction(float scale, int which, KeyStroke ks) {
             this(which, ks);
             html.setFontScalingFactor(scale);
         }
 
-        /**
-         * Description of the Method
-         *
-         * @param evt PARAM
-         */
+        @Override
         public void actionPerformed(ActionEvent evt) {
             switch (whichDirection) {
                 case INCREMENT:
@@ -1026,5 +752,4 @@ public class Eeze {
             }
         }
     }
-}// end class
-
+}

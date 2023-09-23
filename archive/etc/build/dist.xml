@@ -33,7 +33,7 @@
                 />
     </target>
 
-    <!-- 
+    <!--
     Builds a ZIP file of all source for distribution, with 3rd party libraries
     and XHTML samples included
     -->

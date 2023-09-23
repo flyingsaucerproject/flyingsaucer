@@ -39,16 +39,16 @@ public class RenderingContext implements CssContext {
     protected SharedContext sharedContext;
     private OutputDevice outputDevice;
     private FontContext fontContext;
-    
+
     private int pageCount;
-    
+
     private int pageNo;
     private PageBox page;
-    
+
     private Layer rootLayer;
-    
+
     private int initialPageNo;
-    
+
     /**
      * <p/>
      * needs a new instance every run
@@ -80,11 +80,11 @@ public class RenderingContext implements CssContext {
     public float getMmPerDot() {
         return sharedContext.getMmPerPx();
     }
-    
+
     public int getDotsPerPixel() {
         return sharedContext.getDotsPerPixel();
-    }    
-    
+    }
+
     public float getFontSize2D(FontSpecification font) {
         return sharedContext.getFont(font).getSize2D();
     }
@@ -98,7 +98,7 @@ public class RenderingContext implements CssContext {
     }
 
     /**
-     * Returns true if the currently set media type is paged. Currently returns
+     * Returns true if the currently set media type is paged. Currently, returns
      * true only for <i>print</i> , <i>projection</i> , and <i>embossed</i> ,
      * <i>handheld</i> , and <i>tv</i> . See the <a
      * href="http://www.w3.org/TR/CSS21/media.html">media section</a> of the CSS
@@ -113,7 +113,7 @@ public class RenderingContext implements CssContext {
     public FontResolver getFontResolver() {
         return sharedContext.getFontResolver();
     }
-    
+
     public FSFont getFont(FontSpecification font) {
         return sharedContext.getFont(font);
     }
@@ -127,21 +127,21 @@ public class RenderingContext implements CssContext {
         if (! isPrint()) {
             result = sharedContext.getFixedRectangle();
         } else {
-            result = new Rectangle(0, -this.page.getTop(), 
+            result = new Rectangle(0, -this.page.getTop(),
                     this.page.getContentWidth(this),
                     this.page.getContentHeight(this)-1);
         }
         result.translate(-1, -1);
         return result;
     }
-    
+
     public Rectangle getViewportRectangle() {
         Rectangle result = new Rectangle(getFixedRectangle());
         result.y *= -1;
-        
+
         return result;
     }
-    
+
     public boolean debugDrawBoxes() {
         return sharedContext.debugDrawBoxes();
     }
@@ -202,15 +202,15 @@ public class RenderingContext implements CssContext {
     public int getPageNo() {
         return pageNo;
     }
-    
+
     public StyleReference getCss() {
         return sharedContext.getCss();
     }
-    
+
     public FSFontMetrics getFSFontMetrics(FSFont font) {
         return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
     }
-    
+
     public Layer getRootLayer() {
         return rootLayer;
     }
@@ -225,7 +225,7 @@ public class RenderingContext implements CssContext {
 
     public void setInitialPageNo(int initialPageNo) {
         this.initialPageNo = initialPageNo;
-    }    
+    }
 
     public Box getBoxById(String id) {
         return sharedContext.getBoxById(id);

@@ -24,7 +24,7 @@ import java.util.List;
 
 public class History {
 
-    private List _list = new ArrayList();
+    private final List<String> _list = new ArrayList<>();
     private int _current = -1;
 
     public boolean hasBack() {
@@ -51,25 +51,25 @@ public class History {
 
     public String back() {
         if (!hasBack()) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("Cannot go back in history: current=" + _current);
         }
         _current--;
-        return (String) _list.get(_current);
+        return _list.get(_current);
     }
 
     public String forward() {
         if (!hasForward()) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException(String.format("Cannot go back in history: current=%d, length=%d", _current, _list.size()));
         }
         _current++;
-        return (String) _list.get(_current);
+        return _list.get(_current);
     }
 
     public String getCurrent() {
         if (_current < 0) {
             return null;
         } else {
-            return (String) _list.get(_current);
+            return _list.get(_current);
         }
     }
 

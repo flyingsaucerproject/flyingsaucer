@@ -34,7 +34,7 @@ public interface Action {
 
     /**
      * Called when the action needs to be executed.
-     * 
+     *
      * @param browser
      * @param mi the MenuItem selected or <code>null</code> if none.
      */

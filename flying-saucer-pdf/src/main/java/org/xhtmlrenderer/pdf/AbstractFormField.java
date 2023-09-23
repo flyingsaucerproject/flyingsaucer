@@ -19,17 +19,16 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Point;
-
+import com.lowagie.text.pdf.PdfTemplate;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.util.*;
+import org.xhtmlrenderer.util.Util;
 
-import com.lowagie.text.pdf.PdfTemplate;
+import java.awt.*;
 
 public abstract class AbstractFormField implements ITextReplacedElement {
     protected static final String DEFAULT_CHECKED_STATE = "Yes";
@@ -111,7 +110,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     protected boolean isReadOnly(Element e) {
         return !Util.isNullOrEmpty(e.getAttribute("readonly"));
     }
-    
+
     protected boolean isSelected(Element e) {
         return Util.isNullOrEmpty(e.getAttribute("selected"));
     }
@@ -165,13 +164,13 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     }
 
     protected String spaces(int count) {
-        StringBuffer result = new StringBuffer(count);
+        StringBuilder result = new StringBuilder(count);
         for (int i = 0; i < count; i++) {
             result.append(' ');
         }
         return result.toString();
     }
-    
+
     protected void setStrokeColor(PdfTemplate template, FSColor color)
     {
         if (color instanceof FSRGBColor)
@@ -183,11 +182,11 @@ public abstract class AbstractFormField implements ITextReplacedElement {
         {
             FSCMYKColor cmyk = (FSCMYKColor)color;
             template.setCMYKColorStroke(
-                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255), 
+                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255),
                     (int)(cmyk.getYellow()*255), (int)(cmyk.getBlack()*255));
         }
     }
-    
+
     protected void setFillColor(PdfTemplate template, FSColor color)
     {
         if (color instanceof FSRGBColor)
@@ -199,7 +198,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
         {
             FSCMYKColor cmyk = (FSCMYKColor)color;
             template.setCMYKColorFill(
-                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255), 
+                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255),
                     (int)(cmyk.getYellow()*255), (int)(cmyk.getBlack()*255));
         }
     }

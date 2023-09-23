@@ -19,11 +19,11 @@
  */
 package org.xhtmlrenderer.simple;
 
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.layout.SharedContext;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
+import org.w3c.dom.Document;
+import org.xhtmlrenderer.layout.SharedContext;
 
 
 /**
@@ -127,7 +127,7 @@ public class Graphics2DRenderer {
 
     /**
      * Returns the size image needed to render the document without anything
-     * going off the side. Could be different than the dimensions passed into
+     * going off the side. Could be different from the dimensions passed into
      * layout because of text that couldn't break or a table that's set to be
      * too big.
      *

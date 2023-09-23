@@ -115,7 +115,7 @@ public class HoverListener extends DefaultFSMouseListener {
             }
         }
     }
-    
+
     // look up the Element that corresponds to the Box we are hovering over
     private Element getHoveredElement(StyleReference style, Box ib) {
         if (ib == null) {

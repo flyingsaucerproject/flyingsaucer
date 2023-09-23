@@ -36,45 +36,45 @@ public class LineBreakContext {
     private int _width;
     private boolean _endsOnNL;
     private Text _textNode;
-    
+
     public int getLast() {
         return _master.length();
     }
-    
+
     public void reset() {
         _width = 0;
         _unbreakable = false;
         _needsNewLine = false;
     }
-    
+
     public int getEnd() {
         return _end;
     }
-    
+
     public void setEnd(int end) {
         _end = end;
     }
-    
+
     public String getMaster() {
         return _master;
     }
-    
+
     public void setMaster(String master) {
         _master = master;
     }
-    
+
     public int getStart() {
         return _start;
     }
-    
+
     public void setStart(int start) {
         _start = start;
     }
-    
+
     public String getStartSubstring() {
         return _master.substring(_start);
     }
-    
+
     public String getCalculatedSubstring() {
         // mimic the calculation in InlineText.setSubstring to strip newlines for our width calculations
         // the original text width calculation in InlineBox.calcMaxWidthFromLineLength() excludes the newline character
@@ -109,7 +109,7 @@ public class LineBreakContext {
     public void setWidth(int width) {
         _width = width;
     }
-    
+
     public boolean isFinished() {
         return _end == getMaster().length();
     }
@@ -117,7 +117,7 @@ public class LineBreakContext {
     public void resetEnd() {
         _end = _savedEnd;
     }
-    
+
     public void saveEnd() {
         _savedEnd = _end;
     }

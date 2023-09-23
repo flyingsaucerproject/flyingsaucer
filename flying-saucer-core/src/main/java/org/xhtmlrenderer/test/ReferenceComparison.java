@@ -5,19 +5,30 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BoxRenderer;
 import org.xhtmlrenderer.util.IOUtil;
 
-import java.io.*;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.newInputStream;
+import static java.nio.file.Files.newOutputStream;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 
 /**
- * ReferenceComparison runs a comparison of rendering a set of source XHTML files against a 
+ * ReferenceComparison runs a comparison of rendering a set of source XHTML files against a
  */
 public class ReferenceComparison {
-    private int width;
-    private boolean isVerbose;
+    private final int width;
+    private final boolean isVerbose;
     private static final String LINE_SEPARATOR = "\n";
 
     public static void main(String[] args) throws IOException {
@@ -33,7 +44,6 @@ public class ReferenceComparison {
      * Initializes (does not launch) the reference comparison.
      *
      * @param width width at which pages should be rendered
-     * @param verbose
      */
     public ReferenceComparison(int width, boolean verbose) {
         this.width = width;
@@ -47,10 +57,8 @@ public class ReferenceComparison {
 
         boolean wasEnabled = enableLogging(false);
         try {
-            Iterator fileIt = listSourceFiles(sourceDirectory);
             CompareStatistics stats = new CompareStatistics();
-            while (fileIt.hasNext()) {
-                File file = (File) fileIt.next();
+            for (File file : listSourceFiles(sourceDirectory)) {
                 try {
                     compareFile(file, referenceDir, failedDirectory, stats);
                 } catch (IOException e) {
@@ -65,7 +73,7 @@ public class ReferenceComparison {
 
     private boolean enableLogging(final boolean isEnabled) {
         final String prop = "xr.util-logging.loggingEnabled";
-        final boolean orgVal = Boolean.valueOf(System.getProperty(prop)).booleanValue();
+        final boolean orgVal = Boolean.parseBoolean(System.getProperty(prop));
         System.setProperty(prop, Boolean.valueOf(isEnabled).toString());
         return orgVal;
     }
@@ -93,17 +101,12 @@ public class ReferenceComparison {
         return isVerbose;
     }
 
-    private Iterator listSourceFiles(File sourceDirectory) {
-        return Arrays.asList(
-                sourceDirectory.listFiles(new FilenameFilter() {
-                    public boolean accept(File file, String s) {
-                        return Regress.EXTENSIONS.contains(s.substring(s.lastIndexOf(".") + 1));
-                    }
-                })
-        ).iterator();
+    private Iterable<File> listSourceFiles(File sourceDirectory) {
+        File[] files = sourceDirectory.listFiles((dir, name) -> Regress.EXTENSIONS.contains(name.substring(name.lastIndexOf(".") + 1)));
+        return files == null ? emptyList() : asList(files);
     }
 
-    public void compareFile(File source, File referenceDir, File failedDirectory, CompareStatistics stat) throws IOException {
+    void compareFile(File source, File referenceDir, File failedDirectory, CompareStatistics stat) throws IOException {
         log("Comparing " + source.getPath());
         stat.checking(source);
         // TODO: reuse code from Regress
@@ -147,33 +150,18 @@ public class ReferenceComparison {
         copyToFailed(failedDirectory, refFile, Regress.PNG_SFX);
         copyToFailed(failedDirectory, refFile, suffix);
 
-        OutputStreamWriter fw = null;
-        try {
-            fw = new OutputStreamWriter(new FileOutputStream(new File(failedDirectory, refFile.getName() + ".err" + suffix)), "UTF-8");
-            BufferedWriter bw = new BufferedWriter(fw);
-            try {
+        try (OutputStreamWriter fw = new OutputStreamWriter(newOutputStream(new File(failedDirectory, refFile.getName() + ".err" + suffix).toPath()), UTF_8)) {
+            try (BufferedWriter bw = new BufferedWriter(fw)) {
                 bw.write(compareTo);
                 bw.flush();
             } catch (IOException e) {
                 throw new RuntimeException("unexpected IO exception on writing 'failed' info for test.", e);
-            } finally {
-                try {
-                    bw.close();
-                } catch (IOException e) {
-                    // swallow
-                }
             }
+            // swallow
         } catch (IOException e) {
             throw new RuntimeException("unexpected IO exception on writing 'failed' info for test.", e);
-        } finally {
-            if (fw != null) {
-                try {
-                    fw.close();
-                } catch (IOException e) {
-                    // swallow
-                }
-            }
         }
+        // swallow
     }
 
     private void copyToFailed(File failedDirectory, File refFile, String suffix) {
@@ -222,25 +210,17 @@ public class ReferenceComparison {
     }
 
     private String readReference(File referenceDir, String input, String sfx) throws IOException {
-        BufferedReader rdr = null;
-        StringBuffer sb;
         File f = new File(referenceDir, input + sfx);
-        rdr = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
-        try {
+        
+        try (BufferedReader rdr = new BufferedReader(new InputStreamReader(newInputStream(f.toPath()), UTF_8))) {
             String line;
-            sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             while ((line = rdr.readLine()) != null) {
                 sb.append(line);
                 sb.append(LINE_SEPARATOR);
             }
-        } finally {
-            try {
-                rdr.close();
-            } catch (IOException e) {
-                // swallow
-            }
+            return sb.toString();
         }
-        return sb.toString();
     }
 
     private void log(final String msg) {
@@ -252,11 +232,7 @@ public class ReferenceComparison {
     private static class CompareStatistics {
         private File currentFile;
         private static final Result OK = new ResultOK();
-        private Map files;
-
-        public CompareStatistics() {
-            files = new HashMap();
-        }
+        private final Map<File, Result> files = new HashMap<>();
 
         public void failedToRender(Exception e) {
             files.put(currentFile, new RenderFailed(e));
@@ -293,9 +269,8 @@ public class ReferenceComparison {
 
         public void report() {
             int failed = 0;
-            for (Iterator it = files.keySet().iterator(); it.hasNext();) {
-                File file = (File) it.next();
-                Result result = (Result) files.get(file);
+            for (File file : files.keySet()) {
+                Result result = files.get(file);
 
                 if (result instanceof FailedResult) {
                     failed++;

@@ -25,17 +25,17 @@ import java.util.List;
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class ListBreakPointsProvider implements BreakPointsProvider {
-	
-	private Iterator<BreakPoint> breakPoints;
 
-	public ListBreakPointsProvider(List<BreakPoint> breakPoints) {
-		this.breakPoints = breakPoints.iterator();
-	}
+    private Iterator<BreakPoint> breakPoints;
 
-	@Override
-	public BreakPoint next() {
-		if (!breakPoints.hasNext()) return BreakPoint.getDonePoint();
-		return breakPoints.next();
-	}
+    public ListBreakPointsProvider(List<BreakPoint> breakPoints) {
+        this.breakPoints = breakPoints.iterator();
+    }
+
+    @Override
+    public BreakPoint next() {
+        if (!breakPoints.hasNext()) return BreakPoint.getDonePoint();
+        return breakPoints.next();
+    }
 
 }

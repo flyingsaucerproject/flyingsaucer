@@ -37,72 +37,54 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
  * @author Patrick Wright
  */
 public class PropertyDeclaration {
-    /**
-     * Description of the Field
-     */
-    private String propName;
-
-    /**
-     * Description of the Field
-     */
-    private CSSName cssName;
-    /**
-     * Description of the Field
-     */
-    private org.w3c.dom.css.CSSPrimitiveValue cssPrimitiveValue;
+    private final String propName;
+    private final CSSName cssName;
+    private final CSSPrimitiveValue cssPrimitiveValue;
 
     /**
      * Whether the property was declared as important! by the user.
      */
-    private boolean important;
+    private final boolean important;
 
     /**
      * Origin constant from the list defined in {@link Stylesheet}. See {@link
-     * Stylesheet#USER_AGENT}, {@link StylesheetInfo#USER}, and {@link
-     * Stylesheet#AUTHOR}.
+     * StylesheetInfo#USER_AGENT}, {@link StylesheetInfo#USER}, and {@link
+     * StylesheetInfo#AUTHOR}.
      */
-    private int origin;
-    /**
-     * Description of the Field
-     */
+    private final int origin;
     private IdentValue _identVal;
-
-    /**
-     * Description of the Field
-     */
     private boolean identIsSet;
-    
     private String _fingerprint;
 
     /**
      * ImportanceAndOrigin of stylesheet - how many different
      */
-    public final static int IMPORTANCE_AND_ORIGIN_COUNT = 6;
+    public static final int IMPORTANCE_AND_ORIGIN_COUNT = 6;
 
     /**
      * ImportanceAndOrigin of stylesheet - user agent
      */
-    private final static int USER_AGENT = 1;
+    private static final int USER_AGENT = 1;
 
     /**
      * ImportanceAndOrigin of stylesheet - user normal
      */
-    private final static int USER_NORMAL = 2;
+    private static final int USER_NORMAL = 2;
 
     /**
      * ImportanceAndOrigin of stylesheet - author normal
      */
-    private final static int AUTHOR_NORMAL = 3;
+    private static final int AUTHOR_NORMAL = 3;
 
     /**
      * ImportanceAndOrigin of stylesheet - author important
      */
-    private final static int AUTHOR_IMPORTANT = 4;
+    private static final int AUTHOR_IMPORTANT = 4;
 
     /**
      * ImportanceAndOrigin of stylesheet - user important
      */
-    private final static int USER_IMPORTANT = 5;
+    private static final int USER_IMPORTANT = 5;
 
     /**
      * Creates a new instance of PropertyDeclaration from an {@link
@@ -118,7 +100,7 @@ public class PropertyDeclaration {
      *                StylesheetInfo#USER}, and {@link StylesheetInfo#AUTHOR}.
      */
     public PropertyDeclaration(CSSName cssName,
-                               org.w3c.dom.css.CSSPrimitiveValue value,
+                               CSSPrimitiveValue value,
                                boolean imp,
                                int orig) {
         this.propName = cssName.toString();
@@ -137,11 +119,6 @@ public class PropertyDeclaration {
         return getPropertyName() + ": " + getValue().toString();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
     public IdentValue asIdentValue() {
         if (!identIsSet) {
             _identVal = IdentValue.getByIdentString(cssPrimitiveValue.getCssText());
@@ -153,10 +130,10 @@ public class PropertyDeclaration {
     public String getDeclarationStandardText() {
         return cssName + ": " + cssPrimitiveValue.getCssText() + ";";
     }
-    
+
     public String getFingerprint() {
         if (_fingerprint == null) {
-            _fingerprint = 'P' + cssName.FS_ID + ':' + ((PropertyValue)cssPrimitiveValue).getFingerprint() + ';';    
+            _fingerprint = 'P' + cssName.FS_ID + ':' + ((PropertyValue)cssPrimitiveValue).getFingerprint() + ';';
         }
         return _fingerprint;
     }
@@ -171,8 +148,8 @@ public class PropertyDeclaration {
      * sequence number returned from this method would take priority in the
      * cascade, so that a user important! property would override a user
      * non-important! property, and so on. The actual integer value returned by
-     * this method is unimportant, but has a lowest value of 0 and increments
-     * sequentially by 1 for each increase in origin/importance..
+     * this method is unimportant, but has the lowest value of 0 and increments
+     * sequentially by 1 for each increase in origin/importance.
      *
      * @return See method javadoc.
      */
@@ -218,18 +195,18 @@ public class PropertyDeclaration {
      *
      * @return See desc.
      */
-    public org.w3c.dom.css.CSSPrimitiveValue getValue() {
+    public CSSPrimitiveValue getValue() {
         return cssPrimitiveValue;
     }
-    
+
     public boolean isImportant() {
         return important;
     }
-    
+
     public int getOrigin() {
         return origin;
     }
-}// end class
+}
 
 /*
  * $Id$
@@ -261,7 +238,7 @@ public class PropertyDeclaration {
  * Allow for custom properties (don't break).
  *
  * Revision 1.13  2005/05/08 15:37:27  tobega
- * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ * Fixed up style caching, so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
  *
  * Revision 1.12  2005/01/29 20:19:21  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.

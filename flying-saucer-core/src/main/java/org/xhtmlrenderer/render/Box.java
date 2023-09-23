@@ -20,17 +20,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -47,6 +36,17 @@ import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.awt.*;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+
+import static java.util.Collections.emptyIterator;
+import static java.util.Collections.emptyList;
+
 public abstract class Box implements Styleable {
     protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -62,23 +62,23 @@ public abstract class Box implements Styleable {
      * Box width.
      */
     private int _contentWidth;
-    private int _rightMBP = 0;
-    private int _leftMBP = 0;
+    private int _rightMBP;
+    private int _leftMBP;
 
     /**
      * Box height.
      */
     private int _height;
 
-    private Layer _layer = null;
+    private Layer _layer;
     private Layer _containingLayer;
 
     private Box _parent;
 
-    private List _boxes;
+    private List<Box> _boxes;
 
     /**
-     * Keeps track of the start of childrens containing block.
+     * Keeps track of the start of children's containing block.
      */
     private int _tx;
     private int _ty;
@@ -104,10 +104,10 @@ public abstract class Box implements Styleable {
     public abstract String dump(LayoutContext c, String indent, int which);
 
     protected void dumpBoxes(
-            LayoutContext c, String indent, List boxes,
-            int which, StringBuffer result) {
-        for (Iterator i = boxes.iterator(); i.hasNext(); ) {
-            Box b = (Box)i.next();
+            LayoutContext c, String indent, List<Box> boxes,
+            int which, StringBuilder result) {
+        for (Iterator<Box> i = boxes.iterator(); i.hasNext(); ) {
+            Box b = i.next();
             result.append(b.dump(c, indent + "  ", which));
             if (i.hasNext()) {
                 result.append('\n');
@@ -120,10 +120,7 @@ public abstract class Box implements Styleable {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("Box: ");
-        sb.append(" (" + getAbsX() + "," + getAbsY() + ")->(" + getWidth() + " x " + getHeight() + ")");
-        return sb.toString();
+        return String.format("Box: (%d,%d)->(%d x %d)", getAbsX(), getAbsY(), getWidth(), getHeight());
     }
 
     public void addChildForLayout(LayoutContext c, Box child) {
@@ -134,7 +131,7 @@ public abstract class Box implements Styleable {
 
     public void addChild(Box child) {
         if (_boxes == null) {
-            _boxes = new ArrayList();
+            _boxes = new ArrayList<>();
         }
         if (child == null) {
             throw new NullPointerException("trying to add null child");
@@ -144,9 +141,8 @@ public abstract class Box implements Styleable {
         _boxes.add(child);
     }
 
-    public void addAllChildren(List children) {
-        for (Iterator i = children.iterator(); i.hasNext(); ) {
-            Box box = (Box)i.next();
+    public void addAllChildren(List<Box> children) {
+        for (Box box : children) {
             addChild(box);
         }
     }
@@ -160,8 +156,8 @@ public abstract class Box implements Styleable {
     public void removeChild(Box target) {
         if (_boxes != null) {
             boolean found = false;
-            for (Iterator i = getChildIterator(); i.hasNext(); ) {
-                Box child = (Box)i.next();
+            for (Iterator<Box> i = getChildren().iterator(); i.hasNext(); ) {
+                Box child = i.next();
                 if (child.equals(target)) {
                     i.remove();
                     found = true;
@@ -214,18 +210,22 @@ public abstract class Box implements Styleable {
 
     public Box getChild(int i) {
         if (_boxes == null) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException(String.format("No child with index %s, size: %s", i, 0));
         } else {
-            return (Box) _boxes.get(i);
+            return _boxes.get(i);
         }
     }
 
-    public Iterator getChildIterator() {
-        return _boxes == null ? Collections.EMPTY_LIST.iterator() : _boxes.iterator();
+    /**
+     * @deprecated Use {@link #getChildren()} instead
+     */
+    @Deprecated
+    public Iterator<Box> getChildIterator() {
+        return _boxes == null ? emptyIterator() : _boxes.iterator();
     }
 
-    public List getChildren() {
-        return _boxes == null ? Collections.EMPTY_LIST : _boxes;
+    public List<Box> getChildren() {
+        return _boxes == null ? emptyList() : _boxes;
     }
 
     public static final int NOTHING = 0;
@@ -262,10 +262,12 @@ public abstract class Box implements Styleable {
         }
     }
 
+    @Override
     public final CalculatedStyle getStyle() {
         return _style;
     }
 
+    @Override
     public void setStyle(CalculatedStyle style) {
         _style = style;
     }
@@ -315,21 +317,19 @@ public abstract class Box implements Styleable {
 
     public Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getMargin(cssCtx);
-        Rectangle result = new Rectangle(left + (int) margin.left(),
+        return new Rectangle(left + (int) margin.left(),
                 top + (int) margin.top(),
                 getWidth() - (int) margin.left() - (int) margin.right(),
                 getHeight() - (int) margin.top() - (int) margin.bottom());
-        return result;
     }
 
     public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getMargin(cssCtx);
         RectPropertySet border = getBorder(cssCtx);
-        Rectangle result = new Rectangle(left + (int) margin.left() + (int) border.left(),
+        return new Rectangle(left + (int) margin.left() + (int) border.left(),
                 top + (int) margin.top() + (int) border.top(),
                 getWidth() - (int) margin.width() - (int) border.width(),
                 getHeight() - (int) margin.height() - (int) border.height());
-        return result;
     }
 
     protected int getPaddingWidth(CssContext cssCtx) {
@@ -342,12 +342,11 @@ public abstract class Box implements Styleable {
         RectPropertySet border = getBorder(cssCtx);
         RectPropertySet padding = getPadding(cssCtx);
 
-        Rectangle result = new Rectangle(
+        return new Rectangle(
                 left + (int)margin.left() + (int)border.left() + (int)padding.left(),
                 top + (int)margin.top() + (int)border.top() + (int)padding.top(),
                 getWidth() - (int)margin.width() - (int)border.width() - (int)padding.width(),
                 getHeight() - (int) margin.height() - (int) border.height() - (int) padding.height());
-        return result;
     }
 
     public Layer getLayer() {
@@ -393,8 +392,7 @@ public abstract class Box implements Styleable {
         return getRelativeOffset();
     }
 
-    protected boolean isInlineBlock()
-    {
+    protected boolean isInlineBlock() {
         return false;
     }
 
@@ -478,7 +476,7 @@ public abstract class Box implements Styleable {
             // directly wrapped by an inline relative layer (i.e. block boxes sandwiched
             // between anonymous block boxes)
             if (c.getLayer().isInline()) {
-                List content =
+                List<Box> content =
                     ((InlineLayoutBox)c.getLayer().getMaster()).getElementWithContent();
                 if (content.contains(this)) {
                     setContainingLayer(c.getLayer());
@@ -496,8 +494,8 @@ public abstract class Box implements Styleable {
         }
     }
 
-    public List getElementBoxes(Element elem) {
-        List result = new ArrayList();
+    public List<Box> getElementBoxes(Element elem) {
+        List<Box> result = new ArrayList<>();
         for (int i = 0; i < getChildCount(); i++) {
             Box child = getChild(i);
             if (child.getElement() == elem) {
@@ -604,10 +602,10 @@ public abstract class Box implements Styleable {
             }
 
             if (pageBreakCount == 2) {
-                page = (PageBox)c.getRootLayer().getPages().get(page.getPageNo()+1);
+                page = c.getRootLayer().getPages().get(page.getPageNo()+1);
                 delta += page.getContentHeight(c);
 
-                if (pageBreakCount == 2 && pendingPageName) {
+                if (pendingPageName) {
                     c.setPageName(c.getPendingPageName());
                 }
 
@@ -640,7 +638,7 @@ public abstract class Box implements Styleable {
             }
 
             if (needSecondPageBreak) {
-                page = (PageBox)c.getRootLayer().getPages().get(page.getPageNo()+1);
+                page = c.getRootLayer().getPages().get(page.getPageNo()+1);
                 delta += page.getContentHeight(c);
 
                 if (page == c.getRootLayer().getLastPage()) {
@@ -679,7 +677,7 @@ public abstract class Box implements Styleable {
             return null;
         }
 
-        Box result = null;
+        Box result;
         for (int i = 0; i < getChildCount(); i++) {
             Box child = getChild(i);
             result = child.find(cssCtx, absX, absY, findAnonymous);
@@ -700,11 +698,13 @@ public abstract class Box implements Styleable {
         return getParent() != null && getParent().isRoot();
     }
 
+    @Override
     public Element getElement() {
         return _element;
     }
 
-    public void setElement(Element element) {
+    @Override
+    public final void setElement(Element element) {
         _element = element;
     }
 
@@ -766,7 +766,7 @@ public abstract class Box implements Styleable {
         }
     }
 
-    public void clearSelection(List modified) {
+    public void clearSelection(List<Box> modified) {
         for (int i = 0; i < getChildCount(); i++) {
             Box child = getChild(i);
             child.clearSelection(modified);
@@ -828,7 +828,7 @@ public abstract class Box implements Styleable {
             case CalculatedStyle.BOTTOM:
                 return (int)(margin.bottom() + border.bottom() + padding.bottom());
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unsupported margin style: " + which);
         }
     }
 
@@ -901,6 +901,7 @@ public abstract class Box implements Styleable {
         _index = index;
     }
 
+    @Override
     public String getPseudoElementOrClass() {
         return _pseudoElementOrClass;
     }
@@ -966,7 +967,7 @@ public abstract class Box implements Styleable {
     }
 
     public void setContentWidth(int contentWidth) {
-        _contentWidth = contentWidth < 0 ? 0 : contentWidth;
+        _contentWidth = Math.max(contentWidth, 0);
     }
 
     public int getContentWidth() {
@@ -1007,20 +1008,18 @@ public abstract class Box implements Styleable {
         setHeight(dimensions.getHeight());
     }
 
-    public void collectText(RenderingContext c, StringBuffer buffer) throws IOException {
-        for (Iterator i = getChildIterator(); i.hasNext(); ) {
-            Box b = (Box)i.next();
+    public void collectText(RenderingContext c, StringBuilder buffer) throws IOException {
+        for (Box b : getChildren()) {
             b.collectText(c, buffer);
         }
     }
 
     public void exportText(RenderingContext c, Writer writer) throws IOException {
         if (c.isPrint() && isRoot()) {
-            c.setPage(0, (PageBox)c.getRootLayer().getPages().get(0));
+            c.setPage(0, c.getRootLayer().getPages().get(0));
             c.getPage().exportLeadingText(c, writer);
         }
-        for (Iterator i = getChildIterator(); i.hasNext(); ) {
-            Box b = (Box)i.next();
+        for (Box b : getChildren()) {
             b.exportText(c, writer);
         }
         if (c.isPrint() && isRoot()) {
@@ -1031,9 +1030,9 @@ public abstract class Box implements Styleable {
     private void exportPageBoxText(RenderingContext c, Writer writer) throws IOException {
         c.getPage().exportTrailingText(c, writer);
         if (c.getPage() != c.getRootLayer().getLastPage()) {
-            List pages = c.getRootLayer().getPages();
+            List<PageBox> pages = c.getRootLayer().getPages();
             do {
-                PageBox next = (PageBox)pages.get(c.getPageNo()+1);
+                PageBox next = pages.get(c.getPageNo()+1);
                 c.setPage(next.getPageNo(), next);
                 next.exportLeadingText(c, writer);
                 next.exportTrailingText(c, writer);
@@ -1043,13 +1042,13 @@ public abstract class Box implements Styleable {
 
     protected void exportPageBoxText(RenderingContext c, Writer writer, int yPos) throws IOException {
         c.getPage().exportTrailingText(c, writer);
-        List pages = c.getRootLayer().getPages();
-        PageBox next = (PageBox)pages.get(c.getPageNo()+1);
+        List<PageBox> pages = c.getRootLayer().getPages();
+        PageBox next = pages.get(c.getPageNo()+1);
         c.setPage(next.getPageNo(), next);
         while (next.getBottom() < yPos) {
             next.exportLeadingText(c, writer);
             next.exportTrailingText(c, writer);
-            next = (PageBox)pages.get(c.getPageNo()+1);
+            next = pages.get(c.getPageNo()+1);
             c.setPage(next.getPageNo(), next);
         }
         next.exportLeadingText(c, writer);
@@ -1071,15 +1070,14 @@ public abstract class Box implements Styleable {
 
     public void analyzePageBreaks(LayoutContext c, ContentLimitContainer container) {
         container.updateTop(c, getAbsY());
-        for (Iterator i = getChildIterator(); i.hasNext(); ) {
-            Box b = (Box)i.next();
+        for (Box b : getChildren()) {
             b.analyzePageBreaks(c, container);
         }
         container.updateBottom(c, getAbsY() + getHeight());
     }
 
     public FSColor getEffBackgroundColor(RenderingContext c) {
-        FSColor result = null;
+        FSColor result;
         Box current = this;
         while (current != null) {
             result = current.getStyle().getBackgroundColor();
@@ -1254,7 +1252,7 @@ public abstract class Box implements Styleable {
  *
  * Revision 1.117 2006/09/08 15:41:58 peterbrant Calculate containing block
  * width accurately when collapsing margins / Provide collapsed bottom margin to
- * floats / Revive :first-line and :first-letter / Minor simplication in
+ * floats / Revive :first-line and :first-letter / Minor simplification in
  * InlineBoxing (get rid of now-superfluous InlineBoxInfo)
  *
  * Revision 1.116 2006/09/05 23:03:44 peterbrant Initial draft of shrink-to-fit
@@ -1285,7 +1283,7 @@ public abstract class Box implements Styleable {
  * elements with margins, borders, padding
  *
  * Revision 1.107 2006/02/07 00:02:52 peterbrant If "keep together" cannot be
- * satisified, drop rule vs. pushing to next page / Fix bug with incorrect
+ * satisfied, drop rule vs. pushing to next page / Fix bug with incorrect
  * positioning of content following relative block layers
  *
  * Revision 1.106 2006/02/01 01:30:14 peterbrant Initial commit of PDF work
@@ -1423,7 +1421,7 @@ public abstract class Box implements Styleable {
  * don't look right (forms.xhtml, splash.xhtml)
  *
  * Revision 1.60 2005/10/02 21:30:00 tobega Fixed a lot of concurrency (and
- * other) issues from incremental rendering. Also some house-cleaning.
+ * other) issues from incremental rendering. Also, some house-cleaning.
  *
  * Revision 1.59 2005/09/30 04:58:05 joshy fixed garbage when showing a document
  * with a fixed positioned block
@@ -1459,7 +1457,7 @@ public abstract class Box implements Styleable {
  * Revision 1.51 2005/05/08 14:36:58 tobega Refactored away the need for having
  * a context in a CalculatedStyle
  *
- * Revision 1.50 2005/04/22 17:19:19 joshy resovled conflicts in Box Issue
+ * Revision 1.50 2005/04/22 17:19:19 joshy resolved conflicts in Box Issue
  * number: Obtained from: Submitted by: Reviewed by:
  *
  * Revision 1.49 2005/04/21 18:16:08 tobega Improved handling of inline padding.
@@ -1475,7 +1473,7 @@ public abstract class Box implements Styleable {
  * Revision 1.46 2005/02/03 23:16:16 pdoubleya .
  *
  * Revision 1.45 2005/01/31 22:51:35 pdoubleya Added caching for
- * padding/margin/border calcs, plus alternate calls to get their totals (with
+ * padding/margin/border calculations, plus alternate calls to get their totals (with
  * and without style available). Reformatted.
  *
  * Revision 1.44 2005/01/29 20:24:23 pdoubleya Clean/reformat code. Removed
@@ -1617,7 +1615,7 @@ public abstract class Box implements Styleable {
  * Issue number: Obtained from: Submitted by: Reviewed by:
  *
  * Revision 1.9 2004/11/07 16:23:18 joshy added support for lighten and darken
- * to bordercolor added support for different colored sides
+ * to border-color added support for different colored sides
  *
  * Issue number: Obtained from: Submitted by: Reviewed by:
  *
@@ -1636,14 +1634,14 @@ public abstract class Box implements Styleable {
  *
  * Issue number: Obtained from: Submitted by: Reviewed by:
  *
- * Revision 1.6 2004/11/03 15:17:05 joshy added intial support for absolute
+ * Revision 1.6 2004/11/03 15:17:05 joshy added initial support for absolute
  * positioning
  *
  * Issue number: Obtained from: Submitted by: Reviewed by:
  *
  * Revision 1.5 2004/10/23 13:50:26 pdoubleya Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io,
- * java.util, etc). Added CVS log comments at bottom.
+ * java.util, etc.). Added CVS log comments at bottom.
  *
  *
  */

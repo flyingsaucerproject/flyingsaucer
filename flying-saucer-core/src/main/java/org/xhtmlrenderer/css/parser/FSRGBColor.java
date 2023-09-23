@@ -19,29 +19,29 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import java.util.Objects;
+
 public class FSRGBColor implements FSColor {
     public static final FSRGBColor TRANSPARENT = new FSRGBColor(0, 0, 0);
     public static final FSRGBColor RED = new FSRGBColor(255, 0, 0);
     public static final FSRGBColor GREEN = new FSRGBColor(0, 255, 0);
     public static final FSRGBColor BLUE = new FSRGBColor(0, 0, 255);
-    
-    private int _red;
-    private int _green;
-    private int _blue;
-    
+
+    private final int _red;
+    private final int _green;
+    private final int _blue;
+
     public FSRGBColor(int red, int green, int blue) {
-        if (red < 0 || red > 255) {
-            throw new IllegalArgumentException();
+        _red = validateColor("Red", red);
+        _green = validateColor("Green", green);
+        _blue = validateColor("Blue", blue);
+    }
+    
+    private int validateColor(String name, int color) {
+        if (color < 0 || color > 255) {
+            throw new IllegalArgumentException(String.format("%s %s is out of range [0, 255]", name, color));
         }
-        if (green < 0 || green > 255) {
-            throw new IllegalArgumentException();
-        }
-        if (blue < 0 || blue > 255) {
-            throw new IllegalArgumentException();
-        }
-        _red = red;
-        _green = green;
-        _blue = blue;
+        return color;
     }
 
     public FSRGBColor(int color) {
@@ -59,11 +59,11 @@ public class FSRGBColor implements FSColor {
     public int getRed() {
         return _red;
     }
-    
+
     public String toString() {
         return '#' + toString(_red) + toString(_green) + toString(_blue);
     }
-    
+
     private String toString(int color) {
         String result = Integer.toHexString(color);
         if (result.length() == 1) {
@@ -78,19 +78,11 @@ public class FSRGBColor implements FSColor {
         if (!(o instanceof FSRGBColor)) return false;
 
         FSRGBColor that = (FSRGBColor) o;
-
-        if (_blue != that._blue) return false;
-        if (_green != that._green) return false;
-        if (_red != that._red) return false;
-
-        return true;
+        return _blue == that._blue && _green == that._green && _red == that._red;
     }
 
     public int hashCode() {
-        int result = _red;
-        result = 31 * result + _green;
-        result = 31 * result + _blue;
-        return result;
+        return Objects.hash(_red, _green, _blue);
     }
 
     public FSColor lightenColor() {
@@ -98,29 +90,29 @@ public class FSRGBColor implements FSColor {
         float hBase = hsb[0];
         float sBase = hsb[1];
         float bBase = hsb[2];
-        
+
         float hLighter = hBase;
         float sLighter = 0.35f*bBase*sBase;
         float bLighter = 0.6999f + 0.3f*bBase;
-        
+
         int[] rgb = HSBtoRGB(hLighter, sLighter, bLighter);
         return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
     }
-    
+
     public FSColor darkenColor() {
         float[] hsb = RGBtoHSB(getRed(), getGreen(), getBlue(), null);
         float hBase = hsb[0];
         float sBase = hsb[1];
         float bBase = hsb[2];
-        
+
         float hDarker = hBase;
         float sDarker = sBase;
         float bDarker = 0.56f*bBase;
-        
+
         int[] rgb = HSBtoRGB(hDarker, sDarker, bDarker);
         return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
     }
-    
+
     // Taken from java.awt.Color to avoid dependency on it
     private static float[] RGBtoHSB(int r, int g, int b, float[] hsbvals) {
         float hue, saturation, brightness;
@@ -160,7 +152,7 @@ public class FSRGBColor implements FSColor {
         hsbvals[2] = brightness;
         return hsbvals;
     }
-    
+
     // Taken from java.awt.Color to avoid dependency on it
     private static int[] HSBtoRGB(float hue, float saturation, float brightness) {
         int r = 0, g = 0, b = 0;

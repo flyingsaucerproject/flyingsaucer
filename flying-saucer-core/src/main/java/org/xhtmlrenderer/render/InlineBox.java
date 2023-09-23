@@ -18,8 +18,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.text.BreakIterator;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -33,16 +31,18 @@ import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.layout.breaker.BreakPointsProvider;
 import org.xhtmlrenderer.layout.breaker.Breaker;
 
+import java.text.BreakIterator;
+
 /**
- * A class which reprsents a portion of an inline element. If an inline element
- * does not contain any nested elements, then a single <code>InlineBox</code>
- * object will contain the content for the entire element. Otherwise multiple
- * <code>InlineBox</code> objects will be created corresponding to each
- * discrete chunk of text appearing in the elment. It is not rendered directly
+ * A class which represents a portion of an inline element. If an inline element
+ * does not contain any nested elements, then a single {@code InlineBox}
+ * object will contain the content for the entire element. Otherwise, multiple
+ * {@code InlineBox} objects will be created corresponding to each
+ * discrete chunk of text appearing in the element. It is not rendered directly
  * (and hence does not extend from {@link Box}), but does play an important
  * role in layout (for example, when calculating min/max widths). Note that it
  * does not contain children. Inline content is stored as a flat list in the
- * layout tree. However, <code>InlineBox</code> does contain enough
+ * layout tree. However, {@code InlineBox} does contain enough
  * information to reconstruct the original element nesting and this is, in fact,
  * done during inline layout.
  *
@@ -116,18 +116,22 @@ public class InlineBox implements Styleable {
         _startsHere = startsHere;
     }
 
+    @Override
     public CalculatedStyle getStyle() {
         return _style;
     }
 
+    @Override
     public void setStyle(CalculatedStyle style) {
         _style = style;
     }
 
+    @Override
     public Element getElement() {
         return _element;
     }
 
+    @Override
     public void setElement(Element element) {
         _element = element;
     }
@@ -154,8 +158,8 @@ public class InlineBox implements Styleable {
     private int getMaxCharWidth(LayoutContext c, String s) {
         char[] chars = s.toCharArray();
         int result = 0;
-        for (int i = 0; i < chars.length; i++) {
-            int width = getTextWidth(c, Character.toString(chars[i]));
+        for (char aChar : chars) {
+            int width = getTextWidth(c, Character.toString(aChar));
             if (width > result) {
                 result = width;
             }
@@ -165,7 +169,7 @@ public class InlineBox implements Styleable {
 
     private void calcMaxWidthFromLineLength(LayoutContext c, int cbWidth, boolean trim) {
         int last = 0;
-        int current = 0;
+        int current;
 
         while ( (current = _text.indexOf(WhitespaceStripper.EOL, last)) != -1) {
             String target = _text.substring(last, current);
@@ -220,7 +224,7 @@ public class InlineBox implements Styleable {
         int spaceWidth = getSpaceWidth(c);
 
         int last = 0;
-        int current = 0;
+        int current;
         int maxWidth = 0;
         int spaceCount = 0;
 
@@ -229,7 +233,7 @@ public class InlineBox implements Styleable {
         int lastWord = 0;
 
         String text = getText(trimLeadingSpace);
-        
+
         BreakPointsProvider breakIterator = Breaker.getBreakPointsProvider(text, c, getElement(), getStyle());
 
         // Breaker should be used
@@ -377,6 +381,7 @@ public class InlineBox implements Styleable {
         return _firstLineWidth;
     }
 
+    @Override
     public String getPseudoElementOrClass() {
         return _pseudoElementOrClass;
     }
@@ -386,7 +391,7 @@ public class InlineBox implements Styleable {
     }
 
     public String toString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append("InlineBox: ");
         if (getElement() != null) {
             result.append("<");
@@ -419,7 +424,7 @@ public class InlineBox implements Styleable {
         return result.toString();
     }
 
-    protected void appendPositioningInfo(StringBuffer result) {
+    protected void appendPositioningInfo(StringBuilder result) {
         if (getStyle().isRelative()) {
             result.append("(relative) ");
         }
@@ -438,7 +443,7 @@ public class InlineBox implements Styleable {
         if (_text == null) {
             return null;
         } else {
-            StringBuffer result = new StringBuffer();
+            StringBuilder result = new StringBuilder();
             for (int i = 0; i < _text.length() && i < 40; i++) {
                 char c = _text.charAt(i);
                 if (c == '\n') {
@@ -468,6 +473,6 @@ public class InlineBox implements Styleable {
     }
 
     public Text getTextNode() {
-        return this._textNode;
+        return _textNode;
     }
 }

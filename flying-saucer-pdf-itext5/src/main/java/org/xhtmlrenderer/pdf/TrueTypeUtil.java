@@ -9,8 +9,11 @@ import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.singletonList;
 
 /**
  * Uses code from iText's DefaultFontMapper and TrueTypeFont classes.  See
@@ -33,33 +36,34 @@ public class TrueTypeUtil {
         return IdentValue.NORMAL;
     }
 
-    public static String[] getFamilyNames(BaseFont font) {
+    public static Collection<String> getFamilyNames(BaseFont font) {
         String[][] names = font.getFamilyFontName();
 
         if (names.length == 1) {
-            return new String[]{names[0][3]};
+            return singletonList(names[0][3]);
         }
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String[] name : names) {
             if ((name[0].equals("1") && name[1].equals("0")) || name[2].equals("1033")) {
                 result.add(name[3]);
             }
         }
 
-        return result.toArray(new String[result.size()]);
+        return result;
     }
 
     // HACK No accessor
     private static Map<String, int[]> extractTables(BaseFont font)
             throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        Class current = font.getClass();
+        Class<?> current = font.getClass();
 
         while (current != null) {
             if (current.getName().endsWith(".TrueTypeFont")) {
                 Field field = current.getDeclaredField("tables");
                 field.setAccessible(true);
-                return (Map) field.get(font);
+                //noinspection unchecked
+                return (Map<String, int[]>) field.get(font);
             }
 
             current = current.getSuperclass();
@@ -74,48 +78,32 @@ public class TrueTypeUtil {
         return index < 0 ? name : name.substring(0, index + 4);
     }
 
-    public static void populateDescription(String path, BaseFont font, FontDescription descr)
+    public static void populateDescription(String path, BaseFont font, FontDescription description)
             throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
-        RandomAccessFileOrArray rf = null;
+        RandomAccessFileOrArray rf = new RandomAccessFileOrArray(getTTCName(path));
         try {
-            rf = new RandomAccessFileOrArray(getTTCName(path));
-
-            rf = populateDescription0(path, font, descr, rf);
+            populateDescription0(path, font, description, rf);
         } finally {
-            if (rf != null) {
-                try {
-                    rf.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            rf.close();
         }
     }
 
-    public static void populateDescription(String path, byte[] contents, BaseFont font, FontDescription descr)
+    public static void populateDescription(String path, byte[] contents, BaseFont font, FontDescription description)
             throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
-        RandomAccessFileOrArray rf = null;
+        RandomAccessFileOrArray rf = new RandomAccessFileOrArray(contents);
         try {
-            rf = new RandomAccessFileOrArray(contents);
-
-            rf = populateDescription0(path, font, descr, rf);
+            populateDescription0(path, font, description, rf);
         } finally {
-            if (rf != null) {
-                try {
-                    rf.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            rf.close();
         }
     }
 
-    private static RandomAccessFileOrArray populateDescription0(String path,
-                                                                BaseFont font, FontDescription descr, RandomAccessFileOrArray rf)
+    private static void populateDescription0(String path,
+                                             BaseFont font, FontDescription description, RandomAccessFileOrArray rf)
             throws NoSuchFieldException, IllegalAccessException, DocumentException, IOException {
         Map<String, int[]> tables = extractTables(font);
 
-        descr.setStyle(guessStyle(font));
+        description.setStyle(guessStyle(font));
 
         int[] location = tables.get("OS/2");
         if (location == null) {
@@ -129,15 +117,15 @@ public class TrueTypeUtil {
             throw new DocumentException("Skip TT font weight, expect read " + want + " bytes, but only got " + got);
         }
 
-        descr.setWeight(rf.readUnsignedShort());
+        description.setWeight(rf.readUnsignedShort());
         want = 20;
         got = rf.skip(want);
         if (got < want) {
             throw new DocumentException("Skip TT font strikeout, expect read " + want + " bytes, but only got " + got);
         }
 
-        descr.setYStrikeoutSize(rf.readShort());
-        descr.setYStrikeoutPosition(rf.readShort());
+        description.setYStrikeoutSize(rf.readShort());
+        description.setYStrikeoutPosition(rf.readShort());
 
         location = tables.get("post");
 
@@ -148,13 +136,9 @@ public class TrueTypeUtil {
             if (got < want) {
                 throw new DocumentException("Skip TT font underline, expect read " + want + " bytes, but only got " + got);
             }
-            descr.setUnderlinePosition(rf.readShort());
-            descr.setUnderlineThickness(rf.readShort());
+            description.setUnderlinePosition(rf.readShort());
+            description.setUnderlineThickness(rf.readShort());
         }
-
-        rf.close();
-        rf = null;
-        return rf;
     }
 
 }

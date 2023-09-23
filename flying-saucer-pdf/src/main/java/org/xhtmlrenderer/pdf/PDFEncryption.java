@@ -27,7 +27,7 @@ public class PDFEncryption {
     private byte[] _ownerPassword;
     private int _allowedPrivileges = PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_COPY | PdfWriter.ALLOW_FILL_IN;
     private int _encryptionType = PdfWriter.STANDARD_ENCRYPTION_128;
-    
+
     public PDFEncryption() {
     }
 
@@ -41,7 +41,7 @@ public class PDFEncryption {
         _ownerPassword = ArrayUtil.cloneOrEmpty(ownerPassword);
         _allowedPrivileges = allowedPrivileges;
     }
-    
+
     public PDFEncryption(byte[] userPassword, byte[] ownerPassword, int allowedPrivileges, int encryptionType) {
         _userPassword = ArrayUtil.cloneOrEmpty(userPassword);
         _ownerPassword = ArrayUtil.cloneOrEmpty(ownerPassword);
@@ -68,11 +68,11 @@ public class PDFEncryption {
     public int getAllowedPrivileges() {
         return _allowedPrivileges;
     }
-        
+
     public void setAllowedPrivileges(int allowedPrivileges) {
         _allowedPrivileges = allowedPrivileges;
     }
-    
+
     public int getEncryptionType() {
         return _encryptionType;
     }
@@ -80,7 +80,7 @@ public class PDFEncryption {
     public void setEncryptionType(int encryptionType ) {
         _encryptionType  = encryptionType;
     }
-    
+
 }
 
 

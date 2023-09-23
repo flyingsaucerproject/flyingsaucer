@@ -25,7 +25,7 @@ in our distributions and in our source tree.
 
 Flying Saucer uses a couple of FOSS packages to get the job done. A list
 of these, along with the license they each have, is listed in the 
-[`LICENSE`](https://github.com/flyingsaucerproject/flyingsaucer/blob/master/LICENSE) file in our distribution.   
+[`LICENSE`](https://github.com/flyingsaucerproject/flyingsaucer/blob/main/LICENSE) file in our distribution.   
 
 
 ## GETTING FLYING SAUCER
@@ -61,7 +61,7 @@ Other notable entry points include:
 ## CONTACT
 
 See the [discussion group](https://groups.google.com/g/flying-saucer-users) for
-on-going discussions.
+ongoing discussions.
 
 
 ## PROJECT STATUS
@@ -72,7 +72,7 @@ Excerpt from the latest [merge/release policy](https://groups.google.com/forum/#
 > 
 > The basic contract is this: If you're still using Flying Saucer, need something changed, and are willing to do the work yourself, the change will be accepted and released. 
 > 
-> Along that line, please also let me know if you need a release done right away. Otherwise I'll bundle up the changes and do a release every four to six months as long as it's required.
+> Along that line, please also let me know if you need a release done right away. Otherwise, I'll bundle up the changes and do a release every four to six months as long as it's required.
  
 This is also the reason why Issues are currently deactivated on GitHub.
 

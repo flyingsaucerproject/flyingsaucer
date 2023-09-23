@@ -29,24 +29,24 @@ import org.xhtmlrenderer.extend.FSImage;
 
 /**
  * A utility class to paint list markers (all types).
- * @see MarkerData 
+ * @see MarkerData
  */
 public class ListItemPainter {
     public static void paint(RenderingContext c, BlockBox box) {
         if (box.getMarkerData() == null) {
             return;
         }
-        
+
         MarkerData markerData = box.getMarkerData();
-        
+
         if (markerData.getImageMarker() != null) {
             drawImage(c, box, markerData);
         } else {
             CalculatedStyle style = box.getStyle();
             IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
-            
+
             c.getOutputDevice().setColor(style.getColor());
-    
+
             if (markerData.getGlyphMarker() != null) {
                 drawGlyph(c, box, style, listStyle);
             } else if (markerData.getTextMarker() != null){
@@ -56,36 +56,35 @@ public class ListItemPainter {
     }
 
     private static void drawImage(RenderingContext c, BlockBox box, MarkerData markerData) {
-        FSImage img = null;
         MarkerData.ImageMarker marker = markerData.getImageMarker();
-        img = marker.getImage();
+        FSImage img = marker.getImage();
         if (img != null) {
             StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
             int x = getReferenceX(c, box);
             // FIXME: findbugs possible loss of precision, cf. int / (float)2
             x += -marker.getLayoutWidth() +
                     (marker.getLayoutWidth() / 2 - img.getWidth() / 2);
-            c.getOutputDevice().drawImage(img, 
+            c.getOutputDevice().drawImage(img,
                     x,
                     (int)(getReferenceBaseline(c, box)
                         - strutMetrics.getAscent() / 2 - img.getHeight() / 2));
         }
     }
-    
+
     private static int getReferenceX(RenderingContext c, BlockBox box) {
         MarkerData markerData = box.getMarkerData();
-        
+
         if (markerData.getReferenceLine() != null) {
             return markerData.getReferenceLine().getAbsX();
         } else {
             return box.getAbsX() + (int)box.getMargin(c).left();
         }
     }
-    
+
     private static int getReferenceBaseline(RenderingContext c, BlockBox box) {
         MarkerData markerData = box.getMarkerData();
         StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
-        
+
         if (markerData.getReferenceLine() != null) {
             return markerData.getReferenceLine().getAbsY() + strutMetrics.getBaseline();
         } else {
@@ -93,7 +92,7 @@ public class ListItemPainter {
         }
     }
 
-    private static void drawGlyph(RenderingContext c, BlockBox box, 
+    private static void drawGlyph(RenderingContext c, BlockBox box,
             CalculatedStyle style, IdentValue listStyle) {
         // save the old AntiAliasing setting, then force it on
         Object aa_key = c.getOutputDevice().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
@@ -105,7 +104,7 @@ public class ListItemPainter {
         MarkerData.GlyphMarker marker = box.getMarkerData().getGlyphMarker();
         int x = getReferenceX(c, box);
         x += -marker.getLayoutWidth();
-        int y = getReferenceBaseline(c, box) 
+        int y = getReferenceBaseline(c, box)
             - (int)strutMetrics.getAscent() / 2 - marker.getDiameter() / 2;
         if (listStyle == IdentValue.DISC) {
             c.getOutputDevice().fillOval(x, y, marker.getDiameter(), marker.getDiameter());
@@ -122,11 +121,11 @@ public class ListItemPainter {
 
     private static void drawText(RenderingContext c, BlockBox box, IdentValue listStyle) {
         MarkerData.TextMarker text = box.getMarkerData().getTextMarker();
-        
+
         int x = getReferenceX(c, box);
         x += -text.getLayoutWidth();
         int y = getReferenceBaseline(c, box);
-        
+
         c.getOutputDevice().setColor(box.getStyle().getColor());
         c.getOutputDevice().setFont(box.getStyle().getFSFont(c));
         c.getTextRenderer().drawString(

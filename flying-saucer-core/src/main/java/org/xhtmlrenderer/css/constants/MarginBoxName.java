@@ -23,15 +23,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MarginBoxName {
-    private static final Map ALL = new HashMap();
-    private static int _maxAssigned = 0;
-    
+    private static final Map<String, MarginBoxName> ALL = new HashMap<>();
+    private static int _maxAssigned;
+
     public final int FS_ID;
-    
+
     private final String _ident;
     private final IdentValue _textAlign;
     private final IdentValue _verticalAlign;
-    
+
     public static final MarginBoxName TOP_LEFT_CORNER = addValue("top-left-corner", IdentValue.RIGHT, IdentValue.MIDDLE);
     public static final MarginBoxName TOP_LEFT = addValue("top-left", IdentValue.LEFT, IdentValue.MIDDLE);
     public static final MarginBoxName TOP_CENTER = addValue("top-center", IdentValue.CENTER, IdentValue.MIDDLE);
@@ -53,45 +53,45 @@ public class MarginBoxName {
     // the margin box infrastructure, but is instead embedded in the PDF vs. being displayed
     // on the screen.
     public static final MarginBoxName FS_PDF_XMP_METADATA = addValue("-fs-pdf-xmp-metadata", IdentValue.TOP, IdentValue.LEFT);
-    
+
     private MarginBoxName(String ident, IdentValue textAlign, IdentValue verticalAlign) {
         _ident = ident;
         _textAlign = textAlign;
         _verticalAlign = verticalAlign;
-        
+
         this.FS_ID = _maxAssigned++;
     }
-    
-    private final static MarginBoxName addValue(String ident, IdentValue textAlign, IdentValue verticalAlign) {
+
+    private static MarginBoxName addValue(String ident, IdentValue textAlign, IdentValue verticalAlign) {
         MarginBoxName val = new MarginBoxName(ident, textAlign, verticalAlign);
         ALL.put(ident, val);
         return val;
     }
-    
+
     public String toString() {
         return _ident;
     }
-    
+
     public static MarginBoxName valueOf(String ident) {
-        return (MarginBoxName)ALL.get(ident);
+        return ALL.get(ident);
     }
-    
+
     public int hashCode() {
         return FS_ID;
     }
-    
+
     public boolean equals(Object o) {
-        if (o == null || ! (o instanceof MarginBoxName)) {
+        if (!(o instanceof MarginBoxName)) {
             return false;
         }
-        
+
         return FS_ID == ((MarginBoxName)o).FS_ID;
     }
-    
+
     public IdentValue getInitialTextAlign() {
         return _textAlign;
     }
-    
+
     public IdentValue getInitialVerticalAlign() {
         return _verticalAlign;
     }

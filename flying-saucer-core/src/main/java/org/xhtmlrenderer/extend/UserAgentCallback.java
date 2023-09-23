@@ -71,7 +71,7 @@ public interface UserAgentCallback {
      * @return A XMLResource for the content at the URI.
      */
     XMLResource getXMLResource(String uri);
-    
+
     /**
      * Retrieves a binary resource located at a given URI and returns its contents
      * as a byte array or <code>null</code> if the resource could not be loaded.
@@ -81,7 +81,7 @@ public interface UserAgentCallback {
     /**
      * Normally, returns true if the user agent has visited this URI. UserAgent should consider
      * if it should answer truthfully or not for privacy reasons.
-     *  
+     *
      * @param uri A URI which may have been visited by this user agent.
      * @return The visited value
      */
@@ -101,7 +101,7 @@ public interface UserAgentCallback {
     String getBaseURL();
 
     /**
-     * Used to find a uri that may be relative to the BaseURL.
+     * Used to find an uri that may be relative to the BaseURL.
      * The returned value will always only be used via methods in the same
      * implementation of this interface, therefore may be a private uri-space.
      *

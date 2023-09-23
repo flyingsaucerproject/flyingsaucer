@@ -38,21 +38,15 @@ public class Stylesheet implements RulesetContainer {
     /**
      * The info for this stylesheet
      */
-    private String _uri;
-    /**
-     * Description of the Field
-     */
-    private int _origin;
+    private final String _uri;
+    private final int _origin;
 
-    private List _fontFaceRules = new ArrayList();
-    private List _importRules = new ArrayList();
-    private List _contents = new ArrayList();
+    private final List<FontFaceRule> _fontFaceRules = new ArrayList<>();
+    private final List<StylesheetInfo> _importRules = new ArrayList<>();
+    private final List<Object> _contents = new ArrayList<>();
 
     /**
      * Creates a new instance of Stylesheet
-     *
-     * @param uri
-     * @param origin
      */
     public Stylesheet(String uri, int origin) {
         _uri = uri;
@@ -64,6 +58,7 @@ public class Stylesheet implements RulesetContainer {
      *
      * @return The origin value
      */
+    @Override
     public int getOrigin() {
         return _origin;
     }
@@ -76,40 +71,41 @@ public class Stylesheet implements RulesetContainer {
     public String getURI() {
         return _uri;
     }
-    
+
+    @Override
     public void addContent(Ruleset ruleset) {
         _contents.add(ruleset);
     }
-    
+
     public void addContent(MediaRule rule) {
         _contents.add(rule);
     }
-    
+
     public void addContent(PageRule rule) {
         _contents.add(rule);
     }
-    
-    public List getContents() {
+
+    public List<Object> getContents() {
         return _contents;
     }
-    
+
     public void addImportRule(StylesheetInfo info) {
         _importRules.add(info);
     }
-    
-    public List getImportRules() {
+
+    public List<StylesheetInfo> getImportRules() {
         return _importRules;
     }
-    
+
     public void addFontFaceRule(FontFaceRule rule) {
         _fontFaceRules.add(rule);
     }
-    
-    public List getFontFaceRules() {
+
+    public List<FontFaceRule> getFontFaceRules() {
         return _fontFaceRules;
     }
 
-}// end class
+}
 
 /*
  * $Id$

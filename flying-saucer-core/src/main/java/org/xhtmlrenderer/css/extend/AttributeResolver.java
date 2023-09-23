@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.extend;
 
+import javax.annotation.Nullable;
 
 /**
  * In XML, an application may or may not know how to find the ID and/or class
@@ -37,97 +38,65 @@ package org.xhtmlrenderer.css.extend;
 public interface AttributeResolver {
 
     /**
-     * May return null. Required to return null if attribute does not exist and
+     * Required to return null if attribute does not exist, and
      * not null if attribute exists.
      */
-    public String getAttributeValue(Object e, String attrName);
-    
+    @Nullable
+    String getAttributeValue(Object e, String attrName);
+
     /**
-     * May return null. Required to return null if attribute does not exist and
+     * Required to return null if attribute does not exist and
      * not null if attribute exists.
      */
-    public String getAttributeValue(Object e, String namespaceURI, String attrName);
+    @Nullable
+    String getAttributeValue(Object e, String namespaceURI, String attrName);
+
+    @Nullable
+    String getClass(Object e);
+
+    @Nullable
+    String getID(Object e);
 
     /**
-     * may return null
-     *
-     * @param e PARAM
-     * @return The class value
-     */
-    public String getClass(Object e);
-
-    /**
-     * may return null
-     *
-     * @param e PARAM
-     * @return The iD value
-     */
-    public String getID(Object e);
-
-    /**
-     * may return null
-     *
-     * @param e PARAM
      * @return The non css styling (specificity 0,0,0,0 on author styles, according to css 2.1)
      */
-    public String getNonCssStyling(Object e);
+    @Nullable
+    String getNonCssStyling(Object e);
 
     /**
-     * may return null
-     *
-     * @param e PARAM
      * @return The elementStyling value
      *         (corresponding to xhtml style attribute, specificity 1,0,0,0 according to css 2.1)
      */
-    public String getElementStyling(Object e);
+    @Nullable
+    String getElementStyling(Object e);
 
-    /**
-     * may return null
-     *
-     * @param e PARAM
-     * @return The lang value
-     */
-    public String getLang(Object e);
+    @Nullable
+    String getLang(Object e);
 
     /**
      * Gets the link attribute of the AttributeResolver object
-     *
-     * @param e PARAM
-     * @return The link value
      */
-    public boolean isLink(Object e);
+    boolean isLink(Object e);
 
     /**
      * Gets the visited attribute of the AttributeResolver object
-     *
-     * @param e PARAM
-     * @return The visited value
      */
-    public boolean isVisited(Object e);
+    boolean isVisited(Object e);
 
     /**
      * Gets the hover attribute of the AttributeResolver object
-     *
-     * @param e PARAM
-     * @return The hover value
      */
-    public boolean isHover(Object e);
+    boolean isHover(Object e);
 
     /**
      * Gets the active attribute of the AttributeResolver object
-     *
-     * @param e PARAM
-     * @return The active value
      */
-    public boolean isActive(Object e);
+    boolean isActive(Object e);
 
     /**
      * Gets the focus attribute of the AttributeResolver object
-     *
-     * @param e PARAM
-     * @return The focus value
      */
-    public boolean isFocus(Object e);
+    boolean isFocus(Object e);
 
 }
 

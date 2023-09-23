@@ -32,26 +32,10 @@ import org.xhtmlrenderer.extend.UserInterface;
  * @author Torbjoern Gannholm
  */
 public class StandardAttributeResolver implements AttributeResolver {
-    /**
-     * Description of the Field
-     */
-    private NamespaceHandler nsh;
-    /**
-     * Description of the Field
-     */
-    private UserAgentCallback uac;
-    /**
-     * Description of the Field
-     */
-    private UserInterface ui;
+    private final NamespaceHandler nsh;
+    private final UserAgentCallback uac;
+    private final UserInterface ui;
 
-    /**
-     * Constructor for the StandardAttributeResolver object
-     *
-     * @param nsh PARAM
-     * @param uac PARAM
-     * @param ui  PARAM
-     */
     public StandardAttributeResolver(NamespaceHandler nsh, UserAgentCallback uac, UserInterface ui) {
         this.nsh = nsh;
         this.uac = uac;
@@ -60,109 +44,90 @@ public class StandardAttributeResolver implements AttributeResolver {
 
     /**
      * Gets the attributeValue attribute of the StandardAttributeResolver object
-     *
-     * @param e        PARAM
-     * @param attrName PARAM
-     * @return The attributeValue value
      */
+    @Override
     public String getAttributeValue(Object e, String attrName) {
         return nsh.getAttributeValue((Element) e, attrName);
     }
-    
+
+    @Override
     public String getAttributeValue(Object e, String namespaceURI, String attrName) {
         return nsh.getAttributeValue((Element)e, namespaceURI, attrName);
     }
 
     /**
      * Gets the class attribute of the StandardAttributeResolver object
-     *
-     * @param e PARAM
-     * @return The class value
      */
+    @Override
     public String getClass(Object e) {
         return nsh.getClass((Element) e);
     }
 
     /**
      * Gets the iD attribute of the StandardAttributeResolver object
-     *
-     * @param e PARAM
-     * @return The iD value
      */
+    @Override
     public String getID(Object e) {
         return nsh.getID((Element) e);
     }
 
+    @Override
     public String getNonCssStyling(Object e) {
         return nsh.getNonCssStyling((Element) e);
     }
 
     /**
      * Gets the elementStyling attribute of the StandardAttributeResolver object
-     *
-     * @param e PARAM
-     * @return The elementStyling value
      */
+    @Override
     public String getElementStyling(Object e) {
         return nsh.getElementStyling((Element) e);
     }
 
     /**
      * Gets the lang attribute of the StandardAttributeResolver object
-     *
-     * @param e PARAM
-     * @return The lang value
      */
+    @Override
     public String getLang(Object e) {
         return nsh.getLang((Element) e);
     }
 
     /**
      * Gets the link attribute of the StandardAttributeResolver object
-     *
-     * @param e PARAM
-     * @return The link value
      */
+    @Override
     public boolean isLink(Object e) {
         return nsh.getLinkUri((Element) e) != null;
     }
 
     /**
      * Gets the visited attribute of the StandardAttributeResolver object
-     *
-     * @param e PARAM
-     * @return The visited value
      */
+    @Override
     public boolean isVisited(Object e) {
         return isLink(e) && uac.isVisited(nsh.getLinkUri((Element) e));
     }
 
     /**
      * Gets the hover attribute of the StandardAttributeResolver object
-     *
-     * @param e PARAM
-     * @return The hover value
      */
+    @Override
     public boolean isHover(Object e) {
         return ui.isHover((Element) e);
     }
 
     /**
      * Gets the active attribute of the StandardAttributeResolver object
-     *
-     * @param e PARAM
-     * @return The active value
      */
+    @Override
     public boolean isActive(Object e) {
         return ui.isActive((Element) e);
     }
 
     /**
      * Gets the focus attribute of the StandardAttributeResolver object
-     *
-     * @param e PARAM
-     * @return The focus value
      */
+    @Override
     public boolean isFocus(Object e) {
         return ui.isFocus((Element) e);
     }

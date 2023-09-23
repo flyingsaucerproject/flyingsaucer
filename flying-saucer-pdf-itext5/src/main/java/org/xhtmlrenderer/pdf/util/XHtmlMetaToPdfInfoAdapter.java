@@ -19,11 +19,9 @@
 
 package org.xhtmlrenderer.pdf.util;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfObject;
+import com.itextpdf.text.pdf.PdfString;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -32,30 +30,30 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.PDFCreationListener;
 import org.xhtmlrenderer.util.XRLog;
 
-import com.itextpdf.text.pdf.PdfName;
-import com.itextpdf.text.pdf.PdfObject;
-import com.itextpdf.text.pdf.PdfString;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 
 /**
  * <h1>Description</h1>
  * <p>
- * This PDF Creation Listener parses meta data elements from an (X)HTML document and appends them to 
+ * This PDF Creation Listener parses meta data elements from an (X)HTML document and appends them to
  * the info dictionary of a PDF document.
  * </p>
- * 
- * <p> 
+ *
+ * <p>
  * The XHTML document is parsed for relevant PDF meta data during construction, then adds the meta
- * data to the PDF document when the PDF document is closed by the calling ITextRenderer. 
+ * data to the PDF document when the PDF document is closed by the calling ITextRenderer.
  * </p>
- * 
+ *
  * <p>
  * Valid (X)HTML tags are:
  * <ul>
  * <li>TITLE</li>
  * </ul>
  * </p>
- *  
+ *
  * <p>
  * Valid (X)HTML meta tag attribute names are:
  * <ul>
@@ -65,86 +63,85 @@ import com.itextpdf.text.pdf.PdfString;
  * <li>KEYWORDS</li>
  * </ul>
  * </p>
- * 
+ *
  * <p>
- * Valid PDF meta names are defined in Adobe's PDF Reference (Sixth Edition), 
+ * Valid PDF meta names are defined in Adobe's PDF Reference (Sixth Edition),
  * section "10.2.1 - Document Information Dictionary", table 10.2, pg.844
- * http://www.adobe.com/devnet/pdf/pdf_reference.html
+ * <a href="http://www.adobe.com/devnet/pdf/pdf_reference.html">...</a>
  * </p>
- * 
+ *
  * <h1>Usage</h1>
  * <pre>
  * // Setup output stream
- * OutputStream outputStream = ... 
- * 
+ * OutputStream outputStream = ...
+ *
  * // Create W3C document model
  * Document doc = ...
- * 
+ *
  * // Create new PDF renderer
  * ITextRenderer renderer = new ITextRenderer();
- * 
+ *
  * // Add PDF creation listener
  * PDFCreationListener pdfCreationListener = new XHtmlMetaToPdfInfoAdapter( doc );
  * renderer.setListener( pdfCreationListener);
- * 
+ *
  * // Add W3C document to renderer
  * renderer.setDocument( doc, null );
- *       
+ *
  * // Layout PDF document
  * renderer.layout();
- * 
+ *
  * // Write PDF document
  * renderer.createPDF( outputStream, true );
  * </pre>
- * 
+ *
  * <h1>Notes</h1>
  * This class was derived from a sample PDF creation listener
- * at "http://markmail.org/message/46t3bw7q6mbhvra2"
+ * at "https://markmail.org/message/46t3bw7q6mbhvra2"
  * by Jesse Keller <jesse.keller@roche.com>.
  *
- * @author Tim Telcik <tim.telcik@permeance.com.au> 
- * 
+ * @author Tim Telcik <tim.telcik@permeance.com.au>
  * @see DefaultPDFCreationListener
  * @see PDFCreationListener
- * @see ITextRenderer 
- * @see http://markmail.org/message/46t3bw7q6mbhvra2
- * @see http://www.adobe.com/devnet/pdf/pdf_reference.html
- * @see http://www.seoconsultants.com/meta-tags/dublin/
+ * @see ITextRenderer
+ * @see <a href="https://markmail.org/message/46t3bw7q6mbhvra2">...</a>
+ * @see <a href="https://www.adobe.com/devnet/pdf/pdf_reference.html">...</a>
+ * @see <a href="https://www.seoconsultants.com/meta-tags/dublin/">...</a>
  */
 public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
-    private static final String HTML_TAG_TITLE = "title";    
-    private static final String HTML_TAG_HEAD = "head";    
-    private static final String HTML_TAG_META = "meta";    
-    private static final String HTML_META_KEY_TITLE = "title";    
-    private static final String HTML_META_KEY_DC_TITLE = "DC.title";    
-    private static final String HTML_META_KEY_CREATOR = "creator";    
+    private static final String HTML_TAG_TITLE = "title";
+    private static final String HTML_TAG_HEAD = "head";
+    private static final String HTML_TAG_META = "meta";
+    private static final String HTML_META_KEY_TITLE = "title";
+    private static final String HTML_META_KEY_DC_TITLE = "DC.title";
+    private static final String HTML_META_KEY_CREATOR = "creator";
     private static final String HTML_META_KEY_DC_CREATOR = "DC.creator";
-    private static final String HTML_META_KEY_SUBJECT = "subject";    
-    private static final String HTML_META_KEY_DC_SUBJECT = "DC.subject";    
-    private static final String HTML_META_KEY_KEYWORDS = "keywords";    
-    private static final String HTML_META_ATTR_NAME = "name";    
-    private static final String HTML_META_ATTR_CONTENT = "content";    
+    private static final String HTML_META_KEY_SUBJECT = "subject";
+    private static final String HTML_META_KEY_DC_SUBJECT = "DC.subject";
+    private static final String HTML_META_KEY_KEYWORDS = "keywords";
+    private static final String HTML_META_ATTR_NAME = "name";
+    private static final String HTML_META_ATTR_CONTENT = "content";
 
-    private java.util.Map pdfInfoValues = new HashMap();    
+    private final Map<PdfName, PdfString> pdfInfoValues = new HashMap<>();
 
-    
+
     /**
      * Creates a new adapter from the given XHTML document.
-     * 
+     *
      * @param doc XHTML document
      */
     public XHtmlMetaToPdfInfoAdapter( Document doc ) {
-        parseHtmlTags( doc );        
+        parseHtmlTags( doc );
     }
-    
+
     /**
      * PDFCreationListener onClose event handler.
-     * 
+     *
      * @see PDFCreationListener
      */
     public void onClose( ITextRenderer renderer ) {
         XRLog.render(Level.FINEST, "handling onClose event ..." );
-        addPdfMetaValuesToPdfDocument( renderer );        
+        addPdfMetaValuesToPdfDocument( renderer );
     }
 
     private void parseHtmlTags( Document doc ) {
@@ -155,9 +152,9 @@ public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
             XRLog.render(Level.FINEST, "PDF info map = " + pdfInfoValues );
         }
     }
-    
+
     private void parseHtmlTitleTag( Document doc ) {
-        
+
         NodeList headNodeList = doc.getDocumentElement().getElementsByTagName( HTML_TAG_HEAD );
         XRLog.render(Level.FINEST, "headNodeList=" + headNodeList );
         Element rootHeadNodeElement = (Element) headNodeList.item( 0 );
@@ -175,69 +172,64 @@ public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
             this.pdfInfoValues.put( pdfName, pdfString );
         }
     }
-    
+
     private void parseHtmlMetaTags( Document doc ) {
-        
+
         NodeList headNodeList = doc.getDocumentElement().getElementsByTagName( HTML_TAG_HEAD );
         XRLog.render(Level.FINEST, "headNodeList=" + headNodeList );
         Element rootHeadNodeElement = (Element) headNodeList.item( 0 );
         NodeList metaNodeList = rootHeadNodeElement.getElementsByTagName( HTML_TAG_META );
-        XRLog.render(Level.FINEST, "metaNodeList=" + metaNodeList );        
+        XRLog.render(Level.FINEST, "metaNodeList=" + metaNodeList );
 
         for (int inode = 0; inode < metaNodeList.getLength(); ++inode) {
-            XRLog.render(Level.FINEST, "node " + inode + " = "+ metaNodeList.item( inode ).getNodeName() );            
+            XRLog.render(Level.FINEST, "node " + inode + " = "+ metaNodeList.item( inode ).getNodeName() );
             Element thisNode = (Element) metaNodeList.item( inode );
-            XRLog.render(Level.FINEST, "node " + thisNode );            
+            XRLog.render(Level.FINEST, "node " + thisNode );
             String metaName = thisNode.getAttribute( HTML_META_ATTR_NAME );
             String metaContent = thisNode.getAttribute( HTML_META_ATTR_CONTENT );
-            XRLog.render(Level.FINEST, "metaName=" + metaName + ", metaContent=" + metaContent );            
-            if (metaName.length() != 0 && metaContent.length() != 0) {
+            XRLog.render(Level.FINEST, "metaName=" + metaName + ", metaContent=" + metaContent );
+            if (!metaName.isEmpty() && !metaContent.isEmpty()) {
 
-                PdfName pdfName = null;
-                PdfString pdfString = null;            
-                if ( HTML_META_KEY_TITLE.equalsIgnoreCase( metaName ) 
+                if ( HTML_META_KEY_TITLE.equalsIgnoreCase( metaName )
                         || HTML_META_KEY_DC_TITLE.equalsIgnoreCase( metaName ) ) {
-                    pdfName = PdfName.TITLE;
-                    pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );                    
+                    PdfName pdfName = PdfName.TITLE;
+                    PdfString pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
                     this.pdfInfoValues.put( pdfName, pdfString );
-                   
-                } else if ( HTML_META_KEY_CREATOR.equalsIgnoreCase( metaName ) 
+
+                } else if ( HTML_META_KEY_CREATOR.equalsIgnoreCase( metaName )
                         || HTML_META_KEY_DC_CREATOR.equalsIgnoreCase( metaName ) ) {
-                    pdfName = PdfName.AUTHOR;
-                    pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );                    
+                    PdfName pdfName = PdfName.AUTHOR;
+                    PdfString pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
                     this.pdfInfoValues.put( pdfName, pdfString );
-                    
-                } else if ( HTML_META_KEY_SUBJECT.equalsIgnoreCase( metaName ) 
+
+                } else if ( HTML_META_KEY_SUBJECT.equalsIgnoreCase( metaName )
                         || HTML_META_KEY_DC_SUBJECT.equalsIgnoreCase( metaName ) ) {
-                    pdfName = PdfName.SUBJECT;
-                    pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );                    
+                    PdfName pdfName = PdfName.SUBJECT;
+                    PdfString pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
                     this.pdfInfoValues.put( pdfName, pdfString );
-                    
+
                 } else if ( HTML_META_KEY_KEYWORDS.equalsIgnoreCase( metaName ) ) {
-                    pdfName = PdfName.KEYWORDS;
-                    pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );                    
+                    PdfName pdfName = PdfName.KEYWORDS;
+                    PdfString pdfString = new PdfString( metaContent, PdfObject.TEXT_UNICODE );
                     this.pdfInfoValues.put( pdfName, pdfString );
-                }                
+                }
             }
         }
     }
-    
+
     /**
      * Add PDF meta values to the target PDF document.
      */
     private void addPdfMetaValuesToPdfDocument( ITextRenderer renderer ) {
-        
-        Iterator pdfNameIter = this.pdfInfoValues.keySet().iterator();
 
-        while (pdfNameIter.hasNext()) {
-            PdfName pdfName = (PdfName) pdfNameIter.next();
-            PdfString pdfString = (PdfString) pdfInfoValues.get( pdfName );
-            XRLog.render(Level.FINEST, "pdfName=" + pdfName + ", pdfString=" + pdfString );
-            renderer.getOutputDevice().getWriter().getInfo().put( pdfName, pdfString );            
+        for (PdfName pdfName : this.pdfInfoValues.keySet()) {
+            PdfString pdfString = pdfInfoValues.get(pdfName);
+            XRLog.render(Level.FINEST, "pdfName=" + pdfName + ", pdfString=" + pdfString);
+            renderer.getOutputDevice().getWriter().getInfo().put(pdfName, pdfString);
         }
         if ( XRLog.isLoggingEnabled() ) {
-            XRLog.render(Level.FINEST, "added " + renderer.getOutputDevice().getWriter().getInfo().getKeys() );            
+            XRLog.render(Level.FINEST, "added " + renderer.getOutputDevice().getWriter().getInfo().getKeys() );
         }
     }
-    
+
 }

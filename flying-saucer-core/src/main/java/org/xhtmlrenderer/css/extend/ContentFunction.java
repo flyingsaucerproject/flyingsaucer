@@ -30,20 +30,20 @@ import org.xhtmlrenderer.render.RenderingContext;
  */
 public interface ContentFunction {
     /**
-     * Whether or not the function value can change at render time.  If true,
-     * {@link #calculate(LayoutContext, String, TextContent)} will be called.  If false,
-     * {@link #calculate(RenderingContext, String, TextContent)} will be called.
+     * Whether the function value can change at render time.
+     * If true, {@link #calculate(LayoutContext, FSFunction)} will be called.
+     * If false, {@link #calculate(RenderingContext, FSFunction, InlineText)} will be called.
      */
-    public boolean isStatic();
-    
-    public String calculate(LayoutContext c, FSFunction function);
-    public String calculate(RenderingContext c, FSFunction function, InlineText text);
-    
+    boolean isStatic();
+
+    String calculate(LayoutContext c, FSFunction function);
+    String calculate(RenderingContext c, FSFunction function, InlineText text);
+
     /**
      * If a function value can change at render time (i.e. {@link #isStatic()} returns false)
      * use this text as an approximation at layout.
      */
-    public String getLayoutReplacementText();
-    
-    public boolean canHandle(LayoutContext c, FSFunction function);
+    String getLayoutReplacementText();
+
+    boolean canHandle(LayoutContext c, FSFunction function);
 }

@@ -28,7 +28,7 @@ import org.xhtmlrenderer.render.RenderingContext;
 public class BookmarkElement implements ITextReplacedElement {
     private Point _location = new Point(0, 0);
     private String _anchorName;
-    
+
     public int getIntrinsicWidth() {
         return 0;
     }
@@ -44,7 +44,7 @@ public class BookmarkElement implements ITextReplacedElement {
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }
-    
+
     public void detach(LayoutContext c) {
         c.removeBoxId(getAnchorName());
     }
@@ -56,7 +56,7 @@ public class BookmarkElement implements ITextReplacedElement {
     public void setAnchorName(String anchorName) {
         _anchorName = anchorName;
     }
-    
+
     public boolean isRequiresInteractivePaint() {
         // N/A
         return false;
@@ -65,11 +65,11 @@ public class BookmarkElement implements ITextReplacedElement {
     public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     }
 
-	public int getBaseline() {
-		return 0;
-	}
+    public int getBaseline() {
+        return 0;
+    }
 
-	public boolean hasBaseline() {
-		return false;
-	}
+    public boolean hasBaseline() {
+        return false;
+    }
 }

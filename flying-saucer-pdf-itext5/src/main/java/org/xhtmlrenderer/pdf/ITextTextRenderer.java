@@ -19,8 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Rectangle;
-
+import com.itextpdf.text.pdf.BaseFont;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -30,18 +29,18 @@ import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 
-import com.itextpdf.text.pdf.BaseFont;
+import java.awt.*;
 
 public class ITextTextRenderer implements TextRenderer {
     private static float TEXT_MEASURING_DELTA = 0.01f;
-    
+
     public void setup(FontContext context) {
     }
 
     public void drawString(OutputDevice outputDevice, String string, float x, float y) {
         ((ITextOutputDevice)outputDevice).drawString(string, x, y, null);
     }
-    
+
     public void drawString(
             OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
         ((ITextOutputDevice)outputDevice).drawString(string, x, y, info);
@@ -54,17 +53,17 @@ public class ITextTextRenderer implements TextRenderer {
         ITextFSFontMetrics result = new ITextFSFontMetrics();
         result.setAscent(bf.getFontDescriptor(BaseFont.BBOXURY, size));
         result.setDescent(-bf.getFontDescriptor(BaseFont.BBOXLLY, size));
-        
+
         result.setStrikethroughOffset(-descr.getYStrikeoutPosition() / 1000f * size);
         if (descr.getYStrikeoutSize() != 0) {
             result.setStrikethroughThickness(descr.getYStrikeoutSize() / 1000f * size);
         } else {
             result.setStrikethroughThickness(size / 12.0f);
         }
-        
+
         result.setUnderlineOffset(-descr.getUnderlinePosition() / 1000f * size);
         result.setUnderlineThickness(descr.getUnderlineThickness() / 1000f * size);
-        
+
         return result;
     }
 
@@ -74,7 +73,7 @@ public class ITextTextRenderer implements TextRenderer {
         if (result - Math.floor(result) < TEXT_MEASURING_DELTA) {
             return (int)result;
         } else {
-            return (int)Math.ceil(result); 
+            return (int)Math.ceil(result);
         }
     }
 
@@ -96,18 +95,18 @@ public class ITextTextRenderer implements TextRenderer {
     }
 
     public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
     public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
     public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }
 
     public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: drawGlyphVector");
     }
 }

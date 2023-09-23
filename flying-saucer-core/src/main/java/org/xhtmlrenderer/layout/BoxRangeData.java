@@ -26,21 +26,21 @@ import org.xhtmlrenderer.render.BlockBox;
 public class BoxRangeData {
     private BlockBox _box;
     private BoxRange _range;
-    
+
     private Shape _clip;
-    
+
     public BoxRangeData() {
     }
-    
+
     public BoxRangeData(BlockBox box, BoxRange range) {
         _box = box;
         _range = range;
     }
-    
+
     public BlockBox getBox() {
         return _box;
     }
-    
+
     public void setBox(BlockBox box) {
         _box = box;
     }
@@ -60,7 +60,7 @@ public class BoxRangeData {
     public void setClip(Shape clip) {
         _clip = clip;
     }
-    
+
     public String toString() {
         return "[range= " + _range + ", box=" + _box + ", clip=" + _clip + "]";
     }

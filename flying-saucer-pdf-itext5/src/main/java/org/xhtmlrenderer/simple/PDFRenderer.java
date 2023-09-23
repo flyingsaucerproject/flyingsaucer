@@ -6,11 +6,13 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map;
+
+import static java.nio.file.Files.newOutputStream;
 
 /**
  * <p/>
@@ -29,15 +31,15 @@ import java.util.HashMap;
  * @author Patrick Wright
  */
 public class PDFRenderer {
-    private static final Map versionMap = new HashMap();
+    private static final Map<String, Character> versionMap = new HashMap<>();
 
     static {
-        versionMap.put("1.2", new Character(PdfWriter.VERSION_1_2));
-        versionMap.put("1.3", new Character(PdfWriter.VERSION_1_3));
-        versionMap.put("1.4", new Character(PdfWriter.VERSION_1_4));
-        versionMap.put("1.5", new Character(PdfWriter.VERSION_1_5));
-        versionMap.put("1.6", new Character(PdfWriter.VERSION_1_6));
-        versionMap.put("1.7", new Character(PdfWriter.VERSION_1_7));
+        versionMap.put("1.2", PdfWriter.VERSION_1_2);
+        versionMap.put("1.3", PdfWriter.VERSION_1_3);
+        versionMap.put("1.4", PdfWriter.VERSION_1_4);
+        versionMap.put("1.5", PdfWriter.VERSION_1_5);
+        versionMap.put("1.6", PdfWriter.VERSION_1_6);
+        versionMap.put("1.7", PdfWriter.VERSION_1_7);
     }
     /**
      * Renders the XML file at the given URL as a PDF file
@@ -72,7 +74,7 @@ public class PDFRenderer {
 
         ITextRenderer renderer = new ITextRenderer();
         renderer.setDocument(url);
-        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion.charValue());
+        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion);
         doRenderToPDF(renderer, pdf);
     }
 
@@ -108,7 +110,7 @@ public class PDFRenderer {
 
         ITextRenderer renderer = new ITextRenderer();
         renderer.setDocument(file);
-        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion.charValue());
+        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion);
         doRenderToPDF(renderer, pdf);
     }
 
@@ -124,8 +126,7 @@ public class PDFRenderer {
     public static byte[] renderToPDFBytes(byte[] bytes)
             throws IOException, DocumentException {
 
-        byte[] b = renderToPDFBytes(bytes, null);
-        return b;
+        return renderToPDFBytes(bytes, null);
     }
 
     /**
@@ -143,9 +144,8 @@ public class PDFRenderer {
 
         ITextRenderer renderer = new ITextRenderer();
         renderer.setDocument(bytes);
-        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion.charValue());
-        byte[] b = doRenderToPDF(renderer);
-        return b;
+        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion);
+        return doRenderToPDF(renderer);
     }
 
 
@@ -181,44 +181,24 @@ public class PDFRenderer {
 
         ITextRenderer renderer = new ITextRenderer();
         renderer.setDocument(bytes);
-        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion.charValue());
+        if (pdfVersion != null) renderer.setPDFVersion(pdfVersion);
         doRenderToPDF(renderer, pdf);
     }
 
 
     /**
      * Internal use, runs the render process
-     * @param renderer
-     * @param pdf
-     * @throws com.itextpdf.text.DocumentException
-     * @throws java.io.IOException
      */
     private static void doRenderToPDF(ITextRenderer renderer, String pdf)
             throws IOException, DocumentException {
-        OutputStream os = null;
-        try {
-            os = new FileOutputStream(pdf);
+        try (OutputStream os = newOutputStream(Paths.get(pdf))) {
             renderer.layout();
             renderer.createPDF(os);
-
-            os.close();
-            os = null;
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
     }
 
     /**
      * Internal use, runs the render process
-     * @param renderer
-     * @throws com.itextpdf.text.DocumentException
-     * @throws java.io.IOException
      */
     private static byte[] doRenderToPDF(ITextRenderer renderer)
             throws IOException, DocumentException {
@@ -265,7 +245,7 @@ public class PDFRenderer {
             pdfVersion = checkVersion(args[2]);
         }
         String url = args[0];
-        if (url.indexOf("://") == -1) {
+        if (!url.contains("://")) {
             // maybe it's a file
             File f = new File(url);
             if (f.exists()) {
@@ -279,7 +259,7 @@ public class PDFRenderer {
     }
 
     private static Character checkVersion(String version) {
-        final Character val = (Character) versionMap.get(version.trim());
+        final Character val = versionMap.get(version.trim());
         if (val == null) {
             usage("Invalid PDF version number; use 1.2 through 1.7");
         }
@@ -287,10 +267,9 @@ public class PDFRenderer {
     }
 
     /** prints out usage information, with optional error message
-     * @param err
      */
     private static void usage(String err) {
-        if (err != null && err.length() > 0) {
+        if (err != null && !err.isEmpty()) {
             System.err.println("==>" + err);
         }
         System.err.println("Usage: ... url pdf [version]");

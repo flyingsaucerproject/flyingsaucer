@@ -18,14 +18,18 @@
 
 
 import com.lowagie.text.DocumentException;
+import org.w3c.dom.Document;
 import org.xhtmlrenderer.pdf.ITextOutputDevice;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
 import org.xhtmlrenderer.resource.XMLResource;
-import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class PDFRender {
     public static void main(String[] args) throws IOException, DocumentException {
@@ -84,10 +88,11 @@ public class PDFRender {
 
     private static class ResourceLoaderUserAgent extends ITextUserAgent
     {
-        public ResourceLoaderUserAgent(ITextOutputDevice outputDevice) {
+        private ResourceLoaderUserAgent(ITextOutputDevice outputDevice) {
             super(outputDevice);
         }
 
+        @Override
         protected InputStream resolveAndOpenStream(String uri) {
             InputStream is = super.resolveAndOpenStream(uri);
             System.out.println("IN resolveAndOpenStream() " + uri);

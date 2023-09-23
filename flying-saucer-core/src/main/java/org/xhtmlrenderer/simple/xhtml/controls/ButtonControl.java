@@ -19,18 +19,18 @@
  */
 package org.xhtmlrenderer.simple.xhtml.controls;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.xhtml.XhtmlForm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ButtonControl extends AbstractControl {
 
-    private String _type, _label;
-    private boolean _extended;
-    private List _listeners = new ArrayList();
+    private String _type;
+    private final String _label;
+    private final boolean _extended;
+    private final List<ButtonControlListener> _listeners = new ArrayList<>();
 
     public ButtonControl(XhtmlForm form, Element e) {
         super(form, e);
@@ -51,15 +51,15 @@ public class ButtonControl extends AbstractControl {
     public String getType() {
         return _type;
     }
-    
+
     public String getLabel() {
         return _label;
     }
 
     /**
-     * @return <code>true</code> if this button has been defined with
-     *         <code>&lt;button&gt;</code>, <code>false</code> if this
-     *         button has been defined with <code>&lt;input&gt;</code>
+     * @return {@code true} if this button has been defined with
+     *         {@code <button>}, {@code false} if this
+     *         button has been defined with {@code <input>}
      */
     public boolean isExtended() {
         return _extended;
@@ -74,8 +74,8 @@ public class ButtonControl extends AbstractControl {
     }
 
     public boolean press() {
-        for (Iterator iter = _listeners.iterator(); iter.hasNext();) {
-            if(!((ButtonControlListener) iter.next()).pressed(this))
+        for (ButtonControlListener listener : _listeners) {
+            if (!listener.pressed(this))
                 return false;
         }
         return true;

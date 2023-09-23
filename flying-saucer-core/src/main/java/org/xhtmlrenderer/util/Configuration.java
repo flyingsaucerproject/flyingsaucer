@@ -22,14 +22,24 @@ package org.xhtmlrenderer.util;
 
 import org.xhtmlrenderer.DefaultCSSMarker;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.MalformedURLException;
+
+import static java.nio.file.Files.newInputStream;
 
 
 /**
@@ -45,14 +55,14 @@ import java.net.MalformedURLException;
  * second properties file, specify the System property xr-conf. This should be
  * the location of the second file relative to the CLASSPATH, or else a file
  * path, e.g.</p>
- * <code>java -Dxr-conf=resources/conf/myprops.conf</code>
+ * {@code java -Dxr-conf=resources/conf/myprops.conf}
  * <p>
  * You can also place your override properties file in your user home directory,
  * in </p>
- * <code>${user.home}/.flyingsaucer/local.xhtmlrenderer.conf</code>
+ * {@code ${user.home}/.flyingsaucer/local.xhtmlrenderer.conf}
  * <p> To override a property using the System properties, just re-define the
  * property on the command line. e.g.</p>
- * <code>java -Dxr.property-name=new_value</code>
+ * {@code java -Dxr.property-name=new_value}
  * <p>The order in which these will be read is: default properties (bundled with
  * the core, in the jar; override configuration properties; properties file in
  * user.home; and system properties.</p>
@@ -63,7 +73,7 @@ import java.net.MalformedURLException;
  * Configuration is NOT used to control logging levels or output; see
  * LogStartupConfig.</p>
  * <p>
- * There are convenience converstion method for all the primitive types, in
+ * There are convenience conversion method for all the primitive types, in
  * methods like {@link #valueAsInt(String, int)}. A default must always be provided for these
  * methods. The default is returned if the value is not found, or if the
  * conversion from String fails. If the value is not present, or the conversion
@@ -85,13 +95,13 @@ public class Configuration {
     /**
      * The Singleton instance of the class.
      */
-    private static Configuration sInstance;
+    private static final Configuration sInstance = new Configuration();
 
     /**
      * List of LogRecords for messages from Configuration startup; used to hold these
      * temporarily as we can't use XRLog while starting up, as it depends on Configuration.
      */
-    private List startupLogRecords;
+    private final List<LogRecord> startupLogRecords = new ArrayList<>();
 
     /**
      * Logger we use internally related to configuration.
@@ -101,7 +111,7 @@ public class Configuration {
     /**
      * The location of our default properties file; must be on the CLASSPATH.
      */
-    private final static String SF_FILE_NAME = "resources/conf/xhtmlrenderer.conf";
+    private static final String SF_FILE_NAME = "resources/conf/xhtmlrenderer.conf";
 
     /**
      * Default constructor. Will parse default configuration file, system properties, override properties, etc. and
@@ -111,8 +121,6 @@ public class Configuration {
      * for example, if the default configuration file was not readable.
      */
     private Configuration() {
-        startupLogRecords = new ArrayList();
-
         try {
             try {
                 // read logging level from System properties
@@ -172,14 +180,10 @@ public class Configuration {
     public static void setConfigLogger(Logger logger) {
         Configuration config = instance();
         config.configLogger = logger;
-        if (config.startupLogRecords != null) {
-            Iterator iter = config.startupLogRecords.iterator();
-            while (iter.hasNext()) {
-                LogRecord lr = (LogRecord) iter.next();
-                logger.log(lr.getLevel(), lr.getMessage());
-            }
-            config.startupLogRecords = null;
+        for (LogRecord lr : config.startupLogRecords) {
+            logger.log(lr.getLevel(), lr.getMessage());
         }
+        config.startupLogRecords.clear();
     }
 
     /**
@@ -294,11 +298,8 @@ public class Configuration {
             if (f.exists()) {
                 info("Found config override file " + f.getAbsolutePath());
                 try {
-                    InputStream readStream = new BufferedInputStream(new FileInputStream(f));
-                    try {
+                    try (InputStream readStream = new BufferedInputStream(newInputStream(f.toPath()))) {
                         temp.load(readStream);
-                    } finally {
-                        readStream.close();
                     }
                 } catch (IOException iex) {
                     warning("Error while loading override properties file; skipping.", iex);
@@ -307,11 +308,11 @@ public class Configuration {
             } else {
                 InputStream in = null;
                 try {
-					URL url = new URL(uri);
-					in = new BufferedInputStream(url.openStream());
-					info("Found config override URI " + uri);
-					temp.load(in);
-				} catch (MalformedURLException e) {
+                    URL url = new URL(uri);
+                    in = new BufferedInputStream(url.openStream());
+                    info("Found config override URI " + uri);
+                    temp.load(in);
+                } catch (MalformedURLException e) {
                     warning("URI for override properties is malformed, skipping: " + uri);
                     return;
                 } catch (IOException e) {
@@ -326,15 +327,9 @@ public class Configuration {
                 }
             }
 
-            Enumeration elem = this.properties.keys();
-            List lp = Collections.list(elem);
-            Collections.sort(lp);
-            Iterator iter = lp.iterator();
-
             // override existing properties
             int cnt = 0;
-            while (iter.hasNext()) {
-                String key = (String) iter.next();
+            for (String key : sortedKeys(properties)) {
                 String val = temp.getProperty(key);
                 if (val != null) {
                     this.properties.setProperty(key, val);
@@ -345,13 +340,10 @@ public class Configuration {
             finer("Configuration: " + cnt + " properties overridden from secondary properties file.");
             // and add any new properties we don't already know about (needed for custom logging
             // configuration)
-            Enumeration allRead = temp.keys();
-            List ap = Collections.list(allRead);
-            Collections.sort(ap);
-            iter = ap.iterator();
+            Collection<String> allRead = sortedKeys(temp);
+
             cnt = 0;
-            while (iter.hasNext()) {
-                String key = (String) iter.next();
+            for (String key : allRead) {
                 String val = temp.getProperty(key);
                 if (val != null) {
                     this.properties.setProperty(key, val);
@@ -384,19 +376,21 @@ public class Configuration {
         }
     }
 
+    private static Collection<String> sortedKeys(Properties properties) {
+        List<String> keys = new ArrayList<>(properties.size());
+        properties.keySet().forEach(key -> keys.add((String) key));
+        Collections.sort(keys);
+        return keys;
+    }
+
     /**
      * Loads overriding property values from a System properties; this is
      * optional. See class documentation.
      */
     private void loadSystemProperties() {
-        Enumeration elem = properties.keys();
-        List lp = Collections.list(elem);
-        Collections.sort(lp);
-        Iterator iter = lp.iterator();
         fine("Overriding loaded configuration from System properties.");
         int cnt = 0;
-        while (iter.hasNext()) {
-            String key = (String) iter.next();
+        for (String key : sortedKeys(properties)) {
             if (!key.startsWith("xr.")) {
                 continue;
             }
@@ -417,13 +411,12 @@ public class Configuration {
         // add any additional properties we don't already know about (e.g. used for extended logging properties)
         try {
             final Properties sysProps = System.getProperties();
-            final Enumeration keys = sysProps.keys();
+
             cnt = 0;
-            while (keys.hasMoreElements()) {
-                String key = (String) keys.nextElement();
+            for (String key : sortedKeys(properties)) {
                 if (key.startsWith("xr.") && !this.properties.containsKey(key)) {
-                    final Object val = sysProps.get(key);
-                    this.properties.put(key, val);
+                    String val = sysProps.getProperty(key);
+                    this.properties.setProperty(key, val);
                     finer("  (+) " + key);
                     cnt++;
                 }
@@ -438,14 +431,9 @@ public class Configuration {
      * Writes a log of loaded properties to the plumbing.init Logger.
      */
     private void logAfterLoad() {
-        Enumeration elem = properties.keys();
-        List lp = Collections.list(elem);
-        Collections.sort(lp);
-        Iterator iter = lp.iterator();
         finer("Configuration contains " + properties.size() + " keys.");
         finer("List of configuration properties, after override:");
-        while (iter.hasNext()) {
-            String key = (String) iter.next();
+        for (String key : sortedKeys(properties)) {
             String val = properties.getProperty(key);
             finer("  " + key + " = " + val);
         }
@@ -468,11 +456,11 @@ public class Configuration {
         return val;
     }
 
-	public static boolean hasValue(String key) {
+    public static boolean hasValue(String key) {
         Configuration conf = instance();
         String val = conf.properties.getProperty(key);
         return val != null;
-	}
+    }
 
     /**
      * Returns the value for key in the Configuration as a byte, or the default
@@ -481,7 +469,7 @@ public class Configuration {
      * conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static int valueAsByte(String key, byte defaultVal) {
@@ -508,7 +496,7 @@ public class Configuration {
      * conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static int valueAsShort(String key, short defaultVal) {
@@ -535,7 +523,7 @@ public class Configuration {
      * conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static int valueAsInt(String key, int defaultVal) {
@@ -563,7 +551,7 @@ public class Configuration {
      * character, only the first character is returned.
      *
      * @param key Name of the property
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @returnValue assigned to the key, as a character
      */
     public static char valueAsChar(String key, char defaultVal) {
@@ -581,13 +569,13 @@ public class Configuration {
     }
 
     /**
-     * Returns the value for key in the Configurationas a long, or the default
+     * Returns the value for key in the Configurations a long, or the default
      * provided value if not found or if the value is not a valid long. A
      * warning is issued to the log if the property is not defined, or if the
      * conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static long valueAsLong(String key, long defaultVal) {
@@ -614,7 +602,7 @@ public class Configuration {
      * conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static float valueAsFloat(String key, float defaultVal) {
@@ -641,7 +629,7 @@ public class Configuration {
      * if the conversion from String fails.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static double valueAsDouble(String key, double defaultVal) {
@@ -667,7 +655,7 @@ public class Configuration {
      * defined, and if the default is null.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static String valueFor(String key, String defaultVal) {
@@ -685,41 +673,15 @@ public class Configuration {
      * empty if no such keys are found.
      *
      * @param prefix Prefix to filter on. No regex.
-     * @return Returns Iterator, see description.
      */
-    public static Iterator keysByPrefix(String prefix) {
+    public static Iterator<String> keysByPrefix(String prefix) {
         Configuration conf = instance();
-        Iterator iter = conf.properties.keySet().iterator();
-        List l = new ArrayList();
-        while (iter.hasNext()) {
-            String key = (String) iter.next();
-            if (key.startsWith(prefix)) {
-                l.add(key);
-            }
-        }
-        return l.iterator();
+        return sortedKeys(conf.properties).stream()
+                .filter(key -> key.startsWith(prefix))
+                .iterator();
     }
 
-
-    /**
-     * Command-line execution for testing. No arguments.
-     *
-     * @param args Ignored
-     */
-    public static void main(String args[]) {
-        try {
-            System.out.println("byte: " + String.valueOf(Configuration.valueAsByte("xr.test-config-byte", (byte) 15)));
-            System.out.println("short: " + String.valueOf(Configuration.valueAsShort("xr.test-config-short", (short) 20)));
-            System.out.println("int: " + String.valueOf(Configuration.valueAsInt("xr.test-config-int", 25)));
-            System.out.println("long: " + String.valueOf(Configuration.valueAsLong("xr.test-config-long", 30L)));
-            System.out.println("float: " + String.valueOf(Configuration.valueAsFloat("xr.test-config-float", 45.5F)));
-            System.out.println("double: " + String.valueOf(Configuration.valueAsDouble("xr.test-config-double", 50.75D)));
-            System.out.println("boolean: " + String.valueOf(Configuration.isTrue("xr.test-config-boolean", false)));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
+    
     /**
      * Returns true if the value is "true" (ignores case), or the default
      * provided value if not found or if the value is not a valid boolean (true
@@ -727,7 +689,7 @@ public class Configuration {
      * is not defined, and if the default is null.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static boolean isTrue(String key, boolean defaultVal) {
@@ -752,7 +714,7 @@ public class Configuration {
      * is not defined, or the value is not a valid boolean.
      *
      * @param key        Name of the property.
-     * @param defaultVal PARAM
+     * @param defaultVal Default value to return
      * @return Value assigned to the key, as a String.
      */
     public static boolean isFalse(String key, boolean defaultVal) {
@@ -762,16 +724,13 @@ public class Configuration {
     /**
      * @return The singleton instance of the class.
      */
-    private static synchronized Configuration instance() {
-        if (Configuration.sInstance == null) {
-            Configuration.sInstance = new Configuration();
-        }
+    private static Configuration instance() {
         return Configuration.sInstance;
     }// end main()
 
     /**
      * Given a property, resolves the value to a public constant field on some class, where the field is of type Object.
-     * The property value must the the FQN of the class and field, e.g.
+     * The property value must the FQN of the class and field, e.g.
      * aKey=java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR will return the value of the
      * VALUE_INTERPOLATION_NEAREST_NEIGHBOR constant on the RendingHints class.
      *
@@ -796,7 +755,7 @@ public class Configuration {
                     "should be FQN<dot>constant, is " + val);
             return defaultValue;
         }
-        Class klass;
+        Class<?> klass;
         try {
             klass = Class.forName(klassname);
         } catch (ClassNotFoundException e) {
@@ -908,7 +867,7 @@ public class Configuration {
  * Make sure resource streams are cleaned up (bug #201, patch by kaihei)
  *
  * Revision 1.19  2007/07/14 13:06:21  pdoubleya
- * Dont show stack trace if configuration file URL is malformed
+ * Don't show stack trace if configuration file URL is malformed
  *
  * Revision 1.18  2007/07/13 13:40:26  pdoubleya
  * Fix for 183, configuration should allow specifying override files by URL
@@ -952,7 +911,7 @@ public class Configuration {
  *
  * Revision 1.7  2004/10/23 14:06:56  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  * Revision 1.6  2004/10/19 15:00:53  joshy
@@ -960,7 +919,7 @@ public class Configuration {
  * removed some extraneous files
  * update the home page to point to the new jnlp files
  * updated the resource loader to use the marker class
- * updated the text of the about box
+ * updated the text of the "about" box
  *
  * Issue number:
  * Obtained from:

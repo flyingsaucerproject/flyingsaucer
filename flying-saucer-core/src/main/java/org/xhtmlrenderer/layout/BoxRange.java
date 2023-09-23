@@ -22,7 +22,7 @@ package org.xhtmlrenderer.layout;
 public class BoxRange {
     private final int _start;
     private final int _end;
-    
+
     public BoxRange(int start, int end) {
         _start = start;
         _end = end;
@@ -35,7 +35,7 @@ public class BoxRange {
     public int getEnd() {
         return _end;
     }
-    
+
     public String toString() {
         return "[start=" + _start + ", end=" + _end + "]";
     }

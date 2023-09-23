@@ -19,6 +19,15 @@
  */
 package org.xhtmlrenderer.demo.aboutbox;
 
+import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.resource.CSSResource;
+import org.xhtmlrenderer.resource.ImageResource;
+import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.swing.AWTFSImage;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,41 +40,34 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
-
-import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.resource.CSSResource;
-import org.xhtmlrenderer.resource.ImageResource;
-import org.xhtmlrenderer.resource.XMLResource;
-import org.xhtmlrenderer.swing.AWTFSImage;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
- * Created by IntelliJ IDEA.
  * User: tobe
  * Date: 2005-jun-15
  * Time: 07:38:59
- * To change this template use File | Settings | File Templates.
  */
 public class DemoUserAgent implements UserAgentCallback {
     private String baseUrl;
     private int index = -1;
-    private ArrayList history = new ArrayList();
+    private final List<String> history = new ArrayList<>();
 
     /**
      * an LRU cache
      */
-    private int imageCacheCapacity = 16;
-    private java.util.LinkedHashMap imageCache =
-            new java.util.LinkedHashMap(imageCacheCapacity, 0.75f, true) {
-                protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
+    private final int imageCacheCapacity = 16;
+    private final Map<String, ImageResource> imageCache =
+            new LinkedHashMap<String, ImageResource>(imageCacheCapacity, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, ImageResource> eldest) {
                     return size() > imageCacheCapacity;
                 }
             };
 
+    @Override
     public CSSResource getCSSResource(String uri) {
         InputStream is = null;
         uri = resolveURI(uri);
@@ -81,10 +83,10 @@ public class DemoUserAgent implements UserAgentCallback {
         return new CSSResource(is);
     }
 
+    @Override
     public ImageResource getImageResource(String uri) {
-        ImageResource ir = null;
         uri = resolveURI(uri);
-        ir = (ImageResource) imageCache.get(uri);
+        ImageResource ir = imageCache.get(uri);
         //TODO: check that cached image is still valid
         if (ir == null) {
             InputStream is = null;
@@ -110,7 +112,8 @@ public class DemoUserAgent implements UserAgentCallback {
         if (ir == null) ir = new ImageResource(uri, null);
         return ir;
     }
-    
+
+    @Override
     public byte[] getBinaryResource(String uri) {
         InputStream is = null;
         try {
@@ -125,7 +128,7 @@ public class DemoUserAgent implements UserAgentCallback {
             }
             is.close();
             is = null;
-            
+
             return result.toByteArray();
         } catch (IOException e) {
             return null;
@@ -138,16 +141,16 @@ public class DemoUserAgent implements UserAgentCallback {
                 }
             }
         }
-    }    
+    }
 
+    @Override
     public XMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);
         if (uri != null && uri.startsWith("file:")) {
-            File file = null;
             try {
-                file = new File(new URI(uri));
+                new File(new URI(uri));
             } catch (URISyntaxException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
         }
         XMLResource xr = null;
@@ -176,18 +179,20 @@ public class DemoUserAgent implements UserAgentCallback {
         return xr;
     }
 
+    @Override
     public boolean isVisited(String uri) {
         if (uri == null) return false;
         uri = resolveURI(uri);
         return history.contains(uri);
     }
 
+    @Override
     public void setBaseURL(String url) {
         baseUrl = resolveURI(url);
         if (baseUrl == null) baseUrl = "error:FileNotFound";
         //setBaseURL is called by view when document is loaded
         if (index >= 0) {
-            String historic = (String) history.get(index);
+            String historic = history.get(index);
             if (historic.equals(baseUrl)) return;//moved in history
         }
         index++;
@@ -195,6 +200,7 @@ public class DemoUserAgent implements UserAgentCallback {
         history.add(index, baseUrl);
     }
 
+    @Override
     public String resolveURI(String uri) {
         URL ref = null;
         if (uri == null) return baseUrl;
@@ -228,6 +234,7 @@ public class DemoUserAgent implements UserAgentCallback {
             return ref.toExternalForm();
     }
 
+    @Override
     public String getBaseURL() {
         return baseUrl;
     }
@@ -235,27 +242,19 @@ public class DemoUserAgent implements UserAgentCallback {
 
     public String getForward() {
         index++;
-        return (String) history.get(index);
+        return history.get(index);
     }
 
     public String getBack() {
         index--;
-        return (String) history.get(index);
+        return history.get(index);
     }
 
     public boolean hasForward() {
-        if (index + 1 < history.size() && index >= 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return index + 1 < history.size() && index >= 0;
     }
 
     public boolean hasBack() {
-        if (index >= 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return index >= 0;
     }
 }

@@ -20,15 +20,10 @@
  */
 package org.xhtmlrenderer.css.style;
 
-import java.awt.Cursor;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.parser.CounterData;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -48,6 +43,14 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
 
 /**
  * A set of properties that apply to a single Element, derived from all matched
@@ -58,7 +61,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * when this style is created. A property retrieved by name should always have
  * only one value in this class (e.g. one-one map). Any methods to retrieve
  * property values from an instance of this class require a valid {@link
- * org.xhtmlrenderer.layout.Context} be given to it, for some cases of property
+ * CssContext} be given to it, for some cases of property
  * resolution. Generally, a programmer will not use this class directly, but
  * will retrieve properties using a {@link org.xhtmlrenderer.context.StyleReference}
  * implementation.
@@ -91,7 +94,7 @@ public class CalculatedStyle {
     /**
      * Cache child styles of this style that have the same cascaded properties
      */
-    private final java.util.HashMap _childCache = new java.util.HashMap();
+    private final Map<String, CalculatedStyle> _childCache = new HashMap<>();
     /*private java.util.HashMap _childCache = new java.util.LinkedHashMap(5, 0.75f, true) {
         private static final int MAX_ENTRIES = 10;
 
@@ -124,9 +127,6 @@ public class CalculatedStyle {
     /**
      * Constructor for the CalculatedStyle object. To get a derived style, use
      * the Styler objects getDerivedStyle which will cache styles
-     *
-     * @param parent  PARAM
-     * @param matched PARAM
      */
     private CalculatedStyle(CalculatedStyle parent, CascadedStyle matched) {
         this();
@@ -176,7 +176,7 @@ public class CalculatedStyle {
      */
     public synchronized CalculatedStyle deriveStyle(CascadedStyle matched) {
         String fingerprint = matched.getFingerprint();
-        CalculatedStyle cs = (CalculatedStyle) _childCache.get(fingerprint);
+        CalculatedStyle cs = _childCache.get(fingerprint);
 
         if (cs == null) {
             cs = new CalculatedStyle(this, matched);
@@ -187,16 +187,14 @@ public class CalculatedStyle {
 
     public int countAssigned() {
         int c = 0;
-        for (int i = 0; i < _derivedValuesById.length; i++) {
-            if (_derivedValuesById[i] != null) c++;
+        for (FSDerivedValue fsDerivedValue : _derivedValuesById) {
+            if (fsDerivedValue != null) c++;
         }
         return c;
     }
 
     /**
-     * Returns the parent style.
-     *
-     * @return Returns the parent style
+     * Returns the parent style
      */
     public CalculatedStyle getParent() {
         return _parent;
@@ -240,7 +238,7 @@ public class CalculatedStyle {
 
     // TODO: doc
     public boolean hasAbsoluteUnit(CSSName cssName) {
-        boolean isAbs = false;
+        boolean isAbs;
         try {
             isAbs = valueByName(cssName).hasAbsoluteUnit();
         } catch (Exception e) {
@@ -254,10 +252,6 @@ public class CalculatedStyle {
 
     /**
      * Gets the ident attribute of the CalculatedStyle object
-     *
-     * @param cssName PARAM
-     * @param val     PARAM
-     * @return The ident value
      */
     public boolean isIdent(CSSName cssName, IdentValue val) {
         return valueByName(cssName) == val;
@@ -265,9 +259,6 @@ public class CalculatedStyle {
 
     /**
      * Gets the ident attribute of the CalculatedStyle object
-     *
-     * @param cssName PARAM
-     * @return The ident value
      */
     public IdentValue getIdent(CSSName cssName) {
         return valueByName(cssName).asIdentValue();
@@ -319,14 +310,14 @@ public class CalculatedStyle {
             }
         } else {
             ListValue valueList = (ListValue)value;
-            List values = valueList.getValues();
-            boolean firstAuto = ((PropertyValue)values.get(0)).getIdentValue() == IdentValue.AUTO;
-            boolean secondAuto = ((PropertyValue)values.get(1)).getIdentValue() == IdentValue.AUTO;
+            List<PropertyValue> values = valueList.getValues();
+            boolean firstAuto = values.get(0).getIdentValue() == IdentValue.AUTO;
+            boolean secondAuto = values.get(1).getIdentValue() == IdentValue.AUTO;
 
             if (firstAuto && secondAuto) {
                 return new BackgroundSize(false, false, true);
             } else {
-                return new BackgroundSize((PropertyValue)values.get(0), (PropertyValue)values.get(1));
+                return new BackgroundSize(values.get(0), values.get(1));
             }
         }
 
@@ -335,13 +326,12 @@ public class CalculatedStyle {
 
     public BackgroundPosition getBackgroundPosition() {
         ListValue result = (ListValue) valueByName(CSSName.BACKGROUND_POSITION);
-        List values = result.getValues();
+        List<PropertyValue> values = result.getValues();
 
-        return new BackgroundPosition(
-                (PropertyValue) values.get(0), (PropertyValue) values.get(1));
+        return new BackgroundPosition(values.get(0), values.get(1));
     }
 
-    public List getCounterReset() {
+    public List<CounterData> getCounterReset() {
         FSDerivedValue value = valueByName(CSSName.COUNTER_RESET);
 
         if (value == IdentValue.NONE) {
@@ -351,7 +341,7 @@ public class CalculatedStyle {
         }
     }
 
-    public List getCounterIncrement() {
+    public List<CounterData> getCounterIncrement() {
         FSDerivedValue value = valueByName(CSSName.COUNTER_INCREMENT);
 
         if (value == IdentValue.NONE) {
@@ -365,8 +355,7 @@ public class CalculatedStyle {
         if (! _bordersAllowed) {
             return BorderPropertySet.EMPTY_BORDER;
         } else {
-            BorderPropertySet b = getBorderProperty(this, ctx);
-            return b;
+            return getBorderProperty(this, ctx);
         }
     }
 
@@ -592,17 +581,15 @@ public class CalculatedStyle {
      * either of these assumptions. When this method exits, the derived property
      * list for this class will be populated with the properties defined for
      * this element, properly cascaded.</p>
-     *
-     * @param matched PARAM
      */
     private void derive(CascadedStyle matched) {
         if (matched == null) {
             return;
         }//nothing to derive
 
-        Iterator mProps = matched.getCascadedPropertyDeclarations();
+        Iterator<PropertyDeclaration> mProps = matched.getCascadedPropertyDeclarations();
         while (mProps.hasNext()) {
-            PropertyDeclaration pd = (PropertyDeclaration) mProps.next();
+            PropertyDeclaration pd = mProps.next();
             FSDerivedValue val = deriveValue(pd.getCSSName(), pd.getValue());
             _derivedValuesById[pd.getCSSName().FS_ID] = val;
         }
@@ -613,7 +600,7 @@ public class CalculatedStyle {
     }
 
     private String genStyleKey() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < _derivedValuesById.length; i++) {
             CSSName name = CSSName.getByID(i);
             FSDerivedValue val = _derivedValuesById[i];
@@ -748,7 +735,7 @@ public class CalculatedStyle {
             case BOTTOM:
                 return (int) (margin.bottom() + border.bottom() + padding.bottom());
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unsupported margin calculation style: " + which);
         }
     }
 
@@ -773,7 +760,7 @@ public class CalculatedStyle {
     public IdentValue getWordWrap() {
         return getIdent(CSSName.WORD_WRAP);
     }
-    
+
     public IdentValue getHyphens() {
         return getIdent(CSSName.HYPHENS);
     }
@@ -990,9 +977,7 @@ public class CalculatedStyle {
     public String getRunningName() {
         FunctionValue value = (FunctionValue)valueByName(CSSName.POSITION);
         FSFunction function = value.getFunction();
-
-        PropertyValue param = (PropertyValue)function.getParameters().get(0);
-
+        PropertyValue param = function.getParameters().get(0);
         return param.getStringValue();
     }
 
@@ -1163,16 +1148,16 @@ public class CalculatedStyle {
                 isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE));
     }
 
-    public List getTextDecorations() {
+    public List<FSDerivedValue> getTextDecorations() {
         FSDerivedValue value = valueByName(CSSName.TEXT_DECORATION);
         if (value == IdentValue.NONE) {
             return null;
         } else {
-            List idents = ((ListValue) value).getValues();
-            List result = new ArrayList(idents.size());
-            for (Iterator i = idents.iterator(); i.hasNext();) {
+            List<PropertyValue> idents = ((ListValue) value).getValues();
+            List<FSDerivedValue> result = new ArrayList<>(idents.size());
+            for (PropertyValue ident : idents) {
                 result.add(DerivedValueFactory.newDerivedValue(
-                        this, CSSName.TEXT_DECORATION, (PropertyValue) i.next()));
+                        this, CSSName.TEXT_DECORATION, ident));
             }
             return result;
         }
@@ -1252,14 +1237,14 @@ public class CalculatedStyle {
         return isInlineBlock() || isFloated() || isAbsolute() || isFixed();
     }
 
-}// end class
+}
 
 /*
  * $Id$
  *
  * $Log$
  * Revision 1.110  2010/01/12 14:33:27  peterbrant
- * Ignore auto margins when calculating table min/max width.  Also, when deciding whether or not to proceed with the auto margin calculation for a table,  make sure we compare consistently with how the table min width is actually set.
+ * Ignore auto margins when calculating table min/max width.  Also, when deciding whether to proceed with the auto margin calculation for a table,  make sure we compare consistently with how the table min width is actually set.
  *
  * Revision 1.109  2009/11/08 23:52:48  peterbrant
  * Treat percentage widths as auto when calculating min/max widths
@@ -1286,7 +1271,7 @@ public class CalculatedStyle {
  * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
  *
  * Revision 1.101  2008/07/14 11:12:37  peterbrant
- * Fix two bugs when -fs-table-paginate is paginate.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
+ * Fix two bugs when -fs-table-paginate is paginated.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
  *
  * Revision 1.100  2007/08/29 22:18:19  peterbrant
  * Experiment with text justification
@@ -1354,7 +1339,7 @@ public class CalculatedStyle {
  * Implement complete support for background-position and background-attachment
  *
  * Revision 1.83  2007/02/23 16:54:38  peterbrant
- * Allow special ident -fs-intial-value to reset a property value to its initial value (used by border related shorthand properties as 'color' won't be known at property construction time)
+ * Allow special ident -fs-initial-value to reset a property value to its initial value (used by border related shorthand properties as 'color' won't be known at property construction time)
  *
  * Revision 1.82  2007/02/22 18:21:20  peterbrant
  * Add support for overflow: visible/hidden
@@ -1406,7 +1391,7 @@ public class CalculatedStyle {
  * Return value from abs value check never assigned!
  *
  * Revision 1.66  2006/05/08 21:24:24  pdoubleya
- * Log, don't throw exception, if we check for an absolute unit but it doesn't make sense to do so (IdentValue.hasAbsoluteUnit()).
+ * Log, don't throw exception, if we check for an absolute unit, but it doesn't make sense to do so (IdentValue.hasAbsoluteUnit()).
  *
  * Revision 1.65  2006/05/08 20:56:09  pdoubleya
  * Clean exception handling for case where assigned property value is not understood as a valid value; use initial value instead.
@@ -1493,7 +1478,7 @@ public class CalculatedStyle {
  * set  initial capacity for cached rects.
  *
  * Revision 1.37  2005/10/21 18:10:50  pdoubleya
- * Support for cachable borders. Still buggy on some pages, but getting there.
+ * Support for cacheable borders. Still buggy on some pages, but getting there.
  *
  * Revision 1.36  2005/10/21 13:02:20  pdoubleya
  * Changed to cache padding in RectPropertySet.
@@ -1505,7 +1490,7 @@ public class CalculatedStyle {
  * Removed use of MarginPropertySet; using RectPS  now.
  *
  * Revision 1.33  2005/10/21 12:01:13  pdoubleya
- * Added cachable rect property for margin, cleanup minor in styling.
+ * Added cacheable rect property for margin, cleanup minor in styling.
  *
  * Revision 1.32  2005/10/21 10:02:54  pdoubleya
  * Cleanup, removed unneeded vars, reorg code in CS.
@@ -1526,7 +1511,7 @@ public class CalculatedStyle {
  * Refactored the css package to allow a clean separation from the core.
  *
  * Revision 1.26  2005/06/21 08:23:13  pdoubleya
- * Added specific list and count of primitive, non shorthand properties, and CalculatedStyle now sizes array to this size.
+ * Added specific list and count of primitive, non-shorthand properties, and CalculatedStyle now sizes array to this size.
  *
  * Revision 1.25  2005/06/16 07:24:46  tobega
  * Fixed background image bug.
@@ -1553,7 +1538,7 @@ public class CalculatedStyle {
  * Caching fonts in CalculatedStyle
  *
  * Revision 1.19  2005/05/08 15:37:28  tobega
- * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ * Fixed up style caching, so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
  *
  * Revision 1.18  2005/05/08 14:51:21  tobega
  * Removed the need for the Styler

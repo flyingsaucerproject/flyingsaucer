@@ -36,7 +36,7 @@ import org.xhtmlrenderer.css.parser.FSColor;
  * make meaningless calls like asColor(CSSName.HEIGHT). DerivedValue
  * and IdentValue, the two implementations of this interface, just
  * throw a RuntimeException if they can't handle the call.
- * 
+ *
  * <b>NOTE:</b> When resolving proportional property values, implementations of this
  * interface must be prepared to handle calls with different base values.
  */

@@ -19,16 +19,6 @@
  */
 package org.xhtmlrenderer.demo.browser.swt;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import javax.xml.transform.sax.SAXSource;
 import org.eclipse.swt.graphics.Device;
 import org.xhtmlrenderer.demo.browser.DemoMarker;
 import org.xhtmlrenderer.demo.browser.DirectoryLister;
@@ -43,10 +33,21 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
+import javax.xml.transform.sax.SAXSource;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+
 public class BrowserUserAgent extends NaiveUserAgent {
 
-    private DemosNavigation _demos;
-    private History _history;
+    private final DemosNavigation _demos;
+    private final History _history;
 
     public BrowserUserAgent(Device device) {
         super(device);
@@ -54,6 +55,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
         _history = new History();
     }
 
+    @Override
     public String resolveURI(String uri) {
         final String burl = getBaseURL();
 
@@ -122,6 +124,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
     }
 
 
+    @Override
     public void setBaseURL(String url) {
         super.setBaseURL(resolveURI(url));
     }
@@ -145,12 +148,13 @@ public class BrowserUserAgent extends NaiveUserAgent {
         return uri;
     }
 
+    @Override
     public XMLResource getXMLResource(String uri) {
         uri = resolveFullURI(uri);
         if (uri != null && uri.startsWith("file:")) {
             File file;
             try {
-                StringBuffer sbURI = GeneralUtil.htmlEscapeSpace(uri);
+                StringBuilder sbURI = GeneralUtil.htmlEscapeSpace(uri);
                 int i = sbURI.indexOf("#");
                 if (i >= 0) {
                     // delete fragment portion
@@ -164,8 +168,8 @@ public class BrowserUserAgent extends NaiveUserAgent {
                 return getNotFoundDocument(uri);
             }
             if (file.isDirectory()) {
-                String dirlist = DirectoryLister.list(file);
-                return XMLResource.load(new StringReader(dirlist));
+                String dirList = DirectoryLister.list(file);
+                return XMLResource.load(new StringReader(dirList));
             }
         }
         XMLResource xr = null;
@@ -175,7 +179,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
             uc = new URL(uri).openConnection();
             uc.connect();
             String contentType = uc.getContentType();
-            // Maybe should popup a choice when content/unknown!
+            // Maybe should pop up a choice when content/unknown!
             if (contentType.equals("text/plain")
                     || contentType.equals("content/unknown")) {
                 inputStream = uc.getInputStream();
@@ -209,11 +213,13 @@ public class BrowserUserAgent extends NaiveUserAgent {
         return xr;
     }
 
+    @Override
     public CSSResource getCSSResource(String uri) {
         uri = resolveFullURI(uri);
         return super.getCSSResource(uri);
     }
 
+    @Override
     public ImageResource getImageResource(String uri) {
         uri = resolveFullURI(uri);
         return super.getImageResource(uri);
@@ -222,9 +228,9 @@ public class BrowserUserAgent extends NaiveUserAgent {
     /**
      * Used internally when a document can't be loaded--returns XHTML as an
      * XMLResource indicating that fact.
-     * 
+     *
      * @param uri The URI which could not be loaded.
-     * 
+     *
      * @return An XMLResource containing XML which about the failure.
      */
     private XMLResource getNotFoundDocument(String uri) {
@@ -236,6 +242,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
         return xr;
     }
 
+    @Override
     public boolean isVisited(String uri) {
         return _history.contains(uri);
     }

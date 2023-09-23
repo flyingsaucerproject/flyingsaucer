@@ -19,9 +19,6 @@
  */
 package org.xhtmlrenderer.simple.xhtml.swt;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,10 +33,16 @@ import org.xhtmlrenderer.simple.xhtml.FormControlAdapter;
 import org.xhtmlrenderer.simple.xhtml.controls.SelectControl;
 import org.xhtmlrenderer.swt.BasicRenderer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+
+import static java.util.Objects.requireNonNull;
+
 public class SWTSelectControl extends SWTXhtmlControl {
 
     private boolean _combo;
-    private java.util.List _values, _labels;
+    private java.util.List<String> _values;
 
     public SWTSelectControl(FormControl control, BasicRenderer parent,
             LayoutContext c, CalculatedStyle style, UserAgentCallback uac) {
@@ -50,17 +53,16 @@ public class SWTSelectControl extends SWTXhtmlControl {
             BasicRenderer parent, LayoutContext c, CalculatedStyle style,
             UserAgentCallback uac) {
         final SelectControl sc = (SelectControl) control;
-        Map options = sc.getOptions();
-        _values = new ArrayList(options.keySet());
-        _labels = new ArrayList(options.values());
+        Map<String, String> options = sc.getOptions();
+        _values = new ArrayList<>(options.keySet());
+        java.util.List<String> _labels = new ArrayList<>(options.values());
 
         if (sc.getSize() > 1 || sc.isMultiple()) {
             _combo = false;
 
             final List list = new List(parent, SWT.BORDER | SWT.V_SCROLL
                     | (sc.isMultiple() ? SWT.MULTI : SWT.SINGLE));
-            list.setItems((String[]) _labels
-                .toArray(new String[_labels.size()]));
+            list.setItems(_labels.toArray(new String[0]));
 
             list.addSelectionListener(new SelectionAdapter() {
                 public void widgetSelected(SelectionEvent e) {
@@ -68,21 +70,21 @@ public class SWTSelectControl extends SWTXhtmlControl {
                         int[] indices = list.getSelectionIndices();
                         String[] values = new String[indices.length];
                         for (int i = 0; i < indices.length; i++) {
-                            values[i] = (String) _values.get(indices[i]);
+                            values[i] = _values.get(indices[i]);
                         }
                         sc.setMultipleValues(values);
                     } else {
-                        sc.setValue((String) _values.get(list
-                            .getSelectionIndex()));
+                        sc.setValue(_values.get(list.getSelectionIndex()));
                     }
                 }
             });
 
             sc.addFormControlListener(new FormControlAdapter() {
+                @Override
                 public void changed(FormControl control) {
                     if (sc.isSuccessful()) {
                         if (sc.isMultiple()) {
-                            String[] values = sc.getMultipleValues();
+                            String[] values = requireNonNull(sc.getMultipleValues());
                             int[] indices = new int[values.length];
                             for (int i = 0; i < values.length; i++) {
                                 indices[i] = _values.indexOf(values[i]);
@@ -96,6 +98,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
                     }
                 }
 
+                @Override
                 public void successful(FormControl control) {
                     changed(control);
                 }
@@ -103,7 +106,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
 
             if (sc.isSuccessful()) {
                 if (sc.isMultiple()) {
-                    String[] values = sc.getMultipleValues();
+                    String[] values = requireNonNull(sc.getMultipleValues());
                     int[] indices = new int[values.length];
                     for (int i = 0; i < values.length; i++) {
                         indices[i] = _values.indexOf(values[i]);
@@ -119,8 +122,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
             _combo = true;
 
             final Combo combo = new Combo(parent, SWT.DROP_DOWN | SWT.READ_ONLY);
-            combo.setItems((String[]) _labels
-                .toArray(new String[_labels.size()]));
+            combo.setItems(_labels.toArray(new String[0]));
 
             combo.addSelectionListener(new SelectionAdapter() {
                 public void widgetSelected(SelectionEvent e) {
@@ -128,12 +130,13 @@ public class SWTSelectControl extends SWTXhtmlControl {
                     if (selection < 0) {
                         sc.setSuccessful(false);
                     } else {
-                        sc.setValue((String) _values.get(selection));
+                        sc.setValue(_values.get(selection));
                     }
                 }
             });
 
             sc.addFormControlListener(new FormControlAdapter() {
+                @Override
                 public void changed(FormControl control) {
                     if (sc.isSuccessful()) {
                         combo.select(_values.indexOf(sc.getValue()));
@@ -142,6 +145,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
                     }
                 }
 
+                @Override
                 public void successful(FormControl control) {
                     changed(control);
                 }
@@ -165,9 +169,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
             String[] oldSelection = list.getSelection();
             String[] oldItems = list.getItems();
             String[] items = new String[sc.getSize()];
-            for (int i = 0; i < items.length; i++) {
-                items[i] = "Gg";
-            }
+            Arrays.fill(items, "Gg");
             list.setItems(items);
             list.pack();
             int height = list.getSize().y;

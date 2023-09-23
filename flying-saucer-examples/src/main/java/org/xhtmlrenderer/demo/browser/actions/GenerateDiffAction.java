@@ -25,11 +25,7 @@ public class GenerateDiffAction extends AbstractAction {
         this.root = root;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param evt Description of the Parameter
-     */
+    @Override
     public void actionPerformed(ActionEvent evt) {
         try {
 

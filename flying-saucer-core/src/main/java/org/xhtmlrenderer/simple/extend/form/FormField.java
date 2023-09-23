@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import javax.swing.JComponent;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -36,49 +34,54 @@ import org.xhtmlrenderer.simple.extend.URLUTF8Encoder;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.swing.AWTFSFont;
 
+import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Collections.emptyList;
 
 public abstract class FormField {
-    private XhtmlForm _parentForm;
-    private Element _element;
+    private final XhtmlForm _parentForm;
+    private final Element _element;
     private FormFieldState _originalState;
     private JComponent _component;
-    private LayoutContext context;
-    private BlockBox box;
+    private final LayoutContext context;
+    private final BlockBox box;
     protected Integer intrinsicWidth;
     protected Integer intrinsicHeight;
     
-
-    public FormField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    protected FormField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         _element = e;
         _parentForm = form;
         this.context = context;
         this.box = box;
-        
+
         initialize();
     }
 
     protected Element getElement() {
         return _element;
     }
-    
+
     public JComponent getComponent() {
         return _component;
     }
-    
+
     public XhtmlForm getParentForm() {
         return _parentForm;
     }
 
     public Dimension getIntrinsicSize(){
 
-        int width = intrinsicWidth == null ? 0 : intrinsicWidth.intValue();
-        int height = intrinsicHeight == null ? 0 : intrinsicHeight.intValue();
+        int width = intrinsicWidth == null ? 0 : intrinsicWidth;
+        int height = intrinsicHeight == null ? 0 : intrinsicHeight;
 
         return new Dimension(width, height);
     }
 
-    
+
     public void reset() {
         applyOriginalState();
     }
@@ -94,7 +97,7 @@ public abstract class FormField {
 
         return _originalState;
     }
-    
+
     protected boolean hasAttribute(String attributeName) {
         return getElement().getAttribute(attributeName).length() > 0;
     }
@@ -102,15 +105,15 @@ public abstract class FormField {
     protected String getAttribute(String attributeName) {
         return getElement().getAttribute(attributeName);
     }
-    
+
     private void initialize() {
         _component = create();
-        
+
         if (_component != null) {
             if (intrinsicWidth == null)
-                intrinsicWidth = new Integer(_component.getPreferredSize().width);
+                intrinsicWidth = _component.getPreferredSize().width;
             if (intrinsicHeight == null)
-                intrinsicHeight = new Integer(_component.getPreferredSize().height);
+                intrinsicHeight = _component.getPreferredSize().height;
 
             _component.setSize(getIntrinsicSize());
 
@@ -128,17 +131,17 @@ public abstract class FormField {
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromString("");
     }
-    
+
     protected void applyOriginalState() {
         // Do nothing
     }
-    
+
     /**
      * Returns true if the value of the current FormField should be
      * sent along with the current submission.  This is used so that
      * only the value of the submit button that is used to trigger the
      * form's submission is sent.
-     * 
+     *
      * @param source The JComponent that caused the submission
      * @return true if it should
      */
@@ -146,23 +149,21 @@ public abstract class FormField {
         return true;
     }
 
-    // These two methods are temporary but I am using them to clean up
+    // These two methods are temporary, but I am using them to clean up
     // the code in XhtmlForm
-    public String[] getFormDataStrings() {
+    public Collection<String> getFormDataStrings() {
         // Fields MUST have at least a name attribute to get sent.  The attr
         // can be empty, or just white space, but it must be present
         if (!hasAttribute("name")) {
-            return new String[] {};
+            return emptyList();
         }
 
         String name = getAttribute("name");
         String[] values = getFieldValues();
 
-        for (int i = 0; i < values.length; i++) {
-            values[i] = URLUTF8Encoder.encode(name) + "=" + URLUTF8Encoder.encode(values[i]);
-        }
-
-        return values;
+        return Stream.of(values)
+                .map(rawValue -> URLUTF8Encoder.encode(name) + "=" + URLUTF8Encoder.encode(rawValue))
+                .collect(Collectors.toList());
     }
 
     protected abstract String[] getFieldValues();
@@ -219,7 +220,7 @@ public abstract class FormField {
     protected static Integer getLengthValue(CalculatedStyle style, CSSName cssName) {
         FSDerivedValue widthValue = style.valueByName(cssName);
         if (widthValue instanceof LengthValue) {
-            return new Integer((int)widthValue.asFloat());
+            return (int) widthValue.asFloat();
         }
 
         return null;

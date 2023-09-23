@@ -21,12 +21,15 @@ package org.xhtmlrenderer.simple.xhtml;
 
 public abstract class FormControlAdapter implements FormControlListener {
 
+    @Override
     public void changed(FormControl control) {
     }
 
+    @Override
     public void enabled(FormControl control) {
     }
 
+    @Override
     public void successful(FormControl control) {
     }
 

@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
-import java.util.Iterator;
-
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
@@ -35,6 +33,7 @@ public class FontFaceRule implements RulesetContainer {
         _origin = origin;
     }
 
+    @Override
     public void addContent(Ruleset ruleset) {
         if (_ruleset != null) {
             throw new XRRuntimeException("Ruleset can only be set once");
@@ -42,6 +41,7 @@ public class FontFaceRule implements RulesetContainer {
         _ruleset = ruleset;
     }
 
+    @Override
     public int getOrigin() {
         return _origin;
     }
@@ -60,8 +60,7 @@ public class FontFaceRule implements RulesetContainer {
     }
 
     public boolean hasFontFamily() {
-        for (Iterator i = _ruleset.getPropertyDeclarations().iterator(); i.hasNext(); ) {
-            PropertyDeclaration decl = (PropertyDeclaration)i.next();
+        for (PropertyDeclaration decl : _ruleset.getPropertyDeclarations()) {
             if (decl.getPropertyName().equals("font-family")) {
                 return true;
             }
@@ -71,8 +70,7 @@ public class FontFaceRule implements RulesetContainer {
     }
 
     public boolean hasFontWeight() {
-        for (Iterator i = _ruleset.getPropertyDeclarations().iterator(); i.hasNext(); ) {
-            PropertyDeclaration decl = (PropertyDeclaration)i.next();
+        for (PropertyDeclaration decl : _ruleset.getPropertyDeclarations()) {
             if (decl.getPropertyName().equals("font-weight")) {
                 return true;
             }
@@ -82,8 +80,7 @@ public class FontFaceRule implements RulesetContainer {
     }
 
     public boolean hasFontStyle() {
-        for (Iterator i = _ruleset.getPropertyDeclarations().iterator(); i.hasNext(); ) {
-            PropertyDeclaration decl = (PropertyDeclaration)i.next();
+        for (PropertyDeclaration decl : _ruleset.getPropertyDeclarations()) {
             if (decl.getPropertyName().equals("font-style")) {
                 return true;
             }

@@ -19,12 +19,11 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import org.xhtmlrenderer.css.newmatch.Selector;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-
-import org.xhtmlrenderer.css.newmatch.Selector;
 
 
 /**
@@ -32,15 +31,12 @@ import org.xhtmlrenderer.css.newmatch.Selector;
  * @author Patrick Wright
  */
 public class Ruleset {
-    private int _origin;
-    private java.util.List _props;
-
-    private List _fsSelectors = new ArrayList();
+    private final int _origin;
+    private final List<PropertyDeclaration> _props = new ArrayList<>();
+    private final List<Selector> _fsSelectors = new ArrayList<>();
 
     public Ruleset(int orig) {
         _origin = orig;
-        _props = new LinkedList();
-        _fsSelectors = new LinkedList();
     }
 
     /**
@@ -49,31 +45,31 @@ public class Ruleset {
      *
      * @return The propertyDeclarations value
      */
-    public List getPropertyDeclarations() {
+    public List<PropertyDeclaration> getPropertyDeclarations() {
         return Collections.unmodifiableList(_props);
     }
 
     public void addProperty(PropertyDeclaration decl) {
         _props.add(decl);
     }
-    
-    public void addAllProperties(List props) {
+
+    public void addAllProperties(List<PropertyDeclaration> props) {
         _props.addAll(props);
     }
-    
+
     public void addFSSelector(Selector selector) {
         _fsSelectors.add(selector);
     }
-    
-    public List getFSSelectors() {
+
+    public List<Selector> getFSSelectors() {
         return _fsSelectors;
     }
-    
+
     public int getOrigin() {
         return _origin;
     }
 
-}// end class
+}
 
 /*
  * $Id$

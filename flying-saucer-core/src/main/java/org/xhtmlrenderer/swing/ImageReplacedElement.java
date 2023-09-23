@@ -33,7 +33,7 @@ import org.xhtmlrenderer.util.ImageUtil;
  */
 public class ImageReplacedElement implements ReplacedElement {
     protected Image _image;
-    
+
     private Point _location = new Point(0, 0);
 
     protected ImageReplacedElement() {
@@ -50,22 +50,22 @@ public class ImageReplacedElement implements ReplacedElement {
      * @param targetHeight The height we'd like the image to have, in pixels.
      */
     public ImageReplacedElement(Image image, int targetWidth, int targetHeight) {
-		if (targetWidth > 0 || targetHeight > 0) {
+        if (targetWidth > 0 || targetHeight > 0) {
             int w = image.getWidth(null);
             int h = image.getHeight(null);
 
-		    int newW = targetWidth;
-		    int newH = targetHeight;
+            int newW = targetWidth;
+            int newH = targetHeight;
 
-		    if (newW == -1) {
-		        newW = (int)(w * ((double)newH / h));
-		    }
+            if (newW == -1) {
+                newW = (int)(w * ((double)newH / h));
+            }
 
-	        if (newH == -1) {
-	            newH = (int)(h * ((double)newW / w));
-	        }
+            if (newH == -1) {
+                newH = (int)(h * ((double)newW / w));
+            }
 
-			if (w != newW || h != newH) {
+            if (w != newW || h != newH) {
                 if (image instanceof BufferedImage) {
                     image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
                 } else {
@@ -120,11 +120,11 @@ public class ImageReplacedElement implements ReplacedElement {
         return _image;
     }
 
-	public int getBaseline() {
-		return 0;
-	}
+    public int getBaseline() {
+        return 0;
+    }
 
-	public boolean hasBaseline() {
-		return false;
-	}
+    public boolean hasBaseline() {
+        return false;
+    }
 }

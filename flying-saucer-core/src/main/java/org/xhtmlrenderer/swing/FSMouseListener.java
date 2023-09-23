@@ -55,7 +55,7 @@ public interface FSMouseListener {
      * @param box the box where the mouse is currently located
      */
     void onMouseUp(BasicPanel panel, Box box);
-    
+
     /**
      * Sent when the mouse button is pressed.
      *

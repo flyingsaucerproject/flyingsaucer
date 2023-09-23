@@ -23,44 +23,46 @@ import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BorderPainter;
 
+import javax.annotation.Nonnull;
+
 /**
  * A class that contains a single border side of a collapsed cell.  Collapsed
  * border sides are painted in order of priority (so for example, wider borders
  * always paint over narrower borders regardless of the relative tree order of
- * the cells in question). 
+ * the cells in question).
  */
-public class CollapsedBorderSide implements Comparable {
+public class CollapsedBorderSide implements Comparable<CollapsedBorderSide> {
     private TableCellBox _cell;
     private int _side;
-    
+
     public CollapsedBorderSide(TableCellBox cell, int side) {
         _side = side;
         _cell = cell;
     }
-    
+
     public TableCellBox getCell() {
         return _cell;
     }
-    
+
     public void setCell(TableCellBox cell) {
         _cell = cell;
     }
-    
+
     public int getSide() {
         return _side;
     }
-    
+
     public void setSide(int side) {
         _side = side;
     }
-    
-    public int compareTo(Object obj) {
+
+    @Override
+    public int compareTo(@Nonnull CollapsedBorderSide c2) {
         CollapsedBorderSide c1 = this;
-        CollapsedBorderSide c2 = (CollapsedBorderSide)obj;
-        
+
         CollapsedBorderValue v1 = null;
         CollapsedBorderValue v2 = null;
-        
+
         switch (c1._side) {
             case BorderPainter.TOP:
                 v1 = c1._cell.getCollapsedBorderTop();
@@ -73,9 +75,9 @@ public class CollapsedBorderSide implements Comparable {
                 break;
             case BorderPainter.LEFT:
                 v1 = c1._cell.getCollapsedBorderLeft();
-                break;                
+                break;
         }
-        
+
         switch (c2._side) {
             case BorderPainter.TOP:
                 v2 = c2._cell.getCollapsedBorderTop();
@@ -88,11 +90,11 @@ public class CollapsedBorderSide implements Comparable {
                 break;
             case BorderPainter.LEFT:
                 v2 = c2._cell.getCollapsedBorderLeft();
-                break;                
+                break;
         }
-        
+
         CollapsedBorderValue result = TableCellBox.compareBorders(v1, v2, true);
-        
+
         if (result == null) {
             return 0;
         } else {

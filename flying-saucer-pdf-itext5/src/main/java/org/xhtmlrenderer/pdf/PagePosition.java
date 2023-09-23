@@ -26,43 +26,43 @@ public class PagePosition {
     private float _width;
     private float _y;
     private float _height;
-    
+
     public int getPageNo() {
         return _pageNo;
     }
-    
+
     public void setPageNo(int pageNo) {
         _pageNo = pageNo;
     }
-    
+
     public float getX() {
         return _x;
     }
-    
+
     public void setX(float x) {
         _x = x;
     }
-    
+
     public float getWidth() {
         return _width;
     }
-    
+
     public void setWidth(float width) {
         _width = width;
     }
-    
+
     public float getY() {
         return _y;
     }
-    
+
     public void setY(float y) {
         _y = y;
     }
-    
+
     public float getHeight() {
         return _height;
     }
-    
+
     public void setHeight(float height) {
         _height = height;
     }

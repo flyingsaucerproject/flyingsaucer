@@ -23,17 +23,17 @@ package org.xhtmlrenderer.layout.breaker;
  */
 public class BreakAnywhereLineBreakStrategy implements BreakPointsProvider {
 
-	private String currentString;
-	int position = 0;
+    private String currentString;
+    int position = 0;
 
-	public BreakAnywhereLineBreakStrategy(String currentString) {
-		this.currentString = currentString;
-	}
+    public BreakAnywhereLineBreakStrategy(String currentString) {
+        this.currentString = currentString;
+    }
 
-	@Override
-	public BreakPoint next() {
-		if (position + 1 > currentString.length()) return BreakPoint.getDonePoint();
-		return new BreakPoint(position++);
-	}
+    @Override
+    public BreakPoint next() {
+        if (position + 1 > currentString.length()) return BreakPoint.getDonePoint();
+        return new BreakPoint(position++);
+    }
 
 }

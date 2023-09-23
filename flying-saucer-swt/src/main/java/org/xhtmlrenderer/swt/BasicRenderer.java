@@ -19,32 +19,34 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.awt.Dimension;
-import java.awt.Shape;
-import java.awt.geom.Area;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.*;
+import org.xhtmlrenderer.extend.FSCanvas;
+import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.ReplacedElementFactory;
+import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -61,23 +63,33 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
+import java.awt.*;
+import java.awt.geom.Area;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+
 /**
  * Renders XML+CSS using SWT in a widget (a Composite). Scrollbars are handled
  * automatically.
- * 
+ *
  * @author Vianney le Clément
  */
 public class BasicRenderer extends Canvas implements PaintListener, UserInterface, FSCanvas {
     private static final int PAGE_PAINTING_CLEARANCE = 10;
 
-    private SharedContext _sharedContext;
+    private final SharedContext _sharedContext;
 
     // TODO layout_context should not be stored!
     private LayoutContext _layout_context;
 
-    private Image _layout_image = null; // Image and GC used in layout_context
+    private Image _layout_image; // Image and GC used in layout_context
 
-    private GC _layout_gc = null;
+    private GC _layout_gc;
 
     private float _fontScalingFactor = 1.2F;
 
@@ -85,25 +97,25 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     private float _maxFontScale = 3.0F;
 
-    private Document _doc = null;
+    private Document _doc;
 
-    private BlockBox _rootBox = null;
+    private BlockBox _rootBox;
 
-    private Set _documentListeners = new HashSet();
+    private final Set<DocumentListener> _documentListeners = new HashSet<>();
 
-    private boolean _needRelayout = false;
+    private boolean _needRelayout;
 
-    private boolean _hasFixedContent = false;
+    private boolean _hasFixedContent;
 
-    private boolean _noResize = false; // temp. deactivate resize code
+    private boolean _noResize; // temp. deactivate resize code
 
     private Point _origin = new Point(0, 0);
 
     private Point _drawnSize = new Point(0, 0);
 
-    private Image _offscreen = null;
+    private Image _offscreen;
 
-    private SpecialRedraw _specialRedraw = null;
+    private SpecialRedraw _specialRedraw;
 
     private static int checkStyle(int style) {
         final int mask = SWT.BORDER;
@@ -117,7 +129,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Construct the BasicRenderer
-     * 
+     *
      * @param parent
      * @param uac
      */
@@ -131,50 +143,45 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
                 new SWTReplacedElementFactory(), new SWTTextRenderer(), getDisplay().getDPI().y);
         _sharedContext.setCanvas(this);
 
-        getHorizontalBar().addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ScrollBar bar = (ScrollBar) event.widget;
-                int hSelection = bar.getSelection();
-                scrollTo(new Point(hSelection, _origin.y));
-            }
+        getHorizontalBar().addListener(SWT.Selection, event -> {
+            ScrollBar bar = (ScrollBar) event.widget;
+            int hSelection = bar.getSelection();
+            scrollTo(new Point(hSelection, _origin.y));
         });
-        getVerticalBar().addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ScrollBar bar = (ScrollBar) event.widget;
-                int vSelection = bar.getSelection();
-                scrollTo(new Point(_origin.x, vSelection));
-            }
+        getVerticalBar().addListener(SWT.Selection, event -> {
+            ScrollBar bar = (ScrollBar) event.widget;
+            int vSelection = bar.getSelection();
+            scrollTo(new Point(_origin.x, vSelection));
         });
 
         addPaintListener(this);
-        addDisposeListener(new DisposeListener() {
-            public void widgetDisposed(DisposeEvent e) {
-                // dispose used fonts
-                _sharedContext.flushFonts();
-                // clean ReplacedElementFactory
-                ReplacedElementFactory ref = _sharedContext.getReplacedElementFactory();
-                if (ref instanceof SWTReplacedElementFactory) {
-                    ((SWTReplacedElementFactory) ref).clean();
-                }
-                // dispose images when using NaiveUserAgent
-                UserAgentCallback uac = _sharedContext.getUac();
-                if (uac instanceof NaiveUserAgent) {
-                    ((NaiveUserAgent) uac).disposeCache();
-                }
-                // dispose offscreen image
-                if (_offscreen != null) {
-                    _offscreen.dispose();
-                }
-                // dispose temp Image/GC
-                if (_layout_image != null) {
-                    _layout_gc.dispose();
-                    _layout_image.dispose();
-                }
+        addDisposeListener(e -> {
+            // dispose used fonts
+            _sharedContext.flushFonts();
+            // clean ReplacedElementFactory
+            ReplacedElementFactory ref = _sharedContext.getReplacedElementFactory();
+            if (ref instanceof SWTReplacedElementFactory) {
+                ((SWTReplacedElementFactory) ref).clean();
+            }
+            // dispose images when using NaiveUserAgent
+            UserAgentCallback uac1 = _sharedContext.getUac();
+            if (uac1 instanceof NaiveUserAgent) {
+                ((NaiveUserAgent) uac1).disposeCache();
+            }
+            // dispose offscreen image
+            if (_offscreen != null) {
+                _offscreen.dispose();
+            }
+            // dispose temp Image/GC
+            if (_layout_image != null) {
+                _layout_gc.dispose();
+                _layout_image.dispose();
             }
         });
         addListener(SWT.Resize, new Listener() {
-            private Point _previousSize = null;
+            private Point _previousSize;
 
+            @Override
             public void handleEvent(Event event) {
                 Point size = getScreenSize();
                 if (getRootLayer() != null && !_noResize) {
@@ -194,6 +201,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
             }
         });
         addKeyListener(new KeyAdapter() {
+            @Override
             public void keyPressed(KeyEvent e) {
                 Point pt = new Point(_origin.x, _origin.y);
                 switch (e.keyCode) {
@@ -240,29 +248,27 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     }
 
     protected void fireDocumentLoaded() {
-        Iterator it = _documentListeners.iterator();
-        while (it.hasNext()) {
-            ((DocumentListener) it.next()).documentLoaded();
+        for (DocumentListener documentListener : _documentListeners) {
+            documentListener.documentLoaded();
         }
     }
 
     protected void fireOnLayoutException(Throwable t) {
-        Iterator it = _documentListeners.iterator();
-        while (it.hasNext()) {
-            ((DocumentListener) it.next()).onLayoutException(t);
+        for (DocumentListener documentListener : _documentListeners) {
+            documentListener.onLayoutException(t);
         }
     }
 
     protected void fireOnRenderException(Throwable t) {
-        Iterator it = _documentListeners.iterator();
-        while (it.hasNext()) {
-            ((DocumentListener) it.next()).onRenderException(t);
+        for (DocumentListener documentListener : _documentListeners) {
+            documentListener.onRenderException(t);
         }
     }
 
     /**
      * A Renderer has no layout!
      */
+    @Override
     public void setLayout(Layout layout) {
     }
 
@@ -301,7 +307,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Redraw only rect.
-     * 
+     *
      * @param rect
      *            the rectangle
      */
@@ -365,19 +371,23 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return new Point(rect.width, rect.height);
     }
 
+    @Override
     public Point computeSize(int wHint, int hHint, boolean changed) {
         return _drawnSize;
     }
 
+    @Override
     public java.awt.Rectangle getFixedRectangle() {
         Point size = getScreenSize();
         return new java.awt.Rectangle(0, 0, size.x, size.y);
     }
 
+    @Override
     public int getX() {
         return -_origin.x;
     }
 
+    @Override
     public int getY() {
         return -_origin.y;
     }
@@ -415,7 +425,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Set the origin of the view. NOTE: this won't be done immediately.
-     * 
+     *
      * @param pt
      */
     public void setOrigin(Point pt) {
@@ -437,11 +447,11 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         }
 
         Control[] children = getChildren();
-        for (int i = 0; i < children.length; i++) {
-            Point loc = children[i].getLocation();
+        for (Control child : children) {
+            Point loc = child.getLocation();
             loc.x += _origin.x - pt.x;
             loc.y += _origin.y - pt.y;
-            children[i].setLocation(loc);
+            child.setLocation(loc);
         }
 
         _origin = pt;
@@ -450,7 +460,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Update the scrollbars
-     * 
+     *
      * @return true if we need to relayout the whole thing
      */
     protected boolean updateScrollBars() {
@@ -482,7 +492,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Convert an SWT rectangle into an AWT rectangle.
-     * 
+     *
      * @param rect
      * @return
      */
@@ -490,6 +500,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return new java.awt.Rectangle(rect.x, rect.y, rect.width, rect.height);
     }
 
+    @Override
     public void paintControl(PaintEvent e) {
         if (_doc == null) {
             // just draw background
@@ -535,7 +546,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
                 c.getOutputDevice().setClip(new java.awt.Rectangle(0, 0, size.x, size.y));
                 doRender(c);
                 gc.dispose();
-            } else if (_specialRedraw instanceof RedrawTarget) { // targetted
+            } else if (_specialRedraw instanceof RedrawTarget) { // targeted
                 Rectangle target = ((RedrawTarget) _specialRedraw)._target;
                 GC gc = new GC(_offscreen);
                 RenderingContext c = newRenderingContext(gc);
@@ -634,7 +645,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         // update scrollbars
         Dimension intrinsic_size = rootLayer.getPaintingDimension(_layout_context);
         if (_layout_context.isPrint()) {
-            rootLayer.trimEmptyPages(_layout_context, intrinsic_size.height);
+            rootLayer.trimEmptyPages(intrinsic_size.height);
             if (rootLayer.getLastPage() != null) {
                 rootLayer.assignPagePaintingPositions(_layout_context, Layer.PAGED_MODE_SCREEN,
                         PAGE_PAINTING_CLEARANCE);
@@ -686,10 +697,10 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         GC gc = out.getGC();
         Shape working = out.getClip();
 
-        List pages = root.getPages();
+        List<PageBox> pages = root.getPages();
         c.setPageCount(pages.size());
         for (int i = 0; i < pages.size(); i++) {
-            PageBox page = (PageBox) pages.get(i);
+            PageBox page = pages.get(i);
             c.setPage(i, page);
 
             java.awt.Rectangle overall = page.getScreenPaintingBounds(c, PAGE_PAINTING_CLEARANCE);
@@ -836,13 +847,13 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     }
 
     private String getAnchorId(String url) {
-        return url.substring(1, url.length());
+        return url.substring(1);
     }
 
     /**
      * Sets the new current document, where the new document is located
-     * relative, e.g using a relative URL.
-     * 
+     * relative, e.g. using a relative URL.
+     *
      * @param filename
      *            The new document to load
      */
@@ -911,17 +922,15 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return null;
     }
 
-    private Element _hovered_element = null;
+    private Element _hovered_element;
 
-    private Element _active_element = null;
+    private Element _active_element;
 
-    private Element _focus_element = null;
+    private Element _focus_element;
 
+    @Override
     public boolean isHover(org.w3c.dom.Element e) {
-        if (e == _hovered_element) {
-            return true;
-        }
-        return false;
+        return e == _hovered_element;
     }
 
     public Element getHovered_element() {
@@ -932,11 +941,9 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         _hovered_element = hovered_element;
     }
 
+    @Override
     public boolean isActive(org.w3c.dom.Element e) {
-        if (e == _active_element) {
-            return true;
-        }
-        return false;
+        return e == _active_element;
     }
 
     public Element getActive_element() {
@@ -947,11 +954,9 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         _active_element = active_element;
     }
 
+    @Override
     public boolean isFocus(org.w3c.dom.Element e) {
-        if (e == _focus_element) {
-            return true;
-        }
-        return false;
+        return e == _focus_element;
     }
 
     public Element getFocus_element() {
@@ -987,7 +992,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Increments all rendered fonts on the current document by the current
-     * scaling factor for the panel. Scaling applies culmulatively, which means
+     * scaling factor for the panel. Scaling applies cumulatively, which means
      * that multiple calls to this method scale fonts larger and larger by
      * applying the current scaling factor against itself. You can modify the
      * scaling factor by {@link #setFontScalingFactor(float)}, and reset to the
@@ -1002,13 +1007,13 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
      * specified in the document's styling instructions.
      */
     public void resetFontSize() {
-        getSharedContext().getTextRenderer().setFontScale(1f);
+        getSharedContext().getTextRenderer().setFontScale(1.0f);
         reload();
     }
 
     /**
      * Decrements all rendered fonts on the current document by the current
-     * scaling factor for the panel. Scaling applies culmulatively, which means
+     * scaling factor for the panel. Scaling applies cumulatively, which means
      * that multiple calls to this method scale fonts smaller and smaller by
      * applying the current scaling factor against itself. You can modify the
      * scaling factor by {@link #setFontScalingFactor(float)}, and reset to the
@@ -1071,13 +1076,13 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
      */
     private abstract class SpecialRedraw {
         /**
-         * @return <code>true</code> if this special redraw method can also be
+         * @return {@code true} if this special redraw method can also be
          *         applied when there is fixed content
          */
         abstract boolean isForFixedContent();
 
         /**
-         * @return <code>true</code> if special redraws of the same kind (but
+         * @return {@code true} if special redraws of the same kind (but
          *         with other parameters) should be ignored
          */
         abstract boolean ignoreFurther();
@@ -1097,10 +1102,12 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
             _previousSize = previousSize;
         }
 
+        @Override
         boolean isForFixedContent() {
             return false;
         }
 
+        @Override
         boolean ignoreFurther() {
             return true;
         }
@@ -1113,10 +1120,12 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
             _previousOrigin = previousOrigin;
         }
 
+        @Override
         boolean isForFixedContent() {
             return false;
         }
 
+        @Override
         boolean ignoreFurther() {
             return true;
         }
@@ -1129,14 +1138,17 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
             _target = target;
         }
 
+        @Override
         boolean isForFixedContent() {
             return true;
         }
 
+        @Override
         boolean ignoreFurther() {
             return false;
         }
 
+        @Override
         void redraw() {
             BasicRenderer.this.redraw(_target.x, _target.y, _target.width, _target.height, true);
         }

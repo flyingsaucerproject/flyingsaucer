@@ -19,11 +19,14 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 
@@ -35,13 +38,13 @@ import java.util.logging.Level;
  */
 public class Selector {
     private Ruleset _parent;
-    private Selector chainedSelector = null;
-    private Selector siblingSelector = null;
+    private Selector chainedSelector;
+    private Selector siblingSelector;
 
     private int _axis;
     private String _name;
     private String _namespaceURI;
-    private int _pc = 0;
+    private int _pc;
     private String _pe;
 
     //specificity - correct values are gotten from the last Selector in the chain
@@ -51,22 +54,22 @@ public class Selector {
 
     private int _pos;//to distinguish between selectors of same specificity
 
-    private java.util.List conditions;
+    private List<Condition> conditions;
 
-    public final static int DESCENDANT_AXIS = 0;
-    public final static int CHILD_AXIS = 1;
-    public final static int IMMEDIATE_SIBLING_AXIS = 2;
+    public static final int DESCENDANT_AXIS = 0;
+    public static final int CHILD_AXIS = 1;
+    public static final int IMMEDIATE_SIBLING_AXIS = 2;
 
-    public final static int VISITED_PSEUDOCLASS = 2;
-    public final static int HOVER_PSEUDOCLASS = 4;
-    public final static int ACTIVE_PSEUDOCLASS = 8;
-    public final static int FOCUS_PSEUDOCLASS = 16;
+    public static final int VISITED_PSEUDOCLASS = 2;
+    public static final int HOVER_PSEUDOCLASS = 4;
+    public static final int ACTIVE_PSEUDOCLASS = 8;
+    public static final int FOCUS_PSEUDOCLASS = 16;
 
     /**
      * Give each a unique ID to be able to create a key to internalize Matcher.Mappers
      */
-    private int selectorID;
-    private static int selectorCount = 0;
+    private final int selectorID;
+    private static int selectorCount;
 
     public Selector() {
         selectorID = selectorCount++;
@@ -76,9 +79,9 @@ public class Selector {
      * Check if the given Element matches this selector. Note: the parser should
      * give all class
      */
-    public boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+    public boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
         if (siblingSelector != null) {
-            Object sib = siblingSelector.getAppropriateSibling(e, treeRes);
+            Node sib = siblingSelector.getAppropriateSibling(e, treeRes);
             if (sib == null) {
                 return false;
             }
@@ -89,9 +92,8 @@ public class Selector {
         if (_name == null || treeRes.matchesElement(e, _namespaceURI, _name)) {
             if (conditions != null) {
                 // all conditions need to be true
-                for (java.util.Iterator i = conditions.iterator(); i.hasNext();) {
-                    Condition c = (Condition) i.next();
-                    if (!c.matches(e, attRes, treeRes)) {
+                for (Condition condition : conditions) {
+                    if (!condition.matches(e, attRes, treeRes)) {
                         return false;
                     }
                 }
@@ -105,9 +107,9 @@ public class Selector {
      * Check if the given Element matches this selector's dynamic properties.
      * Note: the parser should give all class
      */
-    public boolean matchesDynamic(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+    public boolean matchesDynamic(Node e, AttributeResolver attRes, TreeResolver treeRes) {
         if (siblingSelector != null) {
-            Object sib = siblingSelector.getAppropriateSibling(e, treeRes);
+            Node sib = siblingSelector.getAppropriateSibling(e, treeRes);
             if (sib == null) {
                 return false;
             }
@@ -131,9 +133,7 @@ public class Selector {
             }
         }
         if (isPseudoClass(FOCUS_PSEUDOCLASS)) {
-            if (attRes == null || !attRes.isFocus(e)) {
-                return false;
-            }
+            return attRes != null && attRes.isFocus(e);
         }
         return true;
     }
@@ -160,7 +160,7 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createFirstChildCondition());
     }
-    
+
     /**
      * the CSS condition that element has pseudo-class :last-child
      */
@@ -184,7 +184,7 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createEvenChildCondition());
     }
-    
+
     /**
      * the CSS condition that element has pseudo-class :odd
      */
@@ -232,7 +232,7 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createAttributeEqualsCondition(namespaceURI, name, value));
     }
-    
+
     /**
      * the CSS condition [attribute^=value]
      */
@@ -240,7 +240,7 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createAttributePrefixCondition(namespaceURI, name, value));
     }
-    
+
     /**
      * the CSS condition [attribute$=value]
      */
@@ -248,7 +248,7 @@ public class Selector {
         _specificityC++;
         addCondition(Condition.createAttributeSuffixCondition(namespaceURI, name, value));
     }
-    
+
     /**
      * the CSS condition [attribute*=value]
      */
@@ -323,7 +323,7 @@ public class Selector {
      * @return The pseudoElement value
      */
     public String getPseudoElement() {
-    	return _pe;
+        return _pe;
     }
 
     /**
@@ -402,8 +402,8 @@ public class Selector {
      * @param treeRes
      * @return The appropriateSibling value
      */
-    Object getAppropriateSibling(Object e, TreeResolver treeRes) {
-        Object sibling = null;
+    Node getAppropriateSibling(Node e, TreeResolver treeRes) {
+        Node sibling = null;
         switch (_axis) {
             case IMMEDIATE_SIBLING_AXIS:
                 sibling = treeRes.getPreviousSiblingElement(e);
@@ -421,7 +421,7 @@ public class Selector {
      */
     private void addCondition(Condition c) {
         if (conditions == null) {
-            conditions = new java.util.ArrayList();
+            conditions = new ArrayList<>();
         }
         if (_pe != null) {
             conditions.add(Condition.createUnsupportedCondition());
@@ -442,12 +442,12 @@ public class Selector {
     public int getSelectorID() {
         return selectorID;
     }
-    
+
     public void setName(String name) {
         _name = name;
         _specificityD++;
     }
-    
+
     public void setPos(int pos) {
         _pos = pos;
         if (siblingSelector != null) {
@@ -457,35 +457,35 @@ public class Selector {
             chainedSelector.setPos(pos);
         }
     }
-    
+
     public void setParent(Ruleset ruleset) {
         _parent = ruleset;
     }
-    
+
     public void setAxis(int axis) {
         _axis = axis;
     }
-    
+
     public void setSpecificityB(int b) {
         _specificityB = b;
     }
-    
+
     public void setSpecificityC(int c) {
         _specificityC = c;
     }
-    
+
     public void setSpecificityD(int d) {
         _specificityD = d;
     }
-    
+
     public void setChainedSelector(Selector selector) {
         chainedSelector = selector;
     }
-    
+
     public void setSiblingSelector(Selector selector) {
         siblingSelector = selector;
     }
-    
+
     public void setNamespaceURI(String namespaceURI) {
         _namespaceURI = namespaceURI;
     }

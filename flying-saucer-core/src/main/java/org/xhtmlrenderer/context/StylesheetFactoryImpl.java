@@ -19,15 +19,7 @@
  */
 package org.xhtmlrenderer.context;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
-import org.xhtmlrenderer.css.parser.CSSErrorHandler;
 import org.xhtmlrenderer.css.parser.CSSParser;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
@@ -37,6 +29,15 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * A Factory class for Cascading Style Sheets. Sheets are parsed using a single
@@ -51,28 +52,15 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      */
     private UserAgentCallback _userAgentCallback;
 
-    private int _cacheCapacity = 16;
-
     /**
      * an LRU cache
      */
-    private java.util.LinkedHashMap _cache =
-            new java.util.LinkedHashMap(_cacheCapacity, 0.75f, true) {
-                private static final long serialVersionUID = 1L;
-
-                protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
-                    return size() > _cacheCapacity;
-                }
-            };
-    private CSSParser _cssParser;
+    private final Map<String, Stylesheet> _cache = new StylesheetCache();
+    private final CSSParser _cssParser;
 
     public StylesheetFactoryImpl(UserAgentCallback userAgentCallback) {
         _userAgentCallback = userAgentCallback;
-        _cssParser = new CSSParser(new CSSErrorHandler() {
-            public void error(String uri, String message) {
-                XRLog.cssParse(Level.WARNING, "(" + uri + ") " + message);
-            }
-        });
+        _cssParser = new CSSParser((uri, message) -> XRLog.cssParse(Level.WARNING, "(" + uri + ") " + message));
     }
 
     public synchronized Stylesheet parse(Reader reader, StylesheetInfo info) {
@@ -87,9 +75,10 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     /**
      * @return Returns null if uri could not be loaded
      */
+    @Nullable
     private Stylesheet parse(StylesheetInfo info) {
         CSSResource cr = _userAgentCallback.getCSSResource(info.getUri());
-        if (cr==null) return null;  
+        if (cr==null) return null;
         // Whether by accident or design, InputStream will never be null
         // since the null resource stream is wrapped in a BufferedInputStream
         InputSource inputSource=cr.getResourceInputSource();
@@ -102,12 +91,10 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
             // Shouldn't happen
             throw new RuntimeException(e.getMessage(), e);
         } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // ignore
-                }
+            try {
+                is.close();
+            } catch (IOException e) {
+                // ignore
             }
         }
     }
@@ -124,17 +111,16 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      *              factory.
      * @param sheet The sheet to cache.
      */
-    public synchronized void putStylesheet(Object key, Stylesheet sheet) {
+    public synchronized void putStylesheet(String key, Stylesheet sheet) {
         _cache.put(key, sheet);
     }
 
     /**
-     * @param key
      * @return true if a Stylesheet with this key has been put in the cache.
      *         Note that the Stylesheet may be null.
      */
     //TODO: work out how to handle caching properly, with cache invalidation
-    public synchronized boolean containsStylesheet(Object key) {
+    public synchronized boolean containsStylesheet(String key) {
         return _cache.containsKey(key);
     }
 
@@ -145,8 +131,8 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      *            putStylesheet();
      * @return The stylesheet
      */
-    public synchronized Stylesheet getCachedStylesheet(Object key) {
-        return (Stylesheet) _cache.get(key);
+    public synchronized Stylesheet getCachedStylesheet(String key) {
+        return _cache.get(key);
     }
 
     /**
@@ -155,10 +141,10 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      * @param key The key for this sheet; same as key passed to
      *            putStylesheet();
      */
-    public synchronized Object removeCachedStylesheet(Object key) {
+    public synchronized Stylesheet removeCachedStylesheet(String key) {
         return _cache.remove(key);
     }
-    
+
     public synchronized void flushCachedStylesheets() {
         _cache.clear();
     }
@@ -185,7 +171,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     public void setUserAgentCallback(UserAgentCallback userAgent) {
         _userAgentCallback = userAgent;
     }
-    
+
     public void setSupportCMYKColors(boolean b) {
         _cssParser.setSupportCMYKColors(b);
     }

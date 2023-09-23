@@ -85,7 +85,7 @@ public class JPanelSizeToDocument {
             messageAndExit("Failed to load document", -1);
         }
 
-        // No-op as regards size, but has side-effect of making the window and components "displayable". This is
+        // No-op as regards size, but has side effect of making the window and components "displayable". This is
         // necessary for the doDocumentLayout() below to work correctly. Alternately you could setVisible(true), but
         // then the document would be visible before the resize was completed.
         frame.pack();

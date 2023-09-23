@@ -19,10 +19,11 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import com.itextpdf.text.pdf.PdfAnnotation;
+import com.itextpdf.text.pdf.PdfAppearance;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfFormField;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,100 +32,94 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.util.*;
+import org.xhtmlrenderer.util.Util;
 
-import com.itextpdf.text.pdf.PdfAnnotation;
-import com.itextpdf.text.pdf.PdfAppearance;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfFormField;
-import com.itextpdf.text.pdf.PdfWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class SelectFormField extends AbstractFormField {
     private static final String FIELD_TYPE = "Select";
-    
+
     private static final int EMPTY_SPACE_COUNT = 10;
     private static final int EXTRA_SPACE_COUNT = 4;
-    
-    private List _options;
 
-    private int _baseline;
-    
+    private final List<Option> _options;
+
+    private final int _baseline;
+
     public SelectFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
         _options = readOptions(box.getElement());
         initDimensions(c, box, cssWidth, cssHeight);
-        
+
         float fontSize = box.getStyle().getFSFont(c).getSize2D();
         // FIXME: findbugs possible loss of precision, cf. int / (float)2
         _baseline = (int)(getHeight() / 2 + (fontSize * 0.3f));
     }
-    
+
     private int getSelectedIndex() {
         int result = 0;
-        
-        List options = _options;
-        
+
         int offset = 0;
-        for (Iterator i = options.iterator(); i.hasNext(); offset++) {
-            Option option = (Option)i.next();
+        for (Iterator<Option> i = _options.iterator(); i.hasNext(); offset++) {
+            Option option = i.next();
             if (option.isSelected()) {
                 result = offset;
             }
         }
-        
+
         return result;
     }
-    
+
     private String[][] getPDFOptions() {
-        List options = _options;
+        List<Option> options = _options;
         String[][] result = new String[options.size()][];
-        
+
         int offset = 0;
-        for (Iterator i = options.iterator(); i.hasNext(); offset++) {
-            Option option = (Option)i.next();
+        for (Iterator<Option> i = options.iterator(); i.hasNext(); offset++) {
+            Option option = i.next();
             result[offset] = new String[] { option.getValue(), option.getLabel() };
         }
-        
+
         return result;
     }
-    
+
     private int calcDefaultWidth(LayoutContext c, BlockBox box) {
-        List options = _options;
-        
-        if (options.size() == 0) {
+        List<Option> options = _options;
+
+        if (options.isEmpty()) {
             return c.getTextRenderer().getWidth(
                     c.getFontContext(),
                     box.getStyle().getFSFont(c),
                     spaces(EMPTY_SPACE_COUNT));
         } else {
             int maxWidth = 0;
-            for (Iterator i = options.iterator(); i.hasNext(); ) {
-                Option option = (Option)i.next();
-                
+            for (Option option : options) {
                 String result = option.getLabel() + spaces(EXTRA_SPACE_COUNT);
-                
+
                 int width = c.getTextRenderer().getWidth(
                         c.getFontContext(),
                         box.getStyle().getFSFont(c),
                         result);
-                
+
                 if (width > maxWidth) {
                     maxWidth = width;
                 }
             }
-            
+
             return maxWidth;
         }
     }
-    
-    private List readOptions(Element e) {
-        List result = new ArrayList();
-        
+
+    private List<Option> readOptions(Element e) {
+        List<Option> result = new ArrayList<>();
+
         Node n = e.getFirstChild();
         while (n != null) {
             if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equalsIgnoreCase("option")) {
                 Element optionElem = (Element)n;
-                
-                
+
+
                 String label = collectText(optionElem);
                 Attr valueAttr = optionElem.getAttributeNode("value");
                 String value;
@@ -133,9 +128,9 @@ public class SelectFormField extends AbstractFormField {
                 } else {
                     value = valueAttr.getValue();
                 }
-                
+
                 if (label != null) {
-                    Option option =  new Option();
+                    Option option = new Option();
                     option.setLabel(label);
                     option.setValue(value);
                     if (isSelected(optionElem)) {
@@ -144,16 +139,16 @@ public class SelectFormField extends AbstractFormField {
                     result.add(option);
                 }
             }
-            
+
             n = n.getNextSibling();
         }
-        
+
         return result;
     }
-    
+
     private String collectText(Element e) {
-        StringBuffer result = new StringBuffer();
-        
+        StringBuilder result = new StringBuilder();
+
         Node n = e.getFirstChild();
         while (n != null) {
             short nodeType = n.getNodeType();
@@ -163,7 +158,7 @@ public class SelectFormField extends AbstractFormField {
             }
             n = n.getNextSibling();
         }
-        
+
         return result.length() > 0 ? result.toString() : null;
     }
 
@@ -179,97 +174,97 @@ public class SelectFormField extends AbstractFormField {
         } else {
             setHeight((int) (box.getStyle().getLineHeight(c) * getSize(box.getElement())));
         }
-    } 
-    
+    }
+
     private int getSize(Element elem) {
         int result = 1;
         try {
             String v = elem.getAttribute("size").trim();
-            if (v.length() > 0) {
+            if (!v.isEmpty()) {
                 int i = Integer.parseInt(v);
                 if (i > 1) {
                     result = i;
                 }
-                
+
             }
         } catch (NumberFormatException e) {
             // ignore
         }
-        
+
         return result;
     }
-    
+
     protected boolean isMultiple(Element e) {
         return !Util.isNullOrEmpty(e.getAttribute("multiple"));
     }
-    
+
     protected String getFieldType() {
         return FIELD_TYPE;
     }
 
     public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
         PdfWriter writer = outputDevice.getWriter();
-        
+
         String[][] options = getPDFOptions();
         int selectedIndex = getSelectedIndex();
-        
+
         PdfFormField field;
-        
+
         /*
          * Comment out for now.  We need to draw an appropriate appearance for
          * this to work correctly.
          */
         /*
         if (isMultiple(box.getElement())) {
-            field = PdfFormField.createList(writer, options, selectedIndex);  
+            field = PdfFormField.createList(writer, options, selectedIndex);
         } else {
-            field = PdfFormField.createCombo(writer, false, options, selectedIndex);    
+            field = PdfFormField.createCombo(writer, false, options, selectedIndex);
         }
         */
-        
-        field = PdfFormField.createCombo(writer, false, options, selectedIndex);    
-        
+
+        field = PdfFormField.createCombo(writer, false, options, selectedIndex);
+
         field.setWidget(outputDevice.createLocalTargetArea(c, box), PdfAnnotation.HIGHLIGHT_INVERT);
         field.setFieldName(getFieldName(outputDevice, box.getElement()));
         if (options.length > 0) {
             field.setValueAsString(options[selectedIndex][0]);
         }
-        
+
         createAppearance(c, outputDevice, box, field);
 
         if (isReadOnly(box.getElement())) {
             field.setFieldFlags(PdfFormField.FF_READ_ONLY);
-        }       
-        
+        }
+
         /*
         if (isMultiple(box.getElement())) {
             field.setFieldFlags(PdfFormField.FF_MULTISELECT);
         }
         */
-        
+
         writer.addAnnotation(field);
     }
-    
+
     private void createAppearance(
-            RenderingContext c, ITextOutputDevice outputDevice, 
+            RenderingContext c, ITextOutputDevice outputDevice,
             BlockBox box, PdfFormField field) {
         PdfWriter writer = outputDevice.getWriter();
         ITextFSFont font = (ITextFSFont)box.getStyle().getFSFont(c);
-        
+
         PdfContentByte cb = writer.getDirectContent();
-        
+
         float width = outputDevice.getDeviceLength(getWidth());
         float height = outputDevice.getDeviceLength(getHeight());
         float fontSize = outputDevice.getDeviceLength(font.getSize2D());
-        
+
         PdfAppearance tp = cb.createAppearance(width, height);
         tp.setFontAndSize(font.getFontDescription().getFont(), fontSize);
-        
+
         FSColor color = box.getStyle().getColor();
         setFillColor(tp, color);
-        
+
         field.setDefaultAppearanceString(tp);
-    }    
+    }
 
     public int getBaseline() {
         return _baseline;
@@ -278,32 +273,32 @@ public class SelectFormField extends AbstractFormField {
     public boolean hasBaseline() {
         return true;
     }
-    
+
     private static final class Option {
         private String _value;
         private String _label;
         private boolean _selected;
-        
+
         public String getValue() {
             return _value;
         }
-        
+
         public void setValue(String value) {
             _value = value;
         }
-        
+
         public String getLabel() {
             return _label;
         }
-        
+
         public void setLabel(String label) {
             _label = label;
         }
-        
+
         public boolean isSelected() {
             return _selected;
         }
-        
+
         public void setSelected(boolean selected) {
             _selected = selected;
         }

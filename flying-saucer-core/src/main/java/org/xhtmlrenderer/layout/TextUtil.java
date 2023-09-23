@@ -25,20 +25,8 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.util.Uu;
 
 
-/**
- * Description of the Class
- *
- * @author   empty
- */
 public class TextUtil {
 
-    /**
-     * Description of the Method
-     *
-     * @param text   PARAM
-     * @param style
-     * @return       Returns
-     */
     public static String transformText( String text, CalculatedStyle style ) {
         IdentValue transform = style.getIdent( CSSName.TEXT_TRANSFORM );
         if ( transform == IdentValue.LOWERCASE ) {
@@ -57,13 +45,6 @@ public class TextUtil {
         return text;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param text   PARAM
-     * @param style
-     * @return       Returns
-     */
     public static String transformFirstLetterText( String text, CalculatedStyle style ) {
         if (text.length() > 0) {
             IdentValue transform = style.getIdent( CSSName.TEXT_TRANSFORM );
@@ -106,12 +87,6 @@ public class TextUtil {
         return b.toString();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @return      Returns
-     */
     public static boolean isFirstLetterSeparatorChar( char c ) {
         switch (Character.getType(c)) {
             case Character.START_PUNCTUATION:
@@ -127,19 +102,13 @@ public class TextUtil {
     }
 
 
-    /**
-     * Description of the Method
-     *
-     * @param text  PARAM
-     * @return      Returns
-     */
     private static String capitalizeWords( String text ) {
         //Uu.p("start = -"+text+"-");
         if ( text.length() == 0 ) {
             return text;
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         //Uu.p("text = -" + text + "-");
 
         // do first letter
@@ -163,7 +132,7 @@ public class TextUtil {
 
         //Uu.p("final = -"+sb.toString()+"-");
         if ( sb.toString().length() != text.length() ) {
-            Uu.p( "error! to strings arent the same length = -" + sb.toString() + "-" + text + "-" );
+            Uu.p( "error! to strings arent the same length = -" + sb + "-" + text + "-" );
         }
         return sb.toString();
     }
@@ -218,7 +187,7 @@ public class TextUtil {
  *
  * Revision 1.3  2004/10/23 13:46:48  pdoubleya
  * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
  * Added CVS log comments at bottom.
  *
  *

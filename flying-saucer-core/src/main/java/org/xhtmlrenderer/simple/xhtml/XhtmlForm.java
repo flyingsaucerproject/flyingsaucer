@@ -19,11 +19,6 @@
  */
 package org.xhtmlrenderer.simple.xhtml;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.URLUTF8Encoder;
 import org.xhtmlrenderer.simple.xhtml.controls.ButtonControl;
@@ -32,18 +27,22 @@ import org.xhtmlrenderer.simple.xhtml.controls.HiddenControl;
 import org.xhtmlrenderer.simple.xhtml.controls.SelectControl;
 import org.xhtmlrenderer.simple.xhtml.controls.TextControl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class XhtmlForm {
 
-    protected String _action, _method;
+    private final String _action;
+    private final String _method;
 
     public XhtmlForm(String action, String method) {
         _action = action;
         _method = method;
     }
 
-    protected List _controls = new LinkedList();
-
-    private List _listeners = new ArrayList();
+    private final List<FormControl> _controls = new ArrayList<>();
+    private final List<FormListener> _listeners = new ArrayList<>();
 
     public void addFormListener(FormListener listener) {
         _listeners.add(listener);
@@ -54,8 +53,7 @@ public class XhtmlForm {
     }
 
     public FormControl getControl(String name) {
-        for (Iterator iter = _controls.iterator(); iter.hasNext();) {
-            FormControl control = (FormControl) iter.next();
+        for (FormControl control : _controls) {
             if (control.getName().equals(name)) {
                 return control;
             }
@@ -63,10 +61,9 @@ public class XhtmlForm {
         return null;
     }
 
-    public List getAllControls(String name) {
-        List result = new ArrayList();
-        for (Iterator iter = _controls.iterator(); iter.hasNext();) {
-            FormControl control = (FormControl) iter.next();
+    public List<FormControl> getAllControls(String name) {
+        List<FormControl> result = new ArrayList<>();
+        for (FormControl control : _controls) {
             if (control.getName().equals(name)) {
                 result.add(control);
             }
@@ -74,7 +71,15 @@ public class XhtmlForm {
         return result;
     }
 
-    public Iterator getControls() {
+    public Iterable<FormControl> controls() {
+        return _controls;
+    }
+
+    /**
+     * @deprecated Use method {@link #controls()} instead
+     */
+    @Deprecated
+    public Iterator<FormControl> getControls() {
         return _controls.iterator();
     }
 
@@ -88,28 +93,41 @@ public class XhtmlForm {
 
         FormControl control;
         String name = e.getNodeName();
-        if (name.equals("input")) {
-            String type = e.getAttribute("type");
-            if (type.equals("text") || type.equals("password")) {
+        switch (name) {
+            case "input":
+                String type = e.getAttribute("type");
+                switch (type) {
+                    case "text":
+                    case "password":
+                        control = new TextControl(form, e);
+                        break;
+                    case "hidden":
+                        control = new HiddenControl(form, e);
+                        break;
+                    case "button":
+                    case "submit":
+                    case "reset":
+                        control = new ButtonControl(form, e);
+                        break;
+                    case "checkbox":
+                    case "radio":
+                        control = new CheckControl(form, e);
+                        break;
+                    default:
+                        return null;
+                }
+                break;
+            case "textarea":
                 control = new TextControl(form, e);
-            } else if (type.equals("hidden")) {
-                control = new HiddenControl(form, e);
-            } else if (type.equals("button") || type.equals("submit")
-                    || type.equals("reset")) {
+                break;
+            case "button":
                 control = new ButtonControl(form, e);
-            } else if (type.equals("checkbox") || type.equals("radio")) {
-                control = new CheckControl(form, e);
-            } else {
+                break;
+            case "select":
+                control = new SelectControl(form, e);
+                break;
+            default:
                 return null;
-            }
-        } else if (name.equals("textarea")) {
-            control = new TextControl(form, e);
-        } else if (name.equals("button")) {
-            control = new ButtonControl(form, e);
-        } else if (name.equals("select")) {
-            control = new SelectControl(form, e);
-        } else {
-            return null;
         }
 
         if (form != null) {
@@ -119,26 +137,25 @@ public class XhtmlForm {
     }
 
     public void reset() {
-        for (Iterator iter = _listeners.iterator(); iter.hasNext();) {
-            ((FormListener) iter.next()).resetted(this);
+        for (FormListener listener : _listeners) {
+            listener.resetted(this);
         }
     }
 
     public void submit() {
         // TODO other encodings than urlencode?
-        StringBuffer data = new StringBuffer();
-        for (Iterator iter = getControls(); iter.hasNext();) {
-            FormControl control = (FormControl) iter.next();
+        StringBuilder data = new StringBuilder();
+        for (FormControl control : _controls) {
             if (control.isSuccessful()) {
                 if (control.isMultiple()) {
                     String[] values = control.getMultipleValues();
-                    for (int i = 0; i < values.length; i++) {
+                    for (String value : values) {
                         if (data.length() > 0) {
                             data.append('&');
                         }
                         data.append(URLUTF8Encoder.encode(control.getName()));
                         data.append('=');
-                        data.append(URLUTF8Encoder.encode(values[i]));
+                        data.append(URLUTF8Encoder.encode(value));
                     }
                 } else {
                     if (data.length() > 0) {
@@ -153,12 +170,12 @@ public class XhtmlForm {
 
         // TODO effectively submit form
         System.out.println("Form submitted!");
-        System.out.println("Action: ".concat(_action));
-        System.out.println("Method: ".concat(_method));
-        System.out.println("Data: ".concat(data.toString()));
+        System.out.println("Action: " + _action);
+        System.out.println("Method: " + _method);
+        System.out.println("Data: " + data);
 
-        for (Iterator iter = _listeners.iterator(); iter.hasNext();) {
-            ((FormListener) iter.next()).submitted(this);
+        for (FormListener listener : _listeners) {
+            listener.submitted(this);
         }
     }
 
