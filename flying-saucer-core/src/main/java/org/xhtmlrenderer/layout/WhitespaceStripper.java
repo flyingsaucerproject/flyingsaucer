@@ -25,7 +25,6 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -81,12 +80,11 @@ public class WhitespaceStripper {
         return style.isFloated() || style.isAbsolute() || style.isFixed() || style.isRunning();
     }
 
-    private static void stripTextContent(List stripped) {
+    private static void stripTextContent(List<Styleable> stripped) {
         boolean onlyAnonymous = true;
-        for (Iterator i = stripped.iterator(); i.hasNext(); ) {
-            Styleable node = (Styleable)i.next();
+        for (Styleable node : stripped) {
             if (node.getStyle().isInline()) {
-                InlineBox iB = (InlineBox)node;
+                InlineBox iB = (InlineBox) node;
                 if (iB.getElement() != null) {
                     onlyAnonymous = false;
                 }
@@ -96,12 +94,7 @@ public class WhitespaceStripper {
         }
 
         if (onlyAnonymous) {
-            for (Iterator i = stripped.iterator(); i.hasNext(); ) {
-                Styleable node = (Styleable)i.next();
-                if (node.getStyle().isInline()) {
-                    i.remove();
-                }
-            }
+            stripped.removeIf(node -> node.getStyle().isInline());
         }
     }
 
@@ -110,10 +103,7 @@ public class WhitespaceStripper {
      * 2.1 spec on whitespace handling. It accounts for the different whitespace
      * settings like normal, nowrap, pre, etc
      *
-     * @param iB
-     * @param collapseLeading
-     * @return whether the next leading space should collapse or
-     *         not.
+     * @return whether the next leading space should collapse or not.
      */
     private static boolean stripWhitespace(InlineBox iB, boolean collapseLeading) {
 
@@ -127,16 +117,16 @@ public class WhitespaceStripper {
                 (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE));
 
         iB.setText(text);
-        if (text.trim().equals("")) {
+        if (text.trim().isEmpty()) {
             if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
                 iB.setRemovableWhitespace(true);
             } else if (whitespace == IdentValue.PRE) {
                 iB.setRemovableWhitespace(false);//actually unnecessary, is set to this by default
-            } else if (text.indexOf(EOL) < 0) {//and whitespace.equals("pre-line"), the only one left
+            } else if (!text.contains(EOL)) {//and whitespace.equals("pre-line"), the only one left
                 iB.setRemovableWhitespace(true);
             }
         }
-        return text.equals("") ? collapseLeading : collapseNext;
+        return text.isEmpty() ? collapseLeading : collapseNext;
     }
 
     private static String collapseWhitespace(InlineBox iB, IdentValue whitespace, String text, boolean collapseLeading) {
@@ -164,7 +154,7 @@ public class WhitespaceStripper {
             // collapse first space against prev inline
             if (text.startsWith(SPACE) &&
                     collapseLeading) {
-                text = text.substring(1, text.length());
+                text = text.substring(1);
             }
         }
 
