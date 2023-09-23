@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.simple.xhtml.XhtmlForm;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -124,9 +125,10 @@ public class SelectControl extends AbstractControl {
     }
 
     @Override
+    @Nullable
     public final String[] getMultipleValues() {
         if (isMultiple()) {
-            return _values.toArray(new String[_values.size()]);
+            return _values.toArray(new String[0]);
         } else {
             return null;
         }
