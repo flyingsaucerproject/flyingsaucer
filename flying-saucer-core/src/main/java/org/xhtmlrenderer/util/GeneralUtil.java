@@ -248,11 +248,7 @@ public class GeneralUtil {
                 pw.flush();
                 bw.flush();
             }
-            // ignore
-        } catch (IOException e) {
-            throw e;
         }
-        // ignore
         System.out.println("Wrote file: " + f.getAbsolutePath());
     }
 
@@ -268,7 +264,7 @@ public class GeneralUtil {
      */
     public static int parseIntRelaxed(String s) {
         // An edge-case short circuit...
-        if (s == null || s.length() == 0 || s.trim().length() == 0) {
+        if (s == null || s.isEmpty() || s.trim().isEmpty()) {
             return 0;
         }
 
