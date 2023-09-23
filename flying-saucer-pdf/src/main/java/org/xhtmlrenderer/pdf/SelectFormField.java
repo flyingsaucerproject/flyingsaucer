@@ -19,10 +19,11 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import com.lowagie.text.pdf.PdfAnnotation;
+import com.lowagie.text.pdf.PdfAppearance;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfFormField;
+import com.lowagie.text.pdf.PdfWriter;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,13 +32,11 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.util.*;
+import org.xhtmlrenderer.util.Util;
 
-import com.lowagie.text.pdf.PdfAnnotation;
-import com.lowagie.text.pdf.PdfAppearance;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfFormField;
-import com.lowagie.text.pdf.PdfWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class SelectFormField extends AbstractFormField {
     private static final String FIELD_TYPE = "Select";
@@ -45,9 +44,9 @@ public class SelectFormField extends AbstractFormField {
     private static final int EMPTY_SPACE_COUNT = 10;
     private static final int EXTRA_SPACE_COUNT = 4;
 
-    private List _options;
+    private final List<Option> _options;
 
-    private int _baseline;
+    private final int _baseline;
 
     public SelectFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
         _options = readOptions(box.getElement());
@@ -61,11 +60,9 @@ public class SelectFormField extends AbstractFormField {
     private int getSelectedIndex() {
         int result = 0;
 
-        List options = _options;
-
         int offset = 0;
-        for (Iterator i = options.iterator(); i.hasNext(); offset++) {
-            Option option = (Option)i.next();
+        for (Iterator<Option> i = _options.iterator(); i.hasNext(); offset++) {
+            Option option = i.next();
             if (option.isSelected()) {
                 result = offset;
             }
@@ -75,12 +72,12 @@ public class SelectFormField extends AbstractFormField {
     }
 
     private String[][] getPDFOptions() {
-        List options = _options;
+        List<Option> options = _options;
         String[][] result = new String[options.size()][];
 
         int offset = 0;
-        for (Iterator i = options.iterator(); i.hasNext(); offset++) {
-            Option option = (Option)i.next();
+        for (Iterator<Option> i = options.iterator(); i.hasNext(); offset++) {
+            Option option = i.next();
             result[offset] = new String[] { option.getValue(), option.getLabel() };
         }
 
@@ -88,18 +85,16 @@ public class SelectFormField extends AbstractFormField {
     }
 
     private int calcDefaultWidth(LayoutContext c, BlockBox box) {
-        List options = _options;
+        List<Option> options = _options;
 
-        if (options.size() == 0) {
+        if (options.isEmpty()) {
             return c.getTextRenderer().getWidth(
                     c.getFontContext(),
                     box.getStyle().getFSFont(c),
                     spaces(EMPTY_SPACE_COUNT));
         } else {
             int maxWidth = 0;
-            for (Iterator i = options.iterator(); i.hasNext(); ) {
-                Option option = (Option)i.next();
-
+            for (Option option : options) {
                 String result = option.getLabel() + spaces(EXTRA_SPACE_COUNT);
 
                 int width = c.getTextRenderer().getWidth(
@@ -116,8 +111,8 @@ public class SelectFormField extends AbstractFormField {
         }
     }
 
-    private List readOptions(Element e) {
-        List result = new ArrayList();
+    private List<Option> readOptions(Element e) {
+        List<Option> result = new ArrayList<>();
 
         Node n = e.getFirstChild();
         while (n != null) {
@@ -185,7 +180,7 @@ public class SelectFormField extends AbstractFormField {
         int result = 1;
         try {
             String v = elem.getAttribute("size").trim();
-            if (v.length() > 0) {
+            if (!v.isEmpty()) {
                 int i = Integer.parseInt(v);
                 if (i > 1) {
                     result = i;
