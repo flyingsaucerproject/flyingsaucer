@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.util.List;
-
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -31,10 +29,7 @@ public class TextAreaFormField extends AbstractFormField {
     private static final int DEFAULT_ROWS = 7;
     private static final int DEFAULT_COLS = 25;
 
-    private List _lines;
-
     public TextAreaFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
-
     }
 
     protected String getFieldType() {
