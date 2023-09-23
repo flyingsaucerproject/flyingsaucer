@@ -26,13 +26,13 @@ import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.simple.extend.DefaultFormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.simple.extend.form.FormField;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.resource.ImageResource;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,17 +49,15 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Cache of image components (ReplacedElements) for quick lookup, keyed by Element.
      */
-    protected Map imageComponents;
+    private final Map<CacheKey, ReplacedElement> imageComponents = new HashMap<>();
     /**
      * Cache of XhtmlForms keyed by Element.
      */
-    protected LinkedHashMap forms;
+    private final Map<Element, XhtmlForm> forms = new LinkedHashMap<>();
 
     private FormSubmissionListener formSubmissionListener;
-
     protected final RepaintListener repaintListener;
-
-    private ImageResourceLoader imageResourceLoader;
+    private final ImageResourceLoader imageResourceLoader;
 
 
     public SwingReplacedElementFactory() {
@@ -131,17 +129,15 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * positive values. The element is assumed to have a src attribute (e.g. it's an <img> element)
      *
      * @param uac       Used to retrieve images on demand from some source.
-     * @param context
      * @param elem      The element with the image reference
      * @param cssWidth  Target width of the image
      * @param cssHeight Target height of the image @return A ReplacedElement for the image; will not be null.
-     * @return
      */
     protected ReplacedElement replaceImage(UserAgentCallback uac, LayoutContext context, Element elem, int cssWidth, int cssHeight) {
         ReplacedElement re = null;
         String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
 
-        if (imageSrc == null || imageSrc.length() == 0) {
+        if (imageSrc == null || imageSrc.isEmpty()) {
             XRLog.layout(Level.WARNING, "No source provided for img element.");
             re = newIrreplaceableImageElement(cssWidth, cssHeight);
         } else if (ImageUtil.isEmbeddedBase64Image(imageSrc)) {
@@ -168,11 +164,8 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     }
 
     private ReplacedElement lookupImageReplacedElement(final Element elem, final String ruri, final int cssWidth, final int cssHeight) {
-        if (imageComponents == null) {
-            return null;
-        }
         CacheKey key = new CacheKey(elem, ruri, cssWidth, cssHeight);
-        return (ReplacedElement) imageComponents.get(key);
+        return imageComponents.get(key);
     }
 
 
@@ -211,14 +204,8 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      *
      * @param e   The element under which the image is keyed.
      * @param cc  The replaced element containing the image, or another ReplacedElement to be used in its place
-     * @param uri
-     * @param cssWidth
-     * @param cssHeight
      */
     protected void storeImageReplacedElement(Element e, ReplacedElement cc, String uri, final int cssWidth, final int cssHeight) {
-        if (imageComponents == null) {
-            imageComponents = new HashMap();
-        }
         CacheKey key = new CacheKey(e, uri, cssWidth, cssHeight);
         imageComponents.put(key, cc);
     }
@@ -227,7 +214,6 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * Retrieves a ReplacedElement for an image from cache, or null if not found.
      *
      * @param e   The element by which the image is keyed
-     * @param uri
      * @return The ReplacedElement for the image, or null if there is none.
      */
     protected ReplacedElement lookupImageReplacedElement(Element e, String uri) {
@@ -241,9 +227,6 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * @param f The form element being stored.
      */
     protected void addForm(Element e, XhtmlForm f) {
-        if (forms == null) {
-            forms = new LinkedHashMap();
-        }
         forms.put(e, f);
     }
 
@@ -254,15 +237,9 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * @return The form, or null if not found.
      */
     protected XhtmlForm getForm(Element e) {
-        if (forms == null) {
-            return null;
-        }
-        return (XhtmlForm) forms.get(e);
+        return forms.get(e);
     }
 
-    /**
-     * @param e
-     */
     protected Element getParentForm(Element e, LayoutContext context) {
         Node node = e;
 
@@ -282,18 +259,13 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * Clears out any references to elements or items created by this factory so far.
      */
     public void reset() {
-        forms = null;
-        //imageComponents = null;
+        forms.clear();
+        //imageComponents.clear();
     }
 
     public void remove(Element e) {
-        if (forms != null) {
-            forms.remove(e);
-        }
-
-        if (imageComponents != null) {
-            imageComponents.remove(e);
-        }
+        forms.remove(e);
+        imageComponents.remove(e); // FIXME doesn't really work because e should be `CacheKey`, not `Element`
     }
 
     public void setFormSubmissionListener(FormSubmissionListener fsl) {
