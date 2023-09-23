@@ -20,9 +20,11 @@
 package org.xhtmlrenderer.util;
 
 import java.awt.*;
+import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.Map;
+
+import static java.util.Collections.singletonMap;
 
 
 /**
@@ -33,8 +35,8 @@ import java.util.Map;
  * There is a default constructor for average quality and performance.
  */
 public class ScalingOptions {
-    private DownscaleQuality downscalingHint;
-    private Object renderingHint;
+    private final DownscaleQuality downscalingHint;
+    private final Object renderingHint;
     private int targetWidth;
     private int targetHeight;
 
@@ -104,10 +106,8 @@ public class ScalingOptions {
      *
      * @return Map of rendering hints.
      */
-    protected Map getRenderingHints() {
-        HashMap map = new HashMap();
-        map.put(RenderingHints.KEY_INTERPOLATION, getRenderingHint());
-        return map;
+    protected Map<Key, Object> getRenderingHints() {
+        return singletonMap(RenderingHints.KEY_INTERPOLATION, getRenderingHint());
     }
 
     /**
@@ -126,7 +126,6 @@ public class ScalingOptions {
      * Returns true if the target size specified by these options matches the size provided (e.g. image is
      * already at target size).
      *
-     * @param img
      * @return true if image dimensions already match target size
      */
     public boolean sizeMatches(Image img) {
