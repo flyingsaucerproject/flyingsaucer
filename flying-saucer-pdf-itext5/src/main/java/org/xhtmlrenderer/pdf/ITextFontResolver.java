@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.nio.file.Files.newInputStream;
+import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparingInt;
 import static java.util.Objects.requireNonNull;
 
@@ -76,10 +77,8 @@ public class ITextFontResolver implements FontResolver {
     public static Set<String> getDistinctFontFamilyNames(String path, String encoding, boolean embedded) {
         try {
             BaseFont font = BaseFont.createFont(path, encoding, embedded);
-            String[] fontFamilyNames = TrueTypeUtil.getFamilyNames(font);
-            Set<String> distinct = new HashSet<>();
-            Collections.addAll(distinct, fontFamilyNames);
-            return distinct;
+            Collection<String> fontFamilyNames = TrueTypeUtil.getFamilyNames(font);
+            return new HashSet<>(fontFamilyNames);
         } catch (DocumentException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -103,7 +102,7 @@ public class ITextFontResolver implements FontResolver {
         for (Iterator<FontFamily> i = _fontFamilies.values().iterator(); i.hasNext(); ) {
             FontFamily family = i.next();
             family.getFontDescriptions().removeIf(FontDescription::isFromFontFace);
-            if (family.getFontDescriptions().size() == 0) {
+            if (family.getFontDescriptions().isEmpty()) {
                 i.remove();
             }
         }
@@ -199,12 +198,12 @@ public class ITextFontResolver implements FontResolver {
                         String encoding, boolean embedded, String pathToPFB)
             throws DocumentException, IOException {
         String lower = path.toLowerCase();
-        if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
+        if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.contains(".ttc,")) {
             BaseFont font = BaseFont.createFont(path, encoding, embedded);
 
-            String[] fontFamilyNames;
+            Collection<String> fontFamilyNames;
             if (fontFamilyNameOverride != null) {
-                fontFamilyNames = new String[] { fontFamilyNameOverride };
+                fontFamilyNames = singletonList(fontFamilyNameOverride);
             } else {
                 fontFamilyNames = TrueTypeUtil.getFamilyNames(font);
             }
@@ -257,12 +256,12 @@ public class ITextFontResolver implements FontResolver {
             String fontFamilyNameOverride, IdentValue fontWeightOverride, IdentValue fontStyleOverride, String uri, String encoding, boolean embedded, byte[] afmttf, byte[] pfb)
             throws DocumentException, IOException {
         String lower = uri.toLowerCase();
-        if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
+        if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.contains(".ttc,")) {
             BaseFont font = BaseFont.createFont(uri, encoding, embedded, false, afmttf, pfb);
 
-            String[] fontFamilyNames;
+            Collection<String> fontFamilyNames;
             if (fontFamilyNameOverride != null) {
-                fontFamilyNames = new String[] { fontFamilyNameOverride };
+                fontFamilyNames = singletonList(fontFamilyNameOverride);
             } else {
                 fontFamilyNames = TrueTypeUtil.getFamilyNames(font);
             }
@@ -623,7 +622,7 @@ public class ITextFontResolver implements FontResolver {
                 }
             }
 
-            if (candidates.size() == 0) {
+            if (candidates.isEmpty()) {
                 if (style == IdentValue.ITALIC) {
                     return match(desiredWeight, IdentValue.OBLIQUE);
                 } else if (style == IdentValue.OBLIQUE) {
