@@ -71,7 +71,7 @@ public class Uu extends Util {
     }
 
     public static void dump_stack() {
-        p(stack_to_string(new Exception()));
+        p(stack_to_string(new Exception("Taking a thread dump...")));
     }
 
     public static void main(String[] args) {

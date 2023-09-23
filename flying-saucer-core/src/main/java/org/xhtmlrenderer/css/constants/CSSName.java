@@ -39,6 +39,9 @@ import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -54,6 +57,8 @@ import java.util.TreeMap;
  *
  * @author Patrick Wright
  */
+@ParametersAreNonnullByDefault
+@CheckReturnValue
 public final class CSSName implements Comparable<CSSName> {
     /**
      * marker var, used for initialization
@@ -1814,8 +1819,8 @@ public final class CSSName implements Comparable<CSSName> {
 
     //Assumed to be consistent with equals because CSSName is in essence an enum
     @Override
-    public int compareTo(CSSName object) {
-        if (object == null) throw new NullPointerException();//required by Comparable
+    public int compareTo(@Nullable CSSName object) {
+        if (object == null) throw new NullPointerException("Cannot compare " + this + " to null");
         return FS_ID - object.FS_ID;//will throw ClassCastException according to Comparable if not a CSSName
     }
 

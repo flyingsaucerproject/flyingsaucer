@@ -19,8 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Rectangle;
-
+import com.itextpdf.text.pdf.BaseFont;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -30,7 +29,7 @@ import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 
-import com.itextpdf.text.pdf.BaseFont;
+import java.awt.*;
 
 public class ITextTextRenderer implements TextRenderer {
     private static float TEXT_MEASURING_DELTA = 0.01f;
@@ -96,18 +95,18 @@ public class ITextTextRenderer implements TextRenderer {
     }
 
     public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
     public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
     public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }
 
     public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: drawGlyphVector");
     }
 }

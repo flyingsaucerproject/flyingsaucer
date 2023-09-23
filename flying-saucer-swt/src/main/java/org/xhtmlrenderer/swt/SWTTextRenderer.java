@@ -19,15 +19,20 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.awt.Rectangle;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
-import org.xhtmlrenderer.extend.*;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.extend.FSGlyphVector;
+import org.xhtmlrenderer.extend.FontContext;
+import org.xhtmlrenderer.extend.OutputDevice;
+import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.util.Configuration;
+
+import java.awt.*;
 
 /**
  * Render text with SWT.
@@ -95,7 +100,7 @@ public class SWTTextRenderer implements TextRenderer {
     }
 
     public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: drawGlyphVector");
     }
 
     public void drawString(OutputDevice outputDevice, String string, float x, float y,
@@ -106,16 +111,16 @@ public class SWTTextRenderer implements TextRenderer {
 
     public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font,
             FSGlyphVector fsGlyphVector, int index, float x, float y) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
     public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font,
             FSGlyphVector fsGlyphVector) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
     public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }
 
 }

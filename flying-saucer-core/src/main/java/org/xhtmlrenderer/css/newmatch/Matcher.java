@@ -219,13 +219,13 @@ public class Matcher {
                         if (hasNext()) {
                             return selectors.next().getRuleset();
                         } else {
-                            throw new NoSuchElementException();
+                            throw new NoSuchElementException("No more rulesets");
                         }
                     }
 
                     @Override
                     public void remove() {
-                        throw new UnsupportedOperationException();
+                        throw new UnsupportedOperationException("Removing rulesets is not supported");
                     }
                 };
     }
@@ -246,13 +246,13 @@ public class Matcher {
                         if (hasNext()) {
                             return selectors.next().getRuleset();
                         } else {
-                            throw new NoSuchElementException();
+                            throw new NoSuchElementException("No more rulesets");
                         }
                     }
 
                     @Override
                     public void remove() {
-                        throw new UnsupportedOperationException();
+                        throw new UnsupportedOperationException("Removing rulesets is not supported");
                     }
                 };
     }
@@ -323,7 +323,7 @@ public class Matcher {
                     //carry it forward to other descendants
                     childAxes.add(axe);
                 } else if (axe.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Selector axis==" + Selector.IMMEDIATE_SIBLING_AXIS);
                 }
                 if (!axe.matches(e, _attRes, _treeRes)) {
                     continue;
@@ -356,7 +356,7 @@ public class Matcher {
                 if (chain == null) {
                     mappedSelectors.add(axe);
                 } else if (chain.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Selector axis==" + Selector.IMMEDIATE_SIBLING_AXIS);
                 } else {
                     childAxes.add(chain);
                 }

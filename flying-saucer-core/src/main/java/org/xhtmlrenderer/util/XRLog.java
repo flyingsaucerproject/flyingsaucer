@@ -222,7 +222,7 @@ public class XRLog {
             XRLog.cascade("Cascade msg");
             XRLog.cascade(Level.WARNING, "Cascade msg");
             XRLog.exception("Exception msg");
-            XRLog.exception("Exception msg", new Exception());
+            XRLog.exception("Exception msg", new Exception("General exception"));
             XRLog.general("General msg");
             XRLog.general(Level.WARNING, "General msg");
             XRLog.init("Init msg");

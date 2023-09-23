@@ -127,7 +127,7 @@ public class PropertyValue implements CSSPrimitiveValue {
 
     @Override
     public Counter getCounterValue() throws DOMException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getCounterValue");
     }
 
     @Override
@@ -146,12 +146,12 @@ public class PropertyValue implements CSSPrimitiveValue {
 
     @Override
     public RGBColor getRGBColorValue() throws DOMException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getRGBColorValue");
     }
 
     @Override
     public Rect getRectValue() throws DOMException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: getRectValue");
     }
 
     @Override
@@ -161,12 +161,12 @@ public class PropertyValue implements CSSPrimitiveValue {
 
     @Override
     public void setFloatValue(short unitType, float floatValue) throws DOMException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: setFloatValue");
     }
 
     @Override
     public void setStringValue(short stringType, String stringValue) throws DOMException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: setStringValue");
     }
 
     @Override
@@ -181,7 +181,7 @@ public class PropertyValue implements CSSPrimitiveValue {
 
     @Override
     public void setCssText(String cssText) throws DOMException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unsupported operation: setCssText");
     }
 
     public FSColor getFSColor() {
