@@ -50,7 +50,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
 
     private int scalePolicy = SCALE_POLICY_NONE;
     private double scale = -1.0d;
-    private final ArrayList scListeners;
+    private final java.util.List<ScaleChangeListener> scListeners = new ArrayList<>();
     /**
      * The lastly calculated layout size
      */
@@ -60,7 +60,6 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
      */
     public ScalableXHTMLPanel() {
-        scListeners = new ArrayList();
     }
 
     /**
@@ -71,7 +70,6 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      */
     public ScalableXHTMLPanel(UserAgentCallback uac) {
         super(uac);
-        scListeners = new ArrayList();
     }
 
     /**
@@ -151,9 +149,8 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
 
     private void scaleChanged() {
         ScaleChangeEvent evt = new ScaleChangeEvent(this, scale);
-        for (int i = 0; i < scListeners.size(); i++) {
-            ScaleChangeListener scl = (ScaleChangeListener) scListeners.get(i);
-            scl.scaleChanged(evt);
+        for (ScaleChangeListener scListener : scListeners) {
+            scListener.scaleChanged(evt);
         }
     }
 
