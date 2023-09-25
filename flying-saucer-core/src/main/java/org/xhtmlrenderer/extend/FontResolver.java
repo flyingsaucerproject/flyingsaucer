@@ -25,6 +25,6 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
 
 public interface FontResolver {
-    public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec);
-    public void flushCache();
+    FSFont resolveFont(SharedContext renderingContext, FontSpecification spec);
+    void flushCache();
 }

@@ -193,7 +193,7 @@ public class AWTFontResolver implements FontResolver {
  * FindBugs: use "" instead of new String("")
  *
  * Revision 1.4  2009/04/25 11:09:32  pdoubleya
- * Case-insensitve checks for font name, fix by Peter Fassev in issue #263. Also, remove commented calls to Uu.p.
+ * Case-insensitive checks for font name, fix by Peter Fassev in issue #263. Also, remove commented calls to Uu.p.
  *
  * Revision 1.3  2008/01/22 21:25:40  pdoubleya
  * Fix: fonts not being keyed properly in font cache when a scaling factor was applied to the text renderer; scaled font size now used as part of the key.

@@ -24,7 +24,6 @@ import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
