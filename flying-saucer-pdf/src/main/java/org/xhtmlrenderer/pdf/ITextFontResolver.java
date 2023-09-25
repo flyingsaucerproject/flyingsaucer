@@ -28,6 +28,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.util.FontUtil;
@@ -41,7 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,23 +51,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.Comparator.comparingInt;
 import static java.util.Objects.requireNonNull;
 
 public class ITextFontResolver implements FontResolver {
-    private final Map<String, FontFamily> _fontFamilies;
+    private final Map<String, FontFamily> _fontFamilies = new HashMap<>();
     private final Map<String, FontDescription> _fontCache = new HashMap<>();
-    private final boolean _withCJKFonts;
-    private final SharedContext _sharedContext;
 
+    public ITextFontResolver() {
+    }
+
+    /**
+     * @deprecated Use default constructor (sharedContext is not used anymore by this class)
+     */
+    @Deprecated
     public ITextFontResolver(SharedContext sharedContext) {
         this(sharedContext, true);
     }
 
-    public ITextFontResolver(SharedContext sharedContext, boolean withCjkfonts ) {
-        _sharedContext = sharedContext;
-        _withCJKFonts = withCjkfonts;
-        _fontFamilies = createInitialFontMap();
+    /**
+     * @param sharedContext not needed in constructor anymore
+     * @param withCjkfonts instead of passing this parameter, please use subclass {@link CJKFontResolver}
+     * @deprecated Use default constructor
+     */
+    @Deprecated
+    public ITextFontResolver(SharedContext sharedContext, boolean withCjkfonts) {
+    }
+
+    public synchronized Map<String, FontFamily> getFonts() {
+        if (_fontFamilies.isEmpty()) {
+            _fontFamilies.putAll(loadFonts());
+        }
+        return _fontFamilies;
     }
 
     /**
@@ -100,14 +114,13 @@ public class ITextFontResolver implements FontResolver {
     @Override
     public void flushCache() {
         _fontFamilies.clear();
-        _fontFamilies.putAll(createInitialFontMap());
         _fontCache.clear();
     }
 
     public void flushFontFaceFonts() {
         _fontCache.clear();
 
-        for (Iterator<FontFamily> i = _fontFamilies.values().iterator(); i.hasNext(); ) {
+        for (Iterator<FontFamily> i = getFonts().values().iterator(); i.hasNext(); ) {
             FontFamily family = i.next();
             family.getFontDescriptions().removeIf(FontDescription::isFromFontFace);
             if (family.getFontDescriptions().isEmpty()) {
@@ -116,7 +129,7 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
-    public void importFontFaces(List<FontFaceRule> fontFaces) {
+    public void importFontFaces(List<FontFaceRule> fontFaces, UserAgentCallback userAgentCallback) {
         for (FontFaceRule rule : fontFaces) {
             CalculatedStyle style = rule.getCalculatedStyle();
 
@@ -125,7 +138,7 @@ public class ITextFontResolver implements FontResolver {
                 continue;
             }
 
-            byte[] font1 = _sharedContext.getUac().getBinaryResource(src.asString());
+            byte[] font1 = userAgentCallback.getBinaryResource(src.asString());
             if (font1 == null) {
                 XRLog.exception("Could not load font " + src.asString());
                 continue;
@@ -134,7 +147,7 @@ public class ITextFontResolver implements FontResolver {
             byte[] font2 = null;
             FSDerivedValue metricsSrc = style.valueByName(CSSName.FS_FONT_METRIC_SRC);
             if (metricsSrc != IdentValue.NONE) {
-                font2 = _sharedContext.getUac().getBinaryResource(metricsSrc.asString());
+                font2 = userAgentCallback.getBinaryResource(metricsSrc.asString());
                 if (font2 == null) {
                     XRLog.exception("Could not load font metric data " + src.asString());
                     continue;
@@ -352,10 +365,10 @@ public class ITextFontResolver implements FontResolver {
     }
 
     private FontFamily getFontFamily(String fontFamilyName) {
-        FontFamily fontFamily = _fontFamilies.get(fontFamilyName);
+        FontFamily fontFamily = getFonts().get(fontFamilyName);
         if (fontFamily == null) {
             fontFamily = new FontFamily(fontFamilyName);
-            _fontFamilies.put(fontFamilyName, fontFamily);
+            getFonts().put(fontFamilyName, fontFamily);
         }
         return fontFamily;
     }
@@ -411,7 +424,7 @@ public class ITextFontResolver implements FontResolver {
             return new ITextFSFont(result, size);
         }
 
-        FontFamily family = _fontFamilies.get(normalizedFontFamily);
+        FontFamily family = getFonts().get(normalizedFontFamily);
         if (family != null) {
             result = family.match(convertWeightToInt(weight), style);
             if (result != null) {
@@ -461,36 +474,30 @@ public class ITextFontResolver implements FontResolver {
         return name + "-" + weight + "-" + style;
     }
 
-    private Map<String, FontFamily> createInitialFontMap() {
+    protected Map<String, FontFamily> loadFonts() {
         Map<String, FontFamily> result = new HashMap<>();
-
-        try {
-            addCourier(result);
-            addTimes(result);
-            addHelvetica(result);
-            addSymbol(result);
-            addZapfDingbats(result);
-
-            // Try and load the iTextAsian fonts
-            if(_withCJKFonts && ITextFontResolver.class.getClassLoader().getResource("com/lowagie/text/pdf/fonts/cjkfonts.properties") != null) {
-                addCJKFonts(result);
-            }
-        } catch (DocumentException | IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
+        addCourier(result);
+        addTimes(result);
+        addHelvetica(result);
+        addSymbol(result);
+        addZapfDingbats(result);
         return result;
     }
 
-    private static BaseFont createFont(String name) throws DocumentException, IOException {
+    private BaseFont createFont(String name) {
         return createFont(name, "winansi", true);
     }
 
-    private static BaseFont createFont(String name, String encoding, boolean embedded) throws DocumentException, IOException {
-        return BaseFont.createFont(name, encoding, embedded);
+    private BaseFont createFont(String name, String encoding, boolean embedded) {
+        try {
+            return BaseFont.createFont(name, encoding, embedded);
+        }
+        catch (DocumentException | IOException e) {
+            throw new RuntimeException("Failed to load font " + name + " and encoding " + encoding);
+        }
     }
 
-    private static void addCourier(Map<String, FontFamily> result) throws DocumentException, IOException {
+    private void addCourier(Map<String, FontFamily> result) {
         FontFamily courier = new FontFamily("Courier");
 
         courier.addFontDescription(new FontDescription(
@@ -507,7 +514,7 @@ public class ITextFontResolver implements FontResolver {
         result.put("Courier", courier);
     }
 
-    private static void addTimes(Map<String, FontFamily> result) throws DocumentException, IOException {
+    private void addTimes(Map<String, FontFamily> result) {
         FontFamily times = new FontFamily("Times");
 
         times.addFontDescription(new FontDescription(
@@ -523,7 +530,7 @@ public class ITextFontResolver implements FontResolver {
         result.put("TimesRoman", times);
     }
 
-    private static void addHelvetica(Map<String, FontFamily> result) throws DocumentException, IOException {
+    private void addHelvetica(Map<String, FontFamily> result) {
         FontFamily helvetica = new FontFamily("Helvetica");
 
         helvetica.addFontDescription(new FontDescription(
@@ -540,270 +547,16 @@ public class ITextFontResolver implements FontResolver {
         result.put("Helvetica", helvetica);
     }
 
-    private static void addSymbol(Map<String, FontFamily> result) throws DocumentException, IOException {
+    private void addSymbol(Map<String, FontFamily> result) {
         FontFamily fontFamily = new FontFamily("Symbol");
         fontFamily.addFontDescription(new FontDescription(createFont(BaseFont.SYMBOL, BaseFont.CP1252, false), IdentValue.NORMAL, 400));
         result.put("Symbol", fontFamily);
     }
 
-    private static void addZapfDingbats(Map<String, FontFamily> result) throws DocumentException, IOException {
+    private void addZapfDingbats(Map<String, FontFamily> result) {
         FontFamily fontFamily = new FontFamily("ZapfDingbats");
         fontFamily.addFontDescription(new FontDescription(createFont(BaseFont.ZAPFDINGBATS, BaseFont.CP1252, false), IdentValue.NORMAL, 400));
         result.put("ZapfDingbats", fontFamily);
     }
 
-    // fontFamilyName, fontName, encoding
-    private static final String[][] cjkFonts = {
-        {"STSong-Light-H", "STSong-Light", "UniGB-UCS2-H"},
-        {"STSong-Light-V", "STSong-Light", "UniGB-UCS2-V"},
-        {"STSongStd-Light-H", "STSongStd-Light", "UniGB-UCS2-H"},
-        {"STSongStd-Light-V", "STSongStd-Light", "UniGB-UCS2-V"},
-        {"MHei-Medium-H", "MHei-Medium", "UniCNS-UCS2-H"},
-        {"MHei-Medium-V", "MHei-Medium", "UniCNS-UCS2-V"},
-        {"MSung-Light-H", "MSung-Light", "UniCNS-UCS2-H"},
-        {"MSung-Light-V", "MSung-Light", "UniCNS-UCS2-V"},
-        {"MSungStd-Light-H", "MSungStd-Light", "UniCNS-UCS2-H"},
-        {"MSungStd-Light-V", "MSungStd-Light", "UniCNS-UCS2-V"},
-        {"HeiseiMin-W3-H", "HeiseiMin-W3", "UniJIS-UCS2-H"},
-        {"HeiseiMin-W3-V", "HeiseiMin-W3", "UniJIS-UCS2-V"},
-        {"HeiseiKakuGo-W5-H", "HeiseiKakuGo-W5", "UniJIS-UCS2-H"},
-        {"HeiseiKakuGo-W5-V", "HeiseiKakuGo-W5", "UniJIS-UCS2-V"},
-        {"KozMinPro-Regular-H", "KozMinPro-Regular", "UniJIS-UCS2-HW-H"},
-        {"KozMinPro-Regular-V", "KozMinPro-Regular", "UniJIS-UCS2-HW-V"},
-        {"HYGoThic-Medium-H", "HYGoThic-Medium", "UniKS-UCS2-H"},
-        {"HYGoThic-Medium-V", "HYGoThic-Medium", "UniKS-UCS2-V"},
-        {"HYSMyeongJo-Medium-H", "HYSMyeongJo-Medium", "UniKS-UCS2-H"},
-        {"HYSMyeongJo-Medium-V", "HYSMyeongJo-Medium", "UniKS-UCS2-V"},
-        {"HYSMyeongJoStd-Medium-H", "HYSMyeongJoStd-Medium", "UniKS-UCS2-H"},
-        {"HYSMyeongJoStd-Medium-V", "HYSMyeongJoStd-Medium", "UniKS-UCS2-V"}
-    };
-
-    private static void addCJKFonts(Map<String, FontFamily> fontFamilyMap) throws DocumentException, IOException {
-        for (String[] cjkFont : cjkFonts) {
-            String fontFamilyName = cjkFont[0];
-            String fontName = cjkFont[1];
-            String encoding = cjkFont[2];
-
-            addCJKFont(fontFamilyName, fontName, encoding, fontFamilyMap);
-        }
-    }
-
-    private static void addCJKFont(String fontFamilyName, String fontName, String encoding, Map<String, FontFamily> fontFamilyMap) throws DocumentException, IOException {
-        FontFamily fontFamily = new FontFamily(fontFamilyName);
-
-        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",BoldItalic", encoding, false), IdentValue.OBLIQUE, 700));
-        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",Italic", encoding, false), IdentValue.OBLIQUE, 400));
-        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",Bold", encoding, false), IdentValue.NORMAL, 700));
-        fontFamily.addFontDescription(new FontDescription(createFont(fontName, encoding, false), IdentValue.NORMAL, 400));
-
-        fontFamilyMap.put(fontFamilyName, fontFamily);
-    }
-
-    private static class FontFamily {
-        private final String _name;
-        private final List<FontDescription> _fontDescriptions = new ArrayList<>();
-
-        private FontFamily(String name) {
-            _name = name;
-        }
-
-        public List<FontDescription> getFontDescriptions() {
-            return _fontDescriptions;
-        }
-
-        public void addFontDescription(FontDescription description) {
-            _fontDescriptions.add(description);
-            _fontDescriptions.sort(comparingInt(FontDescription::getWeight));
-        }
-
-        public FontDescription match(int desiredWeight, IdentValue style) {
-            List<FontDescription> candidates = new ArrayList<>();
-
-            for (FontDescription description : _fontDescriptions) {
-                if (description.getStyle() == style) {
-                    candidates.add(description);
-                }
-            }
-
-            if (candidates.isEmpty()) {
-                if (style == IdentValue.ITALIC) {
-                    return match(desiredWeight, IdentValue.OBLIQUE);
-                } else if (style == IdentValue.OBLIQUE) {
-                    return match(desiredWeight, IdentValue.NORMAL);
-                } else {
-                    candidates.addAll(_fontDescriptions);
-                }
-            }
-
-            FontDescription result = findByWeight(candidates, desiredWeight, SM_EXACT);
-
-            if (result != null) {
-                return result;
-            } else {
-                if (desiredWeight <= 500) {
-                    return findByWeight(candidates, desiredWeight, SM_LIGHTER_OR_DARKER);
-                } else {
-                    return findByWeight(candidates, desiredWeight, SM_DARKER_OR_LIGHTER);
-                }
-            }
-        }
-
-        private static final int SM_EXACT = 1;
-        private static final int SM_LIGHTER_OR_DARKER = 2;
-        private static final int SM_DARKER_OR_LIGHTER = 3;
-
-        private FontDescription findByWeight(List<FontDescription> matches, int desiredWeight, int searchMode) {
-            if (searchMode == SM_EXACT) {
-                for (FontDescription description : matches) {
-                    if (description.getWeight() == desiredWeight) {
-                        return description;
-                    }
-                }
-                return null;
-            } else if (searchMode == SM_LIGHTER_OR_DARKER){
-                int offset;
-                FontDescription description = null;
-                for (offset = 0; offset < matches.size(); offset++) {
-                    description = matches.get(offset);
-                    if (description.getWeight() > desiredWeight) {
-                        break;
-                    }
-                }
-
-                if (offset > 0 && description.getWeight() > desiredWeight) {
-                    return matches.get(offset - 1);
-                } else {
-                    return description;
-                }
-
-            } else if (searchMode == SM_DARKER_OR_LIGHTER) {
-                int offset;
-                FontDescription description = null;
-                for (offset = matches.size() - 1; offset >= 0; offset--) {
-                    description = matches.get(offset);
-                    if (description.getWeight() < desiredWeight) {
-                        break;
-                    }
-                }
-
-                if (offset != matches.size() - 1 && description != null && description.getWeight() < desiredWeight) {
-                    return matches.get(offset+1);
-                } else {
-                    return description;
-                }
-            }
-
-            return null;
-        }
-    }
-
-    public static class FontDescription {
-        private IdentValue _style;
-        private int _weight;
-
-        private BaseFont _font;
-
-        private float _underlinePosition;
-        private float _underlineThickness;
-
-        private float _yStrikeoutSize;
-        private float _yStrikeoutPosition;
-
-        private boolean _isFromFontFace;
-
-        public FontDescription() {
-        }
-
-        public FontDescription(BaseFont font) {
-            this(font, IdentValue.NORMAL, 400);
-        }
-
-        public FontDescription(BaseFont font, IdentValue style, int weight) {
-            _font = font;
-            _style = style;
-            _weight = weight;
-            setMetricDefaults();
-        }
-
-        public BaseFont getFont() {
-            return _font;
-        }
-
-        public void setFont(BaseFont font) {
-            _font = font;
-        }
-
-        public int getWeight() {
-            return _weight;
-        }
-
-        public void setWeight(int weight) {
-            _weight = weight;
-        }
-
-        public IdentValue getStyle() {
-            return _style;
-        }
-
-        public void setStyle(IdentValue style) {
-            _style = style;
-        }
-
-        public float getUnderlinePosition() {
-            return _underlinePosition;
-        }
-
-        /**
-         * This refers to the top of the underline stroke
-         */
-        public void setUnderlinePosition(float underlinePosition) {
-            _underlinePosition = underlinePosition;
-        }
-
-        public float getUnderlineThickness() {
-            return _underlineThickness;
-        }
-
-        public void setUnderlineThickness(float underlineThickness) {
-            _underlineThickness = underlineThickness;
-        }
-
-        public float getYStrikeoutPosition() {
-            return _yStrikeoutPosition;
-        }
-
-        public void setYStrikeoutPosition(float strikeoutPosition) {
-            _yStrikeoutPosition = strikeoutPosition;
-        }
-
-        public float getYStrikeoutSize() {
-            return _yStrikeoutSize;
-        }
-
-        public void setYStrikeoutSize(float strikeoutSize) {
-            _yStrikeoutSize = strikeoutSize;
-        }
-
-        private void setMetricDefaults() {
-            _underlinePosition = -50;
-            _underlineThickness = 50;
-
-            int[] box = _font.getCharBBox('x');
-            if (box != null) {
-                _yStrikeoutPosition = box[3] / 2 + 50;
-                _yStrikeoutSize = 100;
-            } else {
-                // Do what the JDK does, size will be calculated by ITextTextRenderer
-                _yStrikeoutPosition = _font.getFontDescriptor(BaseFont.BBOXURY, 1000.0f) / 3.0f;
-            }
-        }
-
-        public boolean isFromFontFace() {
-            return _isFromFontFace;
-        }
-
-        public void setFromFontFace(boolean isFromFontFace) {
-            _isFromFontFace = isFromFontFace;
-        }
-    }
 }
