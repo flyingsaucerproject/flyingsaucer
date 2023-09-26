@@ -5,11 +5,8 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import static java.util.Arrays.asList;
 
 /**
- * Created by IntelliJ IDEA.
  * User: tobe
  * Date: 2005-jun-23
- * Time: 00:28:43
- * To change this template use File | Settings | File Templates.
  */
 public class FontSpecification {
     public float size;
