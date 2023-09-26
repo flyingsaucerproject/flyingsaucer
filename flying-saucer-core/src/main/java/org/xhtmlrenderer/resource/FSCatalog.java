@@ -49,16 +49,16 @@ import static java.util.Objects.requireNonNull;
  * files, and is useful when there are many schemas, or when schemas are broken
  * into many smaller files. Currently, FSCatalog only supports the very simple
  * mapping of public id to local URI using the public element in the catalog XML.
- * <p/>
+ * <p>
  * <p>FSCatalog is not an EntityResolver; it only parses a catalog file. See
  * {@link FSEntityResolver} for entity resolution.
- * <p/>
+ * <p>
  * <p>To use, instantiate the class, and call {@link #parseCatalog(InputSource)}
  * to retrieve a {@link java.util.Map} keyed by public ids. The class uses
  * an XMLReader instance retrieved via {@link XMLResource#newXMLReader()}, so
  * XMLReader configuration (and specification) follows that of the standard XML
  * parsing in Flying Saucer.
- * <p/>
+ * <p>
  * <p>This class is not safe for multithreaded access.
  *
  * @author Patrick Wright

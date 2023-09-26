@@ -21,7 +21,6 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,8 +93,6 @@ public class JDKXRLogger implements XRLogger {
                 Configuration.setConfigLogger(Logger.getLogger(XRLog.CONFIG));
             } catch (SecurityException e) {
                 // may happen in a sandbox environment
-            } catch (IOException e) {
-                throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage(), e);
             }
         }
     }
@@ -115,7 +112,7 @@ public class JDKXRLogger implements XRLogger {
         return props;
     }
 
-    private static void initializeJDKLogManager(final Properties fsLoggingProperties) throws IOException {
+    private static void initializeJDKLogManager(final Properties fsLoggingProperties) {
         final List<Logger> loggers = retrieveLoggers();
 
         configureLoggerHandlerForwarding(fsLoggingProperties, loggers);

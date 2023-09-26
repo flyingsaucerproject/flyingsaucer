@@ -49,31 +49,31 @@ public class URLUTF8Encoder {
 
     /**
      * Encode a string to the "x-www-form-urlencoded" form, enhanced with the
-     * UTF-8-in-URL proposal. This is what happens: <p/>
+     * UTF-8-in-URL proposal. This is what happens: <p>
      *
      *
      * <ul>
      *   <li> <p>
      *
      *   The ASCII characters 'a' through 'z', 'A' through 'Z', and '0' through
-     *   '9' remain the same. <p/>
+     *   '9' remain the same. <p>
      *
      *
      *   <li> <p>
      *
-     *   The unreserved characters - _ . ! ~ * ' ( ) remain the same. <p/>
+     *   The unreserved characters - _ . ! ~ * ' ( ) remain the same. <p>
      *
      *
      *   <li> <p>
      *
-     *   The space character ' ' is converted into a plus sign '+'. <p/>
+     *   The space character ' ' is converted into a plus sign '+'. <p>
      *
      *
      *   <li> <p>
      *
      *   All other ASCII characters are converted into the 3-character string
      *   "%xy", where xy is the two-digit hexadecimal representation of the
-     *   character code <p/>
+     *   character code <p>
      *
      *
      *   <li> <p>

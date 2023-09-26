@@ -250,7 +250,7 @@ public class ITextRenderer {
         createPDF(os, true, 0);
     }
 
-    public void writeNextDocument() throws DocumentException, IOException {
+    public void writeNextDocument() throws IOException {
         writeNextDocument(0);
     }
 

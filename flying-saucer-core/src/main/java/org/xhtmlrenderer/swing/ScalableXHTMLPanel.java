@@ -35,7 +35,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
- * ScalableXHTMLPanel extends {@see XHTMLPanel} to allow zoom on output.
+ * ScalableXHTMLPanel extends {@link org.xhtmlrenderer.simple.XHTMLPanel} to allow zoom on output.
  *
  * @author chm
  */
@@ -124,7 +124,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * Force scale to use
      *
      * @param newScale The scale to use
-     * @throws IllegalArgumentException If newScale <= <tt>0.0d</tt>.
+     * @throws IllegalArgumentException If {@code newScale <= <tt>0.0d</tt>}.
      */
     public void setScale(double newScale) throws IllegalArgumentException {
         if (newScale <= 0.0d) throw new IllegalArgumentException("Only positive scales are allowed.");

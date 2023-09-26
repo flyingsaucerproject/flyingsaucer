@@ -17,20 +17,17 @@
  */
 
 
-
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 
 import javax.swing.*;
-import java.io.File;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.io.File;
 
 /**
  * This example shows rendering a page where the font size can be adjusted dynamically once the page is loaded using
  * a font scaling factor. Note that scaling up or down once the page is rendered requires it to be re-rendered
- * and re-layed out, which takes a small (possibly insignificant) amount of time, but which may be noticeable for
+ * and re-laid out, which takes a small (possibly insignificant) amount of time, but which may be noticeable for
  * larger pages.
  *
  *
@@ -39,7 +36,7 @@ import java.awt.event.ActionEvent;
 public class FontScaleJPanelRender {
     private String fileName;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
             new FontScaleJPanelRender().run(args);
         } catch (IllegalArgumentException e) {
@@ -76,26 +73,20 @@ public class FontScaleJPanelRender {
         panel.setMinFontScale(0.01F);
         panel.setMaxFontScale(12F);
         JButton smaller = new JButton("F-");
-        smaller.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                panel.decrementFontSize();
-                System.out.println("decremented");
-            }
+        smaller.addActionListener(event -> {
+            panel.decrementFontSize();
+            System.out.println("decremented");
         });
         JButton def = new JButton("F0");
-        def.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                panel.resetFontSize();
+        def.addActionListener(event -> {
+            panel.resetFontSize();
 
-                System.out.println("reset");
-            }
+            System.out.println("reset");
         });
         JButton larger = new JButton("F+");
-        larger.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                panel.incrementFontSize();
-                System.out.println("incremented");
-            }
+        larger.addActionListener(event -> {
+            panel.incrementFontSize();
+            System.out.println("incremented");
         });
         JPanel top = new JPanel(new FlowLayout());
         top.add(smaller);

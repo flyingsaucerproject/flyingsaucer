@@ -23,7 +23,12 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.swing.Java2DRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 
-import javax.print.*;
+import javax.print.Doc;
+import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.SimpleDoc;
 import javax.print.attribute.Attribute;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintJobAttributeSet;
@@ -36,7 +41,6 @@ import javax.print.event.PrintJobListener;
 import java.awt.*;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
-import java.awt.print.PrinterException;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -54,12 +58,12 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
     /**
      * the base directory of the templates
      */
-    private String base;
+    private final String base;
 
     /**
      * the logging mechanism log4j
      */
-    private Logger log;
+    private final Logger log;
 
     /**
      * the tread that runs after initialization
@@ -72,13 +76,11 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
     private Java2DRenderer j2dr;
 
     private final File file;
-    private UserAgentCallback uac;
+    private final UserAgentCallback uac;
 
     /**
      * the constructor of the cameventprinter: starts logging and starts the
      * thread
-     *
-     * @param file
      */
     public Printer(File file) {
         this.file = file;
@@ -144,8 +146,8 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
                     log.info("printer selected : " + service.getName());
                     DocPrintJob job = service.createPrintJob();
                     job.addPrintJobListener(this);
-                    PrintJobAttributeSet atts = job.getAttributes();
-                    Attribute[] arr = atts.toArray();
+                    PrintJobAttributeSet attributes = job.getAttributes();
+                    Attribute[] arr = attributes.toArray();
                     for (int i = 0; i < arr.length; i++) {
                         log.fine("arr[" + i + "]= " + arr[0].getName());
                     }
@@ -175,7 +177,7 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
     /**
      * The main function is made for debugging this application separately only.
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         System.out.println("test program for template printing");
         if (args.length > 0) {
             File file = new File(args[0]);
@@ -210,8 +212,7 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
 
     }
 
-    public int print(Graphics graphics, PageFormat pf, int pi)
-            throws PrinterException {
+    public int print(Graphics graphics, PageFormat pf, int pi) {
         log.info("print");
 
         try {

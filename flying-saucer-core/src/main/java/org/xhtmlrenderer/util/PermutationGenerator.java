@@ -7,7 +7,7 @@ import java.math.BigInteger;
  * The PermutationGenerator Java class systematically generates permutations. It relies on the fact that any set with n
  * elements can be placed in one-to-one correspondence with the set {1, 2, 3, ..., n}. The algorithm is described by
  * Kenneth H. Rosen, Discrete Mathematics and Its Applications, 2nd edition (NY: McGraw-Hill, 1991), pp. 282-284.
- * <p/>
+ * <p>
  * The class is very easy to use. Suppose that you wish to generate all permutations of the strings "a", "b", "c", and
  * "d". Put them into an array. Keep calling the permutation generator's {@link #getNext ()} method until there are no
  * more permutations left. The {@link #getNext ()} method returns an array of integers, which tell you the order in
@@ -29,7 +29,7 @@ import java.math.BigInteger;
  * </pre>
  * One caveat. Don't use this class on large sets. Recall that the number of permutations of a set containing n elements
  * is n factorial, which is a very large number even when n is as small as 20. 20! is 2,432,902,008,176,640,000.
- * <p/>
+ * <p>
  * NOTE: This class was taken from the internet, as posted by Michael Gilleland on <a
  * href="http://www.merriampark.com/perm.htm">this website</a>. The code was posted with the following comment: "The
  * source code is free for you to use in whatever way you wish."

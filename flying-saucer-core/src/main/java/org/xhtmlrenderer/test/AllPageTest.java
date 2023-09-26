@@ -4,28 +4,22 @@ import org.xhtmlrenderer.simple.Graphics2DRenderer;
 import org.xhtmlrenderer.util.Uu;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Date;
 
 public class AllPageTest {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         new AllPageTest().run();
     }
 
     public void run() {
         try {
             String demosDir = "d:/java/javanet/xhtmlrenderer/demos/browser/xhtml/new";
-            File[] files = new File(demosDir).listFiles(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return name.endsWith("xhtml");
-                }
-            });
-            for (int i = 0; i < files.length; i++) {
-                File file = files[i];
+            File[] files = new File(demosDir).listFiles((dir, name) -> name.endsWith("xhtml"));
+            for (File file : files) {
                 try {
                     render(file);
-                } catch ( Exception ex ) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }

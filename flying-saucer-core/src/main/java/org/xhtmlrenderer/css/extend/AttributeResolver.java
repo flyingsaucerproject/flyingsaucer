@@ -23,12 +23,12 @@ import javax.annotation.Nullable;
 
 /**
  * In XML, an application may or may not know how to find the ID and/or class
- * and/or attribute defaults of an element. <p/>
- * <p/>
+ * and/or attribute defaults of an element. <p>
+ * <p>
  * To enable matching of identity conditions, class conditions, language, and
  * attribute defaults you need to provide an AttributeResolver to the StyleMap.
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * NOTE: The application is required to look in a document's internal subset for
  * default attribute values, but the application is not required to use its
  * built-in knowledge of a namespace or look in the external subset.

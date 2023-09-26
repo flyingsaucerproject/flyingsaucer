@@ -19,7 +19,11 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -28,7 +32,7 @@ import java.util.zip.ZipOutputStream;
  * in the directory are included. To use, instantiate with a reference to
  * the directory to ZIP, and to the output file to create, then call
  * {@link #zipDirectory()} to create the output file.
- * <p/>
+ * <p>
  * Note that this is ZIP-compatible, not GZIP-compatible (ZIP is both an archive format
  * and a compression format, GZIP is just a compression format).
  */

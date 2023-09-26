@@ -1,18 +1,15 @@
 package org.xhtmlrenderer.util;
 
-import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.BufferedInputStream;
-import java.net.URLConnection;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 
 /**
- * Created by IntelliJ IDEA.
  * User: pdoubleya
  * Date: May 15, 2009
- * Time: 11:56:03 AM
- * To change this template use File | Settings | File Templates.
  */
 public class StreamResource {
     private final String _uri;

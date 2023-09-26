@@ -18,16 +18,16 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.xhtmlrenderer.layout.breaker.BreakPoint;
+import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 
 import java.text.BreakIterator;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.junit.Test;
-import org.xhtmlrenderer.layout.breaker.BreakPoint;
-import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
@@ -35,19 +35,19 @@ import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 public class NonBreakPointsTest {
 
     @Test
-    public void testGeneral() throws Exception {
+    public void testGeneral() {
         test("text s mezerami", 5, 7, 15);
     }
 
     @Test
-    public void testNBSP() throws Exception {
+    public void testNBSP() {
         test("text s\u00A0mezerami", 5, 15);
     }
 
     private void test(String text, int ... expected) {
         BreakIterator breakIt = new UrlAwareLineBreakIterator();
         breakIt.setText(text);
-        TreeSet<BreakPoint> points = new TreeSet<BreakPoint>();
+        TreeSet<BreakPoint> points = new TreeSet<>();
         int p;
         while ((p = breakIt.next()) != BreakIterator.DONE) {
             points.add(new BreakPoint(p));

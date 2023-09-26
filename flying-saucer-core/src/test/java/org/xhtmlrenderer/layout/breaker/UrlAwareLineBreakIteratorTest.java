@@ -1,106 +1,104 @@
 package org.xhtmlrenderer.layout.breaker;
 
-import java.text.BreakIterator;
-
-import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
-
 import junit.framework.TestCase;
+
+import java.text.BreakIterator;
 
 
 public class UrlAwareLineBreakIteratorTest extends TestCase {
 
-    public void testNext_BreakAtSpace() throws Exception {
+    public void testNext_BreakAtSpace() {
         assertBreaksCorrectly("Hello World! World foo",
                 new String[] {"Hello ", "World! ", "World ", "foo"});
     }
 
 
-    public void testNext_BreakAtPunctuation() throws Exception {
+    public void testNext_BreakAtPunctuation() {
         assertBreaksCorrectly("The.quick,brown:fox;jumps!over?the(lazy)[dog]",
                 new String[] {"The.", "quick,", "brown:", "fox;", "jumps!", "over?", "the", "(lazy)", "[dog]"});
     }
 
 
-    public void testNext_BreakAtHyphen() throws Exception {
+    public void testNext_BreakAtHyphen() {
         assertBreaksCorrectly("Pseudo-element",
                 new String[] {"Pseudo-", "element"});
     }
 
 
-    public void testNext_BreakAtSlash() throws Exception {
+    public void testNext_BreakAtSlash() {
         assertBreaksCorrectly("Justice/Law",
                 new String[] {"Justice", "/Law"});
     }
 
 
-    public void testNext_WordBeginsWithSlash() throws Exception {
+    public void testNext_WordBeginsWithSlash() {
         assertBreaksCorrectly("Justice /Law",
                 new String[] {"Justice ", "/Law"});
     }
 
 
-    public void testNext_WordEndsWithSlash() throws Exception {
+    public void testNext_WordEndsWithSlash() {
         assertBreaksCorrectly("Justice/ Law",
                 new String[] {"Justice/ ", "Law"});
     }
 
 
-    public void testNext_WordEndsWithSlashMultipleWhitespace() throws Exception {
+    public void testNext_WordEndsWithSlashMultipleWhitespace() {
         assertBreaksCorrectly("Justice/    Law",
                 new String[] {"Justice/    ", "Law"});
     }
 
 
-    public void testNext_SlashSeparatedSequence() throws Exception {
+    public void testNext_SlashSeparatedSequence() {
         assertBreaksCorrectly("/this/is/a/long/path/name/",
                 new String[] {"/this", "/is", "/a", "/long", "/path", "/name/"});
     }
 
 
-    public void testNext_UrlInside() throws Exception {
+    public void testNext_UrlInside() {
         assertBreaksCorrectly("Sentence with url https://github.com/flyingsaucerproject/flyingsaucer?test=true&param2=false inside.",
                 new String[] {"Sentence ", "with ", "url ", "https://github.", "com", "/flyingsaucerproject", "/flyingsaucer?",
                         "test=true&param2=false ", "inside."});
     }
 
 
-    public void testNext_MultipleSlashesInWord() throws Exception {
+    public void testNext_MultipleSlashesInWord() {
         assertBreaksCorrectly("word/////word",
                 new String[] {"word", "/////word"});
     }
 
 
-    public void testNext_MultipleSlashesBeforeWord() throws Exception {
+    public void testNext_MultipleSlashesBeforeWord() {
         assertBreaksCorrectly("hello /////world",
                 new String[] {"hello ", "/////world"});
     }
 
 
-    public void testNext_MultipleSlashesAfterWord() throws Exception {
+    public void testNext_MultipleSlashesAfterWord() {
         assertBreaksCorrectly("hello world/////",
                 new String[] {"hello ", "world/////"});
     }
 
 
-    public void testNext_MultipleSlashesAroundWord() throws Exception {
+    public void testNext_MultipleSlashesAroundWord() {
         assertBreaksCorrectly("hello /////world/////",
                 new String[] {"hello ", "/////world/////"});
     }
 
 
-    public void testNext_WhitespaceAfterTrailingSlashes() throws Exception {
+    public void testNext_WhitespaceAfterTrailingSlashes() {
         assertBreaksCorrectly("hello world///    ",
                 new String[] {"hello ", "world///    "});
     }
 
 
-    public void testNext_ShortUrl() throws Exception {
+    public void testNext_ShortUrl() {
         assertBreaksCorrectly("http://localhost",
                 new String[] {"http://localhost"});
     }
 
 
-    public void testNext_IncompleteUrl() throws Exception {
+    public void testNext_IncompleteUrl() {
         assertBreaksCorrectly("http://",
                 new String[] {"http://"});
     }

@@ -19,14 +19,13 @@
 
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.test.DelegatingReplacedElementFactory;
 import org.xhtmlrenderer.test.SwingImageReplacer;
 
 import javax.swing.*;
-import java.io.File;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 /**
  * This example shows the most basic use of Flying Saucer, to
@@ -39,7 +38,7 @@ import java.awt.event.ActionEvent;
 public class ReplaceRender {
     private String fileName;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
             new ReplaceRender().run(args);
         } catch (IllegalArgumentException e) {

@@ -6,11 +6,8 @@ import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 
 /**
- * Created by IntelliJ IDEA.
  * User: tobe
  * Date: 2005-jun-23
- * Time: 00:12:50
- * To change this template use File | Settings | File Templates.
  */
 public interface CssContext {
     float getMmPerDot();

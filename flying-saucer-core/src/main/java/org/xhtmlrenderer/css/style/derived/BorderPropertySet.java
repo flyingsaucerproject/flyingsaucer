@@ -11,11 +11,8 @@ import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 import java.awt.*;
 
 /**
- * Created by IntelliJ IDEA.
  * User: patrick
  * Date: Oct 21, 2005
- * Time: 3:24:04 PM
- * To change this template use File | Settings | File Templates.
  */
 public class BorderPropertySet extends RectPropertySet {
     public static final BorderPropertySet EMPTY_BORDER = new BorderPropertySet(0.0f, 0.0f, 0.0f, 0.0f);

@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.protocols.data;
 
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -37,7 +36,7 @@ public class Handler extends URLStreamHandler {
         setURL(u, "data", "", -1, "", "", sub, "", "");
     }
 
-    protected URLConnection openConnection(URL u) throws IOException {
+    protected URLConnection openConnection(URL u) {
         return new DataURLConnection(u);
     }
 

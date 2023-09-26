@@ -35,7 +35,7 @@ import java.io.File;
 public class CenteredPreviewRender {
     private String fileName;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
             new CenteredPreviewRender().run(args);
         } catch (IllegalArgumentException e) {

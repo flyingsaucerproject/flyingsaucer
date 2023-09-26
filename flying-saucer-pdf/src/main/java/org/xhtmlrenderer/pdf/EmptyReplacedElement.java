@@ -1,8 +1,6 @@
 package org.xhtmlrenderer.pdf;
 
 import com.lowagie.text.pdf.PdfAcroForm;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfFormField;
 import com.lowagie.text.pdf.PdfWriter;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -12,18 +10,15 @@ import org.xhtmlrenderer.render.RenderingContext;
 import java.awt.*;
 
 /**
- * Created by IntelliJ IDEA.
  * User: beck
  * Date: 11/4/11
- * Time: 12:42 PM
  */
-
 public class EmptyReplacedElement extends AbstractFormField
 {
   private static final String FIELD_TYPE = "Hidden";
 
-  private int _width;
-  private int _height;
+  private final int _width;
+  private final int _height;
 
   private Point _location = new Point(0, 0);
 
@@ -33,10 +28,7 @@ public class EmptyReplacedElement extends AbstractFormField
     _height = height;
   }
 
-  public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box)
-  {
-    PdfContentByte cb = outputDevice.getCurrentPage();
-
+  public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     PdfWriter writer = outputDevice.getWriter();
 
     PdfAcroForm acroForm = writer.getAcroForm();

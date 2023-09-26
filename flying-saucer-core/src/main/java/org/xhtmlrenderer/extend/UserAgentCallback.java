@@ -28,7 +28,7 @@ import org.xhtmlrenderer.resource.XMLResource;
  * <p>To be implemented by any user agent using the panel. "User agent" is a
  * term defined by the W3C in the documentation for XHTML and CSS; in most
  * cases, you can think of this as the rendering component for a browser.</p>
- * <p/>
+ * <p>
  *
  * <p>This interface defines a simple callback mechanism for Flying Saucer to
  * interact with a user agent. The FS toolkit provides a default implementation

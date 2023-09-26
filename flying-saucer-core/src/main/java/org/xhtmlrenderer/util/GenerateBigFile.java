@@ -4,11 +4,8 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
 /**
- * Created by IntelliJ IDEA.
  * User: tobe
  * Date: 2005-jan-05
- * Time: 09:21:10
- * To change this template use File | Settings | File Templates.
  */
 public class GenerateBigFile {
     public static void main(String[] args) {

@@ -16,38 +16,13 @@
   <licenses>
     <license>
       <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
+      <url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
     </license>
   </licenses>
 
   <packaging>jar</packaging>
 
   <name>Flying Saucer Core Renderer</name>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.w3c</groupId>
-      <artifactId>dom</artifactId>
-      <version>2.3.0-jaxb-1.0.6</version>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>3.24.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>2.0.9</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
   <build>
     <resources>

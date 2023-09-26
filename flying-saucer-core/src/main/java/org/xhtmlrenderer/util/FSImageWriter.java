@@ -38,13 +38,13 @@ import static java.nio.file.Files.newOutputStream;
  * <p>Writes out BufferedImages to some output stream, like a file. Allows image writer parameters to be specified and
  * thus controlled. Uses the java ImageIO libraries--see {@link javax.imageio.ImageIO} and related classes,
  * especially {@link javax.imageio.ImageWriter}.</p>
- * <p/>
+ * <p>
  * By default, FSImageWriter writes BufferedImages out in PNG format. The simplest possible usage is
  * <pre>
  * FSImageWriter writer = new FSImageWriter();
  * writer.write(img, new File("image.png"));
  * </pre>
- * <p/>
+ * <p>
  * <p>You can set the image format in the constructor ({@link org.xhtmlrenderer.util.FSImageWriter#FSImageWriter(String)},
  * and can set compression settings using various setters; this lets you create writer to reuse across a number
  * of images, all output at the same compression level. Note that not all image formats support compression. For
