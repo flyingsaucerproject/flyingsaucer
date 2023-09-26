@@ -4,7 +4,6 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 
 import java.io.IOException;
 import java.lang.reflect.Field;

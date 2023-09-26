@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
@@ -99,17 +100,32 @@ public class ITextRenderer {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
     }
 
+    public ITextRenderer(FontResolver fontResolver) {
+        this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL, fontResolver);
+    }
+
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel) {
         this(dotsPerPoint, dotsPerPixel, new ITextOutputDevice(dotsPerPoint));
+    }
+
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, FontResolver fontResolver) {
+        this(dotsPerPoint, dotsPerPixel, new ITextOutputDevice(dotsPerPoint), fontResolver);
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice) {
         this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice));
     }
 
-    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
-        _dotsPerPoint = dotsPerPoint;
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, FontResolver fontResolver) {
+        this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice), fontResolver);
+    }
 
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
+        this(dotsPerPoint, dotsPerPixel, outputDevice, userAgent, new ITextFontResolver());
+    }
+
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent, FontResolver fontResolver) {
+        _dotsPerPoint = dotsPerPoint;
         _outputDevice = outputDevice;
 
         _sharedContext = new SharedContext();
@@ -118,7 +134,6 @@ public class ITextRenderer {
         userAgent.setSharedContext(_sharedContext);
         _outputDevice.setSharedContext(_sharedContext);
 
-        ITextFontResolver fontResolver = new ITextFontResolver(_sharedContext);
         _sharedContext.setFontResolver(fontResolver);
 
         ITextReplacedElementFactory replacedElementFactory = new ITextReplacedElementFactory(_outputDevice);
@@ -184,7 +199,7 @@ public class ITextRenderer {
         _sharedContext.setBaseURL(url);
         _sharedContext.setNamespaceHandler(nsh);
         _sharedContext.getCss().setDocumentContext(_sharedContext, _sharedContext.getNamespaceHandler(), doc, new NullUserInterface());
-        getFontResolver().importFontFaces(_sharedContext.getCss().getFontFaceRules());
+        getFontResolver().importFontFaces(_sharedContext.getCss().getFontFaceRules(), _sharedContext.getUac());
     }
 
     public PDFEncryption getPDFEncryption() {
