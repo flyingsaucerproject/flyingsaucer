@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.3.1 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/3
+* ...
+
 ## 9.3.0 (released 26.09.2023) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/1?closed=1
 * #204 avoid loading CJK fonts by default
 * Major refactoring: use Java generics everywhere - see PRs #196 ... #203 
