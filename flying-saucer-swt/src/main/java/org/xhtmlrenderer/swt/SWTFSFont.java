@@ -57,7 +57,7 @@ public class SWTFSFont implements FSFont {
         }
     }
 
-    protected void finalize() throws Throwable {
+    protected void finalize() {
         if (!_noDispose && !_font.isDisposed()) {
             _font.dispose();
         }

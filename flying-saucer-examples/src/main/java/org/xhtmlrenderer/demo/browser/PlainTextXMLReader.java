@@ -60,11 +60,11 @@ public class PlainTextXMLReader implements XMLReader {
         throw new SAXNotRecognizedException(s);
     }
 
-    public Object getProperty(String s) throws SAXNotRecognizedException, SAXNotSupportedException {
+    public Object getProperty(String s) throws SAXNotRecognizedException {
         throw new SAXNotRecognizedException(s);
     }
 
-    public void setProperty(String s, Object o) throws SAXNotRecognizedException, SAXNotSupportedException {
+    public void setProperty(String s, Object o) throws SAXNotRecognizedException {
         throw new SAXNotRecognizedException(s);
     }
 
@@ -116,7 +116,7 @@ public class PlainTextXMLReader implements XMLReader {
         contentHandler.endDocument();
     }
 
-    public void parse(String s) throws IOException, SAXException {
+    public void parse(String s) throws SAXException {
         throw new SAXNotRecognizedException(s);
     }
 }

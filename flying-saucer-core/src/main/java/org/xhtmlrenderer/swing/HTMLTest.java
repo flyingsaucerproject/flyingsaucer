@@ -152,12 +152,8 @@ public class HTMLTest extends JFrame {
      * The main program for the HTMLTest class
      *
      * @param args The command line arguments
-     * @throws Exception Throws
      */
-    public static void main(String[] args)
-            throws Exception {
-
-
+    public static void main(String[] args) {
         final JFrame frame = new HTMLTest(args);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

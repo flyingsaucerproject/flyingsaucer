@@ -42,17 +42,13 @@ public class JPanelSizeToDocument {
     private String fileName;
     private int targetWidth = 800;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         new JPanelSizeToDocument().run(args);
     }
 
     private void run(String[] args) {
         loadAndCheckArgs(args);
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                launchGUI();
-            }
-        });
+        SwingUtilities.invokeLater(() -> launchGUI());
     }
 
     private void launchGUI() {
@@ -94,7 +90,7 @@ public class JPanelSizeToDocument {
         // figure out what the document needs based on content.
         //
         // Note that if the document itself has no fixed width, text will not automatically break and will
-        // likely run out and extend the document width as far as necessary to accomodate the longest line of text
+        // likely run out and extend the document width as far as necessary to accommodate the longest line of text
         // you could either set a max width in a document box, or you can set it here.
         //
         // The document height will be calculated automatically based on content. We use an artificially large size
@@ -119,7 +115,7 @@ public class JPanelSizeToDocument {
         if (args.length > 1) {
             String widthVal = args[1];
             try {
-                targetWidth = Integer.valueOf(widthVal).intValue();
+                targetWidth = Integer.parseInt(widthVal);
             } catch (NumberFormatException e) {
                 messageAndExit("Target width " + widthVal + " is not an integer", -1);
             }
