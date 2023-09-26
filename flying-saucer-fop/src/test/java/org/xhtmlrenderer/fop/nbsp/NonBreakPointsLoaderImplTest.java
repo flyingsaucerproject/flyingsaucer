@@ -18,12 +18,12 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-import org.xhtmlrenderer.fop.nbsp.NonBreakPointsLoaderImpl;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
@@ -31,36 +31,36 @@ import org.xhtmlrenderer.fop.nbsp.NonBreakPointsLoaderImpl;
 public class NonBreakPointsLoaderImplTest {
 
     @Test (expected = IllegalArgumentException.class)
-    public void nullLang() throws Exception {
+    public void nullLang() {
         new NonBreakPointsLoaderImpl().loadNBSP(null);
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void emptyLang() throws Exception {
+    public void emptyLang() {
         new NonBreakPointsLoaderImpl().loadNBSP("");
     }
 
     @Test
-    public void loadExactMatch() throws Exception {
+    public void loadExactMatch() {
         List<String> lines = new NonBreakPointsLoaderImpl().loadNBSP("de");
         assertEquals(1, lines.size());
         assertEquals("deRuleščřžýá", lines.get(0)); // tests also UTF-8 chars
     }
 
     @Test
-    public void loadNonExactMatch() throws Exception {
+    public void loadNonExactMatch() {
         List<String> lines = new NonBreakPointsLoaderImpl().loadNBSP("de_DE");
         assertEquals(1, lines.size());
         assertEquals("deRuleščřžýá", lines.get(0)); // tests also UTF-8 chars
     }
 
     @Test
-    public void nonExisting() throws Exception {
+    public void nonExisting() {
         assertNull(new NonBreakPointsLoaderImpl().loadNBSP("es"));
     }
 
     @Test
-    public void loadExactMatch2() throws Exception {
+    public void loadExactMatch2() {
         List<String> lines = new NonBreakPointsLoaderImpl().loadNBSP("en_GB");
         assertEquals(2, lines.size());
         assertEquals("enGBRule1", lines.get(0));

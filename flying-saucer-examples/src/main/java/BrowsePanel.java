@@ -48,7 +48,7 @@ public class BrowsePanel {
     private JFrame frame;
     private UserAgentCallback uac;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
             new BrowsePanel().run(args);
         } catch (IllegalArgumentException e) {
@@ -59,27 +59,25 @@ public class BrowsePanel {
     private void run(String[] args) {
         loadAndCheckArgs(args);
 
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                // Create a JPanel subclass to render the page
-                panel = new XHTMLPanel();
-                setupDocumentListener(panel);
-                setupUserAgentCallback(panel);
+        EventQueue.invokeLater(() -> {
+            // Create a JPanel subclass to render the page
+            panel = new XHTMLPanel();
+            setupDocumentListener(panel);
+            setupUserAgentCallback(panel);
 
-                // Put our panel in a scrolling pane. You can use
-                // a regular JScrollPane here, or our FSScrollPane.
-                // FSScrollPane is already set up to move the correct
-                // amount when scrolling 1 line or 1 page
-                FSScrollPane scroll = new FSScrollPane(panel);
+            // Put our panel in a scrolling pane. You can use
+            // a regular JScrollPane here, or our FSScrollPane.
+            // FSScrollPane is already set up to move the correct
+            // amount when scrolling 1 line or 1 page
+            FSScrollPane scroll = new FSScrollPane(panel);
 
-                frame = new JFrame("Flying Saucer");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.getContentPane().add(scroll);
-                frame.pack();
-                frame.setSize(1024, 768);
-                frame.setVisible(true);
-                launchLoad();
-            }
+            frame = new JFrame("Flying Saucer");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.getContentPane().add(scroll);
+            frame.pack();
+            frame.setSize(1024, 768);
+            frame.setVisible(true);
+            launchLoad();
         });
     }
 
@@ -128,26 +126,20 @@ public class BrowsePanel {
 
 
     private void launchLoad() {
-        new Thread(new Runnable() {
-            public void run() {
-                final Document doc;
-                try {
-                    if (panel != null ) panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                    doc = getUAC().getXMLResource(uri).getDocument();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.err.println("Can't load document");
-                    return;
-                } finally {
-                    if (panel != null ) panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                }
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        startRender(doc);
-                    }
-                });
-
+        new Thread(() -> {
+            final Document doc;
+            try {
+                if (panel != null ) panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                doc = getUAC().getXMLResource(uri).getDocument();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Can't load document");
+                return;
+            } finally {
+                if (panel != null ) panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
+            EventQueue.invokeLater(() -> startRender(doc));
+
         }).start();
     }
 

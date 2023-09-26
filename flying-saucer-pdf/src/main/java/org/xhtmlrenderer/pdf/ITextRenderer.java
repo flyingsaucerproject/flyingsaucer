@@ -277,7 +277,7 @@ public class ITextRenderer {
         createPDF(os, true, 0);
     }
 
-    public void writeNextDocument() throws DocumentException {
+    public void writeNextDocument() {
         writeNextDocument(0);
     }
 

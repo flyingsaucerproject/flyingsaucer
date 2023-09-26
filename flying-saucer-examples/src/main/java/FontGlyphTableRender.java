@@ -80,7 +80,7 @@ public class FontGlyphTableRender {
     private JButton nextBtn;
 
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new FontGlyphTableRender().run());
     }
 

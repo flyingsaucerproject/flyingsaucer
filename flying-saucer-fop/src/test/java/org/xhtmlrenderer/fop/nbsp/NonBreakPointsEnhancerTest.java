@@ -18,13 +18,12 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
@@ -32,79 +31,69 @@ import org.junit.Test;
 public class NonBreakPointsEnhancerTest {
 
     @Test
-    public void testNullInput() throws Exception {
+    public void testNullInput() {
         assertNull(new NonBreakPointsEnhancer().enhance(null, "cs"));
     }
 
     @Test
-    public void testNullLang() throws Exception {
+    public void testNullLang() {
         assertEquals("some input", new NonBreakPointsEnhancer().enhance("some input", null));
     }
 
     @Test
-    public void testEmptyLang() throws Exception {
+    public void testEmptyLang() {
         assertEquals("some input", new NonBreakPointsEnhancer().enhance("some input", ""));
     }
 
     @Test
-    public void testEmptyInput() throws Exception {
+    public void testEmptyInput() {
         assertEquals("", new NonBreakPointsEnhancer().enhance("", "en"));
     }
 
     @Test
-    public void noDefinition() throws Exception {
-        NonBreakPointsLoader nullLoader = new NonBreakPointsLoader() {
-
-            @Override
-            public List<String> loadNBSP(String lang) {
-                return null;
-            }
-        };
+    public void noDefinition() {
+        NonBreakPointsLoader nullLoader = lang -> null;
         assertEquals("some text with spaces", new NonBreakPointsEnhancer(nullLoader).enhance("some text with spaces", "cs"));
     }
 
     @Test
-    public void testLoaderConfiguration() throws Exception {
+    public void testLoaderConfiguration() {
         final String[] c = new String[] {null};
-        NonBreakPointsLoader capturingLoader = new NonBreakPointsLoader() {
-
-            @Override
-            public List<String> loadNBSP(String lang) {
-                c[0] = lang;
-                return null;
-            }
+        NonBreakPointsLoader capturingLoader = lang -> {
+            c[0] = lang;
+            return null;
         };
         new NonBreakPointsEnhancer(capturingLoader).enhance("some text with spaces", "cs");
         assertEquals("cs", c[0]);
     }
 
     @Test
-    public void emptyRules() throws Exception {
+    public void emptyRules() {
         testRulesInternal("some text", "some text");
     }
 
     @Test
-    public void rules1() throws Exception {
+    public void rules1() {
         testRulesInternal("prselo a potom kousek", "prselo a\u00A0potom kousek", "([\\s]+a)( )([^\\s]+)");
     }
 
     @Test
-    public void rules2() throws Exception {
+    public void rules2() {
         testRulesInternal("prselo a potom se to cele stalo a sli jsme domu", "prselo a\u00A0potom se to cele stalo a\u00A0sli jsme domu", "([\\s]+a)( )([^\\s]+)");
     }
 
     @Test
-    public void rules3() throws Exception {
+    public void rules3() {
         testRulesInternal("prselo a potom jsme sli domu s kamarady a povidali si", "prselo a\u00A0potom jsme sli domu s\u00A0kamarady a\u00A0povidali si", "([\\s]+a)( )([^\\s]+)", "([\\s]+s)( )([^\\s]+)");
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void invalidRuleGroups() throws Exception {
+    public void invalidRuleGroups() {
         testRulesInternal("a potom", "a\u00A0potom", "a( )[^\\s]{1,}");
     }
 
     @Test
-    public void czechRules() throws Exception {
+    public void czechRules() {
         assertCzech("byli jsme u babicky", "byli jsme u\u00A0babicky");
         assertCzech("byli jsme k babicky", "byli jsme k\u00A0babicky");
         assertCzech("byli jsme s babicky", "byli jsme s\u00A0babicky");
@@ -130,13 +119,7 @@ public class NonBreakPointsEnhancerTest {
     }
 
     private void testRulesInternal(String text, String expected, final String ... rules) {
-        NonBreakPointsLoader dummyLoader = new NonBreakPointsLoader() {
-
-            @Override
-            public List<String> loadNBSP(String lang) {
-                return Arrays.asList(rules);
-            }
-        };
+        NonBreakPointsLoader dummyLoader = lang -> Arrays.asList(rules);
         assertEquals(expected, new NonBreakPointsEnhancer(dummyLoader).enhance(text, "en"));
     }
 
