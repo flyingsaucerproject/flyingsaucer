@@ -25,7 +25,7 @@ import org.xhtmlrenderer.css.extend.TreeResolver;
 
 /**
  * @author scott
- *         <p/>
+ *         <p>
  *         works for a w3c DOM tree
  */
 public class DOMTreeResolver implements TreeResolver {

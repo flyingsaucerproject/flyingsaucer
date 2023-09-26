@@ -31,7 +31,7 @@ import java.awt.event.WindowEvent;
 /**
  * This sample shows how to size a panel based on the content of a document, when using a layout manager
  * that relies on preferred size. The class was attached as part of an email discussion:
- * <p/>
+ * <p>
  * From the email thread: "The panel doesn't get a preferred size until layout is called (which,
  * in turn, happens the first time it's painted).  This means you're not
  * going to get the results you want if your XHTMLPanel is managed by a
@@ -39,7 +39,7 @@ import java.awt.event.WindowEvent;
  * Assuming you want to lay the document out into some width, you'll want
  * to use a layout manager that doesn't rely (entirely) on preferred
  * size.
- * <p/>
+ * <p>
  * If you need the entirely unconstrained document width, you could
  * temporarily boost the size of the XHTMLPanel to something very large
  * and then call panel.doLayout() and then read back the panel's

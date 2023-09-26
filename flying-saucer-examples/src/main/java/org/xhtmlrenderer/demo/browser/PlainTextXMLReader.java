@@ -1,6 +1,14 @@
 package org.xhtmlrenderer.demo.browser;
 
-import org.xml.sax.*;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
 
 import java.io.BufferedReader;
@@ -10,9 +18,9 @@ import java.io.InputStreamReader;
 
 /**
  * Read plain text file as if it was xml with a text-tag around it.
- * <p/>
+ * <p>
  * Fulfills minimum requirements.
- * <p/>
+ * <p>
  * Maybe not the easiest way to do this :-)
  */
 public class PlainTextXMLReader implements XMLReader {
@@ -20,13 +28,13 @@ public class PlainTextXMLReader implements XMLReader {
     private DTDHandler dtdHandler;
     private ContentHandler contentHandler;
     private ErrorHandler errorHandler;
-    private BufferedReader text;
+    private final BufferedReader text;
 
     public PlainTextXMLReader(InputStream is) {
         text = new BufferedReader(new InputStreamReader(is));
     }
 
-    public boolean getFeature(String s) throws SAXNotRecognizedException, SAXNotSupportedException {
+    public boolean getFeature(String s) throws SAXNotRecognizedException {
         if (s.equals("http://xml.org/sax/features/namespaces")) {
             return true;
         }

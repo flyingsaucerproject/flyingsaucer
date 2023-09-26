@@ -37,21 +37,21 @@ import java.io.InputStream;
  * <p>NaiveUserAgent is a simple implementation of {@link org.xhtmlrenderer.extend.UserAgentCallback} which places no restrictions on what
  * XML, CSS or images are loaded, and reports visited links without any filtering. The most straightforward process
  * available in the JDK is used to load the resources in question--either using java.io or java.net classes.
- * <p/>
+ * <p>
  * <p>The NaiveUserAgent has a small cache for images,
  * the size of which (number of images) can be passed as a constructor argument. There is no automatic cleaning of
  * the cache; call {@link #shrinkImageCache()} to remove the least-accessed elements--for example, you might do this
  * when a new document is about to be loaded. The NaiveUserAgent is also a DocumentListener; if registered with a
  * source of document events (like the panel hierarchy), it will respond to the
  * {@link org.xhtmlrenderer.event.DocumentListener#documentStarted()} call and attempt to shrink its cache.
- * <p/>
+ * <p>
  * <p>This class is meant as a starting point--it will work out of the box, but you should really implement your
  * own, tuned to your application's needs.
  *
  * @author Torbjoern Gannholm
  */
 public class DelegatingUserAgent implements UserAgentCallback, DocumentListener {
-    private UriResolver _uriResolver;
+    private final UriResolver _uriResolver;
     private ImageResourceLoader _imageResourceLoader;
 
 

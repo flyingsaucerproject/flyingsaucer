@@ -53,9 +53,9 @@ import static java.util.Collections.emptyList;
  * </pre>
  * Regress will try to render all files in the source directory; a failure to render one file (e.g. if an exception
  * is thrown) will not stop the rendering process.
- * <p/>
+ * <p>
  * Files in the source directory with the following extensions are included: htm, html, xht, xhtml, and xml.
- * <p/>
+ * <p>
  * You can also run this from the command line, passing in the source directory as argument 1, and the output file
  * name as argument 2. The output is created in the standard temp directory in a subdirectory called "reference". The
  * path to the output directory will be printed to the console when complete.

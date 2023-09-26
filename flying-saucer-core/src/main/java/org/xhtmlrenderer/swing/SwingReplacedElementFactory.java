@@ -74,9 +74,6 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         this.formSubmissionListener = new DefaultFormSubmissionListener();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public ReplacedElement createReplacedElement(
             LayoutContext context,
             BlockBox box,
@@ -126,7 +123,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Handles replacement of image elements in the document. May return the same ReplacedElement for a given image
      * on multiple calls. Image will be automatically scaled to cssWidth and cssHeight assuming these are non-zero
-     * positive values. The element is assumed to have a src attribute (e.g. it's an <img> element)
+     * positive values. The element is assumed to have a src attribute (e.g. it's an {@code <img>} element).
      *
      * @param uac       Used to retrieve images on demand from some source.
      * @param elem      The element with the image reference
@@ -223,7 +220,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Adds a form to a local cache for quick lookup.
      *
-     * @param e The element under which the form is keyed (e.g. "<form>" in HTML)
+     * @param e The element under which the form is keyed (e.g. {@code <form>} in HTML)
      * @param f The form element being stored.
      */
     protected void addForm(Element e, XhtmlForm f) {
