@@ -15,7 +15,7 @@ import java.util.Map;
 import static java.nio.file.Files.newOutputStream;
 
 /**
- * <p/>
+ * <p>
  * PDFRenderer supports headless rendering of XHTML documents, outputting
  * to PDF format. There are two static utility methods, one for rendering
  * a {@link java.net.URL}, {@link #renderToPDF(String, String)} and one

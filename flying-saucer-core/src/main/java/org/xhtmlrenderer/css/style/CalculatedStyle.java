@@ -168,7 +168,7 @@ public class CalculatedStyle {
 
     /**
      * derives a child style from this style.
-     * <p/>
+     * <p>
      * depends on the ability to return the identical CascadedStyle each time a child style is needed
      *
      * @param matched the CascadedStyle to apply
@@ -565,10 +565,7 @@ public class CalculatedStyle {
     }
 
     /**
-     * <p/>
-     * <p/>
-     * <p/>
-     * <p/>
+     * <p>
      * Implements cascade/inherit/important logic. This should result in the
      * element for this style having a value for *each and every* (visual)
      * property in the CSS2 spec. The implementation is based on the notion that

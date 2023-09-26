@@ -1,10 +1,8 @@
 package org.xhtmlrenderer.simple;
 
-import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 
@@ -15,20 +13,20 @@ import java.awt.print.Printable;
  * requires an XHTMLPanel, so it's easiest to prepare an XHTMLPanel as normal, and then
  * wrap a printable around it.ex:
  * </p>
- * <p/>
- * <pre>
+ * <p>
+ * <pre>@{code
  * import org.xhtmlrenderer.simple.*;
  * import java.awt.print.*;
  * // . . . .
  * // xhtml_panel created earlier
- * <p/>
+ * 
  * PrinterJob printJob = PrinterJob.getPrinterJob();
  * printJob.setPrintable(new XHTMLPrintable(xhtml_panel));
- * <p/>
+ * 
  * if(printJob.printDialog()) {
  * printJob.print();
  * }
- * </pre>
+ * }</pre>
  */
 
 public class XHTMLPrintable implements Printable {

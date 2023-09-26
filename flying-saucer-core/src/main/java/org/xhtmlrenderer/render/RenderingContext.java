@@ -19,15 +19,19 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Rectangle;
-
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.extend.*;
+import org.xhtmlrenderer.extend.FSCanvas;
+import org.xhtmlrenderer.extend.FontContext;
+import org.xhtmlrenderer.extend.FontResolver;
+import org.xhtmlrenderer.extend.OutputDevice;
+import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.swing.RootPanel;
+
+import java.awt.*;
 
 /**
  * Supplies information about the context in which rendering will take place
@@ -50,7 +54,6 @@ public class RenderingContext implements CssContext {
     private int initialPageNo;
 
     /**
-     * <p/>
      * needs a new instance every run
      */
     public RenderingContext(SharedContext sharedContext) {

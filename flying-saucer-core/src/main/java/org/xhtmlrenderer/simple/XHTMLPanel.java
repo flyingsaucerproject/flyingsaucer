@@ -36,21 +36,20 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * <p/>
- * <p/>
+ * <p>
  * XHTMLPanel is a simple Swing component that renders valid XHTML content in a
  * Java program. It is scrolling aware so you can safely drop it into a
  * {@link javax.swing.JScrollPane}. The most common usage is to stuff a {@link URL}
  * into it and then add it to your JFrame. Ex:</p>
- * <pre>
+ * 
+ * <pre>{@code
  * import org.xhtmlrenderer.simple.*;
- * .....
- * <p/>
+ * 
  * public static void main(String[] args) {
- * <p/>
+ * 
  * // set up the xhtml panel XHTMLPanel xhtml = new XHTMLPanel();
  * xhtml.setDocument(new URL("http://myserver.com/page.xhtml"));
- * <p/>
+ * 
  * JScrollPane scroll = new JScrollPane(xhtml);
  * JFrame frame = new JFrame("Demo");
  * frame.getContentPane().add(scroll);
@@ -58,8 +57,8 @@ import java.net.URL;
  * frame.setSize(500,600);
  * frame.show();
  * }
- * </pre>
- * <p/>
+ * }</pre>
+ * <p>
  * <p>XHTMLPanel renders XHTML and XML which can be loaded as valid {@link Document}
  * instances. You should make sure the document you want to render is well-formed. For XHTML,
  * there is always a default stylesheet available, even if no CSS is attached to the
@@ -69,14 +68,13 @@ import java.net.URL;
  * documents from a uri ({@link #setDocument(String uri)}),
  * from a Document instance ({@link #setDocument(Document)}) or from an InputStream
  * ({@link org.xhtmlrenderer.swing.BasicPanel#setDocument(java.io.InputStream,String)}).</p>
- * <p/>
- * <p/>
- * <p/>
+ * 
+ * <p>
  * XHTMLPanel also lets you make simple changes with simple methods like
  * {@link #setFontScalingFactor(float)}. If you want to make other changes you will
  * need to get the rendering context ({@link #getSharedContext()}) and call methods on
- * that. Ex: </p> <p/>
- * <p/>
+ * that. Ex: {@code </p>} @{code <p/>}
+ * <p>
  * <pre>
  * XHTMLPanel xhtml = new XHTMLPanel();
  * RenderingContext ctx = xhtml.getRenderingContext();
@@ -85,7 +83,7 @@ import java.net.URL;
  * ctx.addFont(fnt,"Arial"); // redefine a font
  * ctx.setDomImplementation("com.cooldom.DomImpl");
  * </pre>
- * <p/>
+ * <p>
  * <p>XHTMLPanel comes with a pre-installed MouseListener which handles :hover events used for rollovers
  * ( @see org.xhtmlrenderer.swing.HoverListener ). XHTMLPanel also comes with a pre-installed LinkListener
  * used to follow links.  ( @see org.xhtmlrenderer.swing.LinkListener )
@@ -153,8 +151,6 @@ public class XHTMLPanel extends BasicPanel {
     /**
      * Loads and renders a Document given an uri.
      * The uri is resolved by the UserAgentCallback
-     *
-     * @param uri
      */
     @Override
     public void setDocument(String uri) {
@@ -246,7 +242,7 @@ public class XHTMLPanel extends BasicPanel {
 
     /**
      * Increments all rendered fonts on the current document by the current
-     * scaling factor for the panel. Scaling applies culmulatively, which means that
+     * scaling factor for the panel. Scaling applies cumulatively, which means that
      * multiple calls to this method scale fonts larger and larger by applying the
      * current scaling factor against itself. You can modify the scaling factor by
      * {@link #setFontScalingFactor(float)}, and reset to the document's specified

@@ -23,9 +23,9 @@ import org.w3c.dom.Node;
 
 /**
  * @author scott
- *         <p/>
+ *         <p>
  *         Gives the css matcher access to the information it needs about the tree structure.
- *         <p/>
+ *         <p>
  *         Elements are the "things" in the tree structure that can be matched by the matcher.
  */
 public interface TreeResolver {

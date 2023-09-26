@@ -159,11 +159,10 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     }
 
     /**
-     * Customized handling of @link{HttpUrlConnection}.
-     *
+     * Customized handling of {@link URLConnection}.
      *
      * @param origin the original connection
-     * @return @link{URLConnection}
+     * @return {@link URLConnection}
      *
      * @throws MalformedURLException if an unknown protocol is specified.
      * @throws IOException if an I/O exception occurs.
