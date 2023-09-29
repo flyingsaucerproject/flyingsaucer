@@ -25,7 +25,7 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
 
 public class NumberValue extends DerivedValue {
-    private float _floatValue;
+    private final float _floatValue;
 
     public NumberValue(CSSName cssName, PropertyValue value) {
         super(cssName, value.getPrimitiveType(), value.getCssText(), value.getCssText());

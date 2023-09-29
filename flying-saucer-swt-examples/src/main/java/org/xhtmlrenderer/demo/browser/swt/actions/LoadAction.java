@@ -25,7 +25,7 @@ import org.xhtmlrenderer.demo.browser.swt.Browser;
 
 public class LoadAction extends AbstractAction {
 
-    private String _url;
+    private final String _url;
 
     public LoadAction(String url, String text) {
         this(url, text, SWT.NONE, null);

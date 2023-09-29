@@ -20,8 +20,6 @@
 package org.xhtmlrenderer.demo.browser.swt;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -32,8 +30,9 @@ public class BrowserStatus extends Composite {
 
     private static final int REFRESH_INTERVAL = 5000;
 
-    private Label _status, _memory;
-    private MemoryThread _memthread;
+    private final Label _status;
+    private final Label _memory;
+    private final MemoryThread _memoryThread;
 
     public BrowserStatus(Composite parent) {
         super(parent, SWT.NONE);
@@ -58,28 +57,22 @@ public class BrowserStatus extends Composite {
         _memory.setLayoutData(fd);
         _memory.pack();
         // thread
-        _memthread = new MemoryThread();
-        _memthread.start();
+        _memoryThread = new MemoryThread();
+        _memoryThread.start();
         // listeners
-        addDisposeListener(new DisposeListener() {
-            public void widgetDisposed(DisposeEvent e) {
-                _memthread.interrupt();
-            }
-        });
+        addDisposeListener(e -> _memoryThread.interrupt());
     }
 
     public void setStatus(final String text) {
-        getDisplay().asyncExec(new Runnable() {
-            public void run() {
-                if (!_status.isDisposed()) {
-                    _status.setText(text);
-                }
+        getDisplay().asyncExec(() -> {
+            if (!_status.isDisposed()) {
+                _status.setText(text);
             }
         });
     }
 
     public void refreshMemory() {
-        _memthread.refresh();
+        _memoryThread.refresh();
     }
 
     private class MemoryThread extends Thread {
@@ -94,13 +87,11 @@ public class BrowserStatus extends Composite {
                     total = total / (1024 * 1024);
 
                     final String text = used + "MB / " + total + "MB";
-                    getDisplay().asyncExec(new Runnable() {
-                        public void run() {
-                            if (!_memory.isDisposed()) {
-                                _memory.setText(text);
-                                _memory.pack();
-                                layout();
-                            }
+                    getDisplay().asyncExec(() -> {
+                        if (!_memory.isDisposed()) {
+                            _memory.setText(text);
+                            _memory.pack();
+                            layout();
                         }
                     });
                     wait(REFRESH_INTERVAL);

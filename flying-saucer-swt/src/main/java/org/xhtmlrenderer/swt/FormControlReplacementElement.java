@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.awt.Point;
-
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.simple.xhtml.swt.SWTFormControl;
+
+import java.awt.*;
 
 /**
  * ReplacementElement for a FormControl.
@@ -33,7 +33,7 @@ import org.xhtmlrenderer.simple.xhtml.swt.SWTFormControl;
  */
 public class FormControlReplacementElement implements ReplacedElement {
     private final SWTFormControl _swtControl;
-    private Point _location = new Point(0, 0);
+    private final Point _location = new Point(0, 0);
     private int _width, _height;
 
     public FormControlReplacementElement(SWTFormControl swtControl) {
@@ -57,13 +57,8 @@ public class FormControlReplacementElement implements ReplacedElement {
     }
 
     /**
-     * Recalculate the size of the control based on the css lenghts. These
+     * Recalculate the size of the control based on the css lengths. These
      * lengths can be -1 if the size has to be determined automatically.
-     *
-     * @param c
-     * @param style
-     * @param cssWidth
-     * @param cssHeight
      */
     public void calculateSize(LayoutContext c, CalculatedStyle style,
             int cssWidth, int cssHeight) {

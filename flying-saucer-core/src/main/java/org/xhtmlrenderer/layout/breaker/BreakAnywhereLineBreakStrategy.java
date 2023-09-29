@@ -23,8 +23,8 @@ package org.xhtmlrenderer.layout.breaker;
  */
 public class BreakAnywhereLineBreakStrategy implements BreakPointsProvider {
 
-    private String currentString;
-    int position = 0;
+    private final String currentString;
+    private int position = 0;
 
     public BreakAnywhereLineBreakStrategy(String currentString) {
         this.currentString = currentString;

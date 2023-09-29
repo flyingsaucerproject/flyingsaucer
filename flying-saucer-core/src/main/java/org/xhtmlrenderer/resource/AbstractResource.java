@@ -29,7 +29,7 @@ import java.io.InputStream;
  */
 public abstract class AbstractResource implements Resource {
     private InputSource inputSource;
-    private long createTimeStamp;
+    private final long createTimeStamp;
     private long elapsedLoadTime;
 
     private AbstractResource() {
@@ -45,7 +45,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     public AbstractResource(InputStream is) {
-        this(is==null?(InputSource)null:new InputSource(new BufferedInputStream(is)));
+        this(is == null ? null : new InputSource(new BufferedInputStream(is)));
     }
 
     public InputSource getResourceInputSource() {

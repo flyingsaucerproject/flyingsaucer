@@ -20,8 +20,8 @@
 package org.xhtmlrenderer.resource;
 
 import org.xhtmlrenderer.extend.FSImage;
-import org.xhtmlrenderer.swing.MutableFSImage;
 import org.xhtmlrenderer.swing.AWTFSImage;
+import org.xhtmlrenderer.swing.MutableFSImage;
 import org.xml.sax.InputSource;
 
 /**
@@ -29,7 +29,7 @@ import org.xml.sax.InputSource;
  */
 public class ImageResource extends AbstractResource {
     private final String _imageUri;
-    private FSImage _img;
+    private final FSImage _img;
 
     //HACK: at least for now, till we know what we want to do here
     public ImageResource(final String uri, FSImage img) {
@@ -43,7 +43,7 @@ public class ImageResource extends AbstractResource {
     }
 
     public boolean isLoaded() {
-        return _img instanceof MutableFSImage ? ((MutableFSImage) _img).isLoaded() : true;
+        return !(_img instanceof MutableFSImage) || ((MutableFSImage) _img).isLoaded();
     }
 
     public String getImageUri() {
@@ -53,8 +53,8 @@ public class ImageResource extends AbstractResource {
     public boolean hasDimensions(final int width, final int height) {
         if (isLoaded()) {
             if (_img instanceof AWTFSImage) {
-                AWTFSImage awtfi = (AWTFSImage) _img;
-                return awtfi.getWidth() == width && awtfi.getHeight() == height;
+                AWTFSImage image = (AWTFSImage) _img;
+                return image.getWidth() == width && image.getHeight() == height;
             } else {
                 return false;
             }

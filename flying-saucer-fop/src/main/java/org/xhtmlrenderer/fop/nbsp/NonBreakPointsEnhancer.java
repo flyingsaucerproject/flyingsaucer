@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  * Encoding of the nbsp file must be utf8.
  *
  * Language definition file consist of line per each rule. Line contains regexp pattern with
- * three groups. Second group will be reaplaced by \u00A0. First and second will be copied and are used
+ * three groups. Second group will be replaced by \u00A0. First and second will be copied and are used
  * to match the selection properly.
  * Ex.: "([\\s]+and)( )([^\\s]+)" will replace "this and something else" with "this and\u00A0something else"
  * so and will not be left hanging at the end of the line.
@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
  */
 public class NonBreakPointsEnhancer {
 
-    private NonBreakPointsLoader loader;
+    private final NonBreakPointsLoader loader;
 
     public NonBreakPointsEnhancer() {
         this(new NonBreakPointsLoaderImpl());

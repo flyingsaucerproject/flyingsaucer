@@ -34,13 +34,13 @@ import java.math.BigInteger;
  * href="http://www.merriampark.com/perm.htm">this website</a>. The code was posted with the following comment: "The
  * source code is free for you to use in whatever way you wish."
  *
- * @author Michael Gilleland, Merriam Park Software (http://www.merriampark.com/index.htm)
+ * @author Michael Gilleland, Merriam Park Software (<a href="http://www.merriampark.com/index.htm">...</a>)
  */
 public class PermutationGenerator {
 
-    private int[] a;
+    private final int[] a;
     private BigInteger numLeft;
-    private BigInteger total;
+    private final BigInteger total;
 
     //-----------------------------------------------------------
     // Constructor. WARNING: Don't make n too large.
@@ -92,7 +92,7 @@ public class PermutationGenerator {
     //-----------------------------
 
     public boolean hasMore() {
-        return numLeft.compareTo(BigInteger.ZERO) == 1;
+        return numLeft.compareTo(BigInteger.ZERO) > 0;
     }
 
     //------------------
