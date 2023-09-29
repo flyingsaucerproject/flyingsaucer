@@ -25,7 +25,7 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.DerivedValue;
 
 public class FunctionValue extends DerivedValue {
-    private FSFunction _function;
+    private final FSFunction _function;
 
     public FunctionValue(CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());

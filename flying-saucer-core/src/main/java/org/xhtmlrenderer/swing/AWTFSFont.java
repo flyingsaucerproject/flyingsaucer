@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Font;
-
 import org.xhtmlrenderer.render.FSFont;
 
+import java.awt.*;
+
 public class AWTFSFont implements FSFont {
-    private Font _font;
+    private final Font _font;
 
     public AWTFSFont(Font font) {
         _font = font;

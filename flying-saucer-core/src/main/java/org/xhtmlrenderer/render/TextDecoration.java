@@ -22,7 +22,7 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.constants.IdentValue;
 
 public class TextDecoration {
-    private IdentValue _identValue;
+    private final IdentValue _identValue;
     private int _offset;
     private int _thickness;
 

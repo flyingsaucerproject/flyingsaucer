@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Graphics2D;
-
 import org.xhtmlrenderer.extend.FontContext;
 
+import java.awt.*;
+
 public class Java2DFontContext implements FontContext {
-    private Graphics2D _graphics;
+    private final Graphics2D _graphics;
 
     public Java2DFontContext(Graphics2D graphics) {
         _graphics = graphics;

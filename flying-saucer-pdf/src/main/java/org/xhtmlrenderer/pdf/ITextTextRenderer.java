@@ -31,7 +31,7 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import java.awt.*;
 
 public class ITextTextRenderer implements TextRenderer {
-    private static float TEXT_MEASURING_DELTA = 0.01f;
+    private static final float TEXT_MEASURING_DELTA = 0.01f;
 
     public void setup(FontContext context) {
     }
@@ -46,22 +46,22 @@ public class ITextTextRenderer implements TextRenderer {
     }
 
     public FSFontMetrics getFSFontMetrics(FontContext context, FSFont font, String string) {
-        FontDescription descr = ((ITextFSFont)font).getFontDescription();
-        BaseFont bf = descr.getFont();
+        FontDescription description = ((ITextFSFont)font).getFontDescription();
+        BaseFont bf = description.getFont();
         float size = font.getSize2D();
         ITextFSFontMetrics result = new ITextFSFontMetrics();
         result.setAscent(bf.getFontDescriptor(BaseFont.BBOXURY, size));
         result.setDescent(-bf.getFontDescriptor(BaseFont.BBOXLLY, size));
 
-        result.setStrikethroughOffset(-descr.getYStrikeoutPosition() / 1000f * size);
-        if (descr.getYStrikeoutSize() != 0) {
-            result.setStrikethroughThickness(descr.getYStrikeoutSize() / 1000f * size);
+        result.setStrikethroughOffset(-description.getYStrikeoutPosition() / 1000f * size);
+        if (description.getYStrikeoutSize() != 0) {
+            result.setStrikethroughThickness(description.getYStrikeoutSize() / 1000f * size);
         } else {
             result.setStrikethroughThickness(size / 12.0f);
         }
 
-        result.setUnderlineOffset(-descr.getUnderlinePosition() / 1000f * size);
-        result.setUnderlineThickness(descr.getUnderlineThickness() / 1000f * size);
+        result.setUnderlineOffset(-description.getUnderlinePosition() / 1000f * size);
+        result.setUnderlineThickness(description.getUnderlineThickness() / 1000f * size);
 
         return result;
     }

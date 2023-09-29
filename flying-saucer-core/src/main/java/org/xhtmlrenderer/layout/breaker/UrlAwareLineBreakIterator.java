@@ -12,7 +12,7 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
 
     private static final String BREAKING_CHARS = ".,:;!?- \n\r\t/";
 
-    private BreakIterator delegate = BreakIterator.getLineInstance();
+    private final BreakIterator delegate = BreakIterator.getLineInstance();
     private String text;
     private Range currentRange;
 
@@ -59,7 +59,7 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
 
 
     private Range trimSearchRange(Range searchRange) {
-        // Exclude leading breaking characters (should really only be slash).
+        // Exclude leading breaking characters (should really only be a slash).
         while (searchRange.getStart() < currentRange.getStop() && BREAKING_CHARS.indexOf(text.charAt(searchRange.getStart())) > -1) {
             searchRange = searchRange.incrementStart();
         }
@@ -180,7 +180,7 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
 
 
         public Range decrementStop() {
-            int newStop = stop + -1;
+            int newStop = stop - 1;
             return new Range(Math.min(start, newStop), newStop);
         }
 

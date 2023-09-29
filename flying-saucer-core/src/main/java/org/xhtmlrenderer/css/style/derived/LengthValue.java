@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.css.style.derived;
 
-import java.util.logging.Level;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.ValueConstants;
@@ -31,6 +29,8 @@ import org.xhtmlrenderer.css.style.DerivedValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.util.logging.Level;
+
 public class LengthValue extends DerivedValue {
     private final static int MM__PER__CM = 10;
     private final static float CM__PER__IN = 2.54F;
@@ -40,14 +40,14 @@ public class LengthValue extends DerivedValue {
     /**
      * The specified length value, as a float; pulled from the CSS text
      */
-    private float _lengthAsFloat;
+    private final float _lengthAsFloat;
 
-    private CalculatedStyle _style;
+    private final CalculatedStyle _style;
 
     /**
      * The specified primitive SAC data type given for this length, from the CSS text
      */
-    private short _lengthPrimitiveType;
+    private final short _lengthPrimitiveType;
 
     public LengthValue(CalculatedStyle style, CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
@@ -67,8 +67,6 @@ public class LengthValue extends DerivedValue {
      * known before layout/render
      *
      * @param cssName   Name of the property
-     * @param baseValue
-     * @param ctx
      * @return the absolute value or computed absolute value
      */
     public float getFloatProportionalTo(CSSName cssName,
@@ -103,7 +101,7 @@ public class LengthValue extends DerivedValue {
         float absVal = Float.MIN_VALUE;
 
         // NOTE: we used to cache absolute values, but have removed that to see if it
-        // really makes a difference, since the calcs are so simple. In any case, for DPI-relative
+        // really makes a difference, since the calculations are so simple. In any case, for DPI-relative
         // values we shouldn't be caching, unless we also check if the DPI is changed, which
         // would seem to obviate the advantage of caching anyway.
         switch (primitiveType) {
@@ -196,7 +194,7 @@ public class LengthValue extends DerivedValue {
         }
 
         double d = Math.round((double) absVal);
-        absVal = new Float(d).floatValue();
+        absVal = (float) d;
         return absVal;
     }
 

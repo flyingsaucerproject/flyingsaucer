@@ -20,25 +20,28 @@
 package org.xhtmlrenderer.pdf;
 
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.*;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfAnnotation;
+import com.itextpdf.text.pdf.PdfAppearance;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfFormField;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.TextField;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.util.*;
-
-import com.itextpdf.text.Rectangle;
+import org.xhtmlrenderer.util.Util;
 
 import java.io.IOException;
 
-public class TextFormField extends AbstractFormField
-{
+public class TextFormField extends AbstractFormField {
   private static final String FIELD_TYPE = "Text";
 
   private static final int DEFAULT_SIZE = 15;
 
-  private int _baseline;
+  private final int _baseline;
 
   public TextFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
   {
@@ -78,8 +81,7 @@ public class TextFormField extends AbstractFormField
     return FIELD_TYPE;
   }
 
-  public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box)
-  {
+  public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
 
     PdfWriter writer = outputDevice.getWriter();
 
@@ -91,24 +93,19 @@ public class TextFormField extends AbstractFormField
     String value = getValue(elem);
     field.setText(value);
 
-    try
-    {
+    try {
       PdfFormField formField = field.getTextField();
       createAppearance(c, outputDevice, box, formField, value);
       //TODO add max length back in
-      if (isReadOnly(elem))
-      {
+      if (isReadOnly(elem)) {
         formField.setFieldFlags(PdfFormField.FF_READ_ONLY);
       }
       writer.addAnnotation(formField);
-    } catch (IOException ioe)
-    {
+    } catch (IOException ioe) {
       System.out.println(ioe);
-    } catch (DocumentException de)
-    {
+    } catch (DocumentException de) {
       System.out.println(de);
     }
-
   }
 
   private void createAppearance(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box, PdfFormField field, String value)

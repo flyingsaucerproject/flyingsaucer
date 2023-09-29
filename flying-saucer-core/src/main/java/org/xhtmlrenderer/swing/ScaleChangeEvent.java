@@ -28,8 +28,8 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
  */
 public class ScaleChangeEvent {
 
-    private XHTMLPanel pane;
-    private double scale;
+    private final XHTMLPanel pane;
+    private final double scale;
 
     /**
      * Constructs a new ScaleChangeEvent

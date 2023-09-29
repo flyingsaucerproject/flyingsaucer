@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class ListBreakPointsProvider implements BreakPointsProvider {
 
-    private Iterator<BreakPoint> breakPoints;
+    private final Iterator<BreakPoint> breakPoints;
 
     public ListBreakPointsProvider(List<BreakPoint> breakPoints) {
         this.breakPoints = breakPoints.iterator();

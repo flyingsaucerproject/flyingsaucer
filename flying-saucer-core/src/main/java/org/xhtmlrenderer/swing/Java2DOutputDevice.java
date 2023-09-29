@@ -41,7 +41,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
 public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDevice {
-    private Graphics2D _graphics;
+    private final Graphics2D _graphics;
 
     public Java2DOutputDevice(Graphics2D graphics) {
         _graphics = graphics;
@@ -56,7 +56,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         if (inlineText.isSelected()) {
             InlineLayoutBox iB = inlineText.getParent();
             String text = inlineText.getSubstring();
-            if (text != null && text.length() > 0) {
+            if (text != null && !text.isEmpty()) {
                 FSFont font = iB.getStyle().getFSFont(c);
                 FSGlyphVector glyphVector = c.getTextRenderer().getGlyphVector(
                         c.getOutputDevice(),

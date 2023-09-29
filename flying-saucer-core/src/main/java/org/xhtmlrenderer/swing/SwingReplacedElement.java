@@ -19,15 +19,14 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
-
-import javax.swing.JComponent;
-
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class SwingReplacedElement implements ReplacedElement {
-    private JComponent _component;
+    private final JComponent _component;
     private Dimension intrinsicSize;
 
     public SwingReplacedElement(JComponent component) {
