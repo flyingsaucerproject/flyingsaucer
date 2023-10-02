@@ -56,7 +56,7 @@ public class FSEntityResolver implements EntityResolver2 {
     /**
      * Singleton instance, use {@link #instance()} to retrieve.
      */
-    private static FSEntityResolver instance;
+    private static final FSEntityResolver instance = new FSEntityResolver();
 
     private final Map<String, String> entities = new HashMap<>();
 
@@ -150,10 +150,7 @@ public class FSEntityResolver implements EntityResolver2 {
      *
      * @return An instance of .
      */
-    public static synchronized FSEntityResolver instance() {
-        if (instance == null) {
-            instance = new FSEntityResolver();
-        }
+    public static FSEntityResolver instance() {
         return instance;
     }
 
