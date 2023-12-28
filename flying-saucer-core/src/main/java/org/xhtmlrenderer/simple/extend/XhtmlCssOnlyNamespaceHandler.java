@@ -23,7 +23,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
@@ -42,6 +41,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.xhtmlrenderer.util.TextUtil.readTextContent;
 
 /**
  * Handles xhtml but only css styling is honored,
@@ -194,20 +195,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             return e.getAttribute("name");
         }
         return null;
-    }
-
-    private static String readTextContent(Element element) {
-        StringBuilder result = new StringBuilder();
-        Node current = element.getFirstChild();
-        while (current != null) {
-            short nodeType = current.getNodeType();
-            if (nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE) {
-                Text t = (Text)current;
-                result.append(t.getData());
-            }
-            current = current.getNextSibling();
-        }
-        return result.toString();
     }
 
     private static String collapseWhiteSpace(String text) {
