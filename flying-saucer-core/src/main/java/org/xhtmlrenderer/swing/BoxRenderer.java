@@ -292,7 +292,7 @@ public class BoxRenderer {
 
     private void layout(int width) {
         Rectangle rect = new Rectangle(0, 0, width, DEFAULT_HEIGHT);
-        sharedContext.set_TempCanvas(rect);
+        sharedContext.setTemporaryCanvas(rect);
         BlockBox root = BoxBuilder.createRootBox(layoutContext, doc);
         root.setContainingBlock(new ViewportBox(rect));
         root.layout(layoutContext);
