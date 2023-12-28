@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -339,9 +338,9 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     @Override
     @Nonnull
     @CheckReturnValue
-    public StylesheetInfo[] getStylesheets(Document doc) {
+    public List<StylesheetInfo> getStylesheets(Document doc) {
         //get the processing-instructions (actually for XmlDocuments)
-        List<StylesheetInfo> result = new ArrayList<>(Arrays.asList(super.getStylesheets(doc)));
+        List<StylesheetInfo> result = new ArrayList<>(super.getStylesheets(doc));
 
         //get the link elements
         Element html = doc.getDocumentElement();
@@ -370,7 +369,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             }
         }
 
-        return result.toArray(new StylesheetInfo[0]);
+        return result;
     }
 
     @Override

@@ -176,7 +176,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
     @Override
     @Nonnull
     @CheckReturnValue
-    public StylesheetInfo[] getStylesheets(Document doc) {
+    public List<StylesheetInfo> getStylesheets(Document doc) {
         List<StylesheetInfo> list = new ArrayList<>();
         //get the processing-instructions (actually for XmlDocuments)
         //type and href are required to be set
@@ -227,7 +227,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
             list.add(info);
         }
 
-        return list.toArray(new StylesheetInfo[0]);
+        return list;
     }
 
     @Override
