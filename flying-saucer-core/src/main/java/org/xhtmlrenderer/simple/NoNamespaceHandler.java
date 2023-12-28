@@ -33,6 +33,10 @@ import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -43,22 +47,29 @@ import java.util.regex.Pattern;
  *
  * @author Torbjoern Gannholm
  */
+@ParametersAreNonnullByDefault
 public class NoNamespaceHandler implements NamespaceHandler {
 
-    static final String _namespace = "http://www.w3.org/XML/1998/namespace";
+    private static final String _namespace = "http://www.w3.org/XML/1998/namespace";
 
     @Override
+    @Nonnull
+    @CheckReturnValue
     public String getNamespace() {
         return _namespace;
     }
 
     @Override
-    public String getAttributeValue(org.w3c.dom.Element e, String attrName) {
+    @Nonnull
+    @CheckReturnValue
+    public String getAttributeValue(Element e, String attrName) {
         return e.getAttribute(attrName);
     }
 
     @Override
-    public String getAttributeValue(Element e, String namespaceURI, String attrName) {
+    @Nonnull
+    @CheckReturnValue
+    public String getAttributeValue(Element e, @Nullable String namespaceURI, String attrName) {
         if (namespaceURI == TreeResolver.NO_NAMESPACE) {
             return e.getAttribute(attrName);
         } else if (namespaceURI == null) {
@@ -82,59 +93,76 @@ public class NoNamespaceHandler implements NamespaceHandler {
     }
 
     @Override
-    public String getClass(org.w3c.dom.Element e) {
+    @Nullable
+    @CheckReturnValue
+    public String getClass(Element e) {
         return null;
     }
 
     @Override
-    public String getID(org.w3c.dom.Element e) {
+    @Nullable
+    @CheckReturnValue
+    public String getID(Element e) {
         return null;
     }
 
     @Override
-    public String getLang(org.w3c.dom.Element e) {
-        if(e == null) {
-            return "";
-        }
+    @Nonnull
+    @CheckReturnValue
+    public String getLang(Element e) {
         return e.getAttribute("lang");
     }
 
     @Override
-    public String getElementStyling(org.w3c.dom.Element e) {
+    @Nullable
+    @CheckReturnValue
+    public String getElementStyling(Element e) {
         return null;
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public String getNonCssStyling(Element e) {
         return null;
     }
 
     @Override
-    public String getLinkUri(org.w3c.dom.Element e) {
+    @Nullable
+    @CheckReturnValue
+    public String getLinkUri(Element e) {
         return null;
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public String getDocumentTitle(Document doc) {
         return null;
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public String getAnchorName(Element e) {
         return null;
     }
 
     @Override
+    @CheckReturnValue
     public boolean isImageElement(Element e) {
         return false;
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public String getImageSourceURI(Element e) {
         return null;
     }
 
     @Override
+    @CheckReturnValue
     public boolean isFormElement(Element e) {
         return false;
     }
@@ -146,6 +174,8 @@ public class NoNamespaceHandler implements NamespaceHandler {
     private static final Pattern _mediaPattern = Pattern.compile("media\\s?=\\s?");
 
     @Override
+    @Nonnull
+    @CheckReturnValue
     public StylesheetInfo[] getStylesheets(Document doc) {
         List<StylesheetInfo> list = new ArrayList<>();
         //get the processing-instructions (actually for XmlDocuments)
@@ -197,10 +227,11 @@ public class NoNamespaceHandler implements NamespaceHandler {
             list.add(info);
         }
 
-        return list.toArray(new StylesheetInfo[list.size()]);
+        return list.toArray(new StylesheetInfo[0]);
     }
 
     @Override
+    @Nullable
     public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
         return null;
     }

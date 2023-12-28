@@ -31,6 +31,10 @@ import org.xhtmlrenderer.simple.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -44,6 +48,7 @@ import java.util.Map;
  * Handles xhtml but only css styling is honored,
  * no presentational html attributes (see css 2.1 spec, 6.4.4)
  */
+@ParametersAreNonnullByDefault
 public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     private static final String _namespace = "http://www.w3.org/1999/xhtml";
@@ -56,6 +61,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @return The namespace value
      */
     @Override
+    @Nonnull
+    @CheckReturnValue
     public String getNamespace() {
         return _namespace;
     }
@@ -64,7 +71,9 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * Gets the class attribute of the XhtmlNamespaceHandler object
      */
     @Override
-    public String getClass(org.w3c.dom.Element e) {
+    @Nonnull
+    @CheckReturnValue
+    public String getClass(Element e) {
         return e.getAttribute("class");
     }
 
@@ -72,9 +81,11 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * Gets the iD attribute of the XhtmlNamespaceHandler object
      */
     @Override
-    public String getID(org.w3c.dom.Element e) {
+    @Nullable
+    @CheckReturnValue
+    public String getID(Element e) {
         String result = e.getAttribute("id").trim();
-        return result.length() == 0 ? null : result;
+        return result.isEmpty() ? null : result;
     }
 
     protected String convertToLength(String value) {
@@ -95,10 +106,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return true;
     }
 
+    @Nullable
     protected String getAttribute(Element e, String attrName) {
-        String result = e.getAttribute(attrName);
-        result = result.trim();
-        return result.length() == 0 ? null : result;
+        String result = e.getAttribute(attrName).trim();
+        return result.isEmpty() ? null : result;
     }
 
     /**
@@ -106,7 +117,9 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @return The elementStyling value
      */
     @Override
-    public String getElementStyling(org.w3c.dom.Element e) {
+    @Nonnull
+    @CheckReturnValue
+    public String getElementStyling(Element e) {
         StringBuilder style = new StringBuilder();
         switch (e.getNodeName()) {
             case "td":
@@ -168,18 +181,17 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * Gets the linkUri attribute of the XhtmlNamespaceHandler object
      */
     @Override
-    public String getLinkUri(org.w3c.dom.Element e) {
-        String href = null;
-        if (e.getNodeName().equalsIgnoreCase("a") && e.hasAttribute("href")) {
-            href = e.getAttribute("href");
-        }
-        return href;
+    @Nullable
+    @CheckReturnValue
+    public String getLinkUri(Element e) {
+        return e.getNodeName().equalsIgnoreCase("a") && e.hasAttribute("href") ? e.getAttribute("href") : null;
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public String getAnchorName(Element e) {
-        if (e != null && e.getNodeName().equalsIgnoreCase("a") &&
-                e.hasAttribute("name")) {
+        if (e.getNodeName().equalsIgnoreCase("a") && e.hasAttribute("name")) {
             return e.getAttribute("name");
         }
         return null;
@@ -227,6 +239,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @return The document's title, or "" if none found
      */
     @Override
+    @Nonnull
+    @CheckReturnValue
     public String getDocumentTitle(Document doc) {
         String title = "";
 
@@ -256,7 +270,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     protected StylesheetInfo readStyleElement(Element style) {
         String media = style.getAttribute("media");
-        if ("".equals(media)) {
+        if (media.isEmpty()) {
             media = "all";
         }//default for HTML is "screen", but that is silly and firefox seems to assume "all"
         StylesheetInfo info = new StylesheetInfo();
@@ -275,9 +289,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
 
         String css = buf.toString().trim();
-        if (css.length() > 0) {
+        if (!css.isEmpty()) {
             info.setContent(css);
-
             return info;
         } else {
             return null;
@@ -294,13 +307,13 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
 
         String type = link.getAttribute("type");
-        if (! (type.equals("") || type.equals("text/css"))) {
+        if (!(type.isEmpty() || type.equals("text/css"))) {
             return null;
         }
 
         StylesheetInfo info = new StylesheetInfo();
 
-        if (type.equals("")) {
+        if (type.isEmpty()) {
             type = "text/css";
         } // HACK is not entirely correct because default may be set by META tag or HTTP headers
         info.setType(type);
@@ -309,7 +322,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
         info.setUri(link.getAttribute("href"));
         String media = link.getAttribute("media");
-        if ("".equals(media)) {
+        if (media.isEmpty()) {
             media = "all";
         }
         info.setMedia(media);
@@ -324,6 +337,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * Gets the stylesheetLinks attribute of the XhtmlNamespaceHandler object
      */
     @Override
+    @Nonnull
+    @CheckReturnValue
     public StylesheetInfo[] getStylesheets(Document doc) {
         //get the processing-instructions (actually for XmlDocuments)
         List<StylesheetInfo> result = new ArrayList<>(Arrays.asList(super.getStylesheets(doc)));
@@ -355,10 +370,12 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             }
         }
 
-        return result.toArray(new StylesheetInfo[result.size()]);
+        return result.toArray(new StylesheetInfo[0]);
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
         synchronized (XhtmlCssOnlyNamespaceHandler.class) {
             if (_defaultStylesheet != null) {
@@ -438,7 +455,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                         String http_equiv = elem.getAttribute("http-equiv");
                         String content = elem.getAttribute("content");
 
-                        if(!http_equiv.equals("") && !content.equals("")) {
+                        if (!http_equiv.isEmpty() && !content.isEmpty()) {
                             metadata.put(http_equiv, content);
                         }
                     }
@@ -451,14 +468,13 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
 
     @Override
-    public String getLang(org.w3c.dom.Element e) {
-        if(e == null) {
-            return "";
-        }
+    @Nonnull
+    @CheckReturnValue
+    public String getLang(Element e) {
         String lang = e.getAttribute("lang");
-        if("".equals(lang)) {
+        if (lang.isEmpty()) {
             lang = getMetaInfo(e.getOwnerDocument()).get("Content-Language");
-            if(lang == null) {
+            if (lang == null) {
                 lang = "";
             }
         }

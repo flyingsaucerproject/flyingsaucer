@@ -104,7 +104,7 @@ public class StyleReference {
                 }
 
                 if (sheet != null) {
-                    if (sheet.getImportRules().size() > 0) {
+                    if (!sheet.getImportRules().isEmpty()) {
                         result.addAll(readAndParseAll(sheet.getImportRules(), medium));
                     }
 
@@ -217,23 +217,22 @@ public class StyleReference {
 
         StylesheetInfo[] refs = _nsh.getStylesheets(_doc);
         int inlineStyleCount = 0;
-        if (refs != null) {
-            for (StylesheetInfo ref : refs) {
-                String uri;
 
-                if (!ref.isInline()) {
-                    uri = _uac.resolveURI(ref.getUri());
-                    ref.setUri(uri);
-                } else {
-                    ref.setUri(_uac.getBaseURL() + "#inline_style_" + (++inlineStyleCount));
-                    Stylesheet sheet = _stylesheetFactory.parse(
-                            new StringReader(ref.getContent()), ref);
-                    ref.setStylesheet(sheet);
-                    ref.setUri(null);
-                }
+        for (StylesheetInfo ref : refs) {
+            String uri;
+
+            if (!ref.isInline()) {
+                uri = _uac.resolveURI(ref.getUri());
+                ref.setUri(uri);
+            } else {
+                ref.setUri(_uac.getBaseURL() + "#inline_style_" + (++inlineStyleCount));
+                Stylesheet sheet = _stylesheetFactory.parse(
+                        new StringReader(ref.getContent()), ref);
+                ref.setStylesheet(sheet);
+                ref.setUri(null);
             }
-            infos.addAll(Arrays.asList(refs));
         }
+        infos.addAll(Arrays.asList(refs));
 
         // TODO: here we should also get user stylesheet from userAgent
 
