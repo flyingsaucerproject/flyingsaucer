@@ -15,6 +15,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -37,8 +39,9 @@ public class ConcurrentPdfGenerationTest extends TestCase {
         ScheduledExecutorService timer = newScheduledThreadPool(1);
         timer.scheduleWithFixedDelay(System::gc, 0, 15, MILLISECONDS);
 
-        ExecutorService pool = newFixedThreadPool(20);
-        for (int j = 0; j < 2000; j++) {
+        List<Throwable> failures = new ArrayList<>();
+        ExecutorService pool = newFixedThreadPool(10);
+        for (int j = 0; j < 200; j++) {
             final int i = j;
             pool.submit(() -> {
                 try {
@@ -48,12 +51,15 @@ public class ConcurrentPdfGenerationTest extends TestCase {
                 }
                 catch (Throwable e) {
                     log.error("Check #{} failed: ", i, e);
+                    failures.add(e);
                 }
             });
         }
 
         pool.shutdown();
         assert pool.awaitTermination(250, SECONDS) : "Timeout!";
+        
+        assertThat(failures).isEmpty();
     }
 
     private void verifyPdf(byte[] pdfBytes) {
