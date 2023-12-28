@@ -456,7 +456,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     @Override
     @Nonnull
     @CheckReturnValue
-    public String getLang(Element e) {
+    public String getLang(@Nullable Element e) {
+        if (e == null) {
+            return "";
+        }
         String lang = e.getAttribute("lang");
         if (lang.isEmpty()) {
             lang = getMetaInfo(e.getOwnerDocument()).get("Content-Language");
