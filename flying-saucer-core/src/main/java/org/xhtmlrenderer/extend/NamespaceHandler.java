@@ -28,6 +28,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 /**
  * Provides knowledge specific to a certain document type, like resolving
@@ -67,7 +68,7 @@ public interface NamespaceHandler {
      */
     @Nonnull
     @CheckReturnValue
-    StylesheetInfo[] getStylesheets(Document doc);
+    List<StylesheetInfo> getStylesheets(Document doc);
 
     /**
      * may return null. Required to return null if attribute does not exist and

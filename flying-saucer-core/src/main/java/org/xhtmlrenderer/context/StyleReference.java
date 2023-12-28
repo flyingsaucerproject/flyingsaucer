@@ -41,7 +41,6 @@ import org.xhtmlrenderer.util.XRLog;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -215,7 +214,7 @@ public class StyleReference {
             infos.add(defaultStylesheet);
         }
 
-        StylesheetInfo[] refs = _nsh.getStylesheets(_doc);
+        List<StylesheetInfo> refs = _nsh.getStylesheets(_doc);
         int inlineStyleCount = 0;
 
         for (StylesheetInfo ref : refs) {
@@ -232,7 +231,7 @@ public class StyleReference {
                 ref.setUri(null);
             }
         }
-        infos.addAll(Arrays.asList(refs));
+        infos.addAll(refs);
 
         // TODO: here we should also get user stylesheet from userAgent
 
