@@ -389,6 +389,10 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         try {
             URI result = new URI(uri);
             if (result.isAbsolute()) {
+                if (result.getScheme().equals("classpath")) {
+                    URL resource = Thread.currentThread().getContextClassLoader().getResource(uri.substring("classpath".length() + 1));
+                    return resource.toString();
+                }
                 return result.toString();
             }
             XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);

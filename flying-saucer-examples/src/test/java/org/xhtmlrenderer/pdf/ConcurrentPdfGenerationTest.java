@@ -67,6 +67,7 @@ public class ConcurrentPdfGenerationTest extends TestCase {
         assertThat(pdf).containsText("Bill To:", "John doe", "john.do@mail.com");
         assertThat(pdf).containsText("Invoice #:", "INV-666");
         assertThat(pdf).containsText("Invoice Date:", "Sep 27, 2023");
+        assertThat(pdf).doesNotContainText("Password", "Secret");
     }
 
     private byte[] generatePdf(String htmlPath) {
