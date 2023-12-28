@@ -63,7 +63,7 @@ public final class SharedContext {
     private static final Set<String> PAGED_MEDIA_TYPES =
             new HashSet<>(asList("print", "projection", "embossed", "handheld", "tv"));
 
-    private TextRenderer text_renderer;
+    private TextRenderer textRenderer;
     private String media;
     private UserAgentCallback uac;
     private boolean interactive = true;
@@ -168,7 +168,7 @@ public final class SharedContext {
     private FSCanvas canvas;
 
     public TextRenderer getTextRenderer() {
-        return text_renderer;
+        return textRenderer;
     }
 
     public boolean debugDrawBoxes() {
@@ -270,10 +270,10 @@ public final class SharedContext {
     /**
      * Sets the textRenderer attribute of the RenderingContext object
      *
-     * @param text_renderer The new textRenderer value
+     * @param textRenderer The new textRenderer value
      */
-    public void setTextRenderer(TextRenderer text_renderer) {
-        this.text_renderer = text_renderer;
+    public void setTextRenderer(TextRenderer textRenderer) {
+        this.textRenderer = textRenderer;
     }// = "screen";
 
     /**
