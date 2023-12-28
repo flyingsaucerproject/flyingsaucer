@@ -1027,18 +1027,15 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     static class Bookmark {
-        private String _name;
-        private String _HRef;
-        private Box    _box;
+        private final String _name;
+        private final String _href;
+        private Box _box;
 
         private List<Bookmark> _children;
 
-        Bookmark() {
-        }
-
         Bookmark(String name, String href) {
             _name = name;
-            _HRef = href;
+            _href = href;
         }
 
         public Box getBox() {
@@ -1050,19 +1047,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
 
         public String getHRef() {
-            return _HRef;
-        }
-
-        public void setHRef(String href) {
-            _HRef = href;
+            return _href;
         }
 
         public String getName() {
             return _name;
-        }
-
-        public void setName(String name) {
-            _name = name;
         }
 
         public void addChild(Bookmark child) {
