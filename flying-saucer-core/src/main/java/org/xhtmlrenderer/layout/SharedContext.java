@@ -96,7 +96,7 @@ public final class SharedContext {
     }
 
     public SharedContext(UserAgentCallback uac) {
-        font_resolver = new AWTFontResolver();
+        fontResolver = new AWTFontResolver();
         replacedElementFactory = new SwingReplacedElementFactory();
         setMedia("screen");
         this.uac = uac;
@@ -112,7 +112,7 @@ public final class SharedContext {
 
 
     public SharedContext(UserAgentCallback uac, FontResolver fr, ReplacedElementFactory ref, TextRenderer tr, float dpi) {
-        font_resolver = fr;
+        fontResolver = fr;
         replacedElementFactory = ref;
         setMedia("screen");
         this.uac = uac;
@@ -143,14 +143,14 @@ public final class SharedContext {
      * @return The fontResolver value
      */
     public FontResolver getFontResolver() {
-        return font_resolver;
+        return fontResolver;
     }
 
     public void flushFonts() {
-        font_resolver.flushCache();
+        fontResolver.flushCache();
     }
 
-    private FontResolver font_resolver;
+    private FontResolver fontResolver;
 
     /**
      * The media for this context
@@ -442,7 +442,7 @@ public final class SharedContext {
     }
 
     public void setFontResolver(FontResolver resolver) {
-        font_resolver = resolver;
+        fontResolver = resolver;
     }
 
     public int getDotsPerPixel() {
