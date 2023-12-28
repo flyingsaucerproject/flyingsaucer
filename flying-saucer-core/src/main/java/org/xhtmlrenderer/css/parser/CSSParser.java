@@ -57,8 +57,8 @@ public class CSSParser {
 
     private Token _saved;
     private final Lexer _lexer;
-    private CSSErrorHandler _errorHandler;
-    private String _URI;
+    private final CSSErrorHandler _errorHandler;
+    private String _uri;
 
     private final Map<String, String> _namespaces = new HashMap<>();
     private boolean _supportCMYKColors;
@@ -70,7 +70,7 @@ public class CSSParser {
 
     public Stylesheet parseStylesheet(String uri, int origin, Reader reader)
             throws IOException {
-        _URI = uri;
+        _uri = uri;
         reset(reader);
 
         Stylesheet result = new Stylesheet(uri, origin);
@@ -82,7 +82,7 @@ public class CSSParser {
     public Ruleset parseDeclaration(int origin, String text) {
         try {
             // XXX Set this to something more reasonable
-            _URI = "style attribute";
+            _uri = "style attribute";
             reset(new StringReader(text));
 
             skip_whitespace();
@@ -103,7 +103,7 @@ public class CSSParser {
     }
 
     public PropertyValue parsePropertyValue(CSSName cssName, int origin, String expr) {
-        _URI = cssName + " property value";
+        _uri = cssName + " property value";
         try {
             reset(new StringReader(expr));
             List<PropertyValue> values = expr(
@@ -311,7 +311,7 @@ public class CSSParser {
                             t, new Token[] { Token.TK_STRING, Token.TK_URI }, getCurrentLine());
                 }
 
-                if (info.getMedia().size() == 0) {
+                if (info.getMedia().isEmpty()) {
                     info.addMedium("all");
                 }
                 stylesheet.addImportRule(info);
@@ -475,7 +475,6 @@ public class CSSParser {
                     // Prevent runaway threads with a max loop/counter
                     int maxLoops = 1024 * 1024; // 1M is too much, 1K is probably too...
                     int i = 0;
-                    LOOP:
                     while (true) {
                         if (++i >= maxLoops)
                             throw new CSSParseException(t, Token.TK_RBRACE, getCurrentLine());
@@ -484,7 +483,7 @@ public class CSSParser {
                         if (t == Token.TK_RBRACE) {
                             next();
                             skip_whitespace();
-                            break LOOP;
+                            break;
                         } else {
                             declaration_list(ruleset, false, true, true);
                         }
@@ -535,14 +534,13 @@ public class CSSParser {
                 skip_whitespace();
                 t = next();
                 if (t == Token.TK_LBRACE) {
-                    LOOP:
                     while (true) {
                         skip_whitespace();
                         t = la();
                         if (t == Token.TK_RBRACE) {
                             next();
                             skip_whitespace();
-                            break LOOP;
+                            break;
                         } else if (t == Token.TK_AT_RULE) {
                             margin(stylesheet, pageRule);
                         } else {
@@ -775,7 +773,7 @@ public class CSSParser {
                         t, new Token[] { Token.TK_COMMA, Token.TK_LBRACE }, getCurrentLine());
             }
 
-            if (ruleset.getPropertyDeclarations().size() > 0) {
+            if (!ruleset.getPropertyDeclarations().isEmpty()) {
                 container.addContent(ruleset);
             }
         } catch (CSSParseException e) {
@@ -1213,7 +1211,7 @@ public class CSSParser {
         if (SUPPORTED_PSEUDO_ELEMENTS.contains(value)) {
             selector.setPseudoElement(value);
         } else {
-            throw new CSSParseException(value + " is not a recognized psuedo-element", getCurrentLine());
+            throw new CSSParseException(value + " is not a recognized pseudo-element", getCurrentLine());
         }
     }
 
@@ -1250,7 +1248,7 @@ public class CSSParser {
     private boolean checkCSSName(CSSName cssName, String propertyName) {
         if (cssName == null) {
             _errorHandler.error(
-                    _URI,
+                    _uri,
                     propertyName + " is an unrecognized CSS property at line "
                         + getCurrentLine() + ". Ignoring declaration.");
             return false;
@@ -1258,7 +1256,7 @@ public class CSSParser {
 
         if (! CSSName.isImplemented(cssName)) {
             _errorHandler.error(
-                    _URI,
+                    _uri,
                     propertyName + " is not implemented at line "
                         + getCurrentLine() + ". Ignoring declaration.");
             return false;
@@ -1267,7 +1265,7 @@ public class CSSParser {
         PropertyBuilder builder = CSSName.getPropertyBuilder(cssName);
         if (builder == null) {
             _errorHandler.error(
-                    _URI,
+                    _uri,
                     "(bug) No property builder defined for " + propertyName
                         + " at line " + getCurrentLine() + ". Ignoring declaration.");
             return false;
@@ -1828,7 +1826,7 @@ public class CSSParser {
     private void error(CSSParseException e, String what, boolean rethrowEOF) {
         if (! e.isCallerNotified()) {
             String message = e.getMessage() + " Skipping " + what + ".";
-            _errorHandler.error(_URI, message);
+            _errorHandler.error(_uri, message);
         }
         e.setCallerNotified(true);
         if (e.isEOF() && rethrowEOF) {
@@ -1880,14 +1878,6 @@ public class CSSParser {
         _lexer.setyyline(0);
     }
 
-    public CSSErrorHandler getErrorHandler() {
-        return _errorHandler;
-    }
-
-    public void setErrorHandler(CSSErrorHandler errorHandler) {
-        _errorHandler = errorHandler;
-    }
-
     private String getRawTokenValue() {
         return _lexer.yytext();
     }
@@ -1928,16 +1918,16 @@ public class CSSParser {
                 String uriResult = processEscapes(ch, start, end+1);
 
                 // Relative URIs are resolved relative to CSS file, not XHTML file
-                if (isRelativeURI(uriResult) && _URI != null) {
-                    int lastSlash = _URI.lastIndexOf('/');
+                if (isRelativeURI(uriResult) && _uri != null) {
+                    int lastSlash = _uri.lastIndexOf('/');
                     if (lastSlash != -1) {
-                        uriResult = _URI.substring(0, lastSlash+1) + uriResult;
+                        uriResult = _uri.substring(0, lastSlash+1) + uriResult;
                     }
-                } else if (isServerRelativeURI(uriResult) && _URI != null) {
-                    int uriOffset = _URI.indexOf("://") + 3;
-                    int firstSlashAfterProtocol = _URI.substring(uriOffset).indexOf('/');
+                } else if (isServerRelativeURI(uriResult) && _uri != null) {
+                    int uriOffset = _uri.indexOf("://") + 3;
+                    int firstSlashAfterProtocol = _uri.substring(uriOffset).indexOf('/');
                     if (firstSlashAfterProtocol != -1) {
-                        uriResult = _URI.substring(0, uriOffset + firstSlashAfterProtocol) + uriResult;
+                        uriResult = _uri.substring(0, uriOffset + firstSlashAfterProtocol) + uriResult;
                     }
                 }
 
@@ -1962,7 +1952,7 @@ public class CSSParser {
 
     private boolean isRelativeURI(String uri) {
         try {
-            return uri.length() > 0 && (uri.charAt(0) != '/' && ! new URI(uri).isAbsolute());
+            return !uri.isEmpty() && (uri.charAt(0) != '/' && ! new URI(uri).isAbsolute());
         } catch (URISyntaxException e) {
             return false;
         }
@@ -1970,7 +1960,7 @@ public class CSSParser {
 
     private boolean isServerRelativeURI(String uri) {
         try {
-            return uri.length() > 0 && uri.charAt(0) == '/' && !new URI(uri).isAbsolute();
+            return !uri.isEmpty() && uri.charAt(0) == '/' && !new URI(uri).isAbsolute();
         } catch (URISyntaxException e) {
             return false;
         }
