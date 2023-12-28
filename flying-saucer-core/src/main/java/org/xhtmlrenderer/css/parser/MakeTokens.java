@@ -27,10 +27,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.lang.System.lineSeparator;
 import static java.nio.file.Files.newInputStream;
 
 public class MakeTokens {
-    private static final String EOL = System.getProperty("line.separator");
+    private static final String EOL = lineSeparator();
     private static final String INPUT = "C:/eclipseWorkspaceQT/xhtmlrenderer/src/java/org/xhtmlrenderer/css/parser/tokens.txt";
 
     public static void main(String[] args) throws IOException {

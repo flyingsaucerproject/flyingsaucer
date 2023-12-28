@@ -50,8 +50,6 @@ import static java.util.Collections.emptyIterator;
 import static java.util.Collections.emptyList;
 
 public abstract class Box implements Styleable {
-    protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
     private Element _element;
 
     private int _x;

@@ -40,6 +40,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.lineSeparator;
 import static java.util.Collections.emptyList;
 
 /**
@@ -615,7 +616,7 @@ public class LineBox extends Box implements InlinePaintable {
             StringBuilder result = new StringBuilder();
             collectText(c, result);
             writer.write(result.toString().trim());
-            writer.write(LINE_SEPARATOR);
+            writer.write(lineSeparator());
         }
     }
 
