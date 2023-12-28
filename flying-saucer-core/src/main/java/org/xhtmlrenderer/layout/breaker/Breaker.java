@@ -20,8 +20,6 @@
  */
 package org.xhtmlrenderer.layout.breaker;
 
-import java.text.BreakIterator;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -33,11 +31,15 @@ import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.render.FSFont;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.text.BreakIterator;
+
 /**
  * A utility class that scans the text of a single inline box, looking for the
  * next break point.
  * @author Torbjoern Gannholm
  */
+@ParametersAreNonnullByDefault
 public class Breaker {
 
     private static final String DEFAULT_LANGUAGE = System.getProperty("org.xhtmlrenderer.layout.breaker.default-language", "en");

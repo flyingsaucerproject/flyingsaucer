@@ -24,7 +24,10 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Provides knowledge specific to a certain document type, like resolving
@@ -32,68 +35,90 @@ import javax.annotation.Nullable;
  *
  * @author Torbjoern Gannholm
  */
+@ParametersAreNonnullByDefault
 public interface NamespaceHandler {
 
     /**
      * @return the namespace handled
      */
+    @Nonnull
+    @CheckReturnValue
     String getNamespace();
 
     /**
      * @return the default CSS stylesheet for this namespace
      */
+    @Nullable
+    @CheckReturnValue
     StylesheetInfo getDefaultStylesheet(StylesheetFactory factory);
 
     /**
-     * @param doc
+     * @param doc the document
      * @return the title for this document, if any exists
      */
+    @Nullable
+    @CheckReturnValue
     String getDocumentTitle(Document doc);
 
     /**
-     * @param doc
+     * @param doc the document
      * @return all links to CSS stylesheets (type="text/css") in this
      *         document
      */
+    @Nonnull
+    @CheckReturnValue
     StylesheetInfo[] getStylesheets(Document doc);
 
     /**
      * may return null. Required to return null if attribute does not exist and
      * not null if attribute exists.
      */
-    String getAttributeValue(org.w3c.dom.Element e, String attrName);
+    @Nonnull
+    @CheckReturnValue
+    String getAttributeValue(Element e, String attrName);
 
-    String getAttributeValue(org.w3c.dom.Element e, String namespaceURI, String attrName);
-
-    @Nullable
-    String getClass(org.w3c.dom.Element e);
-
-    @Nullable
-    String getID(org.w3c.dom.Element e);
+    @Nonnull
+    @CheckReturnValue
+    String getAttributeValue(Element e, @Nullable String namespaceURI, String attrName);
 
     @Nullable
-    String getElementStyling(org.w3c.dom.Element e);
+    @CheckReturnValue
+    String getClass(Element e);
+
+    @Nullable
+    @CheckReturnValue
+    String getID(Element e);
+
+    @Nullable
+    @CheckReturnValue
+    String getElementStyling(Element e);
 
     /**
      * @return The corresponding css properties for styling that is obtained in other ways.
      */
     @Nullable
-    String getNonCssStyling(org.w3c.dom.Element e);
+    @CheckReturnValue
+    String getNonCssStyling(Element e);
 
-    @Nullable
-    String getLang(org.w3c.dom.Element e);
+    @Nonnull
+    @CheckReturnValue
+    String getLang(Element e);
 
     /**
      * should return null if element is not a link
      */
     @Nullable
-    String getLinkUri(org.w3c.dom.Element e);
+    @CheckReturnValue
+    String getLinkUri(Element e);
 
+    @Nullable
+    @CheckReturnValue
     String getAnchorName(Element e);
 
     /**
      * @return Returns true if the Element represents an image.
      */
+    @CheckReturnValue
     boolean isImageElement(Element e);
 
     /**
@@ -103,18 +128,21 @@ public interface NamespaceHandler {
      * @param e The Element to evaluate.
      * @return true if the Element is a &lt;form&gt; element, false otherwise.
      */
+    @CheckReturnValue
     boolean isFormElement(Element e);
 
     /**
      * For an element where isImageElement returns true, retrieves the URI associated with that Image, as
      * reported by the element; makes no guarantee that the URI is correct, complete or points to anything in
-     * particular. For elements where {@link #isImageElement(org.w3c.dom.Element)} returns false, this method may
+     * particular. For elements where {@link #isImageElement(Element)} returns false, this method may
      * return false, and may also return false if the Element is not correctly formed and contains no URI; check the
      * return value carefully.
      *
      * @param e The element to extract image info from.
      * @return String containing the URI for the image.
      */
+    @Nullable
+    @CheckReturnValue
     String getImageSourceURI(Element e);
 }
 

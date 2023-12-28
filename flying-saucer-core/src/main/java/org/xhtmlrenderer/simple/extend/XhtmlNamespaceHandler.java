@@ -21,6 +21,11 @@ package org.xhtmlrenderer.simple.extend;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 
 /**
  * Handles xhtml documents, including presentational html attributes (see css 2.1 spec, 6.4.4).
@@ -29,27 +34,30 @@ import org.w3c.dom.Node;
  *
  * @author Torbjoern Gannholm
  */
+@ParametersAreNonnullByDefault
 public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     @Override
+    @CheckReturnValue
     public boolean isImageElement(Element e) {
-        return (e != null && e.getNodeName().equalsIgnoreCase("img"));
+        return e != null && e.getNodeName().equalsIgnoreCase("img");
     }
 
     @Override
+    @CheckReturnValue
     public boolean isFormElement(Element e) {
-        return (e != null && e.getNodeName().equalsIgnoreCase("form"));
+        return e != null && e.getNodeName().equalsIgnoreCase("form");
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public String getImageSourceURI(Element e) {
-        String uri = null;
-        if (e != null) {
-            uri = e.getAttribute("src");
-        }
-        return uri;
+        return e != null ? e.getAttribute("src") : null;
     }
 
     @Override
+    @Nonnull
+    @CheckReturnValue
     public String getNonCssStyling(Element e) {
         switch (e.getNodeName()) {
             case "table":
