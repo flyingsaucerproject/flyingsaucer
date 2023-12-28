@@ -27,7 +27,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
@@ -37,6 +36,8 @@ import org.xhtmlrenderer.util.Util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.xhtmlrenderer.util.TextUtil.readTextContentOrNull;
 
 public class SelectFormField extends AbstractFormField {
     private static final String FIELD_TYPE = "Select";
@@ -117,23 +118,17 @@ public class SelectFormField extends AbstractFormField {
         Node n = e.getFirstChild();
         while (n != null) {
             if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equalsIgnoreCase("option")) {
-                Element optionElem = (Element)n;
+                Element optionElement = (Element) n;
 
-
-                String label = collectText(optionElem);
-                Attr valueAttr = optionElem.getAttributeNode("value");
-                String value;
-                if (valueAttr == null) {
-                    value = label;
-                } else {
-                    value = valueAttr.getValue();
-                }
+                String label = readTextContentOrNull(optionElement);
+                Attr valueAttribute = optionElement.getAttributeNode("value");
+                String value = valueAttribute == null ? label : valueAttribute.getValue();
 
                 if (label != null) {
-                    Option option =  new Option();
+                    Option option = new Option();
                     option.setLabel(label);
                     option.setValue(value);
-                    if (isSelected(optionElem)) {
+                    if (isSelected(optionElement)) {
                         option.setSelected(true);
                     }
                     result.add(option);
@@ -144,22 +139,6 @@ public class SelectFormField extends AbstractFormField {
         }
 
         return result;
-    }
-
-    private String collectText(Element e) {
-        StringBuilder result = new StringBuilder();
-
-        Node n = e.getFirstChild();
-        while (n != null) {
-            short nodeType = n.getNodeType();
-            if (nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE) {
-                Text t = (Text)n;
-                result.append(t.getData());
-            }
-            n = n.getNextSibling();
-        }
-
-        return result.length() > 0 ? result.toString() : null;
     }
 
     protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
