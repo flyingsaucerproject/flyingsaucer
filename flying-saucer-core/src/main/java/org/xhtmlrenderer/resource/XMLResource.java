@@ -19,25 +19,6 @@
  */
 package org.xhtmlrenderer.resource;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.logging.Level;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXSource;
-
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
@@ -53,6 +34,24 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.ext.EntityResolver2;
 import org.xml.sax.helpers.XMLFilterImpl;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Level;
 
 
 /**
@@ -224,7 +223,7 @@ public class XMLResource extends AbstractResource {
             return (Document) result.getNode();
         }
 
-    } // class XMLResourceBuilder
+    }
 
 
     private static class XMLReaderPool extends ObjectPool<XMLReader> {
@@ -330,7 +329,7 @@ public class XMLResource extends AbstractResource {
             }
         }
 
-    } // class XMLReaderPool
+    }
 
 
     private static class WhitespacePreservingFilter
@@ -374,7 +373,7 @@ public class XMLResource extends AbstractResource {
             return resolveEntity(publicId, systemId);
         }
 
-    } // class SpacePreservingFilter
+    }
 
 
     private static class IdentityTransformerPool extends ObjectPool<Transformer> {
@@ -407,7 +406,7 @@ public class XMLResource extends AbstractResource {
             }
         }
 
-    } // class TranformerPool
+    }
 
 
     private static abstract class ObjectPool<T> {
@@ -415,7 +414,7 @@ public class XMLResource extends AbstractResource {
         private final Queue<Reference<T>> pool;
 
         ObjectPool(int capacity) {
-            pool = new ArrayBlockingQueue<Reference<T>>(capacity);
+            pool = new ArrayBlockingQueue<>(capacity);
         }
 
         protected abstract T newValue();
@@ -434,10 +433,10 @@ public class XMLResource extends AbstractResource {
         }
 
         void release(T obj) {
-            pool.offer(new SoftReference<T>(obj));
+            pool.offer(new SoftReference<>(obj));
         }
 
-    } // class ObjectPool
+    }
 
 }
 
