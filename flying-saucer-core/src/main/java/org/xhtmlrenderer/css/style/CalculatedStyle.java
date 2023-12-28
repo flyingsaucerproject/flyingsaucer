@@ -73,7 +73,7 @@ public class CalculatedStyle {
     /**
      * The parent-style we inherit from
      */
-    private CalculatedStyle _parent;
+    private final CalculatedStyle _parent;
 
     private BorderPropertySet _border;
     private RectPropertySet _margin;
@@ -114,23 +114,25 @@ public class CalculatedStyle {
      */
     private FontSpecification _font;
 
+    private CalculatedStyle(CalculatedStyle parent) {
+        _derivedValuesById = new FSDerivedValue[CSSName.countCSSNames()];
+        _parent = parent;
+    }
 
     /**
      * Default constructor; as the instance is immutable after use, don't use
      * this for class instantiation externally.
      */
     protected CalculatedStyle() {
-        _derivedValuesById = new FSDerivedValue[CSSName.countCSSNames()];
+        this(null);
     }
-
 
     /**
      * Constructor for the CalculatedStyle object. To get a derived style, use
      * the Styler objects getDerivedStyle which will cache styles
      */
     private CalculatedStyle(CalculatedStyle parent, CascadedStyle matched) {
-        this();
-        _parent = parent;
+        this(parent);
 
         derive(matched);
 
