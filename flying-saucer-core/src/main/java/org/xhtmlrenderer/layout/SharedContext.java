@@ -88,7 +88,7 @@ public final class SharedContext {
     private Map<Element, CalculatedStyle> styleMap;
 
     private ReplacedElementFactory replacedElementFactory;
-    private Rectangle temp_canvas;
+    private Rectangle temporaryCanvas;
 
     private LineBreakingStrategy lineBreakingStrategy = new DefaultLineBreakingStrategy();
 
@@ -224,15 +224,15 @@ public final class SharedContext {
         this.canvas = canvas;
     }
 
-    public void set_TempCanvas(Rectangle rect) {
-        temp_canvas = rect;
+    public void setTemporaryCanvas(Rectangle rect) {
+        temporaryCanvas = rect;
     }
 
 
     public Rectangle getFixedRectangle() {
         //Uu.p("this = " + canvas);
         if (getCanvas() == null) {
-            return temp_canvas;
+            return temporaryCanvas;
         } else {
             Rectangle rect = getCanvas().getFixedRectangle();
             rect.translate(getCanvas().getX(), getCanvas().getY());
