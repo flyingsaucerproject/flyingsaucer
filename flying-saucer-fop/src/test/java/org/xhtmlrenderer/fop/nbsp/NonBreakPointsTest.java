@@ -45,8 +45,7 @@ public class NonBreakPointsTest {
     }
 
     private void test(String text, int ... expected) {
-        BreakIterator breakIt = new UrlAwareLineBreakIterator();
-        breakIt.setText(text);
+        BreakIterator breakIt = new UrlAwareLineBreakIterator(text);
         TreeSet<BreakPoint> points = new TreeSet<>();
         int p;
         while ((p = breakIt.next()) != BreakIterator.DONE) {

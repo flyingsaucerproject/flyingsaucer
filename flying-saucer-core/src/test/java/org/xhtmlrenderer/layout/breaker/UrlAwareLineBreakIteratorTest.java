@@ -105,8 +105,7 @@ public class UrlAwareLineBreakIteratorTest extends TestCase {
 
 
     private void assertBreaksCorrectly(String input, String[] segments) {
-        BreakIterator iterator = new UrlAwareLineBreakIterator();
-        iterator.setText(input);
+        BreakIterator iterator = new UrlAwareLineBreakIterator(input);
 
         int segmentIndex = 0;
         int lastBreakPoint = 0;
