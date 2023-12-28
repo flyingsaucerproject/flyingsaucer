@@ -7,8 +7,7 @@ Flying Saucer is a pure-Java library for rendering arbitrary well-formed XML
 (or XHTML) using CSS 2.1 for layout and formatting, output to Swing panels, 
 PDF, and images.
 
-Comprehensive documentation available in our user's guide, linked from our
-website at https://code.google.com/archive/p/flying-saucer/
+Comprehensive documentation available in [The Flying Saucer User's Guide](https://flyingsaucerproject.github.io/flyingsaucer/r8/guide/users-guide-R8.html).
 
 If you use Flying Saucer in a project, please tell us; it helps suggest
 directions for the code and may inspire other developers.
@@ -78,5 +77,6 @@ This is also the reason why Issues are currently deactivated on GitHub.
 
 ### HISTORIC LINKS
 
+* [Website](https://code.google.com/archive/p/flying-saucer/)
 * [Google Code project page (archived/read-only)](https://code.google.com/archive/p/flying-saucer/)
 * [Google Code Issues (archived/read-only)](https://code.google.com/archive/p/flying-saucer/issues)
