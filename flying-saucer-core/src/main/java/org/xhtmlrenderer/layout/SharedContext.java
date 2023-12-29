@@ -46,6 +46,7 @@ import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -370,7 +371,7 @@ public final class SharedContext {
      *
      * @param url The new baseURL value
      */
-    public void setBaseURL(String url) {
+    public void setBaseURL(@Nullable String url) {
         uac.setBaseURL(url);
     }
 

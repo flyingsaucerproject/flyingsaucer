@@ -29,6 +29,9 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -47,6 +50,7 @@ import java.util.Map;
  *
  * @author Vianney le Clément
  */
+@ParametersAreNonnullByDefault
 public class NaiveUserAgent implements UserAgentCallback {
 
     /**
@@ -187,7 +191,9 @@ public class NaiveUserAgent implements UserAgentCallback {
     }
 
     @Override
-    public String resolveURI(String uri) {
+    @Nullable
+    @CheckReturnValue
+    public String resolveURI(@Nullable String uri) {
         if (uri == null) return null;
 
         if (_baseURL == null) {//first try to set a base URL
@@ -251,6 +257,8 @@ public class NaiveUserAgent implements UserAgentCallback {
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public byte[] getBinaryResource(String uri) {
         InputStream is = getInputStream(uri);
         if (is==null) return null;

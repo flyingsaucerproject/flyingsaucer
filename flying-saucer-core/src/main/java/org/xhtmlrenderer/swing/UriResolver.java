@@ -2,17 +2,29 @@ package org.xhtmlrenderer.swing;
 
 import org.xhtmlrenderer.util.XRLog;
 
-import java.net.URL;
-import java.net.MalformedURLException;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Level;
 
+@ParametersAreNonnullByDefault
 public class UriResolver {
     private String _baseUri;
 
-    public String resolve(final String uri) {
+    @Nullable
+    @CheckReturnValue
+    public String resolve(@Nullable final String uri) {
         if (uri == null) return null;
-        String ret = null;
+        return resolveUri(uri);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    public String resolveUri(final String uri) {
         if (_baseUri == null) {//first try to set a base URL
             try {
                 URL result = new URL(uri);
@@ -33,20 +45,21 @@ public class UriResolver {
             XRLog.load(Level.FINE, "Could not read " + uri + " as a URL; may be relative. Testing using parent URL " + _baseUri);
             try {
                 URL result = new URL(new URL(_baseUri), uri);
-                ret = result.toString();
+                String ret = result.toString();
                 XRLog.load(Level.FINE, "Was able to read from " + uri + " using parent URL " + _baseUri);
+                return ret;
             } catch (MalformedURLException e1) {
-                XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseUri);
+                throw new IllegalStateException("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseUri, e1);
             }
         }
-        return ret;
-
     }
 
     public void setBaseUri(final String baseUri) {
         _baseUri = baseUri;
     }
 
+    @Nonnull
+    @CheckReturnValue
     public String getBaseUri() {
         return _baseUri;
     }

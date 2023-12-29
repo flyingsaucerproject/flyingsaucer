@@ -27,6 +27,9 @@ import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -50,6 +53,7 @@ import java.util.Map;
  * Date: 2005-jun-15
  * Time: 07:38:59
  */
+@ParametersAreNonnullByDefault
 public class DemoUserAgent implements UserAgentCallback {
     private String baseUrl;
     private int index = -1;
@@ -68,19 +72,18 @@ public class DemoUserAgent implements UserAgentCallback {
             };
 
     @Override
-    public CSSResource getCSSResource(String uri) {
-        InputStream is = null;
-        uri = resolveURI(uri);
+    public CSSResource getCSSResource(String resourceUri) {
+        String uri = resolveURI(resourceUri);
         try {
             URLConnection uc = new URL(uri).openConnection();
             uc.connect();
-            is = uc.getInputStream();
+            return new CSSResource(uc.getInputStream());
         } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         }
-        return new CSSResource(is);
+        return new CSSResource(null);
     }
 
     @Override
@@ -114,6 +117,8 @@ public class DemoUserAgent implements UserAgentCallback {
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public byte[] getBinaryResource(String uri) {
         InputStream is = null;
         try {
@@ -180,7 +185,8 @@ public class DemoUserAgent implements UserAgentCallback {
     }
 
     @Override
-    public boolean isVisited(String uri) {
+    @CheckReturnValue
+    public boolean isVisited(@Nullable String uri) {
         if (uri == null) return false;
         uri = resolveURI(uri);
         return history.contains(uri);
@@ -201,10 +207,12 @@ public class DemoUserAgent implements UserAgentCallback {
     }
 
     @Override
-    public String resolveURI(String uri) {
+    @Nullable
+    @CheckReturnValue
+    public String resolveURI(@Nullable String uri) {
         URL ref = null;
         if (uri == null) return baseUrl;
-        if (uri.trim().equals("")) return baseUrl;//jar URLs don't resolve this right
+        if (uri.trim().isEmpty()) return baseUrl;//jar URLs don't resolve this right
         if (uri.startsWith("demo:")) {
             DemoMarker marker = new DemoMarker();
             String short_url = uri.substring(5);

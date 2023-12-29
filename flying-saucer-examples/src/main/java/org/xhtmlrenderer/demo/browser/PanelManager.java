@@ -26,6 +26,8 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import javax.xml.transform.sax.SAXSource;
 import java.io.File;
 import java.io.IOException;
@@ -53,18 +55,16 @@ public class PanelManager extends DelegatingUserAgent {
     private int index = -1;
     private final List<String> history = new ArrayList<>();
 
-
-    /**
-     * {@inheritdoc}.
-     */
     @Override
-    public String resolveURI(String uri) {
+    @Nullable
+    @CheckReturnValue
+    public String resolveURI(@Nullable String uri) {
         final String burl = getBaseURL();
 
         URL ref = null;
 
         if (uri == null) return burl;
-        if (uri.trim().equals("")) return burl; //jar URLs don't resolve this right
+        if (uri.trim().isEmpty()) return burl; //jar URLs don't resolve this right
 
         if (uri.startsWith("demo:")) {
             DemoMarker marker = new DemoMarker();
@@ -106,9 +106,6 @@ public class PanelManager extends DelegatingUserAgent {
             return ref.toExternalForm();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public XMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);

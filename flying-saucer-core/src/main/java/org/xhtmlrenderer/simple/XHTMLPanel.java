@@ -23,7 +23,6 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.CursorListener;
@@ -31,8 +30,11 @@ import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -63,7 +65,7 @@ import java.net.URL;
  * instances. You should make sure the document you want to render is well-formed. For XHTML,
  * there is always a default stylesheet available, even if no CSS is attached to the
  * XHTML you are loading. For XML, there is no default stylesheet, so you should have
- * one attached to your XML before trying to render it using the xml-stylesheer processing
+ * one attached to your XML before trying to render it using the xml-stylesheet processing
  * instruction. XHTMLPanel has methods to load
  * documents from a uri ({@link #setDocument(String uri)}),
  * from a Document instance ({@link #setDocument(Document)}) or from an InputStream
@@ -95,6 +97,7 @@ import java.net.URL;
  * @see <a href="http://xhtmlrenderer.dev.java.net">The Flying Saucer Home Page</a>
  * @see RenderingContext
  */
+@ParametersAreNonnullByDefault
 public class XHTMLPanel extends BasicPanel {
     private static final long serialVersionUID = 1L;
 
@@ -125,11 +128,7 @@ public class XHTMLPanel extends BasicPanel {
             addMouseTrackingListener(new HoverListener());
             addMouseTrackingListener(new LinkListener());
             addMouseTrackingListener(new CursorListener());
-            setFormSubmissionListener(new FormSubmissionListener() {
-                public void submit(String query) {
-                    XHTMLPanel.this.setDocumentRelative(query);
-                }
-            });
+            setFormSubmissionListener(query -> XHTMLPanel.this.setDocumentRelative(query));
         }
     }
 
@@ -175,7 +174,7 @@ public class XHTMLPanel extends BasicPanel {
      * @param url The new document value
      */
     @Override
-    public void setDocument(Document doc, String url) {
+    public void setDocument(Document doc, @Nullable String url) {
         resetListeners();
         setDocument(doc, url, new XhtmlNamespaceHandler());
     }
@@ -189,8 +188,7 @@ public class XHTMLPanel extends BasicPanel {
      */
     // TODO: should throw more specific exception (PWW 25/07/2006)
     @Override
-    public void setDocument(InputStream stream, String url)
-            throws Exception {
+    public void setDocument(InputStream stream, String url) {
         resetListeners();
         setDocument(stream, url, new XhtmlNamespaceHandler());
     }
@@ -203,8 +201,7 @@ public class XHTMLPanel extends BasicPanel {
      *             will be resolved based on the file's parent directory.
      */
     // TODO: should throw more specific exception (PWW 25/07/2006)
-    public void setDocument(File file)
-            throws Exception {
+    public void setDocument(File file) throws MalformedURLException {
         resetListeners();
         File parent = file.getAbsoluteFile().getParentFile();
         String parentURL = ( parent == null ? "" : parent.toURI().toURL().toExternalForm());
@@ -264,7 +261,7 @@ public class XHTMLPanel extends BasicPanel {
 
     /**
      * Decrements all rendered fonts on the current document by the current
-     * scaling factor for the panel. Scaling applies culmulatively, which means that
+     * scaling factor for the panel. Scaling applies cumulatively, which means that
      * multiple calls to this method scale fonts smaller and smaller by applying the
      * current scaling factor against itself. You can modify the scaling factor by
      * {@link #setFontScalingFactor(float)}, and reset to the document's specified

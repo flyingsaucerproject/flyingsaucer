@@ -33,6 +33,9 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.transform.sax.SAXSource;
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +47,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
+@ParametersAreNonnullByDefault
 public class BrowserUserAgent extends NaiveUserAgent {
 
     private final DemosNavigation _demos;
@@ -56,8 +60,13 @@ public class BrowserUserAgent extends NaiveUserAgent {
     }
 
     @Override
-    public String resolveURI(String uri) {
+    @Nullable
+    @CheckReturnValue
+    public String resolveURI(@Nullable String uri) {
+        if (uri == null) return null;
+
         final String burl = getBaseURL();
+        if (uri.trim().isEmpty()) return burl; //jar URLs don't resolve this right
 
         URL ref = null;
 

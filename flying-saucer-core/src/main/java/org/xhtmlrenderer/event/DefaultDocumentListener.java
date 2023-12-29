@@ -19,32 +19,23 @@
  */
 package org.xhtmlrenderer.event;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
  * Default, do-nothing implementation of a {@link DocumentListener}; implements all methods in {@link DocumentListener}
  * but the methods do nothing. Subclass this class and override whichever methods you need to trap.
  */
+@ParametersAreNonnullByDefault
 public class DefaultDocumentListener implements DocumentListener {
-    /**
-     * {@inheritDoc}
-     */
     public void documentStarted() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void documentLoaded() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void onLayoutException(Throwable t) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void onRenderException(Throwable t) {
     }
 }

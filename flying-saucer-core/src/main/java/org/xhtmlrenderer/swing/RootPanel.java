@@ -46,6 +46,8 @@ import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -53,7 +55,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
+import static java.util.Objects.requireNonNull;
 
+@ParametersAreNonnullByDefault
 public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCanvas, RepaintListener {
     private Box rootBox;
     private boolean needRelayout;
@@ -94,7 +98,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         return layoutContext;
     }
 
-    public void setDocument(Document doc, String url, NamespaceHandler nsh) {
+    public void setDocument(Document doc, @Nullable String url, NamespaceHandler nsh) {
         fireDocumentStarted();
         resetScrollPosition();
         setRootBox(null);
@@ -152,7 +156,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
      * @param scrollPane the enclosing {@link JScrollPane} or <tt>null</tt> if
      *                   the panel is no longer enclosed in a {@link JScrollPane}.
      */
-    protected void setEnclosingScrollPane(JScrollPane scrollPane) {
+    protected void setEnclosingScrollPane(@Nullable JScrollPane scrollPane) {
 
         enclosingScrollPane = scrollPane;
 
@@ -286,7 +290,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         return extents;
     }
 
-    public void doDocumentLayout(Graphics g) {
+    public void doDocumentLayout(@Nullable Graphics g) {
         try {
             removeAll();
             if (g == null) {
@@ -329,11 +333,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             // if there is a fixed child then we need to set opaque to false
             // so that the entire viewport will be repainted. this is slower
             // but that's the hit you get from using fixed layout
-            if (root.getLayer().containsFixedContent()) {
-                super.setOpaque(false);
-            } else {
-                super.setOpaque(true);
-            }
+            super.setOpaque(!root.getLayer().containsFixedContent());
 
             XRLog.layout(Level.FINEST, "after layout: " + root);
 
@@ -431,10 +431,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
      * @param listener Contains the DocumentListener for DocumentEvent data.
      */
     public void addDocumentListener(DocumentListener listener) {
-        if(listener == null) {
-            return;
-        }
-        documentListeners.add(listener);
+        documentListeners.add(requireNonNull(listener));
     }
 
     /**
@@ -445,10 +442,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
      * @param listener Contains the DocumentListener to remove.
      */
     public void removeDocumentListener(DocumentListener listener) {
-        if(listener == null) {
-            return;
-        }
-        documentListeners.remove(listener);
+        documentListeners.remove(requireNonNull(listener));
     }
 
     protected boolean hasDocumentListeners() {
@@ -546,7 +540,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         return rootBox;
     }
 
-    public synchronized void setRootBox(Box rootBox) {
+    public synchronized void setRootBox(@Nullable Box rootBox) {
         this.rootBox = rootBox;
     }
 

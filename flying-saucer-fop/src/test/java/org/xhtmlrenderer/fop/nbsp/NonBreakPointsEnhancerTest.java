@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -52,7 +53,7 @@ public class NonBreakPointsEnhancerTest {
 
     @Test
     public void noDefinition() {
-        NonBreakPointsLoader nullLoader = lang -> null;
+        NonBreakPointsLoader nullLoader = lang -> emptyList();
         assertEquals("some text with spaces", new NonBreakPointsEnhancer(nullLoader).enhance("some text with spaces", "cs"));
     }
 
@@ -61,7 +62,7 @@ public class NonBreakPointsEnhancerTest {
         final String[] c = new String[] {null};
         NonBreakPointsLoader capturingLoader = lang -> {
             c[0] = lang;
-            return null;
+            return emptyList();
         };
         new NonBreakPointsEnhancer(capturingLoader).enhance("some text with spaces", "cs");
         assertEquals("cs", c[0]);

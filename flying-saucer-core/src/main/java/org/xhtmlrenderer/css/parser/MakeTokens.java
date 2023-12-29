@@ -44,7 +44,6 @@ public class MakeTokens {
                 tokens.add(s);
             }
         }
-        // ignore
 
         StringBuilder buf = new StringBuilder();
 
