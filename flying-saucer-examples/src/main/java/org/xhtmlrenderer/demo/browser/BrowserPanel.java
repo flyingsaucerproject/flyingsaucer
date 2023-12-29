@@ -35,6 +35,7 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,25 +50,26 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@ParametersAreNonnullByDefault
 public class BrowserPanel extends JPanel implements DocumentListener {
     private static final long serialVersionUID = 1L;
 
-    JButton forward;
-    JButton backward;
-    JButton stop;
-    JButton reload;
-    JButton goHome;
-    JButton font_inc;
-    JButton font_rst;
-    JButton font_dec;
-    JButton print;
+    private JButton forward;
+    private JButton backward;
+    private JButton stop;
+    private JButton reload;
+    private JButton goHome;
+    private JButton font_inc;
+    private JButton font_rst;
+    private JButton font_dec;
+    private JButton print;
     JTextField url;
     BrowserStatus status;
     public ScalableXHTMLPanel view;
-    JScrollPane scroll;
-    BrowserStartup root;
-    BrowserPanelListener listener;
-    JButton print_preview;
+    private JScrollPane scroll;
+    private BrowserStartup root;
+    private BrowserPanelListener listener;
+    private JButton print_preview;
     
     private static final Logger logger = Logger.getLogger("app.browser");
 

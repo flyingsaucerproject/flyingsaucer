@@ -25,8 +25,10 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 
+@ParametersAreNonnullByDefault
 public class ITextImageElement implements ITextReplacedElement {
     private final FSImage _image;
 
@@ -64,8 +66,7 @@ public class ITextImageElement implements ITextReplacedElement {
         return false;
     }
 
-    public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box)
-    {
+    public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
         Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
         ReplacedElement element = box.getReplacedElement();
         outputDevice.drawImage(

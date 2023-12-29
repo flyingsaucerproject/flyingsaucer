@@ -21,46 +21,46 @@ package org.xhtmlrenderer.resource;
 
 import org.xml.sax.InputSource;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 
 /**
  * @author Patrick Wright
  */
+@ParametersAreNonnullByDefault
 public abstract class AbstractResource implements Resource {
-    private InputSource inputSource;
+    private final InputSource inputSource;
     private final long createTimeStamp;
     private long elapsedLoadTime;
 
-    private AbstractResource() {
+    protected AbstractResource(@Nullable InputSource source) {
+        this.inputSource = source;
         this.createTimeStamp = System.currentTimeMillis();
     }
 
-    /**
-     * Creates a new instance of AbstractResource
-     */
-    public AbstractResource(InputSource source) {
-        this();
-        this.inputSource = source;
-    }
-
-    public AbstractResource(InputStream is) {
+    protected AbstractResource(@Nullable InputStream is) {
         this(is == null ? null : new InputSource(new BufferedInputStream(is)));
     }
 
+    @Nullable
+    @CheckReturnValue
     public InputSource getResourceInputSource() {
         return this.inputSource;
     }
 
+    @CheckReturnValue
     public long getResourceLoadTimeStamp() {
         return this.createTimeStamp;
     }
 
+    @CheckReturnValue
     public long getElapsedLoadTime() {
         return elapsedLoadTime;
     }
 
-    /*package*/
     void setElapsedLoadTime(long elapsedLoadTime) {
         this.elapsedLoadTime = elapsedLoadTime;
     }

@@ -19,6 +19,10 @@
  */
 package org.xhtmlrenderer.util;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -37,6 +41,7 @@ import java.util.logging.Level;
  *
  * @author pwright
  */
+@ParametersAreNonnullByDefault
 public class ImageUtil {
 
     private static final Map<DownscaleQuality, Scaler> qualities = new HashMap<>();
@@ -70,6 +75,8 @@ public class ImageUtil {
         clearImage(image, Color.WHITE);
     }
 
+    @Nonnull
+    @CheckReturnValue
     public static BufferedImage makeCompatible(BufferedImage image) {
         BufferedImage cimg;
         if (GraphicsEnvironment.isHeadless()) {
@@ -105,6 +112,8 @@ public class ImageUtil {
      *               in non-headless more.
      * @return A BufferedImage compatible with the screen (best fit).
      */
+    @Nonnull
+    @CheckReturnValue
     public static BufferedImage createCompatibleBufferedImage(int width, int height, int biType) {
         final BufferedImage image;
 
@@ -124,6 +133,8 @@ public class ImageUtil {
         return image;
     }
 
+    @Nonnull
+    @CheckReturnValue
     private static GraphicsConfiguration getGraphicsConfiguration() {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gs = ge.getDefaultScreenDevice();
@@ -140,6 +151,8 @@ public class ImageUtil {
      * @param height Target height for the image
      * @return A BufferedImage compatible with the screen (best fit) supporting transparent pixels.
      */
+    @Nonnull
+    @CheckReturnValue
     public static BufferedImage createCompatibleBufferedImage(int width, int height) {
         return createCompatibleBufferedImage(width, height, Transparency.BITMASK);
     }
@@ -160,6 +173,8 @@ public class ImageUtil {
      * @param orgImage The image to scale
      * @return The scaled image instance.
      */
+    @Nonnull
+    @CheckReturnValue
     public static BufferedImage getScaledInstance(ScalingOptions opt, BufferedImage orgImage) {
         int w = orgImage.getWidth(null);
         int h = orgImage.getHeight(null);
@@ -196,6 +211,8 @@ public class ImageUtil {
      * @param targetHeight The target height in pixels
      * @return The scaled image instance.
      */
+    @Nonnull
+    @CheckReturnValue
     public static BufferedImage getScaledInstance(BufferedImage orgImage, int targetWidth, int targetHeight) {
         String downscaleQuality = Configuration.valueFor("xr.image.scale", DownscaleQuality.HIGH_QUALITY.asString());
         DownscaleQuality quality = DownscaleQuality.forString(downscaleQuality, DownscaleQuality.HIGH_QUALITY);
@@ -218,14 +235,14 @@ public class ImageUtil {
      *                   not check for duplicate dimensions.
      * @return List of buffered images in the given dimensions.
      */
+    @Nonnull
+    @CheckReturnValue
     public static List<BufferedImage> scaleMultiple(ScalingOptions opt, BufferedImage img, List<Dimension> dimensions) {
         List<BufferedImage> scaledImages = new ArrayList<>(dimensions.size());
 
         for (Dimension dim : dimensions) {
             opt.setTargetDimensions(dim);
-
             BufferedImage scaled = getScaledInstance(opt, img);
-
             scaledImages.add(scaled);
         }
         return scaledImages;
@@ -240,6 +257,8 @@ public class ImageUtil {
      *               {@link java.awt.image.BufferedImage#BufferedImage(int,int,int)}
      * @return BufferedImage with same content.
      */
+    @Nonnull
+    @CheckReturnValue
     public static BufferedImage convertToBufferedImage(Image awtImg, int type) {
         final BufferedImage image;
         if (awtImg instanceof BufferedImage) {
@@ -253,6 +272,8 @@ public class ImageUtil {
         return image;
     }
 
+    @Nonnull
+    @CheckReturnValue
     public static BufferedImage createTransparentImage(int width, int height) {
         BufferedImage bi = createCompatibleBufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bi.createGraphics();
@@ -272,8 +293,9 @@ public class ImageUtil {
      * @param uri URI of the image
      * @return A boolean
      */
-    public static boolean isEmbeddedBase64Image(String uri) {
-        return (uri != null && uri.startsWith("data:image/"));
+    @CheckReturnValue
+    public static boolean isEmbeddedBase64Image(@Nullable String uri) {
+        return uri != null && uri.startsWith("data:image/");
     }
 
     /**
@@ -282,6 +304,8 @@ public class ImageUtil {
      * @param imageDataUri URI of the embedded image
      * @return The binary content
      */
+    @Nullable
+    @CheckReturnValue
     public static byte[] getEmbeddedBase64Image(String imageDataUri) {
         int b64Index = imageDataUri.indexOf("base64,");
         if (b64Index != -1) {
@@ -299,6 +323,8 @@ public class ImageUtil {
      * @param imageDataUri URI of the embedded image
      * @return The BufferedImage
      */
+    @Nullable
+    @CheckReturnValue
     public static BufferedImage loadEmbeddedBase64Image(String imageDataUri) {
         try {
             byte[] buffer = getEmbeddedBase64Image(imageDataUri);
@@ -311,6 +337,7 @@ public class ImageUtil {
         return null;
     }
 
+    @ParametersAreNonnullByDefault
     interface Scaler {
         /**
          * Convenience method that returns a scaled instance of the
@@ -339,11 +366,16 @@ public class ImageUtil {
          *                      in pixels
          * @return a scaled version of the original {@code BufferedImage}
          */
+        @Nonnull
+        @CheckReturnValue
         BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt);
     }
 
+    @ParametersAreNonnullByDefault
     abstract static class AbstractFastScaler implements Scaler {
         @Override
+        @Nonnull
+        @CheckReturnValue
         public BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt) {
             // target is always >= 1
             Image scaled = img.getScaledInstance(opt.getTargetWidth(), opt.getTargetHeight(), getImageScalingMethod());
@@ -357,8 +389,10 @@ public class ImageUtil {
     /**
      * Old AWT-style scaling, poor quality
      */
+    @ParametersAreNonnullByDefault
     static class OldScaler extends AbstractFastScaler {
         @Override
+        @CheckReturnValue
         protected int getImageScalingMethod() {
             return Image.SCALE_FAST;
         }
@@ -367,8 +401,10 @@ public class ImageUtil {
     /**
      * AWT-style one-step scaling, using area averaging
      */
+    @ParametersAreNonnullByDefault
     static class AreaAverageScaler extends AbstractFastScaler {
         @Override
+        @CheckReturnValue
         protected int getImageScalingMethod() {
             return Image.SCALE_AREA_AVERAGING;
         }
@@ -377,8 +413,11 @@ public class ImageUtil {
     /**
      * Fast but decent scaling
      */
+    @ParametersAreNonnullByDefault
     static class FastScaler implements Scaler {
         @Override
+        @Nonnull
+        @CheckReturnValue
         public BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt) {
             int w, h;
 
@@ -400,8 +439,11 @@ public class ImageUtil {
     /**
      * Step-wise downscaling
      */
+    @ParametersAreNonnullByDefault
     static class HighQualityScaler implements Scaler {
         @Override
+        @Nonnull
+        @CheckReturnValue
         public BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt) {
             int w, h;
             int width = img.getWidth(null);

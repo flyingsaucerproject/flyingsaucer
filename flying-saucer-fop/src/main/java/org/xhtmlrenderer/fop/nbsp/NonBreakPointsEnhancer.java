@@ -52,10 +52,7 @@ public class NonBreakPointsEnhancer {
         this(new NonBreakPointsLoaderImpl());
     }
 
-    /**
-     * For test only
-     */
-    /*package*/ NonBreakPointsEnhancer(NonBreakPointsLoader loader) {
+    NonBreakPointsEnhancer(NonBreakPointsLoader loader) {
         this.loader = loader;
     }
 
@@ -64,7 +61,6 @@ public class NonBreakPointsEnhancer {
         if (input.isEmpty()) return "";
         if (lang == null || lang.isEmpty()) return input;
         List<String> rules = loader.loadNBSP(lang);
-        if (rules == null) return input;
         for (String r : rules) {
             Matcher m = Pattern.compile(r).matcher(input);
             if (m.groupCount() != 3) {

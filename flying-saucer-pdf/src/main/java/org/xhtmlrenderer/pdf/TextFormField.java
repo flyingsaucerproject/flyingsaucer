@@ -34,10 +34,11 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.Util;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 
-public class TextFormField extends AbstractFormField
-{
+@ParametersAreNonnullByDefault
+public class TextFormField extends AbstractFormField {
   private static final String FIELD_TYPE = "Text";
 
   private static final int DEFAULT_SIZE = 15;
@@ -46,8 +47,7 @@ public class TextFormField extends AbstractFormField
 
   private boolean multiline = false;
 
-  public TextFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
-  {
+  public TextFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
     initDimensions(c, box, cssWidth, cssHeight);
 
     float fontSize = box.getStyle().getFSFont(c).getSize2D();
@@ -55,27 +55,22 @@ public class TextFormField extends AbstractFormField
     _baseline = (int) (getHeight() / 2 + (fontSize * 0.3f));
   }
 
-  protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
-  {
-    if (cssWidth != -1)
-    {
+  protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
+    if (cssWidth != -1) {
       setWidth(cssWidth);
     }
-    else
-    {
+    else {
       setWidth(c.getTextRenderer().getWidth(
           c.getFontContext(),
           box.getStyle().getFSFont(c),
           spaces(getSize(box.getElement()))));
     }
 
-    if (cssHeight != -1)
-    {
+    if (cssHeight != -1) {
       setHeight(cssHeight);
       multiline = true;
     }
-    else
-    {
+    else {
       setHeight((int) (box.getStyle().getLineHeight(c)));
     }
   }

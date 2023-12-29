@@ -4,6 +4,8 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,6 +31,7 @@ import static java.nio.file.Files.newOutputStream;
  * @author Pete Brant
  * @author Patrick Wright
  */
+@ParametersAreNonnullByDefault
 public class PDFRenderer {
     private static final Map<String, Character> versionMap = new HashMap<>();
 
@@ -51,9 +54,7 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(String url, String pdf)
-            throws IOException, DocumentException {
-
+    public static void renderToPDF(String url, String pdf) throws IOException, DocumentException {
         renderToPDF(url, pdf, null);
     }
     /**
@@ -68,7 +69,7 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(String url, String pdf, Character pdfVersion)
+    public static void renderToPDF(String url, String pdf, @Nullable Character pdfVersion)
             throws IOException, DocumentException {
 
         ITextRenderer renderer = new ITextRenderer();
@@ -87,9 +88,7 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(File file, String pdf)
-            throws IOException, DocumentException {
-
+    public static void renderToPDF(File file, String pdf) throws IOException, DocumentException {
         renderToPDF(file, pdf, null);
     }
 
@@ -104,7 +103,7 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(File file, String pdf, Character pdfVersion)
+    public static void renderToPDF(File file, String pdf, @Nullable Character pdfVersion)
             throws IOException, DocumentException {
 
         ITextRenderer renderer = new ITextRenderer();
@@ -116,8 +115,7 @@ public class PDFRenderer {
     /**
      * Internal use, runs the render process
      */
-    private static void doRenderToPDF(ITextRenderer renderer, String pdf)
-            throws IOException, DocumentException {
+    private static void doRenderToPDF(ITextRenderer renderer, String pdf) throws IOException, DocumentException {
         try (OutputStream os = newOutputStream(Paths.get(pdf))){
             renderer.layout();
             renderer.createPDF(os);
@@ -167,7 +165,7 @@ public class PDFRenderer {
 
     /** prints out usage information, with optional error message
      */
-    private static void usage(String err) {
+    private static void usage(@Nullable String err) {
         if (err != null && !err.isEmpty()) {
             System.err.println("==>" + err);
         }

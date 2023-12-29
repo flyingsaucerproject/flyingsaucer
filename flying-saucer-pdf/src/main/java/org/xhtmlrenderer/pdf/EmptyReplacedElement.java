@@ -7,14 +7,15 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 
 /**
  * User: beck
  * Date: 11/4/11
  */
-public class EmptyReplacedElement extends AbstractFormField
-{
+@ParametersAreNonnullByDefault
+public class EmptyReplacedElement extends AbstractFormField {
   private static final String FIELD_TYPE = "Hidden";
 
   private final int _width;
@@ -22,8 +23,7 @@ public class EmptyReplacedElement extends AbstractFormField
 
   private Point _location = new Point(0, 0);
 
-  public EmptyReplacedElement(int width, int height)
-  {
+  public EmptyReplacedElement(int width, int height) {
     _width = width;
     _height = height;
   }
@@ -73,8 +73,7 @@ public class EmptyReplacedElement extends AbstractFormField
     return FIELD_TYPE;
   }
 
-  public void detach(LayoutContext c)
-  {
+  public void detach(LayoutContext c) {
   }
 
   public boolean isRequiresInteractivePaint()

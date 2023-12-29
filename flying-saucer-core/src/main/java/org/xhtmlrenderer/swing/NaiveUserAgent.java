@@ -28,6 +28,9 @@ import org.xhtmlrenderer.util.FontUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -63,6 +66,7 @@ import java.util.Map;
  *
  * @author Torbjoern Gannholm
  */
+@ParametersAreNonnullByDefault
 public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     private static final int DEFAULT_IMAGE_CACHE_SIZE = 16;
@@ -275,7 +279,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      *
      * @return An ImageResource containing the image.
      */
-    protected ImageResource createImageResource(String uri, Image img) {
+    protected ImageResource createImageResource(String uri, @Nullable Image img) {
         return new ImageResource(uri, AWTFSImage.createImage(img));
     }
 
@@ -306,6 +310,8 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public byte[] getBinaryResource(String uri) {
         InputStream is = resolveAndOpenStream(uri);
         if (is==null) return null;
@@ -363,7 +369,9 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @return A URI as String, resolved, or null if there was an exception (for example if the URI is malformed).
      */
     @Override
-    public String resolveURI(String uri) {
+    @Nullable
+    @CheckReturnValue
+    public String resolveURI(@Nullable String uri) {
         if (uri == null) return null;
 
         if (_baseURL == null) {//first try to set a base URL

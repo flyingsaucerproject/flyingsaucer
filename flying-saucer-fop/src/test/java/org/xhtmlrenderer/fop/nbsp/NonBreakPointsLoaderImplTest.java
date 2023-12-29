@@ -22,22 +22,27 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class NonBreakPointsLoaderImplTest {
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void nullLang() {
-        new NonBreakPointsLoaderImpl().loadNBSP(null);
+        assertThatThrownBy(() -> new NonBreakPointsLoaderImpl().loadNBSP(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Lang must be filled to search for file!");
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void emptyLang() {
-        new NonBreakPointsLoaderImpl().loadNBSP("");
+        assertThatThrownBy(() -> new NonBreakPointsLoaderImpl().loadNBSP(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Lang must be filled to search for file!");
     }
 
     @Test
@@ -56,7 +61,7 @@ public class NonBreakPointsLoaderImplTest {
 
     @Test
     public void nonExisting() {
-        assertNull(new NonBreakPointsLoaderImpl().loadNBSP("es"));
+        assertThat(new NonBreakPointsLoaderImpl().loadNBSP("es")).isEmpty();
     }
 
     @Test

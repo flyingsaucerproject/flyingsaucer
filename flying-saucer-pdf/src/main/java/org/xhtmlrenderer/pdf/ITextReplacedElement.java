@@ -23,7 +23,9 @@ import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-public interface ITextReplacedElement extends ReplacedElement
-{
-    public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box);
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+public interface ITextReplacedElement extends ReplacedElement {
+    void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box);
 }

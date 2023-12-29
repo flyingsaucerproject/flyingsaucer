@@ -19,12 +19,15 @@
  */
 package org.xhtmlrenderer.event;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
  * Implementations of this listener interface receive notifications about
  * various document and layout events. Events are called on the Event Dispatch Thread, and will block
  * any EDT activity until the methods return; make sure you do as little as possible in each method, or where necessary,
  * spin the task off to a separate thread.
  */
+@ParametersAreNonnullByDefault
 public interface DocumentListener {
     /**
      * Indicates document has been requested (e.g. a new document is going to be
@@ -43,9 +46,9 @@ public interface DocumentListener {
 
     /**
      * Called when document layout failed with an exception. All
-     * <code>Throwable</code> objects thrown (except for
-     * <code>ThreadDeath</code>) during layout and not otherwise handled will
-     * be provided to this method. If a <code>DocumentListener</code> has been
+     * {@code Throwable} objects thrown (except for
+     * {@code ThreadDeath}) during layout and not otherwise handled will
+     * be provided to this method. If a {@code DocumentListener} has been
      * defined an XHTML panel, the listener is entirely responsible for
      * handling the exception. No other action will be taken.
      */
@@ -53,14 +56,13 @@ public interface DocumentListener {
 
     /**
      * Called when document render failed with an exception. All
-     * <code>Throwable</code> objects thrown (except for
-     * <code>ThreadDeath</code>) during render and not otherwise handled will
-     * be provided to this method. If a <code>DocumentListener</code> has been
+     * {@code Throwable} objects thrown (except for
+     * {@code ThreadDeath}) during render and not otherwise handled will
+     * be provided to this method. If a {@code DocumentListener} has been
      * defined an XHTML panel, the listener is entirely responsible for
      * handling the exception. No other action will be taken.
      */
     void onRenderException(Throwable t);
-
 }
 
 /*

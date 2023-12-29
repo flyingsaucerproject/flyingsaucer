@@ -923,7 +923,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (_bookmarks.isEmpty()) {
             _bookmarks = HTMLOutline.generate(root.getElement(), root);
         }
-        if (_bookmarks.size() > 0) {
+        if (!_bookmarks.isEmpty()) {
             _writer.setViewerPreferences(PdfWriter.PageModeUseOutlines);
             writeBookmarks(c, root, _writer.getRootOutline(), _bookmarks);
         }
@@ -1197,7 +1197,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     // Class for storing metadata element name/content pairs from the head
-    // section of an xhtml document.
+    // section of xhtml document.
     private static class Metadata {
         private String _name;
         private String _content;

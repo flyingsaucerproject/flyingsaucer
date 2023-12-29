@@ -18,6 +18,10 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,26 +30,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptyList;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
+@ParametersAreNonnullByDefault
 public class NonBreakPointsLoaderImpl implements NonBreakPointsLoader {
 
     @Override
-    public List<String> loadNBSP(String lang) {
+    @Nonnull
+    @CheckReturnValue
+    public List<String> loadNBSP(@Nullable String lang) {
         if (lang == null || lang.isEmpty()) {
             throw new IllegalArgumentException("Lang must be filled to search for file!");
         }
         List<String> result = loadForKey(lang);
         if (result == null) {
             int index = lang.indexOf('_');
-            if (index < 0) return null; // cannot split key
+            if (index < 0) return emptyList(); // cannot split key
             result = loadForKey(lang.substring(0, index));
         }
-        return result;
+        return result == null ? emptyList() : result;
     }
 
+    @Nullable
+    @CheckReturnValue
     private List<String> loadForKey(String lang) {
         String path = "non-break-spaces/" + lang + ".nbsp";
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);

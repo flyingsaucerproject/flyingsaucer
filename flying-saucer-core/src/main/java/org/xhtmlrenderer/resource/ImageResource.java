@@ -24,15 +24,19 @@ import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xhtmlrenderer.swing.MutableFSImage;
 import org.xml.sax.InputSource;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
  * @author Administrator
  */
+@ParametersAreNonnullByDefault
 public class ImageResource extends AbstractResource {
     private final String _imageUri;
     private final FSImage _img;
 
     //HACK: at least for now, till we know what we want to do here
-    public ImageResource(final String uri, FSImage img) {
+    public ImageResource(@Nullable final String uri, @Nullable FSImage img) {
         super((InputSource) null);
         _imageUri = uri;
         _img = img;

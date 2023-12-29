@@ -64,6 +64,7 @@ import org.xhtmlrenderer.demo.browser.swt.actions.ReloadAction;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.simple.SWTXHTMLRenderer;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -71,6 +72,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+@ParametersAreNonnullByDefault
 public class Browser implements DisposeListener, DocumentListener {
 
     private final Shell _shell;

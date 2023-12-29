@@ -28,8 +28,10 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.util.Util;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 
+@ParametersAreNonnullByDefault
 public abstract class AbstractFormField implements ITextReplacedElement {
     protected static final String DEFAULT_CHECKED_STATE = "Yes";
     protected static final String OFF_STATE = "Off"; // required per the spec

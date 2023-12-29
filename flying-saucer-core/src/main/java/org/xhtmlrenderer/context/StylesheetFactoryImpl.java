@@ -41,7 +41,7 @@ import java.util.logging.Level;
 
 /**
  * A Factory class for Cascading Style Sheets. Sheets are parsed using a single
- * parser instance for all sheets. Sheets are cached by URI using a LRU test,
+ * parser instance for all sheets. Sheets are cached by URI using LRU test,
  * but timestamp of file is not checked.
  *
  * @author Torbjoern Gannholm

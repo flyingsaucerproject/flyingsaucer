@@ -19,20 +19,18 @@
  */
 package org.xhtmlrenderer.resource;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.InputStream;
 
 /**
  * @author Administrator
  */
+@ParametersAreNonnullByDefault
 public class CSSResource extends AbstractResource {
-
-    /**
-     * Creates a new instance of CSSResource
-     */
-    public CSSResource(InputStream stream) {
+    public CSSResource(@Nullable InputStream stream) {
         super(stream);
     }
-
 }
 
 /*

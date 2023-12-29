@@ -23,6 +23,7 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.swing.Java2DRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
@@ -48,10 +49,9 @@ import java.util.logging.Logger;
 
 
 /**
-
- *
  * @author rk
  */
+@ParametersAreNonnullByDefault
 public class Printer implements Runnable, DocumentListener, Printable, PrintJobListener {
     private final static String template = "printingtemplate.xhtml";
 
@@ -193,7 +193,6 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
         } else {
             System.out.println("usage: <filename>");
         }
-
     }
 
     public void documentStarted() {
@@ -205,11 +204,9 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
     }
 
     public void onLayoutException(Throwable t) {
-
     }
 
     public void onRenderException(Throwable t) {
-
     }
 
     public int print(Graphics graphics, PageFormat pf, int pi) {

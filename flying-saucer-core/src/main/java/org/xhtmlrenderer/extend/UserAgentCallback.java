@@ -23,6 +23,10 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 
 /**
  * <p>To be implemented by any user agent using the panel. "User agent" is a
@@ -47,6 +51,7 @@ import org.xhtmlrenderer.resource.XMLResource;
  *
  * @author Torbjoern Gannholm
  */
+@ParametersAreNonnullByDefault
 public interface UserAgentCallback {
     /**
      * Retrieves the CSS at the given URI. This is a synchronous call.
@@ -76,6 +81,8 @@ public interface UserAgentCallback {
      * Retrieves a binary resource located at a given URI and returns its contents
      * as a byte array or <code>null</code> if the resource could not be loaded.
      */
+    @Nullable
+    @CheckReturnValue
     byte[] getBinaryResource(String uri);
 
     /**
@@ -85,7 +92,8 @@ public interface UserAgentCallback {
      * @param uri A URI which may have been visited by this user agent.
      * @return The visited value
      */
-    boolean isVisited(String uri);
+    @CheckReturnValue
+    boolean isVisited(@Nullable String uri);
 
     /**
      * Does not need to be a correct URL, only an identifier that the
@@ -93,7 +101,7 @@ public interface UserAgentCallback {
      *
      * @param url A URL against which relative references can be resolved.
      */
-    void setBaseURL(String url);
+    void setBaseURL(@Nullable String url);
 
     /**
      * @return the base uri, possibly in the implementations private uri-space
@@ -108,6 +116,8 @@ public interface UserAgentCallback {
      * @param uri an absolute or relative (to baseURL) uri to be resolved.
      * @return the full uri in uri-spaces known to the current implementation.
      */
-    String resolveURI(String uri);
+    @Nullable
+    @CheckReturnValue
+    String resolveURI(@Nullable String uri);
 }
 
