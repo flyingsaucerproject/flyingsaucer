@@ -65,8 +65,8 @@ public class PageSize {
      * ISO B5 media: 176mm wide by 250 high
      */
     public static final PageSize B5 = new PageSize(
-        new PropertyValue(CSSPrimitiveValue.CSS_MM, 176f, "176mm"),
-        new PropertyValue(CSSPrimitiveValue.CSS_MM, 250f, "250mm"));
+            new PropertyValue(CSSPrimitiveValue.CSS_MM, 176f, "176mm"),
+            new PropertyValue(CSSPrimitiveValue.CSS_MM, 250f, "250mm"));
 
     /**
      * North American letter media: 8.5 inches wide and 11 inches high
