@@ -23,6 +23,9 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 /**
  * All objects appearing the layout tree must implement this interface.  It
  * can roughly be thought of as a styled element (although an {@link InlineLayoutBox}
@@ -35,7 +38,10 @@ public interface Styleable {
     CalculatedStyle getStyle();
     void setStyle(CalculatedStyle style);
 
+    @Nullable
+    @CheckReturnValue
     Element getElement();
+    
     void setElement(Element e);
 
     String getPseudoElementOrClass();

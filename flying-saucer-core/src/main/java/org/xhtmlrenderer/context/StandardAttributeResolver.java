@@ -25,12 +25,15 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 
 /**
  * An instance which works together with a w3c DOM tree
  *
  * @author Torbjoern Gannholm
  */
+@ParametersAreNonnullByDefault
 public class StandardAttributeResolver implements AttributeResolver {
     private final NamespaceHandler nsh;
     private final UserAgentCallback uac;

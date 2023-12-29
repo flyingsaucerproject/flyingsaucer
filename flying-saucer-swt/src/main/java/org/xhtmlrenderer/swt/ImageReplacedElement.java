@@ -19,20 +19,20 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.awt.Point;
-
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 
+import java.awt.*;
+
 /**
- * ReplacedElement for <code>&lt;img&gt;</code> tags.
+ * ReplacedElement for {@code <img>} tags.
  *
  * @author Vianney le Clément
  *
  */
 public class ImageReplacedElement implements ReplacedElement {
     private final SWTFSImage _image;
-    private Point _location = new Point(0, 0);
+    private final Point _location = new Point(0, 0);
 
     public ImageReplacedElement(SWTFSImage img, int targetWidth,
             int targetHeight) {

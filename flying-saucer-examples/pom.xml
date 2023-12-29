@@ -7,6 +7,7 @@
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
     <version>9.3.2-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>flying-saucer-examples</artifactId>
@@ -37,12 +38,6 @@
       <groupId>org.xhtmlrenderer</groupId>
       <artifactId>flying-saucer-pdf-openpdf</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.codeborne</groupId>
-      <artifactId>pdf-test</artifactId>
-      <version>${pdftest.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

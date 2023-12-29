@@ -19,23 +19,28 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Color;
-import java.io.IOException;
-
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.*;
+import com.lowagie.text.pdf.BaseField;
+import com.lowagie.text.pdf.PdfBorderDictionary;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfFormField;
+import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.RadioCheckField;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-public class CheckboxFormField extends AbstractFormField
-{
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.*;
+import java.io.IOException;
+
+@ParametersAreNonnullByDefault
+public class CheckboxFormField extends AbstractFormField {
   private static final String FIELD_TYPE = "Checkbox";
 
-  public CheckboxFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
-  {
+  public CheckboxFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
     initDimensions(c, box, cssWidth, cssHeight);
   }
 
@@ -44,8 +49,7 @@ public class CheckboxFormField extends AbstractFormField
     return FIELD_TYPE;
   }
 
-  public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box)
-  {
+  public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     PdfContentByte cb = outputDevice.getCurrentPage();
 
     PdfWriter writer = outputDevice.getWriter();
@@ -65,31 +69,22 @@ public class CheckboxFormField extends AbstractFormField
 
     field.setBorderWidth(BaseField.BORDER_WIDTH_THIN);
 
-    try
-    {
+    try {
       PdfFormField formField = field.getCheckField();
-      if (isReadOnly(elm))
-      {
+      if (isReadOnly(elm)) {
         formField.setFieldFlags(PdfFormField.FF_READ_ONLY);
       }
       writer.addAnnotation(formField);
-    } catch (IOException ioe)
-    {
+    } catch (IOException | DocumentException ioe) {
       System.out.println(ioe);
-    } catch (DocumentException de)
-    {
-      System.out.println(de);
     }
-
   }
 
-  public int getBaseline()
-  {
+  public int getBaseline() {
     return 0;
   }
 
-  public boolean hasBaseline()
-  {
+  public boolean hasBaseline() {
     return false;
   }
 }

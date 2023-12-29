@@ -4,6 +4,10 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.nio.file.Files.newOutputStream;
+import static java.util.Objects.requireNonNull;
 
 /**
  * <p>
@@ -30,6 +35,7 @@ import static java.nio.file.Files.newOutputStream;
  * @author Pete Brant
  * @author Patrick Wright
  */
+@ParametersAreNonnullByDefault
 public class PDFRenderer {
     private static final Map<String, Character> versionMap = new HashMap<>();
 
@@ -52,11 +58,10 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(String url, String pdf)
-            throws IOException, DocumentException {
-
+    public static void renderToPDF(String url, String pdf) throws IOException, DocumentException {
         renderToPDF(url, pdf, null);
     }
+
     /**
      * Renders the XML file at the given URL as a PDF file
      * at the target location.
@@ -69,7 +74,7 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(String url, String pdf, Character pdfVersion)
+    public static void renderToPDF(String url, String pdf, @Nullable Character pdfVersion)
             throws IOException, DocumentException {
 
         ITextRenderer renderer = new ITextRenderer();
@@ -88,9 +93,7 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(File file, String pdf)
-            throws IOException, DocumentException {
-
+    public static void renderToPDF(File file, String pdf) throws IOException, DocumentException {
         renderToPDF(file, pdf, null);
     }
 
@@ -105,7 +108,7 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(File file, String pdf, Character pdfVersion)
+    public static void renderToPDF(File file, String pdf, @Nullable Character pdfVersion)
             throws IOException, DocumentException {
 
         ITextRenderer renderer = new ITextRenderer();
@@ -123,6 +126,8 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
+    @Nonnull
+    @CheckReturnValue
     public static byte[] renderToPDFBytes(byte[] bytes)
             throws IOException, DocumentException {
 
@@ -139,7 +144,9 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static byte[] renderToPDFBytes(byte[] bytes, Character pdfVersion)
+    @Nonnull
+    @CheckReturnValue
+    public static byte[] renderToPDFBytes(byte[] bytes, @Nullable Character pdfVersion)
             throws IOException, DocumentException {
 
         ITextRenderer renderer = new ITextRenderer();
@@ -159,9 +166,7 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(byte[] bytes, String pdf)
-            throws IOException, DocumentException {
-
+    public static void renderToPDF(byte[] bytes, String pdf) throws IOException, DocumentException {
         renderToPDF(bytes, pdf, null);
     }
 
@@ -176,7 +181,7 @@ public class PDFRenderer {
      * @throws DocumentException if an error occurred
      *                           while building the Document.
      */
-    public static void renderToPDF(byte[] bytes, String pdf, Character pdfVersion)
+    public static void renderToPDF(byte[] bytes, String pdf, @Nullable Character pdfVersion)
             throws IOException, DocumentException {
 
         ITextRenderer renderer = new ITextRenderer();
@@ -200,29 +205,14 @@ public class PDFRenderer {
     /**
      * Internal use, runs the render process
      */
-    private static byte[] doRenderToPDF(ITextRenderer renderer)
-            throws IOException, DocumentException {
-        ByteArrayOutputStream os = null;
-        byte[] pdf;
-        try {
-            os = new ByteArrayOutputStream();
+    @Nonnull
+    @CheckReturnValue
+    private static byte[] doRenderToPDF(ITextRenderer renderer) throws IOException, DocumentException {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             renderer.layout();
             renderer.createPDF(os);
-
-            pdf = os.toByteArray();
-
-            os.close();
-            os = null;
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            return os.toByteArray();
         }
-        return pdf;
     }
 
     /**
@@ -258,17 +248,19 @@ public class PDFRenderer {
         }
     }
 
+    @Nonnull
+    @CheckReturnValue
     private static Character checkVersion(String version) {
         final Character val = versionMap.get(version.trim());
         if (val == null) {
             usage("Invalid PDF version number; use 1.2 through 1.7");
         }
-        return val;
+        return requireNonNull(val);
     }
 
     /** prints out usage information, with optional error message
      */
-    private static void usage(String err) {
+    private static void usage(@Nullable String err) {
         if (err != null && !err.isEmpty()) {
             System.err.println("==>" + err);
         }

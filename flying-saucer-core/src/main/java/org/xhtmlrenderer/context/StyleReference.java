@@ -41,7 +41,6 @@ import org.xhtmlrenderer.util.XRLog;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -104,7 +103,7 @@ public class StyleReference {
                 }
 
                 if (sheet != null) {
-                    if (sheet.getImportRules().size() > 0) {
+                    if (!sheet.getImportRules().isEmpty()) {
                         result.addAll(readAndParseAll(sheet.getImportRules(), medium));
                     }
 
@@ -215,25 +214,24 @@ public class StyleReference {
             infos.add(defaultStylesheet);
         }
 
-        StylesheetInfo[] refs = _nsh.getStylesheets(_doc);
+        List<StylesheetInfo> refs = _nsh.getStylesheets(_doc);
         int inlineStyleCount = 0;
-        if (refs != null) {
-            for (StylesheetInfo ref : refs) {
-                String uri;
 
-                if (!ref.isInline()) {
-                    uri = _uac.resolveURI(ref.getUri());
-                    ref.setUri(uri);
-                } else {
-                    ref.setUri(_uac.getBaseURL() + "#inline_style_" + (++inlineStyleCount));
-                    Stylesheet sheet = _stylesheetFactory.parse(
-                            new StringReader(ref.getContent()), ref);
-                    ref.setStylesheet(sheet);
-                    ref.setUri(null);
-                }
+        for (StylesheetInfo ref : refs) {
+            String uri;
+
+            if (!ref.isInline()) {
+                uri = _uac.resolveURI(ref.getUri());
+                ref.setUri(uri);
+            } else {
+                ref.setUri(_uac.getBaseURL() + "#inline_style_" + (++inlineStyleCount));
+                Stylesheet sheet = _stylesheetFactory.parse(
+                        new StringReader(ref.getContent()), ref);
+                ref.setStylesheet(sheet);
+                ref.setUri(null);
             }
-            infos.addAll(Arrays.asList(refs));
         }
+        infos.addAll(refs);
 
         // TODO: here we should also get user stylesheet from userAgent
 

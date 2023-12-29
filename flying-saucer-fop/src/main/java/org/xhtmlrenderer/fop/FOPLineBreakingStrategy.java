@@ -18,10 +18,6 @@
  */
 package org.xhtmlrenderer.fop;
 
-import java.text.BreakIterator;
-import java.util.Arrays;
-import java.util.TreeSet;
-
 import org.apache.fop.hyphenation.Hyphenation;
 import org.apache.fop.hyphenation.HyphenationTree;
 import org.apache.fop.hyphenation.Hyphenator;
@@ -34,6 +30,10 @@ import org.xhtmlrenderer.layout.breaker.LineBreakingStrategy;
 import org.xhtmlrenderer.layout.breaker.ListBreakPointsProvider;
 import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 
+import java.text.BreakIterator;
+import java.util.Arrays;
+import java.util.TreeSet;
+
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
@@ -43,9 +43,8 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
 
     private TreeSet<BreakPoint> getPoints(String text, String lang, CalculatedStyle style) {
         text = new NonBreakPointsEnhancer().enhance(text, lang);
-        BreakIterator breakIt = new UrlAwareLineBreakIterator();
-        breakIt.setText(text);
-        TreeSet<BreakPoint> points = new TreeSet<BreakPoint>();
+        BreakIterator breakIt = new UrlAwareLineBreakIterator(text);
+        TreeSet<BreakPoint> points = new TreeSet<>();
         int p;
         while ((p = breakIt.next()) != BreakIterator.DONE) {
             points.add(new BreakPoint(p));

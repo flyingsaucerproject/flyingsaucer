@@ -26,6 +26,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.MalformedURLException;
 
 /**
  * This example shows the most basic use of Flying Saucer, to
@@ -57,8 +58,8 @@ public class ReplaceRender {
         // are a variety of overloads for setDocument().
         try {
             panel.setDocument(new File(fileName));
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
 
         // Put our panel in a scrolling pane. You can use

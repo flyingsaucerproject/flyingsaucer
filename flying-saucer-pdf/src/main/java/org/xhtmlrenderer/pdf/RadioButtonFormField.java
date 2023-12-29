@@ -34,9 +34,11 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public final class RadioButtonFormField extends AbstractFormField {
     private static final String FIELD_TYPE = "RadioButton";
 

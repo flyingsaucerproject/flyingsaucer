@@ -2,13 +2,14 @@ package org.xhtmlrenderer.pdf;
 
 import com.codeborne.pdftest.PDF;
 import com.lowagie.text.DocumentException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xml.sax.InputSource;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +25,7 @@ public class PDFRenderTest {
     private static final Logger log = LoggerFactory.getLogger(PDFRenderTest.class);
 
     @Test
-    public void testConvertSimpleHtmlToPdf() throws IOException, DocumentException {
+    public void convertSimpleHtmlToPdf() throws IOException, DocumentException {
         URL source = requireNonNull(Thread.currentThread().getContextClassLoader().getResource("hello.html"));
         File output = File.createTempFile("flying-saucer-" + getClass().getSimpleName(), ".hello.pdf");
         PDF pdf = generatePDF(source, output);
@@ -32,7 +33,7 @@ public class PDFRenderTest {
     }
 
     @Test
-    public void testConvertComplexHtmlToPdf() throws IOException, DocumentException {
+    public void convertComplexHtmlToPdf() throws IOException, DocumentException {
         URL source = requireNonNull(Thread.currentThread().getContextClassLoader().getResource("hamlet.xhtml"));
         File output = File.createTempFile("flying-saucer-" + getClass().getSimpleName(), ".hamlet.pdf");
         PDF pdf = generatePDF(source, output);
@@ -66,6 +67,7 @@ public class PDFRenderTest {
         return new PDF(output);
     }
 
+    @ParametersAreNonnullByDefault
     private static class ResourceLoaderUserAgent extends ITextUserAgent {
         private ResourceLoaderUserAgent(ITextOutputDevice outputDevice) {
             super(outputDevice);

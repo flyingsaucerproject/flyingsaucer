@@ -18,7 +18,7 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xhtmlrenderer.layout.breaker.BreakPoint;
 import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 
@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
@@ -35,18 +35,17 @@ import static org.junit.Assert.assertEquals;
 public class NonBreakPointsTest {
 
     @Test
-    public void testGeneral() {
+    public void general() {
         test("text s mezerami", 5, 7, 15);
     }
 
     @Test
-    public void testNBSP() {
+    public void nbsp() {
         test("text s\u00A0mezerami", 5, 15);
     }
 
     private void test(String text, int ... expected) {
-        BreakIterator breakIt = new UrlAwareLineBreakIterator();
-        breakIt.setText(text);
+        BreakIterator breakIt = new UrlAwareLineBreakIterator(text);
         TreeSet<BreakPoint> points = new TreeSet<>();
         int p;
         while ((p = breakIt.next()) != BreakIterator.DONE) {
@@ -56,11 +55,11 @@ public class NonBreakPointsTest {
     }
 
     private void assertBreakPoints(Collection<BreakPoint> calculated, int ... expected) {
-        if (calculated.size() != expected.length) throw new AssertionError("Expected " + expected.length +
-                " break points, got " + calculated.size() + ": " + calculated);
+        assertThat(calculated).hasSize(expected.length);
+
         Iterator<BreakPoint> it = calculated.iterator();
         for (int point : expected) {
-            assertEquals(point, it.next().getPosition());
+            assertThat(it.next().getPosition()).isEqualTo(point);
         }
     }
 

@@ -81,9 +81,9 @@ public class FSCatalog {
             URL url = requireNonNull(FSCatalog.class.getClassLoader().getResource(catalogURI),
                     () -> "Catalog not found in classpath: " + catalogURI);
             return parseCatalog(url);
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             XRLog.xmlEntities(Level.WARNING, "Could not open XML catalog from URI '" + catalogURI + "'", ex);
-            return new HashMap<>();
+            throw new IllegalStateException("Cannot find " + catalogURI + " in classpath", ex);
         }
     }
 

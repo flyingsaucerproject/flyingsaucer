@@ -28,6 +28,8 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.print.PrinterGraphics;
@@ -39,6 +41,7 @@ import java.util.ArrayList;
  *
  * @author chm
  */
+@ParametersAreNonnullByDefault
 public class ScalableXHTMLPanel extends XHTMLPanel {
 
     public static final int SCALE_POLICY_NONE = 0;
@@ -80,7 +83,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * @param url The new document value
      */
     @Override
-    public void setDocument(Document doc, String url) {
+    public void setDocument(Document doc, @Nullable String url) {
         resetScaleAccordingToPolicy();
         lastLayoutSize = null;
         super.setDocument(doc, url);
@@ -94,7 +97,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * @param url	The URL used to resolve relative path references.
      */
     @Override
-    public void setDocument(InputStream stream, String url) throws Exception {
+    public void setDocument(InputStream stream, String url) {
         resetScaleAccordingToPolicy();
         lastLayoutSize = null;
         super.setDocument(stream, url);

@@ -19,14 +19,14 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Point;
-
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 
+import java.awt.*;
+
 public class EmptyReplacedElement implements ReplacedElement {
-    private int _width;
-    private int _height;
+    private final int _width;
+    private final int _height;
 
     private Point _location = new Point(0, 0);
 

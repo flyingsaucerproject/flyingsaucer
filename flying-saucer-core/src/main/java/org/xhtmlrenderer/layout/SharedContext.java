@@ -46,6 +46,7 @@ import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,7 +64,7 @@ public final class SharedContext {
     private static final Set<String> PAGED_MEDIA_TYPES =
             new HashSet<>(asList("print", "projection", "embossed", "handheld", "tv"));
 
-    private TextRenderer text_renderer;
+    private TextRenderer textRenderer;
     private String media;
     private UserAgentCallback uac;
     private boolean interactive = true;
@@ -88,7 +89,7 @@ public final class SharedContext {
     private Map<Element, CalculatedStyle> styleMap;
 
     private ReplacedElementFactory replacedElementFactory;
-    private Rectangle temp_canvas;
+    private Rectangle temporaryCanvas;
 
     private LineBreakingStrategy lineBreakingStrategy = new DefaultLineBreakingStrategy();
 
@@ -96,7 +97,7 @@ public final class SharedContext {
     }
 
     public SharedContext(UserAgentCallback uac) {
-        font_resolver = new AWTFontResolver();
+        fontResolver = new AWTFontResolver();
         replacedElementFactory = new SwingReplacedElementFactory();
         setMedia("screen");
         this.uac = uac;
@@ -112,7 +113,7 @@ public final class SharedContext {
 
 
     public SharedContext(UserAgentCallback uac, FontResolver fr, ReplacedElementFactory ref, TextRenderer tr, float dpi) {
-        font_resolver = fr;
+        fontResolver = fr;
         replacedElementFactory = ref;
         setMedia("screen");
         this.uac = uac;
@@ -143,14 +144,14 @@ public final class SharedContext {
      * @return The fontResolver value
      */
     public FontResolver getFontResolver() {
-        return font_resolver;
+        return fontResolver;
     }
 
     public void flushFonts() {
-        font_resolver.flushCache();
+        fontResolver.flushCache();
     }
 
-    private FontResolver font_resolver;
+    private FontResolver fontResolver;
 
     /**
      * The media for this context
@@ -168,7 +169,7 @@ public final class SharedContext {
     private FSCanvas canvas;
 
     public TextRenderer getTextRenderer() {
-        return text_renderer;
+        return textRenderer;
     }
 
     public boolean debugDrawBoxes() {
@@ -224,15 +225,15 @@ public final class SharedContext {
         this.canvas = canvas;
     }
 
-    public void set_TempCanvas(Rectangle rect) {
-        temp_canvas = rect;
+    public void setTemporaryCanvas(Rectangle rect) {
+        temporaryCanvas = rect;
     }
 
 
     public Rectangle getFixedRectangle() {
         //Uu.p("this = " + canvas);
         if (getCanvas() == null) {
-            return temp_canvas;
+            return temporaryCanvas;
         } else {
             Rectangle rect = getCanvas().getFixedRectangle();
             rect.translate(getCanvas().getX(), getCanvas().getY());
@@ -270,10 +271,10 @@ public final class SharedContext {
     /**
      * Sets the textRenderer attribute of the RenderingContext object
      *
-     * @param text_renderer The new textRenderer value
+     * @param textRenderer The new textRenderer value
      */
-    public void setTextRenderer(TextRenderer text_renderer) {
-        this.text_renderer = text_renderer;
+    public void setTextRenderer(TextRenderer textRenderer) {
+        this.textRenderer = textRenderer;
     }// = "screen";
 
     /**
@@ -370,7 +371,7 @@ public final class SharedContext {
      *
      * @param url The new baseURL value
      */
-    public void setBaseURL(String url) {
+    public void setBaseURL(@Nullable String url) {
         uac.setBaseURL(url);
     }
 
@@ -442,7 +443,7 @@ public final class SharedContext {
     }
 
     public void setFontResolver(FontResolver resolver) {
-        font_resolver = resolver;
+        fontResolver = resolver;
     }
 
     public int getDotsPerPixel() {

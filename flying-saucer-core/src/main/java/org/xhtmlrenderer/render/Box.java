@@ -36,6 +36,8 @@ import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.io.IOException;
 import java.io.Writer;
@@ -48,8 +50,6 @@ import static java.util.Collections.emptyIterator;
 import static java.util.Collections.emptyList;
 
 public abstract class Box implements Styleable {
-    protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
     private Element _element;
 
     private int _x;
@@ -520,13 +520,13 @@ public abstract class Box implements Styleable {
 
         _workingMargin = null;
 
-        String anchorName = c.getNamespaceHandler().getAnchorName(getElement());
-        if (anchorName != null) {
-            c.removeBoxId(anchorName);
-        }
-
         Element e = getElement();
         if (e != null) {
+            String anchorName = c.getNamespaceHandler().getAnchorName(e);
+            if (anchorName != null) {
+                c.removeBoxId(anchorName);
+            }
+
             String id = c.getNamespaceHandler().getID(e);
             if (id != null) {
                 c.removeBoxId(id);
@@ -699,6 +699,8 @@ public abstract class Box implements Styleable {
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public Element getElement() {
         return _element;
     }

@@ -18,53 +18,53 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class NonBreakPointsLoaderImplTest {
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void nullLang() {
-        new NonBreakPointsLoaderImpl().loadNBSP(null);
+        assertThatThrownBy(() -> new NonBreakPointsLoaderImpl().loadNBSP(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Lang must be filled to search for file!");
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void emptyLang() {
-        new NonBreakPointsLoaderImpl().loadNBSP("");
+        assertThatThrownBy(() -> new NonBreakPointsLoaderImpl().loadNBSP(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Lang must be filled to search for file!");
     }
 
     @Test
     public void loadExactMatch() {
         List<String> lines = new NonBreakPointsLoaderImpl().loadNBSP("de");
-        assertEquals(1, lines.size());
-        assertEquals("deRuleščřžýá", lines.get(0)); // tests also UTF-8 chars
+        assertThat(lines).containsExactly("deRuleščřžýá"); // tests also UTF-8 chars
     }
 
     @Test
     public void loadNonExactMatch() {
         List<String> lines = new NonBreakPointsLoaderImpl().loadNBSP("de_DE");
-        assertEquals(1, lines.size());
-        assertEquals("deRuleščřžýá", lines.get(0)); // tests also UTF-8 chars
+        assertThat(lines).containsExactly("deRuleščřžýá"); // tests also UTF-8 chars
     }
 
     @Test
     public void nonExisting() {
-        assertNull(new NonBreakPointsLoaderImpl().loadNBSP("es"));
+        assertThat(new NonBreakPointsLoaderImpl().loadNBSP("es")).isEmpty();
     }
 
     @Test
     public void loadExactMatch2() {
         List<String> lines = new NonBreakPointsLoaderImpl().loadNBSP("en_GB");
-        assertEquals(2, lines.size());
-        assertEquals("enGBRule1", lines.get(0));
-        assertEquals("enGBRule2", lines.get(1));
+        assertThat(lines).containsExactly("enGBRule1", "enGBRule2");
     }
 
 }

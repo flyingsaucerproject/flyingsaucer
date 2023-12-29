@@ -449,10 +449,9 @@ String address = "http://www.w3.org/";
 
 // render    
 try {       
-  BufferedImage buff = null;
-  buff = Graphics2DRenderer.renderToImage(address, "w3c-homepage.png", 1024);            
+  BufferedImage buff = Graphics2DRenderer.renderToImage(address, "w3c-homepage.png", 1024);            
 } catch (IOException e) {
-  e.printStackTrace();   
+  throw new RuntimeException(e);
 }
 }}
 

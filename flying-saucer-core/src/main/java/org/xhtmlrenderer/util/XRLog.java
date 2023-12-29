@@ -34,7 +34,7 @@ import java.util.logging.Level;
  */
 public class XRLog {
 
-    private static final List<String> LOGGER_NAMES = new ArrayList<String>(20);
+    private static final List<String> LOGGER_NAMES = new ArrayList<>(20);
     public static final String CONFIG = registerLoggerByName("org.xhtmlrenderer.config");
     public static final String EXCEPTION = registerLoggerByName("org.xhtmlrenderer.exception");
     public static final String GENERAL = registerLoggerByName("org.xhtmlrenderer.general");
@@ -67,7 +67,7 @@ public class XRLog {
      */
     public static List<String> listRegisteredLoggers() {
         // defensive copy
-        return new ArrayList<String>(LOGGER_NAMES);
+        return new ArrayList<>(LOGGER_NAMES);
     }
 
 
@@ -299,7 +299,7 @@ public class XRLog {
  *
  * $Log$
  * Revision 1.20  2010/01/13 01:28:46  peterbrant
- * Add synchronization to XRLog#log to avoid spurious errors on initializatoin
+ * Add synchronization to XRLog#log to avoid spurious errors on initialization
  *
  * Revision 1.19  2008/01/27 16:40:29  pdoubleya
  * Issues 186 and 130: fix configuration so that logging setup does not override any current settings for JDK logging classes. Disable logging by default.
@@ -314,7 +314,7 @@ public class XRLog {
  * CSS parsing errors should be logged at WARNING, not INFO level
  *
  * Revision 1.15  2006/08/17 17:32:25  joshy
- * intial patch to fix the logging config issues
+ * initial patch to fix the logging config issues
  * https://xhtmlrenderer.dev.java.net/issues/show_bug.cgi?id=130
  *
  * Revision 1.14  2006/07/26 17:59:01  pdoubleya

@@ -27,8 +27,10 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.StreamResource;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -50,6 +52,7 @@ import java.io.InputStream;
  *
  * @author Torbjoern Gannholm
  */
+@ParametersAreNonnullByDefault
 public class DelegatingUserAgent implements UserAgentCallback, DocumentListener {
     private final UriResolver _uriResolver;
     private ImageResourceLoader _imageResourceLoader;
@@ -113,7 +116,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
     }
 
     /**
-     * Retrieves the XML located at the given URI. It's assumed the URI does point to a XML--the URI will
+     * Retrieves the XML located at the given URI. It's assumed the URI does point to XML--the URI will
      * be accessed (using java.io or java.net), opened, read and then passed into the XML parser (XMLReader)
      * configured for Flying Saucer. The result is packed up into an XMLResource for later consumption.
      *
@@ -122,36 +125,24 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      */
     public XMLResource getXMLResource(String uri) {
         String ruri = _uriResolver.resolve(uri);
-        StreamResource sr = new StreamResource(ruri);
-        try {
+        try (StreamResource sr = new StreamResource(ruri)) {
             sr.connect();
             BufferedInputStream bis = sr.bufferedStream();
             return XMLResource.load(bis);
         } catch (IOException e) {
             return null;
-        } finally {
-            sr.close();
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public byte[] getBinaryResource(String uri) {
         String ruri = _uriResolver.resolve(uri);
-        StreamResource sr = new StreamResource(ruri);
-        try {
+        try (StreamResource sr = new StreamResource(ruri)) {
             sr.connect();
-            BufferedInputStream bis = sr.bufferedStream();
-            ByteArrayOutputStream result = new ByteArrayOutputStream(sr.hasStreamLength() ? sr.streamLength() : 4 * 1024);
-            byte[] buf = new byte[10240];
-            int i;
-            while ((i = bis.read(buf)) != -1) {
-                result.write(buf, 0, i);
-            }
-
-            return result.toByteArray();
+            return IOUtil.readBytes(sr.bufferedStream());
         } catch (IOException e) {
             return null;
-        } finally {
-            sr.close();
         }
     }
 
@@ -182,7 +173,9 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri A URI, possibly relative.
      * @return A URI as String, resolved, or null if there was an exception (for example if the URI is malformed).
      */
-    public String resolveURI(String uri) {
+    @Nullable
+    @CheckReturnValue
+    public String resolveURI(@Nullable String uri) {
         return _uriResolver.resolve(uri);
     }
 

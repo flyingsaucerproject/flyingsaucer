@@ -274,7 +274,7 @@ public class Selector {
     }
 
     /**
-     * set which pseudoclasses must apply for this selector
+     * set which pseudo-classes must apply for this selector
      *
      * @param pc the values from AttributeResolver should be used. Once set
      *           they cannot be unset. Note that the pseudo-classes should be set one
@@ -308,7 +308,7 @@ public class Selector {
     }
 
     /**
-     * query if a pseudoclass must apply for this selector
+     * query if a pseudo-class must apply for this selector
      *
      * @param pc the values from AttributeResolver should be used.
      * @return The pseudoClass value
@@ -428,15 +428,6 @@ public class Selector {
             XRLog.match(Level.WARNING, "Trying to append conditions to pseudoElement " + _pe);
         }
         conditions.add(c);
-    }
-
-    /**
-     * Gets the elementStylingOrder attribute of the Selector class
-     *
-     * @return The elementStylingOrder value
-     */
-    static String getElementStylingOrder() {
-        return "1" + "000" + "000" + "000" + "00000";
     }
 
     public int getSelectorID() {

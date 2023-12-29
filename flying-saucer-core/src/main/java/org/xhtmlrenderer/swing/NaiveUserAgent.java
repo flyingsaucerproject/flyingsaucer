@@ -25,13 +25,16 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.FontUtil;
+import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -63,6 +66,7 @@ import java.util.Map;
  *
  * @author Torbjoern Gannholm
  */
+@ParametersAreNonnullByDefault
 public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     private static final int DEFAULT_IMAGE_CACHE_SIZE = 16;
@@ -252,11 +256,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
                     } catch (IOException e) {
                         XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
                     } finally {
-                        try {
-                            is.close();
-                        } catch (IOException e) {
-                            // ignore
-                        }
+                        IOUtil.close(is);
                     }
                 }
             }
@@ -275,7 +275,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      *
      * @return An ImageResource containing the image.
      */
-    protected ImageResource createImageResource(String uri, Image img) {
+    protected ImageResource createImageResource(String uri, @Nullable Image img) {
         return new ImageResource(uri, AWTFSImage.createImage(img));
     }
 
@@ -289,47 +289,21 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      */
     @Override
     public XMLResource getXMLResource(String uri) {
-        InputStream inputStream = resolveAndOpenStream(uri);
-        XMLResource xmlResource;
-        try {
-            xmlResource = XMLResource.load(inputStream);
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // swallow
-                }
-            }
+        try (InputStream inputStream = resolveAndOpenStream(uri)) {
+            return XMLResource.load(inputStream);
+        } catch (IOException ignore) {
+            return null;
         }
-        return xmlResource;
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public byte[] getBinaryResource(String uri) {
-        InputStream is = resolveAndOpenStream(uri);
-        if (is==null) return null;
-        try {
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buf = new byte[10240];
-            int i;
-            while ((i = is.read(buf)) != -1) {
-                result.write(buf, 0, i);
-            }
-            is.close();
-            is = null;
-
-            return result.toByteArray();
+        try (InputStream is = resolveAndOpenStream(uri)) {
+            return is == null ? null : IOUtil.readBytes(is);
         } catch (IOException e) {
             return null;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
     }
 
@@ -363,7 +337,9 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @return A URI as String, resolved, or null if there was an exception (for example if the URI is malformed).
      */
     @Override
-    public String resolveURI(String uri) {
+    @Nullable
+    @CheckReturnValue
+    public String resolveURI(@Nullable String uri) {
         if (uri == null) return null;
 
         if (_baseURL == null) {//first try to set a base URL
@@ -389,6 +365,10 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         try {
             URI result = new URI(uri);
             if (result.isAbsolute()) {
+                if (result.getScheme().equals("classpath")) {
+                    URL resource = Thread.currentThread().getContextClassLoader().getResource(uri.substring("classpath".length() + 1));
+                    return resource.toString();
+                }
                 return result.toString();
             }
             XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);

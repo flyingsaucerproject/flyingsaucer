@@ -31,7 +31,7 @@ import java.awt.font.LineMetrics;
  * value for getAscent()).  So... for now we use LineMetrics for font metrics.
  */
 public class LineMetricsAdapter implements FSFontMetrics {
-    private LineMetrics _lineMetrics;
+    private final LineMetrics _lineMetrics;
 
     public LineMetricsAdapter(LineMetrics lineMetrics) {
         _lineMetrics = lineMetrics;

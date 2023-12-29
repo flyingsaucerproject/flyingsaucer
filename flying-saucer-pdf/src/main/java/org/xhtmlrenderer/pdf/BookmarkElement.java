@@ -19,12 +19,14 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Point;
-
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.*;
+
+@ParametersAreNonnullByDefault
 public class BookmarkElement implements ITextReplacedElement {
     private Point _location = new Point(0, 0);
     private String _anchorName;

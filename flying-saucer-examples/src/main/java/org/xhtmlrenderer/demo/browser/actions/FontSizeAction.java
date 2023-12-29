@@ -11,7 +11,7 @@ public class FontSizeAction extends AbstractAction {
     public static final int DECREMENT = 0;
     public static final int INCREMENT = 1;
     public static final int RESET = 2;
-    private int whichDirection;
+    private final int whichDirection;
 
     public FontSizeAction(BrowserStartup root, int which) {
         super("FontSize");

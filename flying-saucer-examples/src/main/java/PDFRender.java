@@ -26,10 +26,12 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xml.sax.InputSource;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Paths;
+
+import static java.nio.file.Files.newOutputStream;
 
 public class PDFRender {
     public static void main(String[] args) throws IOException, DocumentException {
@@ -48,20 +50,8 @@ public class PDFRender {
         createPDF(url, args[1]);
     }
 
-    public static void createPDF(String url, String pdf)
-            throws IOException, DocumentException {
-        OutputStream os = null;
-        try {
-            os = new FileOutputStream(pdf);
-
-            /* standard approach
-            ITextRenderer renderer = new ITextRenderer();
-
-            renderer.setDocument(url);
-            renderer.layout();
-            renderer.createPDF(os);
-            */
-
+    public static void createPDF(String url, String pdf) throws IOException, DocumentException {
+        try (OutputStream os = newOutputStream(Paths.get(pdf))) {
             ITextRenderer renderer = new ITextRenderer();
             ResourceLoaderUserAgent callback = new ResourceLoaderUserAgent(renderer.getOutputDevice());
             callback.setSharedContext(renderer.getSharedContext());
@@ -72,22 +62,10 @@ public class PDFRender {
             renderer.setDocument(doc, url);
             renderer.layout();
             renderer.createPDF(os);
-
-            os.close();
-            os = null;
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
     }
 
-    private static class ResourceLoaderUserAgent extends ITextUserAgent
-    {
+    private static class ResourceLoaderUserAgent extends ITextUserAgent {
         private ResourceLoaderUserAgent(ITextOutputDevice outputDevice) {
             super(outputDevice);
         }

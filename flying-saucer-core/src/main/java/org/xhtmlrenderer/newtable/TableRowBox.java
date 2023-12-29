@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
+import static java.lang.System.lineSeparator;
+
 public class TableRowBox extends BlockBox {
     private int _baseline;
     private boolean _haveBaseline;
@@ -541,7 +543,7 @@ public class TableRowBox extends BlockBox {
                 }
             }
 
-            writer.write(LINE_SEPARATOR);
+            writer.write(lineSeparator());
         }
     }
 

@@ -26,7 +26,7 @@ import org.xhtmlrenderer.demo.browser.swt.DemosNavigation.Demo;
 
 public class DemoAction extends AbstractAction {
 
-    private Demo _demo;
+    private final Demo _demo;
 
     public DemoAction(Demo demo) {
         super(demo.getName(), SWT.PUSH, SWT.NONE, null);

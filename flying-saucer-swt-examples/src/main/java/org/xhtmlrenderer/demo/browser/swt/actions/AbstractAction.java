@@ -22,10 +22,10 @@ package org.xhtmlrenderer.demo.browser.swt.actions;
 
 public abstract class AbstractAction implements Action {
 
-    private String _text;
-    private int _style;
-    private int _shortcut;
-    private String _icon;
+    private final String _text;
+    private final int _style;
+    private final int _shortcut;
+    private final String _icon;
 
     public AbstractAction(String text, int style, int shortcut, String icon) {
         _text = text;

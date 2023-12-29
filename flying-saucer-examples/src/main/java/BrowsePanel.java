@@ -28,6 +28,7 @@ import org.xhtmlrenderer.swing.ImageResourceLoader;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.GeneralUtil;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -104,12 +105,12 @@ public class BrowsePanel {
                 frame.setTitle(panel.getDocumentTitle());
             }
 
-            public void onLayoutException(Throwable t) {
+            public void onLayoutException(@Nonnull Throwable t) {
                 panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 panel.setDocument(getErrorDocument("can't layout: " + t.getMessage()).getDocument());
             }
 
-            public void onRenderException(Throwable t) {
+            public void onRenderException(@Nonnull Throwable t) {
                 panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 panel.setDocument(getErrorDocument("can't render: " + t.getMessage()).getDocument());
             }

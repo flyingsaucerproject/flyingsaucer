@@ -26,11 +26,14 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,12 +44,15 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.xhtmlrenderer.util.IOUtil.getInputStream;
+
 /**
  * Naive user agent, copy of org.xhtmlrenderer.swing.NaiveUserAgent (but
  * modified for SWT, of course).
  *
  * @author Vianney le Clément
  */
+@ParametersAreNonnullByDefault
 public class NaiveUserAgent implements UserAgentCallback {
 
     /**
@@ -66,30 +72,9 @@ public class NaiveUserAgent implements UserAgentCallback {
         _device = device;
     }
 
-    /**
-     * Gets a Reader for the resource identified
-     *
-     * @return The stylesheet value
-     */
-    // TODO implement this with nio.
-    protected InputStream getInputStream(String uri) {
-        java.io.InputStream is = null;
-        uri = resolveURI(uri);
-        try {
-            is = new URL(uri).openStream();
-        } catch (java.net.MalformedURLException e) {
-            XRLog.exception("bad URL given: " + uri, e);
-        } catch (java.io.FileNotFoundException e) {
-            XRLog.exception("item at URI " + uri + " not found");
-        } catch (java.io.IOException e) {
-            XRLog.exception("IO problem for " + uri, e);
-        }
-        return is;
-    }
-
     @Override
     public CSSResource getCSSResource(String uri) {
-        return new CSSResource(getInputStream(uri));
+        return new CSSResource(getInputStream(resolveURI(uri)));
     }
 
     @Override
@@ -102,29 +87,22 @@ public class NaiveUserAgent implements UserAgentCallback {
             ir = _imageCache.get(uri);
             // TODO: check that cached image is still valid
             if (ir == null) {
-                InputStream is = getInputStream(uri);
-                if (is != null) {
-                    try {
-                        ir = createImageResource(uri, is);
-                        if (_imageCache.size() >= _imageCacheCapacity) {
-                            // prevent the cache from growing too big
-                            ImageResource old = _imageCache
-                                    .remove(_imageCache.keySet().iterator().next());
-                            ((SWTFSImage) old.getImage()).getImage().dispose();
+                    try (InputStream is = getInputStream(resolveURI(uri))) {
+                        if (is != null) {
+                            ir = createImageResource(uri, is);
+                            if (_imageCache.size() >= _imageCacheCapacity) {
+                                // prevent the cache from growing too big
+                                ImageResource old = _imageCache
+                                        .remove(_imageCache.keySet().iterator().next());
+                                ((SWTFSImage) old.getImage()).getImage().dispose();
+                            }
+                            _imageCache.put(uri, ir);
                         }
-                        _imageCache.put(uri, ir);
-                    } catch (SWTException e) {
+                    } catch (SWTException | IOException e) {
                         XRLog.exception(
                                 "Can't read image file; unexpected problem for URI '"
                                 + uri + "'", e);
-                    } finally {
-                        try {
-                            is.close();
-                        } catch (IOException e) {
-                            // swallow
-                        }
                     }
-                }
             }
             if (ir == null) {
                 ir = new ImageResource(uri, null);
@@ -161,7 +139,7 @@ public class NaiveUserAgent implements UserAgentCallback {
             XRLog.exception("null uri requested");
             return null;
         }
-        try (InputStream inputStream = getInputStream(uri)) {
+        try (InputStream inputStream = getInputStream(resolveURI(uri))) {
             if (inputStream == null) {
                 XRLog.exception("couldn't get InputStream for " + uri);
                 return null;
@@ -187,7 +165,9 @@ public class NaiveUserAgent implements UserAgentCallback {
     }
 
     @Override
-    public String resolveURI(String uri) {
+    @Nullable
+    @CheckReturnValue
+    public String resolveURI(@Nullable String uri) {
         if (uri == null) return null;
 
         if (_baseURL == null) {//first try to set a base URL
@@ -251,30 +231,9 @@ public class NaiveUserAgent implements UserAgentCallback {
     }
 
     @Override
+    @Nullable
+    @CheckReturnValue
     public byte[] getBinaryResource(String uri) {
-        InputStream is = getInputStream(uri);
-        if (is==null) return null;
-        try {
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buf = new byte[10240];
-            int i;
-            while ((i = is.read(buf)) != -1) {
-                result.write(buf, 0, i);
-            }
-            is.close();
-            is = null;
-
-            return result.toByteArray();
-        } catch (IOException e) {
-            return null;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
-        }
+        return IOUtil.readBytes(resolveURI(uri));
     }
 }

@@ -37,6 +37,8 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.print.PrinterGraphics;
@@ -48,15 +50,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 
-
-
-
 /**
  * A Swing {@link javax.swing.JPanel} that encloses the Flying Saucer renderer
  * for easy integration into Swing applications.
  *
  * @author Joshua Marinacci
  */
+@ParametersAreNonnullByDefault
 public abstract class BasicPanel extends RootPanel implements FormSubmissionListener {
     private static final int PAGE_PAINTING_CLEARANCE_WIDTH = 10;
     private static final int PAGE_PAINTING_CLEARANCE_HEIGHT = 10;
@@ -342,7 +342,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         setDocument(dom, url, nsh);
     }
 
-    public void setDocumentFromString(String content, String url, NamespaceHandler nsh) {
+    public void setDocumentFromString(String content, @Nullable String url, NamespaceHandler nsh) {
         InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
         Document dom = XMLResource.load(is).getDocument();
 
@@ -423,13 +423,11 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     public URL getURL() {
-        URL base = null;
         try {
-            base = new URL(getSharedContext().getUac().getBaseURL());
+            return new URL(getSharedContext().getUac().getBaseURL());
         } catch (MalformedURLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new RuntimeException(e);
         }
-        return base;
     }
 
     public Document getDocument() {

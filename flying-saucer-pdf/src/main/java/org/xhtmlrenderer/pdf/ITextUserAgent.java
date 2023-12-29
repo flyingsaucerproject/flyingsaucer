@@ -30,6 +30,7 @@ import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper;
+import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -65,11 +66,10 @@ public class ITextUserAgent extends NaiveUserAgent {
     @Override
     public ImageResource getImageResource(String uriStr) {
         String unresolvedUri = uriStr;
-        ImageResource resource;
         if (!ImageUtil.isEmbeddedBase64Image(uriStr)) {
             uriStr = resolveURI(uriStr);
         }
-        resource = _imageCache.get(unresolvedUri);
+        ImageResource resource = _imageCache.get(unresolvedUri);
 
         if (resource == null) {
             if (ImageUtil.isEmbeddedBase64Image(uriStr)) {
@@ -98,11 +98,7 @@ public class ITextUserAgent extends NaiveUserAgent {
                     } catch (BadElementException | IOException | URISyntaxException e) {
                         XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
                     } finally {
-                        try {
-                            is.close();
-                        } catch (IOException e) {
-                            // ignore
-                        }
+                        IOUtil.close(is);
                     }
                 }
             }

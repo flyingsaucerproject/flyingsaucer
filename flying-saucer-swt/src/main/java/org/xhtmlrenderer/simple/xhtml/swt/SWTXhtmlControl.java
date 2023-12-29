@@ -34,7 +34,7 @@ import org.xhtmlrenderer.swt.SWTFSFont;
 
 public abstract class SWTXhtmlControl implements SWTFormControl {
 
-    private FormControl _control;
+    private final FormControl _control;
     protected Control _swtControl;
 
     private Color _foreground, _background;
@@ -59,7 +59,7 @@ public abstract class SWTXhtmlControl implements SWTFormControl {
             _swtControl.setEnabled(false);
         }
         String title = control.getElement().getAttribute("title");
-        if (title.length() != 0) {
+        if (!title.isEmpty()) {
             _swtControl.setToolTipText(title);
         }
         // enable/disable handler

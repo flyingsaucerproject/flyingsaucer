@@ -20,8 +20,6 @@
  */
 package org.xhtmlrenderer.layout.breaker;
 
-import java.text.BreakIterator;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -33,11 +31,18 @@ import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.render.FSFont;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.text.BreakIterator;
+
 /**
  * A utility class that scans the text of a single inline box, looking for the
  * next break point.
  * @author Torbjoern Gannholm
  */
+@ParametersAreNonnullByDefault
 public class Breaker {
 
     private static final String DEFAULT_LANGUAGE = System.getProperty("org.xhtmlrenderer.layout.breaker.default-language", "en");
@@ -125,15 +130,19 @@ public class Breaker {
         return c.getSharedContext().getLineBreakingStrategy().getBreakPointsProvider(text, getLanguage(c, textNode), style);
     }
 
-    private static String getLanguage(LayoutContext c, Element element) {
-        String language = c.getNamespaceHandler().getLang(element);
+    @Nonnull
+    @CheckReturnValue
+    private static String getLanguage(LayoutContext c, @Nullable Element element) {
+        String language = element == null ? null : c.getNamespaceHandler().getLang(element);
         if (language == null || language.isEmpty()) {
             language = DEFAULT_LANGUAGE;
         }
         return language;
     }
 
-    private static String getLanguage(LayoutContext c, Text textNode) {
+    @Nonnull
+    @CheckReturnValue
+    private static String getLanguage(LayoutContext c, @Nullable Text textNode) {
         if (textNode != null) {
             Node parentNode = textNode.getParentNode();
             if (parentNode instanceof Element) {

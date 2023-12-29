@@ -27,6 +27,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
@@ -41,7 +42,7 @@ import java.util.logging.Level;
 
 /**
  * A Factory class for Cascading Style Sheets. Sheets are parsed using a single
- * parser instance for all sheets. Sheets are cached by URI using a LRU test,
+ * parser instance for all sheets. Sheets are cached by URI using LRU test,
  * but timestamp of file is not checked.
  *
  * @author Torbjoern Gannholm
@@ -91,11 +92,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
             // Shouldn't happen
             throw new RuntimeException(e.getMessage(), e);
         } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                // ignore
-            }
+            IOUtil.close(is);
         }
     }
 

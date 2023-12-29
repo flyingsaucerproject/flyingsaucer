@@ -22,9 +22,9 @@
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
+
+import static java.nio.file.Files.newOutputStream;
 
 
 /**
@@ -32,18 +32,16 @@ import java.io.OutputStream;
  */
 public class PDFRenderToMultiplePages {
     public static void main(String[] args) throws Exception {
-        OutputStream os = null;
-        try {
-            // create some simple, fake documents; nothing special about these, anything that Flying Saucer
-            // can otherwise render
-            final String[] inputs = new String[]{
-                    newPageHtml(1, "red"),
-                    newPageHtml(2, "blue"),
-                    newPageHtml(3, "green")
-            };
+        // create some simple, fake documents; nothing special about these, anything that Flying Saucer
+        // can otherwise render
+        final String[] inputs = new String[]{
+                newPageHtml(1, "red"),
+                newPageHtml(2, "blue"),
+                newPageHtml(3, "green")
+        };
 
-            final File outputFile = File.createTempFile("FlyingSacuer.PDFRenderToMultiplePages", ".pdf");
-            os = new FileOutputStream(outputFile);
+        final File outputFile = File.createTempFile("FlyingSaucer.PDFRenderToMultiplePages", ".pdf");
+        try (OutputStream os = newOutputStream(outputFile.toPath())) {
 
             ITextRenderer renderer = new ITextRenderer();
 
@@ -64,13 +62,6 @@ public class PDFRenderToMultiplePages {
             renderer.finishPDF();
 
             System.out.println("Sample file with " + inputs.length + " documents rendered as PDF to " + outputFile);
-        }
-        finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) { /*ignore*/ }
-            }
         }
     }
 
