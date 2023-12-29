@@ -31,71 +31,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.github.librepdf</groupId>
+      <artifactId>openpdf</artifactId>
+      <version>${openpdf.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
   </dependencies>
-
-  <profiles>
-    <profile>
-      <id>itext</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-        <!--
-          Note: The iText Bouncy Castle dependencies have been moved to a new group and version on maven central.
-          This caused some of the artifacts to be resolved twice. By excluding dependencies from the old group
-          and adding corresponding dependencies from the updated group, the artifacts are only resolved once.
-         -->
-        <dependency>
-          <groupId>com.lowagie</groupId>
-          <artifactId>itext</artifactId>
-          <version>${itext.version}</version>
-          <exclusions>
-            <exclusion>
-              <groupId>bouncycastle</groupId>
-              <artifactId>bcmail-jdk14</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>bouncycastle</groupId>
-              <artifactId>bcprov-jdk14</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>bouncycastle</groupId>
-              <artifactId>bctsp-jdk14</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcmail-jdk14</artifactId>
-            <version>${bouncycastle.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bctsp-jdk14</artifactId>
-            <version>1.46</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk14</artifactId>
-            <version>${bouncycastle.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>openpdf</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.github.librepdf</groupId>
-          <artifactId>openpdf</artifactId>
-          <version>${openpdf.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
 
   <build>
     <resources>

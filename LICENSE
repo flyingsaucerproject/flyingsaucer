@@ -31,11 +31,10 @@ http://ant.apache.org/
 License: Apache Software License Version 2.0
 Not packaged with release; development using version 1.6.x
 
-iText (PDF generation)
-http://itextpdf.com/
-License: Mozilla Public License Version 1.1
-Using version 2.1.7.
-Included as lib/iText-2.1.7.jar
+OpenPDF (PDF generation)
+https://github.com/LibrePDF/OpenPDF
+License: Mozilla Public License Version 2.0
+License: GNU Lesser General Public License 2.1
 
 iText 5 (PDF generation only used in flying-saucer-pdf-itext5)
 http://itextpdf.com/

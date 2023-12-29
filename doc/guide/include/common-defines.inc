@@ -2,9 +2,7 @@ define. fs Flying Saucer
 
 define. css21 "CSS 2.1 Specification":http://www.w3.org/TR/CSS21/
 
-define. itext "iText":http://www.lowagie.com/iText/
-
-define. itext.jar iText-2.0.8.jar
+define. OpenPDF (ex. iText) "OpenPDF":https://github.com/LibrePDF/OpenPDF
 
 define. jlogging "java.util.logging":http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html
 

@@ -1,7 +1,7 @@
 # Changelog
 
 ## 9.4.0 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/5
-* ...
+* replace iText 2.x by OpenPDF
 
 ## 9.3.2 (released 29.12.2023) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/4?closed=1
 * #216 implement loading resources from classpath (#241)
