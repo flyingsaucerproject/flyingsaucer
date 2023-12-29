@@ -62,6 +62,13 @@ public class PageSize {
             new PropertyValue(CSSPrimitiveValue.CSS_MM, 353f, "353mm"));
 
     /**
+     * ISO B5 media: 176mm wide by 250 high
+     */
+    public static final PageSize B5 = new PageSize(
+        new PropertyValue(CSSPrimitiveValue.CSS_MM, 176f, "176mm"),
+        new PropertyValue(CSSPrimitiveValue.CSS_MM, 250f, "250mm"));
+
+    /**
      * North American letter media: 8.5 inches wide and 11 inches high
      */
     public static final PageSize LETTER = new PageSize(
@@ -90,6 +97,7 @@ public class PageSize {
         SIZE_MAP.put("a5", A5);
         SIZE_MAP.put("b3", B3);
         SIZE_MAP.put("b4", B4);
+        SIZE_MAP.put("b5", B5);
         SIZE_MAP.put("letter", LETTER);
         SIZE_MAP.put("legal", LEGAL);
         SIZE_MAP.put("ledger", LEDGER);
