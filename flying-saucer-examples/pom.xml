@@ -26,11 +26,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.lowagie</groupId>
-      <artifactId>itext</artifactId>
-      <version>${itext.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.xhtmlrenderer</groupId>
       <artifactId>flying-saucer-core</artifactId>
       <version>${project.version}</version>

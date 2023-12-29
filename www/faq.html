@@ -109,7 +109,7 @@
 </ul>
 
 
-<p>Flying Saucer has become a favorite recently for people who need to render clean <span class="caps">XHTML</span> to <span class="caps">PDF</span>; we support <span class="caps">PDF</span> output via the iText library.</p>
+<p>Flying Saucer has become a favorite recently for people who need to render clean <span class="caps">XHTML</span> to <span class="caps">PDF</span>; we support <span class="caps">PDF</span> output via the OpenPDF library.</p>
 
 <h3 class="fs_heading" id="xil_7" style="clear:none;">What <span class="caps">XHTML</span>/CSS features does Flying Saucer currently support?</h3>
 
@@ -222,7 +222,7 @@
 
 <h3 class="fs_heading" id="xil_15" style="clear:none;">How can I "watermark" <span class="caps">PDF</span>'s created through FS?</h3>
 
-<p>Either use the background property inside of <code>@page</code> or <code>PdfStamper</code> after the <span class="caps">PDF</span> is already created. <code>PdfStamper</code> is part of the iText <span class="caps">API</span>.</p>
+<p>Either use the background property inside of <code>@page</code> or <code>PdfStamper</code> after the <span class="caps">PDF</span> is already created. <code>PdfStamper</code> is part of the OpenPDF <span class="caps">API</span>.</p>
 
 <h3 class="fs_heading" id="xil_16" style="clear:none;">I've created a replacedelementfactory for a custom <span class="caps">XML</span> element (e.g. MathML), but it's not getting replaced within the document.</h3>
 
@@ -319,11 +319,11 @@ renderer.createPDF(os);
 
 <ul>
   <li><code>core-renderer.jar</code> (required)</li>
-  <li><code>${itext.jar}</code></li>
+  <li><code>${flying-saucer-pdf.jar}</code></li>
 </ul>
 
 
-<p>The first two are required; iText is needed for <span class="caps">PDF</span> rendering.</p>
+<p>The first two are required; OpenPDF/iText is needed for <span class="caps">PDF</span> rendering.</p>
 
 <p>In earlier releases, you needed to include a <span class="caps">CSS</span> parser in the <span class="caps">CLASSPATH</span>. This is no longer necessary, as Flying Saucer now includes a fast, compliant <span class="caps">CSS</span> parser.</p>
 
