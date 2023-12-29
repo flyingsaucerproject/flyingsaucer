@@ -1,6 +1,6 @@
 package org.xhtmlrenderer.pdf.bug;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xhtmlrenderer.pdf.ITextOutputDevice;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
@@ -32,14 +32,13 @@ public class OutlineGenerationIssueTest {
             "</html>\n";
 
     @Test
-    public void testOutline() throws Exception {
+    public void outline() throws Exception {
         writePDF("target/test-outline1.pdf", new ITextOutputDevice(26.666666F), html2, html1);
         writePDF("target/test-outline2.pdf", new ITextOutputDevice(26.666666F), html1, html2);
     }
 
     private void writePDF(String name, ITextOutputDevice outputDevice, String html1, String html2) throws Exception {
-        FileOutputStream stream = new FileOutputStream(name);
-        try {
+        try (FileOutputStream stream = new FileOutputStream(name)) {
             ITextRenderer renderer = new ITextRenderer(outputDevice.getDotsPerPoint(), 20, outputDevice);
 
             renderer.setDocumentFromString(html1);
@@ -51,8 +50,6 @@ public class OutlineGenerationIssueTest {
             renderer.writeNextDocument();
 
             renderer.finishPDF();
-        } finally {
-            stream.close();
         }
     }
 }

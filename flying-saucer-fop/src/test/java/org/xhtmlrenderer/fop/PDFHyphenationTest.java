@@ -18,16 +18,18 @@
  */
 package org.xhtmlrenderer.fop;
 
+import com.codeborne.pdftest.PDF;
+import com.itextpdf.text.DocumentException;
+import org.junit.jupiter.api.Test;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.xhtmlrenderer.pdf.ITextUserAgent;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.Test;
-import org.xhtmlrenderer.pdf.ITextRenderer;
-import org.xhtmlrenderer.pdf.ITextUserAgent;
-
-import com.itextpdf.text.DocumentException;
+import static com.codeborne.pdftest.assertj.Assertions.assertThat;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
@@ -64,11 +66,17 @@ public class PDFHyphenationTest {
             "</html>";
 
     @Test
-    public void testGenerator() throws Exception {
+    public void generator() throws Exception {
         Path temp = Files.createTempFile("pdfTest", ".pdf");
         OutputStream os = Files.newOutputStream(temp);
         generatePDF(XML, os);
-        System.out.println(temp);
+        System.out.println("Generated file: " + temp);
+        
+        PDF pdf = new PDF(temp.toFile());
+        assertThat(pdf).containsText(
+                "Velice dlouhy text",
+                "pokud nebude perfektne nastaveno"
+        );
     }
 
     private void generatePDF(String xml, OutputStream os) throws DocumentException, IOException {

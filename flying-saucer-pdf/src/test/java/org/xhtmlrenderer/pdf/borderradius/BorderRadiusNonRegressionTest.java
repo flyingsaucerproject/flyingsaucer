@@ -1,23 +1,25 @@
 package org.xhtmlrenderer.pdf.borderradius;
 
-import java.io.ByteArrayOutputStream;
-import java.net.URL;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
+import com.codeborne.pdftest.PDF;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.resource.FSEntityResolver;
 
-import junit.framework.TestCase;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
 
-public class BorderRadiusNonRegressionTest extends TestCase {
+import static com.codeborne.pdftest.assertj.Assertions.assertThat;
+
+public class BorderRadiusNonRegressionTest {
 
     /**
      * This used to throw a ClassCastException (before this fix).
      */
-    public void testBorderRadiusWithBorderWidthZero() throws Exception {
+    @Test
+    public void borderRadiusWithBorderWidthZero() throws Exception {
         testNoException("borderRadiusWithBorderWidthZero.html");
     }
 
@@ -37,6 +39,8 @@ public class BorderRadiusNonRegressionTest extends TestCase {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         renderer.createPDF(bos);
+        
+        assertThat(new PDF(bos.toByteArray())).containsText("Some content");
     }
 
 }

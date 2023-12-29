@@ -2,7 +2,7 @@ package org.xhtmlrenderer.pdf;
 
 import com.codeborne.pdftest.PDF;
 import com.lowagie.text.DocumentException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ public class PDFRenderToMultiplePagesTest {
     private static final Logger log = LoggerFactory.getLogger(PDFRenderToMultiplePagesTest.class);
 
     @Test
-    public void testGenerateSinglePdfFromMultipleInputDocuments() throws Exception {
+    public void generateSinglePdfFromMultipleInputDocuments() throws Exception {
         File output = File.createTempFile("flying-saucer-" + getClass().getSimpleName(), ".pdf");
         String[] inputs = createSimpleFakeDocuments();
         generatePDF(inputs, output);

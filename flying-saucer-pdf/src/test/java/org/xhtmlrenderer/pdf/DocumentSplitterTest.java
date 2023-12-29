@@ -1,7 +1,7 @@
 package org.xhtmlrenderer.pdf;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -26,8 +26,8 @@ public class DocumentSplitterTest {
     private XMLReader reader;
     private final DocumentSplitter splitter = new DocumentSplitter();
 
-    @Before
-    public void setUp() throws ParserConfigurationException, SAXException {
+    @BeforeEach
+    public final void setUp() throws ParserConfigurationException, SAXException {
         factory.setNamespaceAware(true);
         factory.setValidating(false);
         reader = factory.newSAXParser().getXMLReader();
@@ -36,19 +36,19 @@ public class DocumentSplitterTest {
     }
 
     @Test
-    public void testSplitDocumentWithoutHead() throws Exception {
+    public void splitDocumentWithoutHead() throws Exception {
         reader.parse(new InputSource(new StringReader("<h1>no head</h1>")));
         assertThat(splitter.getDocuments()).hasSize(0);
     }
 
     @Test
-    public void testSplitDocumentWithHead() throws Exception {
+    public void splitDocumentWithHead() throws Exception {
         reader.parse(new InputSource(new StringReader("<html>" +
                 "<head><title>The head</title></head>" +
                 "<body><h1>I have head</h1></body>" +
                 "</html>")));
         assertThat(splitter.getDocuments()).hasSize(1);
-        Document doc = (Document) splitter.getDocuments().get(0);
+        Document doc = splitter.getDocuments().get(0);
         assertThat(doc.getElementsByTagName("h1").getLength()).isEqualTo(1);
 
         assertThat(serialize(doc))
@@ -57,7 +57,7 @@ public class DocumentSplitterTest {
     }
 
     @Test
-    public void testSplitDocumentWithMultipleBodies() throws Exception {
+    public void splitDocumentWithMultipleBodies() throws Exception {
         reader.parse(new InputSource(new StringReader("<html>" +
                 "<head><title>The head</title></head>" +
                 "<body><h1>I have head</h1></body>" +
@@ -65,9 +65,9 @@ public class DocumentSplitterTest {
                 "</html>")));
 
         assertThat(splitter.getDocuments()).hasSize(2);
-        Document doc1 = (Document) splitter.getDocuments().get(0);
+        Document doc1 = splitter.getDocuments().get(0);
         assertThat(doc1.getElementsByTagName("h1").getLength()).isEqualTo(1);
-        Document doc2 = (Document) splitter.getDocuments().get(1);
+        Document doc2 = splitter.getDocuments().get(1);
         assertThat(doc2.getElementsByTagName("h2").getLength()).isEqualTo(1);
 
         assertThat(serialize(doc1))
