@@ -2,7 +2,7 @@ package org.xhtmlrenderer.pdf;
 
 import com.codeborne.pdftest.PDF;
 import com.lowagie.text.DocumentException;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -27,15 +27,17 @@ import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-public class ConcurrentPdfGenerationTest extends TestCase {
+public class ConcurrentPdfGenerationTest {
     private static final Logger log = LoggerFactory.getLogger(ConcurrentPdfGenerationTest.class);
-    
-    public void testSamplePdf() {
+
+    @Test
+    public void samplePdf() {
         byte[] pdf = generatePdf("sample.html");
         verifyPdf(pdf);
     }
 
-    public void testConcurrentPdfGeneration() throws InterruptedException {
+    @Test
+    public void concurrentPdfGeneration() throws InterruptedException {
         ScheduledExecutorService timer = newScheduledThreadPool(1);
         timer.scheduleWithFixedDelay(System::gc, 0, 15, MILLISECONDS);
 

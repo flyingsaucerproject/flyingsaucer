@@ -18,13 +18,13 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
@@ -32,40 +32,40 @@ import static org.junit.Assert.assertNull;
 public class NonBreakPointsEnhancerTest {
 
     @Test
-    public void testNullInput() {
-        assertNull(new NonBreakPointsEnhancer().enhance(null, "cs"));
+    public void nullInput() {
+        assertThat(new NonBreakPointsEnhancer().enhance(null, "cs")).isNull();
     }
 
     @Test
-    public void testNullLang() {
-        assertEquals("some input", new NonBreakPointsEnhancer().enhance("some input", null));
+    public void nullLang() {
+        assertThat(new NonBreakPointsEnhancer().enhance("some input", null)).isEqualTo("some input");
     }
 
     @Test
-    public void testEmptyLang() {
-        assertEquals("some input", new NonBreakPointsEnhancer().enhance("some input", ""));
+    public void emptyLang() {
+        assertThat(new NonBreakPointsEnhancer().enhance("some input", "")).isEqualTo("some input");
     }
 
     @Test
-    public void testEmptyInput() {
-        assertEquals("", new NonBreakPointsEnhancer().enhance("", "en"));
+    public void emptyInput() {
+        assertThat(new NonBreakPointsEnhancer().enhance("", "en")).isEqualTo("");
     }
 
     @Test
     public void noDefinition() {
         NonBreakPointsLoader nullLoader = lang -> emptyList();
-        assertEquals("some text with spaces", new NonBreakPointsEnhancer(nullLoader).enhance("some text with spaces", "cs"));
+        assertThat(new NonBreakPointsEnhancer(nullLoader).enhance("some text with spaces", "cs")).isEqualTo("some text with spaces");
     }
 
     @Test
-    public void testLoaderConfiguration() {
+    public void loaderConfiguration() {
         final String[] c = new String[] {null};
         NonBreakPointsLoader capturingLoader = lang -> {
             c[0] = lang;
             return emptyList();
         };
         new NonBreakPointsEnhancer(capturingLoader).enhance("some text with spaces", "cs");
-        assertEquals("cs", c[0]);
+        assertThat(c[0]).isEqualTo("cs");
     }
 
     @Test
@@ -88,9 +88,11 @@ public class NonBreakPointsEnhancerTest {
         testRulesInternal("prselo a potom jsme sli domu s kamarady a povidali si", "prselo a\u00A0potom jsme sli domu s\u00A0kamarady a\u00A0povidali si", "([\\s]+a)( )([^\\s]+)", "([\\s]+s)( )([^\\s]+)");
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void invalidRuleGroups() {
-        testRulesInternal("a potom", "a\u00A0potom", "a( )[^\\s]{1,}");
+        assertThatThrownBy(() -> testRulesInternal("a potom", "a\u00A0potom", "a( )[^\\s]{1,}"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Expression must contain exactly 3 groups! a( )[^\\s]{1,}");
     }
 
     @Test
@@ -116,12 +118,12 @@ public class NonBreakPointsEnhancerTest {
     }
 
     private void assertCzech(String text, String expected) {
-        assertEquals(expected, new NonBreakPointsEnhancer().enhance(text, "cs"));
+        assertThat(new NonBreakPointsEnhancer().enhance(text, "cs")).isEqualTo(expected);
     }
 
     private void testRulesInternal(String text, String expected, final String ... rules) {
         NonBreakPointsLoader dummyLoader = lang -> Arrays.asList(rules);
-        assertEquals(expected, new NonBreakPointsEnhancer(dummyLoader).enhance(text, "en"));
+        assertThat(new NonBreakPointsEnhancer(dummyLoader).enhance(text, "en")).isEqualTo(expected);
     }
 
 }

@@ -19,8 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser;
 
-import junit.framework.TestCase;
-import org.junit.Assert;
+import org.junit.jupiter.api.Test;
 import org.xhtmlrenderer.css.newmatch.Selector;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.Ruleset;
@@ -29,17 +28,20 @@ import org.xhtmlrenderer.css.sheet.Stylesheet;
 import java.io.IOException;
 import java.io.StringReader;
 
-public class ParserTest extends TestCase {
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class ParserTest {
     private final String test = String.format("div { background-image: url('something') }%n");
     private final CSSErrorHandler errorHandler = (uri, message) -> System.out.println(message);
 
-    public void test_cssParsingPerformance() throws IOException {
+    @Test
+    public void cssParsingPerformance() throws IOException {
         int count = 10_000;
         StringBuilder longTest = new StringBuilder();
         for (int i = 0 ; i < count; i++) {
             longTest.append(test);
         }
-        Assert.assertEquals("Long enough input", test.length() * count, longTest.length());
+        assertThat(longTest.length()).as("Long enough input").isEqualTo(test.length() * count);
         
         long total = 0;
         for (int i = 0; i < 40; i++) {
@@ -50,7 +52,7 @@ public class ParserTest extends TestCase {
             // System.out.println("Took " + (end-start) + " ms");
             total += (end-start);
 
-            assertEquals(count, stylesheet.getContents().size());
+            assertThat(stylesheet.getContents()).hasSize(count);
         }
         System.out.println("Average " + (total/10) + " ms");
 
@@ -62,7 +64,7 @@ public class ParserTest extends TestCase {
             long end = System.currentTimeMillis();
             // System.out.println("Took " + (end-start) + " ms");
             total += (end-start);
-            assertEquals(count, stylesheet.getContents().size());
+            assertThat(stylesheet.getContents()).hasSize(count);
         }
         System.out.println("Average " + (total/10) + " ms");
 
@@ -81,18 +83,19 @@ public class ParserTest extends TestCase {
         System.out.println("Average " + (total/10) + " ms");
     }
 
-    public void test_parseCss() throws IOException {
+    @Test
+    public void parseCss() throws IOException {
         CSSParser p = new CSSParser(errorHandler);
-        
+
         Stylesheet stylesheet = p.parseStylesheet(null, 0, new StringReader(test));
-        assertEquals(1, stylesheet.getContents().size());
+        assertThat(stylesheet.getContents()).hasSize(1);
         Ruleset ruleset = (Ruleset) stylesheet.getContents().get(0);
-        assertEquals(1, ruleset.getFSSelectors().size());
-        assertEquals(Selector.class, ruleset.getFSSelectors().get(0).getClass());
-        assertEquals(1, ruleset.getPropertyDeclarations().size());
-        PropertyDeclaration propertyDeclaration = (PropertyDeclaration) ruleset.getPropertyDeclarations().get(0);
-        assertEquals("background-image", propertyDeclaration.getPropertyName());
-        assertEquals("background-image", propertyDeclaration.getCSSName().toString());
-        assertEquals("url('something')", propertyDeclaration.getValue().getCssText());
+        org.assertj.core.api.Assertions.assertThat(ruleset.getFSSelectors()).hasSize(1);
+        assertThat(ruleset.getFSSelectors().get(0)).isInstanceOf(Selector.class);
+        org.assertj.core.api.Assertions.assertThat(ruleset.getPropertyDeclarations()).hasSize(1);
+        PropertyDeclaration propertyDeclaration = ruleset.getPropertyDeclarations().get(0);
+        assertThat(propertyDeclaration.getPropertyName()).isEqualTo("background-image");
+        assertThat(propertyDeclaration.getCSSName()).hasToString("background-image");
+        assertThat(propertyDeclaration.getValue().getCssText()).isEqualTo("url('something')");
     }
 }
