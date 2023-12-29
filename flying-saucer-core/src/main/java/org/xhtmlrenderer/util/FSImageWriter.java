@@ -128,7 +128,6 @@ public class FSImageWriter {
         try (OutputStream fos = new BufferedOutputStream(newOutputStream(file.toPath()))) {
             write(image, fos);
         }
-        // ignore
     }
 
     /**

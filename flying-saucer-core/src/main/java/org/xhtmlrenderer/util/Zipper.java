@@ -21,11 +21,12 @@ package org.xhtmlrenderer.util;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import static java.nio.file.Files.newInputStream;
+import static java.nio.file.Files.newOutputStream;
 
 /**
  * Create a ZIP-format file from the contents of some directory. All files
@@ -48,45 +49,39 @@ public class Zipper {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         File sourceDir = getSourceDir(args);
         File outputFile = new File(System.getProperty("user.home") + File.separator + sourceDir.getName() + ".zip");
-        try {
-            new Zipper(sourceDir, outputFile).zipDirectory();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        new Zipper(sourceDir, outputFile).zipDirectory();
         System.out.println("Created zip file " + outputFile.getPath());
     }
 
     public File zipDirectory() throws IOException {
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(outputFile));
-        recurseAndZip(sourceDir, zos);
-        zos.close();
-        return outputFile;
+        try (ZipOutputStream zos = new ZipOutputStream(newOutputStream(outputFile.toPath()))) {
+            recurseAndZip(sourceDir, zos);
+            return outputFile;
+        }
     }
 
     private static void recurseAndZip(File file, ZipOutputStream zos) throws IOException {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (files != null) {
-                for (int i = 0; i < files.length; i++) {
-                    File file1 = files[i];
-                    recurseAndZip(file1, zos);
+                for (File f : files) {
+                    recurseAndZip(f, zos);
                 }
             }
         } else {
             byte[] buf = new byte[1024];
             int len;
             ZipEntry entry = new ZipEntry(file.getName());
-            FileInputStream fis = new FileInputStream(file);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-            zos.putNextEntry(entry);
-            while ((len = bis.read(buf)) >= 0) {
-                zos.write(buf, 0, len);
+            try (BufferedInputStream bis = new BufferedInputStream(newInputStream(file.toPath()))) {
+                zos.putNextEntry(entry);
+                while ((len = bis.read(buf)) >= 0) {
+                    zos.write(buf, 0, len);
+                }
+                zos.closeEntry();
             }
-            bis.close();
-            zos.closeEntry();
         }
     }
 

@@ -306,24 +306,18 @@ public class Configuration {
                     return;
                 }
             } else {
-                InputStream in = null;
                 try {
                     URL url = new URL(uri);
-                    in = new BufferedInputStream(url.openStream());
-                    info("Found config override URI " + uri);
-                    temp.load(in);
+                    try (InputStream in = new BufferedInputStream(url.openStream())) {
+                        info("Found config override URI " + uri);
+                        temp.load(in);
+                    }
                 } catch (MalformedURLException e) {
                     warning("URI for override properties is malformed, skipping: " + uri);
                     return;
                 } catch (IOException e) {
                     warning("Overridden properties could not be loaded from URI: " + uri, e);
                     return;
-                } finally {
-                    if (in != null ) try {
-                        in.close();
-                    } catch (IOException e) {
-                        // swallow
-                    }
                 }
             }
 
@@ -552,7 +546,7 @@ public class Configuration {
      *
      * @param key Name of the property
      * @param defaultVal Default value to return
-     * @returnValue assigned to the key, as a character
+     * @return Value assigned to the key, as a character
      */
     public static char valueAsChar(String key, char defaultVal) {
         String val = valueFor(key);

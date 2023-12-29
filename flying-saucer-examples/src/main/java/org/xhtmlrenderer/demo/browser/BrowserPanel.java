@@ -42,7 +42,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -316,16 +315,10 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                 XRLog.general(Level.SEVERE, "Could not export PDF.", e);
                 e.printStackTrace();
                 setStatus( "Error exporting to PDF." );
-               } finally {
-                   try {
-                       os.close();
-                   } catch (IOException e) {
-                       // swallow
-            }
-        }
+               }
            } catch (Exception e) {
                e.printStackTrace();
-    }
+           }
        }
     }
 

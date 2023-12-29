@@ -32,9 +32,8 @@ public class UriResolver {
             } catch (MalformedURLException e) {
                 try {
                     setBaseUri(new File(".").toURI().toURL().toExternalForm());
-                } catch (Exception e1) {
-                    XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for " + uri);
-                    return null;
+                } catch (MalformedURLException e1) {
+                    throw new IllegalStateException("The default NaiveUserAgent doesn't know how to resolve the base URL for " + uri, e1);
                 }
             }
         }

@@ -423,13 +423,11 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     public URL getURL() {
-        URL base = null;
         try {
-            base = new URL(getSharedContext().getUac().getBaseURL());
+            return new URL(getSharedContext().getUac().getBaseURL());
         } catch (MalformedURLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new RuntimeException(e);
         }
-        return base;
     }
 
     public Document getDocument() {

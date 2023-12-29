@@ -23,6 +23,7 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.net.MalformedURLException;
 
 /**
  * This example shows rendering a page where the font size can be adjusted dynamically once the page is loaded using
@@ -55,8 +56,8 @@ public class FontScaleJPanelRender {
         // are a variety of overloads for setDocument().
         try {
             panel.setDocument(new File(fileName));
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
 
         // Put our panel in a scrolling pane. You can use

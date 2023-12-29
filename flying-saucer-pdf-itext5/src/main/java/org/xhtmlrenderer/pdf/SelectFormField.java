@@ -156,21 +156,19 @@ public class SelectFormField extends AbstractFormField {
     }
 
     private int getSize(Element elem) {
-        int result = 1;
         try {
             String v = elem.getAttribute("size").trim();
             if (!v.isEmpty()) {
                 int i = Integer.parseInt(v);
                 if (i > 1) {
-                    result = i;
+                    return i;
                 }
 
             }
-        } catch (NumberFormatException e) {
-            // ignore
+        } catch (NumberFormatException ignore) {
         }
 
-        return result;
+        return 1;
     }
 
     protected boolean isMultiple(Element e) {

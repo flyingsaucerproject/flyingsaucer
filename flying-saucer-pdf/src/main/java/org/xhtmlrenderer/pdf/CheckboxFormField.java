@@ -69,31 +69,22 @@ public class CheckboxFormField extends AbstractFormField {
 
     field.setBorderWidth(BaseField.BORDER_WIDTH_THIN);
 
-    try
-    {
+    try {
       PdfFormField formField = field.getCheckField();
-      if (isReadOnly(elm))
-      {
+      if (isReadOnly(elm)) {
         formField.setFieldFlags(PdfFormField.FF_READ_ONLY);
       }
       writer.addAnnotation(formField);
-    } catch (IOException ioe)
-    {
+    } catch (IOException | DocumentException ioe) {
       System.out.println(ioe);
-    } catch (DocumentException de)
-    {
-      System.out.println(de);
     }
-
   }
 
-  public int getBaseline()
-  {
+  public int getBaseline() {
     return 0;
   }
 
-  public boolean hasBaseline()
-  {
+  public boolean hasBaseline() {
     return false;
   }
 }

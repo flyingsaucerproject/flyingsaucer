@@ -207,31 +207,18 @@ public class BrowserMenuBar extends JMenuBar {
     private void populateDemoList() {
         List<String> demoList = new ArrayList<>();
         URL url = BrowserMenuBar.class.getResource("/demos/file-list.txt");
-        InputStream is = null;
-        
+                
         if (url != null) {
-            try {
-                is = url.openStream();
+            try (InputStream is = url.openStream()) {
                 InputStreamReader reader = new InputStreamReader(is);
                 try (LineNumberReader lnr = new LineNumberReader(reader)) {
                     String line;
                     while ((line = lnr.readLine()) != null) {
                         demoList.add(line);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-                // swallow
             } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        // swallow
-                    }
-                }
+                throw new RuntimeException(e);
             }
 
             for (String s : demoList) {

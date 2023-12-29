@@ -43,8 +43,7 @@ public class TextFormField extends AbstractFormField {
 
   private final int _baseline;
 
-  public TextFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
-  {
+  public TextFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
     initDimensions(c, box, cssWidth, cssHeight);
 
     float fontSize = box.getStyle().getFSFont(c).getSize2D();
@@ -52,32 +51,26 @@ public class TextFormField extends AbstractFormField {
     _baseline = (int) (getHeight() / 2 + (fontSize * 0.3f));
   }
 
-  protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
-  {
-    if (cssWidth != -1)
-    {
+  protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
+    if (cssWidth != -1) {
       setWidth(cssWidth);
     }
-    else
-    {
+    else {
       setWidth(c.getTextRenderer().getWidth(
           c.getFontContext(),
           box.getStyle().getFSFont(c),
           spaces(getSize(box.getElement()))));
     }
 
-    if (cssHeight != -1)
-    {
+    if (cssHeight != -1) {
       setHeight(cssHeight);
     }
-    else
-    {
+    else {
       setHeight((int) (box.getStyle().getLineHeight(c)));
     }
   }
 
-  protected String getFieldType()
-  {
+  protected String getFieldType() {
     return FIELD_TYPE;
   }
 
@@ -101,15 +94,12 @@ public class TextFormField extends AbstractFormField {
         formField.setFieldFlags(PdfFormField.FF_READ_ONLY);
       }
       writer.addAnnotation(formField);
-    } catch (IOException ioe) {
+    } catch (IOException | DocumentException ioe) {
       System.out.println(ioe);
-    } catch (DocumentException de) {
-      System.out.println(de);
     }
   }
 
-  private void createAppearance(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box, PdfFormField field, String value)
-  {
+  private void createAppearance(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box, PdfFormField field, String value) {
     PdfWriter writer = outputDevice.getWriter();
     ITextFSFont font = (ITextFSFont) box.getStyle().getFSFont(c);
 
@@ -140,64 +130,49 @@ public class TextFormField extends AbstractFormField {
     field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, tp);
   }
 
-  private int getSize(Element elem)
-  {
+  private int getSize(Element elem) {
     String sSize = elem.getAttribute("size");
-    if (Util.isNullOrEmpty(sSize))
-    {
+    if (Util.isNullOrEmpty(sSize)) {
       return DEFAULT_SIZE;
     }
-    else
-    {
-      try
-      {
+    else {
+      try {
         return Integer.parseInt(sSize.trim());
-      } catch (NumberFormatException e)
-      {
+      } catch (NumberFormatException e) {
         return DEFAULT_SIZE;
       }
     }
   }
 
-  private int getMaxLength(Element elem)
-  {
+  private int getMaxLength(Element elem) {
     String sMaxLen = elem.getAttribute("maxlength");
-    if (Util.isNullOrEmpty(sMaxLen))
-    {
+    if (Util.isNullOrEmpty(sMaxLen)) {
       return 0;
     }
-    else
-    {
-      try
-      {
+    else {
+      try {
         return Integer.parseInt(sMaxLen.trim());
-      } catch (NumberFormatException e)
-      {
+      } catch (NumberFormatException e) {
         return 0;
       }
     }
   }
 
-  protected String getValue(Element e)
-  {
+  protected String getValue(Element e) {
     String result = e.getAttribute("value");
-    if (Util.isNullOrEmpty(result))
-    {
+    if (Util.isNullOrEmpty(result)) {
       return "";
     }
-    else
-    {
+    else {
       return result;
     }
   }
 
-  public int getBaseline()
-  {
+  public int getBaseline() {
     return _baseline;
   }
 
-  public boolean hasBaseline()
-  {
+  public boolean hasBaseline() {
     return true;
   }
 }

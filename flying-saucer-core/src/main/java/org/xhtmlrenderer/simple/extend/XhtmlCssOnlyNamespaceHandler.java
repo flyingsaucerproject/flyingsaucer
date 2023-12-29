@@ -378,30 +378,16 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             info.setMedia("all");
             info.setType("text/css");
 
-            InputStream is = null;
-            try {
-                is = getDefaultStylesheetStream();
-
+            try (InputStream is = getDefaultStylesheetStream()) {
                 if (_defaultStylesheetError) {
                     return null;
                 }
 
                 Stylesheet sheet = factory.parse(new InputStreamReader(is), info);
                 info.setStylesheet(sheet);
-
-                is.close();
-                is = null;
             } catch (IOException e) {
                 _defaultStylesheetError = true;
                 XRLog.exception("Could not parse default stylesheet", e);
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        //  ignore
-                    }
-                }
             }
 
             _defaultStylesheet = info;

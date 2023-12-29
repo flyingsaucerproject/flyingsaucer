@@ -242,11 +242,7 @@ String[] inputs = new String[] { "input1.html", "input2.html",
 "input3.html" };
 String output = "output.pdf";
 
-OutputStream os = null;
-try
-{
-   os = new FileOutputStream(new File(root, output));
-
+try (OutputStream os = new FileOutputStream(new File(root, output))) {
    ITextRenderer renderer = new ITextRenderer();
 
    renderer.setDocument(new File(root, inputs[0]));
@@ -254,31 +250,13 @@ try
 
    renderer.createPDF(os, false);
 
-   for (int i = 1; i &lt; inputs.length; i++)
-   {
+   for (int i = 1; i &lt; inputs.length; i++) {
        renderer.setDocument(new File(root, inputs[i]));
        renderer.layout();
        renderer.writeNextDocument();
    }
 
    renderer.finishPDF();
-
-   os.close();
-   os = null;
-}
-finally
-{
-   if (os != null)
-   {
-       try
-       {
-           os.close();
-       }
-       catch (IOException e)
-       {
-           // ignore
-       }
-   }
 }
 </code></pre>
 

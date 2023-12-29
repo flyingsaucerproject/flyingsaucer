@@ -19,12 +19,14 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.itextpdf.text.DocumentException;
+
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 
-import com.itextpdf.text.DocumentException;
+import static java.nio.file.Files.newOutputStream;
 
 public class ToPDF
 {
@@ -44,28 +46,12 @@ public class ToPDF
         createPDF(url, args[1]);
     }
 
-    public static void createPDF(String url, String pdf)
-            throws IOException, DocumentException {
-        OutputStream os = null;
-        try {
-            os = new FileOutputStream(pdf);
-
+    public static void createPDF(String url, String pdf) throws IOException, DocumentException {
+        try (OutputStream os = newOutputStream(Paths.get(pdf))) {
             ITextRenderer renderer = new ITextRenderer();
-
             renderer.setDocument(url);
             renderer.layout();
             renderer.createPDF(os);
-
-            os.close();
-            os = null;
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
     }
 }

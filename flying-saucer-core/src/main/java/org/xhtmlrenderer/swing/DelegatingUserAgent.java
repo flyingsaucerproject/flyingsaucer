@@ -31,7 +31,6 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -126,15 +125,12 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      */
     public XMLResource getXMLResource(String uri) {
         String ruri = _uriResolver.resolve(uri);
-        StreamResource sr = new StreamResource(ruri);
-        try {
+        try (StreamResource sr = new StreamResource(ruri)) {
             sr.connect();
             BufferedInputStream bis = sr.bufferedStream();
             return XMLResource.load(bis);
         } catch (IOException e) {
             return null;
-        } finally {
-            sr.close();
         }
     }
 
@@ -142,22 +138,11 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
     @CheckReturnValue
     public byte[] getBinaryResource(String uri) {
         String ruri = _uriResolver.resolve(uri);
-        StreamResource sr = new StreamResource(ruri);
-        try {
+        try (StreamResource sr = new StreamResource(ruri)) {
             sr.connect();
-            BufferedInputStream bis = sr.bufferedStream();
-            ByteArrayOutputStream result = new ByteArrayOutputStream(sr.hasStreamLength() ? sr.streamLength() : 4 * 1024);
-            byte[] buf = new byte[10240];
-            int i;
-            while ((i = bis.read(buf)) != -1) {
-                result.write(buf, 0, i);
-            }
-
-            return result.toByteArray();
+            return IOUtil.readBytes(sr.bufferedStream());
         } catch (IOException e) {
             return null;
-        } finally {
-            sr.close();
         }
     }
 
