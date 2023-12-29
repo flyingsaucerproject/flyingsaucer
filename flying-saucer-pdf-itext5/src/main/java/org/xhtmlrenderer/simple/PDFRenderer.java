@@ -205,29 +205,14 @@ public class PDFRenderer {
     /**
      * Internal use, runs the render process
      */
-    private static byte[] doRenderToPDF(ITextRenderer renderer)
-            throws IOException, DocumentException {
-        ByteArrayOutputStream os = null;
-        byte[] pdf;
-        try {
-            os = new ByteArrayOutputStream();
+    @Nonnull
+    @CheckReturnValue
+    private static byte[] doRenderToPDF(ITextRenderer renderer) throws IOException, DocumentException {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             renderer.layout();
             renderer.createPDF(os);
-
-            pdf = os.toByteArray();
-
-            os.close();
-            os = null;
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            return os.toByteArray();
         }
-        return pdf;
     }
 
     /**

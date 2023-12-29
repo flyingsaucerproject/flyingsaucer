@@ -29,6 +29,7 @@ import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swt.NaiveUserAgent;
 import org.xhtmlrenderer.util.GeneralUtil;
+import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
@@ -69,10 +70,6 @@ public class BrowserUserAgent extends NaiveUserAgent {
         if (uri.trim().isEmpty()) return burl; //jar URLs don't resolve this right
 
         URL ref = null;
-
-        if (uri == null) return null;
-        if (uri.trim().equals("")) return burl; //jar URLs don't resolve this right
-
         if (uri.startsWith("demo:")) {
             DemoMarker marker = new DemoMarker();
             String short_url = uri.substring(5);
@@ -207,13 +204,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
         } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // swallow
-                }
-            }
+            IOUtil.close(inputStream);
         }
 
         if (xr == null) {

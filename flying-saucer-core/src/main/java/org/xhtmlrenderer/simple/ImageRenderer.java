@@ -21,6 +21,7 @@ package org.xhtmlrenderer.simple;
 
 import org.xhtmlrenderer.swing.Java2DRenderer;
 import org.xhtmlrenderer.util.FSImageWriter;
+import org.xhtmlrenderer.util.IOUtil;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
@@ -138,13 +139,7 @@ public class ImageRenderer {
 
             return image;
         } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            IOUtil.close(os);
         }
     }
 

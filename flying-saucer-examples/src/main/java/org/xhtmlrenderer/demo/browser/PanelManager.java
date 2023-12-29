@@ -126,36 +126,28 @@ public class PanelManager extends DelegatingUserAgent {
             }
         }
         XMLResource xr = null;
-        URLConnection uc;
-        InputStream inputStream = null;
         try {
-            uc = new URL(uri).openConnection();
+            URLConnection uc = new URL(uri).openConnection();
             uc.connect();
             String contentType = uc.getContentType();
             //Maybe should pop up a choice when content/unknown!
             if (contentType.equals("text/plain") || contentType.equals("content/unknown")) {
-                inputStream = uc.getInputStream();
-                SAXSource source = new SAXSource(new PlainTextXMLReader(inputStream), new InputSource());
-                xr = XMLResource.load(source);
+                try (InputStream inputStream = uc.getInputStream()) {
+                    SAXSource source = new SAXSource(new PlainTextXMLReader(inputStream), new InputSource());
+                    xr = XMLResource.load(source);
+                }
             } else if (contentType.startsWith("image")) {
                 String doc = "<img src='" + uri + "'/>";
                 xr = XMLResource.load(new StringReader(doc));
             } else {
-                inputStream = uc.getInputStream();
-                xr = XMLResource.load(inputStream);
+                try (InputStream inputStream = uc.getInputStream()) {
+                    xr = XMLResource.load(inputStream);
+                }
             }
         } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // swallow
-                }
-            }
         }
 
         if (xr == null) {

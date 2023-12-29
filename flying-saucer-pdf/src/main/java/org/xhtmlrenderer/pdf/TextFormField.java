@@ -103,10 +103,8 @@ public class TextFormField extends AbstractFormField {
         formField.setFieldFlags(PdfFormField.FF_READ_ONLY);
       }
       writer.addAnnotation(formField);
-    } catch (IOException ioe) {
+    } catch (IOException | DocumentException ioe) {
       System.out.println(ioe);
-    } catch (DocumentException de) {
-      System.out.println(de);
     }
   }
 

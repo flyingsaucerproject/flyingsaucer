@@ -38,14 +38,16 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import static java.awt.Frame.NORMAL;
 import static java.awt.event.InputEvent.ALT_MASK;
 import static java.awt.event.InputEvent.CTRL_MASK;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 
 /**
@@ -93,17 +95,15 @@ public class Eeze {
                     html.getSharedContext().setFontMapping("Ahem",
                             Font.createFont(Font.TRUETYPE_FONT, fontFile.toURL().openStream()));
                 }
-            } catch (FontFormatException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (FontFormatException | IOException e) {
+                throw new RuntimeException(e);
             }
         });
         testFiles = buildFileList();
         try {
             SwingUtilities.invokeLater(this::showHelpPage);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 
@@ -126,76 +126,69 @@ public class Eeze {
     }
 
     private List<File> buildFileList() {
-        List<File> fileList = null;
         try {
             File[] list = directory.listFiles(HTML_FILE_FILTER);
-            fileList = Arrays.asList(list);
+            return list == null ? emptyList() : asList(list);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
-        return fileList;
     }
 
     private void buildFrame() {
-        try {
-            eezeFrame = new JFrame("FS Eeze");
-            final JFrame frame = eezeFrame;
-            frame.setExtendedState(NORMAL);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        eezeFrame = new JFrame("FS Eeze");
+        final JFrame frame = eezeFrame;
+        frame.setExtendedState(NORMAL);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            SwingUtilities.invokeLater(() -> {
-                html = new XHTMLPanel();
-                scroll = new FSScrollPane(html);
-                frame.getContentPane().add(scroll);
-                frame.pack();
-                frame.setSize(1024, 768);
-                frame.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            html = new XHTMLPanel();
+            scroll = new FSScrollPane(html);
+            frame.getContentPane().add(scroll);
+            frame.pack();
+            frame.setSize(1024, 768);
+            frame.setVisible(true);
 
-                frame.addComponentListener(new ComponentAdapter() {
-                    @Override
-                    public void componentResized(ComponentEvent e) {
-                        html.relayout();
-                    }
-                });
-
-                nextDemoAction = new NextDemoAction();
-                reloadPageAction = new ReloadPageAction();
-                chooseDemoAction = new ChooseDemoAction();
-                growAction = new GrowAction();
-                shrinkAction = new ShrinkAction();
-
-                increase_font = new FontSizeAction(FontSizeAction.INCREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_I, CTRL_MASK));
-                reset_font = new FontSizeAction(FontSizeAction.RESET, KeyStroke.getKeyStroke(KeyEvent.VK_0, CTRL_MASK));
-                decrease_font = new FontSizeAction(FontSizeAction.DECREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_D, CTRL_MASK));
-
-                reloadFileList = new ReloadFileListAction();
-                showGrid = new ShowGridAction();
-                showHelp = new ShowHelpAction();
-                saveAsImg = new SaveAsImageAction();
-                overlayImage = new CompareImageAction();
-
-                frame.setJMenuBar(new JMenuBar());
-                JMenu doMenu = new JMenu("Do");
-                doMenu.add(reloadPageAction);
-                doMenu.add(nextDemoAction);
-                doMenu.add(chooseDemoAction);
-                doMenu.add(growAction);
-                doMenu.add(shrinkAction);
-                doMenu.add(increase_font);
-                doMenu.add(reset_font);
-                doMenu.add(decrease_font);
-                doMenu.add(showGrid);
-                doMenu.add(saveAsImg);
-                doMenu.add(overlayImage);
-                doMenu.add(reloadFileList);
-                doMenu.add(showHelp);
-                doMenu.setVisible(false);
-                frame.getJMenuBar().add(doMenu);
+            frame.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    html.relayout();
+                }
             });
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+            nextDemoAction = new NextDemoAction();
+            reloadPageAction = new ReloadPageAction();
+            chooseDemoAction = new ChooseDemoAction();
+            growAction = new GrowAction();
+            shrinkAction = new ShrinkAction();
+
+            increase_font = new FontSizeAction(FontSizeAction.INCREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_I, CTRL_MASK));
+            reset_font = new FontSizeAction(FontSizeAction.RESET, KeyStroke.getKeyStroke(KeyEvent.VK_0, CTRL_MASK));
+            decrease_font = new FontSizeAction(FontSizeAction.DECREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_D, CTRL_MASK));
+
+            reloadFileList = new ReloadFileListAction();
+            showGrid = new ShowGridAction();
+            showHelp = new ShowHelpAction();
+            saveAsImg = new SaveAsImageAction();
+            overlayImage = new CompareImageAction();
+
+            frame.setJMenuBar(new JMenuBar());
+            JMenu doMenu = new JMenu("Do");
+            doMenu.add(reloadPageAction);
+            doMenu.add(nextDemoAction);
+            doMenu.add(chooseDemoAction);
+            doMenu.add(growAction);
+            doMenu.add(shrinkAction);
+            doMenu.add(increase_font);
+            doMenu.add(reset_font);
+            doMenu.add(decrease_font);
+            doMenu.add(showGrid);
+            doMenu.add(saveAsImg);
+            doMenu.add(overlayImage);
+            doMenu.add(reloadFileList);
+            doMenu.add(showHelp);
+            doMenu.setVisible(false);
+            frame.getJMenuBar().add(doMenu);
+        });
     }
 
     private void switchPage(File file, boolean reload) {
@@ -214,8 +207,8 @@ public class Eeze {
                 imagePanel.imageWasLoaded();
                 imagePanel.repaint();
             });
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException(ex);
         } finally {
             eezeFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
@@ -227,8 +220,8 @@ public class Eeze {
             URL help = eezeHelp();
             html.setDocument(help.openStream(), help.toString());
             changeTitle(html.getDocumentTitle());
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         } finally {
             eezeFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
@@ -331,7 +324,7 @@ public class Eeze {
                         "Save As Image",
                         JOptionPane.ERROR_MESSAGE
                 );
-                e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                throw new RuntimeException(e1);
             }
             return img;
         }
@@ -590,11 +583,7 @@ public class Eeze {
                 nextPage = iter.next();
             }
 
-            try {
-                switchPage(nextPage, false);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            switchPage(nextPage, false);
         }
     }
 
@@ -652,7 +641,7 @@ public class Eeze {
                         "Save As Image",
                         JOptionPane.ERROR_MESSAGE
                 );
-                e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e1.printStackTrace();
             }
         }
     }

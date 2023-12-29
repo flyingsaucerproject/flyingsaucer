@@ -25,6 +25,7 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.FontUtil;
+import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -34,7 +35,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -256,11 +256,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
                     } catch (IOException e) {
                         XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
                     } finally {
-                        try {
-                            is.close();
-                        } catch (IOException e) {
-                            // ignore
-                        }
+                        IOUtil.close(is);
                     }
                 }
             }
@@ -293,49 +289,21 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      */
     @Override
     public XMLResource getXMLResource(String uri) {
-        InputStream inputStream = resolveAndOpenStream(uri);
-        XMLResource xmlResource;
-        try {
-            xmlResource = XMLResource.load(inputStream);
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // swallow
-                }
-            }
+        try (InputStream inputStream = resolveAndOpenStream(uri)) {
+            return XMLResource.load(inputStream);
+        } catch (IOException ignore) {
+            return null;
         }
-        return xmlResource;
     }
 
     @Override
     @Nullable
     @CheckReturnValue
     public byte[] getBinaryResource(String uri) {
-        InputStream is = resolveAndOpenStream(uri);
-        if (is==null) return null;
-        try {
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buf = new byte[10240];
-            int i;
-            while ((i = is.read(buf)) != -1) {
-                result.write(buf, 0, i);
-            }
-            is.close();
-            is = null;
-
-            return result.toByteArray();
+        try (InputStream is = resolveAndOpenStream(uri)) {
+            return is == null ? null : IOUtil.readBytes(is);
         } catch (IOException e) {
             return null;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
     }
 

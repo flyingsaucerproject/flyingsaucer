@@ -36,25 +36,18 @@ public class DemosNavigation {
     private boolean _lock;
 
     public DemosNavigation(BrowserUserAgent uac) {
-        BufferedReader reader = null;
         _demos = new ArrayList<>();
         try {
             URL url = new URL(uac.resolveFullURI(FILE_LIST_URL));
-            reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] fields = line.split(",");
-                _demos.add(new Demo(fields[1], fields[0]));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] fields = line.split(",");
+                    _demos.add(new Demo(fields[1], fields[0]));
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         _current = -1;
     }

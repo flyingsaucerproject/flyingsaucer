@@ -11,7 +11,7 @@ import java.net.URLConnection;
  * User: pdoubleya
  * Date: May 15, 2009
  */
-public class StreamResource {
+public class StreamResource implements AutoCloseable {
     private final String _uri;
     private URLConnection _conn;
     private int _slen;
@@ -64,13 +64,8 @@ public class StreamResource {
         return new BufferedInputStream(_inputStream);
     }
 
+    @Override
     public void close() {
-        if (_inputStream != null) {
-            try {
-                _inputStream.close();
-            } catch (IOException e) {
-                // swallow
-            }
-        }
+        IOUtil.close(_inputStream);
     }
 }

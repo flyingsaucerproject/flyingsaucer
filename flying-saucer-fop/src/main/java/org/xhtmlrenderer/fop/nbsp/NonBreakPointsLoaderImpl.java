@@ -58,9 +58,9 @@ public class NonBreakPointsLoaderImpl implements NonBreakPointsLoader {
     @CheckReturnValue
     private List<String> loadForKey(String lang) {
         String path = "non-break-spaces/" + lang + ".nbsp";
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
-        if (is == null) return null;
-        try {
+        
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path)) {
+            if (is == null) return null;
             BufferedReader r = new BufferedReader(new InputStreamReader(is, UTF_8));
             List<String> result = new ArrayList<>();
             String line;
@@ -71,12 +71,6 @@ public class NonBreakPointsLoaderImpl implements NonBreakPointsLoader {
             return result;
         } catch (IOException e) {
             throw new RuntimeException("Error while loading nbsp file from path " + path, e);
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e1) {
-                // ignore
-            }
         }
     }
 

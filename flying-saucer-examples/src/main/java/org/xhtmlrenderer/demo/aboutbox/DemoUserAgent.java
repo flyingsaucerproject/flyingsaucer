@@ -24,6 +24,7 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.AWTFSImage;
+import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -32,7 +33,6 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,32 +120,7 @@ public class DemoUserAgent implements UserAgentCallback {
     @Nullable
     @CheckReturnValue
     public byte[] getBinaryResource(String uri) {
-        InputStream is = null;
-        try {
-            URL url = new URL(uri);
-            URLConnection conn = url.openConnection();
-            is = conn.getInputStream();
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buf = new byte[10240];
-            int i;
-            while ( (i = is.read(buf)) != -1) {
-                result.write(buf, 0, i);
-            }
-            is.close();
-            is = null;
-
-            return result.toByteArray();
-        } catch (IOException e) {
-            return null;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
-        }
+        return IOUtil.readBytes(uri);
     }
 
     @Override
@@ -171,11 +146,7 @@ public class DemoUserAgent implements UserAgentCallback {
         } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         } finally {
-            if ( inputStream != null ) try {
-                inputStream.close();
-            } catch (IOException e) {
-                // swallow
-            }
+            IOUtil.close(inputStream);
         }
         if (xr == null) {
             String notFound = "<h1>Document not found</h1>";

@@ -280,7 +280,7 @@ public class BoxBuilder {
             stripAllWhitespace(children);
         }
 
-        if (children.size() == 0 && style.isAutoWidth() && ! alwaysCreate) {
+        if (children.isEmpty() && style.isAutoWidth() && ! alwaysCreate) {
             return null;
         }
 
@@ -291,14 +291,14 @@ public class BoxBuilder {
 
     private static void resolveChildren(
             LayoutContext c, BlockBox owner, List<Styleable> children, ChildBoxInfo info) {
-        if (children.size() > 0) {
+        if (!children.isEmpty()) {
             if (info.isContainsBlockLevelContent()) {
                 insertAnonymousBlocks(
                         c.getSharedContext(), owner, children, info.isLayoutRunningBlocks());
                 owner.setChildrenContentType(BlockBox.CONTENT_BLOCK);
             } else {
                 WhitespaceStripper.stripInlineContent(children);
-                if (children.size() > 0) {
+                if (!children.isEmpty()) {
                     owner.setInlineContent(children);
                     owner.setChildrenContentType(BlockBox.CONTENT_INLINE);
                 } else {
@@ -339,7 +339,7 @@ public class BoxBuilder {
             if (matchesTableLevel(target, styleable.getStyle().getIdent(CSSName.DISPLAY))) {
                 childrenForAnonymous.add(styleable);
             } else {
-                if (childrenForAnonymous.size() > 0) {
+                if (!childrenForAnonymous.isEmpty()) {
                     createAnonymousTableContent(c, (BlockBox) childrenForAnonymous.get(0), nextUp,
                             childrenForAnonymous, childrenWithAnonymous);
 
@@ -349,7 +349,7 @@ public class BoxBuilder {
             }
         }
 
-        if (childrenForAnonymous.size() > 0) {
+        if (!childrenForAnonymous.isEmpty()) {
             createAnonymousTableContent(c, (BlockBox) childrenForAnonymous.get(0), nextUp,
                     childrenForAnonymous, childrenWithAnonymous);
         }
@@ -449,7 +449,7 @@ public class BoxBuilder {
                 IdentValue childDisplay = child.getStyle().getIdent(CSSName.DISPLAY);
 
                 if (isProperTableNesting(parentDisplay, childDisplay)) {
-                    if (childrenForAnonymous.size() > 0) {
+                    if (!childrenForAnonymous.isEmpty()) {
                         createAnonymousTableContent(c, parent, next, childrenForAnonymous,
                                 childrenWithAnonymous);
 
@@ -461,7 +461,7 @@ public class BoxBuilder {
                 }
             }
 
-            if (childrenForAnonymous.size() > 0) {
+            if (!childrenForAnonymous.isEmpty()) {
                 createAnonymousTableContent(c, parent, next, childrenForAnonymous,
                         childrenWithAnonymous);
             }
@@ -558,7 +558,7 @@ public class BoxBuilder {
             table.addChild(footer);
         }
 
-        if (topCaptions.size() == 0 && bottomCaptions.size() == 0) {
+        if (topCaptions.isEmpty() && bottomCaptions.isEmpty()) {
             return table;
         } else {
             // If we have a floated table with a caption, we need to float the
@@ -680,7 +680,7 @@ public class BoxBuilder {
     public static boolean isElementFunction(FSFunction function) {
         if (function.getName().equals("element")) {
             List<PropertyValue> params = function.getParameters();
-            if (params.size() < 1 || params.size() > 2) {
+            if (params.isEmpty() || params.size() > 2) {
                 return false;
             }
             PropertyValue value1 = params.get(0);
@@ -699,7 +699,7 @@ public class BoxBuilder {
     private static CounterFunction makeCounterFunction(FSFunction function, LayoutContext c, CalculatedStyle style) {
         if (function.getName().equals("counter")) {
             List<PropertyValue> params = function.getParameters();
-            if (params.size() < 1 || params.size() > 2) {
+            if (params.isEmpty() || params.size() > 2) {
                 return null;
             }
 
@@ -1259,7 +1259,7 @@ public class BoxBuilder {
                     }
                 }
             } else {
-                if (inline.size() > 0) {
+                if (!inline.isEmpty()) {
                     createAnonymousBlock(parent, inline, savedParents);
                     inline = new ArrayList<>();
                     savedParents = new ArrayList<>(parents);
@@ -1273,11 +1273,11 @@ public class BoxBuilder {
 
     private static void createAnonymousBlock(Box parent, List<Styleable> inline, List<InlineBox> savedParents) {
         WhitespaceStripper.stripInlineContent(inline);
-        if (inline.size() > 0) {
+        if (!inline.isEmpty()) {
             AnonymousBlockBox anon = new AnonymousBlockBox(parent.getElement());
             anon.setStyle(parent.getStyle().createAnonymousStyle(IdentValue.BLOCK));
             anon.setAnonymous(true);
-            if (savedParents != null && savedParents.size() > 0) {
+            if (savedParents != null && !savedParents.isEmpty()) {
                 anon.setOpenInlineBoxes(savedParents);
             }
             parent.addChild(anon);
