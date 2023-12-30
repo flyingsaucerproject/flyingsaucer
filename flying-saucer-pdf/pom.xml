@@ -12,7 +12,7 @@
 
   <artifactId>flying-saucer-pdf-openpdf</artifactId>
 
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
 
   <name>Flying Saucer PDF Rendering (OpenPDF)</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output. (OpenPDF)</description>
@@ -24,38 +24,10 @@
     </license>
   </licenses>
 
-  <dependencies>
-    <dependency>
-        <groupId>com.github.librepdf</groupId>
-        <artifactId>openpdf</artifactId>
-        <version>${openpdf.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.xhtmlrenderer</groupId>
-        <artifactId>flying-saucer-core</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.librepdf</groupId>
-      <artifactId>openpdf</artifactId>
-      <version>${openpdf.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <resources>
-      <resource>
-        <directory>../</directory>
-        <targetPath>META-INF</targetPath>
-        <includes>
-          <include>LICENSE*</include>
-        </includes>
-      </resource>
-    </resources>
-  </build>
+  <distributionManagement>
+    <relocation>
+      <groupId>org.xhtmlrenderer</groupId>
+      <artifactId>flying-saucer-pdf</artifactId>
+    </relocation>
+  </distributionManagement>
 </project>
