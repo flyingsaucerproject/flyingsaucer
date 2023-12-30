@@ -28,6 +28,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.util.XRLog;
@@ -56,10 +57,10 @@ public class ITextFontResolver implements FontResolver {
     private final Map<String, FontFamily> _fontFamilies = createInitialFontMap();
     private final Map<String, FontDescription> _fontCache = new HashMap<>();
 
-    private final SharedContext _sharedContext;
+    private final UserAgentCallback userAgent;
 
-    public ITextFontResolver(SharedContext sharedContext) {
-        _sharedContext = sharedContext;
+    public ITextFontResolver(UserAgentCallback userAgent) {
+        this.userAgent = userAgent;
     }
 
     /**
@@ -117,7 +118,7 @@ public class ITextFontResolver implements FontResolver {
                 continue;
             }
 
-            byte[] font1 = _sharedContext.getUac().getBinaryResource(src.asString());
+            byte[] font1 = userAgent.getBinaryResource(src.asString());
             if (font1 == null) {
                 XRLog.exception("Could not load font " + src.asString());
                 continue;
@@ -126,7 +127,7 @@ public class ITextFontResolver implements FontResolver {
             byte[] font2 = null;
             FSDerivedValue metricsSrc = style.valueByName(CSSName.FS_FONT_METRIC_SRC);
             if (metricsSrc != IdentValue.NONE) {
-                font2 = _sharedContext.getUac().getBinaryResource(metricsSrc.asString());
+                font2 = userAgent.getBinaryResource(metricsSrc.asString());
                 if (font2 == null) {
                     XRLog.exception("Could not load font metric data " + src.asString());
                     continue;

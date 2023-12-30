@@ -25,6 +25,7 @@ import org.xhtmlrenderer.pdf.ITextUserAgent;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xml.sax.InputSource;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,8 +54,7 @@ public class PDFRender {
     public static void createPDF(String url, String pdf) throws IOException, DocumentException {
         try (OutputStream os = newOutputStream(Paths.get(pdf))) {
             ITextRenderer renderer = new ITextRenderer();
-            ResourceLoaderUserAgent callback = new ResourceLoaderUserAgent(renderer.getOutputDevice());
-            callback.setSharedContext(renderer.getSharedContext());
+            ResourceLoaderUserAgent callback = new ResourceLoaderUserAgent(renderer.getOutputDevice(), renderer.getSharedContext().getDotsPerPixel());
             renderer.getSharedContext ().setUserAgentCallback(callback);
 
             Document doc = XMLResource.load(new InputSource(url)).getDocument();
@@ -65,9 +65,10 @@ public class PDFRender {
         }
     }
 
+    @ParametersAreNonnullByDefault
     private static class ResourceLoaderUserAgent extends ITextUserAgent {
-        private ResourceLoaderUserAgent(ITextOutputDevice outputDevice) {
-            super(outputDevice);
+        private ResourceLoaderUserAgent(ITextOutputDevice outputDevice, int dotsPerPixel) {
+            super(outputDevice, dotsPerPixel);
         }
 
         @Override

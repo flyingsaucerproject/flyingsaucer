@@ -53,8 +53,7 @@ public class PDFRenderTest {
     private static PDF generatePDF(URL source, File output) throws IOException, DocumentException {
         try (OutputStream os = newOutputStream(output.toPath())) {
             ITextRenderer renderer = new ITextRenderer();
-            ResourceLoaderUserAgent callback = new ResourceLoaderUserAgent(renderer.getOutputDevice());
-            callback.setSharedContext(renderer.getSharedContext());
+            ResourceLoaderUserAgent callback = new ResourceLoaderUserAgent(renderer.getOutputDevice(), renderer.getSharedContext().getDotsPerPixel());
             renderer.getSharedContext().setUserAgentCallback(callback);
 
             Document doc = XMLResource.load(new InputSource(source.toString())).getDocument();
@@ -69,8 +68,8 @@ public class PDFRenderTest {
 
     @ParametersAreNonnullByDefault
     private static class ResourceLoaderUserAgent extends ITextUserAgent {
-        private ResourceLoaderUserAgent(ITextOutputDevice outputDevice) {
-            super(outputDevice);
+        private ResourceLoaderUserAgent(ITextOutputDevice outputDevice, int dotsPerPixel) {
+            super(outputDevice, dotsPerPixel);
         }
 
         @Override

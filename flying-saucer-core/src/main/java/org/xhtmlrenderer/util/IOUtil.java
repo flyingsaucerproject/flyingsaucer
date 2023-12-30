@@ -128,7 +128,7 @@ public class IOUtil {
     @Nonnull
     @CheckReturnValue
     public static byte[] readBytes(InputStream is) throws IOException {
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        ByteArrayOutputStream result = new ByteArrayOutputStream(is.available());
         copyBytes(is, result);
         return result.toByteArray();
     }

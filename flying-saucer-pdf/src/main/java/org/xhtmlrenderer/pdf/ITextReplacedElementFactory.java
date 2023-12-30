@@ -56,7 +56,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         switch (nodeName) {
             case "img":
                 String srcAttr = e.getAttribute("src");
-                if (srcAttr.length() > 0) {
+                if (!srcAttr.isEmpty()) {
                     FSImage fsImage = uac.getImageResource(srcAttr).getImage();
                     if (fsImage != null) {
                         if (cssWidth != -1 || cssHeight != -1) {

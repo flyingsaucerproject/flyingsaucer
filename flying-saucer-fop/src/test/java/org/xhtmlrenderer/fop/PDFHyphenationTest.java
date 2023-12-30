@@ -81,8 +81,7 @@ public class PDFHyphenationTest {
 
     private void generatePDF(String xml, OutputStream os) throws DocumentException, IOException {
         ITextRenderer renderer = new ITextRenderer();
-        ITextUserAgent ua = new ITextUserAgent(renderer.getOutputDevice());
-        ua.setSharedContext(renderer.getSharedContext());
+        ITextUserAgent ua = new ITextUserAgent(renderer.getOutputDevice(), renderer.getSharedContext().getDotsPerPixel());
         renderer.getSharedContext().setUserAgentCallback(ua);
         renderer.getSharedContext().setLineBreakingStrategy(new FOPLineBreakingStrategy());
 

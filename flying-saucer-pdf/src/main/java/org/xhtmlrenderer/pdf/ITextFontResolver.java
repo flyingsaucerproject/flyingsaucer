@@ -57,26 +57,6 @@ public class ITextFontResolver implements FontResolver {
     private final Map<String, FontFamily> _fontFamilies = new HashMap<>();
     private final Map<String, FontDescription> _fontCache = new HashMap<>();
 
-    public ITextFontResolver() {
-    }
-
-    /**
-     * @deprecated Use default constructor (sharedContext is not used anymore by this class)
-     */
-    @Deprecated
-    public ITextFontResolver(SharedContext sharedContext) {
-        this(sharedContext, true);
-    }
-
-    /**
-     * @param sharedContext not needed in constructor anymore
-     * @param withCjkfonts instead of passing this parameter, please use subclass {@link CJKFontResolver}
-     * @deprecated Use default constructor
-     */
-    @Deprecated
-    public ITextFontResolver(SharedContext sharedContext, boolean withCjkfonts) {
-    }
-
     public synchronized Map<String, FontFamily> getFonts() {
         if (_fontFamilies.isEmpty()) {
             _fontFamilies.putAll(loadFonts());
