@@ -27,7 +27,10 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.ReplacedElementFactory;
+import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.Layer;
@@ -100,24 +103,33 @@ public class ITextRenderer {
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel) {
+        this(dotsPerPoint, dotsPerPixel, new ITextOutputDevice(dotsPerPoint));
+    }
+
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice) {
+        this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice, dotsPerPixel));
+    }
+    
+    public ITextRenderer(ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
+        this(outputDevice.getDotsPerPoint(), userAgent.getDotsPerPixel(), outputDevice, userAgent);
+    }
+
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
+        this(dotsPerPoint, dotsPerPixel, outputDevice, userAgent, new ITextFontResolver(userAgent),
+                new ITextReplacedElementFactory(outputDevice), new ITextTextRenderer());
+    }
+
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent,
+                         FontResolver fontResolver, ReplacedElementFactory replacedElementFactory, TextRenderer textRenderer) {
         _dotsPerPoint = dotsPerPoint;
-
-        _outputDevice = new ITextOutputDevice(_dotsPerPoint);
-
-        ITextUserAgent userAgent = new ITextUserAgent(_outputDevice);
+        _outputDevice = outputDevice;
         _sharedContext = new SharedContext();
         _sharedContext.setUserAgentCallback(userAgent);
         _sharedContext.setCss(new StyleReference(userAgent));
-        userAgent.setSharedContext(_sharedContext);
         _outputDevice.setSharedContext(_sharedContext);
-
-        ITextFontResolver fontResolver = new ITextFontResolver(_sharedContext);
         _sharedContext.setFontResolver(fontResolver);
-
-        ITextReplacedElementFactory replacedElementFactory = new ITextReplacedElementFactory(_outputDevice);
         _sharedContext.setReplacedElementFactory(replacedElementFactory);
-
-        _sharedContext.setTextRenderer(new ITextTextRenderer());
+        _sharedContext.setTextRenderer(textRenderer);
         _sharedContext.setDPI(72 * _dotsPerPoint);
         _sharedContext.setDotsPerPixel(dotsPerPixel);
         _sharedContext.setPrint(true);

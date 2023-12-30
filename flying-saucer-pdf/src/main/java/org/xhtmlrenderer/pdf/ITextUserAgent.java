@@ -25,7 +25,6 @@ import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfReader;
 import org.xhtmlrenderer.extend.FSImage;
-import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.Configuration;
@@ -34,33 +33,25 @@ import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.io.ByteArrayOutputStream;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static org.xhtmlrenderer.util.IOUtil.readBytes;
+
+@ParametersAreNonnullByDefault
 public class ITextUserAgent extends NaiveUserAgent {
     private static final int IMAGE_CACHE_CAPACITY = 32;
 
-    private SharedContext _sharedContext;
-
     private final ITextOutputDevice _outputDevice;
+    private final int dotsPerPixel;
 
-    public ITextUserAgent(ITextOutputDevice outputDevice) {
+    public ITextUserAgent(ITextOutputDevice outputDevice, int dotsPerPixel) {
         super(Configuration.valueAsInt("xr.image.cache-capacity", IMAGE_CACHE_CAPACITY));
         _outputDevice = outputDevice;
-    }
-
-    private byte[] readStream(InputStream is) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream(is.available());
-        byte[] buf = new byte[10240];
-        int i;
-        while ((i = is.read(buf)) != -1) {
-            out.write(buf, 0, i);
-        }
-        out.close();
-        return out.toByteArray();
+        this.dotsPerPixel = dotsPerPixel;
     }
 
     @Override
@@ -90,7 +81,7 @@ public class ITextUserAgent extends NaiveUserAgent {
                             image.setInitialHeight(rect.getHeight() * _outputDevice.getDotsPerPoint());
                             resource = new ImageResource(uriStr, image);
                         } else {
-                            Image image = Image.getInstance(readStream(is));
+                            Image image = Image.getInstance(readBytes(is));
                             scaleToOutputResolution(image);
                             resource = new ImageResource(uriStr, new ITextFSImage(image));
                         }
@@ -128,17 +119,9 @@ public class ITextUserAgent extends NaiveUserAgent {
     }
 
     private void scaleToOutputResolution(Image image) {
-        float factor = _sharedContext.getDotsPerPixel();
+        float factor = dotsPerPixel;
         if (factor != 1.0f) {
             image.scaleAbsolute(image.getPlainWidth() * factor, image.getPlainHeight() * factor);
         }
-    }
-
-    public SharedContext getSharedContext() {
-        return _sharedContext;
-    }
-
-    public void setSharedContext(SharedContext sharedContext) {
-        _sharedContext = sharedContext;
     }
 }
