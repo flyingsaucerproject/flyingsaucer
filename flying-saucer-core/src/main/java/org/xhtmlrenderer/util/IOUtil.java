@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
 import java.util.logging.Level;
 
 import static java.nio.file.Files.newInputStream;
@@ -122,6 +123,14 @@ public class IOUtil {
         } catch (IOException e) {
             XRLog.load(Level.WARNING, "Unable to read " + uri, e);
             return null;
+        }
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    public static byte[] readBytes(Path file) throws IOException {
+        try (InputStream is = newInputStream(file)) {
+            return readBytes(is);
         }
     }
 

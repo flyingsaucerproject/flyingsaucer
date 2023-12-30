@@ -31,13 +31,12 @@ import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.nio.file.Files.newInputStream;
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparingInt;
 import static java.util.Objects.requireNonNull;
@@ -313,21 +311,7 @@ public class ITextFontResolver implements FontResolver {
     }
 
     private byte[] readFile(String path) throws IOException {
-        File f = new File(path);
-        if (f.exists()) {
-            ByteArrayOutputStream result = new ByteArrayOutputStream((int)f.length());
-            
-            try (InputStream is = newInputStream(Paths.get(path))) {
-                byte[] buf = new byte[10240];
-                int i;
-                while ( (i = is.read(buf)) != -1) {
-                    result.write(buf, 0, i);
-                }
-                return result.toByteArray();
-            }
-        } else {
-            throw new IOException("File " + path + " does not exist or is not accessible");
-        }
+        return IOUtil.readBytes(Paths.get(path));
     }
 
     private FontFamily getFontFamily(String fontFamilyName) {
