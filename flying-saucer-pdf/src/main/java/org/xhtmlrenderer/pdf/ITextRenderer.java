@@ -28,6 +28,8 @@ import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.ReplacedElementFactory;
+import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.Layer;
@@ -63,8 +65,7 @@ import java.util.regex.Pattern;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ITextRenderer {
-    // These two defaults combine to produce an effective resolution of 96 px to
-    // the inch
+    // These two defaults combine to produce an effective resolution of 96 px to the inch
     public static final float DEFAULT_DOTS_PER_POINT = 20f * 4f / 3f;
     public static final int DEFAULT_DOTS_PER_PIXEL = 20;
 
@@ -87,8 +88,14 @@ public class ITextRenderer {
     // use one of the values in PDFWriter.VERSION...
     private Character _pdfVersion;
 
-    private final char[] validPdfVersions = { PdfWriter.VERSION_1_2, PdfWriter.VERSION_1_3, PdfWriter.VERSION_1_4,
-            PdfWriter.VERSION_1_5, PdfWriter.VERSION_1_6, PdfWriter.VERSION_1_7 };
+    private final char[] validPdfVersions = {
+            PdfWriter.VERSION_1_2,
+            PdfWriter.VERSION_1_3,
+            PdfWriter.VERSION_1_4,
+            PdfWriter.VERSION_1_5,
+            PdfWriter.VERSION_1_6,
+            PdfWriter.VERSION_1_7
+    };
 
     private Integer _pdfXConformance;
 
@@ -112,39 +119,44 @@ public class ITextRenderer {
         this(dotsPerPoint, dotsPerPixel, new ITextOutputDevice(dotsPerPoint), fontResolver);
     }
 
+    public ITextRenderer(ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
+        this(outputDevice.getDotsPerPoint(), userAgent.getDotsPerPixel(), outputDevice, userAgent, new ITextFontResolver());
+    }
+
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice) {
-        this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice));
+        this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice, dotsPerPixel));
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, FontResolver fontResolver) {
-        this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice), fontResolver);
+        this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice, dotsPerPixel), fontResolver);
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
         this(dotsPerPoint, dotsPerPixel, outputDevice, userAgent, new ITextFontResolver());
     }
 
-    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent, FontResolver fontResolver) {
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent,
+                         FontResolver fontResolver) {
+        this(dotsPerPoint, dotsPerPixel, outputDevice, userAgent, fontResolver,
+                new ITextReplacedElementFactory(outputDevice), new ITextTextRenderer());
+    }
+
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent,
+                         FontResolver fontResolver, ReplacedElementFactory replacedElementFactory,
+                         TextRenderer textRenderer) {
         _dotsPerPoint = dotsPerPoint;
         _outputDevice = outputDevice;
-
         _sharedContext = new SharedContext();
         _sharedContext.setUserAgentCallback(userAgent);
         _sharedContext.setCss(new StyleReference(userAgent));
-        userAgent.setSharedContext(_sharedContext);
         _outputDevice.setSharedContext(_sharedContext);
-
         _sharedContext.setFontResolver(fontResolver);
-
-        ITextReplacedElementFactory replacedElementFactory = new ITextReplacedElementFactory(_outputDevice);
         _sharedContext.setReplacedElementFactory(replacedElementFactory);
-
-        _sharedContext.setTextRenderer(new ITextTextRenderer());
+        _sharedContext.setTextRenderer(textRenderer);
         _sharedContext.setDPI(72 * _dotsPerPoint);
         _sharedContext.setDotsPerPixel(dotsPerPixel);
         _sharedContext.setPrint(true);
         _sharedContext.setInteractive(false);
-
         _timeouted= false;
     }
 

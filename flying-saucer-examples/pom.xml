@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.3.2</version>
+    <version>9.4.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -26,17 +26,13 @@
 
   <dependencies>
     <dependency>
-        <groupId>com.github.librepdf</groupId>
-        <artifactId>openpdf</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.xhtmlrenderer</groupId>
       <artifactId>flying-saucer-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
-      <artifactId>flying-saucer-pdf-openpdf</artifactId>
+      <artifactId>flying-saucer-pdf</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

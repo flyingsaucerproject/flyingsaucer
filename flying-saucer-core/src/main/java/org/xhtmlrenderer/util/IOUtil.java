@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
 import java.util.logging.Level;
 
 import static java.nio.file.Files.newInputStream;
@@ -127,8 +128,16 @@ public class IOUtil {
 
     @Nonnull
     @CheckReturnValue
+    public static byte[] readBytes(Path file) throws IOException {
+        try (InputStream is = newInputStream(file)) {
+            return readBytes(is);
+        }
+    }
+
+    @Nonnull
+    @CheckReturnValue
     public static byte[] readBytes(InputStream is) throws IOException {
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        ByteArrayOutputStream result = new ByteArrayOutputStream(is.available());
         copyBytes(is, result);
         return result.toByteArray();
     }

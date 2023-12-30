@@ -1,7 +1,12 @@
 # Changelog
 
-## 9.4.0 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/5
+## 9.4.1 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/6
 * ...
+
+## 9.4.0 (released 30.12.2023) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/5?closed=1
+* replace iText 2.x by OpenPDF (#245)  --  thanks to Andreas Rosdal for the initiative
+* Added page size B5 (#246)  --  thanks to Mikhail Voronin
+* add few overloaded constructors to ITextRenderer (#247)
 
 ## 9.3.2 (released 29.12.2023) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/4?closed=1
 * #216 implement loading resources from classpath (#241)

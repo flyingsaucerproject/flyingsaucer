@@ -88,11 +88,10 @@ public class BrowserActions {
                 }
             };
         export_pdf.putValue(Action.NAME, "Export PDF...");
-        //is iText in classpath?
-        try{
+        //is OpenPDF in classpath?
+        try {
             Class.forName("com.lowagie.text.DocumentException");
-        } catch( ClassNotFoundException e )
-        {
+        } catch (ClassNotFoundException ignore) {
             export_pdf.setEnabled(false);
         }
 

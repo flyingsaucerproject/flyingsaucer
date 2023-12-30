@@ -56,7 +56,7 @@ import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
 /**
  * Opens a frame and displays, for a selected font, the glyphs for a range of Unicode code points. Can be used to
- * identify which glyphs are supported by a font. Can export to PDF. Requires core-renderer and iText on classpath.
+ * identify which glyphs are supported by a font. Can export to PDF. Requires core-renderer and OpenPDF on classpath.
  *
  * @author Patrick Wright
  */

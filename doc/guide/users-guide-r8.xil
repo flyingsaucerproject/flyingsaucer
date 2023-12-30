@@ -64,7 +64,7 @@ ${fs} takes XML and CSS as input, where the CSS might be embedded in the documen
 
 If rendering to a GUI, hyperlinks are clickable so you can navigate between pages. As with HTML, you can also render forms, capture output, and create interactive applications. In a GUI, ${fs} provides a _read-only_ view of the output; we cannot replace a text area, say, or Swing's @JEditorPane@ or @JTextPane@. However, for static content, or content created by you, ${fs} can be used for help documents, tutorials, books, splash screens, presentations, and much more.
 
-We can also render to PDF. For PDF, the layout rules come from the CSS using the print media qualifier. For PDF output we rely on the ${itext} library to generate PDF. Note that ${fs} supports media types for CSS, allowing you to distinguish between screen and print media, for example.
+We can also render to PDF. For PDF, the layout rules come from the CSS using the print media qualifier. For PDF output we rely on the ${OpenPDF} library to generate PDF. Note that ${fs} supports media types for CSS, allowing you to distinguish between screen and print media, for example.
 
 Last, we have utility classes to render output to an image file. With this, you could use XML and CSS to layout printable content--for example, a flyer, a poster, business cards, etc.--and save them as images you can print out or email. It's also a nice way to create thumbnail or reduced-size images of pages. 
 
@@ -130,12 +130,12 @@ Basic requirements:
 
 * Java Runtime Environment 1.4 or above (or JDK of course) 
 * core-renderer.jar (our distribution) 
-* ${itext} (also at "iText PDF":http://itextpdf.sourceforge.net )
+* ${OpenPDF} (also at "OpenPDF":https://github.com/LibrePDF/OpenPDF )
 * "Ant":http://ant.apache.org if you want to build from source 
 
 As a rule, we try to limit our dependencies on external libraries to keep the download size to a minimum.
 
-${itext} is not necessary at runtime if you are not generating PDFs, but is necessary for the build to satisfy compile-time dependencies. We include a version with our distribution; you should be able to use a release directly from the ${itext} project, as long as the API is the same. As of release R8, we target the ${itext} 2.x API.
+${OpenPDF} is not necessary at runtime if you are not generating PDFs, but is necessary for the build to satisfy compile-time dependencies. We include a version with our distribution; you should be able to use a release directly from the ${OpenPDF} project, as long as the API is the same. As of release R8, we target the ${OpenPDF} 2.x API.
 
 ${fs} includes its own CSS parser. There is currently no adaptor for external parsers--we didn't find any high-quality, actively-maintained ones. However, such an adapter did exist in earlier ${fs} releases--we used to use the SteadyState CSS parser--so in principle, a different CSS parser could be used.
 
@@ -143,12 +143,12 @@ Most of ${fs} does not rely on advanced Java features. It should be usable on al
 
 h3(fs_heading#set_classpath). Setting your Classpath
 
-You only need the @core-renderer.jar@ in your CLASSPATH. If you want PDF output, add @${itext.jar}@. You also need an XML parser to be in your classpath, but this already included in the JDK. 
+You only need the @core-renderer.jar@ in your CLASSPATH. If you want PDF output, add @${flying-saucer-pdf}@. You also need an XML parser to be in your classpath, but this already included in the JDK. 
 
 To summarize, the easiest CLASSPATH to set is:
 
 * @core-renderer.jar@  (required) 
-* @${itext.jar}@ 
+* @${flying-saucer-pdf.jar}@ 
   
 
 h3(fs_heading). Sample Applications
@@ -349,7 +349,7 @@ p. The basic process is:
 
 That's it! You can now display XHTML and CSS in your Swing applications.
 
-What about AWT or alternate GUI toolkits for Java like SWT? Our basic rendering routine writes to a "renderer". Right now we support the concept of rendering to an _output device_. We have two output device implementations: one for Java2D (essentially a canvas, or @Graphics2D@ instance) and the other for PDF (using iText). When we render to a Swing panel, we are still painting on a Java2D canvas, so in principle, you should be able to port this rendering to other 2D output surfaces. Just note there is no explicit technical limitation that forces you to use Swing--it's just easy, and easy to make it look good.
+What about AWT or alternate GUI toolkits for Java like SWT? Our basic rendering routine writes to a "renderer". Right now we support the concept of rendering to an _output device_. We have two output device implementations: one for Java2D (essentially a canvas, or @Graphics2D@ instance) and the other for PDF (using OpenPDF). When we render to a Swing panel, we are still painting on a Java2D canvas, so in principle, you should be able to port this rendering to other 2D output surfaces. Just note there is no explicit technical limitation that forces you to use Swing--it's just easy, and easy to make it look good.
 
 _Note: we already have an experimental renderer for SWT contributed by one of our users--contact us on the mailing list for more details. We expect to include this as an optional component in an upcoming release._
 
@@ -577,7 +577,7 @@ toc. 4 4 *
 
 h4(fs_heading). How do I add custom or specific fonts?
 
-By default, the iText library only includes a subset of fonts, as do PDF reader applications. You may need to register additional fonts used in your document so they may be included with the PDF.
+By default, the OpenPDF library only includes a subset of fonts, as do PDF reader applications. You may need to register additional fonts used in your document so they may be included with the PDF.
 
 For each font you need, make the following call:
 
@@ -593,7 +593,7 @@ _Thanks to Sean Wesenberg for this tip._
 
 h4(fs_heading). How do I specify fonts for a specific encoding?
 
-It's actually better, since the ${itext} library provides code to parse font files and return font measurements. 
+It's actually better, since the ${OpenPDF} library provides code to parse font files and return font measurements. 
 
 That said, the default encoding is Latin-1; if your content is encoded differently, you may have problems where certain characters are not recognized and don't appear correctly in the output. You will need to specify a different encoding for a specific font, by registering the font with the @ITextRenderer@ instance you're using before you call @setDocument()@. For example, to support Unicode/UTF-8, you'd need  
 
@@ -609,7 +609,7 @@ resolver.addFont (
 );
 }}
 
-where the font supports Unicode characters (in this example). The @BaseFont@ class in the example comes from the iText library, which you'll of course need in your classpath when compiling.
+where the font supports Unicode characters (in this example). The @BaseFont@ class in the example comes from the OpenPDF library, which you'll of course need in your classpath when compiling.
 
 _Thanks to "Manos Batsis":http://github.com/manosbatsis for contributing this info and patches._
 
