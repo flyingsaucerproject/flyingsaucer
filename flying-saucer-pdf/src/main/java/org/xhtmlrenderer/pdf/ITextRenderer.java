@@ -120,7 +120,7 @@ public class ITextRenderer {
     }
 
     public ITextRenderer(ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
-        this(outputDevice.getDotsPerPoint(), DEFAULT_DOTS_PER_PIXEL, outputDevice, userAgent, new ITextFontResolver());
+        this(outputDevice.getDotsPerPoint(), userAgent.getDotsPerPixel(), outputDevice, userAgent, new ITextFontResolver());
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice) {

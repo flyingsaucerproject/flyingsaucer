@@ -54,6 +54,10 @@ public class ITextUserAgent extends NaiveUserAgent {
         this.dotsPerPixel = dotsPerPixel;
     }
 
+    int getDotsPerPixel() {
+        return dotsPerPixel;
+    }
+
     @Override
     public ImageResource getImageResource(String uriStr) {
         String unresolvedUri = uriStr;
@@ -70,8 +74,8 @@ public class ITextUserAgent extends NaiveUserAgent {
                 InputStream is = resolveAndOpenStream(uriStr);
                 if (is != null) {
                     try {
-                        ContentTypeDetectingInputStreamWrapper cis=new ContentTypeDetectingInputStreamWrapper(is);
-                        is=cis;
+                        ContentTypeDetectingInputStreamWrapper cis = new ContentTypeDetectingInputStreamWrapper(is);
+                        is = cis;
                         if (cis.isPdf()) {
                             URI uri = new URI(uriStr);
                             PdfReader reader = _outputDevice.getReader(uri);

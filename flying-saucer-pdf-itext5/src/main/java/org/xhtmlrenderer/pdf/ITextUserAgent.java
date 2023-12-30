@@ -51,7 +51,7 @@ public class ITextUserAgent extends NaiveUserAgent {
         _outputDevice = outputDevice;
     }
 
-    public int getDotsPerPixel() {
+    int getDotsPerPixel() {
         return dotsPerPixel;
     }
 
