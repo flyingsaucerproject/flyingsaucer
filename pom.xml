@@ -254,7 +254,7 @@
     <junit.version>5.10.1</junit.version>
     <itext5.version>5.5.13.3</itext5.version>
     <slf4j.version>2.0.10</slf4j.version>
-    <assertj.version>3.25.0</assertj.version>
+    <assertj.version>3.25.1</assertj.version>
     <pdftest.version>1.8.1</pdftest.version>
     <bouncycastle.version>1.77</bouncycastle.version>
   </properties>
