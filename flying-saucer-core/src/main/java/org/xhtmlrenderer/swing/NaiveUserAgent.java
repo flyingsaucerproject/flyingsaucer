@@ -366,8 +366,18 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
             URI result = new URI(uri);
             if (result.isAbsolute()) {
                 if (result.getScheme().equals("classpath")) {
-                    URL resource = Thread.currentThread().getContextClassLoader().getResource(uri.substring("classpath".length() + 1));
-                    return resource.toString();
+                    try {
+                        // If this conversion succeeds, there is already a
+                        // URLStreamHandler available for the classpath
+                        // protocol. If so, just use that instead vs. relying
+                        // on the implementation below.
+                        return result.toURL().toString();
+                    } catch (MalformedURLException e) {
+                        URL resource = Thread.currentThread().getContextClassLoader().getResource(uri.substring("classpath".length() + 1));
+                        if (resource != null) {
+                            return resource.toString();
+                        }
+                    }
                 }
                 return result.toString();
             }
