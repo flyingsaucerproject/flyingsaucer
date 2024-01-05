@@ -112,8 +112,8 @@ public class BrowserUserAgent extends NaiveUserAgent {
         } else {
             try {
                 URL base;
-                if (burl == null || burl.length() == 0) {
-                    base = new File(".").toURL();
+                if (burl == null || burl.isEmpty()) {
+                    base = new File(".").toURI().toURL();
                 } else {
                     base = new URL(burl);
                 }
