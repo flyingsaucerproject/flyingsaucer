@@ -1,22 +1,23 @@
 package org.xhtmlrenderer.util;
 
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
+
+import static java.nio.file.Files.newOutputStream;
 
 /**
  * User: tobe
  * Date: 2005-jan-05
  */
 public class GenerateBigFile {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         if (args.length < 1) {
             System.out.println("Usage:");
             System.out.println("GenerateBigFile output-file");
             System.exit(1);
         }
-        PrintWriter out = null;
-        try {
-            out = new PrintWriter(new FileOutputStream(args[0]));
+        try (PrintWriter out = new PrintWriter(newOutputStream(Paths.get(args[0])))) {
             out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>Big test file</title></head><body>");
             for (int i = 0; i < 10000; i++) {
                 //style: 10pt Times #000000;
@@ -28,10 +29,6 @@ public class GenerateBigFile {
                 out.println("<p style=\"font: " + style + " " + font + "; color: #" + colour + "\">Some Styled text to see how we can handle it</p>");
             }
             out.println("</body></html>");
-        } catch (Exception e) {//I know, never do this :-)
-            e.printStackTrace();
-        } finally {
-            out.close();
         }
     }
 }
