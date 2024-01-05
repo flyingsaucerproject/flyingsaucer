@@ -91,7 +91,7 @@ if (url_text.startsWith("demo:")) {
 } else if (url_text.startsWith("http")) {
     panel.setDocument(url_text);
 } else {
-    ref = new File(url_text).toURL();
+    ref = new File(url_text).toURI().toURL();
     panel.setDocument(ref.toExternalForm());
 }
 Uu.p("ref = " + ref);

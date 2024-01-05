@@ -32,7 +32,7 @@ public class AllPageTest {
         System.out.println("\n\n*** Rendering page " + file.getName() + " ***\n\n");
         long total = 0;
         int cnt = 1;
-        String page = file.toURL().toExternalForm();
+        String page = file.toURI().toURL().toExternalForm();
         System.out.println("Testing with page " + page);
         for (int i = 0; i < cnt; i++) {
             Date start = new Date();
