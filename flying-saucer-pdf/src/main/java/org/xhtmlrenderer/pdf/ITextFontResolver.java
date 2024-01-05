@@ -21,6 +21,8 @@ package org.xhtmlrenderer.pdf;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.sheet.FontFaceRule;
@@ -37,9 +39,11 @@ import org.xhtmlrenderer.util.SupportedEmbeddedFontTypes;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,6 +56,8 @@ import java.util.Set;
 import static java.util.Objects.requireNonNull;
 
 public class ITextFontResolver implements FontResolver {
+    private static final Logger log = LoggerFactory.getLogger(ITextFontResolver.class);
+
     private final Map<String, FontFamily> _fontFamilies = new HashMap<>();
     private final Map<String, FontDescription> _fontCache = new HashMap<>();
 
@@ -336,8 +342,8 @@ public class ITextFontResolver implements FontResolver {
         return fontFamily;
     }
 
-    private FSFont resolveFont(String[] families, float size, IdentValue weight, IdentValue style) {
-        if (! (style == IdentValue.NORMAL || style == IdentValue.OBLIQUE
+    private FSFont resolveFont(@Nullable String[] families, float size, IdentValue weight, IdentValue style) {
+        if (!(style == IdentValue.NORMAL || style == IdentValue.OBLIQUE
                 || style == IdentValue.ITALIC)) {
             style = IdentValue.NORMAL;
         }
@@ -345,15 +351,17 @@ public class ITextFontResolver implements FontResolver {
             for (String family : families) {
                 FSFont font = resolveFont(family, size, weight, style);
                 if (font != null) {
+                    log.debug("Resolved font {}:{}:{} -> {}", family, weight, style, font);
                     return font;
                 }
             }
         }
 
+        log.debug("Could not resolve font {}:{}:{} - fallback to Serif", Arrays.toString(families), weight, style);
         return resolveFont("Serif", size, weight, style);
     }
 
-    private String normalizeFontFamily(String fontFamily) {
+    String normalizeFontFamily(String fontFamily) {
         String result = fontFamily;
         // strip off the "s if they are there
         if (result.startsWith("\"")) {
@@ -380,10 +388,11 @@ public class ITextFontResolver implements FontResolver {
     private FSFont resolveFont(String fontFamily, float size, IdentValue weight, IdentValue style) {
         String normalizedFontFamily = normalizeFontFamily(fontFamily);
 
-        String cacheKey = getHashName(normalizedFontFamily, weight, style);
+        String cacheKey = String.format("%s-%s-%s", normalizedFontFamily, weight, style);
         FontDescription result = _fontCache.get(cacheKey);
 
         if (result != null) {
+            log.debug("Resolved font {}:{}:{} -> {}", fontFamily, weight, style, result);
             return new ITextFSFont(result, size);
         }
 
@@ -430,11 +439,6 @@ public class ITextFontResolver implements FontResolver {
             return 700;
         }
         throw new IllegalArgumentException("Cannot convert weight to integer: " + weight);
-    }
-
-    protected static String getHashName(
-            String name, IdentValue weight, IdentValue style) {
-        return name + "-" + weight + "-" + style;
     }
 
     protected Map<String, FontFamily> loadFonts() {

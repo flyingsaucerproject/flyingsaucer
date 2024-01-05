@@ -111,4 +111,9 @@ public class FontDescription {
     public void setFromFontFace(boolean isFromFontFace) {
         _isFromFontFace = isFromFontFace;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Font %s:%s", _font.getPostscriptFontName(), _weight);
+    }
 }

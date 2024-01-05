@@ -37,4 +37,9 @@ public class ITextFSFont implements FSFont {
     public FontDescription getFontDescription() {
         return _font;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s:%s", _font, _size);
+    }
 }
