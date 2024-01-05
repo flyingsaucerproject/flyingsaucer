@@ -80,21 +80,15 @@ public class TrueTypeUtil {
     public static void populateDescription(String path, BaseFont font, FontDescription description)
             throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
 
-        RandomAccessFileOrArray rf = new RandomAccessFileOrArray(getTTCName(path));
-        try {
+        try (RandomAccessFileOrArray rf = new RandomAccessFileOrArray(getTTCName(path))) {
             populateDescription0(path, font, description, rf);
-        } finally {
-            rf.close();
         }
     }
 
     public static void populateDescription(String path, byte[] contents, BaseFont font, FontDescription description)
             throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
-        RandomAccessFileOrArray rf = new RandomAccessFileOrArray(contents);
-        try {
+        try (RandomAccessFileOrArray rf = new RandomAccessFileOrArray(contents)) {
             populateDescription0(path, font, description, rf);
-        } finally {
-            rf.close();
         }
     }
 
