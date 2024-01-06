@@ -692,7 +692,7 @@ public class Configuration {
             return defaultVal;
         }
 
-        if ("true|false".indexOf(val) == -1) {
+        if (!"true|false".contains(val)) {
             XRLog.exception("Property '" + key + "' was requested as a boolean, but " +
                     "value of '" + val + "' is not a boolean. Check configuration.");
             return defaultVal;

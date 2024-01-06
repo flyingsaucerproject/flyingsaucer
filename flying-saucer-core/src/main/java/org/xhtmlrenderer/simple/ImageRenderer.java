@@ -143,7 +143,7 @@ public class ImageRenderer {
             usage("Incorrect argument list.");
         }
         String url = args[0];
-        if (url.indexOf("://") == -1) {
+        if (!url.contains("://")) {
             // maybe it's a file
             File f = new File(url);
             if (f.exists()) {
