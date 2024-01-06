@@ -20,5 +20,5 @@
 package org.xhtmlrenderer.render;
 
 public interface FSFont {
-    public float getSize2D();
+    float getSize2D();
 }

@@ -25,5 +25,5 @@ package org.xhtmlrenderer.swing;
  * @author Christophe Marchand (christophe.marchand@contactoffice.net)
  */
 public interface ScaleChangeListener {
-    public void scaleChanged(ScaleChangeEvent evt);
+    void scaleChanged(ScaleChangeEvent evt);
 }

@@ -20,5 +20,5 @@
 package org.xhtmlrenderer.css.parser;
 
 public interface CSSErrorHandler {
-    public void error(String uri, String message);
+    void error(String uri, String message);
 }

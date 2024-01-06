@@ -20,6 +20,6 @@
 package org.xhtmlrenderer.css.parser;
 
 public interface FSColor {
-    public FSColor lightenColor();
-    public FSColor darkenColor();
+    FSColor lightenColor();
+    FSColor darkenColor();
 }

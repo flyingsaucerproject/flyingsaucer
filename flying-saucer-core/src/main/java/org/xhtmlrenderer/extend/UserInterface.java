@@ -19,10 +19,7 @@
  */
 package org.xhtmlrenderer.extend;
 
-
-
 /**
- *
  * @author   Torbjoern Gannholm
  */
 public interface UserInterface {
@@ -33,7 +30,7 @@ public interface UserInterface {
      * @param e  PARAM
      * @return   The hover value
      */
-    public boolean isHover( org.w3c.dom.Element e );
+    boolean isHover(org.w3c.dom.Element e);
 
     /**
      * Gets the active attribute of the UserInterface object
@@ -41,7 +38,7 @@ public interface UserInterface {
      * @param e  PARAM
      * @return   The active value
      */
-    public boolean isActive( org.w3c.dom.Element e );
+    boolean isActive(org.w3c.dom.Element e);
 
     /**
      * Gets the focus attribute of the UserInterface object
@@ -49,6 +46,6 @@ public interface UserInterface {
      * @param e  PARAM
      * @return   The focus value
      */
-    public boolean isFocus( org.w3c.dom.Element e );
+    boolean isFocus(org.w3c.dom.Element e);
 }
 

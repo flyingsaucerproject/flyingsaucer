@@ -20,52 +20,52 @@
  */
 package org.xhtmlrenderer.extend;
 
-import java.awt.Rectangle;
-
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 
-public interface TextRenderer {
-    public void setup(FontContext context);
+import java.awt.*;
 
-    public void drawString(OutputDevice outputDevice, String string, float x, float y);
-    public void drawString(
+public interface TextRenderer {
+    void setup(FontContext context);
+
+    void drawString(OutputDevice outputDevice, String string, float x, float y);
+    void drawString(
             OutputDevice outputDevice, String string, float x, float y, JustificationInfo info);
 
-    public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y);
+    void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y);
 
-    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string);
+    FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string);
 
-    public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector);
-    public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y);
+    float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector);
+    Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y);
 
-    public FSFontMetrics getFSFontMetrics(
-            FontContext context, FSFont font, String string );
+    FSFontMetrics getFSFontMetrics(
+            FontContext context, FSFont font, String string);
 
-    public int getWidth(FontContext context, FSFont font, String string);
+    int getWidth(FontContext context, FSFont font, String string);
 
-    public void setFontScale(float scale);
+    void setFontScale(float scale);
 
-    public float getFontScale();
+    float getFontScale();
 
     /**
-     * Set the smoothing threashold. This is a font size above which
-     * all text will be anti-aliased. Text below this size will not be antialiased.
+     * Set the smoothing threshold. This is a font size above which
+     * all text will be anti-aliased. Text below this size will not be anti-aliased.
      * Set to -1 for no antialiasing.
-     * Set to 0 for all antialising.
+     * Set to 0 for all antialiasing.
      * Else, set to the threshold font size. does not take font scaling
      * into account.
      */
-    public void setSmoothingThreshold(float fontsize);
+    void setSmoothingThreshold(float fontsize);
 
-    public int getSmoothingLevel();
+    int getSmoothingLevel();
 
     /**
      * @deprecated no-op, will be removed in a future release. Antialiasing is now controlled via the smoothing
      * threshold.
      * @param level no-op
      */
-    public void setSmoothingLevel(int level);
+    void setSmoothingLevel(int level);
 }
 
