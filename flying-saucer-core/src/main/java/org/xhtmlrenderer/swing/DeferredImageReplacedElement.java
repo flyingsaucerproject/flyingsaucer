@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
@@ -73,32 +72,18 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
         _image = ImageUtil.createCompatibleBufferedImage(_targetWidth, _targetHeight);
     }
 
-    /** {@inheritDoc} */
-    public void detach(LayoutContext c) {
-        // nothing to do in this case
-    }
-
-    /** {@inheritDoc} */
     public int getIntrinsicHeight() {
         return  _loaded ? _image.getHeight(null) : _targetHeight;
     }
 
-    /** {@inheritDoc} */
     public int getIntrinsicWidth() {
         return _loaded ? _image.getWidth(null) : _targetWidth;
     }
 
-    /** {@inheritDoc} */
     public Point getLocation() {
         return _location;
     }
 
-    /** {@inheritDoc} */
-    public boolean isRequiresInteractivePaint() {
-        return true;
-    }
-
-    /** {@inheritDoc} */
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }
@@ -146,22 +131,11 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
             }
             _loaded = true;
             XRLog.load(Level.FINE, "Icon: replaced image " + _imageResource.getImageUri() + ", repaint requested");
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    repaintListener.repaintRequested(_doScaleImage);
-                }
-            });
+            SwingUtilities.invokeLater(() -> repaintListener.repaintRequested(_doScaleImage));
 
         }
 
         return _image;
     }
 
-    public int getBaseline() {
-        return 0;
-    }
-
-    public boolean hasBaseline() {
-        return false;
-    }
 }
