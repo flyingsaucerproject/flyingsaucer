@@ -59,7 +59,7 @@ public class NonBreakPointsEnhancerTest {
 
     @Test
     public void loaderConfiguration() {
-        final String[] c = new String[] {null};
+        final String[] c = {null};
         NonBreakPointsLoader capturingLoader = lang -> {
             c[0] = lang;
             return emptyList();

@@ -18,23 +18,22 @@
  * }}}
  */
 
-
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 
 import static java.nio.file.Files.newOutputStream;
-
 
 /**
  * This sample shows how to create a single PDF document from multiple input documents.
  */
 public class PDFRenderToMultiplePages {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         // create some simple, fake documents; nothing special about these, anything that Flying Saucer
         // can otherwise render
-        final String[] inputs = new String[]{
+        final String[] inputs = {
                 newPageHtml(1, "red"),
                 newPageHtml(2, "blue"),
                 newPageHtml(3, "green")
