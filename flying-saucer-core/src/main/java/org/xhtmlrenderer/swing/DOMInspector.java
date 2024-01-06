@@ -234,9 +234,9 @@ final class ElementPropertiesPanel extends JPanel {
         private static final long serialVersionUID = 1L;
 
         //String _colNames[] = {"Property Name", "Text", "Value", "Important-Inherit"};
-        String[] _colNames = {"Property Name", "Text", "Value"};
+        private final String[] _colNames = {"Property Name", "Text", "Value"};
 
-        Map<String, CSSPrimitiveValue> _properties;
+        private final Map<String, CSSPrimitiveValue> _properties;
 
         PropertiesTableModel(Map<String, CSSPrimitiveValue> cssProperties) {
             _properties = cssProperties;

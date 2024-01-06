@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 
 public class CopySelectionAction extends AbstractAction {
 
-    protected BrowserStartup root;
+    protected final BrowserStartup root;
 
     public CopySelectionAction(BrowserStartup root) {
         super("Copy");

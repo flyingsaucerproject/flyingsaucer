@@ -35,7 +35,7 @@ import org.xhtmlrenderer.swt.SWTFSFont;
 public abstract class SWTXhtmlControl implements SWTFormControl {
 
     private final FormControl _control;
-    protected Control _swtControl;
+    private final Control _swtControl;
 
     private Color _foreground, _background;
 

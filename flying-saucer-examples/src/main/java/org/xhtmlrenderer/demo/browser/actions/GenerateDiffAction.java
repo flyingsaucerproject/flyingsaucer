@@ -18,7 +18,7 @@ import java.net.URL;
  */
 public class GenerateDiffAction extends AbstractAction {
 
-    protected BrowserStartup root;
+    private final BrowserStartup root;
 
     public GenerateDiffAction(BrowserStartup root) {
         super("Generate Diff");

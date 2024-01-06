@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 
 public class FontSizeAction extends AbstractAction {
 
-    protected BrowserStartup root;
+    private final BrowserStartup root;
     public static final int DECREMENT = 0;
     public static final int INCREMENT = 1;
     public static final int RESET = 2;

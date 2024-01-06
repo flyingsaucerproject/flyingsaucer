@@ -48,7 +48,7 @@ public class Graphics2DRenderer {
     /**
      * The panel we are using to render the document.
      */
-    protected XHTMLPanel panel;
+    private final XHTMLPanel panel;
 
     /**
      * Dimensions of the image to render, in pixels.
@@ -198,7 +198,7 @@ public class Graphics2DRenderer {
      *
      * @param url    java.net.URL for the document to render.
      * @param width  Width in pixels of the layout container
-     * @return Returns an java.awt.Image containing the rendered document.
+     * @return Returns java.awt.Image containing the rendered document.
      */
     public static BufferedImage renderToImageAutoSize(String url, int width){
             return renderToImageAutoSize(url, width, BufferedImage.TYPE_INT_ARGB);
@@ -214,7 +214,7 @@ public class Graphics2DRenderer {
      * @param width  Width in pixels of the layout container
      * @param bufferedImageType On of the pre-defined image types for a java.awt.image.BufferedImage, such
      * as TYPE_INT_ARGB or TYPE_INT_RGB.
-     * @return Returns an java.awt.Image containing the rendered document.
+     * @return Returns java.awt.Image containing the rendered document.
      */
     public static BufferedImage renderToImageAutoSize(String url, int width, int bufferedImageType) {
         Graphics2DRenderer g2r = new Graphics2DRenderer();
@@ -252,7 +252,7 @@ public class Graphics2DRenderer {
  * Merge R8pbrant changes to HEAD
  *
  * Revision 1.20.2.1  2007/08/13 22:32:09  peterbrant
- * Rename doLayout() to doDocumentLayout() to avoid confusion with AWT's doLayout()
+ * Rename doLayout() to doDocumentLayout() to avoid confusion with AWT doLayout()
  *
  * Revision 1.20  2007/05/21 21:58:47  peterbrant
  * More cleanup (remove experimental threading code)

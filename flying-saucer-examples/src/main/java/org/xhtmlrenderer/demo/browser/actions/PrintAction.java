@@ -10,7 +10,7 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 
 public class PrintAction extends AbstractAction {
-    protected BrowserStartup root;
+    private final BrowserStartup root;
 
     public PrintAction(BrowserStartup root, ImageIcon icon) {
         super("Print", icon);
