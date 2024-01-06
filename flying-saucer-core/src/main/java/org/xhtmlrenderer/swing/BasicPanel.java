@@ -362,8 +362,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     // TODO: should throw more specific exception (PWW 25/07/2006)
-    protected void setDocument(InputStream stream, String url)
-            throws Exception {
+    protected void setDocument(InputStream stream, String url) {
         setDocument(stream, url, new NoNamespaceHandler());
     }
 
