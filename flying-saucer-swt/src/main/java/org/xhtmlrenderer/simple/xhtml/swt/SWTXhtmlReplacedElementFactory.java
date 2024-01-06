@@ -17,6 +17,7 @@ import org.xhtmlrenderer.swt.BasicRenderer;
 import org.xhtmlrenderer.swt.FormControlReplacementElement;
 import org.xhtmlrenderer.swt.SWTReplacedElementFactory;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,9 +31,9 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
     }
 
     /**
-     * @return the form corresponding to element <code>e</code> or
-     *         <code>null</code> if none
+     * @return the form corresponding to element {@code e} or {@code null} if none
      */
+    @Nullable
     public XhtmlForm getForm(Element e) {
         return _forms.get(e);
     }

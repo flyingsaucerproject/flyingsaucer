@@ -39,7 +39,7 @@ import java.util.logging.Level;
 
 
 /**
- * Utility class for working with <code>CSSValue</code> instances.
+ * Utility class for working with {@code CSSValue} instances.
  *
  * @author empty
  */

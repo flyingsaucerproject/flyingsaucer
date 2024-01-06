@@ -30,8 +30,8 @@ import java.util.List;
 /**
  * This class performs the real work of vertically positioning inline boxes
  * within a line (i.e. implementing the vertical-align property).  Because
- * of the requirements of vertical-align: top/bottom, a <code>VerticalAlignContext</code>
- * is actually a tree of <code>VerticalAlignContext</code> objects which all
+ * of the requirements of vertical-align: top/bottom, a {@code VerticalAlignContext}
+ * is actually a tree of {@code VerticalAlignContext} objects which all
  * must be taken into consideration when aligning content.
  */
 public class VerticalAlignContext {

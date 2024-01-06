@@ -46,7 +46,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * retrieved from external sources; that's one of the purposes of the UAC.</p>
  *
  * <p>To understand how to create your own UAC, it's best to look at some of the
- * implemetations shipped with the library, like the {@link org.xhtmlrenderer.swing.NaiveUserAgent}.
+ * implementations shipped with the library, like the {@link org.xhtmlrenderer.swing.NaiveUserAgent}.
  * </p>
  *
  * @author Torbjoern Gannholm
@@ -79,7 +79,7 @@ public interface UserAgentCallback {
 
     /**
      * Retrieves a binary resource located at a given URI and returns its contents
-     * as a byte array or <code>null</code> if the resource could not be loaded.
+     * as a byte array or {@code null} if the resource could not be loaded.
      */
     @Nullable
     @CheckReturnValue

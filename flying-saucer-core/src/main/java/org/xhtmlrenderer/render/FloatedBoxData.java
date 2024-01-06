@@ -24,7 +24,7 @@ import org.xhtmlrenderer.layout.Layer;
 
 /**
  * A bean containing additional information used by floated boxes.  The
- * <code>marginFromSibiling</code> property contains the margin from our
+ * {@code marginFromSibling} property contains the margin from our
  * previous inflow block level sibling (if it exists).  It is necessary to
  * correctly position the box when collapsing vertical margins.
  */
