@@ -23,7 +23,7 @@ public class Boxer {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
             if (args.length == 0) {
                 throw new IllegalArgumentException("Give a file name");

@@ -1454,8 +1454,8 @@ class Lexer {
   private static final int ZZ_PUSHBACK_2BIG = 2;
 
   /* error messages for the codes above */
-  private static final String ZZ_ERROR_MSG[] = {
-    "Unkown internal scanner error",
+  private static final String[] ZZ_ERROR_MSG = {
+    "Unknown internal scanner error",
     "Error: could not match input",
     "Error: pushback value was too large"
   };
@@ -1508,12 +1508,12 @@ class Lexer {
 
   /** this buffer contains the current text to be matched and is
       the source of the yytext() string */
-  private char zzBuffer[] = new char[ZZ_BUFFERSIZE];
+  private char[] zzBuffer = new char[ZZ_BUFFERSIZE];
 
-  /** the textposition at the last accepting state */
+  /** the text position at the last accepting state */
   private int zzMarkedPos;
 
-  /** the textposition at the last state to be included in yytext */
+  /** the text position at the last state to be included in yytext */
   private int zzPushbackPos;
 
   /** the current text position in the buffer */
@@ -1621,7 +1621,7 @@ class Lexer {
     /* is the buffer big enough? */
     if (zzCurrentPos >= zzBuffer.length) {
       /* if not: blow it up */
-      char newBuffer[] = new char[zzCurrentPos*2];
+      char[] newBuffer = new char[zzCurrentPos*2];
       System.arraycopy(zzBuffer, 0, newBuffer, 0, zzBuffer.length);
       zzBuffer = newBuffer;
     }
