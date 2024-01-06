@@ -176,7 +176,9 @@ public class Java2DTextRenderer implements TextRenderer {
     }
 
     @Override
-    public void setSmoothingLevel(int level ) { /* no-op */ }
+    @Deprecated
+    public void setSmoothingLevel(int level ) {
+    }
 
     @Override
     public FSFontMetrics getFSFontMetrics(FontContext fc, FSFont font, String string ) {

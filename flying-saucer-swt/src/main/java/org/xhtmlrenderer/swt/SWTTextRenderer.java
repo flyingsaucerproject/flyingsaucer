@@ -91,8 +91,8 @@ public class SWTTextRenderer implements TextRenderer {
         _scale = scale;
     }
 
+    @Deprecated
     public void setSmoothingLevel(int level) {
-        /* no-op */
     }
 
     public void setSmoothingThreshold(float fontsize) {
