@@ -228,17 +228,7 @@ public class ContentFunctionFactory {
             }
 
             // Get leader value and value width
-            PropertyValue param = function.getParameters().get(0);
-            String value = param.getStringValue();
-            if (param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                if (value.equals("dotted")) {
-                    value = ". ";
-                } else if (value.equals("solid")) {
-                    value = "_";
-                } else if (value.equals("space")) {
-                    value = " ";
-                }
-            }
+            String value = getLeaderValue(function);
 
             // Compute value width using 100x string to get more precise width.
             // Otherwise, there might be a small gap on the right side. This is
@@ -273,6 +263,22 @@ public class ContentFunctionFactory {
             return leaderString;
         }
 
+        private String getLeaderValue(FSFunction function) {
+            final PropertyValue param = function.getParameters().get(0);
+            final String value = param.getStringValue();
+            if (param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+                switch (value) {
+                    case "dotted":
+                        return ". ";
+                    case "solid":
+                        return "_";
+                    case "space":
+                        return " ";
+                }
+            }
+            return value;
+        }
+
         @Override
         public String calculate(LayoutContext c, FSFunction function) {
             return null;
@@ -289,15 +295,11 @@ public class ContentFunctionFactory {
                 List<PropertyValue> parameters = function.getParameters();
                 if (parameters.size() == 1) {
                     PropertyValue param = parameters.get(0);
-                    if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_STRING &&
-                            (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
-                                (!param.getStringValue().equals("dotted") &&
-                                        !param.getStringValue().equals("solid") &&
-                                        !param.getStringValue().equals("space")))) {
-                        return false;
-                    }
-
-                    return true;
+                    return param.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ||
+                            (param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT &&
+                                    (param.getStringValue().equals("dotted") ||
+                                            param.getStringValue().equals("solid") ||
+                                            param.getStringValue().equals("space")));
                 }
             }
 
