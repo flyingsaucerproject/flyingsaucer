@@ -91,7 +91,7 @@ public class DocumentDiffTest {
             throws Exception {
         Document doc = XMLUtil.documentFromFile(xhtml);
         Graphics2DRenderer renderer = new Graphics2DRenderer();
-        renderer.setDocument(doc, new File(xhtml).toURL().toString());
+        renderer.setDocument(doc, new File(xhtml).toURI().toURL().toString());
 
         BufferedImage buff = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g = (Graphics2D) buff.getGraphics();

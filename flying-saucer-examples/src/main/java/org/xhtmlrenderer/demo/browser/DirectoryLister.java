@@ -57,7 +57,7 @@ public class DirectoryLister {
             try {
                 File parent = file.getParentFile();
                 if ( parent != null ) {
-                    String loc = GeneralUtil.htmlEscapeSpace(file.getAbsoluteFile().getParentFile().toURL().toExternalForm()).toString();
+                    String loc = GeneralUtil.htmlEscapeSpace(file.getAbsoluteFile().getParentFile().toURI().toURL().toExternalForm()).toString();
                     sb.append("<a class='dir' href='").append(loc).append("'>Up to higher level directory</a>");
                 }
             } catch (MalformedURLException e) {
@@ -79,7 +79,7 @@ public class DirectoryLister {
                     cls = "file";
                 }
                 try {
-                    String loc = GeneralUtil.htmlEscapeSpace(f.toURL().toExternalForm()).toString();
+                    String loc = GeneralUtil.htmlEscapeSpace(f.toURI().toURL().toExternalForm()).toString();
                     sb.append("<td><a class='").append(cls).append("' href='").append(loc).append("'>").append(f.getName()).append("</a></td>");
                     sb.append("<td>").append(lenDesc).append("</td>").append("<td>").append(lastMod).append("</td>");
                 } catch (MalformedURLException e) {

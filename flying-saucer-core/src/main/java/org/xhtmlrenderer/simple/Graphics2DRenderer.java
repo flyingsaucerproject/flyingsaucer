@@ -32,7 +32,7 @@ import java.awt.image.BufferedImage;
  * for rendering documents directly to images.</p>
  * <p>
  * <p>Graphics2DRenderer supports the {@link XHTMLPanel#setDocument(Document)},
- * {@link XHTMLPanel#layout()}, and {@link XHTMLPanel#render()} methods from
+ * {@link XHTMLPanel#doLayout()}, and {@link XHTMLPanel#render()} methods from
  * {@link XHTMLPanel}, as well as easy-to-use static utility methods.
  * For example, to render a document in an image that is 600 pixels wide use the
  * {@link #renderToImageAutoSize(String,int,int)} method like this:</p>

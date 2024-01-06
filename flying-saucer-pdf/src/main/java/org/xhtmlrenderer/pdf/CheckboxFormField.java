@@ -70,7 +70,7 @@ public class CheckboxFormField extends AbstractFormField {
     field.setBorderWidth(BaseField.BORDER_WIDTH_THIN);
 
     try {
-      PdfFormField formField = field.getCheckField();
+      PdfFormField formField = field.getFullField();
       if (isReadOnly(elm)) {
         formField.setFieldFlags(PdfFormField.FF_READ_ONLY);
       }

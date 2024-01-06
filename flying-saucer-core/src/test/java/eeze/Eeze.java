@@ -93,7 +93,7 @@ public class Eeze {
                 File fontFile = new File(directory + "/support/AHEM____.TTF");
                 if (fontFile.exists()) {
                     html.getSharedContext().setFontMapping("Ahem",
-                            Font.createFont(Font.TRUETYPE_FONT, fontFile.toURL().openStream()));
+                            Font.createFont(Font.TRUETYPE_FONT, fontFile.toURI().toURL().openStream()));
                 }
             } catch (FontFormatException | IOException e) {
                 throw new RuntimeException(e);
@@ -196,13 +196,13 @@ public class Eeze {
         try {
             if (reload) {
                 XRLog.load("Reloading " + currentDisplayed);
-                html.reloadDocument(file.toURL().toExternalForm());
+                html.reloadDocument(file.toURI().toURL().toExternalForm());
             } else {
                 XRLog.load("Loading " + currentDisplayed);
-                html.setDocument(file.toURL().toExternalForm());
+                html.setDocument(file.toURI().toURL().toExternalForm());
             }
             currentDisplayed = file;
-            changeTitle(file.toURL().toString());
+            changeTitle(file.toURI().toURL().toString());
             SwingUtilities.invokeLater(() -> {
                 imagePanel.imageWasLoaded();
                 imagePanel.repaint();

@@ -251,7 +251,7 @@ public class FontGlyphTableRender {
     private Font loadFont(String fontPath) throws IOException {
         Font font;
         try {
-            font = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath).toURL().openStream());
+            font = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath).toURI().toURL().openStream());
             return font.deriveFont(Font.PLAIN, 12);
         } catch (FontFormatException e) {
             System.err.println(fontPath + " INVALID FONT FORMAT " + e.getMessage());

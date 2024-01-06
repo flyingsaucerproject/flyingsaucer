@@ -133,7 +133,7 @@ public class HTMLTest extends JFrame {
                 if (uri.startsWith("http://"))
                     url = new URL(uri);
                 else
-                    url = new File(uri).toURL();
+                    url = new File(uri).toURI().toURL();
 
                 System.err.println("loading " + url.toString() + "!");
                 panel.setDocument(url.toExternalForm());
