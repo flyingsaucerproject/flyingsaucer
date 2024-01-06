@@ -19,17 +19,14 @@
  */
 
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.InputStream;
-
-import javax.swing.*;
-
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.swing.SelectionHighlighter;
 import org.xhtmlrenderer.swing.SelectionHighlighter.CopyAction;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Sample for text selection in a rendered document; allows you to select text in the document
