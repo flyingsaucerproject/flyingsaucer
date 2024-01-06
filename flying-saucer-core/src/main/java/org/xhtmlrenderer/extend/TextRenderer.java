@@ -66,6 +66,6 @@ public interface TextRenderer {
      * threshold.
      * @param level no-op
      */
+    @Deprecated
     void setSmoothingLevel(int level);
 }
-

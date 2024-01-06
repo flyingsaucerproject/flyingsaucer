@@ -91,6 +91,7 @@ public class ITextTextRenderer implements TextRenderer {
         return 0;
     }
 
+    @Deprecated
     public void setSmoothingLevel(int level) {
     }
 
