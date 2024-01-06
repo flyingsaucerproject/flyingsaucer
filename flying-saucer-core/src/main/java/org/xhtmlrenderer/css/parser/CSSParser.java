@@ -50,6 +50,8 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_NUMBER;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PERCENTAGE;
 
 public class CSSParser {
     private static final Set<String> SUPPORTED_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
@@ -1471,7 +1473,7 @@ public class CSSParser {
                 throw new CSSParseException("Unsupported CSS unit " + extractUnit(t), getCurrentLine());
             case Token.NUMBER:
                 result = new PropertyValue(
-                        CSSPrimitiveValue.CSS_NUMBER,
+                        CSS_NUMBER,
                         sign*Float.parseFloat(getTokenValue(t)),
                         sign(sign) + getTokenValue(t));
                 next();
@@ -1479,7 +1481,7 @@ public class CSSParser {
                 break;
             case Token.PERCENTAGE:
                 result = new PropertyValue(
-                        CSSPrimitiveValue.CSS_PERCENTAGE,
+                        CSS_PERCENTAGE,
                         sign*Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t));
                 next();
@@ -1651,9 +1653,9 @@ public class CSSParser {
     private float parseCMYKColorComponent(PropertyValue value, int paramNo) {
         short type = value.getPrimitiveType();
         float result;
-        if (type == CSSPrimitiveValue.CSS_NUMBER) {
+        if (type == CSS_NUMBER) {
             result = value.getFloatValue();
-        } else if (type == CSSPrimitiveValue.CSS_PERCENTAGE) {
+        } else if (type == CSS_PERCENTAGE) {
             result = value.getFloatValue() / 100.0f;
         } else {
             throw new CSSParseException(
@@ -1680,34 +1682,17 @@ public class CSSParser {
         int green = 0;
         int blue = 0;
         for (int i = 0; i < params.size(); i++) {
-            PropertyValue value = params.get(i);
-            short type = value.getPrimitiveType();
-            if (type != CSSPrimitiveValue.CSS_PERCENTAGE &&
-                    type != CSSPrimitiveValue.CSS_NUMBER) {
-                throw new CSSParseException(
-                        "Parameter " + (i+1) + " to the rgb() function is " +
-                        "not a number or percentage", getCurrentLine());
-            }
-
-            float f = value.getFloatValue();
-            if (type == CSSPrimitiveValue.CSS_PERCENTAGE) {
-                f = f/100 * 255;
-            }
-            if (f < 0) {
-                f = 0;
-            } else if (f > 255) {
-                f = 255;
-            }
+            float f = extractRgbValue(i, params.get(i));
 
             switch (i) {
                 case 0:
-                    red = (int)f;
+                    red = (int) f;
                     break;
                 case 1:
-                    green = (int)f;
+                    green = (int) f;
                     break;
                 case 2:
-                    blue = (int)f;
+                    blue = (int) f;
                     break;
             }
         }
@@ -1715,7 +1700,27 @@ public class CSSParser {
         return new FSRGBColor(red, green, blue);
     }
 
-//  /*
+    private float extractRgbValue(int i, PropertyValue value) {
+        final short type = value.getPrimitiveType();
+        switch (type) {
+            case CSS_PERCENTAGE: {
+                return fromZeroTo255(value.getFloatValue() / 100 * 255);
+            }
+            case CSS_NUMBER: {
+                return fromZeroTo255(value.getFloatValue());
+            }
+            default: {
+                String message = String.format("Parameter %s to the rgb() function is not a number or percentage", i + 1);
+                throw new CSSParseException(message, getCurrentLine());
+            }
+        }
+    }
+
+    private static float fromZeroTo255(float f) {
+        return Math.max(0, Math.min(255, f));
+    }
+
+    //  /*
 //  * There is a constraint on the color that it must
 //  * have either 3 or 6 hex-digits (i.e., [0-9a-fA-F])
 //  * after the "#"; e.g., "#000" is OK, but "#abcd" is not.
