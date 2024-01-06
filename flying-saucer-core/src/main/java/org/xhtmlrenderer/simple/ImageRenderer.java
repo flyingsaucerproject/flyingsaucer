@@ -21,14 +21,15 @@ package org.xhtmlrenderer.simple;
 
 import org.xhtmlrenderer.swing.Java2DRenderer;
 import org.xhtmlrenderer.util.FSImageWriter;
-import org.xhtmlrenderer.util.IOUtil;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Paths;
+
+import static java.nio.file.Files.newOutputStream;
 
 
 /**
@@ -121,20 +122,12 @@ public class ImageRenderer {
      */
     public static BufferedImage renderImageToOutput(String url, FSImageWriter fsw, String path, int width)
             throws IOException {
-
-        BufferedImage image;
-        OutputStream os = null;
-        try {
+        
+        try (OutputStream os = new BufferedOutputStream(newOutputStream(Paths.get(path)))) {
             Java2DRenderer renderer = new Java2DRenderer(url, url, width);
-
-            os = new BufferedOutputStream(new FileOutputStream(path));
-
-            image = renderer.getImage();
+            BufferedImage image = renderer.getImage();
             fsw.write(image, os);
-
             return image;
-        } finally {
-            IOUtil.close(os);
         }
     }
 
