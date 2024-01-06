@@ -42,10 +42,14 @@ import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.TextDecoration;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.emptyList;
 
 /**
  * This class is responsible for flowing inline content into lines.  Block
@@ -488,11 +492,8 @@ public class InlineBoxing {
             InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutM);
             vaContext.setInitialMeasurements(measurements);
 
-            List<TextDecoration> lBDecorations = calculateTextDecorations(
-                    container, measurements.getBaseline(), strutM);
-            if (lBDecorations != null) {
-                current.setTextDecorations(lBDecorations);
-            }
+            List<TextDecoration> lBDecorations = calculateTextDecorations(container, measurements.getBaseline(), strutM);
+            current.setTextDecorations(lBDecorations);
 
             for (int i = 0; i < current.getChildCount(); i++) {
                 Box child = current.getChild(i);
@@ -593,9 +594,7 @@ public class InlineBoxing {
 
         alignInlineContent(c, iB, fm.getAscent(), fm.getDescent(), vaContext);
         List<TextDecoration> decorations = calculateTextDecorations(iB, iB.getBaseline(), fm);
-        if (decorations != null) {
-            iB.setTextDecorations(decorations);
-        }
+        iB.setTextDecorations(decorations);
 
         InlineBoxMeasurements result = new InlineBoxMeasurements();
         result.setBaseline(iB.getY() + iB.getBaseline());
@@ -615,53 +614,52 @@ public class InlineBoxing {
         return result;
     }
 
-    public static List<TextDecoration> calculateTextDecorations(Box box, int baseline,
-            FSFontMetrics fm) {
-        List<TextDecoration> result = null;
-        CalculatedStyle style = box.getStyle();
+    @Nonnull
+    @CheckReturnValue
+    public static List<TextDecoration> calculateTextDecorations(Box box, int baseline, FSFontMetrics fm) {
+        List<FSDerivedValue> idents = box.getStyle().getTextDecorations();
+        if (idents == null) {
+            return emptyList();
+        }
+        
+        List<TextDecoration> result = new ArrayList<>(idents.size());
+        if (idents.contains(IdentValue.UNDERLINE)) {
+            TextDecoration decoration = new TextDecoration(IdentValue.UNDERLINE);
+            // JDK returns zero so create additional space equal to one
+            // "underlineThickness"
+            if (fm.getUnderlineOffset() == 0) {
+                decoration.setOffset(Math.round((baseline + fm.getUnderlineThickness())));
+            } else {
+                decoration.setOffset(Math.round((baseline + fm.getUnderlineOffset())));
+            }
+            decoration.setThickness(Math.round(fm.getUnderlineThickness()));
 
-        List<FSDerivedValue> idents = style.getTextDecorations();
-        if (idents != null) {
-            result = new ArrayList<>(idents.size());
-            if (idents.contains(IdentValue.UNDERLINE)) {
-                TextDecoration decoration = new TextDecoration(IdentValue.UNDERLINE);
-                // JDK returns zero so create additional space equal to one
-                // "underlineThickness"
-                if (fm.getUnderlineOffset() == 0) {
-                    decoration.setOffset(Math.round((baseline + fm.getUnderlineThickness())));
-                } else {
-                    decoration.setOffset(Math.round((baseline + fm.getUnderlineOffset())));
+            // JDK on Linux returns some goofy values for
+            // LineMetrics.getUnderlineOffset(). Compensate by always
+            // making sure underline fits inside the descender
+            if (fm.getUnderlineOffset() == 0) {  // HACK, are we running under the JDK
+                int maxOffset =
+                    baseline + (int)fm.getDescent() - decoration.getThickness();
+                if (decoration.getOffset() > maxOffset) {
+                    decoration.setOffset(maxOffset);
                 }
-                decoration.setThickness(Math.round(fm.getUnderlineThickness()));
-
-                // JDK on Linux returns some goofy values for
-                // LineMetrics.getUnderlineOffset(). Compensate by always
-                // making sure underline fits inside the descender
-                if (fm.getUnderlineOffset() == 0) {  // HACK, are we running under the JDK
-                    int maxOffset =
-                        baseline + (int)fm.getDescent() - decoration.getThickness();
-                    if (decoration.getOffset() > maxOffset) {
-                        decoration.setOffset(maxOffset);
-                    }
-                }
-                result.add(decoration);
             }
-
-            if (idents.contains(IdentValue.LINE_THROUGH)) {
-                TextDecoration decoration = new TextDecoration(IdentValue.LINE_THROUGH);
-                decoration.setOffset(Math.round(baseline + fm.getStrikethroughOffset()));
-                decoration.setThickness(Math.round(fm.getStrikethroughThickness()));
-                result.add(decoration);
-            }
-
-            if (idents.contains(IdentValue.OVERLINE)) {
-                TextDecoration decoration = new TextDecoration(IdentValue.OVERLINE);
-                decoration.setOffset(0);
-                decoration.setThickness(Math.round(fm.getUnderlineThickness()));
-                result.add(decoration);
-            }
+            result.add(decoration);
         }
 
+        if (idents.contains(IdentValue.LINE_THROUGH)) {
+            TextDecoration decoration = new TextDecoration(IdentValue.LINE_THROUGH);
+            decoration.setOffset(Math.round(baseline + fm.getStrikethroughOffset()));
+            decoration.setThickness(Math.round(fm.getStrikethroughThickness()));
+            result.add(decoration);
+        }
+
+        if (idents.contains(IdentValue.OVERLINE)) {
+            TextDecoration decoration = new TextDecoration(IdentValue.OVERLINE);
+            decoration.setOffset(0);
+            decoration.setThickness(Math.round(fm.getUnderlineThickness()));
+            result.add(decoration);
+        }
         return result;
     }
 
