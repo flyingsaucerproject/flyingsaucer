@@ -113,7 +113,7 @@ public class FloatManager {
                                   BlockFormattingContext bfc, BlockBox current, int direction) {
 
         List<BoxOffset> floats = getFloats(direction);
-        if (floats.size() > 0) {
+        if (!floats.isEmpty()) {
             Point offset = bfc.getOffset();
             BoxOffset lastOffset = floats.get(floats.size() - 1);
             BlockBox last = lastOffset.getBox();
@@ -152,7 +152,7 @@ public class FloatManager {
                                           BlockFormattingContext bfc, BlockBox current, int direction) {
 
         List<BoxOffset> floats = getOpposingFloats(direction);
-        if (floats.size() > 0) {
+        if (!floats.isEmpty()) {
             Point offset = bfc.getOffset();
             BoxOffset lastOffset = floats.get(floats.size() - 1);
 
@@ -226,7 +226,7 @@ public class FloatManager {
 
     private void moveFloatBelow(CssContext cssCtx, BlockFormattingContext bfc,
                                    Box current, List<BoxOffset> floats) {
-        if (floats.size() == 0) {
+        if (floats.isEmpty()) {
             return;
         }
 
@@ -241,7 +241,7 @@ public class FloatManager {
 
     private void moveClear(CssContext cssCtx, BlockFormattingContext bfc,
                            Box current, List<BoxOffset> floats) {
-        if (floats.size() == 0) {
+        if (floats.isEmpty()) {
             return;
         }
 
@@ -342,7 +342,7 @@ public class FloatManager {
     private BoxDistance getFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
                                  LineBox line, int containingBlockContentWidth,
                                  List<BoxOffset> floatsList, int direction) {
-        if (floatsList.size() == 0) {
+        if (floatsList.isEmpty()) {
             return new BoxDistance(null, 0);
         }
 

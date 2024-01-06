@@ -37,7 +37,7 @@ public class TextControl extends AbstractControl {
     public TextControl(XhtmlForm form, Element e) {
         super(form, e);
 
-        _readonly = (e.getAttribute("readonly").length() > 0);
+        _readonly = !e.getAttribute("readonly").isEmpty();
         if (e.getNodeName().equalsIgnoreCase("textarea")) {
             _multiline = true;
             _password = false;

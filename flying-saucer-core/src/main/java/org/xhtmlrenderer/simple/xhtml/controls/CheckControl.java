@@ -31,7 +31,7 @@ public class CheckControl extends AbstractControl {
     public CheckControl(XhtmlForm form, Element e) {
         super(form, e);
 
-        _initialValue = e.getAttribute("checked").length() != 0;
+        _initialValue = !e.getAttribute("checked").isEmpty();
         setSuccessful(_initialValue);
 
         _radio = e.getAttribute("type").equals("radio");

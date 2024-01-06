@@ -56,7 +56,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         InlineLayoutBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
 
-        if (text != null && text.length() > 0) {
+        if (text != null && !text.isEmpty()) {
             setColor(iB.getStyle().getColor());
             setFont(iB.getStyle().getFSFont(c));
             setFontSpecification(iB.getStyle().getFontSpecification());

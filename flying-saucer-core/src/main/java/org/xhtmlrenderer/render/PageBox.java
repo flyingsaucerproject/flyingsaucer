@@ -366,7 +366,7 @@ public class PageBox {
     // but given the existing API, this is about the only place it can be done
     private void retrievePageMetadata(LayoutContext c) {
         List<PropertyDeclaration> props = getPageInfo().getXMPPropertyList();
-        if (props != null && props.size() > 0) {
+        if (props != null && !props.isEmpty()) {
             for (PropertyDeclaration decl : props) {
                 if (decl.getCSSName() == CSSName.CONTENT) {
                     PropertyValue value = (PropertyValue) decl.getValue();

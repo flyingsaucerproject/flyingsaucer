@@ -49,7 +49,7 @@ public abstract class AbstractControl implements FormControl {
         _name = getNameOrId(e);
         _initialValue = e.getAttribute("value");
         _value = _initialValue;
-        _enabled = (e.getAttribute("disabled").length() == 0);
+        _enabled = e.getAttribute("disabled").isEmpty();
         _successful = _enabled;
 
         if (form != null) {
@@ -204,10 +204,10 @@ public abstract class AbstractControl implements FormControl {
     public static int getIntAttribute(Element e, String attribute, int def) {
         int result = def;
         String str = e.getAttribute(attribute);
-        if (str.length() > 0) {
+        if (!str.isEmpty()) {
             try {
                 result = Integer.parseInt(str);
-            } catch (NumberFormatException ex) {
+            } catch (NumberFormatException ignored) {
             }
         }
         return result;

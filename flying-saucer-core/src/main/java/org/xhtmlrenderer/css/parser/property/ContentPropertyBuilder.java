@@ -29,10 +29,10 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 public class ContentPropertyBuilder extends AbstractPropertyBuilder {
 
@@ -46,7 +46,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
             } else if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                 IdentValue ident = checkIdent(CSSName.CONTENT, value);
                 if (ident == IdentValue.NONE || ident == IdentValue.NORMAL) {
-                    return Collections.singletonList(
+                    return singletonList(
                             new PropertyDeclaration(CSSName.CONTENT, value, important, origin));
                 }
             }
@@ -87,8 +87,8 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
             }
         }
 
-        if (resultValues.size() > 0) {
-            return Collections.singletonList(
+        if (!resultValues.isEmpty()) {
+            return singletonList(
                     new PropertyDeclaration(CSSName.CONTENT, new PropertyValue(resultValues), important, origin));
         } else {
             return emptyList();

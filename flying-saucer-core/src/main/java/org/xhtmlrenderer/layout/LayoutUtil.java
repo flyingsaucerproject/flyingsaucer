@@ -85,7 +85,7 @@ public class LayoutUtil {
         c.getBlockFormattingContext().floatBox(c, block);
 
         if (pendingFloats != null &&
-                (pendingFloats.size() > 0 || block.getWidth() > avail) &&
+                (!pendingFloats.isEmpty() || block.getWidth() > avail) &&
                 currentLine.isContainsContent()) {
             block.reset(c);
             result.setPending(true);

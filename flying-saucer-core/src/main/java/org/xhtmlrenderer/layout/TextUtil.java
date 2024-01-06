@@ -46,7 +46,7 @@ public class TextUtil {
     }
 
     public static String transformFirstLetterText( String text, CalculatedStyle style ) {
-        if (text.length() > 0) {
+        if (!text.isEmpty()) {
             IdentValue transform = style.getIdent( CSSName.TEXT_TRANSFORM );
             IdentValue fontVariant = style.getIdent( CSSName.FONT_VARIANT );
             char currentChar;
@@ -104,7 +104,7 @@ public class TextUtil {
 
     private static String capitalizeWords( String text ) {
         //Uu.p("start = -"+text+"-");
-        if ( text.length() == 0 ) {
+        if (text.isEmpty()) {
             return text;
         }
 
@@ -124,10 +124,7 @@ public class TextUtil {
             } else {
                 sb.append( ch );
             }
-            cap = false;
-            if ( ch.equals( " " ) ) {
-                cap = true;
-            }
+            cap = ch.equals(" ");
         }
 
         //Uu.p("final = -"+sb.toString()+"-");

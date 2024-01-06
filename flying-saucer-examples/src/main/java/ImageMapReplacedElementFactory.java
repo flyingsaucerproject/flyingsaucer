@@ -101,7 +101,7 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
    }
 
     private boolean isNotBlank(String _v) {
-        if (_v == null || _v.length() == 0) {
+        if (_v == null || _v.isEmpty()) {
             return false;
         }
         for (int i = 0; i < _v.length(); i++) {
@@ -119,7 +119,7 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
       if (re == null) {
          Image im = null;
          String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
-         if (imageSrc == null || imageSrc.length() == 0) {
+         if (imageSrc == null || imageSrc.isEmpty()) {
             XRLog.layout(Level.WARNING, "No source provided for img element.");
             re = newIrreplaceableImageElement(cssWidth, cssHeight);
          } else {

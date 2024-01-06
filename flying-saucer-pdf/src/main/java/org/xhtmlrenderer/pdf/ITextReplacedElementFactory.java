@@ -140,7 +140,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
             List<RadioButtonFormField> values = _radioButtonsByName.get(fieldName);
             if (values != null) {
                 values.remove(field);
-                if (values.size() == 0) {
+                if (values.isEmpty()) {
                     _radioButtonsByName.remove(fieldName);
                 }
             }

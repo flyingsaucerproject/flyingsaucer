@@ -17,15 +17,14 @@
  */
 
 
-import java.io.IOException;
-import java.io.File;
-import java.awt.image.BufferedImage;
+import org.xhtmlrenderer.simple.Graphics2DRenderer;
+import org.xhtmlrenderer.swing.Java2DRenderer;
+import org.xhtmlrenderer.util.FSImageWriter;
 
 import javax.imageio.ImageIO;
-
-import org.xhtmlrenderer.swing.Java2DRenderer;
-import org.xhtmlrenderer.simple.Graphics2DRenderer;
-import org.xhtmlrenderer.util.FSImageWriter;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  */
@@ -42,7 +41,7 @@ public class ImageRender {
             usage("Incorrect argument list.");
         }
         String url = args[0];
-        if (url.indexOf("://") == -1) {
+        if (!url.contains("://")) {
             // maybe it's a file
             File f = new File(url);
             if (f.exists()) {
@@ -71,7 +70,7 @@ public class ImageRender {
      * prints out usage information, with optional error message
      */
     private static void usage(String err) {
-        if (err != null && err.length() > 0) {
+        if (err != null && !err.isEmpty()) {
             System.err.println("==>" + err);
         }
         System.err.println("Usage: ... [url]");

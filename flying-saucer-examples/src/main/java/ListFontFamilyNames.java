@@ -53,7 +53,7 @@ public class ListFontFamilyNames {
                 }
             }
         }
-        if (errors.size() > 0) {
+        if (!errors.isEmpty()) {
             if (args.length == 2 && args[1].equals("-e")) {
                 System.err.println("Errors were reported on reading some font files.");
                 for (String error : errors) {

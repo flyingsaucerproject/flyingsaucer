@@ -96,8 +96,8 @@ public class InlineBox implements Styleable {
         return _removableWhitespace;
     }
 
-    public void setRemovableWhitespace(boolean removeableWhitespace) {
-        _removableWhitespace = removeableWhitespace;
+    public void setRemovableWhitespace(boolean removableWhitespace) {
+        _removableWhitespace = removableWhitespace;
     }
 
     public boolean isEndsHere() {
@@ -212,7 +212,7 @@ public class InlineBox implements Styleable {
     }
 
     public int getTrailingSpaceWidth(LayoutContext c) {
-        if (_text.length() > 0 && _text.charAt(_text.length()-1) == ' ') {
+        if (!_text.isEmpty() && _text.charAt(_text.length()-1) == ' ') {
             return getSpaceWidth(c);
         } else {
             return 0;
@@ -334,7 +334,7 @@ public class InlineBox implements Styleable {
         if (! trimLeadingSpace) {
             return getText();
         } else {
-            if (_text.length() > 0 && _text.charAt(0) == ' ') {
+            if (!_text.isEmpty() && _text.charAt(0) == ' ') {
                 return _text.substring(1);
             } else {
                 return _text;

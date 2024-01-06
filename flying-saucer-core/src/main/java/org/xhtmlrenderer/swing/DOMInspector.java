@@ -496,7 +496,7 @@ class DOMTreeModel implements TreeModel {
                 Node child = nl.item(i);
                 if (child.getNodeType() == Node.ELEMENT_NODE ||
                         child.getNodeType() == Node.COMMENT_NODE ||
-                        (child.getNodeType() == Node.TEXT_NODE && (child.getNodeValue().trim().length() > 0))) {
+                        (child.getNodeType() == Node.TEXT_NODE && !child.getNodeValue().trim().isEmpty())) {
                     children.add(child);
                 }
             }
@@ -536,7 +536,7 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
 
         if (node.getNodeType() == Node.TEXT_NODE) {
 
-            if (node.getNodeValue().trim().length() > 0) {
+            if (!node.getNodeValue().trim().isEmpty()) {
                 value = "\"" + node.getNodeValue() + "\"";
             }
         }

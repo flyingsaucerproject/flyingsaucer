@@ -466,7 +466,7 @@ public class LayoutContext implements CssContext {
             //_parent is never null for a publicly accessible CounterContext
             List<Integer> values = new ArrayList<>();
             _parent.getCounterValues(name, values);
-            if (values.size() == 0) {
+            if (values.isEmpty()) {
                 _parent.resetCounter(new CounterData(name, 0));
                 values.add(0);
             }

@@ -56,7 +56,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         switch (nodeName) {
             case "img":
                 String srcAttr = e.getAttribute("src");
-                if (srcAttr.length() > 0) {
+                if (!srcAttr.isEmpty()) {
                     FSImage fsImage = uac.getImageResource(srcAttr).getImage();
                     if (fsImage != null) {
                         if (cssWidth != -1 || cssHeight != -1) {
@@ -140,7 +140,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
             List<RadioButtonFormField> values = _radioButtonsByName.get(fieldName);
             if (values != null) {
                 values.remove(field);
-                if (values.size() == 0) {
+                if (values.isEmpty()) {
                     _radioButtonsByName.remove(fieldName);
                 }
             }
