@@ -3,7 +3,6 @@ package org.xhtmlrenderer.pdf;
 import com.lowagie.text.pdf.PdfAcroForm;
 import com.lowagie.text.pdf.PdfWriter;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
@@ -44,8 +43,6 @@ public class EmptyReplacedElement extends AbstractFormField {
         value = value.substring(0, 127);
     }
     acroForm.addHiddenField(name, value);
-
-
   }
 
   public int getIntrinsicWidth()
@@ -71,14 +68,6 @@ public class EmptyReplacedElement extends AbstractFormField {
   protected String getFieldType()
   {
     return FIELD_TYPE;
-  }
-
-  public void detach(LayoutContext c) {
-  }
-
-  public boolean isRequiresInteractivePaint()
-  {
-    return false;
   }
 
   public boolean hasBaseline()
