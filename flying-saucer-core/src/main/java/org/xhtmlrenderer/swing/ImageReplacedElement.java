@@ -82,32 +82,26 @@ public class ImageReplacedElement implements ReplacedElement {
         _image = image;
     }
 
-    /** {@inheritDoc} */
     public void detach(LayoutContext c) {
         // nothing to do in this case
     }
 
-    /** {@inheritDoc} */
     public int getIntrinsicHeight() {
         return _image.getHeight(null);
     }
 
-    /** {@inheritDoc} */
     public int getIntrinsicWidth() {
         return _image.getWidth(null);
     }
 
-    /** {@inheritDoc} */
     public Point getLocation() {
         return _location;
     }
 
-    /** {@inheritDoc} */
     public boolean isRequiresInteractivePaint() {
         return true;
     }
 
-    /** {@inheritDoc} */
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }

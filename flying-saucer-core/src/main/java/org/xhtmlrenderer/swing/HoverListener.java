@@ -36,18 +36,12 @@ import java.awt.*;
 public class HoverListener extends DefaultFSMouseListener {
     private Box _previouslyHovered;
 
-    /**
-     * {@inheritDoc}
-     */
     public void onMouseOut(BasicPanel panel, Box box) {
         // Since we keep track of the most recently hovered element, we do not
         // need to explicitly handle mouseout events.  This way we only try to
         // restyle elements that were actually hoverable to begin with.
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void onMouseOver(BasicPanel panel, Box box) {
         LayoutContext c = panel.getLayoutContext();
 
