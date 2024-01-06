@@ -28,6 +28,7 @@ import org.xml.sax.InputSource;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.transform.sax.SAXSource;
 import java.io.File;
 import java.io.IOException;
@@ -49,8 +50,8 @@ import java.util.List;
  * {@link #getBack()}, {@link #getForward()} and {@link #hasForward()} methods to navigate within the history.
  * As a NaiveUserAgent, the PanelManager is also a DocumentListener, but must be added to the source of document
  * events (like a RootPanel subclass).
- *
  */
+@ParametersAreNonnullByDefault
 public class PanelManager extends DelegatingUserAgent {
     private int index = -1;
     private final List<String> history = new ArrayList<>();
@@ -89,8 +90,8 @@ public class PanelManager extends DelegatingUserAgent {
         } else {
             try {
                 URL base;
-                if (burl == null || burl.length() == 0) {
-                    base = new File(".").toURL();
+                if (burl == null || burl.isEmpty()) {
+                    base = new File(".").toURI().toURL();
                 } else {
                     base = new URL(burl);
                 }
