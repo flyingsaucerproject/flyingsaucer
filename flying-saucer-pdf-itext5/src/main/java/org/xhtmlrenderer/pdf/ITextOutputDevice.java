@@ -74,6 +74,7 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -256,7 +257,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         PdfDestination dest = createDestination(c, target);
 
                         PdfAction action = new PdfAction();
-                        if (!"".equals(handler.getAttributeValue(elem, "onclick"))) {
+                        if (!handler.getAttributeValue(elem, "onclick").isEmpty()) {
                             action = PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
                         } else {
                             action.put(PdfName.S, PdfName.GOTO);
@@ -489,7 +490,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (Configuration.isTrue("xr.renderer.replace-missing-characters", false)) {
             s = replaceMissingCharacters(s);
         }
-        if (s.length() == 0)
+        if (s.isEmpty())
             return;
         PdfContentByte cb = _currentPage;
         ensureFillColor();
@@ -735,22 +736,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
         if (!oldOk || nStroke.getMiterLimit() != oStroke.getMiterLimit())
             cb.setMiterLimit(nStroke.getMiterLimit());
-        boolean makeDash;
-        if (oldOk) {
-            if (nStroke.getDashArray() != null) {
-                if (nStroke.getDashPhase() != oStroke.getDashPhase()) {
-                    makeDash = true;
-                } else if (!java.util.Arrays.equals(nStroke.getDashArray(), oStroke.getDashArray())) {
-                    makeDash = true;
-                } else
-                    makeDash = false;
-            } else if (oStroke.getDashArray() != null) {
-                makeDash = true;
-            } else
-                makeDash = false;
-        } else {
-            makeDash = true;
-        }
+        boolean makeDash = isMakeDash(oldOk, nStroke, oStroke);
         if (makeDash) {
             float[] dash = nStroke.getDashArray();
             if (dash == null)
@@ -765,6 +751,22 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 cb.setLiteral(nStroke.getDashPhase());
                 cb.setLiteral(" d\n");
             }
+        }
+    }
+
+    private boolean isMakeDash(boolean oldOk, BasicStroke nStroke, BasicStroke oStroke) {
+        if (oldOk) {
+            if (nStroke.getDashArray() != null) {
+                if (nStroke.getDashPhase() != oStroke.getDashPhase()) {
+                    return true;
+                } else {
+                    return !Arrays.equals(nStroke.getDashArray(), oStroke.getDashArray());
+                }
+            } else {
+                return oStroke.getDashArray() != null;
+            }
+        } else {
+            return true;
         }
     }
 
@@ -925,7 +927,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (_bookmarks.isEmpty()) {
             _bookmarks = HTMLOutline.generate(root.getElement(), root);
         }
-        if (_bookmarks.size() > 0) {
+        if (!_bookmarks.isEmpty()) {
             _writer.setViewerPreferences(PdfWriter.PageModeUseOutlines);
             writeBookmarks(c, root, _writer.getRootOutline(), _bookmarks);
         }
@@ -950,7 +952,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         String href = bookmark.getHRef();
         PdfDestination target = null;
         Box box = bookmark.getBox();
-        if (href.length() > 0 && href.charAt(0) == '#') {
+        if (!href.isEmpty() && href.charAt(0) == '#') {
             box = _sharedContext.getBoxById(href.substring(1));
         }
         if (box != null) {
@@ -1171,7 +1173,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     // Class for storing metadata element name/content pairs from the head
-    // section of an xhtml document.
+    // section of xhtml document.
     private static class Metadata {
         private String _name;
         private String _content;
