@@ -20,14 +20,14 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Rectangle;
-
 import org.w3c.dom.Text;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.layout.FunctionData;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.util.Uu;
+
+import java.awt.*;
 
 /**
  * A lightweight object which contains a chunk of text from an inline element.
@@ -265,8 +265,7 @@ public class InlineText {
         if (isTrimmedLeadingSpace()) {
             result.append(' ');
         }
-        for (int i = 0; i < ch.length; i++) {
-            char c = ch[i];
+        for (char c : ch) {
             if (c != '\n') {
                 result.append(c);
             }
