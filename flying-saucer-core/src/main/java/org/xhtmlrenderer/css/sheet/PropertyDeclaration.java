@@ -150,8 +150,6 @@ public class PropertyDeclaration {
      * non-important! property, and so on. The actual integer value returned by
      * this method is unimportant, but has the lowest value of 0 and increments
      * sequentially by 1 for each increase in origin/importance.
-     *
-     * @return See method javadoc.
      */
     public int getImportanceAndOrigin() {
         if (origin == StylesheetInfo.USER_AGENT) {
@@ -171,8 +169,6 @@ public class PropertyDeclaration {
 
     /**
      * Returns the CSS name of this property, e.g. "font-family".
-     *
-     * @return See desc.
      */
     public String getPropertyName() {
         return propName;
@@ -192,8 +188,6 @@ public class PropertyDeclaration {
      * Specified means the value as entered by the user. Modifying the CSSValue
      * returned here will result in indeterminate behavior--consider it
      * immutable.
-     *
-     * @return See desc.
      */
     public CSSPrimitiveValue getValue() {
         return cssPrimitiveValue;

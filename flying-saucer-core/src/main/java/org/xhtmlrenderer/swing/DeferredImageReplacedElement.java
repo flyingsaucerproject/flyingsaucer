@@ -90,7 +90,6 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
 
     /**
      * The image we're replacing.
-     * @return see desc
      */
     public Image getImage() {
         if (!_loaded && _imageResource.isLoaded()) {

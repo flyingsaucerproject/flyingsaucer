@@ -508,7 +508,6 @@ public class CalculatedStyle {
      * style, the property will already be resolved at this point.
      *
      * @param cssName The CSS property name, e.g. "font-family"
-     * @return See desc.
      */
     public FSDerivedValue valueByName(CSSName cssName) {
         FSDerivedValue val = _derivedValuesById[cssName.FS_ID];
