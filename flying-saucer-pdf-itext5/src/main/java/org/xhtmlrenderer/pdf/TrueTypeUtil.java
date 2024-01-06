@@ -1,6 +1,9 @@
 package org.xhtmlrenderer.pdf;
 
+import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.io.RandomAccessSource;
+import com.itextpdf.text.io.RandomAccessSourceFactory;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.RandomAccessFileOrArray;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -80,7 +83,11 @@ public class TrueTypeUtil {
 
     public static void populateDescription(String path, BaseFont font, FontDescription description)
             throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
-        RandomAccessFileOrArray rf = new RandomAccessFileOrArray(getTTCName(path));
+        RandomAccessSource source = new RandomAccessSourceFactory()
+                .setForceRead(false)
+                .setUsePlainRandomAccess(Document.plainRandomAccess)
+                .createBestSource(getTTCName(path));
+        RandomAccessFileOrArray rf = new RandomAccessFileOrArray(source);
         try {
             populateDescription0(path, font, description, rf);
         } finally {
@@ -90,7 +97,8 @@ public class TrueTypeUtil {
 
     public static void populateDescription(String path, byte[] contents, BaseFont font, FontDescription description)
             throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
-        RandomAccessFileOrArray rf = new RandomAccessFileOrArray(contents);
+        RandomAccessSource source = new RandomAccessSourceFactory().createSource(contents);
+        RandomAccessFileOrArray rf = new RandomAccessFileOrArray(source);
         try {
             populateDescription0(path, font, description, rf);
         } finally {

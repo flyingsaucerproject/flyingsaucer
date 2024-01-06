@@ -19,7 +19,7 @@ public class NetBeansPageTest {
         for (int i = 0; i < cnt; i++) {
             Date start = new Date();
             Graphics2DRenderer.renderToImage(
-                    new File(page).toURL().toExternalForm(),
+                    new File(page).toURI().toURL().toExternalForm(),
                     700, 700);
             Date end = new Date();
             long diff = (end.getTime() - start.getTime());

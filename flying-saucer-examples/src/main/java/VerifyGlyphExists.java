@@ -19,7 +19,12 @@
  */
 
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,7 +124,7 @@ public class VerifyGlyphExists {
     }
 
     private static Font loadFont( String fontPath) throws IOException {
-        try( final InputStream s = new File( fontPath ).toURL().openStream() ) {
+        try (final InputStream s = new File(fontPath).toURI().toURL().openStream()) {
             final int format = Font.TRUETYPE_FONT;
             final Font font = Font.createFont(format,s );
 
