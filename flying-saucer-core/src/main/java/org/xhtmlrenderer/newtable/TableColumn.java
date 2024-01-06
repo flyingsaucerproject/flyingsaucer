@@ -24,8 +24,8 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Styleable;
 
 /**
- * An object representing an element with <code>display: table-column</code> or
- * <code>display: table-column-group</code>.
+ * An object representing an element with {@code display: table-column} or
+ * {@code display: table-column-group}.
  */
 public class TableColumn implements Styleable {
     private Element _element;
