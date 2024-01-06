@@ -63,13 +63,13 @@ public class DocumentDiffTest {
     public void generateDiffs(File dir, int width, int height)
             throws Exception {
         File[] files = dir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isDirectory()) {
-                generateDiffs(files[i], width, height);
+        for (File file : files) {
+            if (file.isDirectory()) {
+                generateDiffs(file, width, height);
                 continue;
             }
-            if (files[i].getName().endsWith(".xhtml")) {
-                String testfile = files[i].getAbsolutePath();
+            if (file.getName().endsWith(".xhtml")) {
+                String testfile = file.getAbsolutePath();
                 String difffile = testfile.substring(0, testfile.length() - 6) + ".diff";
                 //Uu.p("test file = " + testfile);
                 generateTestFile(testfile, difffile, width, height);
