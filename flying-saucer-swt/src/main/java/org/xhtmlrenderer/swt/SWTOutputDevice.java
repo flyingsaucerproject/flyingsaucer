@@ -309,7 +309,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         }
         _gc.setLineJoin(gcJoin);
 
-        float d[] = bs.getDashArray();
+        float[] d = bs.getDashArray();
         int[] dashes = null;
         if (d != null) {
             dashes = new int[d.length];
