@@ -924,7 +924,7 @@ public class PrimitivePropertyBuilders {
                 }
 
                 if (operator != null) {
-                    if (consecutiveIdents.size() > 0) {
+                    if (!consecutiveIdents.isEmpty()) {
                         normalized.add(concat(consecutiveIdents, ' '));
                         consecutiveIdents.clear();
                     }
@@ -933,7 +933,7 @@ public class PrimitivePropertyBuilders {
                 checkInheritAllowed(value, false);
                 short type = value.getPrimitiveType();
                 if (type == CSSPrimitiveValue.CSS_STRING) {
-                    if (consecutiveIdents.size() > 0) {
+                    if (!consecutiveIdents.isEmpty()) {
                         normalized.add(concat(consecutiveIdents, ' '));
                         consecutiveIdents.clear();
                     }
@@ -944,7 +944,7 @@ public class PrimitivePropertyBuilders {
                     throw new CSSParseException("Invalid font-family definition", -1);
                 }
             }
-            if (consecutiveIdents.size() > 0) {
+            if (!consecutiveIdents.isEmpty()) {
                 normalized.add(concat(consecutiveIdents, ' '));
             }
 

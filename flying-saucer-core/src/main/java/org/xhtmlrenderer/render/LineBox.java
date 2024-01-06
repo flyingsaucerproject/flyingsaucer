@@ -89,7 +89,7 @@ public class LineBox extends Box implements InlinePaintable {
         result.append('\n');
 
         dumpBoxes(c, indent, getNonFlowContent(), Box.DUMP_RENDER, result);
-        if (getNonFlowContent().size() > 0  ) {
+        if (!getNonFlowContent().isEmpty()) {
             result.append('\n');
         }
         dumpBoxes(c, indent, getChildren(), Box.DUMP_RENDER, result);

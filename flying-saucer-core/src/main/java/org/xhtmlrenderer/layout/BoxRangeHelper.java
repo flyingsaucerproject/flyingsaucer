@@ -39,13 +39,13 @@ public class BoxRangeHelper {
         _outputDevice = outputDevice;
         _rangeList = rangeList;
 
-        if (rangeList.size() > 0) {
+        if (!rangeList.isEmpty()) {
             _current = rangeList.get(0);
         }
     }
 
     public void checkFinished() {
-        if (_clipRegionStack.size() != 0) {
+        if (!_clipRegionStack.isEmpty()) {
             throw new XRRuntimeException("internal error");
         }
     }
@@ -66,7 +66,7 @@ public class BoxRangeHelper {
     }
 
     public void popClipRegions(RenderingContext c, int contentIndex) {
-        while (_clipRegionStack.size() > 0) {
+        while (!_clipRegionStack.isEmpty()) {
             BoxRangeData data = _clipRegionStack.getLast();
             if (data.getRange().getEnd() == contentIndex) {
                 _outputDevice.setClip(data.getClip());

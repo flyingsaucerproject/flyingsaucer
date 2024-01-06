@@ -511,7 +511,7 @@ public final class SharedContext {
 
     public void removeElementReferences(Element e) {
         String id = namespaceHandler.getID(e);
-        if (id != null && id.length() > 0) {
+        if (id != null && !id.isEmpty()) {
             removeBoxId(id);
         }
 

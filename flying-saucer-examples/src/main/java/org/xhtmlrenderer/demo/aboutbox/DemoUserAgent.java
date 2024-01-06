@@ -195,7 +195,7 @@ public class DemoUserAgent implements UserAgentCallback {
         } else {
             try {
                 URL base;
-                if (baseUrl == null || baseUrl.length() == 0) {
+                if (baseUrl == null || baseUrl.isEmpty()) {
                     ref = new URL(uri);
                 } else {
                     base = new URL(baseUrl);

@@ -664,7 +664,7 @@ public class TableBox extends BlockBox {
 
     public TableColumn colElement(int col) {
         List<TableColumn> styleColumns = getStyleColumns();
-        if (styleColumns.size() == 0) {
+        if (styleColumns.isEmpty()) {
             return null;
         }
         int cCol = 0;

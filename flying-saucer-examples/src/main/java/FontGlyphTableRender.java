@@ -113,7 +113,7 @@ public class FontGlyphTableRender {
         chooseFontFileBtn.addActionListener(e -> {
             String filename = File.separator + "tmp";
             String famPath = fontPathTF.getText();
-            if (currentFont != null && famPath.length() > 0) {
+            if (currentFont != null && !famPath.isEmpty()) {
                 filename = new File(famPath).getParent();
             }
             JFileChooser fc = new JFileChooser(new File(filename));
@@ -362,7 +362,7 @@ public class FontGlyphTableRender {
     // be set to null
     private void resolveCurrentFont() {
         String path = fontPathTF.getText();
-        if (path.length() == 0) {
+        if (path.isEmpty()) {
             currentFont = null;
             return;
         }

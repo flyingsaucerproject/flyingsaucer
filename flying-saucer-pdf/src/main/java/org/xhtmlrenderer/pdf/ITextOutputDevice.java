@@ -486,7 +486,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (Configuration.isTrue("xr.renderer.replace-missing-characters", false)) {
             s = replaceMissingCharacters(s);
         }
-        if (s.length() == 0)
+        if (s.isEmpty())
             return;
         PdfContentByte cb = _currentPage;
         ensureFillColor();

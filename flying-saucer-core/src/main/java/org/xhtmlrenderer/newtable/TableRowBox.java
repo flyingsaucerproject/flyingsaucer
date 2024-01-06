@@ -170,7 +170,7 @@ public class TableRowBox extends BlockBox {
         int cRow = getIndex();
         int totalRows = getSection().numRows();
         List<RowData> grid = getSection().getGrid();
-        if ((grid.size() > 0) && (cRow < grid.size())) {
+        if (!grid.isEmpty() && cRow < grid.size()) {
             List<TableCellBox> row = grid.get(cRow).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = row.get(cCol);
@@ -260,7 +260,7 @@ public class TableRowBox extends BlockBox {
         int cRow = getIndex();
         int totalRows = getSection().numRows();
         List<RowData> grid = getSection().getGrid();
-        if ((grid.size() > 0) && (cRow < grid.size())) {
+        if (!grid.isEmpty() && cRow < grid.size()) {
             List<TableCellBox> row = grid.get(cRow).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = row.get(cCol);
@@ -356,7 +356,7 @@ public class TableRowBox extends BlockBox {
         int cRow = getIndex();
         int totalRows = getSection().numRows();
         List<RowData> grid = getSection().getGrid();
-        if ((grid.size() > 0) && (cRow < grid.size())) {
+        if (!grid.isEmpty() && cRow < grid.size()) {
             List<TableCellBox> row = grid.get(cRow).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = row.get(cCol);
@@ -393,7 +393,7 @@ public class TableRowBox extends BlockBox {
         int cRow = getIndex();
         int totalRows = getSection().numRows();
         List<RowData> grid = getSection().getGrid();
-        if ((grid.size() > 0) && (cRow < grid.size())) {
+        if (!grid.isEmpty() && cRow < grid.size()) {
             List<TableCellBox> row = grid.get(cRow).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = row.get(cCol);
@@ -422,7 +422,7 @@ public class TableRowBox extends BlockBox {
         int cRow = getIndex();
         int totalRows = getSection().numRows();
         List<RowData> grid = getSection().getGrid();
-        if ((grid.size() > 0) && (cRow < grid.size())) {
+        if (!grid.isEmpty() && cRow < grid.size()) {
             List<TableCellBox> row = grid.get(cRow).getRow();
             for (int cCol = 0; cCol < row.size(); cCol++) {
                 TableCellBox cell = row.get(cCol);

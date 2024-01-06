@@ -45,7 +45,7 @@ public class SelectControl extends AbstractControl {
         super(form, e);
 
         _size = getIntAttribute(e, "size", 1);
-        _multiple = e.getAttribute("multiple").length() != 0;
+        _multiple = !e.getAttribute("multiple").isEmpty();
         super.setValue(null);
         setSuccessful(false);
         traverseOptions(e, "");
@@ -75,16 +75,16 @@ public class SelectControl extends AbstractControl {
                     String value = child.getAttribute("value");
                     String label = child.getAttribute("label");
                     String content = collectText(child);
-                    if (value.length() == 0) {
+                    if (value.isEmpty()) {
                         value = content;
                     }
-                    if (label.length() == 0) {
+                    if (label.isEmpty()) {
                         label = content;
                     } else {
                         label = prefix + label;
                     }
                     _options.put(value, label);
-                    if (child.getAttribute("selected").length() != 0) {
+                    if (!child.getAttribute("selected").isEmpty()) {
                         if (isMultiple()) {
                             if (!_values.contains(value)) {
                                 _values.add(value);

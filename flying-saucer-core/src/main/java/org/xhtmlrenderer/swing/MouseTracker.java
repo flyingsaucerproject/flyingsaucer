@@ -86,7 +86,7 @@ public class MouseTracker extends MouseInputAdapter {
 
         _handlers.remove(l);
 
-        if (_enabled && _handlers.size() == 0) {
+        if (_enabled && _handlers.isEmpty()) {
             _panel.removeMouseListener(this);
             _panel.removeMouseMotionListener(this);
 

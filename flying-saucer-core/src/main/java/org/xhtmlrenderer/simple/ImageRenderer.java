@@ -165,7 +165,7 @@ public class ImageRenderer {
      * prints out usage information, with optional error message
      */
     private static void usage(String err) {
-        if (err != null && err.length() > 0) {
+        if (err != null && !err.isEmpty()) {
             System.err.println("==>" + err);
         }
         System.err.println("Usage: ... [url]");

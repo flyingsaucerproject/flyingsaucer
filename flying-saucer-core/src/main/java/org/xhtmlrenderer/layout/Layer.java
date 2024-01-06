@@ -413,7 +413,7 @@ public final class Layer {
             }
         }
 
-        if (triggerCellsByTable.size() == 0) {
+        if (triggerCellsByTable.isEmpty()) {
             return null;
         } else {
             Map<TableCellBox, List<CollapsedBorderSide>> result = new HashMap<>();
@@ -658,7 +658,7 @@ public final class Layer {
 
     private void layoutAbsoluteChildren(LayoutContext c) {
         List<Layer> children = new ArrayList<>(getChildren());
-        if (children.size() > 0) {
+        if (!children.isEmpty()) {
             LayoutState state = c.captureLayoutState();
             for (Layer layer : children) {
                 if (layer.isRequiresLayout()) {
@@ -724,7 +724,7 @@ public final class Layer {
     public void addPage(CssContext c) {
         String pseudoPage;
         List<PageBox> pages = getPages();
-        if (pages.size() == 0) {
+        if (pages.isEmpty()) {
             pseudoPage = "first";
         } else if (pages.size() % 2 == 0) {
             pseudoPage = "right";
@@ -732,7 +732,7 @@ public final class Layer {
             pseudoPage = "left";
         }
         PageBox pageBox = createPageBox(c, pseudoPage);
-        if (pages.size() == 0) {
+        if (pages.isEmpty()) {
             pageBox.setTopAndBottom(c, 0);
         } else {
             PageBox previous = pages.get(pages.size()-1);
@@ -909,7 +909,7 @@ public final class Layer {
 
     public PageBox getLastPage() {
         List<PageBox> pages = getPages();
-        return pages.size() == 0 ? null : pages.get(pages.size()-1);
+        return pages.isEmpty() ? null : pages.get(pages.size()-1);
     }
 
     public boolean crossesPageBreak(LayoutContext c, int top, int bottom) {

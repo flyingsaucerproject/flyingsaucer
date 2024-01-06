@@ -779,7 +779,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
 
         public boolean canCopy() {
-            return lastHighlightedString.length() != 0;
+            return !lastHighlightedString.isEmpty();
         }
 
     }

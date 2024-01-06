@@ -413,7 +413,7 @@ public class Matcher {
                 propList.addAll(rs.getPropertyDeclarations());
             }
 
-            if (propList.size() == 0)
+            if (propList.isEmpty())
                 return CascadedStyle.emptyCascadedStyle; // already internalized
             else {
                 return new CascadedStyle(propList);

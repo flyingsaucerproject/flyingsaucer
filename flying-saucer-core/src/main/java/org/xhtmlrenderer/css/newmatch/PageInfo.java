@@ -61,7 +61,7 @@ public class PageInfo {
     public CascadedStyle createMarginBoxStyle(MarginBoxName marginBox, boolean alwaysCreate) {
         List<PropertyDeclaration> marginProps = _marginBoxes.get(marginBox);
 
-        if ((marginProps == null || marginProps.size() == 0) && ! alwaysCreate) {
+        if ((marginProps == null || marginProps.isEmpty()) && ! alwaysCreate) {
             return null;
         }
 

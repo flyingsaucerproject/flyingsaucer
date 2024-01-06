@@ -139,7 +139,7 @@ public class BrowserStartup {
     class FrameBrowserPanelListener implements BrowserPanelListener {
         @Override
         public void pageLoadSuccess(String url, String title) {
-            frame.setTitle(title + (title.length() > 0 ? " - " : "") + "Flying Saucer");
+            frame.setTitle(title + (!title.isEmpty() ? " - " : "") + "Flying Saucer");
         }
     }
 
