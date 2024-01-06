@@ -20,6 +20,6 @@
 package org.xhtmlrenderer.css.sheet;
 
 public interface RulesetContainer {
-    public void addContent(Ruleset ruleset);
-    public int getOrigin();
+    void addContent(Ruleset ruleset);
+    int getOrigin();
 }

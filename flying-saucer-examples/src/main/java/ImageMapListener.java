@@ -22,5 +22,5 @@
  * Callback handler for image map events.
  */
 public interface ImageMapListener {
-    public void areaClicked(ImageMapEvent imageMapEvent);
+    void areaClicked(ImageMapEvent imageMapEvent);
 }
