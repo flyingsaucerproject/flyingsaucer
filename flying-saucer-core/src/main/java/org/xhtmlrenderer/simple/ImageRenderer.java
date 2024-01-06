@@ -117,12 +117,7 @@ public class ImageRenderer {
 
     /**
      * Renders a document at a given URL and writes it out using the FSImageWriter provided (e.g. to a file
-     * or outputstream).
-     *
-     * @param url
-     * @param fsw
-     * @param path
-     * @param width
+     * or output stream).
      */
     public static BufferedImage renderImageToOutput(String url, FSImageWriter fsw, String path, int width)
             throws IOException {

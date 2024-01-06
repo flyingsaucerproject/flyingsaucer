@@ -30,7 +30,6 @@ public class SystemPropertiesUtil {
      *
      * @param propertyName property to retrieve
      * @param defaultVal value to use if not found, or not allowed to use the property
-     * @return
      */
     public static String getPropertyOrDefaultSandbox(String propertyName, String defaultVal) {
         String val = defaultVal;

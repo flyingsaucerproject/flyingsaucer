@@ -14,7 +14,7 @@ import java.net.URL;
  * in the browser
  *
  * @author jmarinacci
- * @created November 17, 2004
+ * @since November 17, 2004
  */
 public class GenerateDiffAction extends AbstractAction {
 

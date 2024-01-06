@@ -1,8 +1,9 @@
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.XMLUtil;
+
+import javax.swing.*;
+
+import static javax.swing.SwingUtilities.invokeLater;
 
 
 public class QuotingExample extends JFrame {
@@ -46,14 +47,7 @@ public class QuotingExample extends JFrame {
         setSize(500, 300);
     }
     
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new QuotingExample().setVisible(true);
-            }
-        });
+        invokeLater(() -> new QuotingExample().setVisible(true));
     }
 }

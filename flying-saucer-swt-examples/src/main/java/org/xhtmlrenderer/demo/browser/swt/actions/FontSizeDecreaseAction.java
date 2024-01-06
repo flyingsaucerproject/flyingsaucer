@@ -23,13 +23,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 
+import javax.annotation.Nullable;
+
 public class FontSizeDecreaseAction extends AbstractAction {
 
     public FontSizeDecreaseAction() {
         super("Decrease\tCtrl+Minus", SWT.PUSH, SWT.CTRL | '-', null);
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         browser.getRenderer().decrementFontSize();
     }
 

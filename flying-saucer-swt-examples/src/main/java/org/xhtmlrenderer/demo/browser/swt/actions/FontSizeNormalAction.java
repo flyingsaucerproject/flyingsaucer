@@ -23,13 +23,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 
+import javax.annotation.Nullable;
+
 public class FontSizeNormalAction extends AbstractAction {
 
     public FontSizeNormalAction() {
         super("Normal\tCtrl+0", SWT.PUSH, SWT.CTRL | '0', null);
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         browser.getRenderer().resetFontSize();
     }
 

@@ -308,7 +308,6 @@ public class Matcher {
         /**
          * Side effect: creates and stores a Mapper for the element
          *
-         * @param e
          * @return The selectors that matched, sorted according to specificity
          *         (more correct: preserves the sort order from Matcher creation)
          */

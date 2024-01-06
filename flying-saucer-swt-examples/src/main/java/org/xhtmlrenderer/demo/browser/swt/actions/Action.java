@@ -22,6 +22,8 @@ package org.xhtmlrenderer.demo.browser.swt.actions;
 import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 
+import javax.annotation.Nullable;
+
 public interface Action {
 
     String getText();
@@ -35,9 +37,8 @@ public interface Action {
     /**
      * Called when the action needs to be executed.
      *
-     * @param browser
-     * @param mi the MenuItem selected or <code>null</code> if none.
+     * @param mi the MenuItem selected or {@code null} if none.
      */
-    void run(Browser browser, MenuItem mi);
+    void run(Browser browser, @Nullable MenuItem mi);
 
 }

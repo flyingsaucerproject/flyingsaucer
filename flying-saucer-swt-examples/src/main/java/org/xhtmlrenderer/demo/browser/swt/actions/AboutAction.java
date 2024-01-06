@@ -33,6 +33,8 @@ import org.xhtmlrenderer.demo.browser.swt.Browser;
 import org.xhtmlrenderer.demo.browser.swt.BrowserUserAgent;
 import org.xhtmlrenderer.simple.SWTXHTMLRenderer;
 
+import javax.annotation.Nullable;
+
 public class AboutAction extends AbstractAction {
 
     private static final String ABOUT_URL = "demo:/demos/r7/about.xhtml";
@@ -41,7 +43,7 @@ public class AboutAction extends AbstractAction {
         super("About", SWT.PUSH, SWT.NONE, null);
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         // create about dialog
         final Display display = browser.getShell().getDisplay();
         final Shell shell = new Shell(browser.getShell(), SWT.DIALOG_TRIM

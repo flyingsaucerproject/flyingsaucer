@@ -90,7 +90,7 @@ public class PropertyDeclaration {
      * Creates a new instance of PropertyDeclaration from an {@link
      * CSSPrimitiveValue} instance.
      *
-     * @param cssName
+     * @param cssName the name of CSS property
      * @param value   The CSSValue to wrap
      * @param imp     True if property was declared important! and false if
      *                not.

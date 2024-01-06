@@ -162,10 +162,6 @@ public class StyleReference {
     /**
      * Gets the CascadedStyle for an element. This must then be converted in the
      * current context to a CalculatedStyle (use getDerivedStyle)
-     *
-     * @param e       The element
-     * @param restyle
-     * @return The style value
      */
     public CascadedStyle getCascadedStyle(Element e, boolean restyle) {
         if (e == null) return CascadedStyle.emptyCascadedStyle;

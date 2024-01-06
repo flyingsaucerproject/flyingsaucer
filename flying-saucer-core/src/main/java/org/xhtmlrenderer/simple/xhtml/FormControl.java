@@ -55,8 +55,6 @@ public interface FormControl {
 
     /**
      * Enable/disable this control
-     *
-     * @param enabled
      */
     void setEnabled(boolean enabled);
 
@@ -82,8 +80,6 @@ public interface FormControl {
 
     /**
      * Sets this control's successful state.
-     *
-     * @param successful
      */
     void setSuccessful(boolean successful);
 
@@ -96,8 +92,6 @@ public interface FormControl {
     /**
      * Sets the control's current value. This has no effect when isMultiple
      * returns true.
-     *
-     * @param value
      */
     void setValue(String value);
 
@@ -110,8 +104,6 @@ public interface FormControl {
     /**
      * Sets the control's current values (when isMultiple returns true). This
      * has no effect when isMultiple returns false.
-     *
-     * @param values
      */
     void setMultipleValues(String[] values);
 

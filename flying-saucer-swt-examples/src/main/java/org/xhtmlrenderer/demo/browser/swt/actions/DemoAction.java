@@ -24,6 +24,8 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 import org.xhtmlrenderer.demo.browser.swt.DemosNavigation.Demo;
 
+import javax.annotation.Nullable;
+
 public class DemoAction extends AbstractAction {
 
     private final Demo _demo;
@@ -33,7 +35,7 @@ public class DemoAction extends AbstractAction {
         _demo = demo;
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         browser.getUac().getDemos().setCurrent(_demo);
         browser.load(_demo.getUrl());
     }
