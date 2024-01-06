@@ -70,7 +70,7 @@ public class ImageRenderer {
      * @throws java.io.IOException if the input URL, or output path location is invalid
      */
     public static BufferedImage renderToImage(String url, String path, int width) throws IOException {
-        return renderImageToOutput(url, new FSImageWriter(), path, width);
+        return renderImageToOutput(url, path, width);
     }
 
     /**
@@ -84,7 +84,7 @@ public class ImageRenderer {
      * @throws java.io.IOException if the input URL, or output path location is invalid
      */
     public static BufferedImage renderToImage(String url, String path, int width, int height) throws IOException {
-        return renderImageToOutput(url, new FSImageWriter(), path, width);
+        return renderImageToOutput(url, path, width);
     }
 
     /**
@@ -120,13 +120,13 @@ public class ImageRenderer {
      * Renders a document at a given URL and writes it out using the FSImageWriter provided (e.g. to a file
      * or output stream).
      */
-    public static BufferedImage renderImageToOutput(String url, FSImageWriter fsw, String path, int width)
+    private static BufferedImage renderImageToOutput(String url, String path, int width)
             throws IOException {
         
         try (OutputStream os = new BufferedOutputStream(newOutputStream(Paths.get(path)))) {
             Java2DRenderer renderer = new Java2DRenderer(url, url, width);
             BufferedImage image = renderer.getImage();
-            fsw.write(image, os);
+            new FSImageWriter().write(image, os);
             return image;
         }
     }
