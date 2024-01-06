@@ -34,8 +34,8 @@ public class BrowserStartup {
     protected JFrame frame;
     protected JFrame validation_console = null;
     protected BrowserActions actions;
-    protected String startPage;
-    protected ValidationHandler error_handler = new ValidationHandler();
+    protected final String startPage;
+    protected final ValidationHandler error_handler = new ValidationHandler();
     private static final Logger logger = Logger.getLogger("app.browser");
 
     public BrowserStartup() {

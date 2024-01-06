@@ -31,8 +31,8 @@ import java.awt.print.Printable;
 
 public class XHTMLPrintable implements Printable {
 
-    protected XHTMLPanel panel;
-    protected Graphics2DRenderer g2r = null;
+    private final XHTMLPanel panel;
+    private Graphics2DRenderer g2r;
 
 
     /**

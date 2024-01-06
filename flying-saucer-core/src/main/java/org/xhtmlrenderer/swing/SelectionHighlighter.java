@@ -92,7 +92,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     private ViewModelInfo markInfo;
 
-    protected EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     protected transient ChangeEvent changeEvent;
 
@@ -815,6 +815,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
     }
 
     class SafeScroller implements Runnable {
+        private final Rectangle r;
 
         SafeScroller(Rectangle r) {
             this.r = r;
@@ -826,7 +827,5 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                 panel.scrollRectToVisible(r);
             }
         }
-
-        Rectangle r;
     }
 }

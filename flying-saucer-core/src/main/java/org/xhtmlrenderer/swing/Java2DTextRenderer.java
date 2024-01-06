@@ -42,10 +42,10 @@ import java.util.Map;
  * @author   Torbjoern Gannholm
  */
 public class Java2DTextRenderer implements TextRenderer {
-    protected float scale;
-    protected float threshold;
-    protected Object antiAliasRenderingHint;
-    protected Object fractionalFontMetricsHint;
+    private float scale;
+    private float threshold;
+    private Object antiAliasRenderingHint;
+    private final Object fractionalFontMetricsHint;
 
     public Java2DTextRenderer() {
         scale = Configuration.valueAsFloat("xr.text.scale", 1.0f);

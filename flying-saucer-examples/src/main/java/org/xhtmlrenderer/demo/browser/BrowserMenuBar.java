@@ -465,7 +465,7 @@ public class BrowserMenuBar extends JMenuBar {
     }
 
     class AntiAliasedAction extends AbstractAction {
-        int fontSizeThreshold;
+        private final int fontSizeThreshold;
 
         AntiAliasedAction(String text, int fontSizeThreshold) {
             super(text);

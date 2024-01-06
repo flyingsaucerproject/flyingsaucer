@@ -41,7 +41,7 @@ public class BrowserActions {
     public Action open_file, export_pdf , quit, print;
     public Action forward, backward, refresh, reload, load, stop, print_preview, goHome;
     public Action generate_diff, usersManual, aboutPage;
-    public BrowserStartup root;
+    public final BrowserStartup root;
 
     public Action increase_font, decrease_font, reset_font;
 

@@ -238,7 +238,7 @@ public class HTMLTest extends JFrame {
     class AntiAliasedAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        int fontSizeThreshold;
+        private final int fontSizeThreshold;
 
         AntiAliasedAction(String text, int fontSizeThreshold) {
             super(text);
