@@ -77,6 +77,7 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -733,22 +734,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
         if (!oldOk || nStroke.getMiterLimit() != oStroke.getMiterLimit())
             cb.setMiterLimit(nStroke.getMiterLimit());
-        boolean makeDash;
-        if (oldOk) {
-            if (nStroke.getDashArray() != null) {
-                if (nStroke.getDashPhase() != oStroke.getDashPhase()) {
-                    makeDash = true;
-                } else if (!java.util.Arrays.equals(nStroke.getDashArray(), oStroke.getDashArray())) {
-                    makeDash = true;
-                } else
-                    makeDash = false;
-            } else if (oStroke.getDashArray() != null) {
-                makeDash = true;
-            } else
-                makeDash = false;
-        } else {
-            makeDash = true;
-        }
+        boolean makeDash = isMakeDash(oldOk, nStroke, oStroke);
         if (makeDash) {
             float[] dash = nStroke.getDashArray();
             if (dash == null)
@@ -763,6 +749,19 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 cb.setLiteral(nStroke.getDashPhase());
                 cb.setLiteral(" d\n");
             }
+        }
+    }
+
+    private boolean isMakeDash(boolean oldOk, BasicStroke nStroke, BasicStroke oStroke) {
+        if (oldOk) {
+            if (nStroke.getDashArray() != null) {
+                return nStroke.getDashPhase() != oStroke.getDashPhase() 
+                        || !Arrays.equals(nStroke.getDashArray(), oStroke.getDashArray());
+            } else {
+                return oStroke.getDashArray() != null;
+            }
+        } else {
+            return true;
         }
     }
 
