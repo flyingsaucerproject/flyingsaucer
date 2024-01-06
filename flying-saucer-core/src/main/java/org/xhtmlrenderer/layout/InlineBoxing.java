@@ -189,7 +189,7 @@ public class InlineBoxing {
 
                     zeroWidthInlineBlock = false;
 
-                    if (lbContext.getStartSubstring().length() == 0) {
+                    if (lbContext.getStartSubstring().isEmpty()) {
                         break;
                     }
 
@@ -509,10 +509,8 @@ public class InlineBoxing {
 
             if (vaContext.getInlineTop() < 0) {
                 moveLineContents(current, -vaContext.getInlineTop());
-                if (lBDecorations != null) {
-                    for (TextDecoration lBDecoration : lBDecorations) {
-                        lBDecoration.setOffset(lBDecoration.getOffset() - vaContext.getInlineTop());
-                    }
+                for (TextDecoration lBDecoration : lBDecorations) {
+                    lBDecoration.setOffset(lBDecoration.getOffset() - vaContext.getInlineTop());
                 }
                 paintingTop -= vaContext.getInlineTop();
                 paintingBottom -= vaContext.getInlineTop();
@@ -624,26 +622,7 @@ public class InlineBoxing {
         
         List<TextDecoration> result = new ArrayList<>(idents.size());
         if (idents.contains(IdentValue.UNDERLINE)) {
-            TextDecoration decoration = new TextDecoration(IdentValue.UNDERLINE);
-            // JDK returns zero so create additional space equal to one
-            // "underlineThickness"
-            if (fm.getUnderlineOffset() == 0) {
-                decoration.setOffset(Math.round((baseline + fm.getUnderlineThickness())));
-            } else {
-                decoration.setOffset(Math.round((baseline + fm.getUnderlineOffset())));
-            }
-            decoration.setThickness(Math.round(fm.getUnderlineThickness()));
-
-            // JDK on Linux returns some goofy values for
-            // LineMetrics.getUnderlineOffset(). Compensate by always
-            // making sure underline fits inside the descender
-            if (fm.getUnderlineOffset() == 0) {  // HACK, are we running under the JDK
-                int maxOffset =
-                    baseline + (int)fm.getDescent() - decoration.getThickness();
-                if (decoration.getOffset() > maxOffset) {
-                    decoration.setOffset(maxOffset);
-                }
-            }
+            TextDecoration decoration = calculateTextDecoration(baseline, fm);
             result.add(decoration);
         }
 
@@ -661,6 +640,31 @@ public class InlineBoxing {
             result.add(decoration);
         }
         return result;
+    }
+
+    @Nonnull
+    private static TextDecoration calculateTextDecoration(int baseline, FSFontMetrics fm) {
+        TextDecoration decoration = new TextDecoration(IdentValue.UNDERLINE);
+        // JDK returns zero so create additional space equal to one
+        // "underlineThickness"
+        if (fm.getUnderlineOffset() == 0) {
+            decoration.setOffset(Math.round((baseline + fm.getUnderlineThickness())));
+        } else {
+            decoration.setOffset(Math.round((baseline + fm.getUnderlineOffset())));
+        }
+        decoration.setThickness(Math.round(fm.getUnderlineThickness()));
+
+        // JDK on Linux returns some goofy values for
+        // LineMetrics.getUnderlineOffset(). Compensate by always
+        // making sure underline fits inside the descender
+        if (fm.getUnderlineOffset() == 0) {  // HACK, are we running under the JDK
+            int maxOffset =
+                baseline + (int) fm.getDescent() - decoration.getThickness();
+            if (decoration.getOffset() > maxOffset) {
+                decoration.setOffset(maxOffset);
+            }
+        }
+        return decoration;
     }
 
     // XXX vertical-align: super/middle/sub could be improved (in particular,
@@ -778,7 +782,7 @@ public class InlineBoxing {
 
         block.addChildForLayout(c, current);
 
-        if (pendingInlineLayers.size() > 0) {
+        if (!pendingInlineLayers.isEmpty()) {
             finishPendingInlineLayers(c, pendingInlineLayers);
             pendingInlineLayers.clear();
         }
@@ -788,7 +792,7 @@ public class InlineBoxing {
             block.styleText(c);
         }
 
-        if (pendingFloats.size() > 0) {
+        if (!pendingFloats.isEmpty()) {
             for (FloatLayoutResult layoutResult : pendingFloats) {
                 LayoutUtil.layoutFloated(c, current, layoutResult.getBlock(), maxAvailableWidth, null);
                 current.addNonFlowContent(layoutResult.getBlock());
@@ -883,15 +887,13 @@ public class InlineBoxing {
         if ((! line.isContainsContent() || zeroWidthInlineBlock) &&
                 lbContext.getStartSubstring().startsWith(WhitespaceStripper.SPACE)) {
             IdentValue whitespace = style.getWhitespace();
-            if (whitespace == IdentValue.NORMAL
+            return whitespace == IdentValue.NORMAL
                     || whitespace == IdentValue.NOWRAP
                     || whitespace == IdentValue.PRE_LINE
                     || (whitespace == IdentValue.PRE_WRAP
-                        && lbContext.getStart() > 0
-                        && (lbContext.getMaster().length() > lbContext.getStart() - 1)
-                        && lbContext.getMaster().charAt(lbContext.getStart() - 1) != WhitespaceStripper.EOLC)) {
-                return true;
-            }
+                    && lbContext.getStart() > 0
+                    && (lbContext.getMaster().length() > lbContext.getStart() - 1)
+                    && lbContext.getMaster().charAt(lbContext.getStart() - 1) != WhitespaceStripper.EOLC);
         }
         return false;
     }
