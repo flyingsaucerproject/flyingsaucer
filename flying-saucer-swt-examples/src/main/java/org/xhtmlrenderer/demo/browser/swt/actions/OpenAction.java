@@ -24,13 +24,15 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 
+import javax.annotation.Nullable;
+
 public class OpenAction extends AbstractAction {
 
     public OpenAction() {
         super("Open File...\tCtrl+O", SWT.PUSH, SWT.CTRL | 'O', null);
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         String file = new FileDialog(browser.getShell(), SWT.OPEN).open();
         if (file != null) {
             browser.load("file://" + file);

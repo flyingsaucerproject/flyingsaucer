@@ -398,8 +398,6 @@ public class Selector {
     /**
      * Gets the appropriateSibling attribute of the Selector object
      *
-     * @param e       PARAM
-     * @param treeRes
      * @return The appropriateSibling value
      */
     Node getAppropriateSibling(Node e, TreeResolver treeRes) {

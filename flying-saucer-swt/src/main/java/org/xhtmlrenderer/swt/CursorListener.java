@@ -39,8 +39,6 @@ public class CursorListener implements MouseMoveListener {
 
     /**
      * Construct a CursorListener and add it to the parent.
-     *
-     * @param parent
      */
     public CursorListener(BasicRenderer parent) {
         _parent = parent;

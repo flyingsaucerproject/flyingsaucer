@@ -19,48 +19,35 @@
  */
 package org.xhtmlrenderer.extend;
 
-import java.awt.Point;
-
 import org.xhtmlrenderer.layout.LayoutContext;
+
+import java.awt.*;
 
 /**
  * A replaced element is an XML element in the document being rendered whose visual output is delegated. For example,
- * an <code><img></code> element in HTML may be rendered using some form of {@link java.awt.Image}. The idea is that
+ * an {@code <img>} element in HTML may be rendered using some form of {@link java.awt.Image}. The idea is that
  * there are some XML elements which Flying Saucer knows how to position and size (that's in the CSS) but has no
  * idea how to render on screen. Replaced elements serve that purpose.
  */
 public interface ReplacedElement {
-    /**
-     *
-     */
     int getIntrinsicWidth();
 
-    /**
-     *
-     */
     int getIntrinsicHeight();
 
     /**
      * Returns the current location where the element will be rendered on the canvas
-     * @return see desc
      */
     Point getLocation();
+
     /**
      * Assigns the new locations where the element will be rendered.
-     * @param x new horizontal pos
-     * @param y new vertical pos
+     * @param x new horizontal position
+     * @param y new vertical position
      */
     void setLocation(int x, int y);
 
-    /**
-     *
-     * @param c
-     */
     void detach(LayoutContext c);
 
-    /**
-     *
-     */
     boolean isRequiresInteractivePaint();
 
     boolean hasBaseline();

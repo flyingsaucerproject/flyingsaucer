@@ -23,6 +23,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 
+import javax.annotation.Nullable;
+
 public class LoadAction extends AbstractAction {
 
     private final String _url;
@@ -44,7 +46,7 @@ public class LoadAction extends AbstractAction {
         _url = url;
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         browser.load(_url);
     }
 

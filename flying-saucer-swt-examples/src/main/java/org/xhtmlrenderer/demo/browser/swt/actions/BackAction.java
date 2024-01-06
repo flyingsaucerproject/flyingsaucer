@@ -23,6 +23,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 
+import javax.annotation.Nullable;
+
 public class BackAction extends AbstractAction {
 
     public BackAction() {
@@ -30,7 +32,7 @@ public class BackAction extends AbstractAction {
             "demo:/images/go-previous.png");
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         browser.back();
     }
 

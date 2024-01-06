@@ -23,13 +23,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 
+import javax.annotation.Nullable;
+
 public class DebugBoxesAction extends AbstractAction {
 
     public DebugBoxesAction() {
         super("Show Box Outlines", SWT.CHECK, SWT.NONE, null);
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         if (mi != null) {
             browser.getRenderer().getSharedContext().setDebug_draw_boxes(
                 mi.getSelection());

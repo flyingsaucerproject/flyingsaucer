@@ -412,7 +412,6 @@ public class LayoutContext implements CssContext {
         }
 
         /**
-         * @param cd
          * @return true if a counter was found and incremented
          */
         private boolean incrementCounter(CounterData cd) {

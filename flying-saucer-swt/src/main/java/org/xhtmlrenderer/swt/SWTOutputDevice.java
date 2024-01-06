@@ -38,6 +38,7 @@ import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.xhtml.swt.SWTFormControl;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
@@ -360,10 +361,9 @@ public class SWTOutputDevice extends AbstractOutputDevice {
 
     /**
      * Convert an AWT Shape to an SWT Path.
-     *
-     * @param shape
-     * @return the SWT Path or <code>null</code> if <code>shape == null</code>
+     * @return the SWT Path or {@code null} if {@code shape == null}
      */
+    @Nullable
     private Path convertToPath(Shape shape) {
         if (shape == null) {
             return null;

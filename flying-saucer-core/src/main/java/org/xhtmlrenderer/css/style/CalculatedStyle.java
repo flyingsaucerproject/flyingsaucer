@@ -421,22 +421,10 @@ public class CalculatedStyle {
         return valueByName(cssName).getFloatProportionalTo(cssName, baseValue, ctx);
     }
 
-    /**
-     * @param cssName
-     * @param parentWidth
-     * @param ctx
-     * @return TODO
-     */
     public float getFloatPropertyProportionalWidth(CSSName cssName, float parentWidth, CssContext ctx) {
         return valueByName(cssName).getFloatProportionalTo(cssName, parentWidth, ctx);
     }
 
-    /**
-     * @param cssName
-     * @param parentHeight
-     * @param ctx
-     * @return TODO
-     */
     public float getFloatPropertyProportionalHeight(CSSName cssName, float parentHeight, CssContext ctx) {
         return valueByName(cssName).getFloatProportionalTo(cssName, parentHeight, ctx);
     }
@@ -467,8 +455,6 @@ public class CalculatedStyle {
      * four-sided margin width. Uses the actual value (computed actual value)
      * for this element.
      *
-     * @param cbWidth
-     * @param ctx
      * @return The marginWidth value
      */
     public RectPropertySet getMarginRect(float cbWidth, CssContext ctx) {
@@ -489,8 +475,6 @@ public class CalculatedStyle {
      * four-sided padding width. Uses the actual value (computed actual value)
      * for this element.
      *
-     * @param cbWidth
-     * @param ctx
      * @return The paddingWidth value
      */
     public RectPropertySet getPaddingRect(float cbWidth, CssContext ctx, boolean useCache) {
@@ -505,17 +489,10 @@ public class CalculatedStyle {
         return getPaddingRect(cbWidth, ctx, true);
     }
 
-    /**
-     * @param cssName
-     * @return TODO
-     */
     public String getStringProperty(CSSName cssName) {
         return valueByName(cssName).asString();
     }
 
-    /**
-     * TODO: doc
-     */
     public boolean isLength(CSSName cssName) {
         FSDerivedValue val = valueByName(cssName);
         return val instanceof LengthValue;

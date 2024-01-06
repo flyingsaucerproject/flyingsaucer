@@ -43,8 +43,6 @@ public class HoverListener implements MouseMoveListener {
 
     /**
      * Construct a HoverListener and add it to the parent.
-     *
-     * @param parent
      */
     public HoverListener(BasicRenderer parent) {
         _parent = parent;

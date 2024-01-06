@@ -23,13 +23,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 
+import javax.annotation.Nullable;
+
 public class QuitAction extends AbstractAction {
 
     public QuitAction() {
         super("Quit\tCtrl+Q", SWT.PUSH, SWT.CTRL | 'Q', null);
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         browser.getShell().dispose();
     }
 

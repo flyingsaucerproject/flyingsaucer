@@ -66,8 +66,6 @@ public class SWTFSImage implements FSImage {
 
     /**
      * Get the SWT image. Reload it from the UAC if it was disposed.
-     *
-     * @return
      */
     public Image getImage() {
         if (_image != null && _image.isDisposed()) {

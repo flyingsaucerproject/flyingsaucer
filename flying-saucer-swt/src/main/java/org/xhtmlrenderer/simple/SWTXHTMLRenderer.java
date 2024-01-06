@@ -66,10 +66,8 @@ public class SWTXHTMLRenderer extends BasicRenderer {
     }
 
     /**
-     * Loads and renders a Document given a uri. The uri is resolved by the
+     * Loads and renders a Document given uri. The uri is resolved by the
      * UserAgentCallback
-     *
-     * @param uri
      */
     @Override
     public void setDocument(String uri) {
@@ -115,7 +113,6 @@ public class SWTXHTMLRenderer extends BasicRenderer {
      *
      * @param file The file to read the Document from. Relative paths will be
      *            resolved based on the file's parent directory.
-     * @throws MalformedURLException
      */
     public void setDocument(File file) throws MalformedURLException {
         File parent = file.getParentFile();
@@ -126,14 +123,13 @@ public class SWTXHTMLRenderer extends BasicRenderer {
     }
 
     /**
-     * @param e
-     * @return the form corresponding to element <code>e</code> or
-     *         <code>null</code> if none
+     * @return the form corresponding to element {@code e} or
+     *         {@code null} if none
      */
     public XhtmlForm getForm(Element e) {
         ReplacedElementFactory ref = getSharedContext()
             .getReplacedElementFactory();
-        if (ref != null && ref instanceof SWTXhtmlReplacedElementFactory) {
+        if (ref instanceof SWTXhtmlReplacedElementFactory) {
             return ((SWTXhtmlReplacedElementFactory) ref).getForm(e);
         }
         return null;

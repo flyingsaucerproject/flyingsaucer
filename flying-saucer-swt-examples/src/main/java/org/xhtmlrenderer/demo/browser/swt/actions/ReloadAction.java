@@ -23,6 +23,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 
+import javax.annotation.Nullable;
+
 public class ReloadAction extends AbstractAction {
 
     public ReloadAction() {
@@ -30,7 +32,7 @@ public class ReloadAction extends AbstractAction {
             "demo:/images/view-refresh.png");
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         browser.getRenderer().reload();
     }
 

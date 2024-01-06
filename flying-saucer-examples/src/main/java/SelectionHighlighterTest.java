@@ -36,9 +36,6 @@ import java.awt.event.ActionEvent;
  */
 public class SelectionHighlighterTest extends JFrame {
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         new SelectionHighlighterTest().setVisible(true);
     }

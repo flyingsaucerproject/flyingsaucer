@@ -47,8 +47,7 @@ public interface ReplacedElementFactory {
     public void reset();
 
     /**
-     * Removes any reference to <code>Element</code> <code>e</code>.
-     * @param e
+     * Removes any reference to {@code Element} <code>e</code>.
      */
     public void remove(Element e);
 

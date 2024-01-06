@@ -127,12 +127,6 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         this(parent, style, new NaiveUserAgent(parent.getDisplay()));
     }
 
-    /**
-     * Construct the BasicRenderer
-     *
-     * @param parent
-     * @param uac
-     */
     public BasicRenderer(Composite parent, int style, UserAgentCallback uac) {
         super(parent, checkStyle(style));
         super.setLayout(null);
@@ -335,7 +329,6 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     }
 
     /**
-     * @param gc
      * @return a new {@link RenderingContext}
      */
     protected RenderingContext newRenderingContext(GC gc) {
@@ -425,8 +418,6 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Set the origin of the view. NOTE: this won't be done immediately.
-     *
-     * @param pt
      */
     public void setOrigin(Point pt) {
         Point p = checkOrigin(pt);
@@ -492,9 +483,6 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     /**
      * Convert an SWT rectangle into an AWT rectangle.
-     *
-     * @param rect
-     * @return
      */
     private static java.awt.Rectangle convertRectangle(Rectangle rect) {
         return new java.awt.Rectangle(rect.x, rect.y, rect.width, rect.height);

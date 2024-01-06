@@ -23,13 +23,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MenuItem;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 
+import javax.annotation.Nullable;
+
 public class PrintPreviewAction extends AbstractAction {
 
     public PrintPreviewAction() {
         super("Print Preview", SWT.CHECK, SWT.NONE, null);
     }
 
-    public void run(Browser browser, MenuItem mi) {
+    public void run(Browser browser, @Nullable MenuItem mi) {
         if (mi != null) {
             browser.getRenderer().setPrint(mi.getSelection());
         }

@@ -313,10 +313,6 @@ public class BorderPropertySet extends RectPropertySet {
 
     /**
      * helper function for normalizeBorderRadius. Gets the max side width for each of the corners or the side width whichever is larger
-     * @param left
-     * @param right
-     * @param sideWidth
-     * @return
      */
     private float getSideWidth(BorderRadiusCorner left, BorderRadiusCorner right, float sideWidth) {
         return Math.max(sideWidth, left.getMaxRight(sideWidth) + right.getMaxLeft(sideWidth));
