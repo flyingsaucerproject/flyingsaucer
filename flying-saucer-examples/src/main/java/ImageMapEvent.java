@@ -23,11 +23,7 @@ import java.awt.event.MouseAdapter;
  * Used in notification of mouse motions related to an image map
  */
 public class ImageMapEvent {
-    private final MouseAdapter mouseAdapter;
-    private final String value;
 
     public ImageMapEvent(MouseAdapter mouseAdapter, String value) {
-        this.mouseAdapter = mouseAdapter;
-        this.value = value;
     }
 }

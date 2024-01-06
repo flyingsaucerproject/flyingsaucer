@@ -36,9 +36,7 @@ public final class AboutBox extends JDialog implements Runnable {
     private static final long serialVersionUID = 1L;
 
     private final JScrollPane scroll;
-    private final JButton close_button;
     private boolean go;
-    private Thread thread;
 
     public AboutBox(String text, String url) {
         Uu.p("starting the about box");
@@ -55,7 +53,7 @@ public final class AboutBox extends JDialog implements Runnable {
         //panel.setViewportComponent(scroll);
         //panel.setJScrollPane(scroll);
         getContentPane().add(scroll, "Center");
-        close_button = new JButton("Close");
+        JButton close_button = new JButton("Close");
         getContentPane().add(close_button, "South");
         close_button.addActionListener(evt -> {
             setVisible(false);
@@ -100,8 +98,7 @@ Uu.p("url_text = " + url_text);
 
     public void startScrolling() {
         go = true;
-        thread = new Thread(this);
-        thread.start();
+        new Thread(this).start();
     }
 
     /**

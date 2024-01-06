@@ -1500,9 +1500,6 @@ class Lexer {
   /** the input device */
   private java.io.Reader zzReader;
 
-  /** the current state of the DFA */
-  private int zzState;
-
   /** the current lexical state */
   private int zzLexicalState = YYINITIAL;
 
@@ -1529,29 +1526,15 @@ class Lexer {
   /** number of newlines encountered up to the start of the matched text */
   private int yyline;
 
-  /** the number of characters up to the start of the matched text */
-  private int yychar;
-
-  /**
-   * the number of characters from the last newline up to the start of the 
-   * matched text
-   */
-  private int yycolumn;
-
-  /** 
-   * zzAtBOL == true <=> the scanner is currently at the beginning of a line
-   */
-  private boolean zzAtBOL = true;
-
   /** zzAtEOF == true <=> the scanner is at the EOF */
   private boolean zzAtEOF;
 
   /* user code: */
-    public int yyline() {
+  public int yyline() {
     	return this.yyline;
     }
     
-    public void setyyline(int i) {
+  public void setyyline(int i) {
     	this.yyline = i;
 	}
 
@@ -1570,7 +1553,7 @@ class Lexer {
    * Creates a new scanner.
    * There is also java.io.Reader version of this constructor.
    *
-   * @param   in  the java.io.Inputstream to read input from.
+   * @param   in  the java.io.InputStream to read input from.
    */
   Lexer(java.io.InputStream in) {
     this(new java.io.InputStreamReader(in));
@@ -1664,14 +1647,12 @@ class Lexer {
    */
   public final void yyreset(java.io.Reader reader) {
     zzReader = reader;
-    zzAtBOL  = true;
     zzAtEOF  = false;
     zzEndRead = zzStartRead = 0;
     zzCurrentPos = zzMarkedPos = zzPushbackPos = 0;
-    yyline = yychar = yycolumn = 0;
+    yyline = 0;
     zzLexicalState = YYINITIAL;
   }
-
 
   /**
    * Returns the current lexical state.
@@ -1724,9 +1705,9 @@ class Lexer {
 
 
   /**
-   * Reports an error that occured while scanning.
+   * Reports an error that occurred while scanning.
    *
-   * In a wellformed scanner (no or only correct usage of 
+   * In a well-formed scanner (no or only correct usage of 
    * yypushback(int) and a match-all fallback rule) this method 
    * will only be called with things that "Can't Possibly Happen".
    * If this method is called, something is seriously wrong
@@ -1782,13 +1763,8 @@ class Lexer {
     int zzMarkedPosL;
     int zzEndReadL = zzEndRead;
     char [] zzBufferL = zzBuffer;
-    char [] zzCMapL = ZZ_CMAP;
 
-    int [] zzTransL = ZZ_TRANS;
-    int [] zzRowMapL = ZZ_ROWMAP;
-    int [] zzAttrL = ZZ_ATTRIBUTE;
-
-    while (true) {
+      while (true) {
       zzMarkedPosL = zzMarkedPos;
 
       boolean zzR = false;
@@ -1841,9 +1817,9 @@ class Lexer {
       zzAction = -1;
 
       zzCurrentPosL = zzCurrentPos = zzStartRead = zzMarkedPosL;
-  
-      zzState = zzLexicalState;
 
+      // the current state of the DFA
+      int zzState = zzLexicalState;
 
       zzForAction: {
         while (true) {
@@ -1872,11 +1848,11 @@ class Lexer {
               zzInput = zzBufferL[zzCurrentPosL++];
             }
           }
-          int zzNext = zzTransL[ zzRowMapL[zzState] + zzCMapL[zzInput] ];
+          int zzNext = ZZ_TRANS[ ZZ_ROWMAP[zzState] + ZZ_CMAP[zzInput] ];
           if (zzNext == -1) break zzForAction;
           zzState = zzNext;
 
-          int zzAttributes = zzAttrL[zzState];
+          int zzAttributes = ZZ_ATTRIBUTE[zzState];
           if ( (zzAttributes & 1) == 1 ) {
             zzAction = zzState;
             zzMarkedPosL = zzCurrentPosL;

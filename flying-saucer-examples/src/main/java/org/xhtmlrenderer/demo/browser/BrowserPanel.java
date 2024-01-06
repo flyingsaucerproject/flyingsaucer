@@ -55,19 +55,17 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
     private JButton forward;
     private JButton backward;
-    private JButton stop;
     private JButton reload;
     private JButton goHome;
     private JButton font_inc;
     private JButton font_rst;
     private JButton font_dec;
-    private JButton print;
     JTextField url;
     BrowserStatus status;
     public ScalableXHTMLPanel view;
     private JScrollPane scroll;
-    private BrowserStartup root;
-    private BrowserPanelListener listener;
+    private final BrowserStartup root;
+    private final BrowserPanelListener listener;
     private JButton print_preview;
     
     private static final Logger logger = Logger.getLogger("app.browser");
@@ -84,7 +82,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     public void init() {
         forward = new JButton();
         backward = new JButton();
-        stop = new JButton();
+        JButton stop = new JButton();
         reload = new JButton();
         goToPage = new JButton();
         goHome = new JButton();
@@ -117,7 +115,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         view.setBackground(Color.LIGHT_GRAY);
         scroll = new FSScrollPane(view);
         print_preview = new JButton();
-        print = new JButton();
+        JButton print = new JButton();
 
         loadCustomFonts();
 

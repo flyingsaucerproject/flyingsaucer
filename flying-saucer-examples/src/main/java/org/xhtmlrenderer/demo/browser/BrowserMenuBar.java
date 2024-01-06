@@ -49,7 +49,6 @@ public class BrowserMenuBar extends JMenuBar {
     private JMenu edit;
     private JMenu view;
     private JMenu go;
-    private JMenuItem view_source;
     private JMenu debug;
     private JMenu demos;
     private String lastDemoOpened;
@@ -77,7 +76,7 @@ public class BrowserMenuBar extends JMenuBar {
         help = new JMenu("Help");
         help.setMnemonic('H');
 
-        view_source = new JMenuItem("Page Source");
+        JMenuItem view_source = new JMenuItem("Page Source");
         view_source.setEnabled(false);
         view.add(root.actions.stop);
         view.add(root.actions.refresh);
