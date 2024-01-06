@@ -239,7 +239,6 @@ public class IdentValue implements FSDerivedValue {
      * an ident in the CSS spec, a runtime exception is thrown.
      *
      * @param ident The identifier to retrieve the Singleton IdentValue for.
-     * @return see desc.
      */
     public static IdentValue getByIdentString(String ident) {
         IdentValue val = ALL_IDENT_VALUES.get(ident);

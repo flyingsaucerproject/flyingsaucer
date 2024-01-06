@@ -143,8 +143,6 @@ public class Graphics2DRenderer {
 
     /**
      * Gets the SharedContext for layout and rendering.
-     *
-     * @return see desc
      */
     public SharedContext getSharedContext() {
         return panel.getSharedContext();

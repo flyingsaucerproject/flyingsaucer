@@ -107,8 +107,7 @@ public class ImageReplacedElement implements ReplacedElement {
     }
 
     /**
-     * The image we're replacing.
-     * @return see desc
+     * The image we're replacing
      */
     public Image getImage() {
         return _image;

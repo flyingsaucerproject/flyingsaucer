@@ -104,7 +104,6 @@ public final class ValueConstants {
      * for it (e.g. inches). Proportional types (e.g. %) return false.
      *
      * @param primitive The CSSValue instance to check.
-     * @return See desc.
      */
     //TODO: method may be unnecessary (tobe)
     public static boolean isAbsoluteUnit(CSSPrimitiveValue primitive) {
@@ -119,7 +118,6 @@ public final class ValueConstants {
      * inches). Proportional types (e.g. %) return false.
      *
      * @param type The CSSValue type to check.
-     * @return See desc.
      */
     //TODO: method may be unnecessary (tobe)
     public static boolean isAbsoluteUnit(short type) {
