@@ -423,8 +423,6 @@ public class Eeze {
     final class GrowAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
-        private final float increment = 1.1F;
-
         GrowAction() {
             super("Grow Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_G);
@@ -436,6 +434,7 @@ public class Eeze {
          */
         @Override
         public void actionPerformed(ActionEvent e) {
+            float increment = 1.1F;
             resizeFrame(increment, increment);
         }
     }
