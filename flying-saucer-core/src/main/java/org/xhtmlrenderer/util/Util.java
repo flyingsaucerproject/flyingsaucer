@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Vector;
 
 import static java.util.Arrays.asList;
@@ -406,11 +407,11 @@ public class Util {
     }
 
     public static boolean isEqual(String str1, String str2) {
-        return str1 == str2 || (str1 != null && str1.equals(str2));
+        return Objects.equals(str1, str2);
     }
 
     public static boolean isEqual(String str1, String str2, boolean ignoreCase) {
-        return str1 == str2 || (str1 != null && (ignoreCase ? str1.equalsIgnoreCase(str2) : str1.equals(str2)));
+        return Objects.equals(str1, str2) || str1 != null && ignoreCase && str1.equalsIgnoreCase(str2);
     }
 }
 
