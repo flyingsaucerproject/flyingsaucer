@@ -1,11 +1,7 @@
 package org.xhtmlrenderer.demo.browser;
 
-import java.awt.BorderLayout;
-import java.awt.Insets;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+import java.awt.*;
 
 public class BrowserStatus extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -35,27 +31,21 @@ public class BrowserStatus extends JPanel {
 
     public void createEvents() {
 
-        new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    try {
-                        Runtime rt = Runtime.getRuntime();
-                        long used = rt.totalMemory() - rt.freeMemory();
-                        long total = rt.totalMemory();
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Runtime rt = Runtime.getRuntime();
+                    long used = rt.totalMemory() - rt.freeMemory();
+                    long total = rt.totalMemory();
 
-                        used = used / (1024 * 1024);
-                        total = total / (1024 * 1024);
+                    used = used / (1024 * 1024);
+                    total = total / (1024 * 1024);
 
-                        final String text = used + "M / " + total + "M";
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                memory.setText(text);
-                            }
-                        });
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
+                    final String text = used + "M / " + total + "M";
+                    SwingUtilities.invokeLater(() -> memory.setText(text));
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    break;
                 }
             }
         }).start();
