@@ -20,8 +20,6 @@
 package org.xhtmlrenderer.simple.xhtml.swt;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -85,11 +83,9 @@ public class SWTTextControl extends SWTXhtmlControl {
             }
         });
 
-        text.addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
-                _noChangeText = true;
-                tc.setValue(decodeDelimiter(text.getText()));
-            }
+        text.addModifyListener(e -> {
+            _noChangeText = true;
+            tc.setValue(decodeDelimiter(text.getText()));
         });
 
         return text;

@@ -81,37 +81,35 @@ public class PanelResizeToPreferredSize {
         // then resize the window; it just needs to be displayable.
         f.pack();
 
-        SwingUtilities.invokeAndWait(new Runnable() {
-            public void run() {
-                // Note that our document doesn't have any width constraints, but that there is very little text
-                // involved, so the document width (calculated from the content) is something reasonable for this demo.
-                panel.setDocumentFromString(
-                        "<html style='position: absolute; background-color: red;'>" +
-                                "    Several words that won't wrap" +
-                                "</html>",
-                        null,
-                        new XhtmlNamespaceHandler());
+        SwingUtilities.invokeAndWait(() -> {
+            // Note that our document doesn't have any width constraints, but that there is very little text
+            // involved, so the document width (calculated from the content) is something reasonable for this demo.
+            panel.setDocumentFromString(
+                    "<html style='position: absolute; background-color: red;'>" +
+                            "    Several words that won't wrap" +
+                            "</html>",
+                    null,
+                    new XhtmlNamespaceHandler());
 
-                Dimension savedSize = panel.getSize();
+            Dimension savedSize = panel.getSize();
 
-                // Set the panel size to some artificially large size; the render engine will actually calculate
-                // the actual (preferred) size based on the document content. Setting it to a large size here prevents
-                // the document from being artificially constrained by the panel's width.
-                // If the document had very long runs of text, and no width constraints, we'd want to set the width
-                // to some smaller, reasonable value (800, 1024, etc.). Without that, in the absence of any other
-                // information, the render engine would lay out the runs of text to as wide a space as needed to
-                // accomodate the text without breaks.
-                panel.setSize(10000, 10000);
+            // Set the panel size to some artificially large size; the render engine will actually calculate
+            // the actual (preferred) size based on the document content. Setting it to a large size here prevents
+            // the document from being artificially constrained by the panel's width.
+            // If the document had very long runs of text, and no width constraints, we'd want to set the width
+            // to some smaller, reasonable value (800, 1024, etc.). Without that, in the absence of any other
+            // information, the render engine would lay out the runs of text to as wide a space as needed to
+            // accommodate the text without breaks.
+            panel.setSize(10000, 10000);
 
-                // now we lay the document out again
-                panel.doDocumentLayout(panel.getGraphics());
+            // now we lay the document out again
+            panel.doDocumentLayout(panel.getGraphics());
 
-                // and reset the size
-                panel.setSize(savedSize);
+            // and reset the size
+            panel.setSize(savedSize);
 
-                f.pack();
-                f.setVisible(true);
-            }
+            f.pack();
+            f.setVisible(true);
         });
     }
 }

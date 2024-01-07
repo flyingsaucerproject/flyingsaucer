@@ -46,38 +46,35 @@ public class AddNodeToDocument {
     }
 
     private void run() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                initFrame();
+        SwingUtilities.invokeLater(() -> {
+            initFrame();
+            initPanel();
 
-                initPanel();
+            // here's where the real work takes place
+            Action addDocAction = new AbstractAction("Add Node") {
+                public void actionPerformed(ActionEvent event) {
+                    // we'll add a single node on each click
+                    documentRoot.appendChild(domDocument.createTextNode("adding node at " + new Date()));
+                    documentRoot.appendChild(domDocument.createElement("br"));
 
-                // here's where the real work takes place
-                Action addDocAction = new AbstractAction("Add Node") {
-                    public void actionPerformed(ActionEvent event) {
-                        // we'll add a single node on each click
-                        documentRoot.appendChild(domDocument.createTextNode("adding node at " + new Date()));
-                        documentRoot.appendChild(domDocument.createElement("br"));
+                    // note that we just pass in the same DOM instance we already
+                    // rendered; no need to pass through the XML parser again
+                    panel.setDocument(domDocument);
 
-                        // note that we just pass in the same DOM instance we already
-                        // rendered; no need to pass through the XML parser again
-                        panel.setDocument(domDocument);
+                    // alternately, this will work as well--doDocumentLayout() followed by repaint()
+                    // setDocument() is still the recommended approach in this case, as it's a top-level entry
+                    // point which ensures that proper setup takes place for the layout and render
+                    // panel.doDocumentLayout(panel.getGraphics());
+                    // panel.repaint();
+                }
+            };
 
-                        // alternately, this will work as well--doDocumentLayout() followed by repaint()
-                        // setDocument() is still the recommended approach in this case, as it's a top-level entry
-                        // point which ensures that proper setup takes place for the layout and render
-                        // panel.doDocumentLayout(panel.getGraphics());
-                        // panel.repaint();
-                    }
-                };
+            JButton btn = new JButton(addDocAction);
+            frame.getContentPane().add(BorderLayout.SOUTH, btn);
 
-                JButton btn = new JButton(addDocAction);
-                frame.getContentPane().add(BorderLayout.SOUTH, btn);
-
-                frame.pack();
-                frame.setSize(1024, 768);
-                frame.setVisible(true);
-            }
+            frame.pack();
+            frame.setSize(1024, 768);
+            frame.setVisible(true);
         });
     }
 

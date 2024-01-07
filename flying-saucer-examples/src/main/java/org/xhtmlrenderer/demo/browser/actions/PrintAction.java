@@ -23,15 +23,13 @@ public class PrintAction extends AbstractAction {
         printJob.setPrintable(new XHTMLPrintable(root.panel.view));
 
         if (printJob.printDialog()) {
-            new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        Uu.p("starting printing");
-                        printJob.print();
-                        Uu.p("done printing");
-                    } catch (PrinterException ex) {
-                        Uu.p(ex);
-                    }
+            new Thread(() -> {
+                try {
+                    Uu.p("starting printing");
+                    printJob.print();
+                    Uu.p("done printing");
+                } catch (PrinterException ex) {
+                    Uu.p(ex);
                 }
             }).start();
         }
