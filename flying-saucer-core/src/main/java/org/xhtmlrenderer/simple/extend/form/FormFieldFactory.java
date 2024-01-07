@@ -24,48 +24,59 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
+import javax.annotation.Nullable;
+
+import static java.util.Objects.requireNonNull;
+
 public class FormFieldFactory {
     private FormFieldFactory() {
     }
 
     public static FormField create(XhtmlForm form, LayoutContext context, BlockBox box) {
-        Element e = box.getElement();
+        Element e = requireNonNull(box.getElement());
 
-        String typeKey;
-        if (e.getNodeName().equals("input")) {
-            typeKey = e.getAttribute("type");
-        } else if (e.getNodeName().equals("textarea")) {
-            typeKey = "textarea";
-        } else if (e.getNodeName().equals("select")) {
-            typeKey = "select";
-        } else {
-            return null;
+        String typeKey = getTypeKey(e);
+        if (typeKey == null) return null;
+
+        switch (typeKey) {
+            case "submit":
+                return new SubmitField(e, form, context, box);
+            case "reset":
+                return new ResetField(e, form, context, box);
+            case "button":
+                return new ButtonField(e, form, context, box);
+            case "image":
+                return new ImageField(e, form, context, box);
+            case "hidden":
+                return new HiddenField(e, form, context, box);
+            case "password":
+                return new PasswordField(e, form, context, box);
+            case "checkbox":
+                return new CheckboxField(e, form, context, box);
+            case "radio":
+                return new RadioButtonField(e, form, context, box);
+            case "file":
+                return new FileField(e, form, context, box);
+            case "textarea":
+                return new TextAreaField(e, form, context, box);
+            case "select":
+                return new SelectField(e, form, context, box);
+            default:
+                return new TextField(e, form, context, box);
         }
+    }
 
-        if (typeKey.equals("submit")) {
-            return new SubmitField(e, form, context, box);
-        } else if (typeKey.equals("reset")) {
-            return new ResetField(e, form, context, box);
-        } else if (typeKey.equals("button")) {
-            return new ButtonField(e, form, context, box);
-        } else if (typeKey.equals("image")) {
-            return new ImageField(e, form, context, box);
-        } else if (typeKey.equals("hidden")) {
-            return new HiddenField(e, form, context, box);
-        } else if (typeKey.equals("password")) {
-            return new PasswordField(e, form, context, box);
-        } else if (typeKey.equals("checkbox")) {
-            return new CheckboxField(e, form, context, box);
-        } else if (typeKey.equals("radio")) {
-            return new RadioButtonField(e, form, context, box);
-        } else if (typeKey.equals("file")) {
-            return new FileField(e, form, context, box);
-        } else if (typeKey.equals("textarea")) {
-            return new TextAreaField(e, form, context, box);
-        } else if (typeKey.equals("select")) {
-            return new SelectField(e, form, context, box);
-        } else {
-            return new TextField(e, form, context, box);
+    @Nullable
+    private static String getTypeKey(Element e) {
+        switch (e.getNodeName()) {
+            case "input":
+                return e.getAttribute("type");
+            case "textarea":
+                return "textarea";
+            case "select":
+                return "select";
+            default:
+                return null;
         }
     }
 }

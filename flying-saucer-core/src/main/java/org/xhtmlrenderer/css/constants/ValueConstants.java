@@ -67,29 +67,32 @@ public final class ValueConstants {
     }
 
     public static short sacPrimitiveTypeForString(String type) {
-        if ("em".equals(type)) {
-            return CSSPrimitiveValue.CSS_EMS;
-        } else if ("ex".equals(type)) {
-            return CSSPrimitiveValue.CSS_EXS;
-        } else if ("px".equals(type)) {
-            return CSSPrimitiveValue.CSS_PX;
-        } else if ("%".equals(type)) {
-            return CSSPrimitiveValue.CSS_PERCENTAGE;
-        } else if ("in".equals(type)) {
-            return CSSPrimitiveValue.CSS_IN;
-        } else if ("cm".equals(type)) {
-            return CSSPrimitiveValue.CSS_CM;
-        } else if ("mm".equals(type)) {
-            return CSSPrimitiveValue.CSS_MM;
-        } else if ("pt".equals(type)) {
-            return CSSPrimitiveValue.CSS_PT;
-        } else if ("pc".equals(type)) {
-            return CSSPrimitiveValue.CSS_PC;
-        } else if (type == null) {
+        if (type == null) {
             //this is only valid if length is 0
             return CSSPrimitiveValue.CSS_PX;
-        } else {
-            throw new XRRuntimeException("Unknown type on CSS value: " + type);
+        }
+
+        switch (type) {
+            case "em":
+                return CSSPrimitiveValue.CSS_EMS;
+            case "ex":
+                return CSSPrimitiveValue.CSS_EXS;
+            case "px":
+                return CSSPrimitiveValue.CSS_PX;
+            case "%":
+                return CSSPrimitiveValue.CSS_PERCENTAGE;
+            case "in":
+                return CSSPrimitiveValue.CSS_IN;
+            case "cm":
+                return CSSPrimitiveValue.CSS_CM;
+            case "mm":
+                return CSSPrimitiveValue.CSS_MM;
+            case "pt":
+                return CSSPrimitiveValue.CSS_PT;
+            case "pc":
+                return CSSPrimitiveValue.CSS_PC;
+            default:
+                throw new XRRuntimeException("Unknown type on CSS value: " + type);
         }
     }
 
@@ -280,45 +283,49 @@ public final class ValueConstants {
      * e.g. 14pt is CSS_PT.
      */
     public static short guessType(String value) {
-        short type = CSSPrimitiveValue.CSS_STRING;
         if (value != null && value.length() > 1) {
             if (value.endsWith("%")) {
-                type = CSSPrimitiveValue.CSS_PERCENTAGE;
+                return CSSPrimitiveValue.CSS_PERCENTAGE;
             } else if (value.startsWith("rgb") || value.startsWith("#")) {
-                type = CSSPrimitiveValue.CSS_RGBCOLOR;
+                return CSSPrimitiveValue.CSS_RGBCOLOR;
             } else {
                 String hmm = value.substring(value.length() - 2);
-                if ("pt".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_PT;
-                } else if ("px".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_PX;
-                } else if ("em".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_EMS;
-                } else if ("ex".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_EXS;
-                } else if ("in".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_IN;
-                } else if ("cm".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_CM;
-                } else if ("mm".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_MM;
-                } else {
-                    if (Character.isDigit(value.charAt(value.length() - 1))) {
-                        try {
-                            new Float(value);
-                            type = CSSPrimitiveValue.CSS_NUMBER;
-                        } catch (NumberFormatException ex) {
-                            type = CSSPrimitiveValue.CSS_STRING;
-                        }
-                    } else {
-                        type = CSSPrimitiveValue.CSS_STRING;
-                    }
-                }
+                return guessTypeByFont(value, hmm);
             }
         }
-        return type;
+        return CSSPrimitiveValue.CSS_STRING;
     }
-}// end class
+
+    private static short guessTypeByFont(String value, String hmm) {
+        switch (hmm) {
+            case "pt":
+                return CSSPrimitiveValue.CSS_PT;
+            case "px":
+                return CSSPrimitiveValue.CSS_PX;
+            case "em":
+                return CSSPrimitiveValue.CSS_EMS;
+            case "ex":
+                return CSSPrimitiveValue.CSS_EXS;
+            case "in":
+                return CSSPrimitiveValue.CSS_IN;
+            case "cm":
+                return CSSPrimitiveValue.CSS_CM;
+            case "mm":
+                return CSSPrimitiveValue.CSS_MM;
+            default:
+                if (Character.isDigit(value.charAt(value.length() - 1))) {
+                    try {
+                        new Float(value);
+                        return CSSPrimitiveValue.CSS_NUMBER;
+                    } catch (NumberFormatException ex) {
+                        return CSSPrimitiveValue.CSS_STRING;
+                    }
+                } else {
+                    return CSSPrimitiveValue.CSS_STRING;
+                }
+        }
+    }
+}
 
 /*
  * $Id$
