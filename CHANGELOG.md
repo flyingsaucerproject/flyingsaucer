@@ -1,7 +1,12 @@
 # Changelog
 
-## 9.4.1 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/6
+## 9.4.2 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/7
 * ...
+
+## 9.4.1 (released 07.01.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/6?closed=1
+* Use URLStreamHandler for classpath protocol if available (#250)
+* Add debug logs for font resolver (#252)
+* Refactoring & cleanup (#253)
 
 ## 9.4.0 (released 30.12.2023) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/5?closed=1
 * replace iText 2.x by OpenPDF (#245)  --  thanks to Andreas Rosdal for the initiative
