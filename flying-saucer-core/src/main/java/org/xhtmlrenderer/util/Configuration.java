@@ -39,6 +39,12 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Byte.parseByte;
+import static java.lang.Double.parseDouble;
+import static java.lang.Float.parseFloat;
+import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
 import static java.nio.file.Files.newInputStream;
 
 
@@ -472,15 +478,13 @@ public class Configuration {
             return defaultVal;
         }
 
-        byte bval;
         try {
-            bval = Byte.valueOf(val).byteValue();
+            return parseByte(val);
         } catch (NumberFormatException nex) {
             XRLog.exception("Property '" + key + "' was requested as a byte, but " +
                     "value of '" + val + "' is not a byte. Check configuration.");
-            bval = defaultVal;
+            return defaultVal;
         }
-        return bval;
     }
 
     /**
@@ -499,15 +503,13 @@ public class Configuration {
             return defaultVal;
         }
 
-        short sval;
         try {
-            sval = Short.valueOf(val).shortValue();
+            return Short.parseShort(val);
         } catch (NumberFormatException nex) {
             XRLog.exception("Property '" + key + "' was requested as a short, but " +
                     "value of '" + val + "' is not a short. Check configuration.");
-            sval = defaultVal;
+            return defaultVal;
         }
-        return sval;
     }
 
     /**
@@ -526,15 +528,13 @@ public class Configuration {
             return defaultVal;
         }
 
-        int ival;
         try {
-            ival = Integer.valueOf(val).intValue();
+            return parseInt(val);
         } catch (NumberFormatException nex) {
             XRLog.exception("Property '" + key + "' was requested as an integer, but " +
                     "value of '" + val + "' is not an integer. Check configuration.");
-            ival = defaultVal;
+            return defaultVal;
         }
-        return ival;
     }
 
     /**
@@ -578,15 +578,13 @@ public class Configuration {
             return defaultVal;
         }
 
-        long lval;
         try {
-            lval = Long.valueOf(val).longValue();
+            return parseLong(val);
         } catch (NumberFormatException nex) {
             XRLog.exception("Property '" + key + "' was requested as a long, but " +
                     "value of '" + val + "' is not a long. Check configuration.");
-            lval = defaultVal;
+            return defaultVal;
         }
-        return lval;
     }
 
     /**
@@ -605,15 +603,13 @@ public class Configuration {
             return defaultVal;
         }
 
-        float fval;
         try {
-            fval = Float.valueOf(val).floatValue();
+            return parseFloat(val);
         } catch (NumberFormatException nex) {
             XRLog.exception("Property '" + key + "' was requested as a float, but " +
                     "value of '" + val + "' is not a float. Check configuration.");
-            fval = defaultVal;
+            return defaultVal;
         }
-        return fval;
     }
 
     /**
@@ -632,15 +628,13 @@ public class Configuration {
             return defaultVal;
         }
 
-        double dval;
         try {
-            dval = Double.valueOf(val).doubleValue();
+            return parseDouble(val);
         } catch (NumberFormatException nex) {
             XRLog.exception("Property '" + key + "' was requested as a double, but " +
                     "value of '" + val + "' is not a double. Check configuration.");
-            dval = defaultVal;
+            return defaultVal;
         }
-        return dval;
     }
 
     /**
@@ -697,7 +691,7 @@ public class Configuration {
                     "value of '" + val + "' is not a boolean. Check configuration.");
             return defaultVal;
         } else {
-            return Boolean.valueOf(val).booleanValue();
+            return parseBoolean(val);
         }
     }
 
