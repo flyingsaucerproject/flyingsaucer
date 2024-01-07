@@ -19,20 +19,17 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.BasicStroke;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Area;
-import java.awt.geom.Path2D;
-
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.BorderRadiusCorner;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.extend.OutputDevice;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
+import java.awt.geom.Path2D;
 
 
 public class BorderPainter {
@@ -93,7 +90,7 @@ public class BorderPainter {
      * @return a path for the side chosen!
      */
     public static Path2D generateBorderShape(Rectangle bounds, int side, BorderPropertySet border, boolean drawInterior, float scaledOffset, float widthScale) {
-        /**
+        /*
          * Function overview: Prior to creating the path we check what side were building this on. All the coordinates in this function assume its building a top border
          * the border is then rotated and translated to its appropriate side. Uses of "left" and "right" are assuming a perspective of inside the shape looking out.
          */
