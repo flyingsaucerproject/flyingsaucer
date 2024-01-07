@@ -71,8 +71,8 @@ public class PrinterRenderer implements UserInterface {
     }
 
     /**
-     * Dispose resources used by this {@link PrinterRenderer}. This does NOT
-     * dispose the attached {@link Printer}.
+     * Dispose resources.
+     * This does NOT dispose the attached {@link Printer}.
      */
     public void dispose() {
         // dispose used fonts
