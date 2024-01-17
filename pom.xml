@@ -169,8 +169,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.12.1</version>
         <configuration>
-          <source>8</source>
-          <target>8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
 
@@ -257,6 +257,7 @@
     <assertj.version>3.25.1</assertj.version>
     <pdftest.version>1.8.1</pdftest.version>
     <bouncycastle.version>1.77</bouncycastle.version>
+    <java.version>11</java.version>
   </properties>
 
 </project>
