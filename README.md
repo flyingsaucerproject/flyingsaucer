@@ -38,7 +38,7 @@ New releases of Flying Saucer are distributed through Maven. The available artif
 * `org.xhtmlrenderer:flying-saucer-swt` - SWT output
 * `org.xhtmlrenderer:flying-saucer-log4j` - Logging plugin for log4j
 
-Flying Saucer from version 9.4.2 requires Java 11 or later.
+Flying Saucer from version 9.5.0, requires Java 11 or later.
 
 ## GETTING STARTED
 

@@ -1,7 +1,12 @@
 # Changelog
 
-## 9.4.2 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/7
+## 9.5.1 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/8
 * ...
+
+## 9.5.0 (released 21.01.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/7?closed=1
+* Require Java 11 or later (#257)
+* Bump OpenPDF from 1.3.35 to 1.3.38 (#256) (#258)
+* Bump Slf4j from 2.0.10 to 2.0.11 (#254)
 
 ## 9.4.1 (released 07.01.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/6?closed=1
 * Use URLStreamHandler for classpath protocol if available (#250)
