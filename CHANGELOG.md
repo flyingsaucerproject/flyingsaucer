@@ -1,7 +1,11 @@
 # Changelog
 
-## 9.5.1 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/8
+## 9.5.2 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/9
 * ...
+
+## 9.5.1 (released 22.01.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/8?closed=1
+* Bump OpenPDF from 1.3.38 to 1.3.39 (#261)
+* #260 change scope of jsr305 dependency from "provided" to "compile" (#263)
 
 ## 9.5.0 (released 21.01.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/7?closed=1
 * Require Java 11 or later (#257)
