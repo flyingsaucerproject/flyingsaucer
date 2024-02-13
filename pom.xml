@@ -250,7 +250,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <openpdf.version>1.3.39</openpdf.version>
+    <openpdf.version>1.3.40</openpdf.version>
     <junit.version>5.10.2</junit.version>
     <itext5.version>5.5.13.3</itext5.version>
     <slf4j.version>2.0.12</slf4j.version>
