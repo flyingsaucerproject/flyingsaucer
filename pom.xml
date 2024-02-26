@@ -257,7 +257,7 @@
     <assertj.version>3.25.3</assertj.version>
     <pdftest.version>1.8.1</pdftest.version>
     <bouncycastle.version>1.77</bouncycastle.version>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
   </properties>
 
 </project>

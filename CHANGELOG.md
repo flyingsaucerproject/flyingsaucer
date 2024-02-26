@@ -1,7 +1,7 @@
 # Changelog
 
 ## 9.6.0 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/10
-* upgrade to Java 17
+* Require Java 17 or later
 * Bump openpdf from 1.3.40 to 2.0.0 (#274)
 
 ## 9.5.2 (released 26.02.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/9?closed=1
