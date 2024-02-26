@@ -1,7 +1,13 @@
 # Changelog
 
-## 9.5.2 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/9
-* ...
+## 9.6.0 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/10
+* upgrade to Java 17
+* Bump openpdf from 1.3.40 to 2.0.0 (#274)
+
+## 9.5.2 (released 26.02.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/9?closed=1
+* Bump openpdf from 1.3.39 to 1.3.40 (#269)
+* Bump slf4j from 2.0.11 to 2.0.12 (#268)
+* Bump log4j from 2.22.1 to 2.23.0 (#275)
 
 ## 9.5.1 (released 22.01.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/8?closed=1
 * Bump OpenPDF from 1.3.38 to 1.3.39 (#261)
