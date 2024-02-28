@@ -289,35 +289,31 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         }
     }
 
-    public void exportToPdf( String path )
-    {
-       if (manager.getBaseURL() != null) {
-           setStatus( "Exporting to " + path + "..." );
-           try (OutputStream os = Files.newOutputStream(Paths.get(path))) {
-               try {
-               ITextRenderer renderer = new ITextRenderer();
+    public void exportToPdf(String path) {
+        if (manager.getBaseURL() != null) {
+            setStatus("Exporting to " + path + "...");
+            try (OutputStream os = Files.newOutputStream(Paths.get(path))) {
+                try {
+                    ITextRenderer renderer = new ITextRenderer();
 
-               DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-               DocumentBuilder db = dbf.newDocumentBuilder();
-               Document doc =  db.parse(manager.getBaseURL());
+                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder db = dbf.newDocumentBuilder();
+                    Document doc = db.parse(manager.getBaseURL());
 
-               PDFCreationListener pdfCreationListener = new XHtmlMetaToPdfInfoAdapter( doc );
-               renderer.setListener( pdfCreationListener );
+                    PDFCreationListener pdfCreationListener = new XHtmlMetaToPdfInfoAdapter(doc);
+                    renderer.setListener(pdfCreationListener);
 
-               renderer.setDocument(manager.getBaseURL());
-               renderer.layout();
-
-               renderer.createPDF(os);
-               setStatus( "Done export." );
+                    renderer.createPDF(doc, os);
+                    setStatus("Done export.");
+                } catch (Exception e) {
+                    XRLog.general(Level.SEVERE, "Could not export PDF.", e);
+                    e.printStackTrace();
+                    setStatus("Error exporting to PDF.");
+                }
             } catch (Exception e) {
-                XRLog.general(Level.SEVERE, "Could not export PDF.", e);
                 e.printStackTrace();
-                setStatus( "Error exporting to PDF." );
-               }
-           } catch (Exception e) {
-               e.printStackTrace();
-           }
-       }
+            }
+        }
     }
 
     private void handlePageLoadFailed(String url_text, XRRuntimeException ex) {

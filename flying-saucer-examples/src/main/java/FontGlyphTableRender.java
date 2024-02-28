@@ -339,7 +339,7 @@ public class FontGlyphTableRender {
         String msgToUser;
         try (FileOutputStream fos = new FileOutputStream(f)) {
             BufferedOutputStream bos = new BufferedOutputStream(fos);
-            renderer.setDocument(doc, null, new XhtmlNamespaceHandler());
+
             ITextFontResolver resolver = renderer.getFontResolver();
             // TODO: encoding is hard-coded as IDENTITY_H; maybe give user option to override
             resolver.addFont(
@@ -347,8 +347,8 @@ public class FontGlyphTableRender {
                     BaseFont.IDENTITY_H,
                     BaseFont.EMBEDDED
             );
-            renderer.layout();
-            renderer.createPDF(bos);
+            renderer.getSharedContext().setNamespaceHandler(new XhtmlNamespaceHandler());
+            renderer.createPDF(doc, bos);
 
             msgToUser = "Rendered PDF: " + f.getCanonicalPath();
         } catch (DocumentException | IOException e) {

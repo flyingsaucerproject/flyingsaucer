@@ -1,19 +1,10 @@
 package org.xhtmlrenderer.pdf;
 
 import com.codeborne.pdftest.PDF;
-import com.lowagie.text.DocumentException;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.resource.FSEntityResolver;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static com.codeborne.pdftest.assertj.Assertions.assertThat;
+import static java.lang.Thread.currentThread;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
@@ -73,29 +65,9 @@ public class ConcurrentPdfGenerationTest {
     }
 
     private byte[] generatePdf(String htmlPath) {
-        ITextRenderer renderer = new ITextRenderer();
-        renderer.getSharedContext().setMedia("pdf");
-        renderer.getSharedContext().setInteractive(false);
-        renderer.getSharedContext().getTextRenderer().setSmoothingThreshold(0);
-
-        URL htmlUrl = requireNonNull(Thread.currentThread().getContextClassLoader().getResource(htmlPath), () -> "Test resource not found: " + htmlPath);
-        
-        try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            builder.setEntityResolver(FSEntityResolver.instance());
-
-            Document doc = builder.parse(htmlUrl.openStream());
-            
-            renderer.setDocument(doc, htmlUrl.toString());
-            renderer.layout();
-
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            renderer.createPDF(bos);
-            return bos.toByteArray();
-        }
-        catch (DocumentException | IOException | SAXException | ParserConfigurationException e) {
-            throw new IllegalArgumentException(e);
-        }
+        URL htmlUrl = requireNonNull(currentThread().getContextClassLoader().getResource(htmlPath), 
+                () -> "Test resource not found: " + htmlPath);
+        return Html2Pdf.fromUrl(htmlUrl);
     }
 
 }

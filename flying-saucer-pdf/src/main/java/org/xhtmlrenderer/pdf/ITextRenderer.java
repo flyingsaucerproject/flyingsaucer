@@ -53,6 +53,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -180,8 +181,8 @@ public class ITextRenderer {
         setDocument(doc, url, new XhtmlNamespaceHandler());
     }
 
+    @Deprecated
     public void setDocument(File file) throws IOException {
-
         File parent = file.getAbsoluteFile().getParentFile();
         setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
     }
@@ -197,6 +198,7 @@ public class ITextRenderer {
         setDocument(dom, baseUrl);
     }
 
+    @Deprecated
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
         _doc = doc;
 
@@ -245,7 +247,6 @@ public class ITextRenderer {
         return _pdfXConformance == null ? '0' : _pdfXConformance;
     }
 
-
     public void layout() {
         LayoutContext c = newLayoutContext();
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
@@ -283,6 +284,23 @@ public class ITextRenderer {
         _sharedContext.getTextRenderer().setup(result.getFontContext());
 
         return result;
+    }
+
+    public byte[] createPDF(Document source) throws DocumentException {
+        setDocument(source, source.getDocumentURI());
+        layout();
+        
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        createPDF(bos);
+        finishPDF();
+        return bos.toByteArray();
+    }
+
+    public void createPDF(Document source, OutputStream os) throws DocumentException {
+        setDocument(source, source.getDocumentURI());
+        layout();
+        createPDF(os);
+        finishPDF();
     }
 
     public void createPDF(OutputStream os) throws DocumentException {

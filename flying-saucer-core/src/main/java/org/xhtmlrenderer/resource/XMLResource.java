@@ -48,8 +48,10 @@ import javax.xml.transform.sax.SAXSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.net.URL;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
@@ -77,6 +79,10 @@ public class XMLResource extends AbstractResource {
         super(source);
     }
 
+    public static XMLResource load(URL source) {
+        return load(new InputSource(source.toString()));
+    }
+
     public static XMLResource load(InputStream stream) {
         return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(stream));
     }
@@ -87,6 +93,10 @@ public class XMLResource extends AbstractResource {
 
     public static XMLResource load(Reader reader) {
         return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(new InputSource(reader)));
+    }
+
+    public static XMLResource load(String xml) {
+        return load(new StringReader(xml));
     }
 
     public static XMLResource load(Source source) {
