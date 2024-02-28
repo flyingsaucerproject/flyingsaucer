@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.resource.XMLResource;
-import org.xml.sax.InputSource;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
@@ -51,16 +50,13 @@ public class PDFRenderTest {
     }
 
     private static PDF generatePDF(URL source, File output) throws IOException, DocumentException {
+        Document doc = XMLResource.load(source).getDocument();
+
         try (OutputStream os = newOutputStream(output.toPath())) {
             ITextRenderer renderer = new ITextRenderer();
             ResourceLoaderUserAgent callback = new ResourceLoaderUserAgent(renderer.getOutputDevice(), renderer.getSharedContext().getDotsPerPixel());
             renderer.getSharedContext().setUserAgentCallback(callback);
-
-            Document doc = XMLResource.load(new InputSource(source.toString())).getDocument();
-
-            renderer.setDocument(doc, source.toString());
-            renderer.layout();
-            renderer.createPDF(os);
+            renderer.createPDF(doc, os);
         }
         log.info("Rendered {}{}  to PDF: {}", source, lineSeparator(), output.toURI());
         return new PDF(output);

@@ -59,9 +59,7 @@ public class PDFRender {
 
             Document doc = XMLResource.load(new InputSource(url)).getDocument();
 
-            renderer.setDocument(doc, url);
-            renderer.layout();
-            renderer.createPDF(os);
+            renderer.createPDF(doc, os);
         }
     }
 
