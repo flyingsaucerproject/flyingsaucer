@@ -33,6 +33,7 @@ import com.lowagie.text.pdf.PdfDictionary;
 import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfIndirectReference;
 import com.lowagie.text.pdf.PdfName;
+import com.lowagie.text.pdf.PdfNumber;
 import com.lowagie.text.pdf.PdfOutline;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfString;
@@ -277,12 +278,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                             targetArea.setBorder(0);
                             targetArea.setBorderWidth(0);
 
-                            PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(),
-                                    targetArea.getRight(), targetArea.getTop(), action);
-                            annot.put(PdfName.SUBTYPE, PdfName.LINK);
-                            annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                            annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
-                            _writer.addAnnotation(annot);
+                            addLinkAnnotation(action, targetArea);
                         }
                     }
                 } else {
@@ -292,16 +288,21 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                     if (targetArea == null) {
                         return;
                     }
-                    PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(), targetArea.getRight(),
-                            targetArea.getTop(), action);
-                    annot.put(PdfName.SUBTYPE, PdfName.LINK);
-
-                    annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                    annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
-                    _writer.addAnnotation(annot);
+                    addLinkAnnotation(action, targetArea);
                 }
             }
         }
+    }
+
+    private void addLinkAnnotation(final PdfAction action, final com.lowagie.text.Rectangle targetArea) {
+        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(),
+                targetArea.getRight(), targetArea.getTop(), action);
+        annot.put(PdfName.SUBTYPE, PdfName.LINK);
+        annot.put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+
+        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+        annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
+        _writer.addAnnotation(annot);
     }
 
     public com.lowagie.text.Rectangle createLocalTargetArea(RenderingContext c, Box box) {
