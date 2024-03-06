@@ -31,6 +31,7 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfDestination;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfNumber;
 import com.itextpdf.text.pdf.PdfOutline;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfTextArray;
@@ -272,12 +273,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         targetArea.setBorder(0);
                         targetArea.setBorderWidth(0);
 
-                        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(),
-                                targetArea.getRight(), targetArea.getTop(), action);
-                        annot.put(PdfName.SUBTYPE, PdfName.LINK);
-                        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                        annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
-                        _writer.addAnnotation(annot);
+                        addLinkAnnotation(action, targetArea);
                     }
                 } else {
                     int boxTop = box.getAbsY();
@@ -292,17 +288,22 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         if (targetArea == null) {
                             return;
                         }
-                        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(), targetArea.getRight(),
-                            targetArea.getTop(), action);
-                        annot.put(PdfName.SUBTYPE, PdfName.LINK);
-
-                        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
-                        annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
-                        _writer.addAnnotation(annot);
+                        addLinkAnnotation(action, targetArea);
                     }
                 }
             }
         }
+    }
+
+    private void addLinkAnnotation(final PdfAction action, final com.itextpdf.text.Rectangle targetArea) {
+        PdfAnnotation annot = new PdfAnnotation(_writer, targetArea.getLeft(), targetArea.getBottom(),
+                targetArea.getRight(), targetArea.getTop(), action);
+        annot.put(PdfName.SUBTYPE, PdfName.LINK);
+        annot.put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+
+        annot.setBorderStyle(new PdfBorderDictionary(0.0f, 0));
+        annot.setBorder(new PdfBorderArray(0.0f, 0.0f, 0));
+        _writer.addAnnotation(annot);
     }
 
     public com.itextpdf.text.Rectangle createLocalTargetArea(RenderingContext c, Box box) {
