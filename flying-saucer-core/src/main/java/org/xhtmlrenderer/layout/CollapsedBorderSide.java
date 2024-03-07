@@ -32,8 +32,8 @@ import javax.annotation.Nonnull;
  * the cells in question).
  */
 public class CollapsedBorderSide implements Comparable<CollapsedBorderSide> {
-    private TableCellBox _cell;
-    private int _side;
+    private final TableCellBox _cell;
+    private final int _side;
 
     public CollapsedBorderSide(TableCellBox cell, int side) {
         _side = side;
@@ -44,16 +44,8 @@ public class CollapsedBorderSide implements Comparable<CollapsedBorderSide> {
         return _cell;
     }
 
-    public void setCell(TableCellBox cell) {
-        _cell = cell;
-    }
-
     public int getSide() {
         return _side;
-    }
-
-    public void setSide(int side) {
-        _side = side;
     }
 
     @Override
@@ -104,14 +96,9 @@ public class CollapsedBorderSide implements Comparable<CollapsedBorderSide> {
 
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CollapsedBorderSide)) return false;
+        if (!(o instanceof CollapsedBorderSide that)) return false;
 
-        CollapsedBorderSide that = (CollapsedBorderSide) o;
-
-        if (_side != that._side) return false;
-        if (!_cell.equals(that._cell)) return false;
-
-        return true;
+        return _side == that._side && _cell.equals(that._cell);
     }
 
     public int hashCode() {

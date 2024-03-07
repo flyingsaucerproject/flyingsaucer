@@ -42,10 +42,8 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
             UserAgentCallback uac, int cssWidth, int cssHeight) {
         ReplacedElement re = super.createReplacedElement(c, box, uac, cssWidth, cssHeight);
         if (re == null
-                && c.getNamespaceHandler() instanceof XhtmlNamespaceHandler
+                && c.getNamespaceHandler() instanceof XhtmlNamespaceHandler nsh
                 && !c.isPrint()) {
-            XhtmlNamespaceHandler nsh = (XhtmlNamespaceHandler) c
-                .getNamespaceHandler();
             Element e = box.getElement();
             if (e == null) {
                 return null;

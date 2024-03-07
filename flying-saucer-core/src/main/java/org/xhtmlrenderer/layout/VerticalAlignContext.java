@@ -212,8 +212,7 @@ public class VerticalAlignContext {
         private void moveInlineContents(Box box, int ty) {
             if (canBeMoved(box)) {
                 box.setY(box.getY() + ty);
-                if (box instanceof InlineLayoutBox) {
-                    InlineLayoutBox iB = (InlineLayoutBox)box;
+                if (box instanceof InlineLayoutBox iB) {
                     for (int i = 0; i < iB.getInlineChildCount(); i++) {
                         Object child = iB.getInlineChild(i);
                         if (child instanceof Box) {

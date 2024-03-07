@@ -114,7 +114,7 @@ public interface NamespaceHandler {
 
     @Nullable
     @CheckReturnValue
-    String getAnchorName(Element e);
+    String getAnchorName(@Nullable Element e);
 
     /**
      * @return Returns true if the Element represents an image.

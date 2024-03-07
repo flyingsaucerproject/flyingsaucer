@@ -72,9 +72,7 @@ public abstract class SWTXhtmlControl implements SWTFormControl {
     }
 
     private static Color createFromAWT(Device device, FSColor fsColor) {
-        if (fsColor instanceof FSRGBColor) {
-            FSRGBColor fsrgbcolor = ((FSRGBColor) fsColor);
-
+        if (fsColor instanceof FSRGBColor fsrgbcolor) {
             return new Color(device, fsrgbcolor.getRed(), fsrgbcolor.getGreen(),
                     fsrgbcolor.getBlue());
         } else {

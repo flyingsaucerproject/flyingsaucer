@@ -23,16 +23,12 @@ public class BorderRadiusCorner {
     }
     public BorderRadiusCorner(CSSName fromVal, CalculatedStyle style, CssContext ctx) {
         FSDerivedValue value = style.valueByName(fromVal);
-        PropertyValue first, second;
-        if(value instanceof ListValue) {
-            ListValue lValues = (ListValue)value;
-            first = (PropertyValue)lValues.getValues().get(0);
-            if(lValues.getValues().size() > 1)
-                second = (PropertyValue)lValues.getValues().get(1);
-            else
-                second = first;
+        if (value instanceof ListValue lValues) {
+            PropertyValue first = (PropertyValue)lValues.getValues().get(0);
+            PropertyValue second = lValues.getValues().size() > 1 ? 
+                    (PropertyValue) lValues.getValues().get(1) : first;
 
-            if(fromVal.equals(CSSName.BORDER_TOP_LEFT_RADIUS) || fromVal.equals(CSSName.BORDER_BOTTOM_RIGHT_RADIUS)) {
+            if (fromVal.equals(CSSName.BORDER_TOP_LEFT_RADIUS) || fromVal.equals(CSSName.BORDER_BOTTOM_RIGHT_RADIUS)) {
                 setRight(fromVal, style, first, ctx);
                 setLeft(fromVal, style, second, ctx);
                 //_left = style.getFloatPropertyProportionalHeight(fromVal, 0, ctx);
@@ -43,8 +39,7 @@ public class BorderRadiusCorner {
                 //_right = style.getFloatPropertyProportionalHeight(fromVal, 0, ctx);
                 //_left = style.getFloatPropertyProportionalWidth(fromVal, 0, ctx);
             }
-        } else if(value instanceof LengthValue){
-            LengthValue lv = (LengthValue)value;
+        } else if (value instanceof LengthValue lv){
 
             if(lv.getStringValue().contains("%")) {
                 _leftPercent = _rightPercent = true;
@@ -99,19 +94,15 @@ public class BorderRadiusCorner {
     }
 
     public float getMaxLeft(float max) {
-        if(_leftPercent)
-            return max*_left;
-        if(_left > max)
-            return max;
-        return _left;
+        if (_leftPercent)
+            return max * _left;
+        return Math.min(_left, max);
     }
 
     public float getMaxRight(float max) {
-        if(_rightPercent)
-            return max*_right;
-        if(_right > max)
-            return max;
-        return _right;
+        if (_rightPercent)
+            return max * _right;
+        return Math.min(_right, max);
     }
 
 

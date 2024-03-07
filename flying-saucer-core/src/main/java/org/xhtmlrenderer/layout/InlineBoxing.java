@@ -452,16 +452,13 @@ public class InlineBoxing {
 
         for (int i = 0; i < current.getInlineChildCount(); i++) {
             Object child = current.getInlineChild(i);
-            if (child instanceof InlineLayoutBox) {
-                InlineLayoutBox iB = (InlineLayoutBox) child;
+            if (child instanceof InlineLayoutBox iB) {
                 iB.setX(x);
                 x += positionHorizontally(c, iB, x);
-            } else if (child instanceof InlineText) {
-                InlineText iT = (InlineText) child;
+            } else if (child instanceof InlineText iT) {
                 iT.setX(x - start);
                 x += iT.getWidth();
-            } else if (child instanceof Box) {
-                Box b = (Box) child;
+            } else if (child instanceof Box b) {
                 b.setX(x);
                 x += b.getWidth();
             }
@@ -743,8 +740,7 @@ public class InlineBoxing {
                 vaTarget = vaContext.createChild(child);
             }
         }
-        if (child instanceof InlineLayoutBox) {
-            InlineLayoutBox iB = (InlineLayoutBox) child;
+        if (child instanceof InlineLayoutBox iB) {
             positionInlineVertically(c, vaTarget, iB);
         } else { // any other Box class
             positionInlineBlockVertically(c, vaTarget, (BlockBox)child);

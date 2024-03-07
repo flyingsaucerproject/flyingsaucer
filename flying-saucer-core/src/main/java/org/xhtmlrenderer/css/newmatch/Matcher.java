@@ -168,12 +168,10 @@ public class Matcher {
                         selector.setPos(++count);
                         sorter.put(selector.getOrder(), selector);
                     }
-                } else if (obj instanceof PageRule) {
-                    PageRule pageRule = (PageRule) obj;
+                } else if (obj instanceof PageRule pageRule) {
                     pageRule.setPos(++pCount);
                     _pageRules.add(pageRule);
-                } else if (obj instanceof MediaRule) {
-                    MediaRule mediaRule = (MediaRule) obj;
+                } else if (obj instanceof MediaRule mediaRule) {
                     if (mediaRule.matches(medium)) {
                         for (Ruleset ruleset : mediaRule.getContents()) {
                             for (Selector selector : ruleset.getFSSelectors()) {

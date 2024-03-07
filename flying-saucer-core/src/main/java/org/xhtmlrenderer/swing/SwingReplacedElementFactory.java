@@ -284,9 +284,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
 
         public boolean equals(final Object o) {
             if (this == o) return true;
-            if (!(o instanceof CacheKey)) return false;
-
-            final CacheKey cacheKey = (CacheKey) o;
+            if (!(o instanceof CacheKey cacheKey)) return false;
 
             if (height != cacheKey.height) return false;
             if (width != cacheKey.width) return false;

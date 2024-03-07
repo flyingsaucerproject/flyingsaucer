@@ -139,14 +139,9 @@ public class DemosNavigation {
 
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof Demo)) return false;
+            if (!(o instanceof Demo demo)) return false;
 
-            Demo demo = (Demo) o;
-
-            if (!_name.equals(demo._name)) return false;
-            if (!_url.equals(demo._url)) return false;
-
-            return true;
+            return _name.equals(demo._name) && _url.equals(demo._url);
         }
 
         public int hashCode() {

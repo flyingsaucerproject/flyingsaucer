@@ -208,9 +208,8 @@ public class ImageResourceLoader {
 
         public boolean equals(final Object o) {
             if (this == o) return true;
-            if (!(o instanceof CacheKey)) return false;
+            if (!(o instanceof CacheKey cacheKey)) return false;
 
-            CacheKey cacheKey = (CacheKey) o;
             return height == cacheKey.height && 
                     width == cacheKey.width && 
                     uri.equals(cacheKey.uri);

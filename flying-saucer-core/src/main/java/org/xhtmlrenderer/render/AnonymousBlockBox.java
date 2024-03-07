@@ -86,8 +86,7 @@ public final class AnonymousBlockBox extends BlockBox {
 
     public void provideSiblingMarginToFloats(int margin) {
         for (Styleable styleable : getInlineContent()) {
-            if (styleable instanceof BlockBox) {
-                BlockBox b = (BlockBox) styleable;
+            if (styleable instanceof BlockBox b) {
                 if (b.isFloated()) {
                     b.getFloatedBoxData().setMarginFromSibling(margin);
                 }
