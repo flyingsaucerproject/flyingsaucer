@@ -1,8 +1,10 @@
 # Changelog
 
-## 9.6.0 (work in progress) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/10
+## 9.6.0 (released 07.03.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/10
 * Require Java 17 or later
-* Bump openpdf from 1.3.40 to 2.0.0 (#274)
+* Bump openpdf from 1.3.40 to 2.0.1 (#274) (#278)
+* simplify API for creating PDF (#277)
+* Added F flag to make links pdf/a-1a conform (#280)
 
 ## 9.5.2 (released 26.02.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/9?closed=1
 * Bump openpdf from 1.3.39 to 1.3.40 (#269)
