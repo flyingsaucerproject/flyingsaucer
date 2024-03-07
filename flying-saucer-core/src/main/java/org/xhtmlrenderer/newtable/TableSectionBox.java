@@ -81,7 +81,7 @@ public class TableSectionBox extends BlockBox {
             row.ensureChildren(c);
             for (Box box : row.getChildren()) {
                 TableCellBox cell = (TableCellBox) box;
-                addCell(row, cell, cRow);
+                addCell(cell, cRow);
             }
         }
     }
@@ -140,7 +140,7 @@ public class TableSectionBox extends BlockBox {
         super.layoutChildren(c, contentStart);
     }
 
-    private void addCell(TableRowBox row, TableCellBox cell, int cRow) {
+    private void addCell(TableCellBox cell, int cRow) {
         int rSpan = cell.getStyle().getRowSpan();
         int cSpan = cell.getStyle().getColSpan();
 

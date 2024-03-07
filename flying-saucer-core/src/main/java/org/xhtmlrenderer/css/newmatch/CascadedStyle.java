@@ -133,14 +133,6 @@ public class CascadedStyle {
         this(emptyMap(), iter.iterator());
     }
 
-    /**
-     * @deprecated Use constructor {@link #CascadedStyle(Iterable)} instead
-     */
-    @Deprecated
-    CascadedStyle(Iterator<PropertyDeclaration> iter) {
-        this(emptyMap(), iter);
-    }
-
     private CascadedStyle(Map<CSSName, PropertyDeclaration> startingPoint, Iterator<PropertyDeclaration> iter) {
         //do a bucket-sort on importance and origin
         //properties should already be in order of specificity

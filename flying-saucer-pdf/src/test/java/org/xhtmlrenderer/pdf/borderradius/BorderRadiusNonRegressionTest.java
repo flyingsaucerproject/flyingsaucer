@@ -15,7 +15,7 @@ public class BorderRadiusNonRegressionTest {
      * This used to throw a ClassCastException (before this fix).
      */
     @Test
-    public void borderRadiusWithBorderWidthZero() throws Exception {
+    public void borderRadiusWithBorderWidthZero() {
         testNoException("borderRadiusWithBorderWidthZero.html");
     }
 

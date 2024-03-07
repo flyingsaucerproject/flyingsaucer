@@ -28,7 +28,6 @@ import org.xhtmlrenderer.simple.xhtml.controls.SelectControl;
 import org.xhtmlrenderer.simple.xhtml.controls.TextControl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class XhtmlForm {
@@ -73,14 +72,6 @@ public class XhtmlForm {
 
     public Iterable<FormControl> controls() {
         return _controls;
-    }
-
-    /**
-     * @deprecated Use method {@link #controls()} instead
-     */
-    @Deprecated
-    public Iterator<FormControl> getControls() {
-        return _controls.iterator();
     }
 
     public FormControl createControl(Element e) {

@@ -176,11 +176,6 @@ public class Java2DTextRenderer implements TextRenderer {
     }
 
     @Override
-    @Deprecated
-    public void setSmoothingLevel(int level ) {
-    }
-
-    @Override
     public FSFontMetrics getFSFontMetrics(FontContext fc, FSFont font, String string ) {
         Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();
         Object fracHint = graphics.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS);
@@ -213,11 +208,6 @@ public class Java2DTextRenderer implements TextRenderer {
     @Override
     public float getFontScale() {
         return this.scale;
-    }
-
-    @Override
-    public int getSmoothingLevel() {
-        return 0;
     }
 
     /**
