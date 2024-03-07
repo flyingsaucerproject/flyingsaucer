@@ -86,14 +86,6 @@ public class ITextTextRenderer implements TextRenderer {
     public void setSmoothingThreshold(float fontsize) {
     }
 
-    public int getSmoothingLevel() {
-        return 0;
-    }
-
-    @Deprecated
-    public void setSmoothingLevel(int level) {
-    }
-
     public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }

@@ -46,7 +46,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
-import static java.util.Collections.emptyIterator;
 import static java.util.Collections.emptyList;
 
 public abstract class Box implements Styleable {
@@ -214,14 +213,6 @@ public abstract class Box implements Styleable {
         } else {
             return _boxes.get(i);
         }
-    }
-
-    /**
-     * @deprecated Use {@link #getChildren()} instead
-     */
-    @Deprecated
-    public Iterator<Box> getChildIterator() {
-        return _boxes == null ? emptyIterator() : _boxes.iterator();
     }
 
     public List<Box> getChildren() {

@@ -58,14 +58,4 @@ public interface TextRenderer {
      * into account.
      */
     void setSmoothingThreshold(float fontsize);
-
-    int getSmoothingLevel();
-
-    /**
-     * @deprecated no-op, will be removed in a future release. Antialiasing is now controlled via the smoothing
-     * threshold.
-     * @param level no-op
-     */
-    @Deprecated
-    void setSmoothingLevel(int level);
 }
