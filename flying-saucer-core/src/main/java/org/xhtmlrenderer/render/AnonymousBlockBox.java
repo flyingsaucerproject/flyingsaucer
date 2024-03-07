@@ -35,11 +35,17 @@ import java.util.List;
  * boxes create a {@code BlockBox} directly with the anonymous property is
  * true.
  */
-public class AnonymousBlockBox extends BlockBox {
-    private List<InlineBox> _openInlineBoxes;
+public final class AnonymousBlockBox extends BlockBox {
+    private final List<InlineBox> _openInlineBoxes;
 
-    public AnonymousBlockBox(Element element) {
+    public AnonymousBlockBox(Element element, CalculatedStyle style, List<InlineBox> savedParents,
+                             List<Styleable> inlineContent) {
         setElement(element);
+        setStyle(style);
+        setAnonymous(true);
+        _openInlineBoxes = savedParents;
+        setChildrenContentType(BlockBox.CONTENT_INLINE);
+        setInlineContent(inlineContent);
     }
 
     @Override
@@ -64,10 +70,6 @@ public class AnonymousBlockBox extends BlockBox {
 
     public List<InlineBox> getOpenInlineBoxes() {
         return _openInlineBoxes;
-    }
-
-    public void setOpenInlineBoxes(List<InlineBox> openInlineBoxes) {
-        _openInlineBoxes = openInlineBoxes;
     }
 
     @Override

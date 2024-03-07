@@ -1274,15 +1274,12 @@ public class BoxBuilder {
     private static void createAnonymousBlock(Box parent, List<Styleable> inline, List<InlineBox> savedParents) {
         WhitespaceStripper.stripInlineContent(inline);
         if (!inline.isEmpty()) {
-            AnonymousBlockBox anon = new AnonymousBlockBox(parent.getElement());
-            anon.setStyle(parent.getStyle().createAnonymousStyle(IdentValue.BLOCK));
-            anon.setAnonymous(true);
-            if (savedParents != null && !savedParents.isEmpty()) {
-                anon.setOpenInlineBoxes(savedParents);
-            }
-            parent.addChild(anon);
-            anon.setChildrenContentType(BlockBox.CONTENT_INLINE);
-            anon.setInlineContent(inline);
+            AnonymousBlockBox anonymousBox = new AnonymousBlockBox(parent.getElement(),
+                    parent.getStyle().createAnonymousStyle(IdentValue.BLOCK),
+                    savedParents, inline
+            );
+
+            parent.addChild(anonymousBox);
         }
     }
 
