@@ -144,7 +144,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
     @Override
     @Nullable
     @CheckReturnValue
-    public String getAnchorName(Element e) {
+    public String getAnchorName(@Nullable Element e) {
         return null;
     }
 

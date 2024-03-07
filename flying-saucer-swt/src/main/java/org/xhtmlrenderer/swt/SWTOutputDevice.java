@@ -244,8 +244,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
     }
 
     public void setColor(FSColor color) {
-        if (color instanceof FSRGBColor) {
-            FSRGBColor rgb = (FSRGBColor)color;
+        if (color instanceof FSRGBColor rgb) {
             setColor(new java.awt.Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
         } else {
             throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
@@ -271,42 +270,29 @@ public class SWTOutputDevice extends AbstractOutputDevice {
             return;
         }
 
-        if (!(s instanceof BasicStroke)) {
+        if (!(s instanceof BasicStroke bs)) {
             return;
         }
 
-        BasicStroke bs = (BasicStroke) s;
-
-        // Setup the line width
+        // Set up the line width
         _gc.setLineWidth((int) bs.getLineWidth());
 
-        // Setup the line cap
-        int gcCap = SWT.CAP_SQUARE;
-        switch (bs.getEndCap()) {
-        case BasicStroke.CAP_BUTT:
-            gcCap = SWT.CAP_FLAT;
-            break;
-        case BasicStroke.CAP_ROUND:
-            gcCap = SWT.CAP_ROUND;
-            break;
-        case BasicStroke.CAP_SQUARE:
-            gcCap = SWT.CAP_SQUARE;
-            break;
-        }
+        // Set up the line cap
+        int gcCap = switch (bs.getEndCap()) {
+            case BasicStroke.CAP_BUTT -> SWT.CAP_FLAT;
+            case BasicStroke.CAP_ROUND -> SWT.CAP_ROUND;
+            case BasicStroke.CAP_SQUARE -> SWT.CAP_SQUARE;
+            default -> SWT.CAP_SQUARE;
+        };
         _gc.setLineCap(gcCap);
 
-        // Setup the line Join
-        int gcJoin = SWT.JOIN_MITER;
-        switch (bs.getLineJoin()) {
-        case BasicStroke.JOIN_BEVEL:
-            gcJoin = SWT.JOIN_BEVEL;
-            break;
-        case BasicStroke.JOIN_MITER:
-            gcJoin = SWT.JOIN_MITER;
-            break;
-        case BasicStroke.JOIN_ROUND:
-            gcJoin = SWT.JOIN_ROUND;
-        }
+        // Set up the line Join
+        final int gcJoin = switch (bs.getLineJoin()) {
+            case BasicStroke.JOIN_BEVEL -> SWT.JOIN_BEVEL;
+            case BasicStroke.JOIN_MITER -> SWT.JOIN_MITER;
+            case BasicStroke.JOIN_ROUND -> SWT.JOIN_ROUND;
+            default -> SWT.JOIN_MITER;
+        };
         _gc.setLineJoin(gcJoin);
 
         float[] d = bs.getDashArray();

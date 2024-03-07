@@ -128,8 +128,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
             unmarkPending(c);
         }
 
-        if (child instanceof Box) {
-            Box b = (Box)child;
+        if (child instanceof Box b) {
             b.setParent(this);
             b.initContainingLayer(c);
         } else if (child instanceof InlineText) {
@@ -155,11 +154,10 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         if (getInlineChildCount() > 0) {
             for (int i = getInlineChildCount() - 1; i >= 0; i--) {
                 Object child = getInlineChild(i);
-                if (! (child instanceof InlineLayoutBox)) {
+                if (! (child instanceof InlineLayoutBox iB)) {
                     break;
                 }
 
-                InlineLayoutBox iB = (InlineLayoutBox)child;
                 iB.prunePending();
 
                 if (iB.isPending()) {
@@ -198,8 +196,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     public void unmarkPending(LayoutContext c) {
         _pending = false;
 
-        if (getParent() instanceof InlineLayoutBox) {
-            InlineLayoutBox iB = (InlineLayoutBox)getParent();
+        if (getParent() instanceof InlineLayoutBox iB) {
             if (iB.isPending()) {
                 iB.unmarkPending(c);
             }
@@ -219,8 +216,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         if (getInlineChildCount() > 0) {
             for (int i = 0; i < getInlineChildCount(); i++) {
                 Object obj = getInlineChild(i);
-                if (obj instanceof Box) {
-                    Box box = (Box)obj;
+                if (obj instanceof Box box) {
                     box.setContainingLayer(c.getLayer());
                     box.connectChildrenToCurrentLayer(c);
                 }
@@ -405,13 +401,11 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     public boolean isContainsVisibleContent() {
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object child = getInlineChild(i);
-            if (child instanceof InlineText) {
-                InlineText iT = (InlineText)child;
+            if (child instanceof InlineText iT) {
                 if (! iT.isEmpty()) {
                     return true;
                 }
-            } else if (child instanceof InlineLayoutBox) {
-                InlineLayoutBox iB = (InlineLayoutBox)child;
+            } else if (child instanceof InlineLayoutBox iB) {
                 if (iB.isContainsVisibleContent()) {
                     return true;
                 }
@@ -526,8 +520,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
 
     private boolean containsEnd(List<Box> result) {
         for (Box box : result) {
-            if (box instanceof InlineLayoutBox) {
-                InlineLayoutBox iB = (InlineLayoutBox) box;
+            if (box instanceof InlineLayoutBox iB) {
                 if (getElement() == iB.getElement() && iB.isEndsHere()) {
                     return true;
                 }
@@ -541,8 +534,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         List<Box> result = new ArrayList<>();
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object child = getInlineChild(i);
-            if (child instanceof Box) {
-                Box b = (Box)child;
+            if (child instanceof Box b) {
                 if (b.getElement() == elem) {
                     result.add(b);
                 }
@@ -651,8 +643,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     public void calcChildLocations() {
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object obj = getInlineChild(i);
-            if (obj instanceof Box) {
-                Box child = (Box)obj;
+            if (obj instanceof Box child) {
                 child.calcCanvasLocation();
                 child.calcChildLocations();
             }
@@ -704,8 +695,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     public void lookForDynamicFunctions(RenderingContext c) {
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object obj = getInlineChild(i);
-            if (obj instanceof InlineText) {
-                InlineText iT = (InlineText)obj;
+            if (obj instanceof InlineText iT) {
                 if (iT.isDynamicFunction()) {
                     iT.updateDynamicValue(c);
                 }
@@ -826,8 +816,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
 
         for (Iterator<Object> i = getInlineChildren().iterator(); i.hasNext(); ) {
             Object obj = i.next();
-            if (obj instanceof Box) {
-                Box b = (Box)obj;
+            if (obj instanceof Box b) {
                 result.append(b.dump(c, indent + "  ", which));
                 if (result.charAt(result.length()-1) == '\n') {
                     result.deleteCharAt(result.length()-1);
@@ -899,8 +888,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         float result = 0.0f;
 
         for (Object o : getInlineChildren()) {
-            if (o instanceof InlineText) {
-                InlineText iT = (InlineText) o;
+            if (o instanceof InlineText iT) {
 
                 iT.setX(iT.getX() + Math.round(result));
 

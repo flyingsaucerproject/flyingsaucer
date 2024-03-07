@@ -494,11 +494,9 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             if (element != null && !elementBoxMap.containsKey(element)) {
                 elementBoxMap.put(element, b);
             }
-            if (b instanceof InlineLayoutBox) {
-                InlineLayoutBox ilb = (InlineLayoutBox) b;
+            if (b instanceof InlineLayoutBox ilb) {
                 for (Object o : ilb.getInlineChildren()) {
-                    if (o instanceof InlineText) {
-                        InlineText t = (InlineText) o;
+                    if (o instanceof InlineText t) {
                         Text txt = t.getTextNode();
                         if (!textInlineMap.containsKey(txt)) {
                             textInlineMap.put(txt, new ArrayList<>());
@@ -593,7 +591,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         if (box instanceof InlineLayoutBox) {
             ilb = (InlineLayoutBox) box;
         } else {
-            for (; ilb == null;) {
+            while (ilb == null) {
                 List<InlineLayoutBox> ilbs = getInlineLayoutBoxes(box, false);
                 for (int i = ilbs.size() - 1; i >= 0; i--) {
                     InlineLayoutBox ilbt = ilbs.get(i);
@@ -606,8 +604,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                                 int x = ilbt.getAbsX();
 
                                 for (Object o : ilbt.getInlineChildren()) {
-                                    if (o instanceof InlineText) {
-                                        InlineText txt = (InlineText) o;
+                                    if (o instanceof InlineText txt) {
                                         if (txt.getTextNode() != null) {
                                             hasDecentTextNode = true;
                                             break;
@@ -633,8 +630,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         int x = ilb.getAbsX();
         InlineText lastItxt = null;
         for (Object o : ilb.getInlineChildren()) {
-            if (o instanceof InlineText) {
-                InlineText txt = (InlineText) o;
+            if (o instanceof InlineText txt) {
                 if (txt.getTextNode() != null) {
                     if ((e.getX() >= x + txt.getX() && e.getX() < x + txt.getX() + txt.getWidth())
                             || containsWholeIlb) {
@@ -765,9 +761,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof ViewModelInfo)) return false;
-
-            ViewModelInfo that = (ViewModelInfo) o;
+            if (!(o instanceof ViewModelInfo that)) return false;
 
             return range.equals(that.range) && text.equals(that.text);
         }

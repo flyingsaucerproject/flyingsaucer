@@ -75,9 +75,8 @@ public class FSRGBColor implements FSColor {
 
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FSRGBColor)) return false;
+        if (!(o instanceof FSRGBColor that)) return false;
 
-        FSRGBColor that = (FSRGBColor) o;
         return _blue == that._blue && _green == that._green && _red == that._red;
     }
 

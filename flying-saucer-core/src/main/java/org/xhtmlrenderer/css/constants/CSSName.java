@@ -1828,9 +1828,7 @@ public final class CSSName implements Comparable<CSSName> {
 
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CSSName)) return false;
-
-        CSSName cssName = (CSSName) o;
+        if (!(o instanceof CSSName cssName)) return false;
 
         return FS_ID == cssName.FS_ID;
     }

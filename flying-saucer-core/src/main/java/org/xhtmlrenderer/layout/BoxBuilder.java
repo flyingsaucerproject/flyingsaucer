@@ -381,8 +381,7 @@ public class BoxBuilder {
     private static void rebalanceInlineContent(List<Styleable> content) {
         Map<Element, InlineBox> boxesByElement = new HashMap<>();
         for (Styleable styleable : content) {
-            if (styleable instanceof InlineBox) {
-                InlineBox iB = (InlineBox) styleable;
+            if (styleable instanceof InlineBox iB) {
                 Element elem = iB.getElement();
 
                 if (!boxesByElement.containsKey(elem)) {
@@ -969,8 +968,7 @@ public class BoxBuilder {
 
         CalculatedStyle anon = style.createAnonymousStyle(IdentValue.INLINE);
         for (Styleable s : result) {
-            if (s instanceof InlineBox) {
-                InlineBox iB = (InlineBox) s;
+            if (s instanceof InlineBox iB) {
                 iB.setElement(null);
                 iB.setStyle(anon);
                 iB.applyTextTransform();

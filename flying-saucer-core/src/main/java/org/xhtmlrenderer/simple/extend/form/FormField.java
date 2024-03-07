@@ -202,8 +202,7 @@ public abstract class FormField {
 
     private static Color toColor(FSColor color)
     {
-        if (color instanceof FSRGBColor) {
-            FSRGBColor rgb = (FSRGBColor)color;
+        if (color instanceof FSRGBColor rgb) {
             return new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
         }
         throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());

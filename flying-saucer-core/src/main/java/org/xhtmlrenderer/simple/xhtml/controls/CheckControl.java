@@ -47,8 +47,7 @@ public class CheckControl extends AbstractControl {
                 return;
             }
             for (FormControl control : form.getAllControls(getName())) {
-                if (control instanceof CheckControl) {
-                    CheckControl check = (CheckControl) control;
+                if (control instanceof CheckControl check) {
                     if (check.isRadio() && check != this) {
                         check.setSuccessful(false);
                     }

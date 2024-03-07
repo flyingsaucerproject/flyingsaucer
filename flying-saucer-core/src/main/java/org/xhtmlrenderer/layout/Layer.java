@@ -242,8 +242,7 @@ public final class Layer {
                 ((BlockBox) box).paintDebugOutline(c);
             }
 
-            if (collapsedTableBorders != null && box instanceof TableCellBox) {
-                TableCellBox cell = (TableCellBox)box;
+            if (collapsedTableBorders != null && box instanceof TableCellBox cell) {
                 if (cell.hasCollapsedPaintingBorder()) {
                     List<CollapsedBorderSide> borders = collapsedTableBorders.get(cell);
                     if (borders != null) {
@@ -403,8 +402,7 @@ public final class Layer {
 
         Set<CollapsedBorderValue> all = new HashSet<>();
         for (Box b : blocks) {
-            if (b instanceof TableCellBox) {
-                TableCellBox cell = (TableCellBox) b;
+            if (b instanceof TableCellBox cell) {
                 if (cell.hasCollapsedPaintingBorder()) {
                     List<CollapsedBorderSide> borders = cellBordersByTable.computeIfAbsent(cell.getTable(), k -> new ArrayList<>());
                     triggerCellsByTable.put(cell.getTable(), cell);
@@ -502,8 +500,7 @@ public final class Layer {
     }
 
     private void paintLayerBackgroundAndBorder(RenderingContext c) {
-        if (getMaster() instanceof BlockBox) {
-            BlockBox box = (BlockBox) getMaster();
+        if (getMaster() instanceof BlockBox box) {
             box.paintBackground(c);
             box.paintBorder(c);
         }

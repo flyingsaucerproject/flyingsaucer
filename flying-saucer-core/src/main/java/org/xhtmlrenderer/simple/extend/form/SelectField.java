@@ -165,8 +165,7 @@ class SelectField extends FormField {
         NodeList children = e.getChildNodes();
 
         for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
+            if (!(children.item(i) instanceof Element child)) continue;
 
             if ("option".equals(child.getNodeName())) {
                 // option tag, add it
@@ -285,9 +284,8 @@ class SelectField extends FormField {
             if (e.getStateChange() != ItemEvent.SELECTED)
                 return;
             // only for combo-boxes
-            if (! (e.getSource() instanceof JComboBox) )
+            if (! (e.getSource() instanceof JComboBox<?> combo) )
                 return;
-            JComboBox<?> combo = (JComboBox<?>)e.getSource();
 
             if (((NameValuePair)e.getItem()).getValue() == null) {
                 // header selected: revert to old selection

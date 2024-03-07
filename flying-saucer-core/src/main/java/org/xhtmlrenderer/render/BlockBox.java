@@ -212,8 +212,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 } else {
                     for (Iterator<Styleable> i = getInlineContent().iterator(); i.hasNext();) {
                         Styleable styleable = i.next();
-                        if (styleable instanceof BlockBox) {
-                            BlockBox b = (BlockBox) styleable;
+                        if (styleable instanceof BlockBox b) {
                             result.append(b.dump(c, indent + "  ", which));
                             if (result.charAt(result.length() - 1) == '\n') {
                                 result.deleteCharAt(result.length() - 1);
@@ -774,7 +773,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private void addBoxID(LayoutContext c) {
-        if (! isAnonymous()) {
+        if (!isAnonymous()) {
             String name = c.getNamespaceHandler().getAnchorName(getElement());
             if (name != null) {
                 c.addBoxId(name, this);
@@ -1769,8 +1768,7 @@ public class BlockBox extends Box implements InlinePaintable {
             Deque<CalculatedStyle> styles = new LinkedList<>();
             styles.add(style);
             for (Styleable child : _inlineContent) {
-                if (child instanceof InlineBox) {
-                    InlineBox iB = (InlineBox) child;
+                if (child instanceof InlineBox iB) {
 
                     if (iB.isStartsHere()) {
                         CascadedStyle cs;
@@ -2088,22 +2086,21 @@ public class BlockBox extends Box implements InlinePaintable {
 
     public boolean isContainsInlineContent(LayoutContext c) {
         ensureChildren(c);
-        switch (getChildrenContentType()) {
-            case CONTENT_INLINE:
-                return true;
-            case CONTENT_EMPTY:
-                return false;
-            case CONTENT_BLOCK:
+        return switch (getChildrenContentType()) {
+            case CONTENT_INLINE -> true;
+            case CONTENT_EMPTY -> false;
+            case CONTENT_BLOCK -> {
                 for (Box value : getChildren()) {
                     BlockBox box = (BlockBox) value;
                     if (box.isContainsInlineContent(c)) {
-                        return true;
+                        yield true;
                     }
                 }
-                return false;
-        }
+                yield false;
+            }
+            default -> throw new RuntimeException("internal error: no children");
+        };
 
-        throw new RuntimeException("internal error: no children");
     }
 
     public boolean checkPageContext(LayoutContext c) {

@@ -56,8 +56,7 @@ public class ImageResource extends AbstractResource {
 
     public boolean hasDimensions(final int width, final int height) {
         if (isLoaded()) {
-            if (_img instanceof AWTFSImage) {
-                AWTFSImage image = (AWTFSImage) _img;
+            if (_img instanceof AWTFSImage image) {
                 return image.getWidth() == width && image.getHeight() == height;
             } else {
                 return false;

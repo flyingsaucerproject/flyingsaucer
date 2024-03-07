@@ -190,8 +190,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     @Override
     @Nullable
     @CheckReturnValue
-    public String getAnchorName(Element e) {
-        if (e.getNodeName().equalsIgnoreCase("a") && e.hasAttribute("name")) {
+    public String getAnchorName(@Nullable Element e) {
+        if (e != null && "a".equalsIgnoreCase(e.getNodeName()) && e.hasAttribute("name")) {
             return e.getAttribute("name");
         }
         return null;

@@ -117,8 +117,7 @@ public class DelegatingReplacedElementFactory implements ReplacedElementFactory 
 
         public boolean equals(Object o) {
             if (o == null) return false;
-            if (!(o instanceof ERItem)) return false;
-            ERItem other = (ERItem) o;
+            if (!(o instanceof ERItem other)) return false;
             return other.element == this.element;
         }
     }

@@ -400,11 +400,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     @Override
     public void setColor(FSColor color) {
-        if (color instanceof FSRGBColor) {
-            FSRGBColor rgb = (FSRGBColor) color;
+        if (color instanceof FSRGBColor rgb) {
             _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
-        } else if (color instanceof FSCMYKColor) {
-            FSCMYKColor cmyk = (FSCMYKColor) color;
+        } else if (color instanceof FSCMYKColor cmyk) {
             _color = new CMYKColor(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getBlack());
         } else {
             throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
@@ -700,9 +698,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         PdfContentByte cb = _currentPage;
         if (newStroke == oldStroke)
             return;
-        if (!(newStroke instanceof BasicStroke))
+        if (!(newStroke instanceof BasicStroke nStroke))
             return;
-        BasicStroke nStroke = (BasicStroke) newStroke;
         boolean oldOk = (oldStroke instanceof BasicStroke);
         BasicStroke oStroke = null;
         if (oldOk)
@@ -773,9 +770,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     private Stroke transformStroke(Stroke stroke) {
-        if (!(stroke instanceof BasicStroke))
+        if (!(stroke instanceof BasicStroke st))
             return stroke;
-        BasicStroke st = (BasicStroke) stroke;
         float scale = (float) Math.sqrt(Math.abs(_transform.getDeterminant()));
         float[] dash = st.getDashArray();
         if (dash != null) {
@@ -973,8 +969,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     private int getPageRefY(Box box) {
-        if (box instanceof InlineLayoutBox) {
-            InlineLayoutBox iB = (InlineLayoutBox) box;
+        if (box instanceof InlineLayoutBox iB) {
             return iB.getAbsY() + iB.getBaseline();
         } else {
             return box.getAbsY();

@@ -40,8 +40,7 @@ public abstract class AbstractButtonField extends InputField {
             BasicButtonUI ui = new BasicButtonUI();
             button.setUI(ui);
 
-            if (backgroundColor instanceof FSRGBColor) {
-                FSRGBColor rgb = (FSRGBColor)backgroundColor;
+            if (backgroundColor instanceof FSRGBColor rgb) {
                 button.setBackground(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
             }
 

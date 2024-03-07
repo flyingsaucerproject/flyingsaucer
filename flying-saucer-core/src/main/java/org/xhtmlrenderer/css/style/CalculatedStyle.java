@@ -303,8 +303,7 @@ public class CalculatedStyle {
 
     private BackgroundSize createBackgroundSize() {
         FSDerivedValue value = valueByName(CSSName.BACKGROUND_SIZE);
-        if (value instanceof IdentValue) {
-            IdentValue ident = (IdentValue)value;
+        if (value instanceof IdentValue ident) {
             if (ident == IdentValue.COVER) {
                 return new BackgroundSize(false, true, false);
             } else if (ident == IdentValue.CONTAIN) {
@@ -397,10 +396,9 @@ public class CalculatedStyle {
 
     private IdentValue resolveAbsoluteFontSize() {
         FSDerivedValue fontSize = valueByName(CSSName.FONT_SIZE);
-        if (! (fontSize instanceof IdentValue)) {
+        if (!(fontSize instanceof IdentValue fontSizeIdent)) {
             return null;
         }
-        IdentValue fontSizeIdent = (IdentValue) fontSize;
         if (PrimitivePropertyBuilders.ABSOLUTE_FONT_SIZES.get(fontSizeIdent.FS_ID)) {
             return fontSizeIdent;
         }
@@ -518,7 +516,7 @@ public class CalculatedStyle {
         if (val == null || needInitialValue) {
             // if it is inheritable (like color) and we are not root, ask our parent
             // for the value
-            if (! needInitialValue && CSSName.propertyInherits(cssName)
+            if (!needInitialValue && CSSName.propertyInherits(cssName)
                     && _parent != null
                     //
                     && (val = _parent.valueByName(cssName)) != null) {
