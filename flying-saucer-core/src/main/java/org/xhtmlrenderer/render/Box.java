@@ -46,7 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
-import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNullElseGet;
 
 public abstract class Box implements Styleable {
     private Element _element;
@@ -74,7 +74,7 @@ public abstract class Box implements Styleable {
 
     private Box _parent;
 
-    private List<Box> _boxes;
+    private final List<Box> _boxes = new ArrayList<>(3);
 
     /**
      * Keeps track of the start of children's containing block.
@@ -129,9 +129,6 @@ public abstract class Box implements Styleable {
     }
 
     public void addChild(Box child) {
-        if (_boxes == null) {
-            _boxes = new ArrayList<>();
-        }
         if (child == null) {
             throw new NullPointerException("trying to add null child");
         }
@@ -147,22 +144,18 @@ public abstract class Box implements Styleable {
     }
 
     public void removeAllChildren() {
-        if (_boxes != null) {
-            _boxes.clear();
-        }
+        _boxes.clear();
     }
 
     public void removeChild(Box target) {
-        if (_boxes != null) {
-            boolean found = false;
-            for (Iterator<Box> i = getChildren().iterator(); i.hasNext(); ) {
-                Box child = i.next();
-                if (child.equals(target)) {
-                    i.remove();
-                    found = true;
-                } else if (found) {
-                    child.setIndex(child.getIndex()-1);
-                }
+        boolean found = false;
+        for (Iterator<Box> i = getChildren().iterator(); i.hasNext(); ) {
+            Box child = i.next();
+            if (child.equals(target)) {
+                i.remove();
+                found = true;
+            } else if (found) {
+                child.setIndex(child.getIndex() - 1);
             }
         }
     }
@@ -186,9 +179,7 @@ public abstract class Box implements Styleable {
     }
 
     public void removeChild(int i) {
-        if (_boxes != null) {
-            removeChild(getChild(i));
-        }
+        removeChild(getChild(i));
     }
 
     public void setParent(Box box) {
@@ -204,19 +195,15 @@ public abstract class Box implements Styleable {
     }
 
     public int getChildCount() {
-        return _boxes == null ? 0 : _boxes.size();
+        return _boxes.size();
     }
 
     public Box getChild(int i) {
-        if (_boxes == null) {
-            throw new IndexOutOfBoundsException(String.format("No child with index %s, size: %s", i, 0));
-        } else {
-            return _boxes.get(i);
-        }
+        return _boxes.get(i);
     }
 
     public List<Box> getChildren() {
-        return _boxes == null ? emptyList() : _boxes;
+        return _boxes;
     }
 
     public static final int NOTHING = 0;
@@ -239,18 +226,13 @@ public abstract class Box implements Styleable {
     }
 
     public static String stateToString(int state) {
-        switch (state) {
-            case NOTHING:
-                return "NOTHING";
-            case FLUX:
-                return "FLUX";
-            case CHILDREN_FLUX:
-                return "CHILDREN_FLUX";
-            case DONE:
-                return "DONE";
-            default:
-                return "unknown";
-        }
+        return switch (state) {
+            case NOTHING -> "NOTHING";
+            case FLUX -> "FLUX";
+            case CHILDREN_FLUX -> "CHILDREN_FLUX";
+            case DONE -> "DONE";
+            default -> "unknown";
+        };
     }
 
     @Override
@@ -811,18 +793,13 @@ public abstract class Box implements Styleable {
         RectPropertySet margin = getMargin(cssCtx);
         RectPropertySet padding = getPadding(cssCtx);
 
-        switch (which) {
-            case CalculatedStyle.LEFT:
-                return (int)(margin.left() + border.left() + padding.left());
-            case CalculatedStyle.RIGHT:
-                return (int)(margin.right() + border.right() + padding.right());
-            case CalculatedStyle.TOP:
-                return (int)(margin.top() + border.top() + padding.top());
-            case CalculatedStyle.BOTTOM:
-                return (int)(margin.bottom() + border.bottom() + padding.bottom());
-            default:
-                throw new IllegalArgumentException("Unsupported margin style: " + which);
-        }
+        return switch (which) {
+            case CalculatedStyle.LEFT -> (int) (margin.left() + border.left() + padding.left());
+            case CalculatedStyle.RIGHT -> (int) (margin.right() + border.right() + padding.right());
+            case CalculatedStyle.TOP -> (int) (margin.top() + border.top() + padding.top());
+            case CalculatedStyle.BOTTOM -> (int) (margin.bottom() + border.bottom() + padding.bottom());
+            default -> throw new IllegalArgumentException("Unsupported margin style: " + which);
+        };
     }
 
     protected void moveIfGreater(Dimension result, Dimension test) {
@@ -1083,11 +1060,7 @@ public abstract class Box implements Styleable {
 
         PageBox page = c.getPage();
         result = page.getStyle().getBackgroundColor();
-        if (result == null) {
-            return new FSRGBColor(255, 255, 255);
-        } else {
-            return result;
-        }
+        return requireNonNullElseGet(result, () -> new FSRGBColor(255, 255, 255));
     }
 
     protected boolean isMarginAreaRoot() {
