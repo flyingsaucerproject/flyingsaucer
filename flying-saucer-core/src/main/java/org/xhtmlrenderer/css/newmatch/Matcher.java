@@ -43,7 +43,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -202,59 +201,6 @@ public class Matcher {
         return m;
     }
 
-    private static Iterator<Ruleset> getMatchedRulesets(final List<Selector> mappedSelectors) {
-        return
-                new Iterator<Ruleset>() {
-                    final Iterator<Selector> selectors = mappedSelectors.iterator();
-
-                    @Override
-                    public boolean hasNext() {
-                        return selectors.hasNext();
-                    }
-
-                    @Override
-                    public Ruleset next() {
-                        if (hasNext()) {
-                            return selectors.next().getRuleset();
-                        } else {
-                            throw new NoSuchElementException("No more rulesets");
-                        }
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException("Removing rulesets is not supported");
-                    }
-                };
-    }
-
-    private static Iterator<Ruleset> getSelectedRulesets(List<Selector> selectorList) {
-        final List<Selector> sl = selectorList;
-        return
-                new Iterator<Ruleset>() {
-                    final Iterator<Selector> selectors = sl.iterator();
-
-                    @Override
-                    public boolean hasNext() {
-                        return selectors.hasNext();
-                    }
-
-                    @Override
-                    public Ruleset next() {
-                        if (hasNext()) {
-                            return selectors.next().getRuleset();
-                        } else {
-                            throw new NoSuchElementException("No more rulesets");
-                        }
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException("Removing rulesets is not supported");
-                    }
-                };
-    }
-
     private Ruleset getElementStyle(Node e) {
         synchronized (e) {
             if (_attRes == null || _styleFactory == null) {
@@ -381,9 +327,8 @@ public class Matcher {
                     propList.addAll(nonCssStyling.getPropertyDeclarations());
                 }
                 //these should have been returned in order of specificity
-                for (Iterator<Ruleset> i = getMatchedRulesets(mappedSelectors); i.hasNext();) {
-                    Ruleset rs = i.next();
-                    propList.addAll(rs.getPropertyDeclarations());
+                for (Selector selector : mappedSelectors) {
+                    propList.addAll(selector.getRuleset().getPropertyDeclarations());
                 }
                 //specificity 1,0,0,0
                 if (elementStyling != null) {
@@ -406,9 +351,8 @@ public class Matcher {
             if (pe == null) return null;
 
             List<PropertyDeclaration> propList = new ArrayList<>();
-            for (Iterator<Ruleset> i = getSelectedRulesets(pe); i.hasNext();) {
-                Ruleset rs = i.next();
-                propList.addAll(rs.getPropertyDeclarations());
+            for (Selector selector : pe) {
+                propList.addAll(selector.getRuleset().getPropertyDeclarations());
             }
 
             if (propList.isEmpty())
