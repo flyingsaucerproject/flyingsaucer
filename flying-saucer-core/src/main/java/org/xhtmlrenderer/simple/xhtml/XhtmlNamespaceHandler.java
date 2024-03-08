@@ -60,18 +60,13 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     @Nonnull
     @CheckReturnValue
     public String getNonCssStyling(Element e) {
-        switch (e.getNodeName()) {
-            case "table":
-                return applyTableStyles(e);
-            case "td":
-            case "th":
-                return applyTableCellStyles(e);
-            case "tr":
-                return applyTableRowStyles(e);
-            case "img":
-                return applyImgStyles(e);
-        }
-        return "";
+        return switch (e.getNodeName()) {
+            case "table" -> applyTableStyles(e);
+            case "td", "th" -> applyTableCellStyles(e);
+            case "tr" -> applyTableRowStyles(e);
+            case "img" -> applyImgStyles(e);
+            default -> "";
+        };
     }
 
     private String applyImgStyles(Element e) {

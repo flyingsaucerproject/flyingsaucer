@@ -38,45 +38,29 @@ public class FormFieldFactory {
         String typeKey = getTypeKey(e);
         if (typeKey == null) return null;
 
-        switch (typeKey) {
-            case "submit":
-                return new SubmitField(e, form, context, box);
-            case "reset":
-                return new ResetField(e, form, context, box);
-            case "button":
-                return new ButtonField(e, form, context, box);
-            case "image":
-                return new ImageField(e, form, context, box);
-            case "hidden":
-                return new HiddenField(e, form, context, box);
-            case "password":
-                return new PasswordField(e, form, context, box);
-            case "checkbox":
-                return new CheckboxField(e, form, context, box);
-            case "radio":
-                return new RadioButtonField(e, form, context, box);
-            case "file":
-                return new FileField(e, form, context, box);
-            case "textarea":
-                return new TextAreaField(e, form, context, box);
-            case "select":
-                return new SelectField(e, form, context, box);
-            default:
-                return new TextField(e, form, context, box);
-        }
+        return switch (typeKey) {
+            case "submit" -> new SubmitField(e, form, context, box);
+            case "reset" -> new ResetField(e, form, context, box);
+            case "button" -> new ButtonField(e, form, context, box);
+            case "image" -> new ImageField(e, form, context, box);
+            case "hidden" -> new HiddenField(e, form, context, box);
+            case "password" -> new PasswordField(e, form, context, box);
+            case "checkbox" -> new CheckboxField(e, form, context, box);
+            case "radio" -> new RadioButtonField(e, form, context, box);
+            case "file" -> new FileField(e, form, context, box);
+            case "textarea" -> new TextAreaField(e, form, context, box);
+            case "select" -> new SelectField(e, form, context, box);
+            default -> new TextField(e, form, context, box);
+        };
     }
 
     @Nullable
     private static String getTypeKey(Element e) {
-        switch (e.getNodeName()) {
-            case "input":
-                return e.getAttribute("type");
-            case "textarea":
-                return "textarea";
-            case "select":
-                return "select";
-            default:
-                return null;
-        }
+        return switch (e.getNodeName()) {
+            case "input" -> e.getAttribute("type");
+            case "textarea" -> "textarea";
+            case "select" -> "select";
+            default -> null;
+        };
     }
 }

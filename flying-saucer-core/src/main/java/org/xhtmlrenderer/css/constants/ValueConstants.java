@@ -26,6 +26,8 @@ import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -42,9 +44,8 @@ import static java.lang.Float.parseFloat;
 
 /**
  * Utility class for working with {@code CSSValue} instances.
- *
- * @author empty
  */
+@ParametersAreNonnullByDefault
 public final class ValueConstants {
     /**
      * Type descriptions--a crude approximation taken by scanning CSSValue statics
@@ -68,34 +69,24 @@ public final class ValueConstants {
         }
     }
 
-    public static short sacPrimitiveTypeForString(String type) {
+    public static short sacPrimitiveTypeForString(@Nullable String type) {
         if (type == null) {
             //this is only valid if length is 0
             return CSSPrimitiveValue.CSS_PX;
         }
 
-        switch (type) {
-            case "em":
-                return CSSPrimitiveValue.CSS_EMS;
-            case "ex":
-                return CSSPrimitiveValue.CSS_EXS;
-            case "px":
-                return CSSPrimitiveValue.CSS_PX;
-            case "%":
-                return CSSPrimitiveValue.CSS_PERCENTAGE;
-            case "in":
-                return CSSPrimitiveValue.CSS_IN;
-            case "cm":
-                return CSSPrimitiveValue.CSS_CM;
-            case "mm":
-                return CSSPrimitiveValue.CSS_MM;
-            case "pt":
-                return CSSPrimitiveValue.CSS_PT;
-            case "pc":
-                return CSSPrimitiveValue.CSS_PC;
-            default:
-                throw new XRRuntimeException("Unknown type on CSS value: " + type);
-        }
+        return switch (type) {
+            case "em" -> CSSPrimitiveValue.CSS_EMS;
+            case "ex" -> CSSPrimitiveValue.CSS_EXS;
+            case "px" -> CSSPrimitiveValue.CSS_PX;
+            case "%" -> CSSPrimitiveValue.CSS_PERCENTAGE;
+            case "in" -> CSSPrimitiveValue.CSS_IN;
+            case "cm" -> CSSPrimitiveValue.CSS_CM;
+            case "mm" -> CSSPrimitiveValue.CSS_MM;
+            case "pt" -> CSSPrimitiveValue.CSS_PT;
+            case "pc" -> CSSPrimitiveValue.CSS_PC;
+            default -> throw new XRRuntimeException("Unknown type on CSS value: " + type);
+        };
     }
 
     public static String stringForSACPrimitiveType(short type) {
@@ -189,18 +180,13 @@ public final class ValueConstants {
      * Gets the cssValueTypeDesc attribute of the {@link CSSValue} object
      */
     public static String getCssValueTypeDesc(CSSValue cssValue) {
-        switch (cssValue.getCssValueType()) {
-            case CSSValue.CSS_CUSTOM:
-                return "CSS_CUSTOM";
-            case CSSValue.CSS_INHERIT:
-                return "CSS_INHERIT";
-            case CSSValue.CSS_PRIMITIVE_VALUE:
-                return "CSS_PRIMITIVE_VALUE";
-            case CSSValue.CSS_VALUE_LIST:
-                return "CSS_VALUE_LIST";
-            default:
-                return "UNKNOWN";
-        }
+        return switch (cssValue.getCssValueType()) {
+            case CSSValue.CSS_CUSTOM -> "CSS_CUSTOM";
+            case CSSValue.CSS_INHERIT -> "CSS_INHERIT";
+            case CSSValue.CSS_PRIMITIVE_VALUE -> "CSS_PRIMITIVE_VALUE";
+            case CSSValue.CSS_VALUE_LIST -> "CSS_VALUE_LIST";
+            default -> "UNKNOWN";
+        };
     }
 
     /**
@@ -209,25 +195,17 @@ public final class ValueConstants {
      * did the user declare this as a number unit (like px)?
      */
     public static boolean isNumber(short cssPrimitiveType) {
-        switch (cssPrimitiveType) {
+        return switch (cssPrimitiveType) {
             // fall through on all these
             // relative length or size
-            case CSSPrimitiveValue.CSS_EMS:
-            case CSSPrimitiveValue.CSS_EXS:
-            case CSSPrimitiveValue.CSS_PERCENTAGE:
+            case CSSPrimitiveValue.CSS_EMS, CSSPrimitiveValue.CSS_EXS, CSSPrimitiveValue.CSS_PERCENTAGE ->
                 // relatives will be treated separately from lengths;
-                return false;
-                // length
-            case CSSPrimitiveValue.CSS_PX:
-            case CSSPrimitiveValue.CSS_IN:
-            case CSSPrimitiveValue.CSS_CM:
-            case CSSPrimitiveValue.CSS_MM:
-            case CSSPrimitiveValue.CSS_PT:
-            case CSSPrimitiveValue.CSS_PC:
-                return true;
-            default:
-                return false;
-        }
+                    false;
+            // length
+            case CSSPrimitiveValue.CSS_PX, CSSPrimitiveValue.CSS_IN, CSSPrimitiveValue.CSS_CM, CSSPrimitiveValue.CSS_MM, CSSPrimitiveValue.CSS_PT, CSSPrimitiveValue.CSS_PC ->
+                    true;
+            default -> false;
+        };
     }
 
     static {
@@ -284,7 +262,7 @@ public final class ValueConstants {
      * CSSPrimitiveValue short code for a given value,
      * e.g. 14pt is CSS_PT.
      */
-    public static short guessType(String value) {
+    public static short guessType(@Nullable String value) {
         if (value != null && value.length() > 1) {
             if (value.endsWith("%")) {
                 return CSSPrimitiveValue.CSS_PERCENTAGE;

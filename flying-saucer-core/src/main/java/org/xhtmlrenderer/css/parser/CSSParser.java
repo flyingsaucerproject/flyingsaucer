@@ -1702,18 +1702,14 @@ public class CSSParser {
 
     private float extractRgbValue(int i, PropertyValue value) {
         final short type = value.getPrimitiveType();
-        switch (type) {
-            case CSS_PERCENTAGE: {
-                return fromZeroTo255(value.getFloatValue() / 100 * 255);
-            }
-            case CSS_NUMBER: {
-                return fromZeroTo255(value.getFloatValue());
-            }
-            default: {
+        return switch (type) {
+            case CSS_PERCENTAGE -> fromZeroTo255(value.getFloatValue() / 100 * 255);
+            case CSS_NUMBER -> fromZeroTo255(value.getFloatValue());
+            default -> {
                 String message = String.format("Parameter %s to the rgb() function is not a number or percentage", i + 1);
                 throw new CSSParseException(message, getCurrentLine());
             }
-        }
+        };
     }
 
     private static float fromZeroTo255(float f) {
