@@ -35,6 +35,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DefaultHandler2;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
@@ -61,6 +63,7 @@ import static javax.xml.parsers.SAXParserFactory.newInstance;
  *
  * @author Patrick Wright
  */
+@ParametersAreNonnullByDefault
 public class FontGlyphTableRender {
     private static final int TO_SWING = 1;
     private static final int TO_PDF = 2;
@@ -110,32 +113,7 @@ public class FontGlyphTableRender {
         JPanel top1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         top1.add(new JLabel("Enter font path: "));
         top1.add(fontPathTF);
-        JButton chooseFontFileBtn = new JButton("...");
-        chooseFontFileBtn.addActionListener(e -> {
-            String filename = File.separator + "tmp";
-            String famPath = fontPathTF.getText();
-            if (currentFont != null && !famPath.isEmpty()) {
-                filename = new File(famPath).getParent();
-            }
-            JFileChooser fc = new JFileChooser(new File(filename));
-            fc.showOpenDialog(frame);
-            File selFile = fc.getSelectedFile();
-            Font font = null;
-            String msg = "";
-            try {
-                font = loadFont(selFile.getPath());
-            } catch (IOException e1) {
-                // swallow, just allow font to be null
-                msg = e1.getMessage();
-            }
-            if (font == null) {
-                JOptionPane.showMessageDialog(frame, "Can't load file--is it a valid Font file? " + msg);
-            } else {
-                fontPathTF.setText(selFile.getPath());
-                familyNameFieldAwt.setText(font.getFamily());
-                familyNameFieldIText.setText(getITextFontFamilyName(selFile));
-            }
-        });
+        JButton chooseFontFileBtn = createChooseFontButton();
         top1.add(chooseFontFileBtn);
         ActionListener outputSelection = e -> {
             outputType = e.getActionCommand();
@@ -224,6 +202,37 @@ public class FontGlyphTableRender {
         frame.setSize(1024, 730);
         enableButtons();
         frame.setVisible(true);
+    }
+
+    @Nonnull
+    private JButton createChooseFontButton() {
+        JButton chooseFontFileBtn = new JButton("...");
+        chooseFontFileBtn.addActionListener(e -> {
+            String filename = File.separator + "tmp";
+            String famPath = fontPathTF.getText();
+            if (currentFont != null && !famPath.isEmpty()) {
+                filename = new File(famPath).getParent();
+            }
+            JFileChooser fc = new JFileChooser(new File(filename));
+            fc.showOpenDialog(frame);
+            File selFile = fc.getSelectedFile();
+            Font font = null;
+            String msg = "";
+            try {
+                font = loadFont(selFile.getPath());
+            } catch (IOException e1) {
+                // swallow, just allow font to be null
+                msg = e1.getMessage();
+            }
+            if (font == null) {
+                JOptionPane.showMessageDialog(frame, "Can't load file--is it a valid Font file? " + msg);
+            } else {
+                fontPathTF.setText(selFile.getPath());
+                familyNameFieldAwt.setText(font.getFamily());
+                familyNameFieldIText.setText(getITextFontFamilyName(selFile));
+            }
+        });
+        return chooseFontFileBtn;
     }
 
     private String getITextFontFamilyName(File selFile) {
