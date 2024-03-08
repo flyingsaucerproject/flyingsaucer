@@ -34,9 +34,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DefaultHandler2;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,6 +53,7 @@ import java.util.Set;
 
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
+import static javax.xml.parsers.SAXParserFactory.newInstance;
 
 /**
  * Opens a frame and displays, for a selected font, the glyphs for a range of Unicode code points. Can be used to
@@ -381,7 +382,7 @@ public class FontGlyphTableRender {
     private String parseEnt(String html) {
         try {
             final Table table = new Table(15);
-            XMLReader parser = XMLReaderFactory.createXMLReader();
+            XMLReader parser = newInstance().newSAXParser().getXMLReader();
             InputSource is = new InputSource(new BufferedReader(new StringReader(html)));
             try {
                 parser.setFeature("http://xml.org/sax/features/validation", true);
@@ -418,7 +419,7 @@ public class FontGlyphTableRender {
             parser.parse(is);
             return new Page().toHtml(table.toHtml(getFontFamily(TO_SWING), 0), getFontFamily(TO_SWING));
         }
-        catch (SAXException | IOException e) {
+        catch (SAXException | IOException | ParserConfigurationException e) {
             e.printStackTrace();
             return "";
         }
@@ -448,13 +449,7 @@ public class FontGlyphTableRender {
 
     private static class Page {
         public String toHtml(String bodyContent, String fontFamily) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(getHeadDecl(getStyleDecl(fontFamily)));
-            sb.append("<body>\n");
-            sb.append(bodyContent);
-            sb.append("</body>\n");
-            sb.append("</html>\n");
-            return sb.toString();
+            return "%s<body>\n%s</body>%n</html>%n".formatted(getHeadDecl(getStyleDecl(fontFamily)), bodyContent);
         }
 
         private String getHeadDecl(String style) {
