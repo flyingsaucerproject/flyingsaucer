@@ -16,10 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -34,6 +35,7 @@ import java.net.MalformedURLException;
  *
  * @author Patrick Wright
  */
+@ParametersAreNonnullByDefault
 public class FontScaleJPanelRender {
     private String fileName;
 
@@ -73,6 +75,17 @@ public class FontScaleJPanelRender {
         panel.setFontScalingFactor(1.15F);
         panel.setMinFontScale(0.01F);
         panel.setMaxFontScale(12F);
+        JPanel top = createTopPanel(panel);
+
+        frame.getContentPane().add(BorderLayout.NORTH, top);
+
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
+    }
+
+    @Nonnull
+    private static JPanel createTopPanel(XHTMLPanel panel) {
         JButton smaller = new JButton("F-");
         smaller.addActionListener(event -> {
             panel.decrementFontSize();
@@ -93,12 +106,7 @@ public class FontScaleJPanelRender {
         top.add(smaller);
         top.add(def);
         top.add(larger);
-
-        frame.getContentPane().add(BorderLayout.NORTH, top);
-
-        frame.pack();
-        frame.setSize(1024, 768);
-        frame.setVisible(true);
+        return top;
     }
 
     private void loadAndCheckArgs(String[] args) {
