@@ -3,12 +3,17 @@ package org.xhtmlrenderer.demo.browser.actions;
 import org.xhtmlrenderer.demo.browser.ScaleFactor;
 import org.xhtmlrenderer.swing.ScalableXHTMLPanel;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 /**
  * Implements zooming of the browser panel.
  */
+@ParametersAreNonnullByDefault
 public class ZoomAction extends AbstractAction {
     private static boolean needsWarning = true;
 
@@ -24,10 +29,11 @@ public class ZoomAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent evt) {
         if (needsWarning) {
-            String msg = "The \"zoom\" feature is experimental, and some pages\n" +
-                    "will display incorrectly at certain zoom resolutions\n" +
-                    "due to layout calculations not being zoom-aware.";
-            JOptionPane.showMessageDialog(null, msg, "Zoom Panel", JOptionPane.WARNING_MESSAGE);
+            String msg = """
+                    The "zoom" feature is experimental, and some pages
+                    will display incorrectly at certain zoom resolutions
+                    due to layout calculations not being zoom-aware.""";
+            showMessageDialog(null, msg, "Zoom Panel", WARNING_MESSAGE);
             needsWarning = false;
         }
 

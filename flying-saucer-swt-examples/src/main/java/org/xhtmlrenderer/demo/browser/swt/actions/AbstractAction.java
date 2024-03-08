@@ -20,6 +20,8 @@
 package org.xhtmlrenderer.demo.browser.swt.actions;
 
 
+import javax.annotation.Nullable;
+
 public abstract class AbstractAction implements Action {
 
     private final String _text;
@@ -27,7 +29,7 @@ public abstract class AbstractAction implements Action {
     private final int _shortcut;
     private final String _icon;
 
-    public AbstractAction(String text, int style, int shortcut, String icon) {
+    public AbstractAction(String text, int style, int shortcut, @Nullable String icon) {
         _text = text;
         _style = style;
         _shortcut = shortcut;

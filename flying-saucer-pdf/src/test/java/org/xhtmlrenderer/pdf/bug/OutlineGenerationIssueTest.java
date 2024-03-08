@@ -12,24 +12,26 @@ import java.io.FileOutputStream;
  */
 public class OutlineGenerationIssueTest {
 
-    private static final String html1 = "<!DOCTYPE html>\n" +
-            "<html>\n" +
-            "<head><style> h2 { page-break-before: always;}</style></head>" +
-            "<body>\n" +
-            "<h1>Decision #1</h1><p>Decision 1 ...</p>\n" +
-            "<h2>Attachment A</h2><p>Attachment A#1 ...</p>\n" +
-            "<h2>Attachment B</h2><p>Attachment B#1 ...</p>\n" +
-            "</body>\n" +
-            "</html>\n";
+    private static final String html1 = """
+            <!DOCTYPE html>
+            <html>
+            <head><style> h2 { page-break-before: always;}</style></head><body>
+            <h1>Decision #1</h1><p>Decision 1 ...</p>
+            <h2>Attachment A</h2><p>Attachment A#1 ...</p>
+            <h2>Attachment B</h2><p>Attachment B#1 ...</p>
+            </body>
+            </html>
+            """;
 
-    private static final String html2 = "<!DOCTYPE html>\n" +
-            "<html>\n" +
-            "<head><style> h2 { page-break-before: always;}</style></head>" +
-            "<body>\n" +
-            "<h1>Decision #2</h1><p>Decision 2 ...</p>\n" +
-            "<h2>Attachment B</h2><p>Attachment B#2...</p>\n" +
-            "</body>\n" +
-            "</html>\n";
+    private static final String html2 = """
+            <!DOCTYPE html>
+            <html>
+            <head><style> h2 { page-break-before: always;}</style></head><body>
+            <h1>Decision #2</h1><p>Decision 2 ...</p>
+            <h2>Attachment B</h2><p>Attachment B#2...</p>
+            </body>
+            </html>
+            """;
 
     @Test
     public void outline() throws Exception {
