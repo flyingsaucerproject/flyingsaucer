@@ -23,6 +23,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 
+import static java.util.Objects.requireNonNullElseGet;
+
 /**
  * @author scott
  *         <p>
@@ -80,11 +82,7 @@ public class DOMTreeResolver implements TreeResolver {
         String localName = element.getLocalName();
         String eName;
 
-        if (localName == null) {
-            eName = element.getNodeName();
-        } else {
-            eName = localName;
-        }
+        eName = requireNonNullElseGet(localName, element::getNodeName);
 
         if (namespaceURI != null) {
             return name.equals(localName) && namespaceURI.equals(element.getNamespaceURI());
