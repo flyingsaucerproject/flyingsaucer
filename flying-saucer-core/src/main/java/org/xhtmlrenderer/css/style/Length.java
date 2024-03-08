@@ -72,27 +72,20 @@ public class Length {
     }
 
     public long width(int maxWidth) {
-        switch (_type) {
-            case FIXED:
-                return _value;
-            case PERCENT:
-                return maxWidth*_value/100;
-            case VARIABLE:
-                return maxWidth;
-            default:
-                return -1;
-        }
+        return switch (_type) {
+            case FIXED -> _value;
+            case PERCENT -> maxWidth * _value / 100;
+            case VARIABLE -> maxWidth;
+            default -> -1;
+        };
     }
 
     public long minWidth(int maxWidth) {
-        switch (_type) {
-            case FIXED:
-                return _value;
-            case PERCENT:
-                return maxWidth*_value/100;
-            default:
-                return 0;
-        }
+        return switch (_type) {
+            case FIXED -> _value;
+            case PERCENT -> maxWidth * _value / 100;
+            default -> 0;
+        };
     }
 
     public String toString() {

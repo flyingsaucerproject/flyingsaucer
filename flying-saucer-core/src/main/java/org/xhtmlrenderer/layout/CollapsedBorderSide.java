@@ -52,38 +52,21 @@ public class CollapsedBorderSide implements Comparable<CollapsedBorderSide> {
     public int compareTo(@Nonnull CollapsedBorderSide c2) {
         CollapsedBorderSide c1 = this;
 
-        CollapsedBorderValue v1 = null;
-        CollapsedBorderValue v2 = null;
+        final CollapsedBorderValue v1 = switch (c1._side) {
+            case BorderPainter.TOP -> c1._cell.getCollapsedBorderTop();
+            case BorderPainter.RIGHT -> c1._cell.getCollapsedBorderRight();
+            case BorderPainter.BOTTOM -> c1._cell.getCollapsedBorderBottom();
+            case BorderPainter.LEFT -> c1._cell.getCollapsedBorderLeft();
+            default -> null;
+        };
 
-        switch (c1._side) {
-            case BorderPainter.TOP:
-                v1 = c1._cell.getCollapsedBorderTop();
-                break;
-            case BorderPainter.RIGHT:
-                v1 = c1._cell.getCollapsedBorderRight();
-                break;
-            case BorderPainter.BOTTOM:
-                v1 = c1._cell.getCollapsedBorderBottom();
-                break;
-            case BorderPainter.LEFT:
-                v1 = c1._cell.getCollapsedBorderLeft();
-                break;
-        }
-
-        switch (c2._side) {
-            case BorderPainter.TOP:
-                v2 = c2._cell.getCollapsedBorderTop();
-                break;
-            case BorderPainter.RIGHT:
-                v2 = c2._cell.getCollapsedBorderRight();
-                break;
-            case BorderPainter.BOTTOM:
-                v2 = c2._cell.getCollapsedBorderBottom();
-                break;
-            case BorderPainter.LEFT:
-                v2 = c2._cell.getCollapsedBorderLeft();
-                break;
-        }
+        CollapsedBorderValue v2 = switch (c2._side) {
+            case BorderPainter.TOP -> c2._cell.getCollapsedBorderTop();
+            case BorderPainter.RIGHT -> c2._cell.getCollapsedBorderRight();
+            case BorderPainter.BOTTOM -> c2._cell.getCollapsedBorderBottom();
+            case BorderPainter.LEFT -> c2._cell.getCollapsedBorderLeft();
+            default -> null;
+        };
 
         CollapsedBorderValue result = TableCellBox.compareBorders(v1, v2, true);
 

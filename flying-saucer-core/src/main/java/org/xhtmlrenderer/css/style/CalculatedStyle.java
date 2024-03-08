@@ -43,6 +43,8 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,6 +71,7 @@ import java.util.logging.Level;
  * @author Torbjoern Gannholm
  * @author Patrick Wright
  */
+@ParametersAreNonnullByDefault
 public class CalculatedStyle {
     /**
      * The parent-style we inherit from
@@ -114,7 +117,7 @@ public class CalculatedStyle {
      */
     private FontSpecification _font;
 
-    private CalculatedStyle(CalculatedStyle parent) {
+    private CalculatedStyle(@Nullable CalculatedStyle parent) {
         _derivedValuesById = new FSDerivedValue[CSSName.countCSSNames()];
         _parent = parent;
     }
@@ -556,10 +559,6 @@ public class CalculatedStyle {
      * this element, properly cascaded.</p>
      */
     private void derive(CascadedStyle matched) {
-        if (matched == null) {
-            return;
-        }//nothing to derive
-
         Iterator<PropertyDeclaration> mProps = matched.getCascadedPropertyDeclarations();
         while (mProps.hasNext()) {
             PropertyDeclaration pd = mProps.next();
@@ -697,18 +696,13 @@ public class CalculatedStyle {
         RectPropertySet margin = getMarginRect(cbWidth, cssCtx);
         RectPropertySet padding = getPaddingRect(cbWidth, cssCtx);
 
-        switch (which) {
-            case LEFT:
-                return (int) (margin.left() + border.left() + padding.left());
-            case RIGHT:
-                return (int) (margin.right() + border.right() + padding.right());
-            case TOP:
-                return (int) (margin.top() + border.top() + padding.top());
-            case BOTTOM:
-                return (int) (margin.bottom() + border.bottom() + padding.bottom());
-            default:
-                throw new IllegalArgumentException("Unsupported margin calculation style: " + which);
-        }
+        return switch (which) {
+            case LEFT -> (int) (margin.left() + border.left() + padding.left());
+            case RIGHT -> (int) (margin.right() + border.right() + padding.right());
+            case TOP -> (int) (margin.top() + border.top() + padding.top());
+            case BOTTOM -> (int) (margin.bottom() + border.bottom() + padding.bottom());
+            default -> throw new IllegalArgumentException("Unsupported margin calculation style: " + which);
+        };
     }
 
     public IdentValue getWhitespace() {

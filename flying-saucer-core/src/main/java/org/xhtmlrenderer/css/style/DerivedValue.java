@@ -19,12 +19,17 @@
  */
 package org.xhtmlrenderer.css.style;
 
-import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.util.XRRuntimeException;
+
+import static java.util.Objects.requireNonNullElse;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_ATTR;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_IDENT;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_STRING;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_URI;
 
 
 public abstract class DerivedValue implements FSDerivedValue {
@@ -50,15 +55,10 @@ public abstract class DerivedValue implements FSDerivedValue {
     }
 
     private String deriveStringValue(String cssText, String cssStringValue) {
-            switch (_cssSacUnitType) {
-                case CSSPrimitiveValue.CSS_IDENT:
-                case CSSPrimitiveValue.CSS_STRING:
-                case CSSPrimitiveValue.CSS_URI:
-                case CSSPrimitiveValue.CSS_ATTR:
-                    return ( cssStringValue == null ? cssText : cssStringValue );
-                default:
-                    return cssText;
-            }
+        return switch (_cssSacUnitType) {
+            case CSS_IDENT, CSS_STRING, CSS_URI, CSS_ATTR -> requireNonNullElse(cssStringValue, cssText);
+            default -> cssText;
+        };
     }
 
     /** The getCssText() or getStringValue(), depending. */
@@ -68,7 +68,6 @@ public abstract class DerivedValue implements FSDerivedValue {
 
     /** If value is declared INHERIT should always be the IdentValue.INHERIT,
      * not a DerivedValue
-     *
      */
     public boolean isDeclaredInherit() {
         return false;
