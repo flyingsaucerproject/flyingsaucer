@@ -280,41 +280,28 @@ public class ReferenceComparison {
             System.out.println("Checked " + files.keySet().size() + " files, " + (failed > 0 ? failed + " failed." : "all OK."));
         }
 
-        private static class RenderFailed implements Result {
-            private final Exception exception;
-
-            public RenderFailed(Exception exception) {
-                this.exception = exception;
-            }
-
+        private record RenderFailed(Exception exception) implements Result {
             public String describe(File file) {
-                return "FAIL: Render operation threw exception for " + file.getName() + ", err " + exception.getMessage();
+                return "FAIL: Render operation threw exception for %s, err %s".formatted(file.getName(), exception.getMessage());
             }
         }
 
         private static class RefIsLonger implements FailedResult {
             public String describe(File file) {
-                return "FAIL: reference is longer (more lines): " + file.getName();
+                return "FAIL: reference is longer (more lines): %s".formatted(file.getName());
             }
         }
 
-        private static class LineMismatch implements FailedResult {
-            private final String lineRef;
-            private final String lineOther;
-
-            public LineMismatch(String lineRef, String lineOther) {
-                this.lineRef = lineRef;
-                this.lineOther = lineOther;
-            }
-
+        private record LineMismatch(String lineRef, String lineOther) implements FailedResult {
             public String describe(File file) {
-                return "FAIL: line content doesn't match for " + file.getName() + LINE_SEPARATOR + "ref: " + lineRef + LINE_SEPARATOR + "other: " + lineOther;
+                return "FAIL: line content doesn't match for %s%sref: %s%sother: %s".formatted(
+                        file.getName(), LINE_SEPARATOR, lineRef, LINE_SEPARATOR, lineOther);
             }
         }
 
         private static class OtherIsLonger implements FailedResult {
             public String describe(File file) {
-                return "FAIL: new rendered output is longer (more lines): " +  file.getName();
+                return "FAIL: new rendered output is longer (more lines): %s".formatted(file.getName());
             }
         }
 
@@ -326,18 +313,19 @@ public class ReferenceComparison {
             }
 
             public String describe(File file) {
-                return "FAIL: IOException when comparing: " + file + " (err: " + exception.getMessage();
+                return "FAIL: IOException when comparing: %s (err: %s".formatted(file, exception.getMessage());
             }
         }
 
         private interface Result {
             String describe(File file);
         }
+
         private interface FailedResult extends Result {}
 
         private static class ResultOK implements Result {
             public String describe(File file) {
-                return "OK: " + file.getName();
+                return "OK: %s".formatted(file.getName());
             }
         }
     }
