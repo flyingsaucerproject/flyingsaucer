@@ -213,8 +213,8 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * @param e   The element by which the image is keyed
      * @return The ReplacedElement for the image, or null if there is none.
      */
-    protected ReplacedElement lookupImageReplacedElement(Element e, String uri) {
-        return lookupImageReplacedElement(e, uri, -1, -1);
+    protected ReplacedElement lookupImageReplacedElement(Element e) {
+        return lookupImageReplacedElement(e, "", -1, -1);
     }
 
     /**
@@ -269,38 +269,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         this.formSubmissionListener = fsl;
     }
 
-    private static class CacheKey {
-        final Element elem;
-        final String uri;
-        final int width;
-        final int height;
-
-        public CacheKey(final Element elem, final String uri, final int width, final int height) {
-            this.uri = uri;
-            this.width = width;
-            this.height = height;
-            this.elem = elem;
-        }
-
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (!(o instanceof CacheKey cacheKey)) return false;
-
-            if (height != cacheKey.height) return false;
-            if (width != cacheKey.width) return false;
-            if (!elem.equals(cacheKey.elem)) return false;
-            if (!uri.equals(cacheKey.uri)) return false;
-
-            return true;
-        }
-
-        public int hashCode() {
-            int result = elem.hashCode();
-            result = 31 * result + uri.hashCode();
-            result = 31 * result + width;
-            result = 31 * result + height;
-            return result;
-        }
+    private record CacheKey(Element elem, String uri, int width, int height) {
     }
 
 }
