@@ -275,11 +275,9 @@ public class Configuration {
                 System.err.println("WARNING: Flying Saucer: No configuration files found in classpath using URL: " + SF_FILE_NAME + ", resorting to hard-coded fallback properties.");
                 this.properties = newFallbackProperties();
             } else {
-                try {
+                try (readStream) {
                     this.properties = new Properties();
                     this.properties.load(readStream);
-                } finally {
-                    readStream.close();
                 }
             }
         } catch (RuntimeException rex) {

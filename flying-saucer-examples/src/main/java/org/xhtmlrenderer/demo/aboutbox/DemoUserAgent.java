@@ -64,7 +64,7 @@ public class DemoUserAgent implements UserAgentCallback {
      */
     private final int imageCacheCapacity = 16;
     private final Map<String, ImageResource> imageCache =
-            new LinkedHashMap<String, ImageResource>(imageCacheCapacity, 0.75f, true) {
+            new LinkedHashMap<>(imageCacheCapacity, 0.75f, true) {
                 @Override
                 protected boolean removeEldestEntry(Map.Entry<String, ImageResource> eldest) {
                     return size() > imageCacheCapacity;
