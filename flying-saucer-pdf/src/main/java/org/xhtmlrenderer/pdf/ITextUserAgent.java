@@ -74,20 +74,21 @@ public class ITextUserAgent extends NaiveUserAgent {
                 InputStream is = resolveAndOpenStream(uriStr);
                 if (is != null) {
                     try {
-                        ContentTypeDetectingInputStreamWrapper cis = new ContentTypeDetectingInputStreamWrapper(is);
-                        is = cis;
-                        if (cis.isPdf()) {
-                            URI uri = new URI(uriStr);
-                            PdfReader reader = _outputDevice.getReader(uri);
-                            PDFAsImage image = new PDFAsImage(uri);
-                            Rectangle rect = reader.getPageSizeWithRotation(1);
-                            image.setInitialWidth(rect.getWidth() * _outputDevice.getDotsPerPoint());
-                            image.setInitialHeight(rect.getHeight() * _outputDevice.getDotsPerPoint());
-                            resource = new ImageResource(uriStr, image);
-                        } else {
-                            Image image = Image.getInstance(readBytes(is));
-                            scaleToOutputResolution(image);
-                            resource = new ImageResource(uriStr, new ITextFSImage(image));
+                        try (ContentTypeDetectingInputStreamWrapper cis = new ContentTypeDetectingInputStreamWrapper(is)) {
+                            is = cis;
+                            if (cis.isPdf()) {
+                                URI uri = new URI(uriStr);
+                                PdfReader reader = _outputDevice.getReader(uri);
+                                PDFAsImage image = new PDFAsImage(uri);
+                                Rectangle rect = reader.getPageSizeWithRotation(1);
+                                image.setInitialWidth(rect.getWidth() * _outputDevice.getDotsPerPoint());
+                                image.setInitialHeight(rect.getHeight() * _outputDevice.getDotsPerPoint());
+                                resource = new ImageResource(uriStr, image);
+                            } else {
+                                Image image = Image.getInstance(readBytes(is));
+                                scaleToOutputResolution(image);
+                                resource = new ImageResource(uriStr, new ITextFSImage(image));
+                            }
                         }
                         _imageCache.put(unresolvedUri, resource);
                     } catch (BadElementException | IOException | URISyntaxException e) {
