@@ -266,17 +266,18 @@ public class Util {
 
     public static String inputstream_to_string(InputStream in)
             throws IOException {
-        Reader reader = new InputStreamReader(in);
-        StringWriter writer = new StringWriter();
-        char[] buf = new char[1000];
-        while (true) {
-            int n = reader.read(buf, 0, 1000);
-            if (n == -1) {
-                break;
+        try (Reader reader = new InputStreamReader(in)) {
+            StringWriter writer = new StringWriter();
+            char[] buf = new char[1000];
+            while (true) {
+                int n = reader.read(buf, 0, 1000);
+                if (n == -1) {
+                    break;
+                }
+                writer.write(buf, 0, n);
             }
-            writer.write(buf, 0, n);
+            return writer.toString();
         }
-        return writer.toString();
     }
 
     public static String file_to_string(File file)

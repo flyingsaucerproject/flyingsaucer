@@ -179,24 +179,26 @@ public class ReferenceComparison {
 
     private boolean compareLines(String refText, String text, CompareStatistics statistics) throws IOException {
         log("running comparison");
-        LineNumberReader lnrRef = new LineNumberReader(new StringReader(refText));
-        LineNumberReader lnrOther = new LineNumberReader(new StringReader(text));
-        String lineRef;
-        String lineOther;
-        while ((lineRef = lnrRef.readLine()) != null) {
-            lineOther = lnrOther.readLine();
-            if (lineOther == null) {
-                statistics.failedRefIsLonger();
-                return false;
+        try (LineNumberReader lnrRef = new LineNumberReader(new StringReader(refText))) {
+            try (LineNumberReader lnrOther = new LineNumberReader(new StringReader(text))) {
+                String lineRef;
+                String lineOther;
+                while ((lineRef = lnrRef.readLine()) != null) {
+                    lineOther = lnrOther.readLine();
+                    if (lineOther == null) {
+                        statistics.failedRefIsLonger();
+                        return false;
+                    }
+                    if (!lineRef.equals(lineOther)) {
+                        statistics.failedDontMatch(lineRef, lineOther);
+                        return false;
+                    }
+                }
+                if (lnrOther.readLine() != null) {
+                    statistics.failedOtherIsLonger();
+                    return false;
+                }
             }
-            if (!lineRef.equals(lineOther)) {
-                statistics.failedDontMatch(lineRef, lineOther);
-                return false;
-            }
-        }
-        if (lnrOther.readLine() != null) {
-            statistics.failedOtherIsLonger();
-            return false;
         }
         return true;
     }
@@ -211,7 +213,7 @@ public class ReferenceComparison {
 
     private String readReference(File referenceDir, String input, String sfx) throws IOException {
         File f = new File(referenceDir, input + sfx);
-        
+
         try (BufferedReader rdr = new BufferedReader(new InputStreamReader(newInputStream(f.toPath()), UTF_8))) {
             String line;
             StringBuilder sb = new StringBuilder();
@@ -321,7 +323,8 @@ public class ReferenceComparison {
             String describe(File file);
         }
 
-        private interface FailedResult extends Result {}
+        private interface FailedResult extends Result {
+        }
 
         private static class ResultOK implements Result {
             public String describe(File file) {
