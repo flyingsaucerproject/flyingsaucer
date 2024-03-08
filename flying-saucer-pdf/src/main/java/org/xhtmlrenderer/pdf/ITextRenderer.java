@@ -44,6 +44,8 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -65,6 +67,7 @@ import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@ParametersAreNonnullByDefault
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to the inch
     public static final float DEFAULT_DOTS_PER_POINT = 20f * 4f / 3f;
@@ -103,6 +106,12 @@ public class ITextRenderer {
     private PDFCreationListener _listener;
 
     private boolean _timeouted;
+
+    public ITextRenderer(File file) throws IOException {
+        this();
+        File parent = file.getAbsoluteFile().getParentFile();
+        setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
+    }
 
     public ITextRenderer() {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
@@ -173,33 +182,31 @@ public class ITextRenderer {
         return _sharedContext.getUac().getXMLResource(uri).getDocument();
     }
 
-    public void setDocument(String uri) {
-        setDocument(loadDocument(uri), uri);
+    public static ITextRenderer fromUrl(String uri) {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocument(renderer.loadDocument(uri), uri);
+        return renderer;
     }
 
-    public void setDocument(Document doc, String url) {
+    private void setDocument(Document doc, @Nullable String url) {
         setDocument(doc, url, new XhtmlNamespaceHandler());
     }
 
-    @Deprecated
-    public void setDocument(File file) throws IOException {
-        File parent = file.getAbsoluteFile().getParentFile();
-        setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
+    public static ITextRenderer fromString(String content) {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocumentFromString(content);
+        return renderer;
     }
 
-    public void setDocumentFromString(String content) {
-        setDocumentFromString(content, null);
-    }
-
-    public void setDocumentFromString(String content, String baseUrl) {
+    public final void setDocumentFromString(String content) {
         InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
         Document dom = XMLResource.load(is).getDocument();
 
-        setDocument(dom, baseUrl);
+        setDocument(dom, null);
     }
 
     @Deprecated
-    public void setDocument(Document doc, String url, NamespaceHandler nsh) {
+    private void setDocument(Document doc, @Nullable String url, NamespaceHandler nsh) {
         _doc = doc;
 
         getFontResolver().flushFontFaceFonts();

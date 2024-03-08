@@ -48,8 +48,7 @@ public class ToPDF
 
     private static void createPDF(String url, String pdf) throws IOException, DocumentException {
         try (OutputStream os = newOutputStream(Paths.get(pdf))) {
-            ITextRenderer renderer = new ITextRenderer();
-            renderer.setDocument(url);
+            ITextRenderer renderer = ITextRenderer.fromUrl(url);
             renderer.layout();
             renderer.createPDF(os);
         }
