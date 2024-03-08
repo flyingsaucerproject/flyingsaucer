@@ -37,17 +37,14 @@ public class ParserTest {
     @Test
     public void cssParsingPerformance() throws IOException {
         int count = 10_000;
-        StringBuilder longTest = new StringBuilder();
-        for (int i = 0 ; i < count; i++) {
-            longTest.append(test);
-        }
+        String longTest = String.valueOf(test).repeat(count);
         assertThat(longTest.length()).as("Long enough input").isEqualTo(test.length() * count);
         
         long total = 0;
         for (int i = 0; i < 40; i++) {
             long start = System.currentTimeMillis();
             CSSParser p = new CSSParser(errorHandler);
-            Stylesheet stylesheet = p.parseStylesheet(null, 0, new StringReader(longTest.toString()));
+            Stylesheet stylesheet = p.parseStylesheet(null, 0, new StringReader(longTest));
             long end = System.currentTimeMillis();
             // System.out.println("Took " + (end-start) + " ms");
             total += (end-start);
@@ -60,7 +57,7 @@ public class ParserTest {
         for (int i = 0; i < 10; i++) {
             long start = System.currentTimeMillis();
             CSSParser p = new CSSParser(errorHandler);
-            Stylesheet stylesheet = p.parseStylesheet(null, 0, new StringReader(longTest.toString()));
+            Stylesheet stylesheet = p.parseStylesheet(null, 0, new StringReader(longTest));
             long end = System.currentTimeMillis();
             // System.out.println("Took " + (end-start) + " ms");
             total += (end-start);

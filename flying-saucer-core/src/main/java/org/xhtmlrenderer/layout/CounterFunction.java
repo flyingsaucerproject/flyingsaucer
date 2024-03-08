@@ -90,9 +90,7 @@ public class CounterFunction {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ints.length; i++) {
             int count = val / ints[i];
-            for (int j = 0; j < count; j++) {
-                sb.append(nums[i]);
-            }
+            sb.append(nums[i].repeat(Math.max(0, count)));
             val -= ints[i] * count;
         }
         return sb.toString();
