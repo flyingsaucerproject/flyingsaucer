@@ -6,10 +6,6 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.FileOutputStream;
 
-/**
- * Author: Peter Mikula <peter.mikula@gmail.com>
- * Created: 15.04.2019 10:53
- */
 public class OutlineGenerationIssueTest {
 
     private static final String html1 = """
