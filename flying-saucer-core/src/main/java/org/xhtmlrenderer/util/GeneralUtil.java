@@ -277,13 +277,13 @@ public class GeneralUtil {
             } else {
                 // If we hit a non-numeric with numbers already in the
                 // buffer, we're done.
-                if (buffer.length() > 0) {
+                if (!buffer.isEmpty()) {
                     break;
                 }
             }
         }
 
-        if (buffer.length() == 0) {
+        if (buffer.isEmpty()) {
             return 0;
         }
 

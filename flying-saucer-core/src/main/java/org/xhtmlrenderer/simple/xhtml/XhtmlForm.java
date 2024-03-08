@@ -141,7 +141,7 @@ public class XhtmlForm {
                 if (control.isMultiple()) {
                     String[] values = control.getMultipleValues();
                     for (String value : values) {
-                        if (data.length() > 0) {
+                        if (!data.isEmpty()) {
                             data.append('&');
                         }
                         data.append(URLUTF8Encoder.encode(control.getName()));
@@ -149,7 +149,7 @@ public class XhtmlForm {
                         data.append(URLUTF8Encoder.encode(value));
                     }
                 } else {
-                    if (data.length() > 0) {
+                    if (!data.isEmpty()) {
                         data.append('&');
                     }
                     data.append(URLUTF8Encoder.encode(control.getName()));
