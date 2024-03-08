@@ -8,26 +8,28 @@ import static javax.swing.SwingUtilities.invokeLater;
 
 public class QuotingExample extends JFrame {
     //currently we cannot display different quotes based on depth
-    private static final String DOCUMENT = 
-        "<html>\n" +
-        "  <head>\n" +
-        "    <style type='text/css'><![CDATA[\n" +
-        "      * { quotes: '\"' '\"' \"'\" \"'\" }\n" +
-        "      q:before { content: open-quote }\n" +
-        "      q:after { content: close-quote }\n" +
-        "      blockquote p:before     { content: open-quote }\n" +
-        "      blockquote p:after      { content: no-close-quote }\n" + 
-        "      blockquote p.last:after { content: close-quote }\n" +
-        "    ]]></style>\n" +
-        "  </head>\n" +
-        "  <body>\n" +
-        "    <blockquote>\n" +
-        "      <p>This is just a test of the emergency <q>quoting</q> system.</p>\n" +
-        "      <p>This is only a test.</p>\n" +
-        "      <p class='last'>Thank you for your cooperation during this <q>test.</q></p>\n" +
-        "    </blockquote>\n" +
-        "  </body>\n" +
-        "</html>\n";
+    private static final String DOCUMENT =
+            """
+                    <html>
+                      <head>
+                        <style type='text/css'><![CDATA[
+                          * { quotes: '"' '"' "'" "'" }
+                          q:before { content: open-quote }
+                          q:after { content: close-quote }
+                          blockquote p:before     { content: open-quote }
+                          blockquote p:after      { content: no-close-quote }
+                          blockquote p.last:after { content: close-quote }
+                        ]]></style>
+                      </head>
+                      <body>
+                        <blockquote>
+                          <p>This is just a test of the emergency <q>quoting</q> system.</p>
+                          <p>This is only a test.</p>
+                          <p class='last'>Thank you for your cooperation during this <q>test.</q></p>
+                        </blockquote>
+                      </body>
+                    </html>
+                    """;
     
     protected void frameInit() {
         super.frameInit();

@@ -64,6 +64,8 @@ import org.xhtmlrenderer.demo.browser.swt.actions.ReloadAction;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.simple.SWTXHTMLRenderer;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.io.InputStream;
@@ -260,7 +262,9 @@ public class Browser implements DisposeListener, DocumentListener {
         addActionToToolbar(toolbar, _homeAction);
     }
 
-    private Image loadImage(String icon) {
+    @Nullable
+    @CheckReturnValue
+    private Image loadImage(@Nullable String icon) {
         if (icon == null) {
             return null;
         }
@@ -345,10 +349,10 @@ public class Browser implements DisposeListener, DocumentListener {
                 e.printStackTrace();
                 MessageBox box = new MessageBox(_shell, SWT.ICON_ERROR | SWT.OK);
                 box.setText("Error");
-                box.setMessage("An error has occurred."
-                        + " See console for details.\n\n"
-                        + "Note: the application might be"
-                        + " in an inconsistent state.");
+                box.setMessage("""
+                        An error has occurred. See console for details.
+
+                        Note: the application might be in an inconsistent state.""");
                 box.open();
             }
         }

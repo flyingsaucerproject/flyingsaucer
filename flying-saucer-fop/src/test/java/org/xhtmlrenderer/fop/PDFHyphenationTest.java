@@ -37,33 +37,34 @@ import static com.codeborne.pdftest.assertj.Assertions.assertThat;
 public class PDFHyphenationTest {
 
     private static final String XML =
-            "<html>\n" +
-            "	<head>\n" +
-            "		<meta http-equiv=\"Content-Language\" content=\"cs\"/>" +
-            "		<style media=\"print\" type=\"text/css\">\n" +
-            "			body {\n" +
-            "				background: gray;\n" +
-            "				margin:0;\n" +
-            "				word-wrap: break-word; \n" +
-            "				text-align: justify;\n" +
-            "				font-size: 7.5pt;\n" +
-            "				line-height: 1;\n" +
-            "               hyphens: auto\n" +
-            "			}\n" +
-            "\n" +
-            "			@page {\n" +
-            "				size: 43mm 25mm;\n" +
-            "				margin-top:0cm; \n" +
-            "			    margin-left:0cm; \n" +
-            "			    margin-right:0cm; \n" +
-            "			    margin-bottom:0cm; \n" +
-            "			}\n" +
-            "		</style>\n" +
-            "	</head>\n" +
-            "	<body>\n" +
-            "		Velice dlouhy text, ktery bude mit problemy se zalamovanim, pokud nebude perfektne nastaveno." +
-            "	</body>\n" +
-            "</html>";
+            """
+                    <html>
+                    	<head>
+                    		<meta http-equiv="Content-Language" content="cs"/>
+                    		<style media="print" type="text/css">
+                    			body {
+                    				background: gray;
+                    				margin:0;
+                    				word-wrap: break-word;\s
+                    				text-align: justify;
+                    				font-size: 7.5pt;
+                    				line-height: 1;
+                                   hyphens: auto
+                    			}
+
+                    			@page {
+                    				size: 43mm 25mm;
+                    				margin-top:0cm;\s
+                    			    margin-left:0cm;\s
+                    			    margin-right:0cm;\s
+                    			    margin-bottom:0cm;\s
+                    			}
+                    		</style>
+                    	</head>
+                    	<body>
+                    		Velice dlouhy text, ktery bude mit problemy se zalamovanim, pokud nebude perfektne nastaveno.
+                    	</body>
+                    </html>""";
 
     @Test
     public void generator() throws Exception {
@@ -89,5 +90,4 @@ public class PDFHyphenationTest {
         renderer.layout();
         renderer.createPDF(os);
     }
-
 }
