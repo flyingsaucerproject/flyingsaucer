@@ -135,7 +135,7 @@ public class HTMLTest extends JFrame {
                 else
                     url = new File(uri).toURI().toURL();
 
-                System.err.println("loading " + url.toString() + "!");
+                System.err.println("loading " + url + "!");
                 panel.setDocument(url.toExternalForm());
 
                 long el = System.currentTimeMillis() - st;
