@@ -59,13 +59,9 @@ public class SWTTextControl extends SWTXhtmlControl {
         text.setText(encodeDelimiter(control.getInitialValue()));
 
         StringBuilder str = new StringBuilder(tc.getSize());
-        for (int i = 0; i < tc.getSize(); i++) {
-            str.append('M');
-        }
+        str.append("M".repeat(Math.max(0, tc.getSize())));
         if (tc.isMultiLine()) {
-            for (int i = 1; i < tc.getRows(); i++) {
-                str.append(Text.DELIMITER);
-            }
+            str.append(Text.DELIMITER.repeat(Math.max(0, tc.getRows() - 1)));
         }
         _sizeText = str.toString();
 

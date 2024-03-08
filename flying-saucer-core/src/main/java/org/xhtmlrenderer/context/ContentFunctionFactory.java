@@ -233,12 +233,9 @@ public class ContentFunctionFactory {
             // Compute value width using 100x string to get more precise width.
             // Otherwise, there might be a small gap on the right side. This is
             // necessary because a TextRenderer usually use double/float for width.
-            StringBuilder tmp = new StringBuilder(100 * value.length());
-            for (int i = 0; i < 100; i++) {
-                tmp.append(value);
-            }
+            String tmp = value.repeat(100);
             float valueWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), tmp.toString()) / 100.0f;
+                    iB.getStyle().getFSFont(c), tmp) / 100.0f;
             int spaceWidth = c.getTextRenderer().getWidth(c.getFontContext(),
                     iB.getStyle().getFSFont(c), " ");
 
@@ -246,14 +243,7 @@ public class ContentFunctionFactory {
             int leaderWidth = iB.getContainingBlockWidth() - iB.getLineBox().getWidth() + text.getWidth();
             int count = (int) ((leaderWidth - (2 * spaceWidth)) / valueWidth);
 
-            // build leader string
-            StringBuilder buf = new StringBuilder(count * value.length() + 2);
-            buf.append(' ');
-            for (int i = 0; i < count; i++) {
-                buf.append(value);
-            }
-            buf.append(' ');
-            String leaderString = buf.toString();
+            String leaderString = ' ' + value.repeat(Math.max(0, count)) + ' ';
 
             // set left margin to ensure that the leader is right aligned (for TOC)
             int leaderStringWidth = c.getTextRenderer().getWidth(c.getFontContext(),
