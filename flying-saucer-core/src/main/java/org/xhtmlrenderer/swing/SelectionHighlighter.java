@@ -38,6 +38,8 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Util;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -82,6 +84,7 @@ import java.util.logging.Level;
  *
  * @author Nick Reddel
  */
+@ParametersAreNonnullByDefault
 public class SelectionHighlighter implements MouseMotionListener, MouseListener {
 
     private static final String PARA_EQUIV = "&!<p2equiv!";
@@ -394,20 +397,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             }
 
             final Range acceptRange = docRange.createRange();
-            final Range tr = range;
-            NodeFilter f = n -> {
-                acceptRange.setStart(n, 0);
-                if (tr.getStartContainer() == n) {
-                    return NodeFilter.FILTER_ACCEPT;
-                }
-                if ((acceptRange.compareBoundaryPoints(Range.START_TO_START, tr) < 0 || acceptRange
-                        .compareBoundaryPoints(Range.END_TO_START, tr) > 0)
-                        && n != tr.getStartContainer() && n != tr.getEndContainer()) {
-                    return NodeFilter.FILTER_SKIP;
-                }
-
-                return NodeFilter.FILTER_ACCEPT;
-            };
+            NodeFilter f = createFilter(range, acceptRange);
             NodeIterator nodeIterator = this.docTraversal.createNodeIterator(range
                     .getCommonAncestorContainer(), NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT
                     | NodeFilter.SHOW_CDATA_SECTION, f, false);
@@ -451,9 +441,26 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         // lastModified = modified;
     }
 
-    public String normalizeSpaces(String s) {
-        if (s == null)
-            return null;
+    @Nonnull
+    private static NodeFilter createFilter(Range range, Range acceptRange) {
+        final Range tr = range;
+        NodeFilter f = n -> {
+            acceptRange.setStart(n, 0);
+            if (tr.getStartContainer() == n) {
+                return NodeFilter.FILTER_ACCEPT;
+            }
+            if ((acceptRange.compareBoundaryPoints(Range.START_TO_START, tr) < 0 || acceptRange
+                    .compareBoundaryPoints(Range.END_TO_START, tr) > 0)
+                    && n != tr.getStartContainer() && n != tr.getEndContainer()) {
+                return NodeFilter.FILTER_SKIP;
+            }
+
+            return NodeFilter.FILTER_ACCEPT;
+        };
+        return f;
+    }
+
+    private String normalizeSpaces(String s) {
         StringBuilder buf = new StringBuilder();
         CharacterIterator iter = new StringCharacterIterator(s);
         boolean inWhitespace = false; // Flag set if we're in a second
@@ -470,14 +477,6 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             }
         }
         return buf.toString();
-    }
-
-    private Box getElementContainerBox(InlineText t) {
-        Box b = t.getParent();
-        while (b.getElement() == null) {
-            b = b.getParent();
-        }
-        return b;
     }
 
     private boolean createMaps() {
@@ -745,53 +744,21 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         this.handler = handler;
     }
 
-    public class ViewModelInfo {
-        final Range range;
-        final InlineText text;
-
-        ViewModelInfo(Range range, InlineText text) {
-            this.range = range;
-            this.text = text;
-
-        }
-
+    private record ViewModelInfo(Range range, InlineText text) {
         public String toString() {
             return range.getStartContainer() + ":" + range.getStartOffset();
         }
-
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof ViewModelInfo that)) return false;
-
-            return range.equals(that.range) && text.equals(that.text);
-        }
-
-        public int hashCode() {
-            int result = range.hashCode();
-            result = 31 * result + text.hashCode();
-            return result;
-        }
-
-        public boolean canCopy() {
-            return !lastHighlightedString.isEmpty();
-        }
-
     }
 
     public static final String copyAction = "Copy";
 
     public static class CopyAction extends AbstractAction {
 
-        private SelectionHighlighter caret;
+        private final SelectionHighlighter caret;
 
-        /** Create this object with the appropriate identifier. */
-        public CopyAction() {
+        public CopyAction(SelectionHighlighter caret) {
             super(copyAction);
-        }
-
-        public void install(SelectionHighlighter caret) {
             this.caret = caret;
-
         }
 
         /**
@@ -808,7 +775,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
     }
 
-    class SafeScroller implements Runnable {
+    private class SafeScroller implements Runnable {
         private final Rectangle r;
 
         SafeScroller(Rectangle r) {
