@@ -90,11 +90,10 @@ public class FSRGBColor implements FSColor {
         float sBase = hsb[1];
         float bBase = hsb[2];
 
-        float hLighter = hBase;
         float sLighter = 0.35f*bBase*sBase;
         float bLighter = 0.6999f + 0.3f*bBase;
 
-        int[] rgb = HSBtoRGB(hLighter, sLighter, bLighter);
+        int[] rgb = HSBtoRGB(hBase, sLighter, bLighter);
         return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
     }
 
@@ -103,12 +102,9 @@ public class FSRGBColor implements FSColor {
         float hBase = hsb[0];
         float sBase = hsb[1];
         float bBase = hsb[2];
+        float bDarker = 0.56f * bBase;
 
-        float hDarker = hBase;
-        float sDarker = sBase;
-        float bDarker = 0.56f*bBase;
-
-        int[] rgb = HSBtoRGB(hDarker, sDarker, bDarker);
+        int[] rgb = HSBtoRGB(hBase, sBase, bDarker);
         return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
     }
 
@@ -118,10 +114,10 @@ public class FSRGBColor implements FSColor {
         if (hsbvals == null) {
             hsbvals = new float[3];
         }
-        int cmax = (r > g) ? r : g;
+        int cmax = Math.max(r, g);
         if (b > cmax)
             cmax = b;
-        int cmin = (r < g) ? r : g;
+        int cmin = Math.min(r, g);
         if (b < cmin)
             cmin = b;
 

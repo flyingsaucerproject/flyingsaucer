@@ -724,7 +724,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
     protected MouseEvent convertMouseEventToScale(MouseEvent e) {
         if (!e.isConsumed() && panel instanceof ScalableXHTMLPanel) {
             Point newP = ((ScalableXHTMLPanel) panel).convertFromScaled(e.getX(), e.getY());
-            MouseEvent newE = new MouseEvent(
+            return new MouseEvent(
                     e.getComponent(),
                     e.getID(),
                     e.getWhen(),
@@ -735,7 +735,6 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                     e.isPopupTrigger(),
                     e.getButton()
             );
-            return newE;
         }
         return e;
     }

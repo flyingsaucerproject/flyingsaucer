@@ -660,7 +660,6 @@ public class CalculatedStyle {
                                                    CssContext ctx) {
         RectPropertySet rect;
         rect = RectPropertySet.newInstance(style,
-                shorthand,
                 sides,
                 cbWidth,
                 ctx);
