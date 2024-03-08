@@ -46,10 +46,10 @@ public class RectPropertySet {
         RectPropertySet rect =
                 new RectPropertySet(
                         shortHandProperty,
-                        ! style.isLengthOrNumber(sideProperties.top) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.top, cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties.right) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.right, cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties.bottom) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.bottom, cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties.left) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.left, cbWidth, ctx)
+                        ! style.isLengthOrNumber(sideProperties.top()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.top(), cbWidth, ctx),
+                        ! style.isLengthOrNumber(sideProperties.right()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.right(), cbWidth, ctx),
+                        ! style.isLengthOrNumber(sideProperties.bottom()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.bottom(), cbWidth, ctx),
+                        ! style.isLengthOrNumber(sideProperties.left()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.left(), cbWidth, ctx)
                 );
         return rect;
     }
