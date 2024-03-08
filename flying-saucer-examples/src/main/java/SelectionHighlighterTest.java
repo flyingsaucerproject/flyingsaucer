@@ -87,8 +87,7 @@ public class SelectionHighlighterTest extends JFrame {
         // Copy selection
         // install an action to copy selected test; must be "installed" around
         // the selection highlighter (caret) we just created
-        CopyAction copyAction = new SelectionHighlighter.CopyAction();
-        copyAction.install(caret);
+        CopyAction copyAction = new SelectionHighlighter.CopyAction(caret);
 
         actionPanel.add(new JButton(copyAction), BorderLayout.SOUTH);
         add(mainPanel);
