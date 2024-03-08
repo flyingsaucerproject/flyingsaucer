@@ -24,41 +24,55 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.util.Uu;
 
+import javax.annotation.Nonnull;
+
+import static java.lang.Character.END_PUNCTUATION;
+import static java.lang.Character.FINAL_QUOTE_PUNCTUATION;
+import static java.lang.Character.INITIAL_QUOTE_PUNCTUATION;
+import static java.lang.Character.OTHER_PUNCTUATION;
+import static java.lang.Character.SPACE_SEPARATOR;
+import static java.lang.Character.START_PUNCTUATION;
+
 
 public class TextUtil {
 
-    public static String transformText( String text, CalculatedStyle style ) {
-        IdentValue transform = style.getIdent( CSSName.TEXT_TRANSFORM );
-        if ( transform == IdentValue.LOWERCASE ) {
+    public static String transformText(String text, CalculatedStyle style) {
+        IdentValue transform = style.getIdent(CSSName.TEXT_TRANSFORM);
+        IdentValue fontVariant = style.getIdent(CSSName.FONT_VARIANT);
+        return transformText(text, transform, fontVariant);
+    }
+
+    static String transformText(String text, IdentValue transform, IdentValue fontVariant) {
+        if (transform == IdentValue.LOWERCASE) {
             text = text.toLowerCase();
         }
-        if ( transform == IdentValue.UPPERCASE ) {
+        if (transform == IdentValue.UPPERCASE) {
             text = text.toUpperCase();
         }
-        if ( transform == IdentValue.CAPITALIZE ) {
-            text = capitalizeWords( text );
+        if (transform == IdentValue.CAPITALIZE) {
+            text = capitalizeWords(text);
         }
-        IdentValue fontVariant = style.getIdent( CSSName.FONT_VARIANT );
-        if ( fontVariant == IdentValue.SMALL_CAPS ) {
+
+        if (fontVariant == IdentValue.SMALL_CAPS) {
             text = text.toUpperCase();
         }
         return text;
     }
 
-    public static String transformFirstLetterText( String text, CalculatedStyle style ) {
+    public static String transformFirstLetterText(String text, CalculatedStyle style) {
         if (!text.isEmpty()) {
-            IdentValue transform = style.getIdent( CSSName.TEXT_TRANSFORM );
-            IdentValue fontVariant = style.getIdent( CSSName.FONT_VARIANT );
+            IdentValue transform = style.getIdent(CSSName.TEXT_TRANSFORM);
+            IdentValue fontVariant = style.getIdent(CSSName.FONT_VARIANT);
             char currentChar;
-            for ( int i = 0, end = text.length(); i < end; i++ ) {
+            for (int i = 0, end = text.length(); i < end; i++) {
                 currentChar = text.charAt(i);
-                if ( !isFirstLetterSeparatorChar( currentChar ) ) {
-                    if ( transform == IdentValue.LOWERCASE ) {
-                        currentChar = Character.toLowerCase( currentChar );
-                        text = replaceChar( text, currentChar, i );
-                    } else if ( transform == IdentValue.UPPERCASE || transform == IdentValue.CAPITALIZE || fontVariant == IdentValue.SMALL_CAPS ) {
-                        currentChar = Character.toUpperCase( currentChar );
-                        text = replaceChar( text, currentChar, i );
+                if (!isFirstLetterSeparatorChar(currentChar)) {
+                    if (transform == IdentValue.LOWERCASE) {
+                        currentChar = Character.toLowerCase(currentChar);
+                        text = replaceChar(text, currentChar, i);
+                    } else if (transform == IdentValue.UPPERCASE || transform == IdentValue.CAPITALIZE || fontVariant == IdentValue.SMALL_CAPS) {
+                        currentChar = Character.toUpperCase(currentChar);
+                        text = replaceChar(text, currentChar, i);
                     }
                     break;
                 }
@@ -72,9 +86,9 @@ public class TextUtil {
      *
      * @param text    Source text
      * @param newChar Replacement character
-     * @return        Returns the new text
+     * @return Returns the new text
      */
-    public static String replaceChar( String text, char newChar, int index ) {
+    public static String replaceChar(String text, char newChar, int index) {
         int textLength = text.length();
         StringBuilder b = new StringBuilder(textLength);
         for (int i = 0; i < textLength; i++) {
@@ -87,53 +101,46 @@ public class TextUtil {
         return b.toString();
     }
 
-    public static boolean isFirstLetterSeparatorChar( char c ) {
-        switch (Character.getType(c)) {
-            case Character.START_PUNCTUATION:
-            case Character.END_PUNCTUATION:
-            case Character.INITIAL_QUOTE_PUNCTUATION:
-            case Character.FINAL_QUOTE_PUNCTUATION:
-            case Character.OTHER_PUNCTUATION:
-            case Character.SPACE_SEPARATOR:
-                return true;
-            default:
-                return false;
-        }
+    public static boolean isFirstLetterSeparatorChar(char c) {
+        return switch (Character.getType(c)) {
+            case START_PUNCTUATION,
+                    END_PUNCTUATION,
+                    INITIAL_QUOTE_PUNCTUATION,
+                    FINAL_QUOTE_PUNCTUATION,
+                    OTHER_PUNCTUATION,
+                    SPACE_SEPARATOR -> true;
+            default -> false;
+        };
     }
 
 
-    private static String capitalizeWords( String text ) {
-        //Uu.p("start = -"+text+"-");
+    private static String capitalizeWords(String text) {
         if (text.isEmpty()) {
             return text;
         }
 
+        String result = doCapitalizeWords(text);
+        if (result.length() != text.length()) {
+            Uu.p("error! to strings arent the same length = -" + result + "-" + text + "-");
+        }
+        return result;
+    }
+
+    @Nonnull
+    private static String doCapitalizeWords(String text) {
         StringBuilder sb = new StringBuilder();
-        //Uu.p("text = -" + text + "-");
-
-        // do first letter
-        //Uu.p("first = " + text.substring(0,1));
         boolean cap = true;
-        for ( int i = 0; i < text.length(); i++ ) {
-            String ch = text.substring( i, i + 1 );
-            //Uu.p("ch = " + ch + " cap = " + cap);
-
-
-            if ( cap ) {
-                sb.append( ch.toUpperCase() );
+        for (int i = 0; i < text.length(); i++) {
+            String ch = text.substring(i, i + 1);
+            if (cap) {
+                sb.append(ch.toUpperCase());
             } else {
-                sb.append( ch );
+                sb.append(ch);
             }
             cap = ch.equals(" ");
         }
-
-        //Uu.p("final = -"+sb.toString()+"-");
-        if ( sb.toString().length() != text.length() ) {
-            Uu.p( "error! to strings arent the same length = -" + sb + "-" + text + "-" );
-        }
         return sb.toString();
     }
-
 }
 
 /*
