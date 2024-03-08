@@ -29,6 +29,7 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.LineMetricsAdapter;
 import org.xhtmlrenderer.util.Configuration;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
@@ -59,10 +60,7 @@ public class Java2DTextRenderer implements TextRenderer {
                 // we should be able to look up the "recommended" AA settings (that correspond to the user's
                 // desktop preferences and machine capabilities
                 // see: http://java.sun.com/javase/6/docs/api/java/awt/doc-files/DesktopProperties.html
-                Toolkit tk = Toolkit.getDefaultToolkit();
-                
-                @SuppressWarnings("unchecked")
-                Map<RenderingHints.Key, Object> map = (Map<RenderingHints.Key, Object>) (tk.getDesktopProperty("awt.font.desktophints"));
+                Map<RenderingHints.Key, Object> map = getFontDesktopHints();
                 antiAliasRenderingHint = map.get(RenderingHints.KEY_TEXT_ANTIALIASING);
             } catch (Exception e) {
                 // conceivably could get an exception in a webstart environment? not sure
@@ -76,6 +74,13 @@ public class Java2DTextRenderer implements TextRenderer {
         } else {
             fractionalFontMetricsHint = RenderingHints.VALUE_FRACTIONALMETRICS_OFF;
         }
+    }
+
+    @Nonnull
+    @SuppressWarnings("unchecked")
+    private static Map<RenderingHints.Key, Object> getFontDesktopHints() {
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        return (Map<RenderingHints.Key, Object>) tk.getDesktopProperty("awt.font.desktophints");
     }
 
     @Override
