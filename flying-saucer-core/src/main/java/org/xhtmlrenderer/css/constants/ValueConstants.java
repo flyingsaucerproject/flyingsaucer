@@ -37,6 +37,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
+import static java.lang.Float.parseFloat;
+
 
 /**
  * Utility class for working with {@code CSSValue} instances.
@@ -315,7 +317,7 @@ public final class ValueConstants {
             default:
                 if (Character.isDigit(value.charAt(value.length() - 1))) {
                     try {
-                        new Float(value);
+                        parseFloat(value);
                         return CSSPrimitiveValue.CSS_NUMBER;
                     } catch (NumberFormatException ex) {
                         return CSSPrimitiveValue.CSS_STRING;
