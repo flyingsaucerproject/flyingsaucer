@@ -23,7 +23,11 @@ import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BorderPainter;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import static org.xhtmlrenderer.newtable.TableCellBox.compareBorders;
 
 /**
  * A class that contains a single border side of a collapsed cell.  Collapsed
@@ -49,32 +53,28 @@ public class CollapsedBorderSide implements Comparable<CollapsedBorderSide> {
     }
 
     @Override
-    public int compareTo(@Nonnull CollapsedBorderSide c2) {
-        CollapsedBorderSide c1 = this;
-
-        final CollapsedBorderValue v1 = switch (c1._side) {
-            case BorderPainter.TOP -> c1._cell.getCollapsedBorderTop();
-            case BorderPainter.RIGHT -> c1._cell.getCollapsedBorderRight();
-            case BorderPainter.BOTTOM -> c1._cell.getCollapsedBorderBottom();
-            case BorderPainter.LEFT -> c1._cell.getCollapsedBorderLeft();
-            default -> null;
-        };
-
-        CollapsedBorderValue v2 = switch (c2._side) {
-            case BorderPainter.TOP -> c2._cell.getCollapsedBorderTop();
-            case BorderPainter.RIGHT -> c2._cell.getCollapsedBorderRight();
-            case BorderPainter.BOTTOM -> c2._cell.getCollapsedBorderBottom();
-            case BorderPainter.LEFT -> c2._cell.getCollapsedBorderLeft();
-            default -> null;
-        };
-
-        CollapsedBorderValue result = TableCellBox.compareBorders(v1, v2, true);
+    public int compareTo(@Nonnull CollapsedBorderSide that) {
+        CollapsedBorderValue v1 = getCollapsedBorder(this);
+        CollapsedBorderValue v2 = getCollapsedBorder(that);
+        CollapsedBorderValue result = compareBorders(v1, v2, true);
 
         if (result == null) {
             return 0;
         } else {
             return result == v1 ? 1 : -1;
         }
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private static CollapsedBorderValue getCollapsedBorder(CollapsedBorderSide c1) {
+        return switch (c1._side) {
+            case BorderPainter.TOP -> c1._cell.getCollapsedBorderTop();
+            case BorderPainter.RIGHT -> c1._cell.getCollapsedBorderRight();
+            case BorderPainter.BOTTOM -> c1._cell.getCollapsedBorderBottom();
+            case BorderPainter.LEFT -> c1._cell.getCollapsedBorderLeft();
+            default -> null;
+        };
     }
 
     public boolean equals(Object o) {
