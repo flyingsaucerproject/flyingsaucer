@@ -16,7 +16,7 @@ public class ZoomAction extends AbstractAction {
     private final ScalableXHTMLPanel view;
 
     public ZoomAction(ScalableXHTMLPanel panel, ScaleFactor factor) {
-        super(factor.getZoomLabel());
+        super(factor.zoomLabel());
         scalingFactor = factor;
         view = panel;
     }
@@ -31,17 +31,17 @@ public class ZoomAction extends AbstractAction {
             needsWarning = false;
         }
 
-        if (scalingFactor.getFactor() == ScaleFactor.PAGE_WIDTH) {
+        if (scalingFactor.factor() == ScaleFactor.PAGE_WIDTH) {
             view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_WIDTH);
             view.setDocument(view.getDocument());
-        } else if (scalingFactor.getFactor() == ScaleFactor.PAGE_HEIGHT) {
+        } else if (scalingFactor.factor() == ScaleFactor.PAGE_HEIGHT) {
             view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_HEIGHT);
             view.setDocument(view.getDocument());
-        } else if (scalingFactor.getFactor() == ScaleFactor.PAGE_WHOLE) {
+        } else if (scalingFactor.factor() == ScaleFactor.PAGE_WHOLE) {
             view.setScalePolicy(ScalableXHTMLPanel.SCALE_POLICY_FIT_WHOLE);
             view.setDocument(view.getDocument());
         } else {
-            view.setScale(scalingFactor.getFactor());
+            view.setScale(scalingFactor.factor());
         }
     }
 }
