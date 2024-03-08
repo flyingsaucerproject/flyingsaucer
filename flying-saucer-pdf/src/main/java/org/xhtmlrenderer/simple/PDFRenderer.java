@@ -72,8 +72,7 @@ public class PDFRenderer {
     public static void renderToPDF(String url, String pdf, @Nullable Character pdfVersion)
             throws IOException, DocumentException {
 
-        ITextRenderer renderer = new ITextRenderer();
-        renderer.setDocument(url);
+        ITextRenderer renderer = ITextRenderer.fromUrl(url);
         if (pdfVersion != null) renderer.setPDFVersion(pdfVersion);
         doRenderToPDF(renderer, pdf);
     }
@@ -106,8 +105,7 @@ public class PDFRenderer {
     public static void renderToPDF(File file, String pdf, @Nullable Character pdfVersion)
             throws IOException, DocumentException {
 
-        ITextRenderer renderer = new ITextRenderer();
-        renderer.setDocument(file);
+        ITextRenderer renderer = new ITextRenderer(file);
         if (pdfVersion != null) renderer.setPDFVersion(pdfVersion);
         doRenderToPDF(renderer, pdf);
     }
