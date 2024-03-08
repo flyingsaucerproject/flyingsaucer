@@ -10,7 +10,7 @@ import org.xhtmlrenderer.css.style.CssContext;
  */
 public class RectPropertySet {
     //                                                                  HACK
-    public static final RectPropertySet ALL_ZEROS = new RectPropertySet(CSSName.MARGIN_SHORTHAND, 0, 0, 0, 0);
+    public static final RectPropertySet ALL_ZEROS = new RectPropertySet(0, 0, 0, 0);
 
     protected float _top;
     protected float _right;
@@ -22,7 +22,6 @@ public class RectPropertySet {
     }
 
     public RectPropertySet(
-            CSSName cssName,
             float top,
             float right,
             float bottom,
@@ -37,21 +36,17 @@ public class RectPropertySet {
 
     public static RectPropertySet newInstance(
             CalculatedStyle style,
-            CSSName shortHandProperty,
             CSSName.CSSSideProperties sideProperties,
             float cbWidth,
             CssContext ctx
     ) {
         // HACK isLengthValue is part of margin auto hack
-        RectPropertySet rect =
-                new RectPropertySet(
-                        shortHandProperty,
-                        ! style.isLengthOrNumber(sideProperties.top()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.top(), cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties.right()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.right(), cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties.bottom()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.bottom(), cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties.left()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.left(), cbWidth, ctx)
-                );
-        return rect;
+        return new RectPropertySet(
+                ! style.isLengthOrNumber(sideProperties.top()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.top(), cbWidth, ctx),
+                ! style.isLengthOrNumber(sideProperties.right()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.right(), cbWidth, ctx),
+                ! style.isLengthOrNumber(sideProperties.bottom()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.bottom(), cbWidth, ctx),
+                ! style.isLengthOrNumber(sideProperties.left()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.left(), cbWidth, ctx)
+        );
     }
 
     public String toString() {
