@@ -387,17 +387,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     }
 
     protected void updateButtons() {
-        if (manager.hasBack()) {
-            root.actions.backward.setEnabled(true);
-        } else {
-            root.actions.backward.setEnabled(false);
-        }
-        if (manager.hasForward()) {
-            root.actions.forward.setEnabled(true);
-        } else {
-            root.actions.forward.setEnabled(false);
-        }
-
+        root.actions.backward.setEnabled(manager.hasBack());
+        root.actions.forward.setEnabled(manager.hasForward());
         url.setText(manager.getBaseURL());
     }
 

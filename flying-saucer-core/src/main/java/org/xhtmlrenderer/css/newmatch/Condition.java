@@ -412,11 +412,9 @@ abstract class Condition {
                 return false;
 
             //return true if n is an integer and 0 or +ve
-            if  (    ( ( ( position - b ) % a ) == 0 )   // n is an integer
-                  && ( ( ( position - b ) / a ) >= 0 ) ) // n is 0 or +ve
-                return true;
-
-            return false;
+            // n is 0 or +ve
+            return (((position - b) % a) == 0)   // n is an integer
+                    && (((position - b) / a) >= 0);
 
 //
 //            position -= b;

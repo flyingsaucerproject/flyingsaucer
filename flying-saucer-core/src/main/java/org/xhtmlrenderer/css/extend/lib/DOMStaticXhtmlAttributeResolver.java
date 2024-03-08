@@ -87,12 +87,12 @@ public class DOMStaticXhtmlAttributeResolver implements AttributeResolver {
         StringBuilder style = new StringBuilder();
         if (e.getNodeName().equals("td")) {
             String s;
-            if (!(s = e.getAttribute("colspan")).equals("")) {
+            if (!(s = e.getAttribute("colspan")).isEmpty()) {
                 style.append("-fs-table-cell-colspan: ");
                 style.append(s);
                 style.append(";");
             }
-            if (!(s = e.getAttribute("rowspan")).equals("")) {
+            if (!(s = e.getAttribute("rowspan")).isEmpty()) {
                 style.append("-fs-table-cell-rowspan: ");
                 style.append(s);
                 style.append(";");
@@ -120,8 +120,7 @@ public class DOMStaticXhtmlAttributeResolver implements AttributeResolver {
     @Override
     public boolean isLink(Object el) {
         Element e = ((Element) el);
-        if (e.getNodeName().equalsIgnoreCase("a") && !e.getAttribute("href").equals("")) return true;
-        return false;
+        return e.getNodeName().equalsIgnoreCase("a") && !e.getAttribute("href").isEmpty();
     }
 
     @Override

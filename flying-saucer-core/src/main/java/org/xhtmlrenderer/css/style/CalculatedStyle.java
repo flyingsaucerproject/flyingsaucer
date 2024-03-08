@@ -933,12 +933,8 @@ public class CalculatedStyle {
             }
 
             IdentValue overflow = getIdent(CSSName.OVERFLOW);
-            if ((overflow == IdentValue.SCROLL || overflow == IdentValue.AUTO) &&
-                    isOverflowApplies()) {
-                return true;
-            }
-
-            return false;
+            return (overflow == IdentValue.SCROLL || overflow == IdentValue.AUTO) &&
+                    isOverflowApplies();
         }
     }
 
