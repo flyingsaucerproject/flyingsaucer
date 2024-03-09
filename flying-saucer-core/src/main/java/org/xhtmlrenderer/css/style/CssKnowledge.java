@@ -46,4 +46,10 @@ class CssKnowledge {
     static final Set<IdentValue> TABLE_SECTIONS = Set.of(
             IdentValue.TABLE_ROW_GROUP, IdentValue.TABLE_HEADER_GROUP, IdentValue.TABLE_FOOTER_GROUP
     );
+
+    static final Set<IdentValue> UNDER_TABLE_LAYOUT = Set.of(
+            IdentValue.TABLE_ROW_GROUP, IdentValue.TABLE_HEADER_GROUP, IdentValue.TABLE_FOOTER_GROUP,
+            IdentValue.TABLE_ROW, IdentValue.TABLE_CELL,
+            IdentValue.TABLE_CAPTION, IdentValue.TABLE_COLUMN, IdentValue.TABLE_COLUMN_GROUP
+    );
 }
