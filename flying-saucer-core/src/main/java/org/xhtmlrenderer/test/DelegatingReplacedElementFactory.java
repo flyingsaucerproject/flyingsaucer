@@ -102,23 +102,6 @@ public class DelegatingReplacedElementFactory implements ReplacedElementFactory 
         // maybe there is nothing to do...
     }
 
-    private static class ERItem {
-        private final Element element;
-        private final ElementReplacer elementReplacer;
-
-        private ERItem(final Element e, final ElementReplacer er) {
-            element = e;
-            elementReplacer = er;
-        }
-
-        public int hashCode() {
-            return element.hashCode();
-        }
-
-        public boolean equals(Object o) {
-            if (o == null) return false;
-            if (!(o instanceof ERItem other)) return false;
-            return other.element == this.element;
-        }
+    private record ERItem(Element element, ElementReplacer elementReplacer) {
     }
 }

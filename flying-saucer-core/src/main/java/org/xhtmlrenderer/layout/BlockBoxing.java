@@ -360,11 +360,11 @@ public class BlockBoxing {
             }
         }
 
-        public RelayoutData get(int index) {
+        RelayoutData get(int index) {
             return _hints.get(index);
         }
 
-        public void markRun(int offset, BlockBox previous, BlockBox current) {
+        private void markRun(int offset, BlockBox previous, BlockBox current) {
             RelayoutData previousData = get(offset - 1);
             RelayoutData currentData = get(offset);
 
@@ -392,7 +392,7 @@ public class BlockBoxing {
             }
         }
 
-        public int getRunStart(int runEnd) {
+        int getRunStart(int runEnd) {
             int offset = runEnd;
             RelayoutData current = get(offset);
             if (! current.isEndsRun()) {
@@ -409,19 +409,19 @@ public class BlockBoxing {
         private boolean _changed;
         private int _childOffset;
 
-        public boolean isChanged() {
+        boolean isChanged() {
             return _changed;
         }
 
-        public void setChanged(boolean changed) {
+        private void setChanged(boolean changed) {
             _changed = changed;
         }
 
-        public int getChildOffset() {
+        int getChildOffset() {
             return _childOffset;
         }
 
-        public void setChildOffset(int childOffset) {
+        private void setChildOffset(int childOffset) {
             _childOffset = childOffset;
         }
     }
@@ -436,54 +436,51 @@ public class BlockBoxing {
 
         private int _childOffset;
 
-        private RelayoutData() {
-        }
-
-        public boolean isEndsRun() {
+        boolean isEndsRun() {
             return _endsRun;
         }
 
-        public void setEndsRun(boolean endsRun) {
+        private void setEndsRun(boolean endsRun) {
             _endsRun = endsRun;
         }
 
-        public boolean isInRun() {
+        boolean isInRun() {
             return _inRun;
         }
 
-        public void setInRun(boolean inRun) {
+        private void setInRun(boolean inRun) {
             _inRun = inRun;
         }
 
-        public LayoutState getLayoutState() {
+        LayoutState getLayoutState() {
             return _layoutState;
         }
 
-        public void setLayoutState(LayoutState layoutState) {
+        private void setLayoutState(LayoutState layoutState) {
             _layoutState = layoutState;
         }
 
-        public boolean isStartsRun() {
+        boolean isStartsRun() {
             return _startsRun;
         }
 
-        public void setStartsRun(boolean startsRun) {
+        private void setStartsRun(boolean startsRun) {
             _startsRun = startsRun;
         }
 
-        public int getChildOffset() {
+        int getChildOffset() {
             return _childOffset;
         }
 
-        public void setChildOffset(int childOffset) {
+        private void setChildOffset(int childOffset) {
             _childOffset = childOffset;
         }
 
-        public int getListIndex() {
+        int getListIndex() {
             return _listIndex;
         }
 
-        public void setListIndex(int listIndex) {
+        private void setListIndex(int listIndex) {
             _listIndex = listIndex;
         }
     }

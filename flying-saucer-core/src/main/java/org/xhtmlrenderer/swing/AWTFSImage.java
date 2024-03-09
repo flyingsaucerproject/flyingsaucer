@@ -90,7 +90,7 @@ public abstract class AWTFSImage implements FSImage {
         }
     }
 
-    private static class NullImage extends AWTFSImage {
+    private static final class NullImage extends AWTFSImage {
         private static final BufferedImage EMPTY_IMAGE = ImageUtil.createTransparentImage(1, 1);
 
         public int getWidth() {

@@ -186,18 +186,18 @@ abstract class Condition {
     }
 
     private static class AttributeExistsCondition extends AttributeCompareCondition {
-        AttributeExistsCondition(String namespaceURI, String name) {
+        private AttributeExistsCondition(String namespaceURI, String name) {
             super(namespaceURI, name, null);
         }
 
         @Override
         protected boolean compare(String attrValue, String conditionValue) {
-            return ! attrValue.equals("");
+            return !attrValue.isEmpty();
         }
     }
 
     private static class AttributeEqualsCondition extends AttributeCompareCondition {
-        AttributeEqualsCondition(String namespaceURI, String name, String value) {
+        private AttributeEqualsCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
 
@@ -208,7 +208,7 @@ abstract class Condition {
     }
 
     private static class AttributePrefixCondition extends AttributeCompareCondition {
-        AttributePrefixCondition(String namespaceURI, String name, String value) {
+        private AttributePrefixCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
 
@@ -219,7 +219,7 @@ abstract class Condition {
     }
 
     private static class AttributeSuffixCondition extends AttributeCompareCondition {
-        AttributeSuffixCondition(String namespaceURI, String name, String value) {
+        private AttributeSuffixCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
 
@@ -230,7 +230,7 @@ abstract class Condition {
     }
 
     private static class AttributeSubstringCondition extends AttributeCompareCondition {
-        AttributeSubstringCondition(String namespaceURI, String name, String value) {
+        private AttributeSubstringCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
 
@@ -241,7 +241,7 @@ abstract class Condition {
     }
 
     private static class AttributeMatchesListCondition extends AttributeCompareCondition {
-        AttributeMatchesListCondition(String namespaceURI, String name, String value) {
+        private AttributeMatchesListCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
 
@@ -260,7 +260,7 @@ abstract class Condition {
     }
 
     private static class AttributeMatchesFirstPartCondition extends AttributeCompareCondition {
-        AttributeMatchesFirstPartCondition(String namespaceURI, String name, String value) {
+        private AttributeMatchesFirstPartCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
 
@@ -272,10 +272,9 @@ abstract class Condition {
     }
 
     private static class ClassCondition extends Condition {
-
         private final String _paddedClassName;
 
-        ClassCondition(String className) {
+        private ClassCondition(String className) {
             _paddedClassName = " " + className + " ";
         }
 
@@ -294,14 +293,12 @@ abstract class Condition {
             // in an XML DOM, space normalization in attributes is supposed to have happened already.
             return (" " + c + " ").contains(_paddedClassName);
         }
-
     }
 
     private static class IDCondition extends Condition {
-
         private final String _id;
 
-        IDCondition(String id) {
+        private IDCondition(String id) {
             _id = id;
         }
 
@@ -312,13 +309,12 @@ abstract class Condition {
             }
             return _id.equals(attRes.getID(e));
         }
-
     }
 
     private static class LangCondition extends Condition {
         private final String _lang;
 
-        LangCondition(String lang) {
+        private LangCondition(String lang) {
             _lang = lang;
         }
 
@@ -341,27 +337,17 @@ abstract class Condition {
     }
 
     private static class FirstChildCondition extends Condition {
-
-        FirstChildCondition() {
-        }
-
         @Override
         boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             return treeRes.isFirstChildElement(e);
         }
-
     }
 
     private static class LastChildCondition extends Condition {
-
-        LastChildCondition() {
-        }
-
         @Override
         boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             return treeRes.isLastChildElement(e);
         }
-
     }
 
     private static class NthChildCondition extends Condition {
@@ -444,7 +430,7 @@ abstract class Condition {
                     if (!m.matches()) {
                         throw new CSSParseException("Invalid nth-child selector: " + number, -1);
                     } else {
-                        int a = m.group(2).equals("") ? 1 : Integer.parseInt(m.group(2));
+                        int a = m.group(2).isEmpty() ? 1 : Integer.parseInt(m.group(2));
                         int b = (m.group(5) == null) ? 0 : Integer.parseInt(m.group(5));
                         if ("-".equals(m.group(1))) {
                             a *= -1;
@@ -461,10 +447,6 @@ abstract class Condition {
     }
 
     private static class EvenChildCondition extends Condition {
-
-        EvenChildCondition() {
-        }
-
         @Override
         boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             int position = treeRes.getPositionOfElement(e);
@@ -473,10 +455,6 @@ abstract class Condition {
     }
 
     private static class OddChildCondition extends Condition {
-
-        OddChildCondition() {
-        }
-
         @Override
         boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             int position = treeRes.getPositionOfElement(e);
@@ -485,10 +463,6 @@ abstract class Condition {
     }
 
     private static class LinkCondition extends Condition {
-
-        LinkCondition() {
-        }
-
         @Override
         boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             return attRes.isLink(e);
@@ -500,10 +474,6 @@ abstract class Condition {
      * represents unsupported (or invalid) css, never matches
      */
     private static class UnsupportedCondition extends Condition {
-
-        UnsupportedCondition() {
-        }
-
         @Override
         boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             return false;
@@ -531,7 +501,7 @@ abstract class Condition {
                 result.add(s.substring(last));
             }
 
-            return result.toArray(new String[result.size()]);
+            return result.toArray(new String[0]);
         }
     }
 }

@@ -35,6 +35,8 @@ import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -566,27 +568,28 @@ public class ITextFontResolver implements FontResolver {
     }
 
     private static class FontFamily {
-        private final String _name;
+        private final String name;
         private final List<FontDescription> _fontDescriptions = new ArrayList<>();
 
-        private FontFamily(String name) {
-            this._name = name;
+        FontFamily(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
 
         private List<FontDescription> getFontDescriptions() {
             return _fontDescriptions;
         }
 
-        public void addFontDescription(FontDescription description) {
+        private void addFontDescription(FontDescription description) {
             _fontDescriptions.add(description);
             _fontDescriptions.sort(comparingInt(FontDescription::getWeight));
         }
 
-        public String getName() {
-            return _name;
-        }
-
-        public FontDescription match(int desiredWeight, IdentValue style) {
+        private FontDescription match(int desiredWeight, IdentValue style) {
             List<FontDescription> candidates = new ArrayList<>();
 
             for (FontDescription description : _fontDescriptions) {
@@ -624,8 +627,9 @@ public class ITextFontResolver implements FontResolver {
         private static final int SM_LIGHTER_OR_DARKER = 2;
         private static final int SM_DARKER_OR_LIGHTER = 3;
 
-        private FontDescription findByWeight(List<FontDescription> matches,
-                int desiredWeight, int searchMode) {
+        @Nullable
+        @CheckReturnValue
+        private FontDescription findByWeight(List<FontDescription> matches, int desiredWeight, int searchMode) {
             if (searchMode == SM_EXACT) {
                 for (FontDescription description : matches) {
                     if (description.getWeight() == desiredWeight) {
@@ -674,7 +678,7 @@ public class ITextFontResolver implements FontResolver {
         private IdentValue _style;
         private int _weight;
 
-        private BaseFont _font;
+        private final BaseFont _font;
 
         private float _underlinePosition;
         private float _underlineThickness;
@@ -684,14 +688,11 @@ public class ITextFontResolver implements FontResolver {
 
         private boolean _isFromFontFace;
 
-        public FontDescription() {
-        }
-
-        public FontDescription(BaseFont font) {
+        private FontDescription(BaseFont font) {
             this(font, IdentValue.NORMAL, 400);
         }
 
-        public FontDescription(BaseFont font, IdentValue style, int weight) {
+        private FontDescription(BaseFont font, IdentValue style, int weight) {
             _font = font;
             _style = style;
             _weight = weight;
@@ -702,15 +703,11 @@ public class ITextFontResolver implements FontResolver {
             return _font;
         }
 
-        public void setFont(BaseFont font) {
-            _font = font;
-        }
-
         public int getWeight() {
             return _weight;
         }
 
-        public void setWeight(int weight) {
+        void setWeight(int weight) {
             _weight = weight;
         }
 
@@ -718,7 +715,7 @@ public class ITextFontResolver implements FontResolver {
             return _style;
         }
 
-        public void setStyle(IdentValue style) {
+        void setStyle(IdentValue style) {
             _style = style;
         }
 
@@ -729,7 +726,7 @@ public class ITextFontResolver implements FontResolver {
         /**
          * This refers to the top of the underline stroke
          */
-        public void setUnderlinePosition(float underlinePosition) {
+        void setUnderlinePosition(float underlinePosition) {
             _underlinePosition = underlinePosition;
         }
 
@@ -737,7 +734,7 @@ public class ITextFontResolver implements FontResolver {
             return _underlineThickness;
         }
 
-        public void setUnderlineThickness(float underlineThickness) {
+        void setUnderlineThickness(float underlineThickness) {
             _underlineThickness = underlineThickness;
         }
 
@@ -745,7 +742,7 @@ public class ITextFontResolver implements FontResolver {
             return _yStrikeoutPosition;
         }
 
-        public void setYStrikeoutPosition(float strikeoutPosition) {
+        void setYStrikeoutPosition(float strikeoutPosition) {
             _yStrikeoutPosition = strikeoutPosition;
         }
 
@@ -753,7 +750,7 @@ public class ITextFontResolver implements FontResolver {
             return _yStrikeoutSize;
         }
 
-        public void setYStrikeoutSize(float strikeoutSize) {
+        void setYStrikeoutSize(float strikeoutSize) {
             _yStrikeoutSize = strikeoutSize;
         }
 
@@ -775,7 +772,7 @@ public class ITextFontResolver implements FontResolver {
             return _isFromFontFace;
         }
 
-        public void setFromFontFace(boolean isFromFontFace) {
+        void setFromFontFace(boolean isFromFontFace) {
             _isFromFontFace = isFromFontFace;
         }
     }

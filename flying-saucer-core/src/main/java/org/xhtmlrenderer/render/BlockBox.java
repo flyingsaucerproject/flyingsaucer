@@ -1934,8 +1934,8 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private static class LastLineBoxContext {
-        public int current;
-        public LineBox line;
+        private int current;
+        private LineBox line;
 
         private LastLineBoxContext(int i) {
             current = i;

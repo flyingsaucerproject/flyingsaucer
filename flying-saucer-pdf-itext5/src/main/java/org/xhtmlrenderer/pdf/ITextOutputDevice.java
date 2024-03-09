@@ -1171,7 +1171,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     // Class for storing metadata element name/content pairs from the head
     // section of xhtml document.
     private static class Metadata {
-        private String _name;
+        private final String _name;
         private String _content;
 
         private Metadata(String name, String content) {
@@ -1179,20 +1179,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             _content = content;
         }
 
-        public String getContent() {
+        String getContent() {
             return _content;
         }
 
-        public void setContent(String content) {
+        private void setContent(String content) {
             _content = content;
         }
 
-        public String getName() {
+        String getName() {
             return _name;
-        }
-
-        public void setName(String name) {
-            _name = name;
         }
     }
 

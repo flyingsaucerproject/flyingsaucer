@@ -35,6 +35,7 @@ import org.xml.sax.ext.EntityResolver2;
 import org.xml.sax.helpers.XMLFilterImpl;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
@@ -75,7 +76,7 @@ public class XMLResource extends AbstractResource {
         super(stream);
     }
 
-    private XMLResource(InputSource source) {
+    private XMLResource(@Nullable InputSource source) {
         super(source);
     }
 
@@ -181,28 +182,28 @@ public class XMLResource extends AbstractResource {
         private final XMLReaderPool parserPool = new XMLReaderPool();
         private final IdentityTransformerPool traxPool = new IdentityTransformerPool();
 
-        XMLResource createXMLResource(XMLResource target) {
-            Document document;
-
-            long st = System.currentTimeMillis();
-            XMLReader xmlReader = parserPool.get();
-            try {
-                document = transform(new SAXSource(xmlReader, target.getResourceInputSource()));
-            } finally {
-                parserPool.release(xmlReader);
-            }
-
+        private XMLResource createXMLResource(XMLResource target) {
+            long start = System.currentTimeMillis();
+            Document document = parse(target);
             long end = System.currentTimeMillis();
 
-            target.setElapsedLoadTime(end - st);
-
+            target.setElapsedLoadTime(end - start);
             XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
-
+            
             target.setDocument(document);
             return target;
         }
 
-        public XMLResource createXMLResource(Source source) {
+        private Document parse(XMLResource target) {
+            XMLReader xmlReader = parserPool.get();
+            try {
+                return transform(new SAXSource(xmlReader, target.getResourceInputSource()));
+            } finally {
+                parserPool.release(xmlReader);
+            }
+        }
+
+        XMLResource createXMLResource(Source source) {
             Document document;
 
             long st = System.currentTimeMillis();
@@ -243,11 +244,11 @@ public class XMLResource extends AbstractResource {
         private final boolean preserveElementContentWhitespace = Configuration
                 .isFalse("xr.load.ignore-element-content-whitespace", true);
 
-        XMLReaderPool() {
+        private XMLReaderPool() {
             this(Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
         }
 
-        XMLReaderPool(int capacity) {
+        private XMLReaderPool(int capacity) {
             super(capacity);
         }
 
@@ -345,24 +346,19 @@ public class XMLResource extends AbstractResource {
 
 
     private static class WhitespacePreservingFilter
-            extends XMLFilterImpl implements EntityResolver2
-    {
+            extends XMLFilterImpl implements EntityResolver2 {
 
-        WhitespacePreservingFilter(XMLReader parent) {
+        private WhitespacePreservingFilter(XMLReader parent) {
             super(parent);
         }
 
         @Override
-        public void ignorableWhitespace(char[] ch, int start, int length)
-                throws SAXException
-        {
+        public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
             getContentHandler().characters(ch, start, length);
         }
 
         @Override
-        public InputSource getExternalSubset(String name, String baseURI)
-                throws SAXException, IOException
-        {
+        public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
             EntityResolver resolver = getEntityResolver();
             if (resolver instanceof EntityResolver2) {
                 return ((EntityResolver2) resolver).getExternalSubset(name, baseURI);
@@ -374,9 +370,7 @@ public class XMLResource extends AbstractResource {
         public InputSource resolveEntity(String name,
                                          String publicId,
                                          String baseURI,
-                                         String systemId)
-                throws SAXException, IOException
-        {
+                                         String systemId) throws SAXException, IOException {
             EntityResolver resolver = getEntityResolver();
             if (resolver instanceof EntityResolver2) {
                 return ((EntityResolver2) resolver)
@@ -384,29 +378,23 @@ public class XMLResource extends AbstractResource {
             }
             return resolveEntity(publicId, systemId);
         }
-
     }
 
-
     private static class IdentityTransformerPool extends ObjectPool<Transformer> {
-
         private final TransformerFactory traxFactory;
-        {
+        private IdentityTransformerPool(int capacity) {
+            super(capacity);
             TransformerFactory tf = TransformerFactory.newInstance();
             try {
                 tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             } catch (TransformerConfigurationException e) {
                 XRLog.init(Level.WARNING, "Problem configuring TrAX factory", e);
             }
-            traxFactory = tf;
+            this.traxFactory = tf;
         }
 
-        IdentityTransformerPool() {
+        private IdentityTransformerPool() {
             this(Configuration.valueAsInt("xr.load.parser-pool-capacity", 3));
-        }
-
-        IdentityTransformerPool(int capacity) {
-            super(capacity);
         }
 
         @Override
@@ -417,15 +405,13 @@ public class XMLResource extends AbstractResource {
                 throw new XRRuntimeException("Failed on configuring TrAX transformer.", ex);
             }
         }
-
     }
 
 
     private static abstract class ObjectPool<T> {
-
         private final Queue<Reference<T>> pool;
 
-        ObjectPool(int capacity) {
+        private ObjectPool(int capacity) {
             pool = new ArrayBlockingQueue<>(capacity);
         }
 
@@ -447,9 +433,7 @@ public class XMLResource extends AbstractResource {
         void release(T obj) {
             pool.offer(new SoftReference<>(obj));
         }
-
     }
-
 }
 
 /*
