@@ -88,15 +88,6 @@ public final class Layer {
 
     private Map<String, List<BlockBox>> _runningBlocks;
 
-    private Box _selectionStart;
-    private Box _selectionEnd;
-
-    private int _selectionStartX;
-    private int _selectionStartY;
-
-    private int _selectionEndX;
-    private int _selectionEndY;
-
     public Layer(Box master) {
         this(null, master);
         setStackingContext(true);
@@ -119,7 +110,7 @@ public final class Layer {
         return _stackingContext;
     }
 
-    public final void setStackingContext(boolean stackingContext) {
+    private void setStackingContext(boolean stackingContext) {
         _stackingContext = stackingContext;
     }
 
@@ -1133,54 +1124,6 @@ public final class Layer {
         }
 
         return -1;
-    }
-
-    public Box getSelectionEnd() {
-        return _selectionEnd;
-    }
-
-    public void setSelectionEnd(Box selectionEnd) {
-        _selectionEnd = selectionEnd;
-    }
-
-    public Box getSelectionStart() {
-        return _selectionStart;
-    }
-
-    public void setSelectionStart(Box selectionStart) {
-        _selectionStart = selectionStart;
-    }
-
-    public int getSelectionEndX() {
-        return _selectionEndX;
-    }
-
-    public void setSelectionEndX(int selectionEndX) {
-        _selectionEndX = selectionEndX;
-    }
-
-    public int getSelectionEndY() {
-        return _selectionEndY;
-    }
-
-    public void setSelectionEndY(int selectionEndY) {
-        _selectionEndY = selectionEndY;
-    }
-
-    public int getSelectionStartX() {
-        return _selectionStartX;
-    }
-
-    public void setSelectionStartX(int selectionStartX) {
-        _selectionStartX = selectionStartX;
-    }
-
-    public int getSelectionStartY() {
-        return _selectionStartY;
-    }
-
-    public void setSelectionStartY(int selectionStartY) {
-        _selectionStartY = selectionStartY;
     }
 
     private PageBox getLastRequestedPage() {
