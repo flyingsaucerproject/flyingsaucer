@@ -234,9 +234,6 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                 adjustCaretAndFocus(e);
                 MouseEvent newE = convertMouseEventToScale(e);
                 adjustCaretAndFocus(newE);
-                if (nclicks == 2) {
-                    selectWord(newE);
-                }
             }
         }
 
@@ -244,7 +241,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     void adjustCaretAndFocus(MouseEvent e) {
         adjustCaret(e);
-        adjustFocus(false);
+        adjustFocus();
     }
 
     /**
@@ -267,29 +264,15 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
 
     /**
      * Adjusts the focus, if necessary.
-     *
-     * @param inWindow
-     *            if true indicates requestFocusInWindow should be used
      */
-    private void adjustFocus(boolean inWindow) {
+    private void adjustFocus() {
         if ((panel != null) && panel.isEnabled() && panel.isRequestFocusEnabled()) {
-            if (inWindow) {
-                panel.requestFocusInWindow();
-            } else {
-                panel.requestFocus();
-            }
+            panel.requestFocus();
         }
-    }
-
-    private void selectWord(MouseEvent e) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        // TODO Auto-generated method stub
-
     }
 
     public XHTMLPanel getComponent() {
@@ -558,7 +541,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         }
     }
 
-    List<InlineLayoutBox> getInlineLayoutBoxes(Box b, boolean ignoreChildElements) {
+    List<InlineLayoutBox> getInlineLayoutBoxes(Box b) {
         Stack<Box> boxes = new Stack<>();
         List<InlineLayoutBox> inlineLayoutBoxes = new ArrayList<>();
         boxes.push(b);
@@ -568,9 +551,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                 inlineLayoutBoxes.add((InlineLayoutBox) b);
             } else {
                 for (Box child : b.getChildren()) {
-                    if (!ignoreChildElements || child.getElement() == null) {
-                        boxes.push(child);
-                    }
+                    boxes.push(child);
                 }
             }
         }
@@ -591,7 +572,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
             ilb = (InlineLayoutBox) box;
         } else {
             while (ilb == null) {
-                List<InlineLayoutBox> ilbs = getInlineLayoutBoxes(box, false);
+                List<InlineLayoutBox> ilbs = getInlineLayoutBoxes(box);
                 for (int i = ilbs.size() - 1; i >= 0; i--) {
                     InlineLayoutBox ilbt = ilbs.get(i);
                     if (ilbt.getAbsY() <= e.getY() && ilbt.getAbsX() <= e.getX()) {
@@ -652,11 +633,6 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         LayoutContext lc = panel.getLayoutContext();
         if (fndTxt == null) {
             // TODO: need general debug flag here; not sure if this is an error condition and if the logging is necessary
-            if (false) {
-                XRLog.general(Level.FINE, ilb.dump(lc, "", Box.DUMP_RENDER));
-                XRLog.general(Level.FINE, ilb.getParent().dump(lc, "", Box.DUMP_RENDER));
-                XRLog.general(Level.FINE, ilb.getParent().getParent().dump(lc, "", Box.DUMP_RENDER));
-            }
             return null;
         }
 

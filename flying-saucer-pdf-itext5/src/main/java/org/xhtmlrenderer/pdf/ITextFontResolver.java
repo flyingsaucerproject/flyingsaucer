@@ -277,7 +277,7 @@ public class ITextFontResolver implements FontResolver {
                     throw new XRRuntimeException(e.getMessage(), e);
                 }
 
-                description.setFromFontFace(true);
+                description.setFromFontFace();
 
                 if (fontWeightOverride != null) {
                     description.setWeight(convertWeightToInt(fontWeightOverride));
@@ -302,7 +302,7 @@ public class ITextFontResolver implements FontResolver {
             FontFamily fontFamily = getFontFamily(fontFamilyName);
 
             FontDescription description = new FontDescription(font);
-            description.setFromFontFace(true);
+            description.setFromFontFace();
             // XXX Need to set weight, underline position, etc.  This information
             // is contained in the AFM file (and even parsed by Type1Font), but
             // unfortunately it isn't exposed to the caller.
@@ -772,8 +772,8 @@ public class ITextFontResolver implements FontResolver {
             return _isFromFontFace;
         }
 
-        void setFromFontFace(boolean isFromFontFace) {
-            _isFromFontFace = isFromFontFace;
+        void setFromFontFace() {
+            _isFromFontFace = true;
         }
     }
 }

@@ -36,11 +36,9 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
 
 import java.awt.*;
-import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * <p>Renders an XML files, formatted with CSS, as an image. Input is a document in the form of file or URL,
@@ -62,13 +60,11 @@ import java.util.Map;
  * to control the rendering process; use {@link #getSharedContext()}.</p>
  *
  * <p>By default, this renderer will render to an RGB image which does not support transparency. To use another type
- * of BufferedImage, either set the image type using {@link #setBufferedImageType(int)} before calling
+ * of BufferedImage, either set the image type in constructor before calling
  * {@link #getImage()}, or else override the {@link #createBufferedImage(int, int)} to have full control over
  * the image we render to.</p>
  *
  * <p>Not thread-safe.</p>
- *
- * @see ITextRenderer
  */
 public class Java2DRenderer {
     private static final int DEFAULT_HEIGHT = 1000;
@@ -83,8 +79,7 @@ public class Java2DRenderer {
     private Box root;
 
     private BufferedImage outputImage;
-    private int bufferedImageType;
-
+    private final int bufferedImageType;
 
     /**
      * Whether we've completed rendering; image will only be rendered once.
@@ -92,28 +87,12 @@ public class Java2DRenderer {
     private boolean rendered;
     private String sourceDocument;
     private String sourceDocumentBase;
-    private int width;
+    private final int width;
     private int height;
     private static final int NO_HEIGHT = -1;
-    private Map<Key, Object> renderingHints;
 
-
-    /**
-     * Base constructor
-     */
-    private Java2DRenderer() {
-        this.bufferedImageType = DEFAULT_IMAGE_TYPE;
-    }
-
-    /**
-     * Creates a new instance with specific scaling parameters; these are currently ignored.
-     *
-     * @param dotsPerPoint Layout XML at so many dots per point
-     * @param dotsPerPixel Layout XML at so many dots per pixel
-     */
-    private Java2DRenderer(float dotsPerPoint, int dotsPerPixel) {
-        this();
-        init(dotsPerPoint, dotsPerPixel);
+    public Java2DRenderer(String url, String baseUrl, int width, int height) {
+        this(url, baseUrl, width, height, DEFAULT_IMAGE_TYPE);
     }
 
     /**
@@ -125,16 +104,17 @@ public class Java2DRenderer {
      * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
      * @param height Target height, in pixels, for the image; required to provide vertical bounds for the layout.
      */
-    public Java2DRenderer(String url, String baseUrl, int width, int height) {
+    public Java2DRenderer(String url, String baseUrl, int width, int height, int bufferedImageType) {
         // bypass scaling routines based on DPI -- see PDFRenderer and compare--dotsPerPoint is not implemented
         // in all subordinate classes and interfaces for Java2D, so leaving it out
         // leaving this constructor call here as a TODO
-        this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
+        init();
 
         this.sourceDocument = url;
         this.sourceDocumentBase = baseUrl;
         this.width = width;
         this.height = height;
+        this.bufferedImageType = bufferedImageType;
     }
 
     /**
@@ -149,7 +129,6 @@ public class Java2DRenderer {
         this(file.toURI().toURL().toExternalForm(), width, height);
     }
 
-
         /**
          * Creates a new instance pointing to the given Document. Does not render until {@link #getImage()} is called for
          * the first time.
@@ -159,10 +138,11 @@ public class Java2DRenderer {
          * @param height Target height, in pixels, for the image.
          */
         public Java2DRenderer(Document doc, int width, int height) {
-            this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
+            init();
             this.doc = doc;
             this.width = width;
             this.height = height;
+            this.bufferedImageType = DEFAULT_IMAGE_TYPE;
         }
 
     public Java2DRenderer(Document doc, int width) {
@@ -192,9 +172,13 @@ public class Java2DRenderer {
      * Height is calculated based on content
      */
     public Java2DRenderer(File file, int width) throws IOException {
-        this(file.toURI().toURL().toExternalForm(), width);
+        this(file.toURI().toURL().toExternalForm(), width, NO_HEIGHT);
     }
 
+    public static Java2DRenderer fromFile(File file, int width, int bufferedImageType) throws IOException {
+        String url = file.toURI().toURL().toExternalForm();
+        return new Java2DRenderer(url, url, width, NO_HEIGHT, bufferedImageType);
+    }
 
     /**
      * Renderer for a given URL (which is also used as the base) and a specified width; height is calculated
@@ -234,32 +218,6 @@ public class Java2DRenderer {
     }
 
     /**
-     * Sets the rendering hints to apply to the Graphics2D instance used by the renderer; see
-     * {@link java.awt.Graphics2D#setRenderingHints(java.util.Map)}. The Map need not specify values for all
-     * properties; any settings in this map will be applied as override to the default settings, and will
-     * not replace the entire Map for the Graphics2D instance.
-     *
-     * @param hints values to override in default rendering hints for Graphics2D we are rendering to
-     */
-    public void setRenderingHints(Map<Key, Object> hints) {
-        renderingHints = hints;
-    }
-
-    /**
-     * Sets the type for the BufferedImage used as output for this renderer; must be one of the values from
-     * {@link java.awt.image.BufferedImage} allowed in that class' constructor as a type argument. See docs for
-     * the type parameter in {@link java.awt.image.BufferedImage#BufferedImage(int, int, int)}. Defaults to RGB with
-     * no support for transparency. The type is used when the image is first created, so to change the default type
-     * do so before calling {@link #getImage()}.
-     *
-     * @param bufferedImageType the BufferedImage type to be used to create the image on which the document
-     * will be rendered.
-     */
-    public void setBufferedImageType(int bufferedImageType) {
-        this.bufferedImageType = bufferedImageType;
-    }
-
-    /**
      * Returns the SharedContext to be used by renderer. Is instantiated along with the class, so can be accessed
      * before {@link #getImage()} is called to tune the rendering process.
      *
@@ -285,9 +243,6 @@ public class Java2DRenderer {
             outputImage = createBufferedImage(this.width, height);
             outputDevice = new Java2DOutputDevice(outputImage);
             Graphics2D newG = (Graphics2D) outputImage.getGraphics();
-            if ( renderingHints != null ) {
-                newG.addRenderingHints(renderingHints);
-            }
 
             RenderingContext rc = sharedContext.newRenderingContextInstance();
             rc.setFontContext(new Java2DFontContext(newG));
@@ -305,8 +260,8 @@ public class Java2DRenderer {
 
     /**
      * Returns a BufferedImage using the specified width and height. By default, this returns an image compatible
-     * with the screen (if not in "headless" mode) using the BufferedImage type specified in
-     * {@link #setBufferedImageType(int)}, or else RGB if none is specified.
+     * with the screen (if not in "headless" mode) using the BufferedImage type specified in constructor,
+     * or else RGB if none is specified.
      *
      * @param width target width
      * @param height target height
@@ -360,8 +315,7 @@ public class Java2DRenderer {
         return result;
     }
 
-    private void init(float dotsPerPoint, int dotsPerPixel) {
-
+    private void init() {
         outputImage = ImageUtil.createCompatibleBufferedImage(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_POINT);
         outputDevice = new Java2DOutputDevice(outputImage);
 
@@ -375,8 +329,8 @@ public class Java2DRenderer {
         sharedContext.setReplacedElementFactory(replacedElementFactory);
 
         sharedContext.setTextRenderer(new Java2DTextRenderer());
-        sharedContext.setDPI(72 * dotsPerPoint);
-        sharedContext.setDotsPerPixel(dotsPerPixel);
+        sharedContext.setDPI(72 * (float) Java2DRenderer.DEFAULT_DOTS_PER_POINT);
+        sharedContext.setDotsPerPixel(Java2DRenderer.DEFAULT_DOTS_PER_PIXEL);
         sharedContext.setPrint(false);
         sharedContext.setInteractive(false);
     }

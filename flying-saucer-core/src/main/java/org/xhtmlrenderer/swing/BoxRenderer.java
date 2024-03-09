@@ -60,11 +60,7 @@ import java.util.Map;
  * {@link org.xhtmlrenderer.layout.SharedContext} instance that will be used by this renderer and change settings
  * to control the rendering process; use {@link #getSharedContext()}.</p>
  *
- *
- *
  * <p>Not thread-safe.</p>
- *
- * @see org.xhtmlrenderer.pdf.ITextRenderer
  */
 public class BoxRenderer {
     private static final int DEFAULT_HEIGHT = 1000;
@@ -77,34 +73,17 @@ public class BoxRenderer {
     private Document doc;
     private Box root;
 
-    private float dotsPerPoint;
-
-
     /**
      * Whether we've completed rendering; image will only be rendered once.
      */
     private boolean rendered;
-    private String sourceDocument;
-    private String sourceDocumentBase;
-    private int width;
+    private final String sourceDocument;
+    private final String sourceDocumentBase;
+    private final int width;
     private int height;
     private static final int NO_HEIGHT = -1;
     private Map<Object, Object> renderingHints;
     private LayoutContext layoutContext;
-
-    private BoxRenderer() {
-    }
-
-    /**
-     * Creates a new instance with specific scaling paramters; these are currently ignored.
-     *
-     * @param dotsPerPoint Layout XML at so many dots per point
-     * @param dotsPerPixel Layout XML at so many dots per pixel
-     */
-    private BoxRenderer(float dotsPerPoint, int dotsPerPixel) {
-        this();
-        init(dotsPerPoint, dotsPerPixel);
-    }
 
     /**
      * Creates a new instance for a given URL. Does not render until {@link #render()} is called for
@@ -118,8 +97,7 @@ public class BoxRenderer {
         // bypass scaling routines based on DPI -- see PDFRenderer and compare--dotsPerPoint is not implemented
         // in all subordinate classes and interfaces for Java2D, so leaving it out
         // leaving this constructor call here as a TODO
-        this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
-
+        init();
         this.sourceDocument = url;
         this.sourceDocumentBase = baseUrl;
         this.width = width;
@@ -312,18 +290,16 @@ public class BoxRenderer {
         return result;
     }
 
-    private void init(float dotsPerPoint, int dotsPerPixel) {
-        this.dotsPerPoint = dotsPerPoint;
-
+    private void init() {
         BufferedImage outputImage = ImageUtil.createCompatibleBufferedImage(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_POINT);
         outputDevice = new Java2DOutputDevice(outputImage);
 
         UserAgentCallback userAgent = new NaiveUserAgent();
-        sharedContext = newSharedContext(dotsPerPixel, userAgent);
+        sharedContext = newSharedContext(userAgent);
         layoutContext = newLayoutContext();
     }
 
-    private SharedContext newSharedContext(int dotsPerPixel, UserAgentCallback userAgent) {
+    private SharedContext newSharedContext(UserAgentCallback userAgent) {
         SharedContext context = new SharedContext(userAgent);
 
         AWTFontResolver fontResolver = new AWTFontResolver();
@@ -333,8 +309,8 @@ public class BoxRenderer {
         context.setReplacedElementFactory(replacedElementFactory);
 
         context.setTextRenderer(new Java2DTextRenderer());
-        context.setDPI(72 * this.dotsPerPoint);
-        context.setDotsPerPixel(dotsPerPixel);
+        context.setDPI(72 * (float) DEFAULT_DOTS_PER_POINT);
+        context.setDotsPerPixel(BoxRenderer.DEFAULT_DOTS_PER_PIXEL);
         context.setPrint(false);
         context.setInteractive(false);
         return context;

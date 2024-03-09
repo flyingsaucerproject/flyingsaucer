@@ -78,7 +78,7 @@ public class JPanelSizeToDocument {
             panel.setDocument(new File(fileName));
         } catch (Exception e) {
             XRLog.general(Level.WARNING, "Could not load XHTML document " + fileName, e);
-            messageAndExit("Failed to load document", -1);
+            messageAndExit("Failed to load document");
         }
 
         // No-op as regards size, but has side effect of making the window and components "displayable". This is
@@ -104,11 +104,11 @@ public class JPanelSizeToDocument {
 
     private void loadAndCheckArgs(String[] args) {
         if (args.length == 0) {
-            messageAndExit("Enter a file or URI.", -1);
+            messageAndExit("Enter a file or URI.");
         }
         String name = args[0];
         if (!new File(name).exists()) {
-            messageAndExit("File " + name + " does not exist.", -1);
+            messageAndExit("File " + name + " does not exist.");
         }
         this.fileName = name;
 
@@ -117,13 +117,13 @@ public class JPanelSizeToDocument {
             try {
                 targetWidth = Integer.parseInt(widthVal);
             } catch (NumberFormatException e) {
-                messageAndExit("Target width " + widthVal + " is not an integer", -1);
+                messageAndExit("Target width " + widthVal + " is not an integer");
             }
         }
     }
 
-    private void messageAndExit(final String msg, final int rtnCode) {
+    private void messageAndExit(String msg) {
         System.out.println(msg);
-        System.exit(rtnCode);
+        System.exit(-1);
     }
 }

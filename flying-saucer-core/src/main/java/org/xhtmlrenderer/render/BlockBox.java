@@ -1471,7 +1471,7 @@ public class BlockBox extends Box implements InlinePaintable {
             return;
         }
 
-        RectPropertySet styleMargin = getStyleMargin(c, false);
+        RectPropertySet styleMargin = getStyleMarginNoCache(c);
         RectPropertySet workingMargin = getMargin(c);
 
         // A shrink-to-fit calculation may have set incorrect values for

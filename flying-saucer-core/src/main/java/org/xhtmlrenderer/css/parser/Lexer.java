@@ -58,7 +58,7 @@ class Lexer {
   /** 
    * Translates characters to character classes
    */
-  private static final char [] ZZ_CMAP = zzUnpackCMap(ZZ_CMAP_PACKED);
+  private static final char [] ZZ_CMAP = zzUnpackCMap();
 
   /** 
    * Translates DFA states to action switch labels.
@@ -100,20 +100,19 @@ class Lexer {
 
   private static int [] zzUnpackAction() {
     int [] result = new int[518];
-    zzUnpackAction(ZZ_ACTION_PACKED_0, 0, result);
+    zzUnpackAction(result);
     return result;
   }
 
-  private static int zzUnpackAction(String packed, int offset, int [] result) {
+  private static void zzUnpackAction(int [] result) {
     int i = 0;       /* index in packed string  */
-    int j = offset;  /* index in unpacked array */
-    int l = packed.length();
+    int j = 0;  /* index in unpacked array */
+    int l = Lexer.ZZ_ACTION_PACKED_0.length();
     while (i < l) {
-      int count = packed.charAt(i++);
-      int value = packed.charAt(i++);
+      int count = Lexer.ZZ_ACTION_PACKED_0.charAt(i++);
+      int value = Lexer.ZZ_ACTION_PACKED_0.charAt(i++);
       do result[j++] = value; while (--count > 0);
     }
-    return j;
   }
 
 
@@ -191,19 +190,18 @@ class Lexer {
 
   private static int [] zzUnpackRowMap() {
     int [] result = new int[518];
-    zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, 0, result);
+    zzUnpackRowMap(result);
     return result;
   }
 
-  private static int zzUnpackRowMap(String packed, int offset, int [] result) {
+  private static void zzUnpackRowMap(int [] result) {
     int i = 0;  /* index in packed string  */
-    int j = offset;  /* index in unpacked array */
-    int l = packed.length();
+    int j = 0;  /* index in unpacked array */
+    int l = Lexer.ZZ_ROWMAP_PACKED_0.length();
     while (i < l) {
-      int high = packed.charAt(i++) << 16;
-      result[j++] = high | packed.charAt(i++);
+      int high = Lexer.ZZ_ROWMAP_PACKED_0.charAt(i++) << 16;
+      result[j++] = high | Lexer.ZZ_ROWMAP_PACKED_0.charAt(i++);
     }
-    return j;
   }
 
   /** 
@@ -1430,21 +1428,20 @@ class Lexer {
 
   private static int [] zzUnpackTrans() {
     int [] result = new int[31021];
-    zzUnpackTrans(ZZ_TRANS_PACKED_0, 0, result);
+    zzUnpackTrans(result);
     return result;
   }
 
-  private static int zzUnpackTrans(String packed, int offset, int [] result) {
+  private static void zzUnpackTrans(int [] result) {
     int i = 0;       /* index in packed string  */
-    int j = offset;  /* index in unpacked array */
-    int l = packed.length();
+    int j = 0;  /* index in unpacked array */
+    int l = Lexer.ZZ_TRANS_PACKED_0.length();
     while (i < l) {
-      int count = packed.charAt(i++);
-      int value = packed.charAt(i++);
+      int count = Lexer.ZZ_TRANS_PACKED_0.charAt(i++);
+      int value = Lexer.ZZ_TRANS_PACKED_0.charAt(i++);
       value--;
       do result[j++] = value; while (--count > 0);
     }
-    return j;
   }
 
 
@@ -1481,20 +1478,19 @@ class Lexer {
 
   private static int [] zzUnpackAttribute() {
     int [] result = new int[518];
-    zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, 0, result);
+    zzUnpackAttribute(result);
     return result;
   }
 
-  private static int zzUnpackAttribute(String packed, int offset, int [] result) {
+  private static void zzUnpackAttribute(int [] result) {
     int i = 0;       /* index in packed string  */
-    int j = offset;  /* index in unpacked array */
-    int l = packed.length();
+    int j = 0;  /* index in unpacked array */
+    int l = Lexer.ZZ_ATTRIBUTE_PACKED_0.length();
     while (i < l) {
-      int count = packed.charAt(i++);
-      int value = packed.charAt(i++);
+      int count = Lexer.ZZ_ATTRIBUTE_PACKED_0.charAt(i++);
+      int value = Lexer.ZZ_ATTRIBUTE_PACKED_0.charAt(i++);
       do result[j++] = value; while (--count > 0);
     }
-    return j;
   }
 
   /** the input device */
@@ -1559,19 +1555,18 @@ class Lexer {
     this(new java.io.InputStreamReader(in));
   }
 
-  /** 
+  /**
    * Unpacks the compressed character translation table.
    *
-   * @param packed   the packed character translation table
-   * @return         the unpacked character translation table
+   * @return the unpacked character translation table
    */
-  private static char [] zzUnpackCMap(String packed) {
+  private static char [] zzUnpackCMap() {
     char [] map = new char[0x10000];
     int i = 0;  /* index in packed string  */
     int j = 0;  /* index in unpacked array */
     while (i < 204) {
-      int  count = packed.charAt(i++);
-      char value = packed.charAt(i++);
+      int  count = Lexer.ZZ_CMAP_PACKED.charAt(i++);
+      char value = Lexer.ZZ_CMAP_PACKED.charAt(i++);
       do map[j++] = value; while (--count > 0);
     }
     return map;
