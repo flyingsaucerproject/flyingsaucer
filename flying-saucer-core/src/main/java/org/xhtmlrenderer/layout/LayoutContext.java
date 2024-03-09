@@ -39,6 +39,7 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.PageBox;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -372,7 +373,7 @@ public class LayoutContext implements CssContext {
          * A CounterContext should really be reflected in the element hierarchy, but CalculatedStyles
          * reflect the ancestor hierarchy just as well and also handles pseudo-elements seamlessly.
          */
-        CounterContext(CalculatedStyle style, Integer startIndex) {
+        CounterContext(CalculatedStyle style, @Nullable Integer startIndex) {
             // Numbering restarted via <ol start="x">
             if (startIndex != null) {
                 _counters.put("list-item", startIndex);

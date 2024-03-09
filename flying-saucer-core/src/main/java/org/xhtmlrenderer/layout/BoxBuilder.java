@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.EntityReference;
@@ -51,6 +53,9 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBoxData;
 import org.xhtmlrenderer.render.InlineBox;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,6 +63,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Integer.parseInt;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.xhtmlrenderer.css.newmatch.CascadedStyle.createLayoutPropertyDeclaration;
@@ -75,7 +81,10 @@ import static org.xhtmlrenderer.css.newmatch.CascadedStyle.createLayoutPropertyD
  * content for purposes of inserting anonymous block boxes and calculating
  * the kind of content contained in a given block box.
  */
+@ParametersAreNonnullByDefault
 public class BoxBuilder {
+    private static final Logger log = LoggerFactory.getLogger(BoxBuilder.class);
+
     public static final int MARGIN_BOX_VERTICAL = 1;
     public static final int MARGIN_BOX_HORIZONTAL = 2;
 
@@ -1084,28 +1093,7 @@ public class BoxBuilder {
                         continue;
                     }
 
-                    Integer start = null;
-                    if ("ol".equals(working.getNodeName())) {
-                        Node startAttribute = working.getAttributes().getNamedItem("start");
-                        if (startAttribute != null) {
-                            try {
-                                start = Integer.parseInt(startAttribute.getNodeValue()) - 1;
-                            } catch (NumberFormatException e) {
-                                // ignore
-                            }
-                        }
-                    } else if ("li".equals(working.getNodeName())) {
-                        Node valueAttribute = working.getAttributes().getNamedItem("value");
-                        if (valueAttribute != null) {
-                            try {
-                                start = Integer.parseInt(valueAttribute.getNodeValue()) - 1;
-                            } catch (NumberFormatException e) {
-                                // ignore
-                            }
-                        }
-                    }
-
-                    c.resolveCounters(style, start);
+                    c.resolveCounters(style, parseStartIndex(working));
 
                     if (style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN)
                             || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN_GROUP)) {
@@ -1233,6 +1221,31 @@ public class BoxBuilder {
             children.add(iB);
         }
         insertGeneratedContent(c, parent, parentStyle, "after", children, info);
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private static Integer parseStartIndex(Node node) {
+        return switch (node.getNodeName()) {
+            case "ol" -> parseAttribute(node, "start");
+            case "li" -> parseAttribute(node, "value");
+            default -> null;
+        };
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private static Integer parseAttribute(Node node, String attributeName) {
+        Node startAttribute = node.getAttributes().getNamedItem(attributeName);
+        if (startAttribute != null) {
+            String attributeValue = startAttribute.getNodeValue();
+            try {
+                return parseInt(attributeValue) - 1;
+            } catch (NumberFormatException e) {
+                log.debug("Invalid attribute {}=\"{}\": {}", attributeName, attributeValue, e.toString());
+            }
+        }
+        return null;
     }
 
     private static void insertAnonymousBlocks(
