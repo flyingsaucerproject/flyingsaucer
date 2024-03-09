@@ -61,6 +61,7 @@ import static org.xhtmlrenderer.css.style.CssKnowledge.MAY_HAVE_FIRST_LETTER;
 import static org.xhtmlrenderer.css.style.CssKnowledge.MAY_HAVE_FIRST_LINE;
 import static org.xhtmlrenderer.css.style.CssKnowledge.OVERFLOW_APPLICABLE;
 import static org.xhtmlrenderer.css.style.CssKnowledge.TABLE_SECTIONS;
+import static org.xhtmlrenderer.css.style.CssKnowledge.UNDER_TABLE_LAYOUT;
 
 /**
  * A set of properties that apply to a single Element, derived from all matched
@@ -738,6 +739,10 @@ public class CalculatedStyle {
         return isIdent(CSSName.DISPLAY, IdentValue.INLINE_TABLE);
     }
 
+    public boolean isUnderTableLayout() {
+        return UNDER_TABLE_LAYOUT.contains(getDisplay());
+    }
+
     public boolean isTableCell() {
         return isIdent(CSSName.DISPLAY, IdentValue.TABLE_CELL);
     }
@@ -799,6 +804,9 @@ public class CalculatedStyle {
     }
 
     public boolean isFloated() {
+        if (isUnderTableLayout()) {
+            return false;
+        }
         IdentValue floatVal = getIdent(CSSName.FLOAT);
         return floatVal == IdentValue.LEFT || floatVal == IdentValue.RIGHT;
     }
