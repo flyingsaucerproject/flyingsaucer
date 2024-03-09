@@ -228,32 +228,3 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
         return _cssText;
     }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.7  2005/12/28 00:50:53  peterbrant
- * Continue ripping out first try at pagination / Minor method name refactoring
- *
- * Revision 1.6  2005/05/08 13:02:38  tobega
- * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
- *
- * Revision 1.5  2005/02/02 12:13:23  pdoubleya
- * For URIs, return string value.
- *
- * Revision 1.4  2005/01/29 16:18:13  pdoubleya
- * Fixed error: wasn't storing RGB color value passed in.
- *
- * Revision 1.3  2005/01/29 16:04:15  pdoubleya
- * No longer look up identifier when instantiating; value remains as specified in CSS.
- *
- * Revision 1.2  2005/01/24 19:01:07  pdoubleya
- * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
- *
- * Revision 1.1  2005/01/24 14:27:52  pdoubleya
- * Added to CVS.
- *
- *
- */
-

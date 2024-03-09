@@ -712,7 +712,7 @@ public class Configuration {
      */
     private static Configuration instance() {
         return Configuration.sInstance;
-    }// end main()
+    }
 
     /**
      * Given a property, resolves the value to a public constant field on some class, where the field is of type Object.
@@ -832,100 +832,3 @@ public class Configuration {
         return props;
     }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.24  2009/03/08 16:49:06  pdoubleya
- * Catch another couple of cases where sandbox could be broken (webstart)
- *
- * Revision 1.23  2009/02/08 15:18:46  pdoubleya
- * Support reading properties which are not in our standard config file, passed in via an override config file or via System properties. This is to support extended configuration parameters for JDK logging, e.g. appenders, formatters, etc.
- *
- * Revision 1.22  2008/05/30 14:48:04  pdoubleya
- * Issue 243: handle case where for some reason, a JNLP launched app could not read the default configuration file. This was throwing an RE which then cause FS logging to fail. Now load hard-coded properties (ick!) if we can't read the file itself.
- *
- * Revision 1.21  2008/01/27 16:40:29  pdoubleya
- * Issues 186 and 130: fix configuration so that logging setup does not override any current settings for JDK logging classes. Disable logging by default.
- *
- * Revision 1.20  2007/12/28 14:54:33  peterbrant
- * Make sure resource streams are cleaned up (bug #201, patch by kaihei)
- *
- * Revision 1.19  2007/07/14 13:06:21  pdoubleya
- * Don't show stack trace if configuration file URL is malformed
- *
- * Revision 1.18  2007/07/13 13:40:26  pdoubleya
- * Fix for 183, configuration should allow specifying override files by URL
- *
- * Revision 1.17  2007/05/20 23:25:31  peterbrant
- * Various code cleanups (e.g. remove unused imports)
- *
- * Patch from Sean Bright
- *
- * Revision 1.16  2007/04/10 20:39:07  pdoubleya
- * Added support for object-constants as properties.
- *
- * Revision 1.15  2006/07/26 18:15:50  pdoubleya
- * Check for SecurityExceptions to avoid WebStart problems.
- *
- * Revision 1.14  2006/07/17 23:21:46  pdoubleya
- * Fix for #128 in issue tracker; adder system property xr.conf to specify an override file by name. Changed some log levels, too.
- *
- * Revision 1.13  2006/07/17 22:15:59  pdoubleya
- * Added loggingEnabled switch to XRLog and config file; default logging to off there and in Configuration. Fix for Issue Tracker #123.
- *
- * Revision 1.12  2005/09/29 21:34:06  joshy
- * minor updates to a lot of files. pulling in more incremental rendering code.
- * fixed another resize bug
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.11  2005/07/13 22:49:15  joshy
- * updates to get the jnlp to work without being signed
- *
- * Revision 1.10  2005/06/26 01:02:22  tobega
- * Now checking for SecurityException on System.getProperty
- *
- * Revision 1.9  2005/04/07 16:14:28  pdoubleya
- * Updated to clarify relationship between Configuration and XRLog on load; Configuration must load first, but holds off on logging until XRLog is initialized. LogStartupConfig no longer used.
- *
- * Revision 1.8  2005/01/29 20:22:24  pdoubleya
- * Clean/reformat code. Removed commented blocks, checked copyright.
- *
- * Revision 1.7  2004/10/23 14:06:56  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
- * Added CVS log comments at bottom.
- *
- * Revision 1.6  2004/10/19 15:00:53  joshy
- * updated the build file
- * removed some extraneous files
- * update the home page to point to the new jnlp files
- * updated the resource loader to use the marker class
- * updated the text of the "about" box
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.5  2004/10/18 12:10:50  pdoubleya
- * Added keysByPrefix(); local override file now read from user home directory; all logging now written to console instead of Logger because of Logger setup dependency issues (logger config depends on Configuration).
- *
- * Revision 1.4  2004/10/14 15:06:27  pdoubleya
- * Added conversion methods for primitive datatypes, and testing in main().
- *
- * Revision 1.3  2004/10/14 12:55:28  pdoubleya
- * Use plumbing.init logging hierarchy instead of plumbing.config.
- *
- * Revision 1.2  2004/10/14 11:12:05  pdoubleya
- * Value for is now static, going against Singleton instance. Created separate logger/handler for Configuration use only, and there is a single Logger. Loggers now use INFO, FINER, FINEST for logging progess in loading configuration. Updated comments.
- *
- * Revision 1.1  2004/10/13 23:00:31  pdoubleya
- * Added to CVS.
- *
- */
-

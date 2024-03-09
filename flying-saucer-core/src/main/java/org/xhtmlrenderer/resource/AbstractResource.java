@@ -65,22 +65,3 @@ public abstract class AbstractResource implements Resource {
         this.elapsedLoadTime = elapsedLoadTime;
     }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.4  2005/06/15 10:56:14  tobega
- * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
- *
- * Revision 1.3  2005/06/01 21:36:40  tobega
- * Got image scaling working, and did some refactoring along the way
- *
- * Revision 1.2  2005/02/05 11:33:33  pdoubleya
- * Added load() to XMLResource, and accept overloaded input: InputSource, stream, URL.
- *
- * Revision 1.1  2005/02/03 20:39:35  pdoubleya
- * Added to CVS.
- *
- *
- */

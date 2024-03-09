@@ -1,4 +1,3 @@
-// package PACKAGE;
 package org.xhtmlrenderer.tool;
 
 import org.xhtmlrenderer.test.DocumentDiffTest;
@@ -34,4 +33,4 @@ public class Boxer {
             System.err.println(e.getMessage());
         }
     }
-} // end class
+}

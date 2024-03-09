@@ -4,7 +4,6 @@
 
      This is XHTML, a reformulation of HTML as a modular XML application.
      Copyright 1999-2001 W3C (MIT, INRIA, Keio), All Rights Reserved.
-     Revision: $Id$
 
      This module is based on the W3C Ruby Annotation Specification:
 

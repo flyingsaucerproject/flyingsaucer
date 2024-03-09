@@ -60,10 +60,6 @@ public class PermutationGenerator {
         reset();
     }
 
-    //------
-    // Reset
-    //------
-
     public void reset() {
         for (int i = 0; i < a.length; i++) {
             a[i] = i;
@@ -94,10 +90,6 @@ public class PermutationGenerator {
     public boolean hasMore() {
         return numLeft.compareTo(BigInteger.ZERO) > 0;
     }
-
-    //------------------
-    // Compute factorial
-    //------------------
 
     private static BigInteger getFactorial(int n) {
         BigInteger fact = BigInteger.ONE;
@@ -157,4 +149,4 @@ public class PermutationGenerator {
         numLeft = numLeft.subtract(BigInteger.ONE);
         return ArrayUtil.cloneOrEmpty(a);
     }
-} // end class
+}

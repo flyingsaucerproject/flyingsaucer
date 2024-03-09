@@ -71,22 +71,3 @@ public class LoggerUtil {
         return defaultLogLevel;
     }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.4  2008/01/27 16:40:29  pdoubleya
- * Issues 186 and 130: fix configuration so that logging setup does not override any current settings for JDK logging classes. Disable logging by default.
- *
- * Revision 1.3  2005/01/29 20:19:27  pdoubleya
- * Clean/reformat code. Removed commented blocks, checked copyright.
- *
- * Revision 1.2  2004/10/23 14:06:57  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
- * Added CVS log comments at bottom.
- *
- *
- */
-
