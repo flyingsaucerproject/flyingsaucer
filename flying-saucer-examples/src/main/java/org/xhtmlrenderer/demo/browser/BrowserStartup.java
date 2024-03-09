@@ -124,7 +124,7 @@ public class BrowserStartup {
         try {
             UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
             lnfSet = true;
-        } catch (Throwable th) {
+        } catch (Throwable ignore) {
         }
         if (!lnfSet) {
             try {
