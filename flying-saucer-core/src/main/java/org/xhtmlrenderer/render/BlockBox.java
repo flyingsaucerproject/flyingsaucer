@@ -122,12 +122,15 @@ public class BlockBox extends Box implements InlinePaintable {
 
     public String toString() {
         StringBuilder result = new StringBuilder();
-        String className = getClass().getName();
-        result.append(className.substring(className.lastIndexOf('.') + 1));
+        result.append(getClass().getSimpleName());
         result.append(": ");
-        if (getElement() != null && ! isAnonymous()) {
+        if (getElement() != null && !isAnonymous()) {
             result.append("<");
             result.append(getElement().getNodeName());
+            String id = getElement().getAttribute("id");
+            if (!id.isEmpty()) {
+                result.append(" id=\"").append(id).append("\"");
+            }
             result.append("> ");
         }
         if (isAnonymous()) {
@@ -146,26 +149,19 @@ public class BlockBox extends Box implements InlinePaintable {
             result.append("(running) ");
         }
 
-        result.append('(');
-        switch (getChildrenContentType()) {
-            case CONTENT_BLOCK:
-                result.append('B');
-                break;
-            case CONTENT_INLINE:
-                result.append('I');
-                break;
-            case CONTENT_EMPTY:
-                result.append('E');
-                break;
-        }
-        result.append(") ");
+        result.append(switch (getChildrenContentType()) {
+            case CONTENT_BLOCK -> "(B) ";
+            case CONTENT_INLINE -> "(I) ";
+            case CONTENT_EMPTY -> "(E) ";
+            default -> "";
+        });
 
         result.append(getExtraBoxDescription());
 
         appendPositioningInfo(result);
-        result.append("(").append(getAbsX()).append(",").append(getAbsY())
-                .append(")->(").append(getWidth()).append(" x ").append(getHeight()).append(")");
-        return result.toString();
+        appendPosition(result);
+        appendSize(result);
+        return result.toString().trim();
     }
 
     protected void appendPositioningInfo(StringBuilder result) {

@@ -97,10 +97,6 @@ public class LineBox extends Box implements InlinePaintable {
         return result.toString();
     }
 
-    public String toString() {
-        return "LineBox: (" + getAbsX() + "," + getAbsY() + ")->(" + getWidth() + "," + getHeight() + ")";
-    }
-
     @Override
     public Rectangle getMarginEdge(CssContext cssCtx, int tx, int ty) {
         Rectangle result = new Rectangle(getX(), getY(), getContentWidth(), getHeight());
