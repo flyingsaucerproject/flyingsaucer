@@ -27,6 +27,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import java.util.Map;
 /**
  * @author patrick
  */
+@ParametersAreNonnullByDefault
 public class DelegatingReplacedElementFactory implements ReplacedElementFactory {
     private final List<ElementReplacer> replacers = new ArrayList<>();
     private final Map<String, ElementReplacer> byNameReplacers = new HashMap<>();
@@ -79,6 +81,7 @@ public class DelegatingReplacedElementFactory implements ReplacedElementFactory 
 
     @Override
     public void remove(final Element element) {
+        // FIXME 'List<ERItem>' may not contain objects of type 'Element'
         final int idx = elementReplacements.indexOf(element);
         ERItem item = elementReplacements.get(idx);
         elementReplacements.remove(idx);
