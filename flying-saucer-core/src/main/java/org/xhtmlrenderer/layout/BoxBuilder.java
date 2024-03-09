@@ -269,9 +269,8 @@ public class BoxBuilder {
 
         List<Styleable> children = new ArrayList<>();
 
-        ChildBoxInfo info = new ChildBoxInfo();
-        info.setContainsTableContent(true);
-        info.setLayoutRunningBlocks(true);
+        ChildBoxInfo info = new ChildBoxInfo(true);
+        info.setContainsTableContent();
 
         TableCellBox result = new TableCellBox();
         result.setAnonymous(true);
@@ -365,7 +364,7 @@ public class BoxBuilder {
 
         if (nextUp == IdentValue.TABLE) {
             rebalanceInlineContent(childrenWithAnonymous);
-            info.setContainsBlockLevelContent(true);
+            info.setContainsBlockLevelContent();
             resolveChildren(c, parent, childrenWithAnonymous, info);
         } else {
             resolveChildTableContent(c, parent, childrenWithAnonymous, info, nextUp);
@@ -474,7 +473,7 @@ public class BoxBuilder {
                         childrenWithAnonymous);
             }
 
-            info.setContainsBlockLevelContent(true);
+            info.setContainsBlockLevelContent();
             resolveChildren(c, parent, childrenWithAnonymous, info);
         }
     }
@@ -616,7 +615,7 @@ public class BoxBuilder {
         ChildBoxInfo result = new ChildBoxInfo();
         for (Styleable s : styleables) {
             if (!s.getStyle().isLaidOutInInlineContext()) {
-                result.setContainsBlockLevelContent(true);
+                result.setContainsBlockLevelContent();
                 break;
             }
         }
@@ -827,7 +826,7 @@ public class BoxBuilder {
                         BlockBox target = getRunningBlock(c, value);
                         if (target != null) {
                             result.add(target.copyOf());
-                            info.setContainsBlockLevelContent(true);
+                            info.setContainsBlockLevelContent();
                         }
                     } else {
                         contentFunction =
@@ -962,7 +961,7 @@ public class BoxBuilder {
             result.setPseudoElementOrClass(peName);
 
             if (! style.isLaidOutInInlineContext()) {
-                info.setContainsBlockLevelContent(true);
+                info.setContainsBlockLevelContent();
             }
 
             return new ArrayList<>(singletonList(result));
@@ -1003,16 +1002,16 @@ public class BoxBuilder {
         } else if (! generated && (style.isTable() || style.isInlineTable())) {
             return new TableBox();
         } else if (style.isTableCell()) {
-            info.setContainsTableContent(true);
+            info.setContainsTableContent();
             return new TableCellBox();
         } else if (! generated && style.isTableRow()) {
-            info.setContainsTableContent(true);
+            info.setContainsTableContent();
             return new TableRowBox();
         } else if (! generated && style.isTableSection()) {
-            info.setContainsTableContent(true);
+            info.setContainsTableContent();
             return new TableSectionBox();
         } else if (style.isTableCaption()) {
-            info.setContainsTableContent(true);
+            info.setContainsTableContent();
             return new BlockBox();
         } else {
             return new BlockBox();
@@ -1140,7 +1139,7 @@ public class BoxBuilder {
 
                         if (!info.isContainsBlockLevelContent()
                                 && !style.isLaidOutInInlineContext()) {
-                            info.setContainsBlockLevelContent(true);
+                            info.setContainsBlockLevelContent();
                         }
 
                         BlockBox block = (BlockBox) child;
@@ -1297,30 +1296,34 @@ public class BoxBuilder {
     private static class ChildBoxInfo {
         private boolean _containsBlockLevelContent;
         private boolean _containsTableContent;
-        private boolean _layoutRunningBlocks;
+        private final boolean _layoutRunningBlocks;
+
+        private ChildBoxInfo() {
+            this(false);
+        }
+
+        private ChildBoxInfo(boolean layoutRunningBlocks) {
+            _layoutRunningBlocks = layoutRunningBlocks;
+        }
 
         boolean isContainsBlockLevelContent() {
             return _containsBlockLevelContent;
         }
 
-        private void setContainsBlockLevelContent(boolean containsBlockLevelContent) {
-            _containsBlockLevelContent = containsBlockLevelContent;
+        private void setContainsBlockLevelContent() {
+            _containsBlockLevelContent = true;
         }
 
         boolean isContainsTableContent() {
             return _containsTableContent;
         }
 
-        private void setContainsTableContent(boolean containsTableContent) {
-            _containsTableContent = containsTableContent;
+        private void setContainsTableContent() {
+            _containsTableContent = true;
         }
 
         boolean isLayoutRunningBlocks() {
             return _layoutRunningBlocks;
-        }
-
-        private void setLayoutRunningBlocks(boolean layoutRunningBlocks) {
-            _layoutRunningBlocks = layoutRunningBlocks;
         }
     }
 }
