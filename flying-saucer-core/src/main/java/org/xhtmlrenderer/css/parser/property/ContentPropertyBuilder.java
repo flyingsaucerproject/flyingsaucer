@@ -44,7 +44,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
             if (value.getCssValueType() == CSSValue.CSS_INHERIT) {
                 return emptyList();
             } else if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                IdentValue ident = checkIdent(CSSName.CONTENT, value);
+                IdentValue ident = checkIdent(value);
                 if (ident == IdentValue.NONE || ident == IdentValue.NORMAL) {
                     return singletonList(
                             new PropertyDeclaration(CSSName.CONTENT, value, important, origin));
@@ -73,7 +73,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
                 }
                 resultValues.add(value);
             } else if (type == CSSPrimitiveValue.CSS_IDENT) {
-                IdentValue ident = checkIdent(CSSName.CONTENT, value);
+                IdentValue ident = checkIdent(value);
                 if (ident == IdentValue.OPEN_QUOTE || ident == IdentValue.CLOSE_QUOTE ||
                         ident == IdentValue.NO_CLOSE_QUOTE || ident == IdentValue.NO_OPEN_QUOTE) {
                     resultValues.add(value);

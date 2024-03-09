@@ -59,7 +59,7 @@ public class BorderPropertyBuilders {
 
                 return result;
             } else {
-                checkValueCount(cssName, 1, 3, values.size());
+                assertFoundUpToValues(cssName, values, 3);
                 boolean haveBorderStyle = false;
                 boolean haveBorderColor = false;
                 boolean haveBorderWidth = false;

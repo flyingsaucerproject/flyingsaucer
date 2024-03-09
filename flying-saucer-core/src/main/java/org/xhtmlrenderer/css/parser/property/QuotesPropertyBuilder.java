@@ -45,7 +45,7 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
             if (value.getCssValueType() == CSSValue.CSS_INHERIT) {
                 return emptyList();
             } else if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                IdentValue ident = checkIdent(QUOTES, value);
+                IdentValue ident = checkIdent(value);
                 if (ident == IdentValue.NONE) {
                     return singletonList(
                             new PropertyDeclaration(QUOTES, value, important, origin));

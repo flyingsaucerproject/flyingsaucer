@@ -40,7 +40,7 @@ public class BorderSpacingPropertyBuilder extends AbstractPropertyBuilder {
             return result;
         }
 
-        checkValueCount(CSSName.BORDER_SPACING, 1, 2, values.size());
+        assertFoundUpToValues(CSSName.BORDER_SPACING, values, 2);
 
         PropertyDeclaration horizontalSpacing;
         PropertyDeclaration verticalSpacing;

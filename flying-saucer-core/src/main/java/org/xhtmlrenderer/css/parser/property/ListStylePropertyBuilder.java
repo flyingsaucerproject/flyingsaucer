@@ -49,7 +49,7 @@ public class ListStylePropertyBuilder extends AbstractPropertyBuilder {
             checkInheritAllowed(value, false);
             short type = value.getPrimitiveType();
             if (type == CSSPrimitiveValue.CSS_IDENT) {
-                IdentValue ident = checkIdent(CSSName.LIST_STYLE_SHORTHAND, value);
+                IdentValue ident = checkIdent(value);
 
                 if (ident == IdentValue.NONE) {
                     if (listStyleType == null) {
