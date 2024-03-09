@@ -161,7 +161,7 @@ public class FSCatalog {
         /**
          * Returns a Map of public Ids to local URIs
          */
-        public Map<String, String> getEntityMap() {
+        private Map<String, String> getEntityMap() {
             return entityMap;
         }
 

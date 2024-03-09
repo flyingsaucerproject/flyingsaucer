@@ -209,10 +209,9 @@ class HTMLOutline {
 
 
     private static class NestedSectioningFilter implements NodeFilter {
+        private static final NestedSectioningFilter INSTANCE = new NestedSectioningFilter();
 
-        static final NestedSectioningFilter INSTANCE = new NestedSectioningFilter();
-
-        static NodeIterator iterator(Element root) {
+        private static NodeIterator iterator(Element root) {
             return ((DocumentTraversal) root.getOwnerDocument())
                     .createNodeIterator(root, SHOW_ELEMENT, INSTANCE, true);
         }
@@ -227,8 +226,5 @@ class HTMLOutline {
                     ? FILTER_REJECT
                     : FILTER_ACCEPT;
         }
-
-    } // class NestedSectioningFilter
-
-
-} // class HTMLOutline
+    }
+}

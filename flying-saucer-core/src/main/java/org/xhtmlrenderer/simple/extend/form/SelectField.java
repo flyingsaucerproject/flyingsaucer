@@ -135,8 +135,8 @@ class SelectField extends FormField {
 
             for (int i = 0; i < selectedValues.size(); i++) {
                 NameValuePair pair = selectedValues.get(i);
-                if (pair.getValue() != null)
-                    submitValues[i] = pair.getValue();
+                if (pair.value() != null)
+                    submitValues[i] = pair.value();
             }
 
             return submitValues;
@@ -147,8 +147,8 @@ class SelectField extends FormField {
             NameValuePair selectedValue = (NameValuePair) select.getSelectedItem();
 
             if (selectedValue != null) {
-                if (selectedValue.getValue()!=null)
-                    return new String [] { selectedValue.getValue() };
+                if (selectedValue.value() != null)
+                    return new String[]{selectedValue.value()};
             }
         }
 
@@ -213,34 +213,14 @@ class SelectField extends FormField {
      * The indent property was added to support indentation of items as
      * children below headings.
      */
-    private static class NameValuePair {
-        private final String _name;
-        private final String _value;
-        private final int _indent;
-
-        private NameValuePair(String name, String value, int indent) {
-            _name = name;
-            _value = value;
-            _indent = indent;
-        }
-
-        public String getName() {
-            return _name;
-        }
-
-        public String getValue() {
-            return _value;
-        }
-
-        public int getIndent() {
-            return _indent;
-        }
-
+    private record NameValuePair(String name, String value, int indent) {
+        @Override
         public String toString() {
-            String txt = getName();
-            for (int i = 0; i < getIndent(); i++)
-                txt = "    " + txt;
-            return txt;
+            StringBuilder txt = new StringBuilder(name);
+            for (int i = 0; i < indent; i++) {
+                txt.insert(0, "    ");
+            }
+            return txt.toString();
         }
     }
 
@@ -253,7 +233,7 @@ class SelectField extends FormField {
                                                       int index, boolean isSelected, boolean cellHasFocus) {
             NameValuePair pair = (NameValuePair)value;
 
-            if (pair!=null && pair.getValue()==null) {
+            if (pair != null && pair.value() == null) {
                 // render as heading as such
                 super.getListCellRendererComponent(list, value, index, false, false);
                 Font fold = getFont();
@@ -287,7 +267,7 @@ class SelectField extends FormField {
             if (! (e.getSource() instanceof JComboBox<?> combo) )
                 return;
 
-            if (((NameValuePair)e.getItem()).getValue() == null) {
+            if (((NameValuePair) e.getItem()).value() == null) {
                 // header selected: revert to old selection
                 combo.setSelectedItem(oldSelection);
             } else {
@@ -310,7 +290,7 @@ class SelectField extends FormField {
             for (int i = e.getFirstIndex(); i <= e.getLastIndex(); i++) {
                 if (!list.isSelectedIndex(i)) continue;
                 NameValuePair pair = model.getElementAt(i);
-                if ( pair!=null && pair.getValue() == null) {
+                if ( pair!=null && pair.value() == null) {
                     // We have a heading, remove it. As this handler is called
                     // as a result of the resulting removal, and we do process
                     // the events while the value is adjusting, we don't need

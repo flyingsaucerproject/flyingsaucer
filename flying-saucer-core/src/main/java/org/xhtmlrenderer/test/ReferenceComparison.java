@@ -236,40 +236,32 @@ public class ReferenceComparison {
         private static final Result OK = new ResultOK();
         private final Map<File, Result> files = new HashMap<>();
 
-        public void failedToRender(Exception e) {
+        private void failedToRender(Exception e) {
             files.put(currentFile, new RenderFailed(e));
         }
 
-        public void failedRefIsLonger() {
+        private void failedRefIsLonger() {
             files.put(currentFile, new RefIsLonger());
         }
 
-        public void failedDontMatch(String lineRef, String lineOther) {
+        private void failedDontMatch(String lineRef, String lineOther) {
             files.put(currentFile, new LineMismatch(lineRef, lineOther));
         }
 
-        public void failedOtherIsLonger() {
+        private void failedOtherIsLonger() {
             files.put(currentFile, new OtherIsLonger());
         }
 
-        public void failedIOException(IOException e) {
+        private void failedIOException(IOException e) {
             files.put(currentFile, new FailedIO(e));
         }
 
-        public boolean failed() {
-            return files.get(currentFile) instanceof FailedResult;
-        }
-
-        public void checking(File source) {
+        private void checking(File source) {
             currentFile = source;
             files.put(currentFile, OK);
         }
 
-        public boolean succeeded() {
-            return files.get(currentFile) instanceof ResultOK;
-        }
-
-        public void report() {
+        private void report() {
             int failed = 0;
             for (File file : files.keySet()) {
                 Result result = files.get(file);

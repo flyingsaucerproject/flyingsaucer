@@ -257,14 +257,12 @@ public class ContentFunctionFactory {
             final PropertyValue param = function.getParameters().get(0);
             final String value = param.getStringValue();
             if (param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                switch (value) {
-                    case "dotted":
-                        return ". ";
-                    case "solid":
-                        return "_";
-                    case "space":
-                        return " ";
-                }
+                return switch (value) {
+                    case "dotted" -> ". ";
+                    case "solid" -> "_";
+                    case "space" -> " ";
+                    default -> value;
+                };
             }
             return value;
         }

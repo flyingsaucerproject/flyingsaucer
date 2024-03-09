@@ -1286,30 +1286,27 @@ public class BoxBuilder {
         private boolean _containsTableContent;
         private boolean _layoutRunningBlocks;
 
-        private ChildBoxInfo() {
-        }
-
-        public boolean isContainsBlockLevelContent() {
+        boolean isContainsBlockLevelContent() {
             return _containsBlockLevelContent;
         }
 
-        public void setContainsBlockLevelContent(boolean containsBlockLevelContent) {
+        private void setContainsBlockLevelContent(boolean containsBlockLevelContent) {
             _containsBlockLevelContent = containsBlockLevelContent;
         }
 
-        public boolean isContainsTableContent() {
+        boolean isContainsTableContent() {
             return _containsTableContent;
         }
 
-        public void setContainsTableContent(boolean containsTableContent) {
+        private void setContainsTableContent(boolean containsTableContent) {
             _containsTableContent = containsTableContent;
         }
 
-        public boolean isLayoutRunningBlocks() {
+        boolean isLayoutRunningBlocks() {
             return _layoutRunningBlocks;
         }
 
-        public void setLayoutRunningBlocks(boolean layoutRunningBlocks) {
+        private void setLayoutRunningBlocks(boolean layoutRunningBlocks) {
             _layoutRunningBlocks = layoutRunningBlocks;
         }
     }

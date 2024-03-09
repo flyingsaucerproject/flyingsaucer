@@ -166,7 +166,7 @@ public class DocumentSplitter implements ContentHandler {
                         _handler.startDocument();
                         _handler.setDocumentLocator(_locator);
                         for (ProcessingInstruction pI : _processingInstructions) {
-                            _handler.processingInstruction(pI.getTarget(), pI.getData());
+                            _handler.processingInstruction(pI.target(), pI.data());
                         }
 
                         _currentNSScope.replay(_handler, true);
@@ -285,21 +285,6 @@ public class DocumentSplitter implements ContentHandler {
         }
     }
 
-    private static class ProcessingInstruction {
-        private final String _target;
-        private final String _data;
-
-        private ProcessingInstruction(String target, String data) {
-            _target = target;
-            _data = data;
-        }
-
-        public String getData() {
-            return _data;
-        }
-
-        public String getTarget() {
-            return _target;
-        }
+    private record ProcessingInstruction(String target, String data) {
     }
 }

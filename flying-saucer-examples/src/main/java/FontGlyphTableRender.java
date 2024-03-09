@@ -457,7 +457,7 @@ public class FontGlyphTableRender {
     }
 
     private static class Page {
-        public String toHtml(String bodyContent, String fontFamily) {
+        private String toHtml(String bodyContent, String fontFamily) {
             return "%s<body>\n%s</body>%n</html>%n".formatted(getHeadDecl(getStyleDecl(fontFamily)), bodyContent);
         }
 
@@ -494,7 +494,7 @@ public class FontGlyphTableRender {
             this.colCnt = colCnt;
         }
 
-        public String toHtml(String fontFamily, int curFrom) {
+        private String toHtml(String fontFamily, int curFrom) {
             StringBuilder sb = new StringBuilder();
             for (String line : headerLines) {
                 sb.append("<p>").append(line).append("</p>\n");
@@ -523,27 +523,15 @@ public class FontGlyphTableRender {
             return sb.toString();
         }
 
-        public void addColumn(String content) {
+        private void addColumn(String content) {
             cols.add(new Col("", content));
 
         }
-        public void addGlyph(String content) {
+        private void addGlyph(String content) {
             cols.add(new Col("glyph", content));
         }
 
-        public void addHeaderLine(String text) {
-            headerLines.add(text);
+        private record Col(String cssClass, String content) {
         }
-
-        static class Col {
-            private final String cssClass;
-            private final String content;
-
-            Col(String cssClass, String content) {
-                this.cssClass = cssClass;
-                this.content = content;
-            }
-        }
-
     }
 }
