@@ -778,7 +778,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
 
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append("InlineLayoutBox: ");
+        result.append(getClass().getSimpleName());
+        result.append(": ");
         if (getElement() != null) {
             result.append("<");
             result.append(getElement().getNodeName());
@@ -799,8 +800,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         result.append("(baseline=");
         result.append(_baseline);
         result.append(") ");
-        result.append("(").append(getAbsX()).append(",").append(getAbsY());
-        result.append(")->(").append(getInlineWidth()).append(" x ").append(getHeight()).append(")");
+        appendPosition(result);
+        appendSize(result);
         return result.toString();
     }
 

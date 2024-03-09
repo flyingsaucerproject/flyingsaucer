@@ -119,7 +119,24 @@ public abstract class Box implements Styleable {
     }
 
     public String toString() {
-        return String.format("Box: (%d,%d)->(%d x %d)", getAbsX(), getAbsY(), getWidth(), getHeight());
+        StringBuilder result = new StringBuilder();
+        result.append(getClass().getSimpleName());
+        result.append(": ");
+        appendPosition(result);
+        appendSize(result);
+        return result.toString().trim();
+    }
+
+    protected void appendPosition(StringBuilder result) {
+        if (getAbsX() != 0 || getAbsY() != 0) {
+            result.append("pos: (").append(getAbsX()).append(",").append(getAbsY()).append(") ");
+        }
+    }
+
+    protected void appendSize(StringBuilder result) {
+        if (getWidth() != 0 || getHeight() != 0) {
+            result.append("size: (").append(getWidth()).append("x").append(getHeight()).append(") ");
+        }
     }
 
     public void addChildForLayout(LayoutContext c, Box child) {
