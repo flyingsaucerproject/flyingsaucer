@@ -412,7 +412,7 @@ public class BoxBuilder {
         boolean started = false;
         for (current = 0; current < content.size(); current++) {
             Styleable styleable = content.get(current);
-            if (! styleable.getStyle().isLayedOutInInlineContext()) {
+            if (! styleable.getStyle().isLaidOutInInlineContext()) {
                 if (started) {
                     int before = content.size();
                     WhitespaceStripper.stripInlineContent(content.subList(start, current));
@@ -615,7 +615,7 @@ public class BoxBuilder {
     private static ChildBoxInfo lookForBlockContent(List<Styleable> styleables) {
         ChildBoxInfo result = new ChildBoxInfo();
         for (Styleable s : styleables) {
-            if (!s.getStyle().isLayedOutInInlineContext()) {
+            if (!s.getStyle().isLaidOutInInlineContext()) {
                 result.setContainsBlockLevelContent(true);
                 break;
             }
@@ -961,7 +961,7 @@ public class BoxBuilder {
             result.setChildrenContentType(BlockBox.CONTENT_INLINE);
             result.setPseudoElementOrClass(peName);
 
-            if (! style.isLayedOutInInlineContext()) {
+            if (! style.isLaidOutInInlineContext()) {
                 info.setContainsBlockLevelContent(true);
             }
 
@@ -1139,7 +1139,7 @@ public class BoxBuilder {
                         }
 
                         if (!info.isContainsBlockLevelContent()
-                                && !style.isLayedOutInInlineContext()) {
+                                && !style.isLaidOutInInlineContext()) {
                             info.setContainsBlockLevelContent(true);
                         }
 
@@ -1256,7 +1256,7 @@ public class BoxBuilder {
         List<InlineBox> savedParents = null;
 
         for (Styleable child : children) {
-            if (child.getStyle().isLayedOutInInlineContext() &&
+            if (child.getStyle().isLaidOutInInlineContext() &&
                     !(layoutRunningBlocks && child.getStyle().isRunning())) {
                 inline.add(child);
 
