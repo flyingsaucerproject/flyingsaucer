@@ -63,7 +63,7 @@ public class InlineText {
             setWidth(c.getTextRenderer().getWidth(c.getFontContext(),
                     getParent().getStyle().getFSFont(c),
                     getSubstring()));
-            setTrimmedTrailingSpace(true);
+            setTrimmedTrailingSpace();
         }
     }
 
@@ -284,8 +284,8 @@ public class InlineText {
         _trimmedLeadingSpace = trimmedLeadingSpace;
     }
 
-    private void setTrimmedTrailingSpace(boolean trimmedTrailingSpace) {
-        _trimmedTrailingSpace = trimmedTrailingSpace;
+    private void setTrimmedTrailingSpace() {
+        _trimmedTrailingSpace = true;
     }
 
     private boolean isTrimmedTrailingSpace() {

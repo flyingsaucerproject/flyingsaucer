@@ -172,7 +172,7 @@ public class BlockBoxing {
             if (mightNeedRelayout) {
                 int runStart = relayoutDataList.getRunStart(runEnd);
                 if ( isPageBreakBetweenChildBoxes(runStart, runEnd, c, block) ) {
-                    result.setChanged(true);
+                    result.setChanged();
                     block.resetChildren(c, runStart, offset);
                     result.setChildOffset(relayoutRun(c, localChildren, block,
                             relayoutDataList, runStart, offset, true));
@@ -377,17 +377,17 @@ public class BlockBoxing {
                     (previousAfter == IdentValue.AUTO && currentBefore == IdentValue.AVOID) ||
                     (previousAfter == IdentValue.AVOID && currentBefore == IdentValue.AVOID)) {
                 if (! previousData.isInRun()) {
-                    previousData.setStartsRun(true);
+                    previousData.setStartsRun();
                 }
-                previousData.setInRun(true);
-                currentData.setInRun(true);
+                previousData.setInRun();
+                currentData.setInRun();
 
                 if (offset == _hints.size() - 1) {
-                    currentData.setEndsRun(true);
+                    currentData.setEndsRun();
                 }
             } else {
                 if (previousData.isInRun()) {
-                    previousData.setEndsRun(true);
+                    previousData.setEndsRun();
                 }
             }
         }
@@ -413,8 +413,8 @@ public class BlockBoxing {
             return _changed;
         }
 
-        private void setChanged(boolean changed) {
-            _changed = changed;
+        private void setChanged() {
+            _changed = true;
         }
 
         int getChildOffset() {
@@ -428,7 +428,6 @@ public class BlockBoxing {
 
     private static class RelayoutData {
         private LayoutState _layoutState;
-        private int _listIndex;
 
         private boolean _startsRun;
         private boolean _endsRun;
@@ -440,16 +439,16 @@ public class BlockBoxing {
             return _endsRun;
         }
 
-        private void setEndsRun(boolean endsRun) {
-            _endsRun = endsRun;
+        private void setEndsRun() {
+            _endsRun = true;
         }
 
         boolean isInRun() {
             return _inRun;
         }
 
-        private void setInRun(boolean inRun) {
-            _inRun = inRun;
+        private void setInRun() {
+            _inRun = true;
         }
 
         LayoutState getLayoutState() {
@@ -464,8 +463,8 @@ public class BlockBoxing {
             return _startsRun;
         }
 
-        private void setStartsRun(boolean startsRun) {
-            _startsRun = startsRun;
+        private void setStartsRun() {
+            _startsRun = true;
         }
 
         int getChildOffset() {
@@ -474,14 +473,6 @@ public class BlockBoxing {
 
         private void setChildOffset(int childOffset) {
             _childOffset = childOffset;
-        }
-
-        int getListIndex() {
-            return _listIndex;
-        }
-
-        private void setListIndex(int listIndex) {
-            _listIndex = listIndex;
         }
     }
 }

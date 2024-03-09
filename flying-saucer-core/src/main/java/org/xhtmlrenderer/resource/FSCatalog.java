@@ -104,7 +104,7 @@ public class FSCatalog {
 
         CatalogContentHandler ch = new CatalogContentHandler();
         addHandlers(xmlReader, ch);
-        setFeature(xmlReader, "http://xml.org/sax/features/validation", false);
+        setFeature(xmlReader);
 
         try {
             xmlReader.parse(inputSource);
@@ -182,21 +182,21 @@ public class FSCatalog {
      * Attempts to set requested feature on the parser; logs exception if not supported
      * or not recognized.
      */
-    private void setFeature(XMLReader xmlReader, String featureUri, boolean value) {
+    private void setFeature(XMLReader xmlReader) {
         try {
-            xmlReader.setFeature(featureUri, value);
+            xmlReader.setFeature("http://xml.org/sax/features/validation", false);
 
             XRLog.xmlEntities(Level.FINE, "SAX Parser feature: " +
-                    featureUri.substring(featureUri.lastIndexOf("/")) +
+                    "http://xml.org/sax/features/validation".substring("http://xml.org/sax/features/validation".lastIndexOf("/")) +
                     " set to " +
-                    xmlReader.getFeature(featureUri));
+                    xmlReader.getFeature("http://xml.org/sax/features/validation"));
         } catch (SAXNotSupportedException ex) {
             XRLog.xmlEntities(Level.WARNING,
-                    "SAX feature not supported on this XMLReader: " + featureUri);
+                    "SAX feature not supported on this XMLReader: " + "http://xml.org/sax/features/validation");
         } catch (SAXNotRecognizedException ex) {
             XRLog.xmlEntities(Level.WARNING,
                     "SAX feature not recognized on this XMLReader: " +
-                    featureUri + ". Feature may be properly named, but not recognized by this parser.");
+                            "http://xml.org/sax/features/validation" + ". Feature may be properly named, but not recognized by this parser.");
         }
     }
 }

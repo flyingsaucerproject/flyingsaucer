@@ -731,11 +731,11 @@ public abstract class Box implements Styleable {
     }
 
     protected RectPropertySet getStyleMargin(CssContext cssContext) {
-        return getStyle().getMarginRect(getContainingBlockWidth(), cssContext);
+        return getStyle().getMarginRect(getContainingBlockWidth(), cssContext, true);
     }
 
-    protected RectPropertySet getStyleMargin(CssContext cssContext, boolean useCache) {
-        return getStyle().getMarginRect(getContainingBlockWidth(), cssContext, useCache);
+    protected RectPropertySet getStyleMarginNoCache(CssContext cssContext) {
+        return getStyle().getMarginRect(getContainingBlockWidth(), cssContext, false);
     }
 
     public RectPropertySet getPadding(CssContext cssCtx) {

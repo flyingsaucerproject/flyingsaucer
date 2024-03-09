@@ -16,7 +16,7 @@ import java.util.Arrays;
  */
 public class ContentTypeDetectingInputStreamWrapper extends BufferedInputStream {
     protected static final int MAX_MAGIC_BYTES=4;
-    protected final byte[] MAGIC_BYTES;
+    private final byte[] firstBytes;
 
     public ContentTypeDetectingInputStreamWrapper(InputStream source) throws IOException {
         super(source);
@@ -29,22 +29,23 @@ public class ContentTypeDetectingInputStreamWrapper extends BufferedInputStream 
                 if (bytesRead<=0) MAGIC_BYTES=new byte[0]; // no data
                 else MAGIC_BYTES=Arrays.copyOf(MAGIC_BYTES, bytesRead); // fewer bytes
             }
-            this.MAGIC_BYTES=MAGIC_BYTES;
+            this.firstBytes = MAGIC_BYTES;
         }
         finally {
             reset();
         }
     }
 
-    protected boolean streamStartsWithMagicBytes(byte[] bytes) {
-        if (MAGIC_BYTES.length<bytes.length) return false;
-        for (int i=0;i<bytes.length;i++) {
-            if (MAGIC_BYTES[i]!=bytes[i]) return false;
+    private boolean streamStartsWithMagicBytes(byte[] bytes) {
+        if (firstBytes.length<bytes.length) return false;
+        for (int i = 0; i < bytes.length; i++) {
+            if (firstBytes[i]!=bytes[i]) return false;
         }
         return true;
     }
 
-    protected final static byte[] MAGIC_BYTES_PDF="%PDF".getBytes();
+    private static final byte[] MAGIC_BYTES_PDF = "%PDF".getBytes();
+
     public boolean isPdf() {
         return streamStartsWithMagicBytes(MAGIC_BYTES_PDF);
     }

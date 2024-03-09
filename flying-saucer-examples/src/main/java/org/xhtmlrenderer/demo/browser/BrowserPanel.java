@@ -52,6 +52,7 @@ import java.util.logging.Logger;
 @ParametersAreNonnullByDefault
 public class BrowserPanel extends JPanel implements DocumentListener {
     private static final long serialVersionUID = 1L;
+    private static final int maxLineLength = 80;
 
     private JButton forward;
     private JButton backward;
@@ -319,7 +320,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     private void handlePageLoadFailed(String url_text, XRRuntimeException ex) {
         final XMLResource xr;
         final String rootCause = getRootCause(ex);
-        final String msg = GeneralUtil.escapeHTML(addLineBreaks(rootCause, 80));
+        final String msg = GeneralUtil.escapeHTML(addLineBreaks(rootCause));
         String notFound =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<!DOCTYPE html PUBLIC \" -//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n" +
@@ -338,7 +339,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         SwingUtilities.invokeLater(() -> root.panel.view.setDocument(xr.getDocument(), null));
    }
 
-    private String addLineBreaks(String _text, int maxLineLength) {
+   private String addLineBreaks(String _text) {
         StringBuilder broken = new StringBuilder(_text.length() + 10);
         boolean needBreak = false;
         for (int i = 0; i < _text.length(); i++) {

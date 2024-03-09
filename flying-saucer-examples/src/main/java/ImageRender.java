@@ -45,8 +45,7 @@ public class ImageRender {
             // maybe it's a file
             File f = new File(url);
             if (f.exists()) {
-                Java2DRenderer renderer = new Java2DRenderer(f, 1024);
-                renderer.setBufferedImageType(BufferedImage.TYPE_INT_RGB);
+                Java2DRenderer renderer = Java2DRenderer.fromFile(f, 1024, BufferedImage.TYPE_INT_RGB);
                 BufferedImage image = renderer.getImage();
 
                 FSImageWriter imageWriter = new FSImageWriter();

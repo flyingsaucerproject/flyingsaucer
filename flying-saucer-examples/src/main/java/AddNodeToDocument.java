@@ -97,7 +97,7 @@ public class AddNodeToDocument {
             // by traversing, XPath, etc.
             documentRoot = domDocument.getDocumentElement();
         } catch (Exception e) {
-            messageAndExit("Could not render page: " + e.getMessage(), -1);
+            messageAndExit("Could not render page: " + e.getMessage());
         }
 
         FSScrollPane fsScrollPane = new FSScrollPane(panel);
@@ -114,8 +114,8 @@ public class AddNodeToDocument {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    private void messageAndExit(final String msg, final int rtnCode) {
+    private void messageAndExit(String msg) {
         System.out.println(msg);
-        System.exit(rtnCode);
+        System.exit(-1);
     }
 }

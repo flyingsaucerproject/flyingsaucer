@@ -16,13 +16,9 @@ public class BorderRadiusNonRegressionTest {
      */
     @Test
     public void borderRadiusWithBorderWidthZero() {
-        testNoException("borderRadiusWithBorderWidthZero.html");
-    }
-
-    private void testNoException(String htmlPath) {
-        URL htmlUrl = requireNonNull(getClass().getResource(htmlPath), () -> "test resource not found: " + htmlPath);
+        URL htmlUrl = requireNonNull(getClass().getResource("borderRadiusWithBorderWidthZero.html"), 
+                "test resource not found: borderRadiusWithBorderWidthZero.html");
         byte[] pdf = Html2Pdf.fromUrl(htmlUrl);
         assertThat(new PDF(pdf)).containsText("Some content");
     }
-
 }
