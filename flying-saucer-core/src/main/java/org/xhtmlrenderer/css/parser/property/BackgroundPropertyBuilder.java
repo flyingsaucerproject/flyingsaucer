@@ -87,7 +87,7 @@ public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
                     continue;
                 }
 
-                IdentValue ident = checkIdent(CSSName.BACKGROUND_SHORTHAND, value);
+                IdentValue ident = checkIdent(value);
 
                 if (PrimitivePropertyBuilders.BACKGROUND_REPEATS.get(ident.FS_ID)) {
                     if (backgroundRepeat != null) {

@@ -66,7 +66,7 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
                 // (lowercase) version though.
                 String lowerCase = value.getStringValue().toLowerCase();
                 value = new PropertyValue(CSSPrimitiveValue.CSS_IDENT, lowerCase, lowerCase);
-                IdentValue ident = checkIdent(cssName, value);
+                IdentValue ident = checkIdent(value);
                 if (ident == IdentValue.NORMAL) { // skip to avoid double set false positives
                     continue;
                 }

@@ -37,7 +37,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
     public List<PropertyDeclaration> buildDeclarations(
             CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
         List<PropertyDeclaration> result = new ArrayList<>(3);
-        checkValueCount(cssName, 1, 2, values.size());
+        assertFoundUpToValues(cssName, values, 2);
 
         if (values.size() == 1) {
             PropertyValue value = (PropertyValue)values.get(0);
@@ -58,7 +58,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
                     return result;
                 }
 
-                IdentValue ident = checkIdent(cssName, value);
+                IdentValue ident = checkIdent(value);
                 if (ident == IdentValue.LANDSCAPE || ident == IdentValue.PORTRAIT) {
                     result.add(new PropertyDeclaration(
                             CSSName.FS_PAGE_ORIENTATION, value, important, origin));

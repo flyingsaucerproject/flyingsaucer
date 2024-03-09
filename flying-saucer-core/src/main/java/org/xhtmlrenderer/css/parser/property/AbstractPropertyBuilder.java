@@ -39,17 +39,11 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
         return buildDeclarations(cssName, values, origin, important, true);
     }
 
-    protected void checkValueCount(CSSName cssName, int expected, int found) {
-        if (expected != found) {
-            throw new CSSParseException("Found " + found + " value(s) for " +
-                    cssName + " when " + expected + " value(s) were expected", -1);
-        }
-    }
-
-    protected void checkValueCount(CSSName cssName, int min, int max, int found) {
-        if (! (found >= min && found <= max)) {
-            throw new CSSParseException("Found " + found + " value(s) for " +
-                    cssName + " when between " + min + " and " + max + " value(s) were expected", -1);
+    protected void assertFoundUpToValues(CSSName cssName, List<? extends CSSPrimitiveValue> values, int max) {
+        int found = values.size();
+        if (found < 1 || found > max) {
+            throw new CSSParseException("Found %d value(s) for %s when between %d and %d value(s) were expected"
+                    .formatted(found, cssName, 1, max), -1);
         }
     }
 
@@ -132,12 +126,6 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
         }
     }
 
-    protected void checkStringType(CSSName cssName, CSSPrimitiveValue value) {
-        if (value.getPrimitiveType() != CSSPrimitiveValue.CSS_STRING) {
-            throw new CSSParseException("Value for " + cssName + " must be a string", -1);
-        }
-    }
-
     protected void checkIdentOrString(CSSName cssName, CSSPrimitiveValue value) {
         short type = value.getPrimitiveType();
         if (type != CSSPrimitiveValue.CSS_STRING && type != CSSPrimitiveValue.CSS_IDENT) {
@@ -170,7 +158,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
         }
     }
 
-    protected IdentValue checkIdent(CSSName cssName, CSSPrimitiveValue value) {
+    protected IdentValue checkIdent(CSSPrimitiveValue value) {
         IdentValue result = IdentValue.valueOf(value.getStringValue());
         if (result == null) {
             throw new CSSParseException("Value " + value.getStringValue() + " is not a recognized identifier", -1);
