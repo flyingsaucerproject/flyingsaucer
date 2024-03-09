@@ -64,32 +64,3 @@ public interface DocumentListener {
      */
     void onRenderException(Throwable t);
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.8  2008/02/16 12:27:55  pdoubleya
- * On calling DocumentListener methods, make sure we catch exceptions from listener implementations which could otherwise kill our work on the EDT.
- *
- * Revision 1.7  2007/08/23 20:52:31  peterbrant
- * Begin work on AcroForm support
- * Revision 1.6 2007/06/19 21:25:58 pdoubleya
- * Add document start event
- *
- * Revision 1.5 2007/04/03 13:38:13 peterbrant Javadoc clarification
- *
- * Revision 1.4 2007/04/03 13:12:07 peterbrant Add notification interface for
- * layout and render exceptions / Minor clean up (remove obsolete body expand
- * hack, remove unused API, method name improvements)
- *
- * Revision 1.3 2005/01/29 20:22:17 pdoubleya Clean/reformat code. Removed
- * commented blocks, checked copyright.
- *
- * Revision 1.2 2004/10/23 13:37:29 pdoubleya Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io,
- * java.util, etc.). Added CVS log comments at bottom.
- *
- *
- */
-

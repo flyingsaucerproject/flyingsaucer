@@ -66,25 +66,3 @@ public class ImageResource extends AbstractResource {
         }
     }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.6  2009/05/15 16:20:13  pdoubleya
- * ImageResource now tracks the URI for the image that was created and handles mutable images.
- *
- * Revision 1.4  2007/04/11 21:09:06  pdoubleya
- * Remove commented block
- *
- * Revision 1.3  2006/02/02 02:47:36  peterbrant
- * Support non-AWT images
- *
- * Revision 1.2  2005/06/25 17:23:34  tobega
- * first refactoring of UAC: ImageResource
- *
- * Revision 1.1  2005/02/03 20:39:35  pdoubleya
- * Added to CVS.
- *
- *
- */

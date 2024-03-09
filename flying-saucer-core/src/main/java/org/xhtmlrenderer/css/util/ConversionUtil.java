@@ -20,42 +20,22 @@
  */
 package org.xhtmlrenderer.css.util;
 
-import java.awt.Color;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.RGBColor;
 
+import java.awt.*;
+
 
 /**
- * Utility methods for data conversion.
- *
- * @author   empty
+ * Utility methods for data conversion
  */
 public class ConversionUtil {
     /**
      * Copied from Josh M.'s CSSAccessor class
-     *
-     * @param rgbcol  PARAM
-     * @return        Returns
      */
-    public static Color rgbToColor( RGBColor rgbcol ) {
+    public static Color rgbToColor(RGBColor rgbcol) {
         return new java.awt.Color( rgbcol.getRed().getFloatValue( CSSPrimitiveValue.CSS_NUMBER ) / 255f,
                 rgbcol.getGreen().getFloatValue( CSSPrimitiveValue.CSS_NUMBER ) / 255f,
                 rgbcol.getBlue().getFloatValue( CSSPrimitiveValue.CSS_NUMBER ) / 255f );
     }
-}// end class
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.3  2005/01/29 20:22:23  pdoubleya
- * Clean/reformat code. Removed commented blocks, checked copyright.
- *
- * Revision 1.2  2004/10/23 13:30:42  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
- * Added CVS log comments at bottom.
- *
- *
- */
-
+}

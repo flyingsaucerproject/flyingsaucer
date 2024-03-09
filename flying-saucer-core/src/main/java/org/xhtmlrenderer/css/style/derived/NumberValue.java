@@ -44,7 +44,3 @@ public class NumberValue extends DerivedValue {
         return true;
     }
 }
-
-/*
- * $Id$
- */

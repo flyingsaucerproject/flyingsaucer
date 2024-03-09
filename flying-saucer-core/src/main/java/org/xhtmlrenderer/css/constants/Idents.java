@@ -238,25 +238,7 @@ public final class Idents {
 
     static {
         COLOR_MAP = new HashMap<>();
-        /* From CSS 2.1- 4.3.6: Colors
-        aqua #00ffff
-        black #000000
-        blue #0000ff
-        fuchsia #ff00ff
-        gray #808080
-        green #008000
-        lime #00ff00
-        maroon #800000
-        navy #000080
-        olive #808000
-        orange #ffA500
-        purple #800080
-        red #ff0000
-        silver #c0c0c0
-        teal #008080
-        white #ffffff
-        yellow #ffff00
-        */
+        /* From CSS 2.1- 4.3.6: Colors */
         COLOR_MAP.put("aqua", "#00ffff");
         COLOR_MAP.put("black", "#000000");
         COLOR_MAP.put("blue", "#0000ff");
@@ -396,7 +378,7 @@ public final class Idents {
         FONT_STYLES.add("italic");
         FONT_STYLES.add("oblique");
 
-    }// end static
+    }
 
     public static boolean looksLikeAQuote(String content) {
         return content.equals("open-quote") || content.equals("close-quote");
@@ -406,63 +388,3 @@ public final class Idents {
         return content.equals("no-open-quote") || content.equals("no-close-quote");
     }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.17  2007/02/19 14:53:36  peterbrant
- * Integrate new CSS parser
- *
- * Revision 1.16  2007/02/07 16:33:36  peterbrant
- * Initial commit of rewritten table support and associated refactorings
- *
- * Revision 1.15  2006/07/28 10:08:55  pdoubleya
- * Additional work for support of parsing content and quotes.
- *
- * Revision 1.14  2006/04/03 00:01:59  peterbrant
- * Fix color: inherit
- *
- * Revision 1.13  2006/04/02 22:22:35  peterbrant
- * Add function interface for generated content / Implement page counters in terms of this, removing previous hack / Add custom page numbering functions
- *
- * Revision 1.12  2005/11/12 21:55:25  tobega
- * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
- *
- * Revision 1.11  2005/11/08 22:53:44  tobega
- * added getLineHeight method to CalculatedStyle and hacked in some list-item support
- *
- * Revision 1.10  2005/10/31 16:19:58  pdoubleya
- * Orange is a CSS 2.1 color; double-checked list of color constants.
- *
- * Revision 1.9  2005/10/20 20:48:03  pdoubleya
- * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
- *
- * Revision 1.8  2005/07/04 00:12:11  tobega
- * text-align now works for table-cells too (is done in render, not in layout)
- *
- * Revision 1.7  2005/06/04 12:45:14  tobega
- * Added support for rgb-triples. Added fallback to default for non-css color idents.
- * Fixed some stuff with eeze.
- *
- * Revision 1.6  2005/04/07 16:21:34  pdoubleya
- * Formatting.
- *
- * Revision 1.5  2005/03/17 20:22:32  pdoubleya
- * Added orange (Kevin).
- *
- * Revision 1.4  2005/01/29 20:21:09  pdoubleya
- * Clean/reformat code. Removed commented blocks, checked copyright.
- *
- * Revision 1.3  2005/01/29 12:17:18  pdoubleya
- * .
- *
- * Revision 1.2  2005/01/24 19:01:07  pdoubleya
- * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
- *
- * Revision 1.1  2005/01/24 14:27:51  pdoubleya
- * Added to CVS.
- *
- *
- */
-

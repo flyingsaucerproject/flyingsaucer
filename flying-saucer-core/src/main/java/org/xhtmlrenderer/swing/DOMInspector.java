@@ -147,8 +147,6 @@ public final class DOMInspector extends JPanel {
     }
 }
 
-//-{{{ ElementPropertiesPanel
-
 final class ElementPropertiesPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
@@ -333,9 +331,7 @@ class DOMSelectionListener implements TreeSelectionListener {
 
         _elemPropPanel.setForElement(node);
     }
-}//}}}
-
-//-{{{
+}
 
 class DOMTreeModel implements TreeModel {
 
@@ -506,9 +502,7 @@ class DOMTreeModel implements TreeModel {
         }
     }
 
-}//}}}
-
-//-{{{ DOMTreeCellRenderer
+}
 
 class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
     /**
@@ -553,71 +547,4 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
 
         return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
     }
-}//}}}
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.18  2009/05/09 14:15:14  pdoubleya
- * FindBugs: inner class could be static
- *
- * Revision 1.17  2007/05/20 23:25:33  peterbrant
- * Various code cleanups (e.g. remove unused imports)
- *
- * Patch from Sean Bright
- *
- * Revision 1.16  2005/10/27 00:09:08  tobega
- * Sorted out Context into RenderingContext and LayoutContext
- *
- * Revision 1.15  2005/06/22 23:48:46  tobega
- * Refactored the css package to allow a clean separation from the core.
- *
- * Revision 1.14  2005/06/16 07:24:53  tobega
- * Fixed background image bug.
- * Caching images in browser.
- * Enhanced LinkListener.
- * Some house-cleaning, playing with Idea's code inspection utility.
- *
- * Revision 1.13  2005/01/29 20:22:17  pdoubleya
- * Clean/reformat code. Removed commented blocks, checked copyright.
- *
- * Revision 1.12  2005/01/25 14:45:54  pdoubleya
- * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
- *
- * Revision 1.11  2005/01/24 14:36:35  pdoubleya
- * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
- *
- * Revision 1.10  2005/01/03 23:40:40  tobega
- * Cleaned out unnecessary styling/matching code. styling/matching is now called during boxing/rendering rather than as a separate stage.
- *
- * Revision 1.9  2004/12/29 10:39:35  tobega
- * Separated current state Context into LayoutContext and the rest into SharedContext.
- *
- * Revision 1.8  2004/12/12 04:18:58  tobega
- * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
- *
- * Revision 1.7  2004/12/11 18:18:12  tobega
- * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
- *
- * Revision 1.6  2004/11/07 01:17:56  tobega
- * DOMInspector now works with any StyleReference
- *
- * Revision 1.5  2004/10/28 13:46:33  joshy
- * removed dead code
- * moved code about specific elements to the layout factory (link and br)
- * fixed form rendering bug
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.4  2004/10/23 13:51:54  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
- * Added CVS log comments at bottom.
- *
- *
- */
-
+}

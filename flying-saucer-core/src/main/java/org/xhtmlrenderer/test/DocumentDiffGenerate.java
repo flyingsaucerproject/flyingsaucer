@@ -39,33 +39,3 @@ public class DocumentDiffGenerate {
         }
     }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.6  2007/05/20 23:25:32  peterbrant
- * Various code cleanups (e.g. remove unused imports)
- *
- * Patch from Sean Bright
- *
- * Revision 1.5  2005/04/22 17:09:47  joshy
- * minor changes to the document diff.
- * removed system.exit
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.4  2005/01/29 20:22:18  pdoubleya
- * Clean/reformat code. Removed commented blocks, checked copyright.
- *
- * Revision 1.3  2004/10/23 14:01:42  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc.).
- * Added CVS log comments at bottom.
- *
- *
- */
-

@@ -6,8 +6,6 @@
      Inc., and the Organization for the Advancement of Structured Information
      Standards (OASIS).
 
-     $Id$
-
      Permission to use, copy, modify and distribute the DocBook XML DTD
      and its accompanying documentation for any purpose and without fee
      is hereby granted in perpetuity, provided that the above copyright
