@@ -47,10 +47,6 @@ import static java.util.Collections.emptyList;
  * Regress regress = new Regress(sourceDir, outputDir, width);
  * regress.snapshot();
  * </pre>
- * One the regress is done, you can use Zipper to pack it up:
- * <pre>
- *  new Zipper(outputDir, outputZip).zipDirectory();
- * </pre>
  * Regress will try to render all files in the source directory; a failure to render one file (e.g. if an exception
  * is thrown) will not stop the rendering process.
  * <p>
@@ -197,25 +193,6 @@ public class Regress {
                 pw.flush();
             }
         }
-    }
-
-    private static File getArgOutputZipFile(String[] args) throws IOException {
-        if (args.length < 2) {
-            usageAndExit("Need file name which will contain rendered files as a Zip.");
-        }
-        String path = args[1];
-        File file = new File(path);
-        final File parentFile = file.getAbsoluteFile().getParentFile();
-        if (!parentFile.exists()) {
-            usageAndExit("Output directory not found: " + parentFile.getPath());
-        }
-        if (file.exists() && !file.delete()) {
-            usageAndExit("Failed to .delete output Zip file " + file.getAbsoluteFile());
-        }
-        if (!file.createNewFile()) {
-            usageAndExit("Failed to create output Zip file " + file.getAbsoluteFile());
-        }
-        return file;
     }
 
     private static File getArgSourceDir(String[] args) {
