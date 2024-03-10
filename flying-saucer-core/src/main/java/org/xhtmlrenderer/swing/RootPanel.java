@@ -69,7 +69,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     private JScrollPane enclosingScrollPane;
     private boolean viewportMatchWidth = true;
 
-    // initialize to JViewport default mode
     private int default_scroll_mode = JViewport.BLIT_SCROLL_MODE;
 
     protected Document doc;
@@ -131,8 +130,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
                 XRLog.load(Level.FINE, "Greedily loading background property " + uri);
                 try {
                     getSharedContext().getUac().getImageResource(uri);
-                } catch (Exception ex) {
-                    // swallow
+                } catch (Exception ignore) {
                 }
             }
             requestBGImages(cb);
@@ -161,7 +159,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         enclosingScrollPane = scrollPane;
 
         if (enclosingScrollPane != null) {
-//            Uu.p("added root panel as a component listener to the scroll pane");
             JViewport viewPort = enclosingScrollPane.getViewport();
             if(viewPort != null) {
                 default_scroll_mode = viewPort.getScrollMode();
@@ -280,9 +277,8 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         if (enclosingScrollPane != null) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
             extents = new Rectangle(0, 0, bnds.width, bnds.height);
-            //Uu.p("bnds = " + bnds);
         } else {
-            extents = new Rectangle(getWidth(), getHeight());//200, 200 ) );
+            extents = new Rectangle(getWidth(), getHeight());
             Insets insets = getInsets();
             extents.width -= insets.left + insets.right;
             extents.height -= insets.top + insets.bottom;
@@ -360,11 +356,9 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
                 if(viewPort != null) {
                     // turn on simple scrolling mode if there's any fixed elements
                     if (root.getLayer().containsFixedContent()) {
-                        // Uu.p("is fixed");
                         viewPort.setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
                     }
                     else {
-                        // Uu.p("is not fixed");
                         viewPort.setScrollMode(default_scroll_mode);
                     }
                 }
@@ -620,8 +614,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
                             repaintRequested(doLayout);
                             repaintRequestPending = false;
                         });
-                    } catch (InterruptedException e) {
-                        // swallow
+                    } catch (InterruptedException ignore) {
                     }
                 }).start();
             } else {
@@ -638,8 +631,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     public void setDefaultFontFromComponent(boolean defaultFontFromComponent) {
         this.defaultFontFromComponent = defaultFontFromComponent;
     }
-
-    // ----- Scrollable interface -----
 
     @Override
     public Dimension getPreferredScrollableViewportSize() {

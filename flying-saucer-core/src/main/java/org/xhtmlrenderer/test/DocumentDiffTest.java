@@ -32,6 +32,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.util.Util.file_to_string;
+import static org.xhtmlrenderer.util.Util.string_to_file;
+
 public class DocumentDiffTest {
     public static final int width = 500;
     public static final int height = 500;
@@ -47,7 +50,6 @@ public class DocumentDiffTest {
                 String testfile = file.getAbsolutePath();
                 String difffile = testfile.substring(0, testfile.length() - 6) + ".diff";
                 XRLog.log("unittests", Level.WARNING, "test file = " + testfile);
-                //Uu.p( "diff file = " + difffile );
                 try {
                     boolean is_correct = compareTestFile(testfile, difffile, width, height);
                     XRLog.log("unittests", Level.WARNING, "is correct = " + is_correct);
@@ -71,7 +73,6 @@ public class DocumentDiffTest {
             if (file.getName().endsWith(".xhtml")) {
                 String testfile = file.getAbsolutePath();
                 String difffile = testfile.substring(0, testfile.length() - 6) + ".diff";
-                //Uu.p("test file = " + testfile);
                 generateTestFile(testfile, difffile, width, height);
                 Uu.p("generated = " + difffile);
             }
@@ -83,8 +84,7 @@ public class DocumentDiffTest {
             throws Exception {
         Uu.p("test = " + test);
         String out = xhtmlToDiff(test, width, height);
-        //Uu.p("diff = \n" + out);
-        Uu.string_to_file(out, new File(diff));
+        string_to_file(out, new File(diff));
     }
 
     public static String xhtmlToDiff(String xhtml, int width, int height)
@@ -110,13 +110,11 @@ public class DocumentDiffTest {
         String tin = xhtmlToDiff(test, width, height);
         String din;
         try {
-            din = Uu.file_to_string(diff);
+            din = file_to_string(diff);
         } catch (FileNotFoundException ex) {
             XRLog.log("unittests", Level.WARNING, "diff file missing");
             return false;
         }
-        //XRLog.log("unittests",Level.WARNING,"tin = " + tin);
-        //XRLog.log("unittests",Level.WARNING,"din = " + din);
         if (tin.equals(din)) {
             return true;
         }
@@ -124,9 +122,8 @@ public class DocumentDiffTest {
         File dfile = new File("correct.diff");
         File tfile = new File("test.diff");
         XRLog.log("unittests", Level.WARNING, "writing to " + dfile + " and " + tfile);
-        Uu.string_to_file(tin, tfile);
-        Uu.string_to_file(din, dfile);
-        //System.exit(-1);
+        string_to_file(tin, tfile);
+        string_to_file(din, dfile);
         return false;
     }
 
@@ -134,7 +131,6 @@ public class DocumentDiffTest {
      * Gets the diff attribute of the DocumentDiffTest object
      */
     public static void getDiff(StringBuilder sb, Box box, String tab) {
-        /* sb.append(tab + box.getTestString() + "\n"); */
         for (int i = 0; i < box.getChildCount(); i++) {
             getDiff(sb, box.getChild(i), tab + " ");
         }

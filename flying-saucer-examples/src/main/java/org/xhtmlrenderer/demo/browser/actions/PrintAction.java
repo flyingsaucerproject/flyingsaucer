@@ -18,16 +18,13 @@ public class PrintAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent evt) {
-        Uu.p("printing");
         final PrinterJob printJob = PrinterJob.getPrinterJob();
         printJob.setPrintable(new XHTMLPrintable(root.panel.view));
 
         if (printJob.printDialog()) {
             new Thread(() -> {
                 try {
-                    Uu.p("starting printing");
                     printJob.print();
-                    Uu.p("done printing");
                 } catch (PrinterException ex) {
                     Uu.p(ex);
                 }

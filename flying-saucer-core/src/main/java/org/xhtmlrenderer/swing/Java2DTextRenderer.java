@@ -165,7 +165,6 @@ public class Java2DTextRenderer implements TextRenderer {
 
     @Override
     public void setup(FontContext fontContext) {
-        //Uu.p("setup graphics called");
 //        ((Java2DFontContext)fontContext).getGraphics().setRenderingHint(
 //                RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF );
     }

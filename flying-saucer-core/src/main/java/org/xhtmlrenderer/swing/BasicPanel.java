@@ -110,8 +110,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         }
         setNeedRelayout(false);
         if (root == null) {
-            //Uu.p("dispatching an initial resize event");
-            //queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
             XRLog.render(Level.FINE, "skipping the actual painting");
         } else {
             Graphics gg = g.create();
