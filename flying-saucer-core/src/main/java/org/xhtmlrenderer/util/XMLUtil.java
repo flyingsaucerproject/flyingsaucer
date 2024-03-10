@@ -30,7 +30,7 @@ import java.io.File;
 import java.io.StringReader;
 
 /**
- * Booch utility class for XML processing using DOM
+ * Utility class for XML processing using DOM
  */
 public class XMLUtil {
 

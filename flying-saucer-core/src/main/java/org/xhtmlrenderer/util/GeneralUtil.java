@@ -326,46 +326,6 @@ public class GeneralUtil {
                 case '"':
                     sb.append("&quot;");
                     break;
-                /*
-             case 'ÔøΩ': sb.append("&agrave;");break;
-             case 'ÔøΩ': sb.append("&Agrave;");break;
-             case 'ÔøΩ': sb.append("&acirc;");break;
-             case 'ÔøΩ': sb.append("&Acirc;");break;
-             case 'ÔøΩ': sb.append("&auml;");break;
-             case 'ÔøΩ': sb.append("&Auml;");break;
-             case 'ÔøΩ': sb.append("&aring;");break;
-             case 'ÔøΩ': sb.append("&Aring;");break;
-             case 'ÔøΩ': sb.append("&aelig;");break;
-             case 'ÔøΩ': sb.append("&AElig;");break;
-             case 'ÔøΩ': sb.append("&ccedil;");break;
-             case 'ÔøΩ': sb.append("&Ccedil;");break;
-             case 'ÔøΩ': sb.append("&eacute;");break;
-             case 'ÔøΩ': sb.append("&Eacute;");break;
-             case 'ÔøΩ': sb.append("&egrave;");break;
-             case 'ÔøΩ': sb.append("&Egrave;");break;
-             case 'ÔøΩ': sb.append("&ecirc;");break;
-             case 'ÔøΩ': sb.append("&Ecirc;");break;
-             case 'ÔøΩ': sb.append("&euml;");break;
-             case 'ÔøΩ': sb.append("&Euml;");break;
-             case 'ÔøΩ': sb.append("&iuml;");break;
-             case 'ÔøΩ': sb.append("&Iuml;");break;
-             case 'ÔøΩ': sb.append("&ocirc;");break;
-             case 'ÔøΩ': sb.append("&Ocirc;");break;
-             case 'ÔøΩ': sb.append("&ouml;");break;
-             case 'ÔøΩ': sb.append("&Ouml;");break;
-             case 'ÔøΩ': sb.append("&oslash;");break;
-             case 'ÔøΩ': sb.append("&Oslash;");break;
-             case 'ÔøΩ': sb.append("&szlig;");break;
-             case 'ÔøΩ': sb.append("&ugrave;");break;
-             case 'ÔøΩ': sb.append("&Ugrave;");break;
-             case 'ÔøΩ': sb.append("&ucirc;");break;
-              case 'ÔøΩ': sb.append("&Ucirc;");break;
-             case 'ÔøΩ': sb.append("&uuml;");break;
-             case 'ÔøΩ': sb.append("&Uuml;");break;
-             case 'ÔøΩ': sb.append("&reg;");break;
-             case 'ÔøΩ': sb.append("&copy;");break;
-             case 'ÔøΩ': sb.append("&euro;"); break;
-                */
                 // be careful with this one (non-breaking white space)
                 case ' ':
                     sb.append("&nbsp;");
@@ -378,5 +338,4 @@ public class GeneralUtil {
         }
         return sb.toString();
     }
-
 }

@@ -77,12 +77,12 @@ public class DownscaleQuality {
      *  Retrieves the DownscaleQuality instance for the corresponding string.
      *
      * @param type The string describing the quality, e.g. HIGH
-     * @param dflt Default value to use if not found
+     * @param defaultValue Default value to use if not found
      * @return The constant quality instance for the type, or the default if not found.
      */
-    public static DownscaleQuality forString(String type, DownscaleQuality dflt) {
+    public static DownscaleQuality forString(String type, DownscaleQuality defaultValue) {
         DownscaleQuality q = constList.get(type);
 
-        return q == null ? dflt : q;
+        return q == null ? defaultValue : q;
     }
 }

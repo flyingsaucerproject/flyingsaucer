@@ -19,41 +19,16 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 public class Uu {
-    private static Util util;
-    private static Util utilAsString;
-
-    public static void on() {
-        init();
-        util.setOn(true);
-    }
-
-    public static void off() {
-        init();
-        util.setOn(false);
-    }
-
-    public static void p(Object object) {
-        init();
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        utilAsString.setPrintWriter(pw);
-        utilAsString.print(object);// our log adds a newline
-        pw.flush();
+    public static void p(String message) {
         if (XRLog.isLoggingEnabled()) {
-            XRLog.general(sw.getBuffer().toString());
+            XRLog.general(message);
         }
     }
 
-    private static void init() {
-        if (util == null) {
-            util = new Util(System.out);
-        }
-        if (utilAsString == null) {
-            utilAsString = new Util(System.out);
+    public static void p(Exception e) {
+        if (XRLog.isLoggingEnabled()) {
+            XRLog.exception(e.getMessage(), e);
         }
     }
 }

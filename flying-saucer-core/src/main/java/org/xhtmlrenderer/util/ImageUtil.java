@@ -28,10 +28,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -44,35 +41,21 @@ import java.util.logging.Level;
 @ParametersAreNonnullByDefault
 public class ImageUtil {
 
-    private static final Map<DownscaleQuality, Scaler> qualities = new HashMap<>();
-
-    static {
-        qualities.put(DownscaleQuality.FAST, new OldScaler());
-        qualities.put(DownscaleQuality.HIGH_QUALITY, new HighQualityScaler());
-        qualities.put(DownscaleQuality.LOW_QUALITY, new FastScaler());
-        qualities.put(DownscaleQuality.AREA, new AreaAverageScaler());
-    }
+    private static final Map<DownscaleQuality, Scaler> qualities = Map.of(
+            DownscaleQuality.FAST, new OldScaler(),
+            DownscaleQuality.HIGH_QUALITY, new HighQualityScaler(),
+            DownscaleQuality.LOW_QUALITY, new FastScaler(),
+            DownscaleQuality.AREA, new AreaAverageScaler()
+    );
 
     /**
-     * Sets the background of the image to the specified color
-     *
-     * @param image the image
-     * @param bgColor the color
-     */
-    public static void clearImage(BufferedImage image, Color bgColor) {
-        Graphics2D g2d = (Graphics2D) image.getGraphics();
-        g2d.setColor(bgColor);
-        g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
-        g2d.dispose();
-    }
-
-    /**
-     * Sets the background of the image to white.
-     *
-     * @param image the image
+     * Sets the background of the image to white
      */
     public static void clearImage(BufferedImage image) {
-        clearImage(image, Color.WHITE);
+        Graphics2D g2d = (Graphics2D) image.getGraphics();
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
+        g2d.dispose();
     }
 
     @Nonnull
@@ -226,29 +209,6 @@ public class ImageUtil {
     }
 
     /**
-     * Scales one image to multiple dimensions, using the same ScalingOptions for each. The method follows the same
-     * process for scaling as {@link #getScaledInstance(ScalingOptions, BufferedImage)}.
-     *
-     * @param opt		Options to apply to control scaling process.
-     * @param img		The original image to scale
-     * @param dimensions List of dimensions to scale to; one output image will be produced for each dimension. Will
-     *                   not check for duplicate dimensions.
-     * @return List of buffered images in the given dimensions.
-     */
-    @Nonnull
-    @CheckReturnValue
-    public static List<BufferedImage> scaleMultiple(ScalingOptions opt, BufferedImage img, List<Dimension> dimensions) {
-        List<BufferedImage> scaledImages = new ArrayList<>(dimensions.size());
-
-        for (Dimension dim : dimensions) {
-            opt.setTargetDimensions(dim);
-            BufferedImage scaled = getScaledInstance(opt, img);
-            scaledImages.add(scaled);
-        }
-        return scaledImages;
-    }
-
-    /**
      * Utility method to convert an AWT Image to a BufferedImage. Size is preserved, BufferedImage is compatible
      * with current display device.
      *
@@ -338,7 +298,7 @@ public class ImageUtil {
     }
 
     @ParametersAreNonnullByDefault
-    interface Scaler {
+    private interface Scaler {
         /**
          * Convenience method that returns a scaled instance of the
          * provided {@code BufferedImage}, taken from 
@@ -372,7 +332,7 @@ public class ImageUtil {
     }
 
     @ParametersAreNonnullByDefault
-    abstract static class AbstractFastScaler implements Scaler {
+    private abstract static class AbstractFastScaler implements Scaler {
         @Override
         @Nonnull
         @CheckReturnValue
@@ -390,7 +350,7 @@ public class ImageUtil {
      * Old AWT-style scaling, poor quality
      */
     @ParametersAreNonnullByDefault
-    static class OldScaler extends AbstractFastScaler {
+    private static class OldScaler extends AbstractFastScaler {
         @Override
         @CheckReturnValue
         protected int getImageScalingMethod() {
@@ -402,7 +362,7 @@ public class ImageUtil {
      * AWT-style one-step scaling, using area averaging
      */
     @ParametersAreNonnullByDefault
-    static class AreaAverageScaler extends AbstractFastScaler {
+    private static class AreaAverageScaler extends AbstractFastScaler {
         @Override
         @CheckReturnValue
         protected int getImageScalingMethod() {
@@ -414,7 +374,7 @@ public class ImageUtil {
      * Fast but decent scaling
      */
     @ParametersAreNonnullByDefault
-    static class FastScaler implements Scaler {
+    private static class FastScaler implements Scaler {
         @Override
         @Nonnull
         @CheckReturnValue
@@ -440,7 +400,7 @@ public class ImageUtil {
      * Step-wise downscaling
      */
     @ParametersAreNonnullByDefault
-    static class HighQualityScaler implements Scaler {
+    private static class HighQualityScaler implements Scaler {
         @Override
         @Nonnull
         @CheckReturnValue
