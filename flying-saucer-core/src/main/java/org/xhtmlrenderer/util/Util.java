@@ -25,11 +25,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -262,22 +259,6 @@ public class Util {
         e.printStackTrace(pw);
         pw.close();
         return sw.toString();
-    }
-
-    public static String inputstream_to_string(InputStream in)
-            throws IOException {
-        try (Reader reader = new InputStreamReader(in)) {
-            StringWriter writer = new StringWriter();
-            char[] buf = new char[1000];
-            while (true) {
-                int n = reader.read(buf, 0, 1000);
-                if (n == -1) {
-                    break;
-                }
-                writer.write(buf, 0, n);
-            }
-            return writer.toString();
-        }
     }
 
     public static String file_to_string(File file)
