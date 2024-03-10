@@ -30,16 +30,18 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.logging.Level;
 
-import static org.xhtmlrenderer.util.Util.file_to_string;
-import static org.xhtmlrenderer.util.Util.string_to_file;
-
 public class DocumentDiffTest {
-    public static final int width = 500;
-    public static final int height = 500;
+    private static final int width = 500;
+    private static final int height = 500;
 
-    public void runTests(File dir, int width, int height) {
+    private void runTests(File dir, int width, int height) {
         File[] files = dir.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
@@ -62,8 +64,7 @@ public class DocumentDiffTest {
 
     }
 
-    public void generateDiffs(File dir, int width, int height)
-            throws Exception {
+    public void generateDiffs(File dir, int width, int height) throws Exception {
         File[] files = dir.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
@@ -80,15 +81,13 @@ public class DocumentDiffTest {
 
     }
 
-    public static void generateTestFile(String test, String diff, int width, int height)
-            throws Exception {
+    public static void generateTestFile(String test, String diff, int width, int height) throws Exception {
         Uu.p("test = " + test);
         String out = xhtmlToDiff(test, width, height);
         string_to_file(out, new File(diff));
     }
 
-    public static String xhtmlToDiff(String xhtml, int width, int height)
-            throws Exception {
+    public static String xhtmlToDiff(String xhtml, int width, int height) throws Exception {
         Document doc = XMLUtil.documentFromFile(xhtml);
         Graphics2DRenderer renderer = new Graphics2DRenderer();
         renderer.setDocument(doc, new File(xhtml).toURI().toURL().toString());
@@ -101,12 +100,11 @@ public class DocumentDiffTest {
         renderer.render(g);
 
         StringBuilder sb = new StringBuilder();
-        getDiff(sb, renderer.getPanel().getRootBox(), "");
+        getDiff(renderer.getPanel().getRootBox(), "");
         return sb.toString();
     }
 
-    public boolean compareTestFile(String test, String diff, int width, int height)
-            throws Exception {
+    public boolean compareTestFile(String test, String diff, int width, int height) throws Exception {
         String tin = xhtmlToDiff(test, width, height);
         String din;
         try {
@@ -130,11 +128,10 @@ public class DocumentDiffTest {
     /**
      * Gets the diff attribute of the DocumentDiffTest object
      */
-    public static void getDiff(StringBuilder sb, Box box, String tab) {
+    private static void getDiff(Box box, String tab) {
         for (int i = 0; i < box.getChildCount(); i++) {
-            getDiff(sb, box.getChild(i), tab + " ");
+            getDiff(box.getChild(i), tab + " ");
         }
-
     }
 
     /**
@@ -142,8 +139,7 @@ public class DocumentDiffTest {
      *
      * @param args The command line arguments
      */
-    public static void main(String[] args)
-            throws Exception {
+    public static void main(String[] args) throws Exception {
 
         XRLog.setLevel("plumbing.general", Level.OFF);
         //String testfile = "tests/diff/background/01.xhtml";
@@ -162,4 +158,51 @@ public class DocumentDiffTest {
         }
     }
 
+    private static String file_to_string(String filename) throws IOException {
+        File file = new File(filename);
+        return file_to_string(file);
+    }
+
+    private static String file_to_string(File file) throws IOException {
+        FileReader reader = null;
+        StringWriter writer = null;
+        String str;
+        try {
+            reader = new FileReader(file);
+            writer = new StringWriter();
+            char[] buf = new char[1000];
+            while (true) {
+                int n = reader.read(buf, 0, 1000);
+                if (n == -1) {
+                    break;
+                }
+                writer.write(buf, 0, n);
+            }
+            str = writer.toString();
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
+            if (writer != null) {
+                writer.close();
+            }
+        }
+        return str;
+    }
+
+    public static void string_to_file(String text, File file)
+            throws IOException {
+        try (FileWriter writer = new FileWriter(file)) {
+            StringReader reader = new StringReader(text);
+            char[] buf = new char[1000];
+            while (true) {
+                int n = reader.read(buf, 0, 1000);
+                if (n == -1) {
+                    break;
+                }
+                writer.write(buf, 0, n);
+            }
+            writer.flush();
+        }
+    }
 }
