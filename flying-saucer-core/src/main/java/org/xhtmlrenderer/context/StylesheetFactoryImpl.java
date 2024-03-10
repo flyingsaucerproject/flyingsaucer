@@ -138,11 +138,11 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      * @param key The key for this sheet; same as key passed to
      *            putStylesheet();
      */
-    public synchronized Stylesheet removeCachedStylesheet(String key) {
-        return _cache.remove(key);
+    public synchronized void removeCachedStylesheet(String key) {
+        _cache.remove(key);
     }
 
-    public synchronized void flushCachedStylesheets() {
+    synchronized void flushCachedStylesheets() {
         _cache.clear();
     }
 
@@ -165,11 +165,11 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         return s;
     }
 
-    public void setUserAgentCallback(UserAgentCallback userAgent) {
+    void setUserAgentCallback(UserAgentCallback userAgent) {
         _userAgentCallback = userAgent;
     }
 
-    public void setSupportCMYKColors(boolean b) {
+    void setSupportCMYKColors(boolean b) {
         _cssParser.setSupportCMYKColors(b);
     }
 }
