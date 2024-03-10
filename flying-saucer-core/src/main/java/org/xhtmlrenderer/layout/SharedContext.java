@@ -231,7 +231,6 @@ public final class SharedContext {
 
 
     public Rectangle getFixedRectangle() {
-        //Uu.p("this = " + canvas);
         if (getCanvas() == null) {
             return temporaryCanvas;
         } else {

@@ -22,14 +22,9 @@ package org.xhtmlrenderer.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-
-public class Uu extends Util {
+public class Uu {
     private static Util util;
     private static Util utilAsString;
-
-    private Uu() {
-        super(System.out);
-    }
 
     public static void on() {
         init();
@@ -51,31 +46,6 @@ public class Uu extends Util {
         if (XRLog.isLoggingEnabled()) {
             XRLog.general(sw.getBuffer().toString());
         }
-    }
-
-    public static void pr(Object object) {
-        init();
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        utilAsString.setPrintWriter(pw);
-        utilAsString.print(object);// our log adds a newline
-        pw.flush();
-        if (XRLog.isLoggingEnabled()) {
-            XRLog.general(sw.getBuffer().toString());
-        }
-        //util.print( object );
-    }
-
-    public static void sleep(int msec) throws InterruptedException {
-        Thread.sleep(msec);
-    }
-
-    public static void dump_stack() {
-        p(stack_to_string(new Exception("Taking a thread dump...")));
-    }
-
-    public static void main(String[] args) {
-        Uu.p(new Object());
     }
 
     private static void init() {

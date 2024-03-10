@@ -80,7 +80,6 @@ public class AWTFontResolver implements FontResolver {
         }
 
         // if we get here then no font worked, so just return default sans
-        //Uu.p("pulling out: -" + available_fonts_hash.get("SansSerif") + "-");
         String family = "SansSerif";
         if (style == IdentValue.ITALIC) {
             family = "Serif";
@@ -88,7 +87,6 @@ public class AWTFontResolver implements FontResolver {
 
         Font fnt = createFont(ctx, available_fonts_hash.get(family), size, weight, style, variant);
         instance_hash.put(getFontInstanceHashName(ctx, family, size, weight, style, variant), fnt);
-        //Uu.p("subbing in base sans : " + fnt);
         return new AWTFSFont(fnt);
     }
 
@@ -130,7 +128,6 @@ public class AWTFontResolver implements FontResolver {
     }
 
     protected Font resolveFont(SharedContext ctx, String font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
-        //Uu.p("here");
         // strip off the "s if they are there
         if (font.startsWith("\"")) {
             font = font.substring(1);
@@ -139,7 +136,6 @@ public class AWTFontResolver implements FontResolver {
             font = font.substring(0, font.length() - 1);
         }
 
-        //Uu.p("final font = " + font);
         // normalize the font name
         if (font.equals("serif")) {
             font = "Serif";
@@ -154,21 +150,11 @@ public class AWTFontResolver implements FontResolver {
         if (font.equals("Serif") && style == IdentValue.OBLIQUE) font = "SansSerif";
         if (font.equals("SansSerif") && style == IdentValue.ITALIC) font = "Serif";
 
-        // assemble a font instance hash name
         String font_instance_name = getFontInstanceHashName(ctx, font, size, weight, style, variant);
-        //Uu.p("looking for font: " + font_instance_name);
-        // check if the font instance exists in the hash table
         if (instance_hash.containsKey(font_instance_name)) {
-            // if so then return it
             return instance_hash.get(font_instance_name);
         }
 
-        //Uu.p("font lookup failed for: " + font_instance_name);
-        //Uu.p("searching for : " + font + " " + size + " " + weight + " " + style + " " + variant);
-
-
-        // if not then
-        //  does the font exist
         if (available_fonts_hash.containsKey(font)) {
             Font root_font = available_fonts_hash.get(font);
 
