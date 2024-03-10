@@ -56,14 +56,12 @@ import static java.nio.file.Files.newOutputStream;
  * 		writer.setWriteCompressionType("JPEG");
  * 		writer.setWriteCompressionQuality(.75f);
  * </pre>
- * <p>The method {@link #newJpegWriter(float)} creates a writer for JPG images; you just need to specify the
- * output quality. Note that for the JPG format, your image or BufferedImage shouldn't be ARGB.</p>
  */
 public class FSImageWriter {
     private final String imageFormat;
-    private float writeCompressionQuality;
-    private int writeCompressionMode;
-    private String writeCompressionType;
+    private final float writeCompressionQuality;
+    private final int writeCompressionMode;
+    private final String writeCompressionType;
 
     /**
      * New image writer for the PNG image format
@@ -83,20 +81,6 @@ public class FSImageWriter {
         this.writeCompressionMode = ImageWriteParam.MODE_COPY_FROM_METADATA;
         this.writeCompressionType = null;
         this.writeCompressionQuality = 1.0f;
-    }
-
-    /**
-     * Convenience method for initializing a writer for the JPEG image format.
-     *
-     * @param quality level of compression, between 0 and 1; 0 is lowest, 1 is highest quality.
-     * @return a writer for JPEG images
-     */
-    public static FSImageWriter newJpegWriter(float quality) {
-        FSImageWriter writer = new FSImageWriter("jpg");
-        writer.setWriteCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-        writer.setWriteCompressionType("JPEG");
-        writer.setWriteCompressionQuality(quality);
-        return writer;
     }
 
     /**
@@ -174,40 +158,7 @@ public class FSImageWriter {
 
         return param;
     }
-
-    /**
-     * Compression quality for images to be generated from this writer. See
-     * {@link javax.imageio.ImageWriteParam#setCompressionQuality(float)} for a description of what this means
-     * and valid range of values.
-     *
-     * @param q Compression quality for image output.
-     */
-    public void setWriteCompressionQuality(float q) {
-        writeCompressionQuality = q;
-    }
-
-    /**
-     * Compression mode for images to be generated from this writer. See
-     * {@link javax.imageio.ImageWriteParam#setCompressionMode(int)}  for a description of what this means
-     * and valid range of values.
-     *
-     * @param mode Compression mode for image output.
-     */
-    public void setWriteCompressionMode(int mode) {
-        this.writeCompressionMode = mode;
-    }
-
-    /**
-     * Compression type for images to be generated from this writer. See
-     * {@link javax.imageio.ImageWriteParam#setCompressionType(String)} for a description of what this means
-     * and valid range of values.
-     *
-     * @param type Type of compression for image output.
-     */
-    public void setWriteCompressionType(String type) {
-        this.writeCompressionType = type;
-    }
-
+    
     /**
      * Utility method to find an image writer.
      *
