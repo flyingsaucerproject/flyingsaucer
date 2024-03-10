@@ -14,6 +14,7 @@ import java.io.LineNumberReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -22,11 +23,15 @@ import static java.nio.file.Files.newOutputStream;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
-
 /**
  * ReferenceComparison runs a comparison of rendering a set of source XHTML files against a
  */
 public class ReferenceComparison {
+    private static final List<String> EXTENSIONS = asList("htm", "html", "xht", "xhtml", "xml");
+    private static final String RENDER_SFX = ".render.txt";
+    private static final String LAYOUT_SFX = ".layout.txt";
+    private static final String PNG_SFX = ".png";
+
     private final int width;
     private final boolean isVerbose;
     private static final String LINE_SEPARATOR = "\n";
@@ -102,14 +107,13 @@ public class ReferenceComparison {
     }
 
     private Iterable<File> listSourceFiles(File sourceDirectory) {
-        File[] files = sourceDirectory.listFiles((dir, name) -> Regress.EXTENSIONS.contains(name.substring(name.lastIndexOf(".") + 1)));
+        File[] files = sourceDirectory.listFiles((dir, name) -> EXTENSIONS.contains(name.substring(name.lastIndexOf(".") + 1)));
         return files == null ? emptyList() : asList(files);
     }
 
     void compareFile(File source, File referenceDir, File failedDirectory, CompareStatistics stat) throws IOException {
         log("Comparing " + source.getPath());
         stat.checking(source);
-        // TODO: reuse code from Regress
         BoxRenderer renderer = new BoxRenderer(source, width);
         Box box;
         try {
@@ -125,16 +129,16 @@ public class ReferenceComparison {
         }
         LayoutContext layoutContext = renderer.getLayoutContext();
         String inputFileName = source.getName();
-        String refRendered = trimTrailingLS(readReference(referenceDir, inputFileName, Regress.RENDER_SFX));
+        String refRendered = trimTrailingLS(readReference(referenceDir, inputFileName, RENDER_SFX));
         String rendered = trimTrailingLS(box.dump(layoutContext, "", Box.DUMP_RENDER));
         if (!compareLines(refRendered, rendered, stat)) {
-            storeFailed(failedDirectory, new File(referenceDir, inputFileName), Regress.RENDER_SFX, rendered);
+            storeFailed(failedDirectory, new File(referenceDir, inputFileName), RENDER_SFX, rendered);
         }
 
-        final String refLaidOut = trimTrailingLS(readReference(referenceDir, inputFileName, Regress.LAYOUT_SFX));
+        final String refLaidOut = trimTrailingLS(readReference(referenceDir, inputFileName, LAYOUT_SFX));
         final String laidOut = trimTrailingLS(box.dump(layoutContext, "", Box.DUMP_LAYOUT));
         if (!compareLines(refLaidOut, laidOut, stat)) {
-            storeFailed(failedDirectory, new File(referenceDir, inputFileName), Regress.LAYOUT_SFX, laidOut);
+            storeFailed(failedDirectory, new File(referenceDir, inputFileName), LAYOUT_SFX, laidOut);
         }
     }
 
@@ -147,7 +151,7 @@ public class ReferenceComparison {
 
     private void storeFailed(File failedDirectory, File refFile, String suffix, String compareTo) {
         copyToFailed(failedDirectory, refFile, "");
-        copyToFailed(failedDirectory, refFile, Regress.PNG_SFX);
+        copyToFailed(failedDirectory, refFile, PNG_SFX);
         copyToFailed(failedDirectory, refFile, suffix);
 
         try (OutputStreamWriter fw = new OutputStreamWriter(newOutputStream(new File(failedDirectory, refFile.getName() + ".err" + suffix).toPath()), UTF_8)) {
