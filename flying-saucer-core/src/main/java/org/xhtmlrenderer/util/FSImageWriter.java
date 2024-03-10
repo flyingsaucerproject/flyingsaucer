@@ -60,13 +60,10 @@ import static java.nio.file.Files.newOutputStream;
  * output quality. Note that for the JPG format, your image or BufferedImage shouldn't be ARGB.</p>
  */
 public class FSImageWriter {
-    public static final String DEFAULT_IMAGE_FORMAT = "png";
-
     private final String imageFormat;
     private float writeCompressionQuality;
     private int writeCompressionMode;
     private String writeCompressionType;
-
 
     /**
      * New image writer for the PNG image format
