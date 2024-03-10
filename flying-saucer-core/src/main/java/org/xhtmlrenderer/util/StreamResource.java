@@ -14,7 +14,6 @@ import java.net.URLConnection;
 public class StreamResource implements AutoCloseable {
     private final String _uri;
     private URLConnection _conn;
-    private int _slen;
     private InputStream _inputStream;
 
     public StreamResource(final String uri) {
@@ -41,7 +40,7 @@ public class StreamResource implements AutoCloseable {
             _conn.setRequestProperty("Accept", "*/*");
 
             _conn.connect();
-            _slen = _conn.getContentLength();
+            _conn.getContentLength();
         } catch (java.net.MalformedURLException e) {
             XRLog.exception("bad URL given: " + _uri, e);
         } catch (FileNotFoundException e) {
@@ -49,14 +48,6 @@ public class StreamResource implements AutoCloseable {
         } catch (IOException e) {
             XRLog.exception("IO problem for " + _uri, e);
         }
-    }
-
-    public boolean hasStreamLength() {
-        return _slen >= 0;
-    }
-
-    public int streamLength() {
-        return _slen;
     }
 
     public BufferedInputStream bufferedStream() throws IOException {
