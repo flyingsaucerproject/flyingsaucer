@@ -29,7 +29,6 @@ import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper;
-import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -71,11 +70,9 @@ public class ITextUserAgent extends NaiveUserAgent {
                 resource = loadEmbeddedBase64ImageResource(uriStr);
                 _imageCache.put(unresolvedUri, resource);
             } else {
-                InputStream is = resolveAndOpenStream(uriStr);
-                if (is != null) {
-                    try {
+                try (InputStream is = resolveAndOpenStream(uriStr)) {
+                    if (is != null) {
                         try (ContentTypeDetectingInputStreamWrapper cis = new ContentTypeDetectingInputStreamWrapper(is)) {
-                            is = cis;
                             if (cis.isPdf()) {
                                 URI uri = new URI(uriStr);
                                 PdfReader reader = _outputDevice.getReader(uri);
@@ -85,17 +82,15 @@ public class ITextUserAgent extends NaiveUserAgent {
                                 image.setInitialHeight(rect.getHeight() * _outputDevice.getDotsPerPoint());
                                 resource = new ImageResource(uriStr, image);
                             } else {
-                                Image image = Image.getInstance(readBytes(is));
+                                Image image = Image.getInstance(readBytes(cis));
                                 scaleToOutputResolution(image);
                                 resource = new ImageResource(uriStr, new ITextFSImage(image));
                             }
                         }
                         _imageCache.put(unresolvedUri, resource);
-                    } catch (BadElementException | IOException | URISyntaxException e) {
-                        XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
-                    } finally {
-                        IOUtil.close(is);
                     }
+                } catch (BadElementException | IOException | URISyntaxException e) {
+                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
                 }
             }
         }

@@ -72,11 +72,9 @@ public class ITextUserAgent extends NaiveUserAgent {
                 resource = loadEmbeddedBase64ImageResource(uriStr);
                 _imageCache.put(uriStr, resource);
             } else {
-                InputStream is = resolveAndOpenStream(uriStr);
-                if (is != null) {
-                    try {
+                try (InputStream is = resolveAndOpenStream(uriStr)) {
+                    if (is != null) {
                         try (ContentTypeDetectingInputStreamWrapper cis = new ContentTypeDetectingInputStreamWrapper(is)) {
-                            is = cis;
                             if (cis.isPdf()) {
                                 URI uri = new URI(uriStr);
                                 PdfReader reader = _outputDevice.getReader(uri);
@@ -86,17 +84,15 @@ public class ITextUserAgent extends NaiveUserAgent {
                                 image.setInitialHeight(rect.getHeight() * _outputDevice.getDotsPerPoint());
                                 resource = new ImageResource(uriStr, image);
                             } else {
-                                Image image = Image.getInstance(readStream(is));
+                                Image image = Image.getInstance(readStream(cis));
                                 scaleToOutputResolution(image);
                                 resource = new ImageResource(uriStr, new ITextFSImage(image));
                             }
                         }
                         _imageCache.put(uriStr, resource);
-                    } catch (Exception e) {
-                        XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
-                    } finally {
-                        IOUtil.close(is);
                     }
+                } catch (Exception e) {
+                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
                 }
             }
         }
