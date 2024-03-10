@@ -1,7 +1,13 @@
 # Changelog
 
-## 9.6.1 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/11
+## 9.7.0 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/12
 * ...
+
+## 9.6.1 (released 10.03.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/11?closed=1
+* #276 never consider table cells as "floated" (even if they have style "float: left" or "float:right") (#283)
+* refactoring (remove unused methods, convert classes to records etc.) (#281) (#284)
+* refactoring: make most of `setDocument()` methods private (#281)
+* make toString method of Box elements more easily readable (#283)
 
 ## 9.6.0 (released 07.03.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/10?closed=1
 * Require Java 17 or later
