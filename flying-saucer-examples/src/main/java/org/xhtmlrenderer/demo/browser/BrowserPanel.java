@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -34,14 +35,17 @@ import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xml.sax.SAXException;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -51,6 +55,8 @@ import java.util.logging.Logger;
 
 @ParametersAreNonnullByDefault
 public class BrowserPanel extends JPanel implements DocumentListener {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(BrowserPanel.class);
+
     private static final long serialVersionUID = 1L;
     private static final int maxLineLength = 80;
 
@@ -286,33 +292,25 @@ public class BrowserPanel extends JPanel implements DocumentListener {
             handlePageLoadFailed(url_text, ex);
         } catch (Exception ex) {
             XRLog.general(Level.SEVERE, "Could not load page for display.", ex);
-            ex.printStackTrace();
+            log.error("Failed to load page for display", ex);
         }
     }
 
-    public void exportToPdf(String path) {
+    public void exportToPdf(String path) throws IOException, ParserConfigurationException, SAXException {
         if (manager.getBaseURL() != null) {
             setStatus("Exporting to " + path + "...");
             try (OutputStream os = Files.newOutputStream(Paths.get(path))) {
-                try {
-                    ITextRenderer renderer = new ITextRenderer();
+                ITextRenderer renderer = new ITextRenderer();
 
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder db = dbf.newDocumentBuilder();
-                    Document doc = db.parse(manager.getBaseURL());
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document doc = db.parse(manager.getBaseURL());
 
-                    PDFCreationListener pdfCreationListener = new XHtmlMetaToPdfInfoAdapter(doc);
-                    renderer.setListener(pdfCreationListener);
+                PDFCreationListener pdfCreationListener = new XHtmlMetaToPdfInfoAdapter(doc);
+                renderer.setListener(pdfCreationListener);
 
-                    renderer.createPDF(doc, os);
-                    setStatus("Done export.");
-                } catch (Exception e) {
-                    XRLog.general(Level.SEVERE, "Could not export PDF.", e);
-                    e.printStackTrace();
-                    setStatus("Error exporting to PDF.");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+                renderer.createPDF(doc, os);
+                setStatus("Done export.");
             }
         }
     }
@@ -397,12 +395,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     @Override
     public void onLayoutException(Throwable t) {
         // TODO: clean
-        t.printStackTrace();
+        log.error(t.toString(), t);
     }
 
     @Override
     public void onRenderException(Throwable t) {
         // TODO: clean
-        t.printStackTrace();
+        log.error(t.toString(), t);
     }
 }

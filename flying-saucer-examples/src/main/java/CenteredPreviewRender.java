@@ -23,6 +23,7 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.net.MalformedURLException;
 
 /**
  * This example shows the most basic use of Flying Saucer, to
@@ -35,15 +36,11 @@ import java.io.File;
 public class CenteredPreviewRender {
     private String fileName;
 
-    public static void main(String[] args) {
-        try {
-            new CenteredPreviewRender().run(args);
-        } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
-        }
+    public static void main(String[] args) throws MalformedURLException {
+        new CenteredPreviewRender().run(args);
     }
 
-    private void run(String[] args) {
+    private void run(String[] args) throws MalformedURLException {
         loadAndCheckArgs(args);
 
         // Create a JPanel subclass to render the page
@@ -56,11 +53,7 @@ public class CenteredPreviewRender {
         // Set the XHTML document to render. We use the simplest form
         // of the API call, which uses a File reference. There
         // are a variety of overloads for setDocument().
-        try {
-            panel.setDocument(new File(fileName));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        panel.setDocument(new File(fileName));
 
         // Put our panel in a scrolling pane. You can use
         // a regular JScrollPane here, or our FSScrollPane.

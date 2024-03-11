@@ -24,19 +24,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class DemosNavigation {
 
     private static final String FILE_LIST_URL = "demo:/demos/file-list.txt";
 
-    private final List<Demo> _demos;
+    private final List<Demo> _demos = new ArrayList<>();
     private int _current;
     private boolean _lock;
 
     public DemosNavigation(BrowserUserAgent uac) {
-        _demos = new ArrayList<>();
         try {
             URL url = new URL(uac.resolveFullURI(FILE_LIST_URL));
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
@@ -47,7 +45,7 @@ public class DemosNavigation {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         _current = -1;
     }
@@ -58,10 +56,6 @@ public class DemosNavigation {
 
     public Iterable<Demo> demos() {
         return _demos;
-    }
-
-    public Iterator<Demo> iterate() {
-        return _demos.iterator();
     }
 
     public Demo getCurrent() {

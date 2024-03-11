@@ -172,14 +172,10 @@ final class ElementPropertiesPanel extends JPanel {
      * @param node The new forElement value
      */
     public void setForElement(Node node) {
-        try {
-            _properties.setModel(tableModel(node));
-            TableColumnModel model = _properties.getColumnModel();
-            if (model.getColumnCount() > 0) {
-                model.getColumn(0).sizeWidthToFit();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        _properties.setModel(tableModel(node));
+        TableColumnModel model = _properties.getColumnModel();
+        if (model.getColumnCount() > 0) {
+            model.getColumn(0).sizeWidthToFit();
         }
     }
 

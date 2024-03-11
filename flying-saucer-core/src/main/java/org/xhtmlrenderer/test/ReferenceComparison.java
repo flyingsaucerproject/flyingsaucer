@@ -1,5 +1,7 @@
 package org.xhtmlrenderer.test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BoxRenderer;
@@ -27,6 +29,7 @@ import static java.util.Collections.emptyList;
  * ReferenceComparison runs a comparison of rendering a set of source XHTML files against a
  */
 public class ReferenceComparison {
+    private static final Logger log = LoggerFactory.getLogger(ReferenceComparison.class);
     private static final List<String> EXTENSIONS = asList("htm", "html", "xht", "xhtml", "xml");
     private static final String RENDER_SFX = ".render.txt";
     private static final String LAYOUT_SFX = ".layout.txt";
@@ -121,7 +124,7 @@ public class ReferenceComparison {
             box = renderer.render();
             log("rendered");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to render file {}", source, e);
             stat.failedToRender(e);
             storeFailed(failedDirectory, source);
             log("Could not render input file, skipping: " + source + " err: " + e.getMessage());

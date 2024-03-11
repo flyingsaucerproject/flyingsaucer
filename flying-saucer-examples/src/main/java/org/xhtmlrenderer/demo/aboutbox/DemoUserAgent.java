@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.demo.aboutbox;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
@@ -48,13 +50,10 @@ import java.util.List;
 import java.util.Map;
 
 
-/**
- * User: tobe
- * Date: 2005-jun-15
- * Time: 07:38:59
- */
 @ParametersAreNonnullByDefault
 public class DemoUserAgent implements UserAgentCallback {
+    private static final Logger log = LoggerFactory.getLogger(DemoUserAgent.class);
+    
     private String baseUrl;
     private int index = -1;
     private final List<String> history = new ArrayList<>();
@@ -130,7 +129,7 @@ public class DemoUserAgent implements UserAgentCallback {
             try {
                 new File(new URI(uri));
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                log.error("Failed to read xml resource {}", uri, e);
             }
         }
         XMLResource xr = null;
@@ -203,7 +202,7 @@ public class DemoUserAgent implements UserAgentCallback {
                 }
 
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                log.error("Failed to resolve uri {}", uri, e);
             }
         }
 

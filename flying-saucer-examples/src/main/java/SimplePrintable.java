@@ -24,9 +24,9 @@ import org.xhtmlrenderer.simple.XHTMLPrintable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
-import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 
 /**
@@ -36,7 +36,7 @@ import java.net.URISyntaxException;
  * @author Patrick Wright
  */
 public class SimplePrintable {
-    public static void main(String[] args) throws MalformedURLException, URISyntaxException {
+    public static void main(String[] args) throws MalformedURLException, URISyntaxException, PrinterException {
         if (args.length == 0) {
             System.err.println("Need file path");
             System.exit(-1);
@@ -56,36 +56,21 @@ public class SimplePrintable {
         }
     }
 
-    private void printPanel(XHTMLPanel panel) {
+    private void printPanel(XHTMLPanel panel) throws PrinterException {
         final PrinterJob printJob = PrinterJob.getPrinterJob();
         printJob.setPrintable(new XHTMLPrintable(panel));
 
         if (printJob.printDialog()) {
-            try {
-
-                printJob.print();
-
-            } catch (PrinterException ex) {
-                ex.printStackTrace();
-            }
+            printJob.print();
         }
     }
 
-    private void printURL(String url) {
+    private void printURL(String url) throws PrinterException {
         XHTMLPanel panel = new XHTMLPanel();
         panel.getSharedContext().setPrint(true);
         panel.getSharedContext().setInteractive(false);
 
-        try {
-            panel.setDocument(url);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        panel.setDocument(url);
         printPanel(panel);
-    }
-
-    public void printFile(File file) {
-        printURL(file.toURI().toString());
     }
 }

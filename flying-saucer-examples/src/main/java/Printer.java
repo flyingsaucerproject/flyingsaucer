@@ -47,6 +47,8 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import static java.util.logging.Level.SEVERE;
+
 
 /**
  * @author rk
@@ -167,8 +169,7 @@ public class Printer implements Runnable, DocumentListener, Printable, PrintJobL
                 log.severe("file " + file.getName() + " doesn't exist");
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "error loading file " + file.getName(), e);
-            e.printStackTrace();
+            log.log(SEVERE, "error loading file " + file.getName(), e);
         }
         // stop the thread
         runner = null;

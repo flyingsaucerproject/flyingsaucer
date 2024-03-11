@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -29,6 +30,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BrowserStartup {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(BrowserStartup.class);
+    
     public BrowserPanel panel;
     protected BrowserMenuBar menu;
     protected JFrame frame;
@@ -59,8 +62,7 @@ public class BrowserStartup {
                 try {
                     logger.log(Level.SEVERE, "error initializing the mac properties", ex);
                 } catch (Exception ex2) {
-                    //System.out.println("error writing to the log file!" + ex2);
-                    //ex2.printStackTrace();
+                    log.error("error writing to the log file", ex2);
                 }
             }
         } else {
@@ -131,7 +133,7 @@ public class BrowserStartup {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 lnfSet = true;
             } catch (Throwable th) {
-                th.printStackTrace();
+                log.error(th.toString(), th);
             }
         }
     }

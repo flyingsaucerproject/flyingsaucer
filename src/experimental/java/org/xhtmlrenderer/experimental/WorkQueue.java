@@ -65,13 +65,13 @@ public class WorkQueue {
                             try {
                                 task.run();
                             } catch (RuntimeException e) {
-                                e.printStackTrace();
+                                log.error(e.toString(), e)
                             }
                         }
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();  // FIXME
+                log.error(e.toString(), e)
             }
         }
     }

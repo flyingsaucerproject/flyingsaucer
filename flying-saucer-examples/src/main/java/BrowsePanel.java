@@ -17,6 +17,8 @@
  */
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DefaultDocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -44,6 +46,8 @@ import java.net.URL;
  * @author Patrick Wright
  */
 public class BrowsePanel {
+    private static final Logger log = LoggerFactory.getLogger(BrowsePanel.class);
+    
     private String uri;
     private XHTMLPanel panel;
     private JFrame frame;
@@ -133,8 +137,7 @@ public class BrowsePanel {
                 if (panel != null ) panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 doc = getUAC().getXMLResource(uri).getDocument();
             } catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("Can't load document");
+                log.error("Failed to load document from {}", uri, e);
                 return;
             } finally {
                 if (panel != null ) panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -155,12 +158,7 @@ public class BrowsePanel {
         // Set the XHTML document to render. We use the simplest form
         // of the API call, which uses a File reference. There
         // are a variety of overloads for setDocument().
-        try {
-            panel.setDocument(document, uri);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        panel.setDocument(document, uri);
     }
 
     private void loadAndCheckArgs(String[] args) {
