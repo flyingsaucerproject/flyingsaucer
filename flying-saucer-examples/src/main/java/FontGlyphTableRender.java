@@ -19,6 +19,8 @@
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DefaultDocumentListener;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
@@ -65,6 +67,8 @@ import static javax.xml.parsers.SAXParserFactory.newInstance;
  */
 @ParametersAreNonnullByDefault
 public class FontGlyphTableRender {
+    private static final Logger log = LoggerFactory.getLogger(FontGlyphTableRender.class);
+    
     private static final int TO_SWING = 1;
     private static final int TO_PDF = 2;
     private static final String OUTPUT_ENTITIES = "entities";
@@ -383,7 +387,7 @@ public class FontGlyphTableRender {
                 familyNameFieldIText.setText(getITextFontFamilyName(new File(fontPathTF.getText())));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to resolve font from {}", path, e);
             currentFont = null;
         }
     }
@@ -429,7 +433,7 @@ public class FontGlyphTableRender {
             return new Page().toHtml(table.toHtml(getFontFamily(TO_SWING), 0), getFontFamily(TO_SWING));
         }
         catch (SAXException | IOException | ParserConfigurationException e) {
-            e.printStackTrace();
+            log.error("Failed to parse entity {}", html, e);
             return "";
         }
 

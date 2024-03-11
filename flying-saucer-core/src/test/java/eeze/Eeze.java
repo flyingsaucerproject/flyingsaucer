@@ -19,6 +19,8 @@
  */
 package eeze;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.Graphics2DRenderer;
 import org.xhtmlrenderer.simple.XHTMLPanel;
@@ -48,6 +50,8 @@ import static java.awt.event.InputEvent.ALT_MASK;
 import static java.awt.event.InputEvent.CTRL_MASK;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 
 /**
@@ -57,6 +61,8 @@ import static java.util.Collections.emptyList;
  * @author Who?
  */
 public class Eeze {
+    private static final Logger log = LoggerFactory.getLogger(Eeze.class);
+    
     private List<File> testFiles;
     private JFrame eezeFrame;
     private File currentDisplayed;
@@ -634,13 +640,13 @@ public class Eeze {
                     imagePanel.setImage(image);
                 }
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(
+                showMessageDialog(
                         Eeze.this.eezeFrame,
                         "Error on trying to save image, check stack trace on console.",
                         "Save As Image",
-                        JOptionPane.ERROR_MESSAGE
+                        ERROR_MESSAGE
                 );
-                e1.printStackTrace();
+                log.error("Failed to save image", e1);
             }
         }
     }
@@ -656,11 +662,7 @@ public class Eeze {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            try {
-                switchPage(currentDisplayed, true);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+           switchPage(currentDisplayed, true);
         }
     }
 
@@ -683,11 +685,7 @@ public class Eeze {
                     testFiles.toArray(),
                     currentDisplayed);
 
-            try {
-                switchPage(nextPage, false);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            switchPage(nextPage, false);
         }
     }
 

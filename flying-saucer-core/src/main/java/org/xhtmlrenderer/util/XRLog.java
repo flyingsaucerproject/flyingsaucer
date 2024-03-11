@@ -218,26 +218,22 @@ public class XRLog {
     }
 
     public static void main(String[] args) {
-        try {
-            XRLog.cascade("Cascade msg");
-            XRLog.cascade(Level.WARNING, "Cascade msg");
-            XRLog.exception("Exception msg");
-            XRLog.exception("Exception msg", new Exception("General exception"));
-            XRLog.general("General msg");
-            XRLog.general(Level.WARNING, "General msg");
-            XRLog.init("Init msg");
-            XRLog.init(Level.WARNING, "Init msg");
-            XRLog.load("Load msg");
-            XRLog.load(Level.WARNING, "Load msg");
-            XRLog.match("Match msg");
-            XRLog.match(Level.WARNING, "Match msg");
-            XRLog.layout("Layout msg");
-            XRLog.layout(Level.WARNING, "Layout msg");
-            XRLog.render("Render msg");
-            XRLog.render(Level.WARNING, "Render msg");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        XRLog.cascade("Cascade msg");
+        XRLog.cascade(Level.WARNING, "Cascade msg");
+        XRLog.exception("Exception msg");
+        XRLog.exception("Exception msg", new Exception("General exception"));
+        XRLog.general("General msg");
+        XRLog.general(Level.WARNING, "General msg");
+        XRLog.init("Init msg");
+        XRLog.init(Level.WARNING, "Init msg");
+        XRLog.load("Load msg");
+        XRLog.load(Level.WARNING, "Load msg");
+        XRLog.match("Match msg");
+        XRLog.match(Level.WARNING, "Match msg");
+        XRLog.layout("Layout msg");
+        XRLog.layout(Level.WARNING, "Layout msg");
+        XRLog.render("Render msg");
+        XRLog.render(Level.WARNING, "Render msg");
     }
 
     private static void init() {

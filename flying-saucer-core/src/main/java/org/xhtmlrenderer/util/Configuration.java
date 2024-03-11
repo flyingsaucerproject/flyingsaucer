@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.util;
 
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.DefaultCSSMarker;
 
 import java.io.BufferedInputStream;
@@ -45,6 +46,7 @@ import static java.lang.Double.parseDouble;
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
+import static java.lang.System.err;
 import static java.nio.file.Files.newInputStream;
 
 
@@ -88,6 +90,8 @@ import static java.nio.file.Files.newInputStream;
  * @author Patrick Wright
  */
 public class Configuration {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Configuration.class);
+    
     /**
      * Our backing data store of properties.
      */
@@ -170,8 +174,8 @@ public class Configuration {
     }
 
     private void handleUnexpectedExceptionOnInit(Exception e) {
-        System.err.println("Could not initialize configuration for Flying Saucer library. Message is: " + e.getMessage());
-        e.printStackTrace();
+        err.println("Could not initialize configuration for Flying Saucer library. Message is: " + e.getMessage());
+        log.error(e.toString(), e);
     }
 
     /**
@@ -238,7 +242,7 @@ public class Configuration {
      */
     private void warning(String msg, Throwable th) {
         warning(msg);
-        th.printStackTrace();
+        log.error(msg, th);
     }
 
     /**

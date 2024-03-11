@@ -116,7 +116,7 @@ public class Review {
 
             XRLog.general("MD5 via BI: " + currentHex);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.toString(), e)
         }
     }
 

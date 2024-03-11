@@ -36,6 +36,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -73,6 +75,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.util.XRLog.exception;
+
 /**
  * Renders XML+CSS using SWT in a widget (a Composite). Scrollbars are handled
  * automatically.
@@ -80,6 +84,7 @@ import java.util.logging.Level;
  * @author Vianney le Clément
  */
 public class BasicRenderer extends Canvas implements PaintListener, UserInterface, FSCanvas {
+    private static final Logger log = LoggerFactory.getLogger(BasicRenderer.class);
     private static final int PAGE_PAINTING_CLEARANCE = 10;
 
     private final SharedContext _sharedContext;
@@ -621,8 +626,8 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
             long end = System.currentTimeMillis();
             XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
         } catch (Throwable e) {
-            XRLog.exception(e.getMessage(), e);
-            e.printStackTrace();
+            exception(e.getMessage(), e);
+            log.error(e.toString(), e);
         }
 
         Layer rootLayer = _rootBox.getLayer();

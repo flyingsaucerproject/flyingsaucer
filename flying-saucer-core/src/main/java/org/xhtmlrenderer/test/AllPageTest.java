@@ -7,24 +7,15 @@ import java.io.File;
 import java.util.Date;
 
 public class AllPageTest {
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new AllPageTest().run();
     }
 
-    public void run() {
-        try {
-            String demosDir = "d:/java/javanet/xhtmlrenderer/demos/browser/xhtml/new";
-            File[] files = new File(demosDir).listFiles((dir, name) -> name.endsWith("xhtml"));
-            for (File file : files) {
-                try {
-                    render(file);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        } catch ( Exception ex ) {
-            ex.printStackTrace();
+    public void run() throws Exception {
+        String demosDir = "d:/java/javanet/xhtmlrenderer/demos/browser/xhtml/new";
+        File[] files = new File(demosDir).listFiles((dir, name) -> name.endsWith("xhtml"));
+        for (File file : files) {
+            render(file);
         }
     }
 

@@ -43,6 +43,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.demo.browser.swt.DemosNavigation.Demo;
 import org.xhtmlrenderer.demo.browser.swt.actions.AboutAction;
 import org.xhtmlrenderer.demo.browser.swt.actions.Action;
@@ -74,8 +76,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.eclipse.swt.SWT.ICON_ERROR;
+import static org.eclipse.swt.SWT.OK;
+
 @ParametersAreNonnullByDefault
 public class Browser implements DisposeListener, DocumentListener {
+    private static final Logger log = LoggerFactory.getLogger(Browser.class);
 
     private final Shell _shell;
     private final SWTXHTMLRenderer _xhtml;
@@ -145,7 +151,7 @@ public class Browser implements DisposeListener, DocumentListener {
         populateMenu(menu);
         populateToolBar(toolbar);
 
-        // set coolbar dimensions
+        // set toolbar dimensions
         toolbar.pack();
         Point size = toolbar.getSize();
         size = ciToolbar.computeSize(size.x, size.y);
@@ -346,8 +352,8 @@ public class Browser implements DisposeListener, DocumentListener {
                     display.sleep();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
-                MessageBox box = new MessageBox(_shell, SWT.ICON_ERROR | SWT.OK);
+                log.error(e.toString(), e);
+                MessageBox box = new MessageBox(_shell, ICON_ERROR | OK);
                 box.setText("Error");
                 box.setMessage("""
                         An error has occurred. See console for details.

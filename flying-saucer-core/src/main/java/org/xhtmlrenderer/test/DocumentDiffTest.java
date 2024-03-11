@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.simple.Graphics2DRenderer;
@@ -38,10 +40,11 @@ import java.io.StringWriter;
 import java.util.logging.Level;
 
 public class DocumentDiffTest {
+    private static final Logger log = LoggerFactory.getLogger(DocumentDiffTest.class);
     private static final int width = 500;
     private static final int height = 500;
 
-    private void runTests(File dir, int width, int height) {
+    private void runTests(File dir, int width, int height) throws Exception {
         File[] files = dir.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
@@ -52,13 +55,8 @@ public class DocumentDiffTest {
                 String testfile = file.getAbsolutePath();
                 String difffile = testfile.substring(0, testfile.length() - 6) + ".diff";
                 XRLog.log("unittests", Level.WARNING, "test file = " + testfile);
-                try {
-                    boolean is_correct = compareTestFile(testfile, difffile, width, height);
-                    XRLog.log("unittests", Level.WARNING, "is correct = " + is_correct);
-                } catch (Throwable thr) {
-                    XRLog.log("unittests", Level.WARNING, thr.toString());
-                    thr.printStackTrace();
-                }
+                boolean is_correct = compareTestFile(testfile, difffile, width, height);
+                XRLog.log("unittests", Level.WARNING, "is correct = " + is_correct);
             }
         }
 

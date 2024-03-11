@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
@@ -53,6 +55,8 @@ import java.util.logging.Level;
  * @author Patrick Wright
  */
 public class FSEntityResolver implements EntityResolver2 {
+    private static final Logger log = LoggerFactory.getLogger(FSEntityResolver.class);
+
     /**
      * Singleton instance, use {@link #instance()} to retrieve.
      */
@@ -93,7 +97,7 @@ public class FSEntityResolver implements EntityResolver2 {
             try {
                 is = realUrl.openStream();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("Failed to resolve entity {} ({})", publicID, systemID, e);
             }
 
             if (is == null) {
