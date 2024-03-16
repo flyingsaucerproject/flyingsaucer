@@ -193,16 +193,29 @@ public class ITextRenderer {
     }
 
     public static ITextRenderer fromString(String content) {
+        return fromString(content, null);
+    }
+
+    public static ITextRenderer fromString(String content, @Nullable String baseUrl) {
         ITextRenderer renderer = new ITextRenderer();
-        renderer.setDocumentFromString(content);
+        renderer.setDocumentFromString(content, baseUrl);
         return renderer;
     }
 
     public final void setDocumentFromString(String content) {
-        InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
-        Document dom = XMLResource.load(is).getDocument();
+        setDocument(parse(content), null);
+    }
 
-        setDocument(dom, null);
+    public final void setDocumentFromString(String content, @Nullable String baseUrl) {
+        setDocument(parse(content), baseUrl);
+    }
+
+    private Document parse(String content) {
+        try (var is = new BufferedReader(new StringReader(content))) {
+            return XMLResource.load(new InputSource(is)).getDocument();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Deprecated
