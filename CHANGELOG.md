@@ -1,7 +1,17 @@
 # Changelog
 
-## 9.7.0 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/12
+## 9.7.1 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/13
 * ...
+
+## 9.7.0 (released 16.03.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/12?closed=1
+* #291 restore methods with `baseUrl` parameter (#292)
+* Bump log4j from 2.23.0 to 2.23.1 (#287)
+* [cleanup] cleanup CVS history in comments (#285)
+* [cleanup] remove the old archive with ANT build scripts (#286)
+* [cleanup] make few methods non-public (#286)
+* [cleanup] remove a bunch of unused code (#286)
+* [cleanup] remove unused classes (PermutationGenerator, Idents, XLayout, SystemPropertiesUtil, Zipper, Regress) (#286)
+* [cleanup] replace "e.printStackTrace()" by a "standard" logging (#288)
 
 ## 9.6.1 (released 10.03.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/11?closed=1
 * #276 never consider table cells as "floated" (even if they have style "float: left" or "float:right") (#283)
