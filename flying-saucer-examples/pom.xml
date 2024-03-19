@@ -35,6 +35,12 @@
       <artifactId>flying-saucer-pdf</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.17.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
