@@ -188,7 +188,11 @@ public class ITextRenderer {
         return renderer;
     }
 
-    private void setDocument(Document doc, @Nullable String url) {
+    public void setDocument(Document doc) {
+        setDocument(doc, null);
+    }
+
+    public void setDocument(Document doc, @Nullable String url) {
         setDocument(doc, url, new XhtmlNamespaceHandler());
     }
 
