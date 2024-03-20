@@ -42,7 +42,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.print.PrinterGraphics;
-import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -341,7 +340,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     public void setDocumentFromString(String content, @Nullable String url, NamespaceHandler nsh) {
-        InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
+        InputSource is = new InputSource(new StringReader(content));
         Document dom = XMLResource.load(is).getDocument();
 
         setDocument(dom, url, nsh);

@@ -45,6 +45,7 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
+import javax.annotation.Nullable;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -53,7 +54,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -152,7 +152,11 @@ public class ITextRenderer {
         setDocument(loadDocument(uri), uri);
     }
 
-    public void setDocument(Document doc, String url) {
+    public void setDocument(Document doc) {
+        setDocument(doc, null);
+    }
+
+    public void setDocument(Document doc, @Nullable String url) {
         setDocument(doc, url, new XhtmlNamespaceHandler());
     }
 
@@ -172,14 +176,14 @@ public class ITextRenderer {
         setDocumentFromString(content, null);
     }
 
-    public void setDocumentFromString(String content, String baseUrl) {
-        InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
+    public void setDocumentFromString(String content, @Nullable String baseUrl) {
+        InputSource is = new InputSource(new StringReader(content));
         Document dom = XMLResource.load(is).getDocument();
 
         setDocument(dom, baseUrl);
     }
 
-    public void setDocument(Document doc, String url, NamespaceHandler nsh) {
+    public void setDocument(Document doc, @Nullable String url, NamespaceHandler nsh) {
         _doc = doc;
 
         getFontResolver().flushFontFaceFonts();

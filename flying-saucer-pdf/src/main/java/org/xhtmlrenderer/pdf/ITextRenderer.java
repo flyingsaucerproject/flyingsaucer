@@ -54,7 +54,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -215,10 +214,8 @@ public class ITextRenderer {
     }
 
     private Document parse(String content) {
-        try (var is = new BufferedReader(new StringReader(content))) {
+        try (var is = new StringReader(content)) {
             return XMLResource.load(new InputSource(is)).getDocument();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

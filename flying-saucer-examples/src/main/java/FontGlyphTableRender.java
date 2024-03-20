@@ -45,7 +45,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -317,7 +316,7 @@ public class FontGlyphTableRender {
         }
         // DEBUG
         //System.out.println(page);
-        InputSource is = new InputSource(new BufferedReader(new StringReader(page)));
+        InputSource is = new InputSource(new StringReader(page));
         return XMLResource.load(is).getDocument();
     }
 
@@ -396,7 +395,7 @@ public class FontGlyphTableRender {
         try {
             final Table table = new Table(15);
             XMLReader parser = newInstance().newSAXParser().getXMLReader();
-            InputSource is = new InputSource(new BufferedReader(new StringReader(html)));
+            InputSource is = new InputSource(new StringReader(html));
             try {
                 parser.setFeature("http://xml.org/sax/features/validation", true);
             } catch (SAXException e) {
