@@ -67,7 +67,6 @@ import org.xml.sax.InputSource;
 
 import java.awt.*;
 import java.awt.geom.Area;
-import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.HashSet;
@@ -813,7 +812,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     }
 
     public void setDocumentFromString(String content, String url, NamespaceHandler nsh) {
-        InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
+        InputSource is = new InputSource(new StringReader(content));
         Document dom = XMLResource.load(is).getDocument();
 
         setDocument(dom, url, nsh);
