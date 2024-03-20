@@ -59,15 +59,13 @@ public class ListItemPainter {
         MarkerData.ImageMarker marker = markerData.getImageMarker();
         FSImage img = marker.getImage();
         if (img != null) {
-            StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
             int x = getReferenceX(c, box);
             // FIXME: findbugs possible loss of precision, cf. int / (float)2
             x += -marker.getLayoutWidth() +
                     (marker.getLayoutWidth() / 2 - img.getWidth() / 2);
             c.getOutputDevice().drawImage(img,
                     x,
-                    (int)(getReferenceBaseline(c, box)
-                        - strutMetrics.getAscent() / 2 - img.getHeight() / 2));
+                    getListItemCenterBaseline(box) - img.getHeight() / 2);
         }
     }
 
@@ -81,17 +79,6 @@ public class ListItemPainter {
         }
     }
 
-    private static int getReferenceBaseline(RenderingContext c, BlockBox box) {
-        MarkerData markerData = box.getMarkerData();
-        StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
-
-        if (markerData.getReferenceLine() != null) {
-            return markerData.getReferenceLine().getAbsY() + strutMetrics.getBaseline();
-        } else {
-            return box.getAbsY() + box.getTy() + strutMetrics.getBaseline();
-        }
-    }
-
     private static void drawGlyph(RenderingContext c, BlockBox box,
             CalculatedStyle style, IdentValue listStyle) {
         // save the old AntiAliasing setting, then force it on
@@ -100,12 +87,10 @@ public class ListItemPainter {
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
         // calculations for bullets
-        StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
         MarkerData.GlyphMarker marker = box.getMarkerData().getGlyphMarker();
-        int x = getReferenceX(c, box);
-        x += -marker.getLayoutWidth();
-        int y = getReferenceBaseline(c, box)
-            - (int)strutMetrics.getAscent() / 2 - marker.getDiameter() / 2;
+        int x = getReferenceX(c, box) - marker.getLayoutWidth();
+        int y = getListItemCenterBaseline(box) - marker.getDiameter() / 2;
+
         if (listStyle == IdentValue.DISC) {
             c.getOutputDevice().fillOval(x, y, marker.getDiameter(), marker.getDiameter());
         } else if (listStyle == IdentValue.SQUARE) {
@@ -119,6 +104,18 @@ public class ListItemPainter {
                 aa_key == null ? RenderingHints.VALUE_ANTIALIAS_DEFAULT : aa_key);
     }
 
+    private static int getListItemCenterBaseline(final BlockBox box) {
+        return box.getAbsY() + getHeightOfFirstChild(box) / 2;
+    }
+
+    private static int getHeightOfFirstChild(final Box box) {
+        if (box.getChildCount() > 1) {
+            return getHeightOfFirstChild(box.getChild(0));
+        } else {
+            return box.getHeight();
+        }
+    }
+
     private static void drawText(RenderingContext c, BlockBox box, IdentValue listStyle) {
         MarkerData.TextMarker text = box.getMarkerData().getTextMarker();
 
@@ -130,5 +127,16 @@ public class ListItemPainter {
         c.getOutputDevice().setFont(box.getStyle().getFSFont(c));
         c.getTextRenderer().drawString(
                 c.getOutputDevice(), text.getText(), x, y);
+    }
+
+    private static int getReferenceBaseline(RenderingContext c, BlockBox box) {
+        MarkerData markerData = box.getMarkerData();
+        StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
+
+        if (markerData.getReferenceLine() != null) {
+            return markerData.getReferenceLine().getAbsY() + strutMetrics.getBaseline();
+        } else {
+            return box.getAbsY() + box.getTy() + strutMetrics.getBaseline();
+        }
     }
 }
