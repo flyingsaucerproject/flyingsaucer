@@ -20,33 +20,14 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
  * @author Patrick Wright
  */
 public class GeneralUtil {
-
-    /**
-     * Used to format an Object's hashcode into a 0-padded 10 char String, e.g.
-     * for 24993066 returns "0024993066"
-     */
-    public static final DecimalFormat PADDED_HASH_FORMAT = new DecimalFormat("0000000000");
-
     public static InputStream openStreamFromClasspath(Object obj, String resource) {
         InputStream readStream = null;
         try {
@@ -100,92 +81,7 @@ public class GeneralUtil {
             System.out.println("  " + ste.getClassName() + "." + ste.getMethodName() + "(ln " + ste.getLineNumber() + ")");
         }
     }
-
-    /**
-     * Returns a String tracking the last n method calls, from oldest to most
-     * recent. You can use this as a simple tracing mechanism to find out the
-     * calls that got to where you execute the {@code trackBack()} call
-     * from. Example:</p>
-     * <pre>
-     * // called from Box.calcBorders(), line 639
-     * String tback = GeneralUtil.trackBack(6);
-     * System.out.println(tback);
-     * </pre> produces
-     * <pre>
-     * Boxing.layoutChildren(ln 204)
-     * BlockBoxing.layoutContent(ln 81)
-     * Boxing.layout(ln 72)
-     * Boxing.layout(ln 133)
-     * Box.totalLeftPadding(ln 306)
-     * Box.calcBorders(ln 639)
-     * </pre>
-     * The {@code trackBack()} method itself is always excluded from the dump.
-     * Note the output may not be useful if HotSpot has been optimizing the
-     * code.
-     *
-     * @param cnt How far back in the call tree to go; if call tree is smaller, will
-     *            be limited to call tree.
-     */
-    public static String trackBack(int cnt) {
-        Exception ex = new Exception("Getting stack trace...");
-        StringBuilder sb = new StringBuilder();
-        List<String> list = new ArrayList<>(cnt);
-        StackTraceElement[] stackTrace = ex.getStackTrace();
-        if (cnt >= stackTrace.length) {
-            cnt = stackTrace.length - 1;
-        }
-
-        // >= 1 to not include this method
-        for (int i = cnt; i >= 1; i--) {
-            StackTraceElement ste = stackTrace[i];
-            sb.append(classNameOnly(ste.getClassName()));
-            sb.append(".");
-            sb.append(ste.getMethodName());
-            sb.append("(ln ").append(ste.getLineNumber()).append(")");
-            list.add(sb.toString());
-            sb = new StringBuilder();
-        }
-
-        StringBuilder padding = new StringBuilder();
-        StringBuilder trackback = new StringBuilder();
-        for (String s : list) {
-            trackback.append(padding).append(s).append("\n");
-            padding.append("   ");
-        }
-        return trackback.toString();
-    }
-
-
-    /**
-     * Given an Object instance, returns just the classname with no package
-     */
-    public static String classNameOnly(Object o) {
-        String s = "[null object ref]";
-        if (o != null) {
-            s = classNameOnly(o.getClass().getName());
-        }
-        return s;
-    }
-
-    /**
-     * Given a String classname, returns just the classname with no package
-     */
-    public static String classNameOnly(String cname) {
-        String s = "[null object ref]";
-        if (cname != null) {
-            s = cname.substring(cname.lastIndexOf('.') + 1);
-        }
-        return s;
-    }
-
-    public static String paddedHashCode(Object o) {
-        String s = "0000000000";
-        if (o != null) {
-            s = PADDED_HASH_FORMAT.format(o.hashCode());
-        }
-        return s;
-    }
-
+    
     public static boolean isMacOSX() {
         try {
             if (System.getProperty("os.name").toLowerCase().startsWith("mac os x")) {
@@ -211,44 +107,6 @@ public class GeneralUtil {
             }
         }
         return sbURI;
-    }
-
-    /**
-     * Reads all content from a given InputStream into a String using the default platform encoding.
-     *
-     * @param is the InputStream to read from. Must already be open, and will NOT be closed by this function. Failing to
-     * close this stream after the call will result in a resource leak.
-     *
-     * @return String containing contents read from the stream
-     * @throws IOException if the stream could not be read
-     */
-    public static String inputStreamToString(InputStream is) throws IOException {
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        StringWriter sw = new StringWriter();
-        char[] c = new char[1024];
-        while (true) {
-            int n = br.read(c, 0, c.length);
-            if (n < 0) break;
-            sw.write(c, 0, n);
-        }
-        isr.close();
-        return sw.toString();
-    }
-
-    public static void writeStringToFile(String content, String encoding, String fileName)
-            throws IOException {
-        File f = new File(fileName);
-        try (FileOutputStream fos = new FileOutputStream(f)) {
-            OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
-            BufferedWriter bw = new BufferedWriter(osw);
-            try (PrintWriter pw = new PrintWriter(bw)) {
-                pw.print(content);
-                pw.flush();
-                bw.flush();
-            }
-        }
-        System.out.println("Wrote file: " + f.getAbsolutePath());
     }
 
     /**
