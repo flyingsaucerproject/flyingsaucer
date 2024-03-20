@@ -1,6 +1,9 @@
 # Changelog
 
-## 9.7.1 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/13
+## 9.7.2 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/14
+* 
+
+## 9.7.1 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/13?closed=1
 * #298 restore public method setDocument(Document) (#299)
 
 ## 9.7.0 (released 16.03.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/12?closed=1
