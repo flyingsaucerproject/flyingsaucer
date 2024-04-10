@@ -1,9 +1,13 @@
 # Changelog
 
-## 9.7.2 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/14
+## 9.7.3 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/15
 * 
 
-## 9.7.1 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/13?closed=1
+## 9.7.2 (released 10.04.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/14?closed=1
+* fix center image and glyph list item marker (#302)
+* bump OpenPDF from 2.0.1 to 2.0.2 (#307)
+
+## 9.7.1 (released 20.03.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/13?closed=1
 * #298 restore public method setDocument(Document) (#299)
 
 ## 9.7.0 (released 16.03.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/12?closed=1
