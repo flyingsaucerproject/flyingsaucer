@@ -6,7 +6,7 @@
 
   <groupId>org.xhtmlrenderer</groupId>
   <artifactId>flying-saucer-parent</artifactId>
-  <version>9.7.2</version>
+  <version>9.7.3-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
