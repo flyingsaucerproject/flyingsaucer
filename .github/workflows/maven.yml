@@ -14,7 +14,7 @@ jobs:
             java: [ 17, 21 ]
     name: Java ${{matrix.java}}
     steps:
-      - uses: actions/checkout@v4.1.4
+      - uses: actions/checkout@v4.1.5
       - name: Setup java
         uses: actions/setup-java@v4
         with:
