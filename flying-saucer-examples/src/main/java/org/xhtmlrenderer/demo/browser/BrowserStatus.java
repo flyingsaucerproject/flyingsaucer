@@ -44,7 +44,8 @@ public class BrowserStatus extends JPanel {
                     final String text = used + "M / " + total + "M";
                     SwingUtilities.invokeLater(() -> memory.setText(text));
                     Thread.sleep(5000);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignore) {
+                    Thread.currentThread().interrupt();
                     break;
                 }
             }

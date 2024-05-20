@@ -178,6 +178,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         return false;
                     }
                 } catch (ClassCastException cce) {

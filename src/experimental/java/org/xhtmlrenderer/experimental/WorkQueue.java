@@ -58,8 +58,8 @@ public class WorkQueue {
                         while (queue.isEmpty()) {
                             try {
                                 queue.wait();
-                            } catch (InterruptedException e) {
-                                // ignore
+                            } catch (InterruptedException ignore) {
+                                Thread.currentThread().interrupt();
                             }
                             task = (Runnable) queue.removeFirst();
                             try {

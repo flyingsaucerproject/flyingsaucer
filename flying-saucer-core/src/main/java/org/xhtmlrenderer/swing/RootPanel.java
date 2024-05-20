@@ -615,6 +615,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
                             repaintRequestPending = false;
                         });
                     } catch (InterruptedException ignore) {
+                        Thread.currentThread().interrupt();
                     }
                 }).start();
             } else {

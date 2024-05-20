@@ -76,8 +76,8 @@ class ImageLoadWorker extends Thread {
                 final BufferedImage newImg1 = newImg;
                 EventQueue.invokeLater(() -> loadItem._mfsImage.setImage(loadItem._uri, newImg1, wasScaled));
             }
-        } catch (InterruptedException e) {
-            //
+        } catch (InterruptedException ignore) {
+            Thread.currentThread().interrupt();
         }
     }
 }

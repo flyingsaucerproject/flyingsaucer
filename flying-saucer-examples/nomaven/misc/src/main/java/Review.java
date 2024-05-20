@@ -404,8 +404,8 @@ public class Review {
             while (!isSet) {
                 try {
                     wait();
-                } catch (InterruptedException ie) {
-                    // swallow
+                } catch (InterruptedException ignore) {
+                    Thread.currentThread().interrupt();
                 }
             }
         }

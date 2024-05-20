@@ -95,7 +95,8 @@ public class BrowserStatus extends Composite {
                         }
                     });
                     wait(REFRESH_INTERVAL);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignore) {
+                    Thread.currentThread().interrupt();
                     break;
                 }
             }
