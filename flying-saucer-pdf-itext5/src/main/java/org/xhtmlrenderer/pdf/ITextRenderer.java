@@ -109,7 +109,7 @@ public class ITextRenderer {
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice) {
         this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice, dotsPerPixel));
     }
-    
+
     public ITextRenderer(ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
         this(outputDevice.getDotsPerPoint(), userAgent.getDotsPerPixel(), outputDevice, userAgent);
     }
@@ -500,12 +500,9 @@ public class ITextRenderer {
     }
 
     private String createXPacket(String metadata) {
-        StringBuilder result = new StringBuilder(metadata.length() + 50);
-        result.append("<?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?>\n");
-        result.append(metadata);
-        result.append("\n<?xpacket end='r'?>");
-
-        return result.toString();
+        return "<?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+                metadata +
+                "\n<?xpacket end='r'?>";
     }
 
     public ITextOutputDevice getOutputDevice() {
