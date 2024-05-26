@@ -19,7 +19,7 @@
 package org.xhtmlrenderer.fop;
 
 import com.codeborne.pdftest.PDF;
-import com.itextpdf.text.DocumentException;
+import com.lowagie.text.DocumentException;
 import org.junit.jupiter.api.Test;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
