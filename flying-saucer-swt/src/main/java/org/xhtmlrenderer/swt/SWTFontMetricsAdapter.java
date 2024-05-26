@@ -33,8 +33,8 @@ public class SWTFontMetricsAdapter implements FSFontMetrics {
     private final FontMetrics _fm;
 
     public SWTFontMetricsAdapter(SWTFontContext context, SWTFSFont font) {
-        GC gc = ((SWTFontContext) context).getGC();
-        gc.setFont(((SWTFSFont) font).getSWTFont());
+        GC gc = context.getGC();
+        gc.setFont(font.getSWTFont());
         _fm = gc.getFontMetrics();
     }
 

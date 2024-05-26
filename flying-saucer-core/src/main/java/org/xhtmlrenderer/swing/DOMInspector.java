@@ -343,7 +343,7 @@ class DOMTreeModel implements TreeModel {
         Node tempRoot = doc.getDocumentElement();
         NodeList nl = tempRoot.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
-            if (nl.item(i).getNodeName().toLowerCase().equals("body")) {
+            if (nl.item(i).getNodeName().equalsIgnoreCase("body")) {
                 this.root = nl.item(i);
             }
         }
