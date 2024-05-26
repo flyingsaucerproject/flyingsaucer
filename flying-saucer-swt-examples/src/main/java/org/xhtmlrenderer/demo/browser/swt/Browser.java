@@ -283,12 +283,14 @@ public class Browser implements DisposeListener, DocumentListener {
         try {
             url = new URL(uri);
         } catch (MalformedURLException e) {
+            log.debug("Failed to load image {} from uri {}", icon, uri, e);
             return null;
         }
         InputStream is;
         try {
             is = url.openStream();
         } catch (IOException e) {
+            log.debug("Failed to load image {} from uri {}", icon, uri, e);
             return null;
         }
         if (is == null) {

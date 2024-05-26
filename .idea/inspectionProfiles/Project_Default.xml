@@ -2,6 +2,10 @@
   <profile version="1.0">
     <option name="myName" value="Project Default" />
     <inspection_tool class="BooleanMethodIsAlwaysInverted" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CatchMayIgnoreException" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="m_ignoreCatchBlocksWithComments" value="false" />
+      <option name="m_ignoreNonEmptyCatchBlock" value="false" />
+    </inspection_tool>
     <inspection_tool class="Convert2MethodRef" enabled="true" level="INFORMATION" enabled_by_default="true" />
     <inspection_tool class="HtmlTagCanBeJavadocTag" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="JavadocBlankLines" enabled="false" level="WARNING" enabled_by_default="false" />

@@ -96,7 +96,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
                         ref = new URL(duri);
                     }
                 } catch (MalformedURLException e) {
-                    Uu.p("URI/URL is malformed: " + burl + " or " + uri);
+                    Uu.p("URI/URL is malformed: %s or %s (caused by: %s)".formatted(burl, uri, e));
                 }
             } else {
                 if (!short_url.startsWith("/")) {
@@ -119,7 +119,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
                 }
                 ref = new URL(base, uri);
             } catch (MalformedURLException e) {
-                Uu.p("URI/URL is malformed: " + burl + " or " + uri);
+                Uu.p("URI/URL is malformed: %s or %s (caused by: %s)".formatted(burl, uri, e));
             }
         }
 

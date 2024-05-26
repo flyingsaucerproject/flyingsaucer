@@ -47,7 +47,7 @@ import java.net.URL;
  */
 public class BrowsePanel {
     private static final Logger log = LoggerFactory.getLogger(BrowsePanel.class);
-    
+
     private String uri;
     private XHTMLPanel panel;
     private JFrame frame;
@@ -170,7 +170,7 @@ public class BrowsePanel {
             try {
                 new URL(name);
             } catch (MalformedURLException e) {
-                throw new IllegalArgumentException("File " + name + " does not exist or is not a URI");
+                throw new IllegalArgumentException("File " + name + " does not exist or is not a URI", e);
             }
         }
         this.uri = name;
