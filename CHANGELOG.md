@@ -1,7 +1,14 @@
 # Changelog
 
-## 9.7.3 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/15
+## 9.8.1 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/16
 * 
+
+## 9.8.0 (released 26.05.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/15?closed=1
+* Remove itext 5 support (#325)
+* Remove libs (#324)
+* disabled logging by default (#304)
+* Add a test for the embedding of fonts declared in the css (#318)
+* Bump slf4j from 2.0.12 to 2.0.13 (#310)
 
 ## 9.7.2 (released 10.04.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/14?closed=1
 * fix center image and glyph list item marker (#302)
