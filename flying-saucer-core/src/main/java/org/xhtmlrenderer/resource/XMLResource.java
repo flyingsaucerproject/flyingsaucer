@@ -59,8 +59,11 @@ import java.util.logging.Level;
 
 
 /**
+ * Deprecated, see HTMLResource instead.
+ *
  * @author Patrick Wright
  */
+@Deprecated
 @ParametersAreNonnullByDefault
 public class XMLResource extends AbstractResource {
     private Document document;

@@ -63,6 +63,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Patrick Wright
  */
+@Deprecated
 public class FSCatalog {
     /**
      * Default constructor

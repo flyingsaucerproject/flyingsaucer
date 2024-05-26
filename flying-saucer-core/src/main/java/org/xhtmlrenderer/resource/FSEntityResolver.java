@@ -54,6 +54,7 @@ import java.util.logging.Level;
  *
  * @author Patrick Wright
  */
+@Deprecated
 public class FSEntityResolver implements EntityResolver2 {
     private static final Logger log = LoggerFactory.getLogger(FSEntityResolver.class);
 
