@@ -49,8 +49,8 @@ public class HTMLResource extends AbstractResource {
             Document jsoupDoc = Jsoup.parse(stream, StandardCharsets.UTF_8.name(), "", Parser.xmlParser());
             this.document = convertJsoupToW3CDocument(jsoupDoc);
         } catch (IOException | ParserConfigurationException | TransformerException | SAXException e) {
-            XRLog.load(java.util.logging.Level.SEVERE, "Failed to parse and convert XML document.", e);
-            throw new XRRuntimeException("Failed to parse and convert XML document.", e);
+            XRLog.load(java.util.logging.Level.SEVERE, "Failed to parse and convert HTML document.", e);
+            throw new XRRuntimeException("Failed to parse and convert HTML document.", e);
         }
     }
 
@@ -58,8 +58,8 @@ public class HTMLResource extends AbstractResource {
         try (InputStream stream = source.openStream()) {
             return new HTMLResource(stream);
         } catch (IOException e) {
-            XRLog.load(java.util.logging.Level.SEVERE, "Failed to load XML from URL.", e);
-            throw new XRRuntimeException("Failed to load XML from URL.", e);
+            XRLog.load(java.util.logging.Level.SEVERE, "Failed to load HTML from URL.", e);
+            throw new XRRuntimeException("Failed to load HTML from URL.", e);
         }
     }
 
@@ -72,8 +72,8 @@ public class HTMLResource extends AbstractResource {
             InputStream stream = convertReaderToInputStream(reader);
             return new HTMLResource(stream);
         } catch (IOException e) {
-            XRLog.load(java.util.logging.Level.SEVERE, "Failed to load XML from Reader.", e);
-            throw new XRRuntimeException("Failed to load XML from Reader.", e);
+            XRLog.load(java.util.logging.Level.SEVERE, "Failed to load HTML from Reader.", e);
+            throw new XRRuntimeException("Failed to load HTML from Reader.", e);
         }
     }
 
