@@ -31,26 +31,6 @@
 
   <profiles>
     <profile>
-      <id>itext</id>
-      <activation>
-      <activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-        <!-- IText used for test execution -->
-        <dependency>
-          <groupId>com.itextpdf</groupId>
-          <artifactId>itextpdf</artifactId>
-          <version>${itext5.version}</version>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.xhtmlrenderer</groupId>
-          <artifactId>flying-saucer-pdf-itext5</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>openpdf</id>
       <dependencies>
         <dependency>
