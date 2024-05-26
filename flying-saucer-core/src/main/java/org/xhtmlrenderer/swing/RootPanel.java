@@ -608,7 +608,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
                 repaintRequestPending = true;
                 new Thread(() -> {
                     try {
-                        Thread.currentThread().sleep(Math.min(maxRepaintRequestWaitMs, Math.abs(maxRepaintRequestWaitMs - el)));
+                        Thread.sleep(Math.min(maxRepaintRequestWaitMs, Math.abs(maxRepaintRequestWaitMs - el)));
                         EventQueue.invokeLater(() -> {
                             XRLog.general(Level.FINE, "--> running queued repaint request");
                             repaintRequested(doLayout);

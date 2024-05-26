@@ -408,7 +408,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
                     int selTxtEnd = (t == range.getEndContainer()) ? range.getEndOffset() : t
                             .getNodeValue().length();
 
-                    hlText.append(t.getNodeValue().substring(selTxtSt, selTxtEnd));
+                    hlText.append(t.getNodeValue(), selTxtSt, selTxtEnd);
                     for (InlineText iT : iTs) {
                         iT.setSelectionStart((short) Math.max(0, Math.min(selTxtSt, iT.getEnd())
                                 - iT.getStart()));

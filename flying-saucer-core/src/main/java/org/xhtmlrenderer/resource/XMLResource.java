@@ -121,7 +121,7 @@ public class XMLResource extends AbstractResource {
         // you get exceptions on every load
         try {
             if (xmlReaderClass != null &&
-                    !xmlReaderClass.toLowerCase().equals("default") &&
+                    !xmlReaderClass.equalsIgnoreCase("default") &&
                     XMLResource.useConfiguredParser) {
                 try {
                     Class.forName(xmlReaderClass);

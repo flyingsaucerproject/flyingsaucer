@@ -94,7 +94,7 @@ public class BorderPainter {
          * Function overview: Prior to creating the path we check what side were building this on. All the coordinates in this function assume its building a top border
          * the border is then rotated and translated to its appropriate side. Uses of "left" and "right" are assuming a perspective of inside the shape looking out.
          */
-        border = border.normalizedInstance(new Rectangle((int)(bounds.width), (int)(bounds.height)));
+        border = border.normalizedInstance(new Rectangle(bounds.width, bounds.height));
 
         RelativeBorderProperties props = new RelativeBorderProperties(bounds, border, 0f, side, 1+scaledOffset, widthScale);
         float sideWidth;

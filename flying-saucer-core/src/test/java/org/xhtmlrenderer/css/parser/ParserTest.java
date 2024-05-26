@@ -37,7 +37,7 @@ public class ParserTest {
     @Test
     public void cssParsingPerformance() throws IOException {
         int count = 10_000;
-        String longTest = String.valueOf(test).repeat(count);
+        String longTest = test.repeat(count);
         assertThat(longTest.length()).as("Long enough input").isEqualTo(test.length() * count);
         
         long total = 0;
