@@ -80,7 +80,6 @@
     <module>flying-saucer-core</module>
     <module>flying-saucer-pdf</module>
     <module>flying-saucer-pdf-osgi</module>
-    <module>flying-saucer-pdf-itext5</module>
     <module>flying-saucer-log4j</module>
     <module>flying-saucer-swt</module>
     <module>flying-saucer-swt-examples</module>
@@ -257,7 +256,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <openpdf.version>2.0.2</openpdf.version>
     <junit.version>5.10.2</junit.version>
-    <itext5.version>5.5.13.3</itext5.version>
     <slf4j.version>2.0.13</slf4j.version>
     <assertj.version>3.25.3</assertj.version>
     <pdftest.version>1.8.1</pdftest.version>

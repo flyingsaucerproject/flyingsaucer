@@ -33,7 +33,6 @@ New releases of Flying Saucer are distributed through Maven. The available artif
 
 * `org.xhtmlrenderer:flying-saucer-core` - Core library and Java2D rendering
 * `org.xhtmlrenderer:flying-saucer-pdf` - PDF output using OpenPDF (ex. iText 2.x)
-* `org.xhtmlrenderer:flying-saucer-pdf-itext5` - PDF output using iText 5.x (iText 5 is EOL)
 * `org.xhtmlrenderer:flying-saucer-pdf-openpdf` - not supported anymore (replaced by `flying-saucer-pdf`)
 * `org.xhtmlrenderer:flying-saucer-swt` - SWT output
 * `org.xhtmlrenderer:flying-saucer-log4j` - Logging plugin for log4j
