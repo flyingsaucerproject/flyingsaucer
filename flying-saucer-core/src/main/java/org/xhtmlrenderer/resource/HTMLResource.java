@@ -20,21 +20,16 @@
 package org.xhtmlrenderer.resource;
 
 import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.net.URL;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import javax.xml.transform.TransformerException;
 
 /**
  * HTMLResource uses JSoup to parse XML resources.
@@ -47,8 +42,9 @@ public class HTMLResource extends AbstractResource {
         super(stream);
         try {
             Document jsoupDoc = Jsoup.parse(stream, StandardCharsets.UTF_8.name(), "", Parser.xmlParser());
-            this.document = convertJsoupToW3CDocument(jsoupDoc);
-        } catch (IOException | ParserConfigurationException | TransformerException | SAXException e) {
+            W3CDom w3cDom = new W3CDom();
+            this.document = w3cDom.fromJsoup(jsoupDoc);
+        } catch (IOException  e) {
             XRLog.load(java.util.logging.Level.SEVERE, "Failed to parse and convert HTML document.", e);
             throw new XRRuntimeException("Failed to parse and convert HTML document.", e);
         }
@@ -83,13 +79,6 @@ public class HTMLResource extends AbstractResource {
 
     public org.w3c.dom.Document getDocument() {
         return document;
-    }
-
-    private static org.w3c.dom.Document convertJsoupToW3CDocument(Document jsoupDoc) throws ParserConfigurationException, IOException, TransformerException, SAXException {
-        String html = jsoupDoc.outerHtml();
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        return builder.parse(new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8)));
     }
 
     private static InputStream convertReaderToInputStream(Reader reader) throws IOException {
