@@ -5,7 +5,10 @@
 
 Flying Saucer is a pure-Java library for rendering arbitrary well-formed XML 
 (or XHTML) using CSS 2.1 for layout and formatting, output to Swing panels, 
-PDF, and images.
+PDF, and images. 
+
+The new [Jsoup](https://jsoup.org/) based HTML parser will allow supporting HTML 5 syntax
+and features in Flying Saucer, with a goal of implementing full HTML5 support over time. 
 
 Comprehensive documentation available in [The Flying Saucer User's Guide](https://flyingsaucerproject.github.io/flyingsaucer/r8/guide/users-guide-R8.html).
 
