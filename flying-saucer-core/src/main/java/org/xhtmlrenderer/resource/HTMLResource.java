@@ -41,7 +41,7 @@ public class HTMLResource extends AbstractResource {
     private HTMLResource(InputStream stream) {
         super(stream);
         try {
-            Document jsoupDoc = Jsoup.parse(stream, StandardCharsets.UTF_8.name(), "", Parser.xmlParser());
+            Document jsoupDoc = Jsoup.parse(stream, StandardCharsets.UTF_8.name(), "", Parser.htmlParser());
             W3CDom w3cDom = new W3CDom();
             this.document = w3cDom.fromJsoup(jsoupDoc);
         } catch (IOException  e) {
