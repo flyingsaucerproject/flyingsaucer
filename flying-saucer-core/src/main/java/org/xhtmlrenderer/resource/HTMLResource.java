@@ -32,7 +32,7 @@ import java.net.URL;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * HTMLResource uses JSoup to parse XML resources.
+ * HTMLResource uses JSoup to parse HTML.
  */
 @ParametersAreNonnullByDefault
 public class HTMLResource extends AbstractResource {
