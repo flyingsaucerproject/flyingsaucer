@@ -199,7 +199,7 @@ will need to synchronize this yourself.</p>
 <a name="configuration"></a>
 <h2>How do I change the runtime configuration for XR?</h2>
 <p>The renderer works with a simple, <code>java.util.Properties</code>-based 
-configuration system--no XML! Our <code>org.xhtmlrenderer.util.Confuration</code> class 
+configuration system--no XML! Our <code>org.xhtmlrenderer.util.Configuration</code> class 
 loads properties on first access and makes them available at runtime.</p>
 
 <p>When you are using the renderer, <code>Configuration</code> needs to know where
@@ -237,6 +237,10 @@ properties, just re-define the property on the command line. e.g.
 <pre>
 java -Dxr.property-name=new_value org.xhtmlrenderer.HTMLPanel
 </pre>
+</p>
+
+<p><b>Override programmatically:</b> You can also override properties in your java-code
+  with <code>Configuration.setProperty("key", "value");</code>.
 </p>
 
 <p>You can override as many properties as you like. Note that overrides are driven

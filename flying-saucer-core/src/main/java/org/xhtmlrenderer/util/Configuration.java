@@ -443,6 +443,17 @@ public class Configuration {
     }
 
     /**
+     * Updates the value for a key in the Configuration.
+     *
+     * @param key Name of the property.
+     * @param value Value, which will be assigned to this property.
+     */
+    public static void setProperty(String key, String val) {
+        Configuration conf = instance();
+        conf.properties.setProperty(key, val);
+    }
+
+    /**
      * Returns the value for key in the Configuration. A warning is issued to
      * the log if the property is not defined.
      *
