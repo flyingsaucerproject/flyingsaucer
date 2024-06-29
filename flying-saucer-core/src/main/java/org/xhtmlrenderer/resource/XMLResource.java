@@ -66,10 +66,12 @@ public class XMLResource extends AbstractResource {
     private Document document;
     private static final XMLResourceBuilder XML_RESOURCE_BUILDER;
     private static boolean useConfiguredParser;
+    private static boolean useHtmlUnitCyberNekoParser;
 
     static {
         XML_RESOURCE_BUILDER = new XMLResourceBuilder();
         useConfiguredParser = true;
+        useHtmlUnitCyberNekoParser = true;
     }
 
     private XMLResource(InputStream stream) {
@@ -115,8 +117,8 @@ public class XMLResource extends AbstractResource {
 
     public static XMLReader newXMLReader() {
         XMLReader xmlReader = null;
-        String xmlReaderClass = Configuration.valueFor("xr.load.xml-reader");
 
+        String xmlReaderClass = Configuration.valueFor("xr.load.xml-reader");
         //TODO: if it doesn't find the parser, note that in a static boolean--otherwise
         // you get exceptions on every load
         try {
@@ -143,6 +145,17 @@ public class XMLResource extends AbstractResource {
                     + xmlReaderClass + ". Please check classpath. Use value 'default' in " +
                     "FS configuration if necessary. Will now try JDK default.", ex);
         }
+
+        xmlReaderClass = "org.htmlunit.cyberneko.parsers.SAXParser";
+        if (xmlReaderClass != null && XMLResource.useHtmlUnitCyberNekoParser) {
+            try {
+                xmlReader = XMLReaderFactory.createXMLReader(xmlReaderClass);
+            } catch (Exception ex) {
+                XMLResource.useHtmlUnitCyberNekoParser = false;
+                // no need for logging here
+            }
+        }
+
         if (xmlReader == null) {
             try {
                 // JDK default
@@ -189,7 +202,7 @@ public class XMLResource extends AbstractResource {
 
             target.setElapsedLoadTime(end - start);
             XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
-            
+
             target.setDocument(document);
             return target;
         }
