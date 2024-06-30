@@ -47,10 +47,10 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import static org.xhtmlrenderer.css.style.CssKnowledge.BLOCK_EQUIVALENTS;
@@ -106,7 +106,7 @@ public class CalculatedStyle {
     /**
      * Cache child styles of this style that have the same cascaded properties
      */
-    private final Map<String, CalculatedStyle> _childCache = new HashMap<>();
+    private final Map<String, CalculatedStyle> _childCache = new ConcurrentHashMap<>();
 
     /**
      * Our main array of property values defined in this style, keyed
@@ -149,7 +149,7 @@ public class CalculatedStyle {
 
     private boolean checkPaddingAllowed(IdentValue display) {
         return display != IdentValue.TABLE_HEADER_GROUP && display != IdentValue.TABLE_ROW_GROUP &&
-                display != IdentValue.TABLE_FOOTER_GROUP && display != IdentValue.TABLE_ROW && 
+                display != IdentValue.TABLE_FOOTER_GROUP && display != IdentValue.TABLE_ROW &&
                 (!isTable(display) || !isCollapseBorders());
     }
 
@@ -173,15 +173,9 @@ public class CalculatedStyle {
      * @param matched the CascadedStyle to apply
      * @return The derived child style
      */
-    public synchronized CalculatedStyle deriveStyle(CascadedStyle matched) {
+    public CalculatedStyle deriveStyle(CascadedStyle matched) {
         String fingerprint = matched.getFingerprint();
-        CalculatedStyle cs = _childCache.get(fingerprint);
-
-        if (cs == null) {
-            cs = new CalculatedStyle(this, matched);
-            _childCache.put(fingerprint, cs);
-        }
-        return cs;
+        return _childCache.computeIfAbsent(fingerprint, (key) -> new CalculatedStyle(this, matched));
     }
 
     public CalculatedStyle getParent() {

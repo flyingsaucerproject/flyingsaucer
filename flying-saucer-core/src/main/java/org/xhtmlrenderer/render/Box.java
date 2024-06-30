@@ -228,17 +228,17 @@ public abstract class Box implements Styleable {
     public static final int CHILDREN_FLUX = 2;
     public static final int DONE = 3;
 
-    private int _state = NOTHING;
+    private volatile int _state = NOTHING;
 
     public static final int DUMP_RENDER = 2;
 
     public static final int DUMP_LAYOUT = 1;
 
-    public synchronized int getState() {
+    public int getState() {
         return _state;
     }
 
-    public synchronized void setState(int state) {
+    public void setState(int state) {
         _state = state;
     }
 

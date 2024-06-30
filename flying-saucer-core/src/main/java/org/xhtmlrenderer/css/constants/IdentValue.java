@@ -24,8 +24,8 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -53,7 +53,7 @@ import java.util.Map;
  * @author Patrick Wright
  */
 public class IdentValue implements FSDerivedValue {
-    private static final Map<String, IdentValue> ALL_IDENT_VALUES = new HashMap<>();
+    private static final Map<String, IdentValue> ALL_IDENT_VALUES = new ConcurrentHashMap<>();
     private static int maxAssigned;
 
     private final String ident;
@@ -265,7 +265,7 @@ public class IdentValue implements FSDerivedValue {
      *
      * @param ident The feature to be added to the Value attribute
      */
-    private static synchronized IdentValue addValue(String ident) {
+    private static IdentValue addValue(String ident) {
         IdentValue val = new IdentValue(ident);
         ALL_IDENT_VALUES.put(ident, val);
         return val;

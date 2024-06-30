@@ -52,7 +52,7 @@ import static org.xhtmlrenderer.util.TextUtil.readTextContent;
 public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     private static final String _namespace = "http://www.w3.org/1999/xhtml";
-    private static StylesheetInfo _defaultStylesheet;
+    private static volatile StylesheetInfo _defaultStylesheet;
     private static boolean _defaultStylesheetError;
 
     /**
@@ -363,6 +363,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     @Nullable
     @CheckReturnValue
     public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
+        if (_defaultStylesheet != null) {
+            return _defaultStylesheet;
+        }
+
         synchronized (XhtmlCssOnlyNamespaceHandler.class) {
             if (_defaultStylesheet != null) {
                 return _defaultStylesheet;

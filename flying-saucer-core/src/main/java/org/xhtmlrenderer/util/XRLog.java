@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import static java.util.Collections.unmodifiableList;
+
 
 /**
  * Utility class for using the java.util.logging package. Relies on the standard
@@ -48,7 +50,7 @@ public class XRLog {
     public static final String LAYOUT = registerLoggerByName("org.xhtmlrenderer.layout");
     public static final String RENDER = registerLoggerByName("org.xhtmlrenderer.render");
 
-    private static boolean initPending = true;
+    private static volatile boolean initPending = true;
     private static XRLogger loggerImpl;
 
     private static boolean loggingEnabled = true;
@@ -66,8 +68,7 @@ public class XRLog {
      * @return List of loggers, never null.
      */
     public static List<String> listRegisteredLoggers() {
-        // defensive copy
-        return new ArrayList<>(LOGGER_NAMES);
+        return unmodifiableList(LOGGER_NAMES);
     }
 
 
@@ -199,19 +200,15 @@ public class XRLog {
         log(RENDER, level, msg, th);
     }
 
-    public static synchronized void log(String where, Level level, String msg) {
-        if (initPending) {
-            init();
-        }
+    public static void log(String where, Level level, String msg) {
+        init();
         if (isLoggingEnabled()) {
             loggerImpl.log(where, level, msg);
         }
     }
 
-    public static synchronized void log(String where, Level level, String msg, Throwable th) {
-        if (initPending) {
-            init();
-        }
+    public static void log(String where, Level level, String msg, Throwable th) {
+        init();
         if (isLoggingEnabled()) {
             loggerImpl.log(where, level, msg, th);
         }
@@ -237,25 +234,23 @@ public class XRLog {
     }
 
     private static void init() {
-        synchronized (XRLog.class) {
-            if (!initPending) {
-                return;
+        if (initPending) {
+            synchronized (XRLog.class) {
+                if (initPending) {
+                    XRLog.setLoggingEnabled(Configuration.isTrue("xr.util-logging.loggingEnabled", true));
+
+                    if (loggerImpl == null) {
+                        loggerImpl = new JDKXRLogger();
+                    }
+
+                    initPending = false;
+                }
             }
-
-            XRLog.setLoggingEnabled(Configuration.isTrue("xr.util-logging.loggingEnabled", true));
-
-            if (loggerImpl == null) {
-                loggerImpl = new JDKXRLogger();
-            }
-
-            initPending = false;
         }
     }
 
-    public static synchronized void setLevel(String log, Level level) {
-        if (initPending) {
-            init();
-        }
+    public static void setLevel(String log, Level level) {
+        init();
         loggerImpl.setLevel(log, level);
     }
 
@@ -266,7 +261,7 @@ public class XRLog {
      * to configuration file property xr.util-logging.loggingEnabled, or to
      * value passed to setLoggingEnabled(bool).
      */
-    public static synchronized boolean isLoggingEnabled() {
+    public static boolean isLoggingEnabled() {
         return loggingEnabled;
     }
 
@@ -277,15 +272,15 @@ public class XRLog {
      *                       if false, all logging calls fail silently. Corresponds
      *                       to configuration file property xr.util-logging.loggingEnabled
      */
-    public static synchronized void setLoggingEnabled(boolean loggingEnabled) {
+    public static void setLoggingEnabled(boolean loggingEnabled) {
         XRLog.loggingEnabled = loggingEnabled;
     }
 
-    public static synchronized XRLogger getLoggerImpl() {
+    public static XRLogger getLoggerImpl() {
         return loggerImpl;
     }
 
-    public static synchronized void setLoggerImpl(XRLogger loggerImpl) {
+    public static void setLoggerImpl(XRLogger loggerImpl) {
         XRLog.loggerImpl = loggerImpl;
     }
 }
