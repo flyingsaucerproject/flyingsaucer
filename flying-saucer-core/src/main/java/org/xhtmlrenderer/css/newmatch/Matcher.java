@@ -71,7 +71,7 @@ public class Matcher {
     private final List<PageRule> _pageRules = new ArrayList<>();
     private final List<FontFaceRule> _fontFaceRules = new ArrayList<>();
 
-    public Matcher(TreeResolver tr, AttributeResolver ar, 
+    public Matcher(TreeResolver tr, AttributeResolver ar,
                    StylesheetFactory factory, List<Stylesheet> stylesheets, String medium) {
         _treeRes = tr;
         _attRes = ar;
@@ -235,18 +235,20 @@ public class Matcher {
      *
      * @author Torbjoern Gannholm
      */
-    protected class Mapper {
-        private List<Selector> axes;
-        private Map<String, List<Selector>> pseudoSelectors;
-        private List<Selector> mappedSelectors;
+    private class Mapper {
+        private final List<Selector> axes;
+        private final Map<String, List<Selector>> pseudoSelectors;
+        private final List<Selector> mappedSelectors;
         private Map<String, Mapper> children;
 
         Mapper(Collection<Selector> selectors) {
-            axes = new ArrayList<>(selectors.size());
-            axes.addAll(selectors);
+            this(new ArrayList<>(selectors), null, null);
         }
 
-        private Mapper() {
+        private Mapper(List<Selector> childAxes, Map<String, List<Selector>> pseudoSelectors, List<Selector> mappedSelectors) {
+            this.axes = childAxes;
+            this.pseudoSelectors = pseudoSelectors;
+            this.mappedSelectors = mappedSelectors;
         }
 
         /**
@@ -256,7 +258,6 @@ public class Matcher {
          *         (more correct: preserves the sort order from Matcher creation)
          */
         Mapper mapChild(Node e) {
-            //Mapper childMapper = new Mapper();
             List<Selector> childAxes = new ArrayList<>(axes.size() + 10);
             Map<String, List<Selector>> pseudoSelectors = new HashMap<>();
             List<Selector> mappedSelectors = new LinkedList<>();
@@ -305,14 +306,8 @@ public class Matcher {
                 }
             }
             if (children == null) children = new HashMap<>();
-            Mapper childMapper = children.get(key.toString());
-            if (childMapper == null) {
-                childMapper = new Mapper();
-                childMapper.axes = childAxes;
-                childMapper.pseudoSelectors = pseudoSelectors;
-                childMapper.mappedSelectors = mappedSelectors;
-                children.put(key.toString(), childMapper);
-            }
+            Mapper childMapper = children.computeIfAbsent(key.toString(), k ->
+                    new Mapper(childAxes, pseudoSelectors, mappedSelectors));
             link(e, childMapper);
             return childMapper;
         }
