@@ -326,7 +326,7 @@ abstract class Condition {
         }
     }
 
-    private static class LangCondition extends Condition {
+    static class LangCondition extends Condition {
         private final String _lang;
 
         private LangCondition(String lang) {
@@ -338,15 +338,16 @@ abstract class Condition {
             if (attRes == null) {
                 return false;
             }
-            String lang = attRes.getLang(e);
-            if (lang == null) {
-                return false;
-            }
-            if(_lang.equalsIgnoreCase(lang)) {
+            String langAttribute = attRes.getLang(e);
+            return langAttribute != null && matches(langAttribute);
+        }
+
+        boolean matches(String langAttribute) {
+            if (_lang.equalsIgnoreCase(langAttribute)) {
                 return true;
             }
-            String[] ca = split(lang, '-');
-            return _lang.equalsIgnoreCase(ca[0]);
+            int i = langAttribute.indexOf('-');
+            return i == _lang.length() && langAttribute.substring(0, i).equalsIgnoreCase(_lang);
         }
 
     }
