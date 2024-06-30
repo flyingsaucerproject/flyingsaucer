@@ -271,11 +271,13 @@ abstract class Condition {
         }
     }
 
-    private static class ClassCondition extends Condition {
-        private final String _paddedClassName;
+    final static class ClassCondition extends Condition {
+        private final String className;
+        private final int classNameLength;
 
         private ClassCondition(String className) {
-            _paddedClassName = " " + className + " ";
+            this.className = className;
+            this.classNameLength = className.length();
         }
 
         @Override
@@ -284,14 +286,27 @@ abstract class Condition {
                 return false;
             }
             String c = attRes.getClass(e);
-            if (c == null) {
-                return false;
-            }
+            return c != null && containsClassName(c);
+        }
 
+        boolean containsClassName(String classAttribute) {
+            return containsClassName(classAttribute, -1);
+        }
+
+        private boolean containsClassName(String classAttribute, int fromIndex) {
             // This is much faster than calling `split()` and comparing individual values in a loop.
             // NOTE: In jQuery, for example, the attribute value first has whitespace normalized to spaces. But
             // in an XML DOM, space normalization in attributes is supposed to have happened already.
-            return (" " + c + " ").contains(_paddedClassName);
+            int index = classAttribute.indexOf(className, fromIndex);
+            if (index == -1) return false;
+
+            return isWhitespace(classAttribute, index - 1)
+                    && isWhitespace(classAttribute, index + classNameLength)
+                    || containsClassName(classAttribute, index + classNameLength);
+        }
+
+        private boolean isWhitespace(String classAttribute, int index) {
+            return index < 0 || index >= classAttribute.length() || Character.isWhitespace(classAttribute.charAt(index));
         }
     }
 
