@@ -93,7 +93,7 @@ public class XRSimpleLogFormatter extends Formatter {
      * Localize and format the message string from a log record.
      */
     @Override
-    public synchronized String formatMessage(LogRecord record) {
+    public String formatMessage(LogRecord record) {
         return super.formatMessage(record);
     }
 

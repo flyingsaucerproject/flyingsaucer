@@ -40,6 +40,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static java.util.Collections.synchronizedMap;
+
 /**
  * A Factory class for Cascading Style Sheets. Sheets are parsed using a single
  * parser instance for all sheets. Sheets are cached by URI using LRU test,
@@ -56,7 +58,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     /**
      * an LRU cache
      */
-    private final Map<String, Stylesheet> _cache = new StylesheetCache();
+    private final Map<String, Stylesheet> _cache = synchronizedMap(new StylesheetCache());
     private final CSSParser _cssParser;
 
     public StylesheetFactoryImpl(UserAgentCallback userAgentCallback) {
@@ -64,7 +66,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         _cssParser = new CSSParser((uri, message) -> XRLog.cssParse(Level.WARNING, "(" + uri + ") " + message));
     }
 
-    public synchronized Stylesheet parse(Reader reader, StylesheetInfo info) {
+    public Stylesheet parse(Reader reader, StylesheetInfo info) {
         try {
             return _cssParser.parseStylesheet(info.getUri(), info.getOrigin(), reader);
         } catch (IOException e) {
@@ -96,7 +98,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         }
     }
 
-    public synchronized Ruleset parseStyleDeclaration(int origin, String styleDeclaration) {
+    public Ruleset parseStyleDeclaration(int origin, String styleDeclaration) {
         return _cssParser.parseDeclaration(origin, styleDeclaration);
     }
 
@@ -108,7 +110,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      *              factory.
      * @param sheet The sheet to cache.
      */
-    public synchronized void putStylesheet(String key, Stylesheet sheet) {
+    public void putStylesheet(String key, Stylesheet sheet) {
         _cache.put(key, sheet);
     }
 
@@ -117,19 +119,8 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      *         Note that the Stylesheet may be null.
      */
     //TODO: work out how to handle caching properly, with cache invalidation
-    public synchronized boolean containsStylesheet(String key) {
+    public boolean containsStylesheet(String key) {
         return _cache.containsKey(key);
-    }
-
-    /**
-     * Returns a cached sheet by its key; null if no entry for that key.
-     *
-     * @param key The key for this sheet; same as key passed to
-     *            putStylesheet();
-     * @return The stylesheet
-     */
-    public synchronized Stylesheet getCachedStylesheet(String key) {
-        return _cache.get(key);
     }
 
     /**
@@ -138,11 +129,11 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      * @param key The key for this sheet; same as key passed to
      *            putStylesheet();
      */
-    public synchronized void removeCachedStylesheet(String key) {
+    public void removeCachedStylesheet(String key) {
         _cache.remove(key);
     }
 
-    synchronized void flushCachedStylesheets() {
+    void flushCachedStylesheets() {
         _cache.clear();
     }
 
@@ -157,7 +148,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     public Stylesheet getStylesheet(StylesheetInfo info) {
         XRLog.load("Requesting stylesheet: " + info.getUri());
 
-        Stylesheet s = getCachedStylesheet(info.getUri());
+        Stylesheet s = _cache.get(info.getUri());
         if (s == null && !containsStylesheet(info.getUri())) {
             s = parse(info);
             putStylesheet(info.getUri(), s);

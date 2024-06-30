@@ -27,13 +27,5 @@ package org.xhtmlrenderer.css.style;
  * @author Torbjoern Gannholm
  */
 public class EmptyStyle extends CalculatedStyle {
-
-    /**
-     * Creates a new instance of EmptyStyle
-     */
-    public EmptyStyle() {
-        super();
-    }
-
 }
 

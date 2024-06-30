@@ -52,6 +52,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
 
@@ -59,11 +60,15 @@ public class ITextFontResolver implements FontResolver {
     private static final Logger log = LoggerFactory.getLogger(ITextFontResolver.class);
 
     private final Map<String, FontFamily> _fontFamilies = new HashMap<>();
-    private final Map<String, FontDescription> _fontCache = new HashMap<>();
+    private final Map<String, FontDescription> _fontCache = new ConcurrentHashMap<>();
 
-    public synchronized Map<String, FontFamily> getFonts() {
+    public Map<String, FontFamily> getFonts() {
         if (_fontFamilies.isEmpty()) {
-            _fontFamilies.putAll(loadFonts());
+            synchronized (_fontFamilies) {
+                if (_fontFamilies.isEmpty()) {
+                    _fontFamilies.putAll(loadFonts());
+                }
+            }
         }
         return _fontFamilies;
     }
@@ -97,7 +102,9 @@ public class ITextFontResolver implements FontResolver {
 
     @Override
     public void flushCache() {
-        _fontFamilies.clear();
+        synchronized (_fontFamilies) {
+            _fontFamilies.clear();
+        }
         _fontCache.clear();
     }
 
@@ -269,7 +276,7 @@ public class ITextFontResolver implements FontResolver {
     }
 
     private void addFontFaceFont(
-            String fontFamilyNameOverride, IdentValue fontWeightOverride, IdentValue fontStyleOverride, String uri, String encoding, boolean embedded, 
+            String fontFamilyNameOverride, IdentValue fontWeightOverride, IdentValue fontStyleOverride, String uri, String encoding, boolean embedded,
             byte[] afmttf, byte[] pfb)
             throws DocumentException, IOException {
         String lower = uri.toLowerCase();
