@@ -52,4 +52,11 @@ public class ConfigurationTest {
         assertThat(Configuration.isTrue("xr.test-config-boolean", false)).isTrue();
         assertThat(Configuration.isTrue("xr.test-config-BOOLEAN", false)).isFalse();
     }
+
+    @Test
+    public void setProperty() {
+        assertThat(Configuration.valueAsInt("xr.test-config-int", 25)).isEqualTo(100);
+        Configuration.setProperty("xr.test-config-int", "42");
+        assertThat(Configuration.valueAsInt("xr.test-config-int", 25)).isEqualTo(42);
+    }
 }
