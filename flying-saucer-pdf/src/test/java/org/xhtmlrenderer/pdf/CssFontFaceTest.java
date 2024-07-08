@@ -1,6 +1,9 @@
 package org.xhtmlrenderer.pdf;
 
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -27,7 +30,8 @@ public class CssFontFaceTest {
     public void autoInstallationOfCssDeclaredFonts() throws IOException {
         URL htmlUrl = requireNonNull(getClass().getResource("fonts/CssFontFace.html"), "test resource not found: fonts/CssFontFace.html");
         byte[] pdfBytes = Html2Pdf.fromUrl(htmlUrl);
-        try (PDDocument document = PDDocument.load(pdfBytes)) {
+        try (RandomAccessRead buffer = new RandomAccessReadBuffer(pdfBytes);
+             PDDocument document = new PDFParser(buffer).parse()) {
             assertThat(document.getNumberOfPages()).isGreaterThanOrEqualTo(1);
             for (int i = 0; i < document.getNumberOfPages(); ++i) {
                 PDPage page = document.getPage(i);
