@@ -27,6 +27,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class DataURLConnection extends URLConnection {
 
@@ -176,13 +177,14 @@ class Base64 {
 
     private static final byte[] EMPTY_BYTE_ARRAY = {};
     private static final String _map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    private static final Pattern RE_FORBIDDEN_CHARACTERS = Pattern.compile("[^" + _map + "]+");
 
-    public static byte [] decode(String s) {
+    public static byte[] decode(String s) {
 
         if (s == null || s.length() < 4)
             return EMPTY_BYTE_ARRAY;
 
-        s = s.replaceAll("[^A-Za-z0-9+/=]+", "");
+        s = RE_FORBIDDEN_CHARACTERS.matcher(s).replaceAll("");
 
         if (s.length() < 4)
             return EMPTY_BYTE_ARRAY;
