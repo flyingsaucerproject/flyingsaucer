@@ -1,7 +1,13 @@
 # Changelog
 
-## 9.8.1 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/16
+## 9.9.1 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/17
 * 
+
+## 9.9.0 (released 19.07.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/16?closed=1
+* #349 Moved `org.xhtmlrenderer.simple.PDFRenderer` to `org.xhtmlrenderer.pdf.PDFRenderer`  --  thanks to
+  Aaron Verachtert (#350)
+* #349 rename package "org.xhtmlrenderer.simple" in module "flaying-saucer-swt" (#351)
+* #340 optimize CPU and memory consumption (#352) (#353)
 
 ## 9.8.0 (released 26.05.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/15?closed=1
 * Remove itext 5 support (#325)
