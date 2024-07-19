@@ -30,8 +30,11 @@ import org.xhtmlrenderer.simple.xhtml.FormControlAdapter;
 import org.xhtmlrenderer.simple.xhtml.controls.TextControl;
 import org.xhtmlrenderer.swt.BasicRenderer;
 
+import java.util.regex.Pattern;
+
 public class SWTTextControl extends SWTXhtmlControl {
 
+    private static final Pattern RE_NEWLINE = Pattern.compile("\n");
     private String _sizeText;
     private boolean _noChangeText = false;
 
@@ -108,7 +111,7 @@ public class SWTTextControl extends SWTXhtmlControl {
     }
 
     private static String encodeDelimiter(String text) {
-        return text.replaceAll("\n", Text.DELIMITER);
+        return RE_NEWLINE.matcher(text).replaceAll(Text.DELIMITER);
     }
 
     private static String decodeDelimiter(String text) {
