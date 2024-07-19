@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.context;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -49,12 +50,12 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the attributeValue attribute of the StandardAttributeResolver object
      */
     @Override
-    public String getAttributeValue(Object e, String attrName) {
+    public String getAttributeValue(Node e, String attrName) {
         return nsh.getAttributeValue((Element) e, attrName);
     }
 
     @Override
-    public String getAttributeValue(Object e, String namespaceURI, String attrName) {
+    public String getAttributeValue(Node e, String namespaceURI, String attrName) {
         return nsh.getAttributeValue((Element)e, namespaceURI, attrName);
     }
 
@@ -62,7 +63,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the class attribute of the StandardAttributeResolver object
      */
     @Override
-    public String getClass(Object e) {
+    public String getClass(Node e) {
         return nsh.getClass((Element) e);
     }
 
@@ -70,12 +71,12 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the iD attribute of the StandardAttributeResolver object
      */
     @Override
-    public String getID(Object e) {
+    public String getID(Node e) {
         return nsh.getID((Element) e);
     }
 
     @Override
-    public String getNonCssStyling(Object e) {
+    public String getNonCssStyling(Node e) {
         return nsh.getNonCssStyling((Element) e);
     }
 
@@ -83,7 +84,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the elementStyling attribute of the StandardAttributeResolver object
      */
     @Override
-    public String getElementStyling(Object e) {
+    public String getElementStyling(Node e) {
         return nsh.getElementStyling((Element) e);
     }
 
@@ -91,7 +92,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the lang attribute of the StandardAttributeResolver object
      */
     @Override
-    public String getLang(Object e) {
+    public String getLang(Node e) {
         return nsh.getLang((Element) e);
     }
 
@@ -99,7 +100,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the link attribute of the StandardAttributeResolver object
      */
     @Override
-    public boolean isLink(Object e) {
+    public boolean isLink(Node e) {
         return nsh.getLinkUri((Element) e) != null;
     }
 
@@ -107,7 +108,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the visited attribute of the StandardAttributeResolver object
      */
     @Override
-    public boolean isVisited(Object e) {
+    public boolean isVisited(Node e) {
         return isLink(e) && uac.isVisited(nsh.getLinkUri((Element) e));
     }
 
@@ -115,7 +116,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the hover attribute of the StandardAttributeResolver object
      */
     @Override
-    public boolean isHover(Object e) {
+    public boolean isHover(Node e) {
         return ui.isHover((Element) e);
     }
 
@@ -123,7 +124,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the active attribute of the StandardAttributeResolver object
      */
     @Override
-    public boolean isActive(Object e) {
+    public boolean isActive(Node e) {
         return ui.isActive((Element) e);
     }
 
@@ -131,7 +132,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the focus attribute of the StandardAttributeResolver object
      */
     @Override
-    public boolean isFocus(Object e) {
+    public boolean isFocus(Node e) {
         return ui.isFocus((Element) e);
     }
 }

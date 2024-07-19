@@ -24,6 +24,7 @@ package org.xhtmlrenderer.css.extend.lib;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 
@@ -32,12 +33,12 @@ import org.xhtmlrenderer.css.extend.TreeResolver;
  */
 public class DOMStaticXhtmlAttributeResolver implements AttributeResolver {
     @Override
-    public String getAttributeValue(Object e, String attrName) {
+    public String getAttributeValue(Node e, String attrName) {
         return ((Element) e).getAttribute(attrName);
     }
 
     @Override
-    public String getAttributeValue(Object o, String namespaceURI, String attrName) {
+    public String getAttributeValue(Node o, String namespaceURI, String attrName) {
         Element e = (Element)o;
         if (namespaceURI == TreeResolver.NO_NAMESPACE) {
             return e.getAttribute(attrName);
@@ -62,27 +63,27 @@ public class DOMStaticXhtmlAttributeResolver implements AttributeResolver {
     }
 
     @Override
-    public String getClass(Object e) {
+    public String getClass(Node e) {
         return ((Element) e).getAttribute("class");
     }
 
     @Override
-    public String getID(Object e) {
+    public String getID(Node e) {
         return ((Element) e).getAttribute("id");
     }
 
     @Override
-    public String getNonCssStyling(Object e) {
+    public String getNonCssStyling(Node e) {
         return null;
     }
 
     @Override
-    public String getLang(Object e) {
+    public String getLang(Node e) {
         return ((Element) e).getAttribute("lang");
     }
 
     @Override
-    public String getElementStyling(Object el) {
+    public String getElementStyling(Node el) {
         Element e = ((Element) el);
         StringBuilder style = new StringBuilder();
         if (e.getNodeName().equals("td")) {
@@ -103,28 +104,28 @@ public class DOMStaticXhtmlAttributeResolver implements AttributeResolver {
     }
 
     @Override
-    public boolean isActive(Object e) {
+    public boolean isActive(Node e) {
         return false;
     }
 
     @Override
-    public boolean isFocus(Object e) {
+    public boolean isFocus(Node e) {
         return false;
     }
 
     @Override
-    public boolean isHover(Object e) {
+    public boolean isHover(Node e) {
         return false;
     }
 
     @Override
-    public boolean isLink(Object el) {
+    public boolean isLink(Node el) {
         Element e = ((Element) el);
         return e.getNodeName().equalsIgnoreCase("a") && !e.getAttribute("href").isEmpty();
     }
 
     @Override
-    public boolean isVisited(Object e) {
+    public boolean isVisited(Node e) {
         return false;
     }
 

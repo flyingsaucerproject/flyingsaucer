@@ -136,7 +136,7 @@ public class Matcher {
         return _focusElements.contains(e);
     }
 
-    protected Mapper matchElement(Node e) {
+    private Mapper matchElement(Node e) {
         synchronized (e) {
             Node parent = _treeRes.getParentElement(e);
             Mapper child;
@@ -150,7 +150,7 @@ public class Matcher {
         }
     }
 
-    Mapper createDocumentMapper(List<Stylesheet> stylesheets, String medium) {
+    private Mapper createDocumentMapper(List<Stylesheet> stylesheets, String medium) {
         Map<String, Selector> sorter = new TreeMap<>();
         addAllStylesheets(stylesheets, sorter, medium);
         XRLog.match("Matcher created with " + sorter.size() + " selectors");

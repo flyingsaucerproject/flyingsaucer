@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.css.extend;
 
+import org.w3c.dom.Node;
+
 import javax.annotation.Nullable;
 
 /**
@@ -42,61 +44,61 @@ public interface AttributeResolver {
      * not null if attribute exists.
      */
     @Nullable
-    String getAttributeValue(Object e, String attrName);
+    String getAttributeValue(Node e, String attrName);
 
     /**
      * Required to return null if attribute does not exist and
      * not null if attribute exists.
      */
     @Nullable
-    String getAttributeValue(Object e, String namespaceURI, String attrName);
+    String getAttributeValue(Node e, String namespaceURI, String attrName);
 
     @Nullable
-    String getClass(Object e);
+    String getClass(Node e);
 
     @Nullable
-    String getID(Object e);
+    String getID(Node e);
 
     /**
      * @return The non css styling (specificity 0,0,0,0 on author styles, according to css 2.1)
      */
     @Nullable
-    String getNonCssStyling(Object e);
+    String getNonCssStyling(Node e);
 
     /**
      * @return The elementStyling value
      *         (corresponding to xhtml style attribute, specificity 1,0,0,0 according to css 2.1)
      */
     @Nullable
-    String getElementStyling(Object e);
+    String getElementStyling(Node e);
 
     @Nullable
-    String getLang(Object e);
+    String getLang(Node e);
 
     /**
      * Gets the link attribute of the AttributeResolver object
      */
-    boolean isLink(Object e);
+    boolean isLink(Node e);
 
     /**
      * Gets the visited attribute of the AttributeResolver object
      */
-    boolean isVisited(Object e);
+    boolean isVisited(Node e);
 
     /**
      * Gets the hover attribute of the AttributeResolver object
      */
-    boolean isHover(Object e);
+    boolean isHover(Node e);
 
     /**
      * Gets the active attribute of the AttributeResolver object
      */
-    boolean isActive(Object e);
+    boolean isActive(Node e);
 
     /**
      * Gets the focus attribute of the AttributeResolver object
      */
-    boolean isFocus(Object e);
+    boolean isFocus(Node e);
 
 }
 
