@@ -27,6 +27,8 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 
 /**
@@ -39,6 +41,7 @@ public class StandardAttributeResolver implements AttributeResolver {
     private final NamespaceHandler nsh;
     private final UserAgentCallback uac;
     private final UserInterface ui;
+    private final Map<Node, String> classAttributeCache = new IdentityHashMap<>();
 
     public StandardAttributeResolver(NamespaceHandler nsh, UserAgentCallback uac, UserInterface ui) {
         this.nsh = nsh;
@@ -64,7 +67,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      */
     @Override
     public String getClass(Node e) {
-        return nsh.getClass((Element) e);
+        return classAttributeCache.computeIfAbsent(e, (x) -> nsh.getClass((Element) e));
     }
 
     /**
