@@ -7,7 +7,7 @@ import java.util.logging.Level;
 
 public class FontUtil {
 
-    public static Boolean isEmbeddedBase64Font(String uri) {
+    public static boolean isEmbeddedBase64Font(String uri) {
         return uri != null && uri.startsWith("data:font/");
     }
 
