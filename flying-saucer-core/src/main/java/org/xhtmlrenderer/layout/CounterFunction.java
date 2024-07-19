@@ -55,33 +55,31 @@ public class CounterFunction {
     }
 
     public static String createCounterText(IdentValue listStyle, int listCounter) {
-        String text;
         if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
-            text = toLatin(listCounter).toLowerCase();
+            return toLatin(listCounter).toLowerCase();
         } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
-            text = toLatin(listCounter).toUpperCase();
+            return toLatin(listCounter).toUpperCase();
         } else if (listStyle == IdentValue.LOWER_ROMAN) {
-            text = toRoman(listCounter).toLowerCase();
+            return toRoman(listCounter).toLowerCase();
         } else if (listStyle == IdentValue.UPPER_ROMAN) {
-            text = toRoman(listCounter).toUpperCase();
+            return toRoman(listCounter).toUpperCase();
         } else if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
-            text = (listCounter >= 10 ? "" : "0") + listCounter;
+            return (listCounter >= 10 ? "" : "0") + listCounter;
         } else { // listStyle == IdentValue.DECIMAL or anything else
-            text = Integer.toString(listCounter);
+            return Integer.toString(listCounter);
         }
-        return text;
     }
 
 
-    private static String toLatin(int val) {
-        String result = "";
-        val -= 1;
+    private static String toLatin(int index) {
+        StringBuilder result = new StringBuilder(5);
+        int val = index - 1;
         while (val >= 0) {
             int letter = val % 26;
             val = val / 26 - 1;
-            result = ((char) (letter + 65)) + result;
+            result.insert(0, (char) (letter + 65));
         }
-        return result;
+        return result.toString();
     }
 
     private static String toRoman(int val) {
