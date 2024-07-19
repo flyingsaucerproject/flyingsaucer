@@ -62,7 +62,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
  */
 public class Eeze {
     private static final Logger log = LoggerFactory.getLogger(Eeze.class);
-    
+
     private List<File> testFiles;
     private JFrame eezeFrame;
     private File currentDisplayed;
@@ -77,7 +77,7 @@ public class Eeze {
     private ImagePanel imagePanel;
     private boolean comparingWithImage;
     private File directory;
-    
+
     private static final FileFilter HTML_FILE_FILTER = f ->
       f.getName().endsWith(".html") ||
         f.getName().endsWith(".htm") ||
@@ -311,7 +311,7 @@ public class Eeze {
                 File parent = file.getAbsoluteFile().getParentFile();
                 if (parent == null) parent = file;
                 File imgDir = new File(parent.getAbsolutePath() + File.separator + "ref-img");
-                String name = file.getName().substring(0, file.getName().lastIndexOf(".")) + ".png";
+                String name = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".png";
                 File target = new File(imgDir.getAbsolutePath() + File.separator + name);
                 if (target.exists()) {
                     img = new ImageIcon(target.toURI().toURL()).getImage();
@@ -619,7 +619,7 @@ public class Eeze {
                         return;
                     }
                 }
-                String name = file.getName().substring(0, file.getName().lastIndexOf(".")) + ".png";
+                String name = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".png";
                 File target = new File(imgDir.getAbsolutePath() + File.separator + name);
                 if (target.exists() && JOptionPane.showConfirmDialog(
                         Eeze.this.eezeFrame,

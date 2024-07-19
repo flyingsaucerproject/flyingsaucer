@@ -110,7 +110,7 @@ public class ReferenceComparison {
     }
 
     private Iterable<File> listSourceFiles(File sourceDirectory) {
-        File[] files = sourceDirectory.listFiles((dir, name) -> EXTENSIONS.contains(name.substring(name.lastIndexOf(".") + 1)));
+        File[] files = sourceDirectory.listFiles((dir, name) -> EXTENSIONS.contains(name.substring(name.lastIndexOf('.') + 1)));
         return files == null ? emptyList() : asList(files);
     }
 

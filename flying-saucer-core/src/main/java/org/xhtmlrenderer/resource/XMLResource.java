@@ -189,7 +189,7 @@ public class XMLResource extends AbstractResource {
 
             target.setElapsedLoadTime(end - start);
             XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
-            
+
             target.setDocument(document);
             return target;
         }
@@ -331,7 +331,7 @@ public class XMLResource extends AbstractResource {
                 xmlReader.setFeature(featureUri, value);
 
                 XRLog.load(Level.FINE, "SAX Parser feature: " +
-                        featureUri.substring(featureUri.lastIndexOf("/")) +
+                        featureUri.substring(featureUri.lastIndexOf('/')) +
                         " set to " +
                         xmlReader.getFeature(featureUri));
             } catch (SAXNotSupportedException ex) {

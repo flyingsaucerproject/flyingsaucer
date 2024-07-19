@@ -122,7 +122,7 @@ public class ImageRenderer {
      */
     private static BufferedImage renderImageToOutput(String url, String path, int width)
             throws IOException {
-        
+
         try (OutputStream os = new BufferedOutputStream(newOutputStream(Paths.get(path)))) {
             Java2DRenderer renderer = new Java2DRenderer(url, url, width);
             BufferedImage image = renderer.getImage();
@@ -148,7 +148,7 @@ public class ImageRenderer {
             File f = new File(url);
             if (f.exists()) {
                 String output = f.getAbsolutePath();
-                output = output.substring(0, output.lastIndexOf(".")) + ".png";
+                output = output.substring(0, output.lastIndexOf('.')) + ".png";
                 System.out.println("Saving image to " + output);
                 renderToImage(f, output, DEFAULT_WIDTH);
             } else {
