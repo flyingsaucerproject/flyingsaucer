@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.simple;
+package org.xhtmlrenderer.swt.simple;
 
 import org.eclipse.swt.widgets.Composite;
 import org.w3c.dom.Document;
@@ -26,7 +26,6 @@ import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.simple.xhtml.XhtmlForm;
 import org.xhtmlrenderer.simple.xhtml.XhtmlNamespaceHandler;
-import org.xhtmlrenderer.simple.xhtml.swt.SWTXhtmlReplacedElementFactory;
 import org.xhtmlrenderer.swt.BasicRenderer;
 import org.xhtmlrenderer.swt.CursorListener;
 import org.xhtmlrenderer.swt.HoverListener;

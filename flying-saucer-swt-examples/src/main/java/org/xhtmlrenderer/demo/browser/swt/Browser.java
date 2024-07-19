@@ -64,7 +64,7 @@ import org.xhtmlrenderer.demo.browser.swt.actions.PrintPreviewAction;
 import org.xhtmlrenderer.demo.browser.swt.actions.QuitAction;
 import org.xhtmlrenderer.demo.browser.swt.actions.ReloadAction;
 import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.simple.SWTXHTMLRenderer;
+import org.xhtmlrenderer.swt.simple.SWTXHTMLRenderer;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;

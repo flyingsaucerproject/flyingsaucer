@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 import org.xhtmlrenderer.demo.browser.swt.BrowserUserAgent;
-import org.xhtmlrenderer.simple.SWTXHTMLRenderer;
+import org.xhtmlrenderer.swt.simple.SWTXHTMLRenderer;
 
 import javax.annotation.Nullable;
 

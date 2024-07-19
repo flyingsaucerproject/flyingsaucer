@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.simple.xhtml.swt;
+package org.xhtmlrenderer.swt.simple;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;

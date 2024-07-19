@@ -1,4 +1,4 @@
-package org.xhtmlrenderer.simple.xhtml.swt;
+package org.xhtmlrenderer.swt.simple;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

@@ -22,7 +22,7 @@ package org.xhtmlrenderer.swt;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.simple.xhtml.swt.SWTFormControl;
+import org.xhtmlrenderer.swt.simple.SWTFormControl;
 
 import java.awt.*;
 
