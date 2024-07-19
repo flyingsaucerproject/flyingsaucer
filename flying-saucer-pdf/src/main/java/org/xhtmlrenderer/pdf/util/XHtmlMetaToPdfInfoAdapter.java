@@ -222,8 +222,9 @@ public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
      */
     private void addPdfMetaValuesToPdfDocument( ITextRenderer renderer ) {
 
-        for (PdfName pdfName : this.pdfInfoValues.keySet()) {
-            PdfString pdfString = pdfInfoValues.get(pdfName);
+        for (Map.Entry<PdfName, PdfString> entry : pdfInfoValues.entrySet()) {
+            PdfName pdfName = entry.getKey();
+            PdfString pdfString = entry.getValue();
             XRLog.render(Level.FINEST, "pdfName=" + pdfName + ", pdfString=" + pdfString);
             renderer.getOutputDevice().getWriter().getInfo().put(pdfName, pdfString);
         }
