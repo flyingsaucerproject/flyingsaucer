@@ -20,8 +20,6 @@
 package org.xhtmlrenderer.css.parser;
 
 public class CSSParseException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
-
     private final Token _found;
     private final Token[] _expected;
     private int _line;
@@ -31,6 +29,11 @@ public class CSSParseException extends RuntimeException {
     private boolean _callerNotified;
 
     public CSSParseException(String message, int line) {
+        this(message, line, null);
+    }
+
+    public CSSParseException(String message, int line, Throwable cause) {
+        super(message, cause);
         _found = null;
         _expected = null;
         _line = line;

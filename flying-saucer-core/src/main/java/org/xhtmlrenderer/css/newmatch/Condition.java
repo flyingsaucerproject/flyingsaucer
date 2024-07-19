@@ -444,7 +444,7 @@ abstract class Condition {
                     Matcher m = pattern.matcher(number);
 
                     if (!m.matches()) {
-                        throw new CSSParseException("Invalid nth-child selector: " + number, -1);
+                        throw new CSSParseException("Invalid nth-child selector: " + number, -1, e);
                     } else {
                         int a = m.group(2).isEmpty() ? 1 : Integer.parseInt(m.group(2));
                         int b = (m.group(5) == null) ? 0 : Integer.parseInt(m.group(5));
