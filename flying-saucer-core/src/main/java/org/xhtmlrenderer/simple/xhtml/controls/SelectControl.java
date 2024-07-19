@@ -72,17 +72,11 @@ public class SelectControl extends AbstractControl {
                     traverseOptions(child, prefix + child.getAttribute("label")
                             + " ");
                 } else if (child.getNodeName().equalsIgnoreCase("option")) {
-                    String value = child.getAttribute("value");
-                    String label = child.getAttribute("label");
+                    String valueAttribute = child.getAttribute("value");
+                    String labelAttribute = child.getAttribute("label");
                     String content = collectText(child);
-                    if (value.isEmpty()) {
-                        value = content;
-                    }
-                    if (label.isEmpty()) {
-                        label = content;
-                    } else {
-                        label = prefix + label;
-                    }
+                    String value = valueAttribute.isEmpty() ? content : valueAttribute;
+                    String label = labelAttribute.isEmpty() ? content : prefix + labelAttribute;
                     _options.put(value, label);
                     if (!child.getAttribute("selected").isEmpty()) {
                         if (isMultiple()) {
