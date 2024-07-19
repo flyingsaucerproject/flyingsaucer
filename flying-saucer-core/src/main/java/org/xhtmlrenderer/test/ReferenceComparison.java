@@ -270,12 +270,12 @@ public class ReferenceComparison {
 
         private void report() {
             int failed = 0;
-            for (File file : files.keySet()) {
-                Result result = files.get(file);
+            for (Map.Entry<File, Result> entry : files.entrySet()) {
+                Result result = entry.getValue();
 
                 if (result instanceof FailedResult) {
                     failed++;
-                    System.out.println(result.describe(file));
+                    System.out.println(result.describe(entry.getKey()));
                 }
             }
             System.out.println("Checked " + files.keySet().size() + " files, " + (failed > 0 ? failed + " failed." : "all OK."));
