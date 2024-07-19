@@ -273,7 +273,7 @@ public class CSSParser {
                                 System.out.println("Token: " + tokenValue + " resolved " + resolvedUri);
                                 info.setUri(resolvedUri);
                             } catch (URISyntaxException use) {
-                                throw new CSSParseException("Invalid URL, " + use.getMessage(), getCurrentLine());
+                                throw new CSSParseException("Invalid URL, " + use.getMessage(), getCurrentLine(), use);
                             }
 
                         }

@@ -467,7 +467,7 @@ public class ITextFontResolver implements FontResolver {
             return BaseFont.createFont(name, encoding, embedded);
         }
         catch (DocumentException | IOException e) {
-            throw new RuntimeException("Failed to load font " + name + " and encoding " + encoding);
+            throw new RuntimeException("Failed to load font " + name + " and encoding " + encoding, e);
         }
     }
 
