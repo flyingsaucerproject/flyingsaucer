@@ -52,7 +52,7 @@ import static java.nio.file.Files.newOutputStream;
  *
  * <p>Image width must always be supplied; height is determined automatically.</p>
  *
- * @see org.xhtmlrenderer.simple.PDFRenderer
+ * @see org.xhtmlrenderer.pdf.PDFRenderer
  * @author Pete Brant
  * @author Patrick Wright
  */

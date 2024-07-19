@@ -1,8 +1,7 @@
-package org.xhtmlrenderer.simple;
+package org.xhtmlrenderer.pdf;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
-import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -25,7 +24,7 @@ import static java.nio.file.Files.newOutputStream;
  * the URL or file location as first parameter, and PDF path as second
  * parameter:
  * <pre>
- * java -cp %classpath% org.xhtmlrenderer.simple.PDFRenderer <url> <pdf>
+ * java -cp %classpath% org.xhtmlrenderer.pdf.PDFRenderer <url> <pdf>
  * </pre>
  *
  * @author Pete Brant
