@@ -52,7 +52,7 @@ build path, as well as the SWT JAR for your OS.
 Other notable entry points include:
 
 * `org.xhtmlrenderer.simple.XHTMLPanel`
-* `org.xhtmlrenderer.simple.PDFRenderer`
+* `org.xhtmlrenderer.pdf.PDFRenderer`
 * `org.xhtmlrenderer.simple.ImageRenderer`
 
 
