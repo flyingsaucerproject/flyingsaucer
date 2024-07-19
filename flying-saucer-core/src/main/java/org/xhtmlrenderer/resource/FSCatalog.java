@@ -187,7 +187,7 @@ public class FSCatalog {
             xmlReader.setFeature("http://xml.org/sax/features/validation", false);
 
             XRLog.xmlEntities(Level.FINE, "SAX Parser feature: " +
-                    "http://xml.org/sax/features/validation".substring("http://xml.org/sax/features/validation".lastIndexOf("/")) +
+                    "http://xml.org/sax/features/validation".substring("http://xml.org/sax/features/validation".lastIndexOf('/')) +
                     " set to " +
                     xmlReader.getFeature("http://xml.org/sax/features/validation"));
         } catch (SAXNotSupportedException ex) {

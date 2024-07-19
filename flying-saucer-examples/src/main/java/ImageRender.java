@@ -50,7 +50,7 @@ public class ImageRender {
 
                 FSImageWriter imageWriter = new FSImageWriter();
                 String path = f.getAbsolutePath();
-                path = path.substring(0, path.lastIndexOf("."));
+                path = path.substring(0, path.lastIndexOf('.'));
                 imageWriter.write(image, path + ".png");
 
                 // compare to old

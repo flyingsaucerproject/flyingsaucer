@@ -91,7 +91,7 @@ import static java.nio.file.Files.newInputStream;
  */
 public class Configuration {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Configuration.class);
-    
+
     /**
      * Our backing data store of properties.
      */
@@ -671,7 +671,7 @@ public class Configuration {
                 .iterator();
     }
 
-    
+
     /**
      * Returns true if the value is "true" (ignores case), or the default
      * provided value if not found or if the value is not a valid boolean (true
@@ -734,7 +734,7 @@ public class Configuration {
         if ( val == null ) {
             return defaultValue;
         }
-        int idx = val.lastIndexOf(".");
+        int idx = val.lastIndexOf('.');
         String klassname;
         String cnst;
         try {
