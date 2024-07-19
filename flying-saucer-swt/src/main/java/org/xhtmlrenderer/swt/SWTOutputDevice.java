@@ -36,7 +36,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.simple.xhtml.swt.SWTFormControl;
+import org.xhtmlrenderer.swt.simple.SWTFormControl;
 
 import javax.annotation.Nullable;
 import java.awt.*;
