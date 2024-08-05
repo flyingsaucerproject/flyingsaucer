@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 class HTMLOutline {
 
     private static final Pattern HEADING =
-            Pattern.compile("h([1-6])", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("h(\\d+)", Pattern.CASE_INSENSITIVE);
 
     /** <a href="https://www.w3.org/TR/html51/sections.html#sectioning-roots">sectioning roots</a> */
     private static final Pattern ROOT =
