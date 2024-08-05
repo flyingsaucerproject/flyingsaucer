@@ -734,7 +734,7 @@ h2(#configuration). Configuration
 
 h3(fs_heading). The Flying Saucer Configuration File
 
-The renderer works with a simple, @java.util.Properties@ -based configuration system--no XML! Our @org.xhtmlrenderer.util.Confuration@ class loads properties on first access and makes them available at runtime.
+The renderer works with a simple, @java.util.Properties@ -based configuration system--no XML! Our @org.xhtmlrenderer.util.Configuration@ class loads properties on first access and makes them available at runtime.
 
 When you are using the renderer, @Configuration@ needs to know where to find the properties file. If you are running from the renderer JAR file, our default properties will be read from there. If you have unpacked, or re-packed, the JAR, the location of the file is currently hard-coded as @/resources/conf/xhtmlrenderer.conf@. This path must be on the CLASSPATH as it is loaded as a system resource using a ClassLoader. You need to add the parent directory for @/resources@ to your classpath, or include @/resources@ in your JAR with no parent directory.
 
@@ -767,6 +767,10 @@ bc. java -Dshow-config=ALL org.xhtmlrenderer.HTMLPanel
 This will output messages to the console as Configuration is loading and looking for overrides to the default property values for the renderer.
 
 We have just started using the Configuration system late in preparing release R4. Some runtime behavior that should be configurable (like XHTML parser) is not. If you would like to see some behavior made configurable, shoot us an email.
+
+h4(fs_heading). Override programmatically.
+
+It is possible to set the configuration in your java-code with @Configuration.setProperty("key", "value");@.
 
 h4(fs_heading). Looking up Configuration at Runtime
 
