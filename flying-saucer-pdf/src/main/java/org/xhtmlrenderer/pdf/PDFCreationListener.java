@@ -50,7 +50,7 @@ public interface PDFCreationListener {
 
     /**
      * Called immediately before the iText Document instance is closed, e.g. before
-     * {@link com.itextpdf.text.Document#close()} is called.
+     * {@link com.lowagie.text.Document#close()} is called.
      *
      * @param renderer the iTextRenderer preparing the document
      */
