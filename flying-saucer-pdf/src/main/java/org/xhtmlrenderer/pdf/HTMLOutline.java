@@ -35,24 +35,21 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+
 class HTMLOutline {
 
-    private static final Pattern HEADING =
-            Pattern.compile("h(\\d+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern HEADING = Pattern.compile("h(\\d+)", CASE_INSENSITIVE);
 
     /** <a href="https://www.w3.org/TR/html51/sections.html#sectioning-roots">sectioning roots</a> */
-    private static final Pattern ROOT =
-            Pattern.compile("blockquote|details|fieldset|figure|td",
-                            Pattern.CASE_INSENSITIVE);
+    private static final Pattern ROOT = Pattern.compile("blockquote|details|fieldset|figure|td", CASE_INSENSITIVE);
 
     private static final Pattern WS = Pattern.compile("\\s+");
 
     private static final int MAX_NAME_LENGTH = 200;
 
     private final HTMLOutline parent;
-
     private final int level;
-
     private final Bookmark bookmark;
 
     private HTMLOutline() {
@@ -160,7 +157,7 @@ class HTMLOutline {
                 if (level < 1) {
                     continue; // Illegal value
                 }
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignore) {
                 continue; // Invalid value
             }
 
@@ -174,7 +171,7 @@ class HTMLOutline {
         }
         initBoxRefs(map, box);
         return root.bookmark.getChildren();
-    } // generate(Element, Box) : List<Bookmark>
+    }
 
     private static void initBoxRefs(Map<Element,Bookmark> map, Box box) {
         Bookmark bookmark = map.get(box.getElement());
@@ -198,19 +195,22 @@ class HTMLOutline {
         return name;
     }
 
-    static String getOutlineLevel(Element element) {
+    private static String getOutlineLevel(Element element) {
         String bookmark = element.getAttribute("data-pdf-bookmark").trim();
-        if (bookmark.isEmpty()) {
-            Matcher heading = HEADING.matcher(element.getTagName());
-            if (heading.matches()) {
-                bookmark = heading.group(1);
-            } else if (ROOT.matcher(element.getTagName()).matches()) {
-                bookmark = "exclude";
-            } else {
-                bookmark = "none";
-            }
+        return bookmark.isEmpty() ?
+                getOutlineLevelFromTagName(element.getTagName()) :
+                bookmark;
+    }
+
+    static String getOutlineLevelFromTagName(String tagName) {
+        Matcher heading = HEADING.matcher(tagName);
+        if (heading.matches()) {
+            return heading.group(1);
+        } else if (ROOT.matcher(tagName).matches()) {
+            return "exclude";
+        } else {
+            return "none";
         }
-        return bookmark;
     }
 
 
