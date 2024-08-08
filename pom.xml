@@ -266,7 +266,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <openpdf.version>2.0.2</openpdf.version>
+    <openpdf.version>2.0.3</openpdf.version>
     <junit.version>5.10.3</junit.version>
     <slf4j.version>2.0.14</slf4j.version>
     <assertj.version>3.26.3</assertj.version>
