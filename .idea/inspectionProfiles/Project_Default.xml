@@ -7,6 +7,10 @@
       <option name="m_ignoreCatchBlocksWithComments" value="false" />
       <option name="m_ignoreNonEmptyCatchBlock" value="false" />
     </inspection_tool>
+    <inspection_tool class="ConstantValue" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="DONT_REPORT_TRUE_ASSERT_STATEMENTS" value="true" />
+      <option name="IGNORE_ASSERT_STATEMENTS" value="true" />
+    </inspection_tool>
     <inspection_tool class="Convert2MethodRef" enabled="true" level="INFORMATION" enabled_by_default="true" />
     <inspection_tool class="DynamicRegexReplaceableByCompiledPattern" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ErrorRethrown" enabled="true" level="WARNING" enabled_by_default="true" />
