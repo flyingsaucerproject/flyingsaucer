@@ -255,7 +255,7 @@ public class ImageUtil {
      */
     @CheckReturnValue
     public static boolean isEmbeddedBase64Image(@Nullable String uri) {
-        return uri != null && uri.startsWith("data:image/");
+        return uri != null && uri.startsWith("data:image");
     }
 
     /**
@@ -301,7 +301,7 @@ public class ImageUtil {
     private interface Scaler {
         /**
          * Convenience method that returns a scaled instance of the
-         * provided {@code BufferedImage}, taken from 
+         * provided {@code BufferedImage}, taken from
          * <a href="http://today.java.net/pub/a/today/2007/04/03/perils-of-image-getscaledinstance.html">article on java.net by Chris Campbell</a>.
          * <br>
          * Expects the image to be fully loaded (e.g. no need to wait for loading on requesting height or width)
