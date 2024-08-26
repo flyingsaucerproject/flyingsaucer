@@ -1,7 +1,15 @@
 # Changelog
 
-## 9.9.1 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/17
+## 9.9.2 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/18
 * 
+
+## 9.9.1 (released 26.08.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/17?closed=1
+* Modify pattern so that headings won't have an upper limitation for their level - thanks to Orosz Péter <peter.orosz@meta-inf.hu> (#359)
+* #359 add tests for HTMLOutline
+* remove links to iText from LICENSE
+* #370 allow not-so-correct image url of form "data:image;base64,iVBORw...." (#371)
+* Overcoming Table Cell and Line Splitting Challenges - thanks to Jérôme @syluna (#358)
+* Bump com.github.librepdf:openpdf from 2.0.2 to 2.0.3 (#361)
 
 ## 9.9.0 (released 19.07.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/16?closed=1
 * #349 Moved `org.xhtmlrenderer.simple.PDFRenderer` to `org.xhtmlrenderer.pdf.PDFRenderer`  --  thanks to
