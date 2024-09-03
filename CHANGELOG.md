@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.9.3 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/19
+* 
+
 ## 9.9.2 (released 04.09.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/18?closed=1
 * #377 Add automatic module name to MANIFEST.MF files - thanks to @Openhelios (#378)
 
