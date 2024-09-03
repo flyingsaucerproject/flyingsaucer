@@ -97,6 +97,7 @@
         <configuration>
           <instructions>
             <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.fop</Bundle-SymbolicName>
+            <Automatic-Module-Name>flying.saucer.fop</Automatic-Module-Name>
             <Bundle-Version>${project.version}</Bundle-Version>
             <!-- Dependency resolution seems not to work properly with default
               behavior of importing the exported packages. -->
