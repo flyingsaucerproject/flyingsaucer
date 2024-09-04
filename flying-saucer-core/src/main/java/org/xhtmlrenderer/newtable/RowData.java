@@ -22,6 +22,8 @@ package org.xhtmlrenderer.newtable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.joining;
+
 /**
  * A row in the table grid.  The list of cells it maintains is always large
  * enough to set a table cell at every position in the row.  If there are no
@@ -47,5 +49,12 @@ public class RowData {
     public void splitColumn(int pos) {
         TableCellBox current = _row.get(pos);
         _row.add(pos+1, current == null ? null : TableCellBox.SPANNING_CELL);
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + ": [" + _row.stream()
+                .map(box -> String.valueOf(box))
+                .collect(joining("; ")) +
+                "]";
     }
 }

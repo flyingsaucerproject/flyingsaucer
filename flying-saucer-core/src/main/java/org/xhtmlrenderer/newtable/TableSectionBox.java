@@ -214,6 +214,8 @@ public class TableSectionBox extends BlockBox {
                     endCol++;
                 }
 
+                // Dirty fix for Issue 379 (fixes the exception, but the resulting PDF is still invalid):
+                // if (endCol >= columnPos.length) continue;
                 int w = columnPos[endCol] - columnPos[j] - hspacing;
                 cell.setLayoutWidth(c, w);
                 cell.setX(columnPos[j] + hspacing);
