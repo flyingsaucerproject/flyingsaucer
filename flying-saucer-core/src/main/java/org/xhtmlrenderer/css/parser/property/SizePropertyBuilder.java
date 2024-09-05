@@ -37,7 +37,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
     public List<PropertyDeclaration> buildDeclarations(
             CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
         List<PropertyDeclaration> result = new ArrayList<>(3);
-        assertFoundUpToValues(cssName, values, 2);
+        assertFoundUpToValues(cssName, values, 3);
 
         if (values.size() == 1) {
             PropertyValue value = (PropertyValue)values.get(0);
@@ -94,7 +94,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
             } else {
                 throw new CSSParseException("Value for " + cssName + " must be a length or identifier", -1);
             }
-        } else { /* values.size == 2 */
+        } else if (values.size() == 2) { /* values.size == 2 */
             PropertyValue value1 = (PropertyValue)values.get(0);
             PropertyValue value2 = (PropertyValue)values.get(1);
 
@@ -135,7 +135,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
 
                 PageSize pageSize = PageSize.getPageSize(value2.getStringValue());
                 if (pageSize == null) {
-                    throw new CSSParseException("Value " + value1 + " is not a valid page size", -1);
+                    throw new CSSParseException("Value " + value2 + " is not a valid page size", -1);
                 }
 
                 result.add(new PropertyDeclaration(
@@ -147,6 +147,35 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
             } else {
                 throw new CSSParseException("Invalid value for size property", -1);
             }
-        }
+        }  else if (values.size() == 3) {
+			PropertyValue value1 = (PropertyValue) values.get(0);
+			PropertyValue value2 = (PropertyValue) values.get(1);
+			PropertyValue value3 = (PropertyValue) values.get(2);
+
+			checkInheritAllowed(value3, false);
+			
+			if (isLength(value1) && isLength(value2) && value2.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+				if (value1.getFloatValue() < 0.0f) {
+					throw new CSSParseException("A page dimension may not be negative", -1);
+				}
+
+				if (value2.getFloatValue() < 0.0f) {
+					throw new CSSParseException("A page dimension may not be negative", -1);
+				}
+
+				if (!(value3.toString().equals("landscape") || value3.toString().equals("portrait"))) {
+					throw new CSSParseException("Value " + value1 + " is not a valid page orientation", -1);
+				}
+
+				result.add(new PropertyDeclaration(CSSName.FS_PAGE_WIDTH, value1, important, origin));
+				result.add(new PropertyDeclaration(CSSName.FS_PAGE_HEIGHT, value2, important, origin));
+				result.add(new PropertyDeclaration(CSSName.FS_PAGE_ORIENTATION, value3, important, origin));
+				return result;
+			} else {
+				throw new CSSParseException("Size property parsing error", -1);
+			}
+		} else {
+			throw new CSSParseException("Invalid value count for size property", -1);
+		}
     }
 }
