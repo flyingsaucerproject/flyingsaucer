@@ -94,7 +94,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
             } else {
                 throw new CSSParseException("Value for " + cssName + " must be a length or identifier", -1);
             }
-        } else if (values.size() == 2) { /* values.size == 2 */
+        } else if (values.size() == 2) {
             PropertyValue value1 = (PropertyValue)values.get(0);
             PropertyValue value2 = (PropertyValue)values.get(1);
 
@@ -154,7 +154,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
 
             checkInheritAllowed(value3, false);
 			
-            if (isLength(value1) && isLength(value2) && value2.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+            if (isLength(value1) && isLength(value2) && value3.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                 if (value1.getFloatValue() < 0.0f) {
                     throw new CSSParseException("A page dimension may not be negative", -1);
                 }
