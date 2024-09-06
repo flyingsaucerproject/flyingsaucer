@@ -154,7 +154,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
 
             checkInheritAllowed(value3, false);
 			
-            if (isLength(value1) && isLength(value2) && value2.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+            if (isLength(value1) && isLength(value2) && value3.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                 if (value1.getFloatValue() < 0.0f) {
                     throw new CSSParseException("A page dimension may not be negative", -1);
                 }
