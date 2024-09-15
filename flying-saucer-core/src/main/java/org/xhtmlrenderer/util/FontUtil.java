@@ -1,17 +1,24 @@
 package org.xhtmlrenderer.util;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.logging.Level;
 
+@ParametersAreNonnullByDefault
 public class FontUtil {
 
-    public static boolean isEmbeddedBase64Font(String uri) {
+    @CheckReturnValue
+    public static boolean isEmbeddedBase64Font(@Nullable String uri) {
         return uri != null && uri.startsWith("data:font/");
     }
 
-    public static InputStream getEmbeddedBase64Data(String uri) {
+    @Nullable
+    @CheckReturnValue
+    public static InputStream getEmbeddedBase64Data(@Nullable String uri) {
         int b64Index = (uri!= null)? uri.indexOf("base64,") : -1;
         if (b64Index != -1) {
             String b64encoded = uri.substring(b64Index + "base64,".length());
