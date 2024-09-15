@@ -39,7 +39,7 @@ import java.util.List;
 public class ContentFunctionFactory {
     private final List<ContentFunction> _functions = new ArrayList<>();
 
-    {
+    public ContentFunctionFactory() {
         _functions.add(new PageCounterFunction());
         _functions.add(new PagesCounterFunction());
         _functions.add(new TargetCounterFunction());
