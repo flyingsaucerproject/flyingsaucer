@@ -4,7 +4,11 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -18,8 +22,11 @@ import static java.util.Collections.singletonList;
  * Uses code from iText's DefaultFontMapper and TrueTypeFont classes.  See
  * <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/projects/itext/</a> for license information.
  */
+@ParametersAreNonnullByDefault
 public class TrueTypeUtil {
 
+    @Nonnull
+    @CheckReturnValue
     private static IdentValue guessStyle(BaseFont font) {
         String[][] names = font.getFullFontName();
 
@@ -35,6 +42,8 @@ public class TrueTypeUtil {
         return IdentValue.NORMAL;
     }
 
+    @Nonnull
+    @CheckReturnValue
     public static Collection<String> getFamilyNames(BaseFont font) {
         String[][] names = font.getFamilyFontName();
 
@@ -52,6 +61,8 @@ public class TrueTypeUtil {
         return result;
     }
 
+    @Nonnull
+    @CheckReturnValue
     // HACK No accessor
     private static Map<String, int[]> extractTables(BaseFont font)
             throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
@@ -71,10 +82,23 @@ public class TrueTypeUtil {
         throw new NoSuchFieldException("Could not find tables field");
     }
 
+    @Nonnull
+    @CheckReturnValue
     private static String getTTCName(String name) {
         int index = name.toLowerCase().indexOf(".ttc,");
-
         return index < 0 ? name : name.substring(0, index + 4);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    public static FontDescription extractDescription(String path, BaseFont font) {
+        try {
+            FontDescription description = new FontDescription(font);
+            TrueTypeUtil.populateDescription(path, font, description);
+            return description;
+        } catch (DocumentException | IOException | NoSuchFieldException | IllegalAccessException e) {
+            throw new XRRuntimeException("Failed to read font description from %s".formatted(path), e);
+        }
     }
 
     public static void populateDescription(String path, BaseFont font, FontDescription description)
@@ -82,6 +106,18 @@ public class TrueTypeUtil {
 
         try (RandomAccessFileOrArray rf = new RandomAccessFileOrArray(getTTCName(path))) {
             populateDescription0(path, font, description, rf);
+        }
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    public static FontDescription extractDescription(String path, byte[] contents, BaseFont font) {
+        try {
+            FontDescription description = new FontDescription(font);
+            populateDescription(path, contents, font, description);
+            return description;
+        } catch (IOException | NoSuchFieldException | IllegalAccessException e) {
+            throw new XRRuntimeException("Failed to read font description from %s".formatted(path), e);
         }
     }
 
