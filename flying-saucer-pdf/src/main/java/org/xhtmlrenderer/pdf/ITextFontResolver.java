@@ -226,13 +226,7 @@ public class ITextFontResolver implements FontResolver {
         String lower = path.toLowerCase();
         if (lower.endsWith(OTF) || lower.endsWith(TTF) || lower.contains(TTC_COMMA)) {
             BaseFont font = BaseFont.createFont(path, encoding, embedded);
-
-            Collection<String> fontFamilyNames = getFontFamilyNames(font, fontFamilyNameOverride);
-
-            for (String fontFamilyName : fontFamilyNames) {
-                getFontFamily(fontFamilyName)
-                        .addFontDescription(extractDescription(path, font));
-            }
+            addFont(font, path, fontFamilyNameOverride);
         } else if (lower.endsWith(TTC)) {
             String[] names = BaseFont.enumerateTTCNames(path);
             for (int i = 0; i < names.length; i++) {
@@ -256,6 +250,15 @@ public class ITextFontResolver implements FontResolver {
             fontFamily.addFontDescription(description);
         } else {
             throw new IOException("Unsupported font type: %s".formatted(path));
+        }
+    }
+
+    public void addFont(BaseFont font, String path, @Nullable String fontFamilyNameOverride) {
+        Collection<String> fontFamilyNames = getFontFamilyNames(font, fontFamilyNameOverride);
+
+        for (String fontFamilyName : fontFamilyNames) {
+            getFontFamily(fontFamilyName)
+                    .addFontDescription(extractDescription(path, font));
         }
     }
 
