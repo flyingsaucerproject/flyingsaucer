@@ -91,7 +91,8 @@ public class ITextFontResolver implements FontResolver {
             Collection<String> fontFamilyNames = TrueTypeUtil.getFamilyNames(font);
             return new HashSet<>(fontFamilyNames);
         } catch (DocumentException | IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "Failed to read font family names from %s (encoding: %s, embedded: %s)".formatted(path, encoding, embedded), e);
         }
     }
 
@@ -227,7 +228,7 @@ public class ITextFontResolver implements FontResolver {
                 try {
                     TrueTypeUtil.populateDescription(path, font, description);
                 } catch (DocumentException | IOException | NoSuchFieldException | IllegalAccessException e) {
-                    throw new XRRuntimeException(e.getMessage(), e);
+                    throw new XRRuntimeException("Failed to read font description from %s".formatted(path), e);
                 }
 
                 fontFamily.addFontDescription(description);
@@ -239,7 +240,7 @@ public class ITextFontResolver implements FontResolver {
             }
         } else if (lower.endsWith(".afm") || lower.endsWith(".pfm")) {
             if (embedded && pathToPFB == null) {
-                throw new IOException("When embedding a font, path to PFB/PFA file must be specified");
+                throw new IOException("When embedding a font, path to PFB/PFA file must be specified (path: %s)".formatted(path));
             }
 
             BaseFont font = BaseFont.createFont(
@@ -260,7 +261,7 @@ public class ITextFontResolver implements FontResolver {
             // unfortunately it isn't exposed to the caller.
             fontFamily.addFontDescription(description);
         } else {
-            throw new IOException("Unsupported font type");
+            throw new IOException("Unsupported font type: %s".formatted(path));
         }
     }
 
@@ -298,7 +299,7 @@ public class ITextFontResolver implements FontResolver {
                 try {
                     TrueTypeUtil.populateDescription(uri, afmttf, font, description);
                 } catch (IOException | NoSuchFieldException | IllegalAccessException e) {
-                    throw new XRRuntimeException(e.getMessage(), e);
+                    throw new XRRuntimeException("Failed to read font description from %s".formatted(uri), e);
                 }
 
                 description.setFromFontFace(true);
@@ -315,7 +316,7 @@ public class ITextFontResolver implements FontResolver {
             }
         } else if (lower.endsWith(".afm") || lower.endsWith(".pfm") || lower.endsWith(".pfb") || lower.endsWith(".pfa")) {
             if (embedded && pfb == null) {
-                throw new IOException("When embedding a font, path to PFB/PFA file must be specified");
+                throw new IOException("When embedding a font, path to PFB/PFA file must be specified (uri: %s)".formatted(uri));
             }
 
             String name = uri.substring(0, uri.length()-4) + ".afm";
@@ -332,7 +333,7 @@ public class ITextFontResolver implements FontResolver {
             // unfortunately it isn't exposed to the caller.
             fontFamily.addFontDescription(description);
         } else {
-            throw new IOException("Unsupported font type");
+            throw new IOException("Unsupported font type: %s".formatted(uri));
         }
     }
 
@@ -467,7 +468,7 @@ public class ITextFontResolver implements FontResolver {
             return BaseFont.createFont(name, encoding, embedded);
         }
         catch (DocumentException | IOException e) {
-            throw new RuntimeException("Failed to load font " + name + " and encoding " + encoding, e);
+            throw new RuntimeException("Failed to load font %s (encoding: %s, embedded: %s)".formatted(name, encoding, embedded), e);
         }
     }
 

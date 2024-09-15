@@ -165,7 +165,7 @@ public class XMLResource extends AbstractResource {
                 SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
                 xmlReader = parser.getXMLReader();
             } catch (Exception ex) {
-                XRLog.general(ex.getMessage());
+                XRLog.general(Level.WARNING, ex.getMessage(), ex);
             }
         }
         if (xmlReader == null) {

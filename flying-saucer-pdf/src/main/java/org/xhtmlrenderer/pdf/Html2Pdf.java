@@ -15,11 +15,11 @@ import static java.util.Objects.requireNonNull;
 
 public class Html2Pdf {
     public static byte[] fromClasspathResource(String fileName) {
-        URL htmlUrl = requireNonNull(Thread.currentThread().getContextClassLoader().getResource(fileName), 
+        URL htmlUrl = requireNonNull(Thread.currentThread().getContextClassLoader().getResource(fileName),
                 () -> "Resource not found in classpath: " + fileName);
         return fromUrl(htmlUrl);
     }
-    
+
     public static byte[] fromUrl(URL html) {
         ITextRenderer renderer = new ITextRenderer();
         renderer.getSharedContext().setMedia("pdf");
@@ -34,7 +34,7 @@ public class Html2Pdf {
             return renderer.createPDF(doc);
         }
         catch (DocumentException | IOException | SAXException | ParserConfigurationException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException("Failed to parse XML from " + html, e);
         }
     }
 }

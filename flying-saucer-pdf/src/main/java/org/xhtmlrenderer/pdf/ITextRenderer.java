@@ -252,8 +252,9 @@ public class ITextRenderer {
                 return;
             }
         }
-        throw new IllegalArgumentException("Invalid PDF version character; use "
-                + "valid constants from PdfWriter (e.g. PdfWriter.VERSION_1_2)");
+        throw new IllegalArgumentException("""
+                Invalid PDF version character: "%s"; use one of constants PdfWriter.VERSION_1_N.
+                """.formatted(_v).trim());
     }
 
     public char getPDFVersion() {

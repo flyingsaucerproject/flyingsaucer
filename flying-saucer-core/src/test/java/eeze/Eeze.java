@@ -95,14 +95,14 @@ public class Eeze {
     private void run() {
         buildFrame();
         SwingUtilities.invokeLater(() -> {
+            File fontFile = new File(directory + "/support/AHEM____.TTF");
             try {
-                File fontFile = new File(directory + "/support/AHEM____.TTF");
                 if (fontFile.exists()) {
                     html.getSharedContext().setFontMapping("Ahem",
                             Font.createFont(Font.TRUETYPE_FONT, fontFile.toURI().toURL().openStream()));
                 }
             } catch (FontFormatException | IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Failed to read font from " + fontFile.getAbsolutePath(), e);
             }
         });
         testFiles = buildFileList();

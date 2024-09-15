@@ -79,7 +79,7 @@ public class DataURLConnection extends URLConnection {
         int comma = sub.indexOf(',');
 
         if (comma < 0) {
-            throw new RuntimeException("Improperly formatted data URL");
+            throw new RuntimeException("Improperly formatted data URL: \"%s\" (it should contain comma)".formatted(sub));
         }
 
         String meta = sub.substring(0, comma);

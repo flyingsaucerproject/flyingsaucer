@@ -297,7 +297,7 @@ public class CalculatedStyle {
             }
         }
 
-        throw new RuntimeException("internal error");
+        throw new RuntimeException("Cannot created background size for " + value);
     }
 
     public BackgroundPosition getBackgroundPosition() {

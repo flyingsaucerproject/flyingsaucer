@@ -74,23 +74,23 @@ public class InlineText {
     public String getSubstring() {
         if (getMasterText() != null) {
             if (_start == -1 || _end == -1) {
-                throw new RuntimeException("negative index in InlineBox");
+                throw new RuntimeException("negative index in InlineBox (start: %s, end: %s) for element %s".formatted(_start, _end, this));
             }
             if (_end < _start) {
-                throw new RuntimeException("end is less than setStartStyle");
+                throw new RuntimeException("end is less than start (%s < %s) for element %s".formatted(_end, _start, this));
             }
             return getMasterText().substring(_start, _end);
         } else {
-            throw new RuntimeException("No master text set!");
+            throw new RuntimeException("No master text set for element " + this);
         }
     }
 
     public void setSubstring(int start, int end) {
         if (end < start) {
             Uu.p("setting substring to: " + start + " " + end);
-            throw new RuntimeException("set substring length too long: " + this);
+            throw new RuntimeException("end is less than start (%s < %s) for element %s".formatted(end, start, this));
         } else if (end < 0 || start < 0) {
-            throw new RuntimeException("Trying to set negative index to inline box");
+            throw new RuntimeException("Trying to set negative index to inline box (start: %s, end: %s)".formatted(start, end));
         }
         _start = start;
         _end = end;
