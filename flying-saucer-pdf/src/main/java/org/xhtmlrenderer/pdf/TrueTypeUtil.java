@@ -25,6 +25,13 @@ import static java.util.Collections.singletonList;
 @ParametersAreNonnullByDefault
 public class TrueTypeUtil {
 
+    /**
+     * Avoid using memory-mapped files for loading fonts.
+     * On Windows, these memory-mapped files are not released from memory, causing memory leaks.
+     * See <a href="https://github.com/flyingsaucerproject/flyingsaucer/issues/385#issuecomment-2352080728">github issue 385</a>.
+     */
+    private static final boolean AVOID_MEMORY_MAPPED_FILES = true;
+
     @Nonnull
     @CheckReturnValue
     private static IdentValue guessStyle(BaseFont font) {
@@ -71,7 +78,7 @@ public class TrueTypeUtil {
         while (current != null) {
             if (current.getName().endsWith(".TrueTypeFont")) {
                 Field field = current.getDeclaredField("tables");
-                field.setAccessible(true);
+                field.setAccessible(AVOID_MEMORY_MAPPED_FILES);
                 //noinspection unchecked
                 return (Map<String, int[]>) field.get(font);
             }
@@ -104,7 +111,7 @@ public class TrueTypeUtil {
     public static void populateDescription(String path, BaseFont font, FontDescription description)
             throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
 
-        try (RandomAccessFileOrArray rf = new RandomAccessFileOrArray(getTTCName(path))) {
+        try (RandomAccessFileOrArray rf = new RandomAccessFileOrArray(getTTCName(path), false, AVOID_MEMORY_MAPPED_FILES)) {
             populateDescription0(path, font, description, rf);
         }
     }
