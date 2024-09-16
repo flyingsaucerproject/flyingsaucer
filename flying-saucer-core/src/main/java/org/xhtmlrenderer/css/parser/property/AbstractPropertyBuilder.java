@@ -42,7 +42,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
     protected void assertFoundUpToValues(CSSName cssName, List<? extends CSSPrimitiveValue> values, int max) {
         int found = values.size();
         if (found < 1 || found > max) {
-            throw new CSSParseException("Found %d value(s) for %s when between %d and %d value(s) were expected"
+            throw new CSSParseException("Found %d values for %s when between %d and %d value(s) were expected"
                     .formatted(found, cssName, 1, max), -1);
         }
     }
@@ -80,7 +80,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
 
     protected void checkInteger(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
-        if (type != CSS_NUMBER || 
+        if (type != CSS_NUMBER ||
                 (int) value.getFloatValue(CSS_NUMBER) != Math.round(value.getFloatValue(CSS_NUMBER))) {
             throw new CSSParseException("Value for " + cssName + " must be an integer", -1);
         }
