@@ -1,7 +1,15 @@
 # Changelog
 
-## 9.9.3 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/19
+## 9.9.4 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/20
 * 
+
+## 9.9.3 (16.09.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/19?closed=1
+* #385 avoid using memory-mapped files for reading fonts (#388)
+* #385 expose a public method `ITextFontResolver.addFont(BaseFont,...)` (#386)
+* support `@page` property `size` with 3 values (e.g. "size: 40mm 20mm landscape") - thanks to @jelinj8 (#383)
+* add details to all thrown exceptions  -  see commit 6aa47916
+* remove unused classes Handler and DataURLConnection  -  see commit 65cd001b
+* Bump org.apache.logging.log4j:log4j-core from 2.23.1 to 2.24.0 (#384)
 
 ## 9.9.2 (released 04.09.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/18?closed=1
 * #377 Add automatic module name to MANIFEST.MF files - thanks to @Openhelios (#378)
