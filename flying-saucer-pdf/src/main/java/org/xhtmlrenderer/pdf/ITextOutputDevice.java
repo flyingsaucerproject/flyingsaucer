@@ -920,7 +920,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             _bookmarks = HTMLOutline.generate(root.getElement(), root);
         }
         if (!_bookmarks.isEmpty()) {
-            _writer.setViewerPreferences(PdfWriter.PageModeUseOutlines);
             writeBookmarks(c, root, _writer.getRootOutline(), _bookmarks);
         }
     }
