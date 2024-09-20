@@ -1,7 +1,8 @@
 # Changelog
 
-## 9.9.4 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/20
-* 
+## 9.9.4 (20.09.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/20?closed=1
+* Set "Page only" as default initial view in PDF viewer (#390)
+* #379 Revert "Overcoming Table Cell and Line Splitting Challenges (#358)"
 
 ## 9.9.3 (16.09.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/19?closed=1
 * #385 avoid using memory-mapped files for reading fonts (#388)
