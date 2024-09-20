@@ -132,9 +132,13 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <use>false</use>
-        </configuration>
+        <version>3.10.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <phase>none</phase> <!-- Disable the execution of the plugin -->
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
