@@ -44,13 +44,9 @@
       </activation>
       <dependencies>
         <dependency>
-          <groupId>org.eclipse</groupId>
-          <artifactId>swt</artifactId>
-          <version>3.6</version>
-          <type>jar</type>
-          <scope>system</scope>
-          <systemPath>${basedir}/lib/swt/swt-3.6-win32.jar</systemPath>
-          <optional>true</optional>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
+          <version>4.3</version>
         </dependency>
       </dependencies>
     </profile>
@@ -64,13 +60,9 @@
       </activation>
       <dependencies>
         <dependency>
-          <groupId>org.eclipse</groupId>
-          <artifactId>swt</artifactId>
-          <version>3.6</version>
-          <type>jar</type>
-          <scope>system</scope>
-          <systemPath>${basedir}/lib/swt/swt-3.6-osx.jar</systemPath>
-          <optional>true</optional>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
+          <version>4.3</version>
         </dependency>
       </dependencies>
     </profile>
@@ -83,13 +75,9 @@
       </activation>
       <dependencies>
         <dependency>
-          <groupId>org.eclipse</groupId>
-          <artifactId>swt</artifactId>
-          <version>3.6</version>
-          <type>jar</type>
-          <scope>system</scope>
-          <systemPath>${basedir}/lib/swt/swt-3.6-linux.jar</systemPath>
-          <optional>true</optional>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+          <version>4.3</version>
         </dependency>
       </dependencies>
     </profile>
