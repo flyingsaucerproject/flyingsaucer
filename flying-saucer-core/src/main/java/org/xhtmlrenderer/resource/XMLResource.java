@@ -59,9 +59,14 @@ import java.util.logging.Level;
 
 
 /**
+ * XML based parser.
+ *
+ * @deprecated See HTMLResource class for JSoup HTML based parsing.
+ *
  * @author Patrick Wright
  */
 @ParametersAreNonnullByDefault
+@Deprecated
 public class XMLResource extends AbstractResource {
     private Document document;
     private static final XMLResourceBuilder XML_RESOURCE_BUILDER;
