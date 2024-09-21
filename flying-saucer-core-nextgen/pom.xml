@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.xhtmlrenderer</groupId>
+    <artifactId>flying-saucer-parent</artifactId>
+    <version>9.9.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>flying-saucer-core-nextgen</artifactId>
+  <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact contains the core rendering and layout code as well as Java2D output. This is focused on development of new features and supporting modern standards. Uses JSoup HTML parser.</description>
+
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
+      <url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
+    </license>
+  </licenses>
+
+  <packaging>jar</packaging>
+
+  <name>Flying Saucer Core Renderer - Next generation</name>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>../</directory>
+        <targetPath>META-INF</targetPath>
+        <includes>
+          <include>LICENSE*</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>target/classes/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.core.nextgen</Bundle-SymbolicName>
+            <Automatic-Module-Name>flying.saucer.nextgen</Automatic-Module-Name>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- Dependency resolution seems not to work properly with default
+              behavior of importing the exported packages. -->
+            <Import-Package>!org.xhtmlrenderer.*</Import-Package>
+            <Export-Package>org.xhtmlrenderer.*</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

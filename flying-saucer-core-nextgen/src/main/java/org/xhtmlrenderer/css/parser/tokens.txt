@@ -1,0 +1,54 @@
+S,whitespace
+CDO,<!--
+CDC,-->
+INCLUDES,an attribute word match
+DASHMATCH,an attribute hyphen match
+PREFIXMATCH,an attribute prefix match
+SUFFIXMATCH,an attribute suffix match
+SUBSTRINGMATCH,an attribute substring match
+LBRACE,a {
+PLUS,a +
+GREATER,a >
+COMMA,a comma
+STRING,a string
+INVALID,an unclosed string
+IDENT,an identifier
+HASH,a hex color
+IMPORT_SYM,@import
+PAGE_SYM,@page
+MEDIA_SYM,@media
+CHARSET_SYM,@charset
+NAMESPACE_SYM,@namespace
+FONT_FACE_SYM,@font-face
+AT_RULE,at rule
+IMPORTANT_SYM,!important
+EMS,an em value
+EXS,an ex value
+PX,a pixel value
+CM,a centimeter value
+MM,a millimeter value
+IN,an inch value
+PT,a point value
+PC,a pica value
+ANGLE,an angle value
+TIME,a time value
+FREQ,a freq value
+DIMENSION,a dimension
+PERCENTAGE,a percentage
+NUMBER,a number
+URI,a URI
+FUNCTION,function
+OTHER,other
+RBRACE,}
+SEMICOLON,;
+VIRGULE,/
+COLON,:
+MINUS,-
+RPAREN,)
+LBRACKET,[
+RBRACKET,]
+PERIOD,.
+EQUALS,=
+ASTERISK,*
+VERTICAL_BAR,|
+EOF,end of file
