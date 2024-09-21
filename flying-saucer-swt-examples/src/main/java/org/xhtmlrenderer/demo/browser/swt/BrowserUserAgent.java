@@ -188,7 +188,9 @@ public class BrowserUserAgent extends NaiveUserAgent {
             String charset = "UTF-8"; // Default to UTF-8
 
             // Check if charset is provided in the content type header
-            if (contentType != null && contentType.contains("charset=")) {
+            if (contentType == null) {
+                contentType = "";
+            } else if (contentType != null && contentType.contains("charset=")) {
                 charset = contentType.substring(contentType.indexOf("charset=") + 8).trim();
             }
 

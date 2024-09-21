@@ -359,9 +359,11 @@ public class Browser implements DisposeListener, DocumentListener {
                 box.setText("Error");
                 box.setMessage("""
                         An error has occurred. See console for details.
-
-                        Note: the application might be in an inconsistent state.""");
+                        Error details: 
+                        """
+                        + e.getLocalizedMessage());
                 box.open();
+                e.printStackTrace();
             }
         }
     }
@@ -383,6 +385,9 @@ public class Browser implements DisposeListener, DocumentListener {
     }
 
     public void load(String url) {
+        if (!url.startsWith("http") && url.startsWith("www")) {
+            url = "https://" + url;
+        }
         _xhtml.setDocument(url);
     }
 
