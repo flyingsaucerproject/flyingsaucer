@@ -47,7 +47,7 @@ Only one should be used at a time.
 
 See the sample code under the `flying-saucer-examples` directory.
 
-`flying-saucer-core`, `flying-saucer-pdf`, and `flying-saucer-swt` must be on the
+(`flying-saucer-core` or `flying-saucer-core-nextgen`), `flying-saucer-pdf`, and `flying-saucer-swt` must be on the
 build path, as well as the SWT JAR for your OS.
 
 `org.xhtmlrenderer.demo.browser.BrowserStartup` will start the browser demo.

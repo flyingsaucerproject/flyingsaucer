@@ -1,7 +1,9 @@
 # Changelog
 
 ## 9.9.5 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/21
-*
+* flying-saucer-core-nextgen module with JSoup HTML parser has been added. This new core module is for adding new features and supporting modern HTML standards. flying-saucer-core is for stable legacy xhtml parsing. flying-saucer-core and flying-saucer-core-nextgen are interchangeable.
+* Flying-saucer-swt: Replace bundled jar files with proper dependencies from maven central.
+* XMLResource has been renamed to HTMLResource.
 
 ## 9.9.4 (20.09.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/20?closed=1
 * Set "Page only" as default initial view in PDF viewer (#390)
