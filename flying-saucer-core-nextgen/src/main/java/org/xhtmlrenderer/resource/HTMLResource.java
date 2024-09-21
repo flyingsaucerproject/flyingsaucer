@@ -62,7 +62,7 @@ import java.util.logging.Level;
  * @author Patrick Wright
  */
 @ParametersAreNonnullByDefault
-public class XMLResource extends AbstractResource {
+public class HTMLResource extends AbstractResource {
     private Document document;
     private static final XMLResourceBuilder XML_RESOURCE_BUILDER;
     private static boolean useConfiguredParser;
@@ -72,35 +72,35 @@ public class XMLResource extends AbstractResource {
         useConfiguredParser = true;
     }
 
-    private XMLResource(InputStream stream) {
+    private HTMLResource(InputStream stream) {
         super(stream);
     }
 
-    private XMLResource(@Nullable InputSource source) {
+    private HTMLResource(@Nullable InputSource source) {
         super(source);
     }
 
-    public static XMLResource load(URL source) {
+    public static HTMLResource load(URL source) {
         return load(new InputSource(source.toString()));
     }
 
-    public static XMLResource load(InputStream stream) {
-        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(stream));
+    public static HTMLResource load(InputStream stream) {
+        return XML_RESOURCE_BUILDER.createXMLResource(new HTMLResource(stream));
     }
 
-    public static XMLResource load(InputSource source) {
-        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(source));
+    public static HTMLResource load(InputSource source) {
+        return XML_RESOURCE_BUILDER.createXMLResource(new HTMLResource(source));
     }
 
-    public static XMLResource load(Reader reader) {
-        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(new InputSource(reader)));
+    public static HTMLResource load(Reader reader) {
+        return XML_RESOURCE_BUILDER.createXMLResource(new HTMLResource(new InputSource(reader)));
     }
 
-    public static XMLResource load(String xml) {
+    public static HTMLResource load(String xml) {
         return load(new StringReader(xml));
     }
 
-    public static XMLResource load(Source source) {
+    public static HTMLResource load(Source source) {
         return XML_RESOURCE_BUILDER.createXMLResource(source);
     }
 
@@ -122,18 +122,18 @@ public class XMLResource extends AbstractResource {
         try {
             if (xmlReaderClass != null &&
                     !xmlReaderClass.equalsIgnoreCase("default") &&
-                    XMLResource.useConfiguredParser) {
+                    HTMLResource.useConfiguredParser) {
                 try {
                     Class.forName(xmlReaderClass);
                 } catch (Exception ex) {
-                    XMLResource.useConfiguredParser = false;
+                    HTMLResource.useConfiguredParser = false;
                     XRLog.load(Level.WARNING,
                             "The XMLReader class you specified as a configuration property " +
                             "could not be found. Class.forName() failed on "
                             + xmlReaderClass + ". Please check classpath. Use value 'default' in " +
                             "FS configuration if necessary. Will now try JDK default.");
                 }
-                if (XMLResource.useConfiguredParser) {
+                if (HTMLResource.useConfiguredParser) {
                     xmlReader = XMLReaderFactory.createXMLReader(xmlReaderClass);
                 }
             }
@@ -182,7 +182,7 @@ public class XMLResource extends AbstractResource {
         private final XMLReaderPool parserPool = new XMLReaderPool();
         private final IdentityTransformerPool traxPool = new IdentityTransformerPool();
 
-        private XMLResource createXMLResource(XMLResource target) {
+        private HTMLResource createXMLResource(HTMLResource target) {
             long start = System.currentTimeMillis();
             Document document = parse(target);
             long end = System.currentTimeMillis();
@@ -194,7 +194,7 @@ public class XMLResource extends AbstractResource {
             return target;
         }
 
-        private Document parse(XMLResource target) {
+        private Document parse(HTMLResource target) {
             XMLReader xmlReader = parserPool.get();
             try {
                 return transform(new SAXSource(xmlReader, target.getResourceInputSource()));
@@ -203,7 +203,7 @@ public class XMLResource extends AbstractResource {
             }
         }
 
-        XMLResource createXMLResource(Source source) {
+        HTMLResource createXMLResource(Source source) {
             Document document;
 
             long st = System.currentTimeMillis();
@@ -213,7 +213,7 @@ public class XMLResource extends AbstractResource {
             long end = System.currentTimeMillis();
 
             //HACK: should rather use a default constructor
-            XMLResource target = new XMLResource((InputSource) null);
+            HTMLResource target = new HTMLResource((InputSource) null);
 
             target.setElapsedLoadTime(end - st);
 

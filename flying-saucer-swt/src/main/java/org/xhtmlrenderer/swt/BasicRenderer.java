@@ -58,7 +58,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.simple.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
@@ -806,14 +806,14 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     }
 
     public void setDocument(InputStream stream, String url, NamespaceHandler nsh) {
-        Document dom = XMLResource.load(stream).getDocument();
+        Document dom = HTMLResource.load(stream).getDocument();
 
         setDocument(dom, url, nsh);
     }
 
     public void setDocumentFromString(String content, String url, NamespaceHandler nsh) {
         InputSource is = new InputSource(new StringReader(content));
-        Document dom = XMLResource.load(is).getDocument();
+        Document dom = HTMLResource.load(is).getDocument();
 
         setDocument(dom, url, nsh);
     }
@@ -872,11 +872,11 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     }
 
     protected Document loadDocument(final String uri) {
-        XMLResource xmlResource = _sharedContext.getUac().getXMLResource(uri);
-        if (xmlResource == null) {
+        HTMLResource HTMLResource = _sharedContext.getUac().getXMLResource(uri);
+        if (HTMLResource == null) {
             return null;
         }
-        return xmlResource.getDocument();
+        return HTMLResource.getDocument();
     }
 
     public String getDocumentTitle() {

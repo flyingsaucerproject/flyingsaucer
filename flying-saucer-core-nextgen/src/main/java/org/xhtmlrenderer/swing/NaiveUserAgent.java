@@ -23,7 +23,7 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.util.FontUtil;
 import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
@@ -288,9 +288,9 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @return An XMLResource containing the image.
      */
     @Override
-    public XMLResource getXMLResource(String uri) {
+    public HTMLResource getXMLResource(String uri) {
         try (InputStream inputStream = resolveAndOpenStream(uri)) {
-            return XMLResource.load(inputStream);
+            return HTMLResource.load(inputStream);
         } catch (IOException ignore) {
             return null;
         }

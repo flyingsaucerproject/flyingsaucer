@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.Image;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
@@ -134,7 +134,7 @@ public class NaiveUserAgent implements UserAgentCallback {
     }
 
     @Override
-    public XMLResource getXMLResource(String uri) {
+    public HTMLResource getXMLResource(String uri) {
         if (uri == null) {
             XRLog.exception("null uri requested");
             return null;
@@ -144,7 +144,7 @@ public class NaiveUserAgent implements UserAgentCallback {
                 XRLog.exception("couldn't get InputStream for " + uri);
                 return null;
             }
-            return XMLResource.load(inputStream);
+            return HTMLResource.load(inputStream);
         } catch (Exception e) {
             XRLog.exception("unable to load xml resource: " + uri, e);
             return null;

@@ -38,7 +38,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -218,11 +218,11 @@ public class PrinterRenderer implements UserInterface {
     }
 
     protected Document loadDocument(final String uri) {
-        XMLResource xmlResource = _sharedContext.getUac().getXMLResource(uri);
-        if (xmlResource == null) {
+        HTMLResource HTMLResource = _sharedContext.getUac().getXMLResource(uri);
+        if (HTMLResource == null) {
             return null;
         }
-        return xmlResource.getDocument();
+        return HTMLResource.getDocument();
     }
 
     public boolean isActive(Element e) {

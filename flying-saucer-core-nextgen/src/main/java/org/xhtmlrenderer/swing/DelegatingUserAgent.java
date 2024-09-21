@@ -23,7 +23,7 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.StreamResource;
 
@@ -123,12 +123,12 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri Location of the XML source.
      * @return An XMLResource containing the image.
      */
-    public XMLResource getXMLResource(String uri) {
+    public HTMLResource getXMLResource(String uri) {
         String ruri = _uriResolver.resolve(uri);
         try (StreamResource sr = new StreamResource(ruri)) {
             sr.connect();
             BufferedInputStream bis = sr.bufferedStream();
-            return XMLResource.load(bis);
+            return HTMLResource.load(bis);
         } catch (IOException e) {
             return null;
         }
