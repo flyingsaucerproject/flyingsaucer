@@ -40,7 +40,8 @@ New releases of Flying Saucer are distributed through Maven. The available artif
 Flying Saucer from version 9.5.0, requires Java 11 or later.
 Flying Saucer from version 9.6.0, requires Java 17 or later.
 
-org.xhtmlrenderer:flying-saucer-core and org.xhtmlrenderer:flying-saucer-core-nextgen are interchangeable and generally API compatible.
+flying-saucer-core and flying-saucer-core-nextgen are interchangeable and generally API compatible. 
+Only one should be used at a time.
 
 ## GETTING STARTED
 
