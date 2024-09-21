@@ -19,3 +19,5 @@ Alice in Wonderland,demo:demos/alice/alice.xhtml
 Hamlet,demo:demos/hamlet.xhtml
 Game Screen,demo:demos/game/game-screen.xhtml
 Unsupported,demo:demos/unsupported.xhtml
+Google,https://www.google.com
+Wikipedia,https://en.wikipedia.org/

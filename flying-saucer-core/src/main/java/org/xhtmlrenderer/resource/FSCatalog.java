@@ -55,7 +55,7 @@ import static java.util.Objects.requireNonNull;
  * <p>
  * <p>To use, instantiate the class, and call {@link #parseCatalog(InputSource)}
  * to retrieve a {@link java.util.Map} keyed by public ids. The class uses
- * an XMLReader instance retrieved via {@link XMLResource#newXMLReader()}, so
+ * an XMLReader instance retrieved via {@link HTMLResource#newXMLReader()}, so
  * XMLReader configuration (and specification) follows that of the standard XML
  * parsing in Flying Saucer.
  * <p>
@@ -100,7 +100,7 @@ public class FSCatalog {
      * @param inputSource A SAX InputSource to a catalog XML file on the classpath.
      */
     public Map<String, String> parseCatalog(InputSource inputSource) {
-        XMLReader xmlReader = XMLResource.newXMLReader();
+        XMLReader xmlReader = HTMLResource.newXMLReader();
 
         CatalogContentHandler ch = new CatalogContentHandler();
         addHandlers(xmlReader, ch);

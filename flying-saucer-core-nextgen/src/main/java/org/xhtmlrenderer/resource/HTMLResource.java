@@ -31,7 +31,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 /**
