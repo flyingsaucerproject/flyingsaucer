@@ -812,8 +812,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     }
 
     public void setDocumentFromString(String content, String url, NamespaceHandler nsh) {
-        InputSource is = new InputSource(new StringReader(content));
-        Document dom = HTMLResource.load(is).getDocument();
+        Document dom = HTMLResource.load(content).getDocument();
 
         setDocument(dom, url, nsh);
     }

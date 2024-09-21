@@ -340,8 +340,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     public void setDocumentFromString(String content, @Nullable String url, NamespaceHandler nsh) {
-        InputSource is = new InputSource(new StringReader(content));
-        Document dom = HTMLResource.load(is).getDocument();
+        Document dom = HTMLResource.load(content).getDocument();
 
         setDocument(dom, url, nsh);
     }
