@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.AWTFSImage;
@@ -123,7 +124,7 @@ public class DemoUserAgent implements UserAgentCallback {
     }
 
     @Override
-    public XMLResource getXMLResource(String uri) {
+    public HTMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);
         if (uri != null && uri.startsWith("file:")) {
             try {
@@ -132,14 +133,14 @@ public class DemoUserAgent implements UserAgentCallback {
                 log.error("Failed to read xml resource {}", uri, e);
             }
         }
-        XMLResource xr = null;
+        HTMLResource xr = null;
         InputStream inputStream = null;
         try {
             URLConnection uc = new URL(uri).openConnection();
             uc.connect();
             // TODO: String contentType = uc.getContentType(); Maybe should popup a choice when content/unknown!
             inputStream = uc.getInputStream();
-            xr = XMLResource.load(inputStream);
+            xr = HTMLResource.load(inputStream);
         } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (IOException e) {
@@ -149,7 +150,7 @@ public class DemoUserAgent implements UserAgentCallback {
         }
         if (xr == null) {
             String notFound = "<h1>Document not found</h1>";
-            xr = XMLResource.load(new StringReader(notFound));
+            xr = HTMLResource.load(new StringReader(notFound));
         }
         return xr;
     }

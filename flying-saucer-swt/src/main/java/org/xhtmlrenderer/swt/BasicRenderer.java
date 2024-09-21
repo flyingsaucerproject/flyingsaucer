@@ -63,12 +63,10 @@ import org.xhtmlrenderer.simple.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
-import org.xml.sax.InputSource;
 
 import java.awt.*;
 import java.awt.geom.Area;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -806,7 +804,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     }
 
     public void setDocument(InputStream stream, String url, NamespaceHandler nsh) {
-        Document dom = HTMLResource.load(stream, "").getDocument();
+        Document dom = HTMLResource.load(stream).getDocument();
 
         setDocument(dom, url, nsh);
     }

@@ -144,7 +144,7 @@ public class NaiveUserAgent implements UserAgentCallback {
                 XRLog.exception("couldn't get InputStream for " + uri);
                 return null;
             }
-            return HTMLResource.load(inputStream, "");
+            return HTMLResource.load(inputStream);
         } catch (Exception e) {
             XRLog.exception("unable to load xml resource: " + uri, e);
             return null;

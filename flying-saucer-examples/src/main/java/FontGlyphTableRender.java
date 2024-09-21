@@ -25,7 +25,6 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DefaultDocumentListener;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextRenderer;
-import org.xhtmlrenderer.resource.FSEntityResolver;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
@@ -401,7 +400,6 @@ public class FontGlyphTableRender {
             } catch (SAXException e) {
                 System.err.println("Cannot activate validation.");
             }
-            parser.setEntityResolver(FSEntityResolver.instance());
             DefaultHandler2 dh2 = new DefaultHandler2() {
                 boolean isEnt;
 

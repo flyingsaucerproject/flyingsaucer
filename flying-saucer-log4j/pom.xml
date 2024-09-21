@@ -33,7 +33,7 @@
     </dependency>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
-      <artifactId>flying-saucer-core</artifactId>
+      <artifactId>flying-saucer-core-nextgen</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

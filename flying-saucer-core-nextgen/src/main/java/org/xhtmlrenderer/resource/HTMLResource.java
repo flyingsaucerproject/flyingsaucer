@@ -52,6 +52,10 @@ public class HTMLResource extends AbstractResource {
         this.jsoupDocument = document;
     }
 
+    public static HTMLResource load(InputStream stream) {
+        return load(stream, null);
+    }
+
     public static HTMLResource load(InputStream stream, String charset) {
         try {
             org.jsoup.nodes.Document document = Jsoup.parse(stream, charset, "");

@@ -2,7 +2,6 @@ package org.xhtmlrenderer.pdf;
 
 import com.lowagie.text.DocumentException;
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.resource.FSEntityResolver;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -28,7 +27,6 @@ public class Html2Pdf {
 
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            builder.setEntityResolver(FSEntityResolver.instance());
 
             Document doc = builder.parse(html.toString());
             return renderer.createPDF(doc);

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.DelegatingUserAgent;
 import org.xhtmlrenderer.util.GeneralUtil;
@@ -108,7 +109,7 @@ public class PanelManager extends DelegatingUserAgent {
     }
 
     @Override
-    public XMLResource getXMLResource(String uri) {
+    public HTMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);
         if (uri != null && uri.startsWith("file:")) {
             File file;
@@ -123,10 +124,10 @@ public class PanelManager extends DelegatingUserAgent {
             }
             if (file.isDirectory()) {
                 String dirList = DirectoryLister.list(file);
-                return XMLResource.load(new StringReader(dirList));
+                return HTMLResource.load(new StringReader(dirList));
             }
         }
-        XMLResource xr = null;
+        HTMLResource xr = null;
         try {
             URLConnection uc = new URL(uri).openConnection();
             uc.connect();
@@ -134,15 +135,14 @@ public class PanelManager extends DelegatingUserAgent {
             //Maybe should pop up a choice when content/unknown!
             if (contentType.equals("text/plain") || contentType.equals("content/unknown")) {
                 try (InputStream inputStream = uc.getInputStream()) {
-                    SAXSource source = new SAXSource(new PlainTextXMLReader(inputStream), new InputSource());
-                    xr = XMLResource.load(source);
+                    xr = HTMLResource.load(inputStream);
                 }
             } else if (contentType.startsWith("image")) {
                 String doc = "<img src='" + uri + "'/>";
-                xr = XMLResource.load(new StringReader(doc));
+                xr = HTMLResource.load(new StringReader(doc));
             } else {
                 try (InputStream inputStream = uc.getInputStream()) {
-                    xr = XMLResource.load(inputStream);
+                    xr = HTMLResource.load(inputStream);
                 }
             }
         } catch (MalformedURLException e) {
@@ -164,14 +164,14 @@ public class PanelManager extends DelegatingUserAgent {
      *
      * @return An XMLResource containing XML which about the failure.
      */
-    private XMLResource getNotFoundDocument(String uri) {
-        XMLResource xr;
+    private HTMLResource getNotFoundDocument(String uri) {
+        HTMLResource xr;
 
         // URI may contain & symbols which can "break" the XHTML we're creating
         String cleanUri = GeneralUtil.escapeHTML(uri);
         String notFound = "<html><h1>Document not found</h1><p>Could not access URI <pre>" + cleanUri + "</pre></p></html>";
 
-        xr = XMLResource.load(new StringReader(notFound));
+        xr = HTMLResource.load(new StringReader(notFound));
         return xr;
     }
 
