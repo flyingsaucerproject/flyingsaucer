@@ -290,7 +290,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     @Override
     public HTMLResource getXMLResource(String uri) {
         try (InputStream inputStream = resolveAndOpenStream(uri)) {
-            return HTMLResource.load(inputStream);
+            return HTMLResource.load(inputStream, "");
         } catch (IOException ignore) {
             return null;
         }

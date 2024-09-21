@@ -52,17 +52,9 @@ public class HTMLResource extends AbstractResource {
         this.jsoupDocument = document;
     }
 
-    public static HTMLResource load(URL source) {
+    public static HTMLResource load(InputStream stream, String charset) {
         try {
-            return load(source.openStream());
-        } catch (IOException e) {
-            throw new XRRuntimeException("Could not load URL resource: " + source, e);
-        }
-    }
-
-    public static HTMLResource load(InputStream stream) {
-        try {
-            org.jsoup.nodes.Document document = Jsoup.parse(stream, "UTF-8", "");
+            org.jsoup.nodes.Document document = Jsoup.parse(stream, charset, "");
             return new HTMLResource(stream, document);
         } catch (IOException e) {
             throw new XRRuntimeException("Could not load InputStream resource", e);

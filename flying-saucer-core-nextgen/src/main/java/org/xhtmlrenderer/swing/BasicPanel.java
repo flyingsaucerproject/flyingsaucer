@@ -334,7 +334,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 =========== set document utility methods =============== */
 
     public void setDocument(InputStream stream, String url, NamespaceHandler nsh) {
-        Document dom = HTMLResource.load(stream).getDocument();
+        Document dom = HTMLResource.load(stream, "").getDocument();
 
         setDocument(dom, url, nsh);
     }

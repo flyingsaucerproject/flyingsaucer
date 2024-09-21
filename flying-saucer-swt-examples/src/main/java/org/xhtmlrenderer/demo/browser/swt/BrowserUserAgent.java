@@ -38,10 +38,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.transform.sax.SAXSource;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -178,24 +175,32 @@ public class BrowserUserAgent extends NaiveUserAgent {
                 return HTMLResource.load(new StringReader(dirList));
             }
         }
+
         HTMLResource xr = null;
         URLConnection uc;
         InputStream inputStream = null;
         try {
             uc = new URL(uri).openConnection();
+            uc.setRequestProperty("Accept-Charset", "UTF-8");
             uc.connect();
+
             String contentType = uc.getContentType();
-            // Maybe should pop up a choice when content/unknown!
-            if (contentType.equals("text/plain")
-                    || contentType.equals("content/unknown")) {
+            String charset = "UTF-8"; // Default to UTF-8
+
+            // Check if charset is provided in the content type header
+            if (contentType != null && contentType.contains("charset=")) {
+                charset = contentType.substring(contentType.indexOf("charset=") + 8).trim();
+            }
+
+            if (contentType.equals("text/plain") || contentType.equals("content/unknown")) {
                 inputStream = uc.getInputStream();
-                xr = HTMLResource.load(inputStream);
+                xr = HTMLResource.load(new InputStreamReader(inputStream, charset));
             } else if (contentType.startsWith("image")) {
                 String doc = "<img src='" + uri + "'/>";
                 xr = HTMLResource.load(new StringReader(doc));
             } else {
                 inputStream = uc.getInputStream();
-                xr = HTMLResource.load(inputStream);
+                xr = HTMLResource.load(inputStream, charset);
             }
         } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);

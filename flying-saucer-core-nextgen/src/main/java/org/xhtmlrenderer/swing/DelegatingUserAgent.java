@@ -128,7 +128,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
         try (StreamResource sr = new StreamResource(ruri)) {
             sr.connect();
             BufferedInputStream bis = sr.bufferedStream();
-            return HTMLResource.load(bis);
+            return HTMLResource.load(bis, "");
         } catch (IOException e) {
             return null;
         }

@@ -806,7 +806,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     }
 
     public void setDocument(InputStream stream, String url, NamespaceHandler nsh) {
-        Document dom = HTMLResource.load(stream).getDocument();
+        Document dom = HTMLResource.load(stream, "").getDocument();
 
         setDocument(dom, url, nsh);
     }
