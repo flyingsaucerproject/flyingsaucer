@@ -25,7 +25,6 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.resource.ImageResource;
-import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.Uu;
@@ -150,7 +149,7 @@ public class DemoUserAgent implements UserAgentCallback {
         }
         if (xr == null) {
             String notFound = "<h1>Document not found</h1>";
-            xr = HTMLResource.load(new StringReader(notFound));
+            xr = HTMLResource.load(notFound);
         }
         return xr;
     }

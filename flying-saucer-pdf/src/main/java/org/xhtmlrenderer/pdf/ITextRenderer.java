@@ -39,7 +39,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
@@ -214,9 +214,7 @@ public class ITextRenderer {
     }
 
     private Document parse(String content) {
-        try (var is = new StringReader(content)) {
-            return XMLResource.load(new InputSource(is)).getDocument();
-        }
+            return HTMLResource.load(content).getDocument();
     }
 
     @Deprecated

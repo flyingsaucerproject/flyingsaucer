@@ -26,7 +26,7 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.PDFCreationListener;
 import org.xhtmlrenderer.pdf.util.XHtmlMetaToPdfInfoAdapter;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.swing.ImageResourceLoader;
 import org.xhtmlrenderer.swing.ScalableXHTMLPanel;
@@ -316,7 +316,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     }
 
     private void handlePageLoadFailed(String url_text, XRRuntimeException ex) {
-        final XMLResource xr;
+        final HTMLResource xr;
         final String rootCause = getRootCause(ex);
         final String msg = GeneralUtil.escapeHTML(addLineBreaks(rootCause));
         String notFound =
@@ -333,7 +333,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                         "</body>\n" +
                         "</html>";
 
-        xr = XMLResource.load(new StringReader(notFound));
+        xr = HTMLResource.load(notFound);
         SwingUtilities.invokeLater(() -> root.panel.view.setDocument(xr.getDocument(), null));
    }
 

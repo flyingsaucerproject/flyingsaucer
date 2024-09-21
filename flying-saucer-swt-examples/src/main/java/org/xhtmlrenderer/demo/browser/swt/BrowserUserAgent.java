@@ -172,7 +172,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
             }
             if (file.isDirectory()) {
                 String dirList = DirectoryLister.list(file);
-                return HTMLResource.load(new StringReader(dirList));
+                return HTMLResource.load(dirList);
             }
         }
 
@@ -196,10 +196,10 @@ public class BrowserUserAgent extends NaiveUserAgent {
 
             if (contentType.equals("text/plain") || contentType.equals("content/unknown")) {
                 inputStream = uc.getInputStream();
-                xr = HTMLResource.load(new InputStreamReader(inputStream, charset));
+                xr = HTMLResource.load(inputStream, charset);
             } else if (contentType.startsWith("image")) {
                 String doc = "<img src='" + uri + "'/>";
-                xr = HTMLResource.load(new StringReader(doc));
+                xr = HTMLResource.load(doc);
             } else {
                 inputStream = uc.getInputStream();
                 xr = HTMLResource.load(inputStream, charset);
@@ -243,7 +243,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
         String notFound = "<html><h1>Document not found</h1><p>Could not access URI <pre>"
                 + uri + "</pre></p></html>";
 
-        xr = HTMLResource.load(new StringReader(notFound));
+        xr = HTMLResource.load(notFound);
         return xr;
     }
 

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DefaultDocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.swing.DelegatingUserAgent;
@@ -121,11 +121,11 @@ public class BrowsePanel {
         });
     }
 
-    private XMLResource getErrorDocument(String reason) {
-        XMLResource xr;
+    private HTMLResource getErrorDocument(String reason) {
+        HTMLResource xr;
         String cleanUri = GeneralUtil.escapeHTML(uri);
         String notFound = "<html><h1>Document not found</h1><p>Could not load URI <pre>" + cleanUri + "</pre>, because: " + reason + "</p></html>";
-        xr = XMLResource.load(new StringReader(notFound));
+        xr = HTMLResource.load(notFound);
         return xr;
     }
 

@@ -22,7 +22,7 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.pdf.ITextOutputDevice;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xml.sax.InputSource;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -57,7 +57,7 @@ public class PDFRender {
             ResourceLoaderUserAgent callback = new ResourceLoaderUserAgent(renderer.getOutputDevice(), renderer.getSharedContext().getDotsPerPixel());
             renderer.getSharedContext ().setUserAgentCallback(callback);
 
-            Document doc = XMLResource.load(new InputSource(url)).getDocument();
+            Document doc = HTMLResource.load(url).getDocument();
 
             renderer.createPDF(doc, os);
         }

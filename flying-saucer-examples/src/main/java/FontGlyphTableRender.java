@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DefaultDocumentListener;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextRenderer;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
@@ -315,8 +315,7 @@ public class FontGlyphTableRender {
         }
         // DEBUG
         //System.out.println(page);
-        InputSource is = new InputSource(new StringReader(page));
-        return XMLResource.load(is).getDocument();
+        return HTMLResource.load(page).getDocument();
     }
 
     private Table buildGlyphTable(int from, int to) {

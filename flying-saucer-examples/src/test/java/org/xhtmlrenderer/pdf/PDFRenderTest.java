@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
@@ -50,7 +50,7 @@ public class PDFRenderTest {
     }
 
     private static PDF generatePDF(URL source, File output) throws IOException, DocumentException {
-        Document doc = XMLResource.load(source).getDocument();
+        Document doc = HTMLResource.load(source).getDocument();
 
         try (OutputStream os = newOutputStream(output.toPath())) {
             ITextRenderer renderer = new ITextRenderer();

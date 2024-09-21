@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.pdf.ITextRenderer;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,7 +36,7 @@ class FloatedTableCellTest {
 			</html>""";
 
         ITextRenderer renderer = new ITextRenderer();
-		byte[] result = renderer.createPDF(XMLResource.load(page).getDocument());
+		byte[] result = renderer.createPDF(HTMLResource.load(page).getDocument());
 		printFile(result, "table-with-floated-cell.pdf");
 		PDF pdf = new PDF(result);
 		assertThat(pdf).containsText("first cell", "second cell");
@@ -48,7 +48,7 @@ class FloatedTableCellTest {
 			<table><tr><td style="float:left;">first cell {float:left;}</td></tr></table>""";
 
         ITextRenderer renderer = new ITextRenderer();
-		byte[] result = renderer.createPDF(XMLResource.load(page).getDocument());
+		byte[] result = renderer.createPDF(HTMLResource.load(page).getDocument());
 		printFile(result, "table-cell.pdf");
 		
 		PDF pdf = new PDF(result);		

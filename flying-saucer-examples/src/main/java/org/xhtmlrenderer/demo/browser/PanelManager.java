@@ -20,17 +20,14 @@
 package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.resource.HTMLResource;
-import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.DelegatingUserAgent;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
-import org.xml.sax.InputSource;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import javax.xml.transform.sax.SAXSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -124,7 +121,7 @@ public class PanelManager extends DelegatingUserAgent {
             }
             if (file.isDirectory()) {
                 String dirList = DirectoryLister.list(file);
-                return HTMLResource.load(new StringReader(dirList));
+                return HTMLResource.load(dirList);
             }
         }
         HTMLResource xr = null;
@@ -139,7 +136,7 @@ public class PanelManager extends DelegatingUserAgent {
                 }
             } else if (contentType.startsWith("image")) {
                 String doc = "<img src='" + uri + "'/>";
-                xr = HTMLResource.load(new StringReader(doc));
+                xr = HTMLResource.load(doc);
             } else {
                 try (InputStream inputStream = uc.getInputStream()) {
                     xr = HTMLResource.load(inputStream);
@@ -171,7 +168,7 @@ public class PanelManager extends DelegatingUserAgent {
         String cleanUri = GeneralUtil.escapeHTML(uri);
         String notFound = "<html><h1>Document not found</h1><p>Could not access URI <pre>" + cleanUri + "</pre></p></html>";
 
-        xr = HTMLResource.load(new StringReader(notFound));
+        xr = HTMLResource.load(notFound);
         return xr;
     }
 

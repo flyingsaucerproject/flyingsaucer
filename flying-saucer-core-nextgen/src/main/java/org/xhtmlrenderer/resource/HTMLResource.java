@@ -27,10 +27,10 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.w3c.dom.Document;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -55,6 +55,21 @@ public class HTMLResource extends AbstractResource {
         return load(stream, null);
     }
 
+    public static HTMLResource load(URL source) {
+        try {
+            org.jsoup.nodes.Document document;
+            if (source.getProtocol().equals("file")) {
+                File inputFile = new File(source.toURI());
+                document = Jsoup.parse(inputFile, "UTF-8");
+            } else {
+                document = Jsoup.connect(source.toString()).get();
+            }
+            return new HTMLResource(null, document);
+        } catch (IOException | URISyntaxException e) {
+            throw new XRRuntimeException("Could not load resource", e);
+        }
+    }
+
     public static HTMLResource load(InputStream stream, String charset) {
         try {
             org.jsoup.nodes.Document document = Jsoup.parse(stream, charset, "");
@@ -62,12 +77,6 @@ public class HTMLResource extends AbstractResource {
         } catch (IOException e) {
             throw new XRRuntimeException("Could not load InputStream resource", e);
         }
-    }
-
-    public static HTMLResource load(Reader reader) {
-        org.jsoup.nodes.Document document = Jsoup.parse(reader.toString());
-        InputStream inputStream = toInputStream(document.html());
-        return new HTMLResource(inputStream, document);
     }
 
     public static HTMLResource load(String html) {

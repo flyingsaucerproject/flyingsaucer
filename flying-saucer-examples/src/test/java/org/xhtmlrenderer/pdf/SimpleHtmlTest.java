@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.resource.HTMLResource;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,7 +25,7 @@ public class SimpleHtmlTest {
         File file = new File("target/simple.pdf");
         try (FileOutputStream o = new FileOutputStream(file)) {
             ITextRenderer renderer = new ITextRenderer();
-            Document source = XMLResource.load(new StringReader(htmlContent)).getDocument();
+            Document source = HTMLResource.load(htmlContent).getDocument();
             renderer.createPDF(source, o);
         }
         log.info("Generated PDF: {}", file.getAbsolutePath());
