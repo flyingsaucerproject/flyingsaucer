@@ -107,7 +107,8 @@ public class ImageUtil {
             GraphicsConfiguration gc = getGraphicsConfiguration();
 
             // TODO: check type using image type - can be sniffed; see Filthy Rich Clients
-            int type = (biType == BufferedImage.TYPE_INT_ARGB || biType == BufferedImage.TYPE_INT_ARGB_PRE ?
+            int type = (biType == BufferedImage.TYPE_INT_ARGB || biType == BufferedImage.TYPE_INT_ARGB_PRE 
+                || biType == BufferedImage.TYPE_4BYTE_ABGR || biType == BufferedImage.TYPE_4BYTE_ABGR_PRE ?
                     Transparency.TRANSLUCENT : Transparency.OPAQUE);
 
             image = gc.createCompatibleImage(width, height, type);
