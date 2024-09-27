@@ -270,7 +270,7 @@
     <junit.version>5.11.1</junit.version>
     <slf4j.version>2.0.16</slf4j.version>
     <assertj.version>3.26.3</assertj.version>
-    <pdftest.version>1.9.0</pdftest.version>
+    <pdftest.version>1.9.1</pdftest.version>
     <pdfbox.version>3.0.3</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
     <java.version>17</java.version>
