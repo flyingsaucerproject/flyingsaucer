@@ -32,6 +32,7 @@ import org.xhtmlrenderer.extend.FSCanvas;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -131,8 +132,8 @@ public final class SharedContext {
         return new LayoutContext(this);
     }
 
-    public RenderingContext newRenderingContextInstance() {
-        return new RenderingContext(this);
+    public RenderingContext newRenderingContextInstance(OutputDevice outputDevice) {
+        return new RenderingContext(this, outputDevice);
     }
 
     /*
@@ -414,7 +415,7 @@ public final class SharedContext {
      * font with a particular string. For example, the following would load a
      * font out of the cool.ttf file and associate it with the name <i>CoolFont
      * </i>:</p>
-     * 
+     *
      * <pre>
      *   Font font = Font.createFont(Font.TRUETYPE_FONT,
      *   new FileInputStream("cool.ttf");
@@ -459,7 +460,7 @@ public final class SharedContext {
 
     public CalculatedStyle getStyle(Element e, boolean restyle) {
         Map<Element, CalculatedStyle> localMap = styleMap;
-	    
+
         if (localMap == null) {
             localMap = new HashMap<>(1024, 0.75f);
         }
