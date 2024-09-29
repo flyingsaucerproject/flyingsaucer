@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
 
+import static java.awt.Transparency.OPAQUE;
+import static java.awt.Transparency.TRANSLUCENT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.xhtmlrenderer.util.ImageUtil.detectTransparency;
 import static org.xhtmlrenderer.util.ImageUtil.isEmbeddedBase64Image;
 import static org.xhtmlrenderer.util.ImageUtil.loadEmbeddedBase64Image;
 
@@ -29,5 +32,17 @@ class ImageUtilTest {
         assertThat(image).isNotNull();
         assertThat(image.getWidth()).isEqualTo(352);
         assertThat(image.getHeight()).isEqualTo(186);
+    }
+
+    @Test
+    void detectsImageType() {
+        assertThat(detectTransparency(BufferedImage.TYPE_INT_ARGB)).isEqualTo(TRANSLUCENT);
+        assertThat(detectTransparency(BufferedImage.TYPE_INT_ARGB_PRE)).isEqualTo(TRANSLUCENT);
+        assertThat(detectTransparency(BufferedImage.TYPE_4BYTE_ABGR)).isEqualTo(TRANSLUCENT);
+        assertThat(detectTransparency(BufferedImage.TYPE_4BYTE_ABGR_PRE)).isEqualTo(TRANSLUCENT);
+
+        assertThat(detectTransparency(BufferedImage.TYPE_3BYTE_BGR)).isEqualTo(OPAQUE);
+        assertThat(detectTransparency(BufferedImage.TYPE_CUSTOM)).isEqualTo(OPAQUE);
+        assertThat(detectTransparency(BufferedImage.TYPE_INT_RGB)).isEqualTo(OPAQUE);
     }
 }
