@@ -27,6 +27,8 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +44,8 @@ public class DelegatingReplacedElementFactory implements ReplacedElementFactory 
     private final Map<String, ElementReplacer> byNameReplacers = new HashMap<>();
     private final List<ERItem> elementReplacements = new ArrayList<>();
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public ReplacedElement createReplacedElement(final LayoutContext context,
                                                  final BlockBox box,

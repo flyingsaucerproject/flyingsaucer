@@ -41,6 +41,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
+
 /**
  * <p>Renders an XML files, formatted with CSS, as an Box. Input is a document in the form of file or URL,
  * and output is the root of the Box model. A BoxRenderer is not intended to be re-used for multiple document
@@ -213,8 +215,7 @@ public class BoxRenderer {
             height = this.height == -1 ? root.getHeight() : this.height;
             BufferedImage outputImage = createBufferedImage(this.width, height);
             outputDevice = new Java2DOutputDevice(outputImage);
-            Graphics2D newG = (Graphics2D) outputImage.getGraphics();
-            try {
+            withGraphics(outputImage, newG -> {
                 if ( renderingHints != null ) {
                     newG.getRenderingHints().putAll(renderingHints);
                 }
@@ -225,9 +226,7 @@ public class BoxRenderer {
                 sharedContext.getTextRenderer().setup(rc.getFontContext());
 
                 root.getLayer().paint(rc);
-            } finally {
-                if (newG != null) newG.dispose();
-            }
+            });
 
             rendered = true;
         }

@@ -33,6 +33,10 @@ import org.xhtmlrenderer.swing.SwingReplacedElement;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -46,12 +50,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import static java.util.Objects.requireNonNull;
+
 
 /**
  * Sample for handling image maps in XHTML, as replaced elements.
  *
  * Sample is incomplete in current state and meant as a starting point for future work.
  */
+@ParametersAreNonnullByDefault
 public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory {
    private final ImageMapListener listener;
    private static final String IMG_USEMAP_ATTR = "usemap";
@@ -69,13 +76,12 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
    private static final String POLYGON_SHAPE = "polygon";
 
    public ImageMapReplacedElementFactory(ImageMapListener listener) {
-       super(null);
-       if (null == listener) {
-         throw new IllegalArgumentException("listener required");
-      }
-      this.listener = listener;
+      super(null);
+      this.listener = requireNonNull(listener, "listener required");
    }
 
+   @Nullable
+   @CheckReturnValue
    @Override
    public ReplacedElement createReplacedElement(LayoutContext context, BlockBox box, UserAgentCallback uac, int cssWidth, int cssHeight) {
       Element e = box.getElement();
@@ -100,7 +106,8 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
       }
    }
 
-    private boolean isNotBlank(String _v) {
+    @CheckReturnValue
+    private boolean isNotBlank(@Nullable String _v) {
         if (_v == null || _v.isEmpty()) {
             return false;
         }
@@ -112,6 +119,8 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
     }
 
     // See SwingReplacedElementFactory#replaceImage
+   @Nonnull
+   @CheckReturnValue
    protected ReplacedElement replaceImageMap(UserAgentCallback uac, LayoutContext context, Element elem, String usemapAttr, int cssWidth, int cssHeight) {
       ReplacedElement re;
       // lookup in cache, or instantiate
@@ -154,13 +163,17 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
       return re;
    }
 
-    private static boolean areEqual(String str1, String str2) {
+    @CheckReturnValue
+    private static boolean areEqual(@Nullable String str1, @Nullable String str2) {
         return (str1 == null && str2 == null) || (str1 != null && str1.equals(str2));
     }
-    private static boolean areEqualIgnoreCase(String str1, String str2) {
+
+    @CheckReturnValue
+    private static boolean areEqualIgnoreCase(@Nullable String str1, @Nullable String str2) {
         return (str1 == null && str2 == null) || (str1 != null && str1.equalsIgnoreCase(str2));
     }
 
+    @ParametersAreNonnullByDefault
     private static final class ImageMapReplacedElement extends SwingReplacedElement {
       private final Map<Shape, String> areas;
 
@@ -207,7 +220,7 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
          }
       }
 
-      private static Map<Shape, String> parseMap(Node map) {
+      private static Map<Shape, String> parseMap(@Nullable Node map) {
          if (null == map) {
             return Collections.emptyMap();
          } else if (map.hasChildNodes()) {
@@ -250,11 +263,15 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
          }
       }
 
+      @Nullable
+      @CheckReturnValue
       private static String getAttribute(NamedNodeMap attrs, String attrName) {
          final Node node = attrs.getNamedItem(attrName);
          return null == node ? null : node.getNodeValue();
       }
 
+      @Nullable
+      @CheckReturnValue
       private static Shape getCoords(String[] coordValues, int length) {
          if ((-1 == length && 0 == coordValues.length % 2) || length == coordValues.length) {
             int[] coords = new int[coordValues.length];
@@ -290,6 +307,8 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
          }
       }
 
+      @Nonnull
+      @CheckReturnValue
       private static JComponent create(Image image, int targetWidth, int targetHeight) {
          final JLabel component = new JLabel(new ImageIcon(image));
          component.setSize(component.getPreferredSize());

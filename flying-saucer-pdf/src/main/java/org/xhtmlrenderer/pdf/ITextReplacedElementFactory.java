@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.pdf;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
@@ -29,11 +28,15 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@ParametersAreNonnullByDefault
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
     private final ITextOutputDevice _outputDevice;
 
@@ -44,6 +47,8 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         _outputDevice = outputDevice;
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
                                                  UserAgentCallback uac, int cssWidth, int cssHeight) {
@@ -102,22 +107,6 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         return null;
     }
 
-    private boolean isTextarea(Element e) {
-        if (!e.getNodeName().equals("textarea")) {
-            return false;
-        }
-
-        Node n = e.getFirstChild();
-        while (n != null) {
-            short nodeType = n.getNodeType();
-            if (nodeType != Node.TEXT_NODE && nodeType != Node.CDATA_SECTION_NODE) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     private void saveResult(Element e, RadioButtonFormField result) {
         _radioButtonsByElem.put(e, result);
 
@@ -158,6 +147,8 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         _radioButtonsByName.remove(fieldName);
     }
 
+    @Nullable
+    @CheckReturnValue
     public List<RadioButtonFormField> getRadioButtons(String name) {
         return _radioButtonsByName.get(name);
     }

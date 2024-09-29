@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
 
 /**
  * <p>Renders an XML files, formatted with CSS, as an image. Input is a document in the form of file or URL,
@@ -249,16 +250,14 @@ public class Java2DRenderer {
             height = this.height == -1 ? root.getHeight() : this.height;
             outputImage = createBufferedImage(this.width, height);
             outputDevice = new Java2DOutputDevice(outputImage);
-            Graphics2D newG = (Graphics2D) outputImage.getGraphics();
+            withGraphics(outputImage, newG -> {
+                RenderingContext rc = sharedContext.newRenderingContextInstance();
+                rc.setFontContext(new Java2DFontContext(newG));
+                rc.setOutputDevice(outputDevice);
+                sharedContext.getTextRenderer().setup(rc.getFontContext());
+                root.getLayer().paint(rc);
+            });
 
-            RenderingContext rc = sharedContext.newRenderingContextInstance();
-            rc.setFontContext(new Java2DFontContext(newG));
-            rc.setOutputDevice(outputDevice);
-            sharedContext.getTextRenderer().setup(rc.getFontContext());
-
-            root.getLayer().paint(rc);
-
-            newG.dispose();
             rendered = true;
         }
 

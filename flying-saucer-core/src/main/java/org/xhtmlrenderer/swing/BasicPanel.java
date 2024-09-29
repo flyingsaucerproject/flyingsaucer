@@ -49,6 +49,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
+
 /**
  * A Swing {@link javax.swing.JPanel} that encloses the Flying Saucer renderer
  * for easy integration into Swing applications.
@@ -99,28 +101,21 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         // if this is the first time painting this document, then calc layout
         Layer root = getRootLayer();
         if (root == null || isNeedRelayout()) {
-            Graphics gg = g.create();
-            try {
-                doDocumentLayout(gg);
-            } finally {
-                gg.dispose();
-            }
+            withGraphics(g, gg -> doDocumentLayout(gg));
             root = getRootLayer();
         }
         setNeedRelayout(false);
         if (root == null) {
             XRLog.render(Level.FINE, "skipping the actual painting");
         } else {
-            Graphics gg = g.create();
-            try {
+            Layer rootLayer = root;
+            withGraphics(g, gg -> {
                 RenderingContext c = newRenderingContext((Graphics2D) gg);
                 long start = System.currentTimeMillis();
-                doRender(c, root);
+                doRender(c, rootLayer);
                 long end = System.currentTimeMillis();
                 XRLog.render(Level.FINE, "RENDERING TOOK " + (end - start) + " ms");
-            } finally {
-                gg.dispose();
-            }
+            });
         }
     }
 

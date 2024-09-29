@@ -28,6 +28,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.util.Util;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 
@@ -44,6 +45,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     private int _width;
     private int _height;
 
+    @Nullable
     private String _fieldName;
 
     protected abstract String getFieldType();

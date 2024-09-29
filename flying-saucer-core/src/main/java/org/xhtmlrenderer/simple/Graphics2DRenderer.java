@@ -25,6 +25,8 @@ import org.xhtmlrenderer.layout.SharedContext;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
+
 
 /**
  * <p>
@@ -36,7 +38,7 @@ import java.awt.image.BufferedImage;
  * {@link XHTMLPanel}, as well as easy-to-use static utility methods.
  * For example, to render a document in an image that is 600 pixels wide use the
  * {@link #renderToImageAutoSize(String,int,int)} method like this:</p>
- * 
+ *
  * <pre>{@code
  * BufferedImage img = Graphics2DRenderer.renderToImage( "test.xhtml", width);
  * }</pre>
@@ -183,10 +185,10 @@ public class Graphics2DRenderer {
         g2r.setDocument(url);
         Dimension dim = new Dimension(width, height);
         BufferedImage buff = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), bufferedImageType);
-        Graphics2D g = (Graphics2D) buff.getGraphics();
-        g2r.layout(g, dim);
-        g2r.render(g);
-        g.dispose();
+        withGraphics(buff, g -> {
+            g2r.layout(g, dim);
+            g2r.render(g);
+        });
         return buff;
     }
 
@@ -222,19 +224,15 @@ public class Graphics2DRenderer {
         Dimension dim = new Dimension(width, 1000);
 
         // do layout with temp buffer
-        BufferedImage buff = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), bufferedImageType);
-        Graphics2D g = (Graphics2D) buff.getGraphics();
-        g2r.layout(g, new Dimension(width, 1000));
-        g.dispose();
+        BufferedImage tempBuffer = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), bufferedImageType);
+        withGraphics(tempBuffer, g -> g2r.layout(g, new Dimension(width, 1000)));
 
         // get size
         Rectangle rect = g2r.getMinimumSize();
 
         // render into real buffer
-        buff = new BufferedImage((int) rect.getWidth(), (int) rect.getHeight(), bufferedImageType);
-        g = (Graphics2D) buff.getGraphics();
-        g2r.render(g);
-        g.dispose();
+        BufferedImage buff = new BufferedImage((int) rect.getWidth(), (int) rect.getHeight(), bufferedImageType);
+        withGraphics(buff, g -> g2r.render(g));
 
         // return real buffer
         return buff;
