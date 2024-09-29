@@ -30,6 +30,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import static java.awt.Transparency.OPAQUE;
@@ -59,10 +60,30 @@ public class ImageUtil {
      * Sets the background of the image to white
      */
     public static void clearImage(BufferedImage image) {
-        Graphics2D g2d = (Graphics2D) image.getGraphics();
-        g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
-        g2d.dispose();
+        withGraphics(image, g2d -> {
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
+        });
+    }
+
+    public static void withGraphics(BufferedImage image, Consumer<Graphics2D> block) {
+        Graphics2D g = (Graphics2D) image.getGraphics();
+        try {
+            block.accept(g);
+        }
+        finally {
+            g.dispose();
+        }
+    }
+
+    public static void withGraphics(Graphics graphics, Consumer<Graphics> block) {
+        Graphics g = graphics.create();
+        try {
+            block.accept(g);
+        }
+        finally {
+            g.dispose();
+        }
     }
 
     @Nonnull
@@ -79,9 +100,7 @@ public class ImageUtil {
             cimg = gc.createCompatibleImage(image.getWidth(), image.getHeight(), image.getTransparency());
         }
 
-        Graphics cg = cimg.getGraphics();
-        cg.drawImage(image, 0, 0, null);
-        cg.dispose();
+        withGraphics(cimg, cg -> cg.drawImage(image, 0, 0, null));
         return cimg;
     }
 
@@ -229,30 +248,26 @@ public class ImageUtil {
     @Nonnull
     @CheckReturnValue
     public static BufferedImage convertToBufferedImage(Image awtImg, int type) {
-        final BufferedImage image;
-        if (awtImg instanceof BufferedImage) {
-            image = (BufferedImage) awtImg;
+        if (awtImg instanceof BufferedImage result) {
+            return result;
         } else {
-            image = createCompatibleBufferedImage(awtImg.getWidth(null), awtImg.getHeight(null), type);
-            Graphics2D g = image.createGraphics();
-            g.drawImage(awtImg, 0, 0, null, null);
-            g.dispose();
+            BufferedImage image = createCompatibleBufferedImage(awtImg.getWidth(null), awtImg.getHeight(null), type);
+            withGraphics(image, g -> g.drawImage(awtImg, 0, 0, null, null));
+            return image;
         }
-        return image;
     }
 
     @Nonnull
     @CheckReturnValue
     public static BufferedImage createTransparentImage(int width, int height) {
         BufferedImage bi = createCompatibleBufferedImage(width, height, TYPE_INT_ARGB);
-        Graphics2D g2d = bi.createGraphics();
-
-        // Make all filled pixels transparent
-        Color transparent = new Color(0, 0, 0, 0);
-        g2d.setColor(transparent);
-        g2d.setComposite(AlphaComposite.Src);
-        g2d.fillRect(0, 0, width, height);
-        g2d.dispose();
+        withGraphics(bi, g2d -> {
+            // Make all filled pixels transparent
+            Color transparent = new Color(0, 0, 0, 0);
+            g2d.setColor(transparent);
+            g2d.setComposite(AlphaComposite.Src);
+            g2d.fillRect(0, 0, width, height);
+        });
         return bi;
     }
 
@@ -388,18 +403,16 @@ public class ImageUtil {
         @Nonnull
         @CheckReturnValue
         public BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt) {
-            int w, h;
-
             // Use one-step technique: scale directly from original
             // size to target size with a single drawImage() call
-            w = opt.getTargetWidth();
-            h = opt.getTargetHeight();
+            int w = opt.getTargetWidth();
+            int h = opt.getTargetHeight();
 
             BufferedImage scaled = createCompatibleBufferedImage(w, h, img.getType());
-            Graphics2D g2 = scaled.createGraphics();
-            opt.applyRenderingHints(g2);
-            g2.drawImage(img, 0, 0, w, h, null);
-            g2.dispose();
+            withGraphics(scaled, g2 -> {
+                opt.applyRenderingHints(g2);
+                g2.drawImage(img, 0, 0, w, h, null);
+            });
 
             return scaled;
         }
@@ -451,9 +464,13 @@ public class ImageUtil {
 
                 BufferedImage tmp = createCompatibleBufferedImage(w, h, img.getType());
                 Graphics2D g2 = tmp.createGraphics();
-                opt.applyRenderingHints(g2);
-                g2.drawImage(scaled, 0, 0, w, h, null);
-                g2.dispose();
+                try {
+                    opt.applyRenderingHints(g2);
+                    g2.drawImage(scaled, 0, 0, w, h, null);
+                }
+                finally {
+                    g2.dispose();
+                }
 
                 scaled = tmp;
 

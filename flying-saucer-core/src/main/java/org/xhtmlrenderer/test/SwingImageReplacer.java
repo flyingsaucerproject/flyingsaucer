@@ -1,5 +1,7 @@
 package org.xhtmlrenderer.test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -12,41 +14,51 @@ import org.xhtmlrenderer.swing.ImageReplacedElement;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static java.lang.Math.max;
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
+
 /**
  * @author patrick
  */
+@ParametersAreNonnullByDefault
 public class SwingImageReplacer extends ElementReplacer {
+    private static final Logger log = LoggerFactory.getLogger(SwingImageReplacer.class);
     private final Map<Element, ReplacedElement> imageComponents = new HashMap<>();
 
+    @Override
     public boolean isElementNameMatch() {
         return true;
     }
 
+    @Override
     public String getElementNameMatch() {
         return "img";
     }
 
+    @Override
     public boolean accept(final LayoutContext context, final Element element) {
         return context.getNamespaceHandler().isImageElement(element);
     }
 
+    @Override
     public ReplacedElement replace(LayoutContext context, BlockBox box, UserAgentCallback uac, int cssWidth, int cssHeight) {
         return replaceImage(uac, context, box.getElement(), cssWidth, cssHeight);
     }
 
     public void clear(Element element) {
-        System.out.println("*** cleared image components for element " + element);
+        log.info("cleared image components for element {}", element);
         imageComponents.remove(element);
     }
 
     public void reset() {
-        System.out.println("*** cleared image components");
+        log.info("cleared image components");
         imageComponents.clear();
     }
 
@@ -97,7 +109,7 @@ public class SwingImageReplacer extends ElementReplacer {
      *           (like a placeholder if the image can't be loaded).
      */
     protected void storeImageReplacedElement(Element e, ReplacedElement cc) {
-        System.out.println("\n*** Cached image for element");
+        log.info("\nCached image for element");
         imageComponents.put(e, cc);
     }
 
@@ -120,23 +132,19 @@ public class SwingImageReplacer extends ElementReplacer {
      * @return A ReplacedElement to substitute for one that can't be generated.
      */
     protected ReplacedElement newIrreplaceableImageElement(int cssWidth, int cssHeight) {
-        ReplacedElement mre;
         try {
             // TODO: we can come up with something better; not sure if we should use Alt text, how text should size, etc.
             BufferedImage missingImage = ImageUtil.createCompatibleBufferedImage(cssWidth, cssHeight, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = missingImage.createGraphics();
-            g.setColor(Color.BLACK);
-            g.setBackground(Color.WHITE);
-            g.setFont(new Font("Serif", Font.PLAIN, 12));
-            g.drawString("Missing", 0, 12);
-            g.dispose();
-            mre = new ImageReplacedElement(missingImage, cssWidth, cssHeight);
+            withGraphics(missingImage, g -> {
+                g.setColor(Color.BLACK);
+                g.setBackground(Color.WHITE);
+                g.setFont(new Font("Serif", Font.PLAIN, 12));
+                g.drawString("Missing", 0, 12);
+            });
+            return new ImageReplacedElement(missingImage, cssWidth, cssHeight);
         } catch (Exception e) {
-            mre = new EmptyReplacedElement(
-                    Math.max(cssWidth, 0),
-                    Math.max(cssHeight, 0));
+            log.error("Failed to create image element of size %sx%s".formatted(cssWidth, cssHeight), e);
+            return new EmptyReplacedElement(max(cssWidth, 0), max(cssHeight, 0));
         }
-        return mre;
     }
-
 }

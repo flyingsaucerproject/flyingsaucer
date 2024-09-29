@@ -24,6 +24,9 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 public interface ReplacedElementFactory {
 
     /**
@@ -36,6 +39,8 @@ public interface ReplacedElementFactory {
      * @return The {@code ReplacedElement} or {@code null} if no
      * {@code ReplacedElement} applies
      */
+    @Nullable
+    @CheckReturnValue
     ReplacedElement createReplacedElement(
             LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight);

@@ -17,10 +17,13 @@ import org.xhtmlrenderer.swt.BasicRenderer;
 import org.xhtmlrenderer.swt.FormControlReplacementElement;
 import org.xhtmlrenderer.swt.SWTReplacedElementFactory;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 
+@ParametersAreNonnullByDefault
 public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
     private final BasicRenderer _parent;
     private final Map<Element, XhtmlForm> _forms = new HashMap<>();
@@ -34,10 +37,14 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
      * @return the form corresponding to element {@code e} or {@code null} if none
      */
     @Nullable
+    @CheckReturnValue
     public XhtmlForm getForm(Element e) {
         return _forms.get(e);
     }
 
+    @Nullable
+    @CheckReturnValue
+    @Override
     public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight) {
         ReplacedElement re = super.createReplacedElement(c, box, uac, cssWidth, cssHeight);
@@ -126,6 +133,8 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
         _controls.clear();
     }
 
+    @Nullable
+    @CheckReturnValue
     protected Element getParentForm(Element e, LayoutContext context) {
         Node node = e;
         XhtmlNamespaceHandler nsh = (XhtmlNamespaceHandler) context

@@ -37,6 +37,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
+
 public class DocumentDiffTest {
     private static final int width = 500;
     private static final int height = 500;
@@ -88,11 +90,11 @@ public class DocumentDiffTest {
         renderer.setDocument(doc, new File(xhtml).toURI().toURL().toString());
 
         BufferedImage buff = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-        Graphics2D g = (Graphics2D) buff.getGraphics();
-
-        Dimension dim = new Dimension(width, height);
-        renderer.layout(g, dim);
-        renderer.render(g);
+        withGraphics(buff, g -> {
+            Dimension dim = new Dimension(width, height);
+            renderer.layout(g, dim);
+            renderer.render(g);
+        });
 
         getDiff(renderer.getPanel().getRootBox(), "");
         return "";

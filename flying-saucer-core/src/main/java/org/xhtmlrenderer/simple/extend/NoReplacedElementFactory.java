@@ -7,10 +7,15 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public class NoReplacedElementFactory implements ReplacedElementFactory {
 
+    @Nullable
     public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
-            UserAgentCallback uac, int cssWidth, int cssHeight) {
+                                             UserAgentCallback uac, int cssWidth, int cssHeight) {
         return null;
     }
 

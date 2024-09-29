@@ -30,6 +30,9 @@ import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -37,6 +40,7 @@ import java.util.logging.Level;
 /**
  * @author Vianney le Clément
  */
+@ParametersAreNonnullByDefault
 public class SWTReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Cache of image components (ReplacedElements) for quick lookup, keyed by
@@ -51,6 +55,9 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
         reset();
     }
 
+    @Nullable
+    @CheckReturnValue
+    @Override
     public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight) {
         Element e = box.getElement();
@@ -79,6 +86,8 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
      * @param cssHeight Target height of the image
      * @return A ReplacedElement for the image; will not be null.
      */
+    @Nullable
+    @CheckReturnValue
     protected ReplacedElement replaceImage(UserAgentCallback uac,
             LayoutContext context, Element elem, int cssWidth, int cssHeight) {
         ReplacedElement re = null;
@@ -131,6 +140,8 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
      * @param e The element by which the image is keyed
      * @return The ReplacedElement for the image, or null if there is none.
      */
+    @Nullable
+    @CheckReturnValue
     protected ReplacedElement lookupImageReplacedElement(Element e) {
         return _imageComponents.get(e);
     }

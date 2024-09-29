@@ -34,6 +34,8 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.Util;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 
@@ -178,17 +180,10 @@ public class TextFormField extends AbstractFormField {
     }
   }
 
-  protected String getValue(Element e)
-  {
-    String result = e.getAttribute("value");
-    if (Util.isNullOrEmpty(result))
-    {
-      return "";
-    }
-    else
-    {
-      return result;
-    }
+  @Nonnull
+  @CheckReturnValue
+  protected String getValue(Element e) {
+    return e.getAttribute("value");
   }
 
   public int getBaseline()

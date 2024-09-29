@@ -1,14 +1,17 @@
 package org.xhtmlrenderer.test;
 
-import org.xhtmlrenderer.layout.LayoutContext;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
-import org.w3c.dom.Element;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @author patrick
 */
+@ParametersAreNonnullByDefault
 public abstract class ElementReplacer {
     public abstract boolean isElementNameMatch();
 
