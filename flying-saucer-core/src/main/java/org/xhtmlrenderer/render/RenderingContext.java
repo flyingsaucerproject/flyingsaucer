@@ -51,23 +51,16 @@ public class RenderingContext implements CssContext {
 
     private Layer rootLayer;
 
-    private int initialPageNo;
+    private final int initialPageNo;
 
     /**
      * needs a new instance every run
      */
-    public RenderingContext(SharedContext sharedContext, OutputDevice outputDevice, FontContext fontContext) {
+    public RenderingContext(SharedContext sharedContext, OutputDevice outputDevice, FontContext fontContext, int initialPageNo) {
         this.sharedContext = sharedContext;
         this.outputDevice = outputDevice;
         this.fontContext = fontContext;
-    }
-
-    public void setContext(SharedContext sharedContext) {
-        this.sharedContext = sharedContext;
-    }
-
-    public void setBaseURL(String url) {
-        sharedContext.setBaseURL(url);
+        this.initialPageNo = initialPageNo;
     }
 
     public UserAgentCallback getUac() {
@@ -218,10 +211,6 @@ public class RenderingContext implements CssContext {
 
     public int getInitialPageNo() {
         return initialPageNo;
-    }
-
-    public void setInitialPageNo(int initialPageNo) {
-        this.initialPageNo = initialPageNo;
     }
 
     public Box getBoxById(String id) {
