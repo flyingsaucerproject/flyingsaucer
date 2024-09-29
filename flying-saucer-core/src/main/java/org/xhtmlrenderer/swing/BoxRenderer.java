@@ -69,7 +69,7 @@ public class BoxRenderer {
     private static final int DEFAULT_DOTS_PER_POINT = 1;
     private static final int DEFAULT_DOTS_PER_PIXEL = 1;
 
-    private SharedContext sharedContext;
+    private final SharedContext sharedContext;
     private Java2DOutputDevice outputDevice;
 
     private Document doc;
@@ -85,7 +85,7 @@ public class BoxRenderer {
     private int height;
     private static final int NO_HEIGHT = -1;
     private Map<Object, Object> renderingHints;
-    private LayoutContext layoutContext;
+    private final LayoutContext layoutContext;
 
     /**
      * Creates a new instance for a given URL. Does not render until {@link #render()} is called for
@@ -99,7 +99,12 @@ public class BoxRenderer {
         // bypass scaling routines based on DPI -- see PDFRenderer and compare--dotsPerPoint is not implemented
         // in all subordinate classes and interfaces for Java2D, so leaving it out
         // leaving this constructor call here as a TODO
-        init();
+        BufferedImage outputImage = ImageUtil.createCompatibleBufferedImage(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_POINT);
+        outputDevice = new Java2DOutputDevice(outputImage);
+
+        UserAgentCallback userAgent = new NaiveUserAgent();
+        sharedContext = newSharedContext(userAgent);
+        layoutContext = newLayoutContext();
         this.sourceDocument = url;
         this.sourceDocumentBase = baseUrl;
         this.width = width;
@@ -285,15 +290,6 @@ public class BoxRenderer {
         sharedContext.getTextRenderer().setup(result.getFontContext());
 
         return result;
-    }
-
-    private void init() {
-        BufferedImage outputImage = ImageUtil.createCompatibleBufferedImage(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_POINT);
-        outputDevice = new Java2DOutputDevice(outputImage);
-
-        UserAgentCallback userAgent = new NaiveUserAgent();
-        sharedContext = newSharedContext(userAgent);
-        layoutContext = newLayoutContext();
     }
 
     private SharedContext newSharedContext(UserAgentCallback userAgent) {
