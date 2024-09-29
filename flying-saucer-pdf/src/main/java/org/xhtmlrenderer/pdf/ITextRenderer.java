@@ -286,8 +286,8 @@ public class ITextRenderer {
         return new Rectangle(0, 0, first.getContentWidth(c), first.getContentHeight(c));
     }
 
-    private RenderingContext newRenderingContext() {
-        RenderingContext result = _sharedContext.newRenderingContextInstance(_outputDevice, new ITextFontContext());
+    private RenderingContext newRenderingContext(int initialPageNo) {
+        RenderingContext result = _sharedContext.newRenderingContextInstance(_outputDevice, new ITextFontContext(), initialPageNo);
         _sharedContext.getTextRenderer().setup(result.getFontContext());
         result.setRootLayer(_root.getLayer());
         return result;
@@ -330,8 +330,7 @@ public class ITextRenderer {
     public void writeNextDocument(int initialPageNo) {
         List<PageBox> pages = _root.getLayer().getPages();
 
-        RenderingContext c = newRenderingContext();
-        c.setInitialPageNo(initialPageNo);
+        RenderingContext c = newRenderingContext(initialPageNo);
         PageBox firstPage = pages.get(0);
         com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
                 firstPage.getHeight(c) / _dotsPerPoint);
@@ -362,8 +361,8 @@ public class ITextRenderer {
     public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException {
         List<PageBox> pages = _root.getLayer().getPages();
 
-        RenderingContext c = newRenderingContext();
-        c.setInitialPageNo(initialPageNo);
+        RenderingContext c = newRenderingContext(initialPageNo);
+
         PageBox firstPage = pages.get(0);
         com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
                 firstPage.getHeight(c) / _dotsPerPoint);
@@ -556,7 +555,7 @@ public class ITextRenderer {
     }
 
     public void exportText(Writer writer) throws IOException {
-        RenderingContext c = newRenderingContext();
+        RenderingContext c = newRenderingContext(0);
         c.setPageCount(_root.getLayer().getPages().size());
         _root.exportText(c, writer);
     }

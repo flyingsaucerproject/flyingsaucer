@@ -133,7 +133,11 @@ public final class SharedContext {
     }
 
     public RenderingContext newRenderingContextInstance(OutputDevice outputDevice, FontContext fontContext) {
-        return new RenderingContext(this, outputDevice, fontContext);
+        return newRenderingContextInstance(outputDevice, fontContext, 0);
+    }
+
+    public RenderingContext newRenderingContextInstance(OutputDevice outputDevice, FontContext fontContext, int initialPageNo) {
+        return new RenderingContext(this, outputDevice, fontContext, initialPageNo);
     }
 
     /*
