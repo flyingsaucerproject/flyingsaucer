@@ -34,11 +34,18 @@ import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * <p>Renders an XML files, formatted with CSS, as an image. Input is a document in the form of file or URL,
@@ -350,6 +357,15 @@ public class Java2DRenderer {
         @Override
         public boolean isFocus(Element e) {
             return false;
+        }
+    }
+
+    public static BufferedImage htmlAsImage(String html, int widthInPixels) throws SAXException {
+        try (InputStream in = new ByteArrayInputStream(html.getBytes(UTF_8))) {
+            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+            return new Java2DRenderer(document, widthInPixels).getImage();
+        } catch (IOException | ParserConfigurationException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -32,6 +32,13 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static java.awt.Transparency.OPAQUE;
+import static java.awt.Transparency.TRANSLUCENT;
+import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
+import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR_PRE;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
+
 /**
  * Static utility methods for working with images. Meant to suggest "best practices" for the most straightforward
  * cases of working with images.
@@ -98,23 +105,24 @@ public class ImageUtil {
     @Nonnull
     @CheckReturnValue
     public static BufferedImage createCompatibleBufferedImage(int width, int height, int biType) {
-        final BufferedImage image;
-
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         if (ge.isHeadlessInstance()) {
-            image = new BufferedImage(width, height, biType);
+            return new BufferedImage(width, height, biType);
         } else {
             GraphicsConfiguration gc = getGraphicsConfiguration();
-
-            // TODO: check type using image type - can be sniffed; see Filthy Rich Clients
-            int type = (biType == BufferedImage.TYPE_INT_ARGB || biType == BufferedImage.TYPE_INT_ARGB_PRE 
-                || biType == BufferedImage.TYPE_4BYTE_ABGR || biType == BufferedImage.TYPE_4BYTE_ABGR_PRE ?
-                    Transparency.TRANSLUCENT : Transparency.OPAQUE);
-
-            image = gc.createCompatibleImage(width, height, type);
+            return gc.createCompatibleImage(width, height, detectTransparency(biType));
         }
+    }
 
-        return image;
+    static int detectTransparency(int biType) {
+        // TODO: check type using image type - can be sniffed; see Filthy Rich Clients
+        return switch (biType) {
+            case TYPE_INT_ARGB,
+                 TYPE_INT_ARGB_PRE,
+                 TYPE_4BYTE_ABGR,
+                 TYPE_4BYTE_ABGR_PRE -> TRANSLUCENT;
+            default -> OPAQUE;
+        };
     }
 
     @Nonnull
@@ -204,7 +212,7 @@ public class ImageUtil {
         Object hint = Configuration.valueFromClassConstant("xr.image.render-quality",
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-        ScalingOptions opt = new ScalingOptions(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB, quality, hint);
+        ScalingOptions opt = new ScalingOptions(targetWidth, targetHeight, TYPE_INT_ARGB, quality, hint);
 
         return getScaledInstance(opt, orgImage);
     }
@@ -236,7 +244,7 @@ public class ImageUtil {
     @Nonnull
     @CheckReturnValue
     public static BufferedImage createTransparentImage(int width, int height) {
-        BufferedImage bi = createCompatibleBufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage bi = createCompatibleBufferedImage(width, height, TYPE_INT_ARGB);
         Graphics2D g2d = bi.createGraphics();
 
         // Make all filled pixels transparent
