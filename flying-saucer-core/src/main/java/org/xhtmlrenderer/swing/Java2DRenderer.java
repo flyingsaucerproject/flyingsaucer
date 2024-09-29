@@ -80,7 +80,7 @@ public class Java2DRenderer {
     private static final int DEFAULT_DOTS_PER_PIXEL = 1;
     private static final int DEFAULT_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
 
-    private SharedContext sharedContext;
+    private final SharedContext sharedContext;
     private Java2DOutputDevice outputDevice;
 
     private Document doc;
@@ -96,7 +96,7 @@ public class Java2DRenderer {
     private String sourceDocument;
     private String sourceDocumentBase;
     private final int width;
-    private int height;
+    private final int height;
     private static final int NO_HEIGHT = -1;
 
     public Java2DRenderer(String url, String baseUrl, int width, int height) {
@@ -116,13 +116,10 @@ public class Java2DRenderer {
         // bypass scaling routines based on DPI -- see PDFRenderer and compare--dotsPerPoint is not implemented
         // in all subordinate classes and interfaces for Java2D, so leaving it out
         // leaving this constructor call here as a TODO
-        init();
+        this(width, height, bufferedImageType);
 
         this.sourceDocument = url;
         this.sourceDocumentBase = baseUrl;
-        this.width = width;
-        this.height = height;
-        this.bufferedImageType = bufferedImageType;
     }
 
     /**
@@ -146,11 +143,8 @@ public class Java2DRenderer {
          * @param height Target height, in pixels, for the image.
          */
         public Java2DRenderer(Document doc, int width, int height) {
-            init();
+            this(width, height, DEFAULT_IMAGE_TYPE);
             this.doc = doc;
-            this.width = width;
-            this.height = height;
-            this.bufferedImageType = DEFAULT_IMAGE_TYPE;
         }
 
     public Java2DRenderer(Document doc, int width) {
@@ -247,7 +241,7 @@ public class Java2DRenderer {
 
             layout(this.width);
 
-            height = this.height == -1 ? root.getHeight() : this.height;
+            int height = this.height == -1 ? root.getHeight() : this.height;
             outputImage = createBufferedImage(this.width, height);
             outputDevice = new Java2DOutputDevice(outputImage);
             withGraphics(outputImage, newG -> {
@@ -319,7 +313,11 @@ public class Java2DRenderer {
         return result;
     }
 
-    private void init() {
+    private Java2DRenderer(int width, int height, int bufferedImageType) {
+        this.width = width;
+        this.height = height;
+        this.bufferedImageType = bufferedImageType;
+
         outputImage = ImageUtil.createCompatibleBufferedImage(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_POINT);
         outputDevice = new Java2DOutputDevice(outputImage);
 
