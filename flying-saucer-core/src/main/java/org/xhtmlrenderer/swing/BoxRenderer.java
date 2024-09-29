@@ -220,8 +220,7 @@ public class BoxRenderer {
                     newG.getRenderingHints().putAll(renderingHints);
                 }
 
-                RenderingContext rc = sharedContext.newRenderingContextInstance(outputDevice);
-                rc.setFontContext(new Java2DFontContext(newG));
+                RenderingContext rc = sharedContext.newRenderingContextInstance(outputDevice, new Java2DFontContext(newG));
                 sharedContext.getTextRenderer().setup(rc.getFontContext());
 
                 root.getLayer().paint(rc);

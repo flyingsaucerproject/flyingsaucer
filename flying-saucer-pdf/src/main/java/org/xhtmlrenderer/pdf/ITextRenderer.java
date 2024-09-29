@@ -287,8 +287,7 @@ public class ITextRenderer {
     }
 
     private RenderingContext newRenderingContext() {
-        RenderingContext result = _sharedContext.newRenderingContextInstance(_outputDevice);
-        result.setFontContext(new ITextFontContext());
+        RenderingContext result = _sharedContext.newRenderingContextInstance(_outputDevice, new ITextFontContext());
         _sharedContext.getTextRenderer().setup(result.getFontContext());
         result.setRootLayer(_root.getLayer());
         return result;

@@ -336,8 +336,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
      * @return a new {@link RenderingContext}
      */
     protected RenderingContext newRenderingContext(GC gc) {
-        RenderingContext result = _sharedContext.newRenderingContextInstance(new SWTOutputDevice(gc));
-        result.setFontContext(new SWTFontContext(gc));
+        RenderingContext result = _sharedContext.newRenderingContextInstance(new SWTOutputDevice(gc), new SWTFontContext(gc));
         _sharedContext.getTextRenderer().setup(result.getFontContext());
         return result;
     }

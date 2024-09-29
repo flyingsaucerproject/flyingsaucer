@@ -100,8 +100,7 @@ public class PrinterRenderer implements UserInterface {
     }
 
     protected RenderingContext newRenderingContext(GC gc) {
-        RenderingContext result = _sharedContext.newRenderingContextInstance(new SWTOutputDevice(gc));
-        result.setFontContext(new SWTFontContext(gc));
+        RenderingContext result = _sharedContext.newRenderingContextInstance(new SWTOutputDevice(gc), new SWTFontContext(gc));
         _sharedContext.getTextRenderer().setup(result.getFontContext());
         return result;
     }
