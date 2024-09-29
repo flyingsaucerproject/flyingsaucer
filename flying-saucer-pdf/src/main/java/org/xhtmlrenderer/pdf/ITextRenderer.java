@@ -287,10 +287,9 @@ public class ITextRenderer {
     }
 
     private RenderingContext newRenderingContext(int initialPageNo) {
-        RenderingContext result = _sharedContext.newRenderingContextInstance(_outputDevice, new ITextFontContext(), initialPageNo);
-        _sharedContext.getTextRenderer().setup(result.getFontContext());
-        result.setRootLayer(_root.getLayer());
-        return result;
+        ITextFontContext fontContext = new ITextFontContext();
+        _sharedContext.getTextRenderer().setup(fontContext);
+        return _sharedContext.newRenderingContextInstance(_outputDevice, fontContext, _root.getLayer(), initialPageNo);
     }
 
     private LayoutContext newLayoutContext() {

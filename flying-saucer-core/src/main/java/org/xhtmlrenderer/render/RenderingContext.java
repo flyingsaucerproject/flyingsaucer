@@ -31,6 +31,7 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 
 /**
@@ -49,17 +50,20 @@ public class RenderingContext implements CssContext {
     private int pageNo;
     private PageBox page;
 
-    private Layer rootLayer;
+    private final Layer rootLayer;
 
     private final int initialPageNo;
 
     /**
      * needs a new instance every run
      */
-    public RenderingContext(SharedContext sharedContext, OutputDevice outputDevice, FontContext fontContext, int initialPageNo) {
+    public RenderingContext(SharedContext sharedContext, OutputDevice outputDevice, FontContext fontContext,
+                            @Nullable Layer rootLayer,
+                            int initialPageNo) {
         this.sharedContext = sharedContext;
         this.outputDevice = outputDevice;
         this.fontContext = fontContext;
+        this.rootLayer = rootLayer;
         this.initialPageNo = initialPageNo;
     }
 
@@ -203,10 +207,6 @@ public class RenderingContext implements CssContext {
 
     public Layer getRootLayer() {
         return rootLayer;
-    }
-
-    public void setRootLayer(Layer rootLayer) {
-        this.rootLayer = rootLayer;
     }
 
     public int getInitialPageNo() {
