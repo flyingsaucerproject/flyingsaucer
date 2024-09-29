@@ -223,8 +223,8 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
 
         XRLog.layout(Level.FINEST, "new context end");
 
-        RenderingContext result = getSharedContext().newRenderingContextInstance(new Java2DOutputDevice(g));
-        result.setFontContext(new Java2DFontContext(g));
+        RenderingContext result = getSharedContext().newRenderingContextInstance(
+                new Java2DOutputDevice(g), new Java2DFontContext(g));
 
         getSharedContext().getTextRenderer().setup(result.getFontContext());
 

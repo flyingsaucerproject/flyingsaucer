@@ -251,8 +251,7 @@ public class Java2DRenderer {
             outputImage = createBufferedImage(this.width, height);
             outputDevice = new Java2DOutputDevice(outputImage);
             withGraphics(outputImage, newG -> {
-                RenderingContext rc = sharedContext.newRenderingContextInstance(outputDevice);
-                rc.setFontContext(new Java2DFontContext(newG));
+                RenderingContext rc = sharedContext.newRenderingContextInstance(outputDevice, new Java2DFontContext(newG));
                 sharedContext.getTextRenderer().setup(rc.getFontContext());
                 root.getLayer().paint(rc);
             });

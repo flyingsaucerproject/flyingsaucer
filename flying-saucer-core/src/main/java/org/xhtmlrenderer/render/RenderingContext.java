@@ -42,7 +42,7 @@ import java.awt.*;
 public class RenderingContext implements CssContext {
     protected SharedContext sharedContext;
     private final OutputDevice outputDevice;
-    private FontContext fontContext;
+    private final FontContext fontContext;
 
     private int pageCount;
 
@@ -56,9 +56,10 @@ public class RenderingContext implements CssContext {
     /**
      * needs a new instance every run
      */
-    public RenderingContext(SharedContext sharedContext, OutputDevice outputDevice) {
+    public RenderingContext(SharedContext sharedContext, OutputDevice outputDevice, FontContext fontContext) {
         this.sharedContext = sharedContext;
         this.outputDevice = outputDevice;
+        this.fontContext = fontContext;
     }
 
     public void setContext(SharedContext sharedContext) {
@@ -176,10 +177,6 @@ public class RenderingContext implements CssContext {
 
     public FontContext getFontContext() {
         return fontContext;
-    }
-
-    public void setFontContext(FontContext fontContext) {
-        this.fontContext = fontContext;
     }
 
     public void setPage(int pageNo, PageBox page) {
