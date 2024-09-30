@@ -1,7 +1,9 @@
 # Changelog
 
-## 9.9.5 (under construction) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/21
+## 9.9.5 (30.09.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/21?closed=1
 * #392 Fix transparent background of resized base64 encoded images - thanks to @Openhelios (#393)
+* dispose Graphics object after using it (#397)
+* bump log4j from 2.24.0 to 2.24.1 (#399)
 
 ## 9.9.4 (20.09.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/20?closed=1
 * Set "Page only" as default initial view in PDF viewer (#390)
