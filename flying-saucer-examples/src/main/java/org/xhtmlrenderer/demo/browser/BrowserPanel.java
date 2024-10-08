@@ -37,7 +37,6 @@ import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xml.sax.SAXException;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -53,7 +52,6 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@ParametersAreNonnullByDefault
 public class BrowserPanel extends JPanel implements DocumentListener {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(BrowserPanel.class);
 
@@ -74,7 +72,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     private final BrowserStartup root;
     private final BrowserPanelListener listener;
     private JButton print_preview;
-    
+
     private static final Logger logger = Logger.getLogger("app.browser");
 
     private PanelManager manager;
@@ -113,8 +111,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         manager = new PanelManager();
         view = new ScalableXHTMLPanel(manager);
         manager.setRepaintListener(view);
-        ImageResourceLoader irl = new ImageResourceLoader();
-        irl.setRepaintListener(view);
+        ImageResourceLoader irl = new ImageResourceLoader(view);
         manager.setImageResourceLoader(irl);
         view.getSharedContext().setReplacedElementFactory(new SwingReplacedElementFactory(view, irl));
         view.addDocumentListener(manager);

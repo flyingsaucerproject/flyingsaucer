@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -27,8 +28,6 @@ import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -52,7 +51,7 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
                 }
             }
         }
-        
+
         if (values.size() % 2 == 1) {
             throw new CSSParseException(
                     "Mismatched quotes " + values, -1);
@@ -68,7 +67,6 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
         }
     }
 
-    @Nonnull
     @CheckReturnValue
     private List<String> getStringValues(List<? extends CSSPrimitiveValue> values) {
         return values.stream()
@@ -78,7 +76,7 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
                 .map(value -> value.getStringValue())
                 .collect(toList());
     }
-    
+
     private void assertNoOperator(PropertyValue cssPrimitiveValue) {
         if (cssPrimitiveValue.getOperator() != null) {
             throw new CSSParseException(

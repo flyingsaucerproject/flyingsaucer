@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.context;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.parser.CSSParser;
 import org.xhtmlrenderer.css.sheet.Ruleset;
@@ -31,7 +32,6 @@ import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

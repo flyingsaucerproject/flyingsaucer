@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.demo.aboutbox;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -30,9 +32,6 @@ import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -49,11 +48,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
-@ParametersAreNonnullByDefault
 public class DemoUserAgent implements UserAgentCallback {
     private static final Logger log = LoggerFactory.getLogger(DemoUserAgent.class);
-    
+
     private String baseUrl;
     private int index = -1;
     private final List<String> history = new ArrayList<>();
@@ -116,9 +113,8 @@ public class DemoUserAgent implements UserAgentCallback {
     }
 
     @Override
-    @Nullable
     @CheckReturnValue
-    public byte[] getBinaryResource(String uri) {
+    public byte @Nullable [] getBinaryResource(String uri) {
         return IOUtil.readBytes(uri);
     }
 
@@ -163,7 +159,7 @@ public class DemoUserAgent implements UserAgentCallback {
     }
 
     @Override
-    public void setBaseURL(String url) {
+    public void setBaseURL(@Nullable String url) {
         baseUrl = resolveURI(url);
         if (baseUrl == null) baseUrl = "error:FileNotFound";
         //setBaseURL is called by view when document is loaded

@@ -29,11 +29,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 import org.xhtmlrenderer.demo.browser.swt.BrowserUserAgent;
 import org.xhtmlrenderer.swt.simple.SWTXHTMLRenderer;
-
-import javax.annotation.Nullable;
 
 public class AboutAction extends AbstractAction {
 

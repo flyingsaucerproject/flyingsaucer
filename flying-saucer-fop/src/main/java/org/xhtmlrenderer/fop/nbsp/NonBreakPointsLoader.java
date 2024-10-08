@@ -18,19 +18,16 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
-@ParametersAreNonnullByDefault
 public interface NonBreakPointsLoader {
 
-    @Nonnull
     @CheckReturnValue
     List<String> loadNBSP(@Nullable String lang);
 

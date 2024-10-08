@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.demo.browser.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -43,6 +44,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.demo.browser.swt.DemosNavigation.Demo;
@@ -66,9 +68,6 @@ import org.xhtmlrenderer.demo.browser.swt.actions.ReloadAction;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.swt.simple.SWTXHTMLRenderer;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -79,7 +78,6 @@ import java.util.Map;
 import static org.eclipse.swt.SWT.ICON_ERROR;
 import static org.eclipse.swt.SWT.OK;
 
-@ParametersAreNonnullByDefault
 public class Browser implements DisposeListener, DocumentListener {
     private static final Logger log = LoggerFactory.getLogger(Browser.class);
 

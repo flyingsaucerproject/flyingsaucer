@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.simple.xhtml;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.URLUTF8Encoder;
 import org.xhtmlrenderer.simple.xhtml.controls.ButtonControl;
@@ -51,6 +52,7 @@ public class XhtmlForm {
         _listeners.remove(listener);
     }
 
+    @Nullable
     public FormControl getControl(String name) {
         for (FormControl control : _controls) {
             if (control.getName().equals(name)) {
@@ -74,10 +76,12 @@ public class XhtmlForm {
         return _controls;
     }
 
+    @Nullable
     public FormControl createControl(Element e) {
         return createControl(this, e);
     }
 
+    @Nullable
     public static FormControl createControl(XhtmlForm form, Element e) {
         if (e == null)
             return null;

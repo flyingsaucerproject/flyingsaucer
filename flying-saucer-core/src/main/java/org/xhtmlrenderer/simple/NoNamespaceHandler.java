@@ -21,6 +21,8 @@
 
 package org.xhtmlrenderer.simple;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -33,10 +35,6 @@ import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -47,27 +45,23 @@ import java.util.regex.Pattern;
  *
  * @author Torbjoern Gannholm
  */
-@ParametersAreNonnullByDefault
 public class NoNamespaceHandler implements NamespaceHandler {
 
     private static final String _namespace = "http://www.w3.org/XML/1998/namespace";
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getNamespace() {
         return _namespace;
     }
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getAttributeValue(Element e, String attrName) {
         return e.getAttribute(attrName);
     }
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getAttributeValue(Element e, @Nullable String namespaceURI, String attrName) {
         if (namespaceURI == TreeResolver.NO_NAMESPACE) {
@@ -107,7 +101,6 @@ public class NoNamespaceHandler implements NamespaceHandler {
     }
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getLang(Element e) {
         return e.getAttribute("lang");
@@ -174,7 +167,6 @@ public class NoNamespaceHandler implements NamespaceHandler {
     private static final Pattern _mediaPattern = Pattern.compile("media\\s?=\\s?");
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public List<StylesheetInfo> getStylesheets(Document doc) {
         List<StylesheetInfo> list = new ArrayList<>();

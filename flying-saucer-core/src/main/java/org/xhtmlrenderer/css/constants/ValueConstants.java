@@ -20,14 +20,13 @@
  */
 package org.xhtmlrenderer.css.constants;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ import static java.lang.Float.parseFloat;
 /**
  * Utility class for working with {@code CSSValue} instances.
  */
-@ParametersAreNonnullByDefault
 public final class ValueConstants {
     /**
      * Type descriptions--a crude approximation taken by scanning CSSValue statics

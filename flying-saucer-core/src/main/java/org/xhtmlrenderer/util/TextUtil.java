@@ -1,15 +1,11 @@
 package org.xhtmlrenderer.util;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
-@ParametersAreNonnullByDefault
 public class TextUtil {
     @Nullable
     @CheckReturnValue
@@ -18,7 +14,6 @@ public class TextUtil {
         return text.isEmpty() ? null : text;
     }
 
-    @Nonnull
     @CheckReturnValue
     public static String readTextContent(Element element) {
         StringBuilder result = new StringBuilder();

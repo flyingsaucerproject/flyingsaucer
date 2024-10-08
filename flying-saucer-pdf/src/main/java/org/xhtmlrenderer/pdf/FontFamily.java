@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.pdf;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class FontFamily {
         _fontDescriptions.sort(comparingInt(FontDescription::getWeight));
     }
 
+    @Nullable
     public FontDescription match(int desiredWeight, IdentValue style) {
         List<FontDescription> candidates = new ArrayList<>();
 
@@ -64,6 +66,7 @@ public class FontFamily {
     private static final int SM_LIGHTER_OR_DARKER = 2;
     private static final int SM_DARKER_OR_LIGHTER = 3;
 
+    @Nullable
     private FontDescription findByWeight(List<FontDescription> matches, int desiredWeight, int searchMode) {
         if (searchMode == SM_EXACT) {
             for (FontDescription description : matches) {

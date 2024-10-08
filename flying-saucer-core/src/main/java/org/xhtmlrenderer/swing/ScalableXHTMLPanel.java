@@ -20,6 +20,7 @@
 
 package org.xhtmlrenderer.swing;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
@@ -28,8 +29,6 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.print.PrinterGraphics;
@@ -41,7 +40,6 @@ import java.util.ArrayList;
  *
  * @author chm
  */
-@ParametersAreNonnullByDefault
 public class ScalableXHTMLPanel extends XHTMLPanel {
 
     public static final int SCALE_POLICY_NONE = 0;
@@ -57,7 +55,8 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
     /**
      * The lastly calculated layout size
      */
-    private Dimension lastLayoutSize = null;
+    @Nullable
+    private Dimension lastLayoutSize;
 
     /**
      * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
@@ -114,6 +113,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * @param y the displayed y position
      */
     @Override
+    @Nullable
     public Box find(int x, int y) {
         Point p = convertFromScaled(x, y);
         Layer l = getRootLayer();

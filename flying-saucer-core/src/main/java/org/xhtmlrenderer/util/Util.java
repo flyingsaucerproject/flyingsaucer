@@ -19,10 +19,8 @@
  */
 package org.xhtmlrenderer.util;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
 
-@ParametersAreNonnullByDefault
 public class Util {
     public static String replace(String source, String target, String replacement) {
         StringBuilder output = new StringBuilder();
@@ -39,7 +37,7 @@ public class Util {
         }
         return output.toString();
     }
-    
+
     public static boolean isNullOrEmpty(@Nullable String str) {
         return str == null || str.isEmpty();
     }

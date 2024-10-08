@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.css.style;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -43,8 +44,6 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -80,27 +79,33 @@ import static org.xhtmlrenderer.css.style.CssKnowledge.UNDER_TABLE_LAYOUT;
  * @author Torbjoern Gannholm
  * @author Patrick Wright
  */
-@ParametersAreNonnullByDefault
 public class CalculatedStyle {
     /**
      * The parent-style we inherit from
      */
+    @Nullable
     private final CalculatedStyle _parent;
 
+    @Nullable
     private BorderPropertySet _border;
+    @Nullable
     private RectPropertySet _margin;
+    @Nullable
     private RectPropertySet _padding;
 
     private float _lineHeight;
     private boolean _lineHeightResolved;
 
+    @Nullable
     private FSFont _FSFont;
+    @Nullable
     private FSFontMetrics _FSFontMetrics;
 
     private boolean _marginsAllowed = true;
     private boolean _paddingAllowed = true;
     private boolean _bordersAllowed = true;
 
+    @Nullable
     private BackgroundSize _backgroundSize;
 
     /**
@@ -112,11 +117,13 @@ public class CalculatedStyle {
      * Our main array of property values defined in this style, keyed
      * by the CSSName assigned ID.
      */
+    @Nullable
     private final FSDerivedValue[] _derivedValuesById;
 
     /**
      * The derived Font for this style
      */
+    @Nullable
     private FontSpecification _font;
 
     private CalculatedStyle(@Nullable CalculatedStyle parent) {
@@ -178,6 +185,7 @@ public class CalculatedStyle {
         return _childCache.computeIfAbsent(fingerprint, (key) -> new CalculatedStyle(this, matched));
     }
 
+    @Nullable
     public CalculatedStyle getParent() {
         return _parent;
     }
@@ -259,6 +267,7 @@ public class CalculatedStyle {
      *
      * @return The backgroundColor value
      */
+    @Nullable
     public FSColor getBackgroundColor() {
         FSDerivedValue prop = valueByName(CSSName.BACKGROUND_COLOR);
         if (prop == IdentValue.TRANSPARENT) {
@@ -307,6 +316,7 @@ public class CalculatedStyle {
         return new BackgroundPosition(values.get(0), values.get(1));
     }
 
+    @Nullable
     public List<CounterData> getCounterReset() {
         FSDerivedValue value = valueByName(CSSName.COUNTER_RESET);
 
@@ -317,6 +327,7 @@ public class CalculatedStyle {
         }
     }
 
+    @Nullable
     public List<CounterData> getCounterIncrement() {
         FSDerivedValue value = valueByName(CSSName.COUNTER_INCREMENT);
 
@@ -327,7 +338,7 @@ public class CalculatedStyle {
         }
     }
 
-    public BorderPropertySet getBorder(CssContext ctx) {
+    public BorderPropertySet getBorder(@Nullable CssContext ctx) {
         if (! _bordersAllowed) {
             return BorderPropertySet.EMPTY_BORDER;
         } else {
@@ -365,10 +376,12 @@ public class CalculatedStyle {
         return _font;
     }
 
+    @Nullable
     public FontSpecification getFontSpecification() {
     return _font;
     }
 
+    @Nullable
     private IdentValue resolveAbsoluteFontSize() {
         FSDerivedValue fontSize = valueByName(CSSName.FONT_SIZE);
         if (!(fontSize instanceof IdentValue fontSizeIdent)) {
@@ -507,7 +520,7 @@ public class CalculatedStyle {
                     CSSName ref = CSSName.getByPropertyName(initialValue.substring(1));
                     val = valueByName(ref);
                 } else {
-                    val = CSSName.initialDerivedValue(cssName);
+                    val = cssName.initialDerivedValue();
                 }
             }
             _derivedValuesById[cssName.FS_ID] = val;
@@ -549,7 +562,7 @@ public class CalculatedStyle {
             CSSName name = CSSName.getByID(i);
             FSDerivedValue val = _derivedValuesById[i];
             if (val != null) {
-                sb.append(name.toString());
+                sb.append(name);
             } else {
                 sb.append("(no prop assigned in this pos)");
             }
@@ -625,7 +638,7 @@ public class CalculatedStyle {
     }
 
     private static BorderPropertySet getBorderProperty(CalculatedStyle style,
-                                                       CssContext ctx) {
+                                                       @Nullable CssContext ctx) {
         if (style._border == null) {
             BorderPropertySet result = BorderPropertySet.newInstance(style, ctx);
 
@@ -1047,6 +1060,7 @@ public class CalculatedStyle {
                 isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE));
     }
 
+    @Nullable
     public List<FSDerivedValue> getTextDecorations() {
         FSDerivedValue value = valueByName(CSSName.TEXT_DECORATION);
         if (value == IdentValue.NONE) {
@@ -1062,6 +1076,7 @@ public class CalculatedStyle {
         }
     }
 
+    @Nullable
     public Cursor getCursor() {
         FSDerivedValue value = valueByName(CSSName.CURSOR);
 
@@ -1135,5 +1150,4 @@ public class CalculatedStyle {
     public boolean isCanBeShrunkToFit() {
         return isInlineBlock() || isFloated() || isAbsolute() || isFixed();
     }
-
 }

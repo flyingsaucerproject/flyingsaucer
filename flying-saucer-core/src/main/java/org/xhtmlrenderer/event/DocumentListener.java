@@ -19,15 +19,12 @@
  */
 package org.xhtmlrenderer.event;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 /**
  * Implementations of this listener interface receive notifications about
  * various document and layout events. Events are called on the Event Dispatch Thread, and will block
  * any EDT activity until the methods return; make sure you do as little as possible in each method, or where necessary,
  * spin the task off to a separate thread.
  */
-@ParametersAreNonnullByDefault
 public interface DocumentListener {
     /**
      * Indicates document has been requested (e.g. a new document is going to be

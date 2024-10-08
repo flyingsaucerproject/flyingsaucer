@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -42,8 +44,6 @@ import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.TextDecoration;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -608,14 +608,13 @@ public class InlineBoxing {
         return result;
     }
 
-    @Nonnull
     @CheckReturnValue
     public static List<TextDecoration> calculateTextDecorations(Box box, int baseline, FSFontMetrics fm) {
         List<FSDerivedValue> idents = box.getStyle().getTextDecorations();
         if (idents == null) {
             return emptyList();
         }
-        
+
         List<TextDecoration> result = new ArrayList<>(idents.size());
         if (idents.contains(IdentValue.UNDERLINE)) {
             TextDecoration decoration = calculateTextDecoration(baseline, fm);
@@ -638,7 +637,7 @@ public class InlineBoxing {
         return result;
     }
 
-    @Nonnull
+    @CheckReturnValue
     private static TextDecoration calculateTextDecoration(int baseline, FSFontMetrics fm) {
         TextDecoration decoration = new TextDecoration(IdentValue.UNDERLINE);
         // JDK returns zero so create additional space equal to one
@@ -902,7 +901,7 @@ public class InlineBoxing {
         lbContext.setStart(lbContext.getStart() + i);
     }
 
-    private static LineBox newLine(LayoutContext c, LineBox previousLine, Box box) {
+    private static LineBox newLine(LayoutContext c, @Nullable LineBox previousLine, Box box) {
         int y = 0;
 
         if (previousLine != null) {
@@ -926,7 +925,7 @@ public class InlineBoxing {
     }
 
     private static InlineLayoutBox addOpenInlineBoxes(
-            LayoutContext c, LineBox line, List<InlineBox> openParents, int cbWidth, 
+            LayoutContext c, LineBox line, List<InlineBox> openParents, int cbWidth,
             Map<InlineBox, InlineLayoutBox> iBMap) {
         List<InlineBox> result = new ArrayList<>();
 

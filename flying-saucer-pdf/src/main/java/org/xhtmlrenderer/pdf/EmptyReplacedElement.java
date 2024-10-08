@@ -6,14 +6,12 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 
 /**
  * User: beck
  * Date: 11/4/11
  */
-@ParametersAreNonnullByDefault
 public class EmptyReplacedElement extends AbstractFormField {
   private static final String FIELD_TYPE = "Hidden";
 

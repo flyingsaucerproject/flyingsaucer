@@ -20,11 +20,15 @@
  */
 package org.xhtmlrenderer.extend;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
 
 public interface FontResolver {
+    @Nullable
+    @CheckReturnValue
     FSFont resolveFont(SharedContext renderingContext, FontSpecification spec);
     void flushCache();
 }

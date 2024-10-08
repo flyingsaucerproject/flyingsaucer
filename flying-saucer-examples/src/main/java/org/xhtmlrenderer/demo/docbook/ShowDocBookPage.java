@@ -7,17 +7,12 @@ import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.InputStream;
 import java.net.URL;
 
-/**
- *
- */
-@ParametersAreNonnullByDefault
 public class ShowDocBookPage {
     public JFrame frame;
 

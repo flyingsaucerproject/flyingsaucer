@@ -19,13 +19,12 @@
  */
 package org.xhtmlrenderer.extend;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
 
 public interface ReplacedElementFactory {
 

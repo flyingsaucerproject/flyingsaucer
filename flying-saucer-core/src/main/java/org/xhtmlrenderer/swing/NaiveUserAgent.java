@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
@@ -29,9 +31,6 @@ import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -66,7 +65,6 @@ import java.util.Map;
  *
  * @author Torbjoern Gannholm
  */
-@ParametersAreNonnullByDefault
 public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     private static final int DEFAULT_IMAGE_CACHE_SIZE = 16;
@@ -121,7 +119,8 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * Gets a Reader for the resource identified
      */
     //TOdO:implement this with nio.
-    protected InputStream resolveAndOpenStream(final String uri) {
+    @Nullable
+    protected InputStream resolveAndOpenStream(@Nullable String uri) {
         java.io.InputStream is = null;
         String resolvedUri = resolveURI(uri);
         try {

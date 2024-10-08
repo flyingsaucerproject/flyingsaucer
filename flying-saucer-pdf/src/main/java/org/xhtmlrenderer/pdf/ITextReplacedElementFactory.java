@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -28,15 +30,11 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ParametersAreNonnullByDefault
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
     private final ITextOutputDevice _outputDevice;
 
@@ -95,13 +93,12 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
              */
             case "bookmark":
                 // HACK Add box as named anchor and return placeholder
-                BookmarkElement result = new BookmarkElement();
                 if (e.hasAttribute("name")) {
                     String name = e.getAttribute("name");
                     c.addBoxId(name, box);
-                    result.setAnchorName(name);
+                    return new BookmarkElement(name);
                 }
-                return result;
+                return new BookmarkElement(null);
         }
 
         return null;

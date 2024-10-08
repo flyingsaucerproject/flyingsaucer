@@ -6,12 +6,10 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @author patrick
 */
-@ParametersAreNonnullByDefault
 public abstract class ElementReplacer {
     public abstract boolean isElementNameMatch();
 

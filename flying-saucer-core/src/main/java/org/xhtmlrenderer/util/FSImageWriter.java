@@ -19,7 +19,8 @@
  */
 package org.xhtmlrenderer.util;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.Nullable;
+
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -61,6 +62,7 @@ public class FSImageWriter {
     private final String imageFormat;
     private final float writeCompressionQuality;
     private final int writeCompressionMode;
+    @Nullable
     private final String writeCompressionType;
 
     /**
@@ -158,14 +160,13 @@ public class FSImageWriter {
 
         return param;
     }
-    
+
     /**
      * Utility method to find an image writer.
      *
      * @param imageFormat String informal format name, "jpg"
      * @return ImageWriter corresponding to that format
      */
-    @Nonnull
     private ImageWriter lookupImageWriterForFormat(String imageFormat) {
         Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName(imageFormat);
         if (iter.hasNext()) {

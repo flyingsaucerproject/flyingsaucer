@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -30,9 +32,6 @@ import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -40,7 +39,6 @@ import java.util.logging.Level;
 /**
  * @author Vianney le Clément
  */
-@ParametersAreNonnullByDefault
 public class SWTReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Cache of image components (ReplacedElements) for quick lookup, keyed by

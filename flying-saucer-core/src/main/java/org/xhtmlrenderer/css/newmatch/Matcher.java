@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.MarginBoxName;
@@ -94,6 +95,7 @@ public class Matcher {
      * May return null.
      * We assume that restyle has already been done by a getCascadedStyle if necessary.
      */
+    @Nullable
     public CascadedStyle getPECascadedStyle(Element e, String pseudoElement) {
         synchronized (e) {
             Mapper em = getMapper(e);
@@ -337,6 +339,7 @@ public class Matcher {
          * May return null.
          * We assume that restyle has already been done by a getCascadedStyle if necessary.
          */
+        @Nullable
         public CascadedStyle getPECascadedStyle(Node e, String pseudoElement) {
             Iterator<Map.Entry<String, List<Selector>>> si = pseudoSelectors.entrySet().iterator();
             if (!si.hasNext()) {

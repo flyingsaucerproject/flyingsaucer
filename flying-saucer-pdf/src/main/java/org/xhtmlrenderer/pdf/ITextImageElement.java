@@ -25,10 +25,8 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 
-@ParametersAreNonnullByDefault
 public class ITextImageElement implements ITextReplacedElement {
     private final FSImage _image;
 

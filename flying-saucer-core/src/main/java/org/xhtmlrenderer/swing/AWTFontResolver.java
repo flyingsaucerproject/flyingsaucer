@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
@@ -43,10 +45,11 @@ public class AWTFontResolver implements FontResolver {
     private final Map<String, Font> available_fonts_hash = new HashMap<>();
 
     public AWTFontResolver() {
-        init();
+        flushCache();
     }
 
-    private void init() {
+    @Override
+    public final void flushCache() {
         instance_hash.clear();
         availableFontNames.clear();
 
@@ -57,19 +60,15 @@ public class AWTFontResolver implements FontResolver {
         availableFontNames.addAll(asList(gfx.getAvailableFontFamilyNames()));
 
         available_fonts_hash.clear();
-        
+
         // preload sans, serif, and monospace into the available font hash
         available_fonts_hash.put("Serif", new Font("Serif", Font.PLAIN, 1));
         available_fonts_hash.put("SansSerif", new Font("SansSerif", Font.PLAIN, 1));
         available_fonts_hash.put("Monospaced", new Font("Monospaced", Font.PLAIN, 1));
     }
 
-    @Override
-    public void flushCache() {
-        init();
-    }
-
-    public FSFont resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    @CheckReturnValue
+    public FSFont resolveFont(SharedContext ctx, String @Nullable [] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         if (families != null) {
             for (String family : families) {
                 Font font = resolveFont(ctx, family, size, weight, style, variant);
@@ -100,7 +99,10 @@ public class AWTFontResolver implements FontResolver {
         available_fonts_hash.put(name, font.deriveFont(1.0f));
     }
 
-    protected static Font createFont(SharedContext ctx, Font root_font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    protected static Font createFont(SharedContext ctx, Font root_font, float size,
+                                     @Nullable IdentValue weight,
+                                     @Nullable IdentValue style,
+                                     @Nullable IdentValue variant) {
         int font_const = Font.PLAIN;
         if (weight != null &&
                 (weight == IdentValue.BOLD ||
@@ -127,6 +129,7 @@ public class AWTFontResolver implements FontResolver {
         return fnt;
     }
 
+    @Nullable
     protected Font resolveFont(SharedContext ctx, String font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         // strip off the "s if they are there
         if (font.startsWith("\"")) {
@@ -182,6 +185,8 @@ public class AWTFontResolver implements FontResolver {
         return name + "-" + (size * ctx.getTextRenderer().getFontScale()) + "-" + weight + "-" + style + "-" + variant;
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
         return resolveFont(renderingContext, spec.families, spec.size, spec.fontWeight, spec.fontStyle, spec.variant);

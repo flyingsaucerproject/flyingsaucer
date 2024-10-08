@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Styleable;
@@ -28,6 +29,7 @@ import org.xhtmlrenderer.layout.Styleable;
  * {@code display: table-column-group}.
  */
 public class TableColumn implements Styleable {
+    @Nullable
     private Element _element;
     private CalculatedStyle _style;
 
@@ -57,7 +59,7 @@ public class TableColumn implements Styleable {
     }
 
     @Override
-    public void setElement(Element e) {
+    public void setElement(@Nullable Element e) {
         _element = e;
     }
 

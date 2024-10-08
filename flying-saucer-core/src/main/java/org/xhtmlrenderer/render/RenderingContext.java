@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
@@ -31,7 +32,6 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
 
-import javax.annotation.Nullable;
 import java.awt.*;
 
 /**

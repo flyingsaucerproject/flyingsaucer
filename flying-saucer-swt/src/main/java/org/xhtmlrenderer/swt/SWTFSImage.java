@@ -21,6 +21,7 @@ package org.xhtmlrenderer.swt;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 
@@ -31,7 +32,9 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
  */
 public class SWTFSImage implements FSImage {
     private final UserAgentCallback _uac;
+    @Nullable
     private final String _uri;
+    @Nullable
     private Image _image;
     private int _width, _height;
 
@@ -42,7 +45,7 @@ public class SWTFSImage implements FSImage {
         this(null, null, null);
     }
 
-    public SWTFSImage(Image image, UserAgentCallback uac, String uri) {
+    public SWTFSImage(@Nullable Image image, UserAgentCallback uac, @Nullable String uri) {
         _uac = uac;
         _uri = uri;
         _image = image;
@@ -67,15 +70,11 @@ public class SWTFSImage implements FSImage {
     /**
      * Get the SWT image. Reload it from the UAC if it was disposed.
      */
+    @Nullable
     public Image getImage() {
         if (_image != null && _image.isDisposed()) {
-            SWTFSImage fsimg = (SWTFSImage) _uac.getImageResource(_uri)
-                .getImage();
-            if (fsimg == null) {
-                _image = null;
-            } else {
-                _image = fsimg._image;
-            }
+            SWTFSImage image = (SWTFSImage) _uac.getImageResource(_uri).getImage();
+            _image = image == null ? null : image._image;
         }
         return _image;
     }

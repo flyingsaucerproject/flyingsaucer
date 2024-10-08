@@ -20,7 +20,7 @@
 package org.xhtmlrenderer.demo.browser.swt.actions;
 
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractAction implements Action {
 

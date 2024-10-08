@@ -19,17 +19,17 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 
-@ParametersAreNonnullByDefault
 public class BookmarkElement implements ITextReplacedElement {
     private Point _location = new Point(0, 0);
-    private String _anchorName;
+    @Nullable
+    private final String _anchorName;
 
     public int getIntrinsicWidth() {
         return 0;
@@ -51,11 +51,12 @@ public class BookmarkElement implements ITextReplacedElement {
         c.removeBoxId(getAnchorName());
     }
 
+    @Nullable
     public String getAnchorName() {
         return _anchorName;
     }
 
-    public void setAnchorName(String anchorName) {
+    public BookmarkElement(@Nullable String anchorName) {
         _anchorName = anchorName;
     }
 

@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.simple.extend;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -50,10 +51,11 @@ public class XhtmlForm {
     private final UserAgentCallback _userAgentCallback;
     private final Map<Element, FormField> _componentCache = new LinkedHashMap<>();
     private final Map<String, ButtonGroupWrapper> _buttonGroups = new HashMap<>();
+    @Nullable
     private final Element _parentFormElement;
     private final FormSubmissionListener _formSubmissionListener;
 
-    public XhtmlForm(UserAgentCallback uac, Element e, FormSubmissionListener fsListener) {
+    public XhtmlForm(UserAgentCallback uac, @Nullable Element e, FormSubmissionListener fsListener) {
         _userAgentCallback = uac;
         _parentFormElement = e;
         _formSubmissionListener = fsListener;
@@ -67,7 +69,7 @@ public class XhtmlForm {
         return _userAgentCallback;
     }
 
-    public void addButtonToGroup(String groupName, AbstractButton button) {
+    public void addButtonToGroup(@Nullable String groupName, AbstractButton button) {
         if (groupName == null) {
             groupName = createNewDefaultGroupName();
         }
@@ -87,6 +89,7 @@ public class XhtmlForm {
         return nodeName.equals("input") || nodeName.equals("select") || nodeName.equals("textarea");
     }
 
+    @Nullable
     public FormField addComponent(Element e, LayoutContext context, BlockBox box) {
 
         if (_componentCache.containsKey(e)) {
@@ -128,7 +131,7 @@ public class XhtmlForm {
         StringBuilder data = new StringBuilder();
         String action = _parentFormElement.getAttribute("action");
         data.append(action).append("?");
-        
+
         AtomicBoolean first = new AtomicBoolean(true);
         for (Map.Entry<Element, FormField> entry : _componentCache.entrySet()) {
             FormField field = entry.getValue();
@@ -145,7 +148,7 @@ public class XhtmlForm {
             }
         }
 
-        if(_formSubmissionListener !=null) _formSubmissionListener.submit(data.toString());
+        _formSubmissionListener.submit(data.toString());
     }
 
     public static String collectText(Element e) {
@@ -168,7 +171,7 @@ public class XhtmlForm {
         private final AbstractButton _dummy = new JRadioButton();
 
         private ButtonGroupWrapper() {
-            // We need a dummy button to have the appearance of all 
+            // We need a dummy button to have the appearance of all
             // the radio buttons being in an unselected state.
             //
             // From:

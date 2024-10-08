@@ -1,5 +1,7 @@
 package org.xhtmlrenderer.swt.simple;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -17,13 +19,9 @@ import org.xhtmlrenderer.swt.BasicRenderer;
 import org.xhtmlrenderer.swt.FormControlReplacementElement;
 import org.xhtmlrenderer.swt.SWTReplacedElementFactory;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 
-@ParametersAreNonnullByDefault
 public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
     private final BasicRenderer _parent;
     private final Map<Element, XhtmlForm> _forms = new HashMap<>();

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 
@@ -103,15 +104,12 @@ public class PageSize {
         SIZE_MAP.put("ledger", LEDGER);
     }
 
-    private CSSPrimitiveValue _pageWidth;
-    private CSSPrimitiveValue _pageHeight;
+    private final CSSPrimitiveValue _pageWidth;
+    private final CSSPrimitiveValue _pageHeight;
 
     private PageSize(CSSPrimitiveValue width, CSSPrimitiveValue height) {
         _pageWidth = width;
         _pageHeight = height;
-    }
-
-    private PageSize() {
     }
 
     public CSSPrimitiveValue getPageHeight() {
@@ -122,6 +120,7 @@ public class PageSize {
         return _pageWidth;
     }
 
+    @Nullable
     public static PageSize getPageSize(String pageSize) {
         return SIZE_MAP.get(pageSize);
     }

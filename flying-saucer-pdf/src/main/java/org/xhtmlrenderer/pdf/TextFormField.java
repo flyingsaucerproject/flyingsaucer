@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfAnnotation;
@@ -34,12 +35,8 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.Util;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 
-@ParametersAreNonnullByDefault
 public class TextFormField extends AbstractFormField {
   private static final String FIELD_TYPE = "Text";
 
@@ -180,7 +177,6 @@ public class TextFormField extends AbstractFormField {
     }
   }
 
-  @Nonnull
   @CheckReturnValue
   protected String getValue(Element e) {
     return e.getAttribute("value");

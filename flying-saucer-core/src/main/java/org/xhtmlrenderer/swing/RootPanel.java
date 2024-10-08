@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -46,8 +47,6 @@ import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -57,20 +56,23 @@ import java.util.logging.Level;
 
 import static java.util.Objects.requireNonNull;
 
-@ParametersAreNonnullByDefault
 public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCanvas, RepaintListener {
+    @Nullable
     private Box rootBox;
     private boolean needRelayout;
+    @Nullable
     private CellRendererPane cellRendererPane;
     private final Set<DocumentListener> documentListeners = new HashSet<>();
     private boolean defaultFontFromComponent;
     protected SharedContext sharedContext;
     private volatile LayoutContext layoutContext;
+    @Nullable
     private JScrollPane enclosingScrollPane;
     private boolean viewportMatchWidth = true;
 
     private int default_scroll_mode = JViewport.BLIT_SCROLL_MODE;
 
+    @Nullable
     protected Document doc;
 
     /*
@@ -166,6 +168,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         }
     }
 
+    @Nullable
     protected JScrollPane getEnclosingScrollPane() {
         return enclosingScrollPane;
     }
@@ -390,8 +393,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         if (isDefaultFontFromComponent()) {
             CalculatedStyle style = root.getStyle();
             PropertyValue fontFamilyProp = new PropertyValue(CSSPrimitiveValue.CSS_STRING, getFont().getFamily(),
-                    getFont().getFamily());
-            fontFamilyProp.setStringArrayValue(new String[] { fontFamilyProp.getStringValue() });
+                    getFont().getFamily(), new String[]{getFont().getFamily()}, null);
             style.setDefaultValue(CSSName.FONT_FAMILY, new StringValue(CSSName.FONT_FAMILY, fontFamilyProp));
             style.setDefaultValue(CSSName.FONT_SIZE, new LengthValue(style, CSSName.FONT_SIZE,
                     new PropertyValue(CSSPrimitiveValue.CSS_PX, getFont().getSize(), Integer
@@ -523,6 +525,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         return false;
     }
 
+    @Nullable
     public synchronized Box getRootBox() {
         return rootBox;
     }
@@ -531,6 +534,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         this.rootBox = rootBox;
     }
 
+    @Nullable
     public synchronized Layer getRootLayer() {
         return getRootBox() == null ? null : getRootBox().getLayer();
     }
@@ -539,6 +543,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         return find(e.getX(), e.getY());
     }
 
+    @Nullable
     public Box find(int x, int y) {
         Layer l = getRootLayer();
         if (l != null) {

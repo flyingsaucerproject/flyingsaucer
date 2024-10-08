@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.constants;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
@@ -252,6 +253,7 @@ public class IdentValue implements FSDerivedValue {
         return ALL_IDENT_VALUES.get(ident) != null;
     }
 
+    @Nullable
     public static IdentValue valueOf(String ident) {
         return ALL_IDENT_VALUES.get(ident);
     }

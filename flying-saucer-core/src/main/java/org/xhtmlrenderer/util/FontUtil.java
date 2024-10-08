@@ -1,14 +1,13 @@
 package org.xhtmlrenderer.util;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.logging.Level;
 
-@ParametersAreNonnullByDefault
 public class FontUtil {
 
     @CheckReturnValue

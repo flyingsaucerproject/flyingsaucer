@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.context;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
@@ -63,7 +65,7 @@ public class AWTFontResolver implements FontResolver {
         init();
     }
 
-    public FSFont resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    public FSFont resolveFont(SharedContext ctx, String @Nullable[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         // for each font family
         if (families != null) {
             for (String family : families) {
@@ -95,7 +97,10 @@ public class AWTFontResolver implements FontResolver {
         availableFonts.put(name, font.deriveFont(1.0f));
     }
 
-    protected static Font createFont(SharedContext ctx, Font root_font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    protected static Font createFont(SharedContext ctx, Font root_font, float size,
+                                     @Nullable IdentValue weight,
+                                     @Nullable IdentValue style,
+                                     @Nullable IdentValue variant) {
         int font_const = Font.PLAIN;
         if (weight != null &&
                 (weight == IdentValue.BOLD ||
@@ -122,6 +127,7 @@ public class AWTFontResolver implements FontResolver {
         return fnt;
     }
 
+    @Nullable
     protected Font resolveFont(SharedContext ctx, String font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         // strip off the "s if they are there
         if (font.startsWith("\"")) {
@@ -179,6 +185,8 @@ public class AWTFontResolver implements FontResolver {
         return name + "-" + (size * ctx.getTextRenderer().getFontScale()) + "-" + weight + "-" + style + "-" + variant;
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
         return resolveFont(renderingContext, spec.families, spec.size, spec.fontWeight, spec.fontStyle, spec.variant);

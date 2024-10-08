@@ -19,15 +19,22 @@
  */
 package org.xhtmlrenderer.util;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 public class ArrayUtil {
-    public static String[] cloneOrEmpty(String[] source){
+    @CheckReturnValue
+    public static String[] cloneOrEmpty(String @Nullable [] source){
         return source == null ? Constants.EMPTY_STR_ARR : source.clone();
     }
-    public static byte[] cloneOrEmpty(byte[] source){
+
+    @CheckReturnValue
+    public static byte[] cloneOrEmpty(byte @Nullable [] source){
         return source == null ? Constants.EMPTY_BYTE_ARR : source.clone();
     }
 
-    public static int[] cloneOrEmpty(int[] source) {
+    @CheckReturnValue
+    public static int[] cloneOrEmpty(int @Nullable [] source) {
         return source == null ? Constants.EMPTY_INT_ARR : source.clone();
     }
 }

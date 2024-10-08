@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.swing;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.util.Configuration;
@@ -21,20 +22,21 @@ public class ImageResourceLoader {
     public static final RepaintListener NO_OP_REPAINT_LISTENER = doLayout -> XRLog.general(Level.FINE, "No-op repaint requested");
     private final Map<CacheKey, ImageResource> _imageCache;
 
+    @Nullable
     private final ImageLoadQueue _loadQueue;
-
     private final int _imageCacheCapacity;
-
-    private RepaintListener _repaintListener = NO_OP_REPAINT_LISTENER;
-
+    private final RepaintListener _repaintListener;
     private final boolean _useBackgroundImageLoading;
 
     public ImageResourceLoader() {
-        // FIXME
-        this(16);
+        this(16, NO_OP_REPAINT_LISTENER);
     }
 
-    public ImageResourceLoader(int cacheSize) {
+    public ImageResourceLoader(RepaintListener repaintListener) {
+        this(16, repaintListener);
+    }
+
+    public ImageResourceLoader(int cacheSize, RepaintListener repaintListener) {
         this._imageCacheCapacity = cacheSize;
         this._useBackgroundImageLoading = Configuration.isTrue("xr.image.background.loading.enable", false);
 
@@ -51,6 +53,7 @@ public class ImageResourceLoader {
         // note we do *not* override removeEldestEntry() here--users of this class must call shrinkImageCache().
         // that's because we don't know when is a good time to flush the cache
         this._imageCache = new LinkedHashMap<>(cacheSize, 0.75f, true);
+        this._repaintListener = repaintListener;
     }
 
     public static ImageResource loadImageResourceFromUri(final String uri) {
@@ -176,16 +179,12 @@ public class ImageResourceLoader {
         }
     }
 
-    public static ImageResource createImageResource(final String uri, final BufferedImage img) {
+    public static ImageResource createImageResource(final String uri, @Nullable final BufferedImage img) {
         if (img == null) {
             return new ImageResource(uri, AWTFSImage.createImage(ImageUtil.createTransparentImage(10, 10)));
         } else {
             return new ImageResource(uri, AWTFSImage.createImage(ImageUtil.makeCompatible(img)));
         }
-    }
-
-    public void setRepaintListener(final RepaintListener repaintListener) {
-        _repaintListener = repaintListener;
     }
 
     public void stopLoading() {

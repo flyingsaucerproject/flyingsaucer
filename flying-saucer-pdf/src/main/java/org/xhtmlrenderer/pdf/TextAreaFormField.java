@@ -23,9 +23,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 
-@ParametersAreNonnullByDefault
 public class TextAreaFormField extends AbstractFormField {
     private static final String FIELD_TYPE = "TextArea";
 

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -37,8 +38,6 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.print.PrinterGraphics;
@@ -57,7 +56,6 @@ import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
  *
  * @author Joshua Marinacci
  */
-@ParametersAreNonnullByDefault
 public abstract class BasicPanel extends RootPanel implements FormSubmissionListener {
     private static final int PAGE_PAINTING_CLEARANCE_WIDTH = 10;
     private static final int PAGE_PAINTING_CLEARANCE_HEIGHT = 10;

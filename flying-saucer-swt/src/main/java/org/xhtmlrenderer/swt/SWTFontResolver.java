@@ -19,10 +19,12 @@
  */
 package org.xhtmlrenderer.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
@@ -94,6 +96,9 @@ public class SWTFontResolver implements FontResolver {
         _instance_hash.clear();
     }
 
+    @Nullable
+    @CheckReturnValue
+    @Override
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
         if (spec.families != null) {
             for (int i = 0; i < spec.families.length; i++) {
@@ -118,8 +123,11 @@ public class SWTFontResolver implements FontResolver {
         return _system_font;
     }
 
-    private SWTFSFont resolveFont(SharedContext ctx, String font, float size, IdentValue weight,
-            IdentValue style, IdentValue variant) {
+    @Nullable
+    private SWTFSFont resolveFont(SharedContext ctx, String font, float size,
+                                  @Nullable IdentValue weight,
+                                  @Nullable IdentValue style,
+                                  @Nullable IdentValue variant) {
         // strip off the "s if they are there
         if (font.startsWith("\"")) {
             font = font.substring(1);

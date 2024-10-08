@@ -16,11 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -35,8 +36,9 @@ import java.net.MalformedURLException;
  *
  * @author Patrick Wright
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class FontScaleJPanelRender {
+    @Nullable
     private String fileName;
 
     public static void main(String[] args) {
@@ -84,7 +86,7 @@ public class FontScaleJPanelRender {
         frame.setVisible(true);
     }
 
-    @Nonnull
+    @CheckReturnValue
     private static JPanel createTopPanel(XHTMLPanel panel) {
         JButton smaller = new JButton("F-");
         smaller.addActionListener(event -> {

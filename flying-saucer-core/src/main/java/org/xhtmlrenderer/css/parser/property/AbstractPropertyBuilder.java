@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -177,6 +178,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
         }
     }
 
+    @Nullable
     protected List<PropertyDeclaration> checkInheritAll(CSSName[] all, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
         if (values.size() == 1) {
             CSSPrimitiveValue value = values.get(0);

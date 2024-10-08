@@ -19,12 +19,11 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.util.Uu;
-
-import javax.annotation.Nonnull;
 
 import static java.lang.Character.END_PUNCTUATION;
 import static java.lang.Character.FINAL_QUOTE_PUNCTUATION;
@@ -126,7 +125,7 @@ public class TextUtil {
         return result;
     }
 
-    @Nonnull
+    @CheckReturnValue
     private static String doCapitalizeWords(String text) {
         StringBuilder sb = new StringBuilder();
         boolean cap = true;

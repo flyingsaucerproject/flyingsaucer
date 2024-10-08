@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -36,8 +38,6 @@ import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.io.IOException;
 import java.io.Writer;
@@ -49,6 +49,7 @@ import java.util.logging.Level;
 import static java.util.Objects.requireNonNullElseGet;
 
 public abstract class Box implements Styleable {
+    @Nullable
     private Element _element;
 
     private int _x;
@@ -696,7 +697,7 @@ public abstract class Box implements Styleable {
     }
 
     @Override
-    public final void setElement(Element element) {
+    public final void setElement(@Nullable Element element) {
         _element = element;
     }
 

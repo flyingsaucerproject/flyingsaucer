@@ -18,6 +18,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -49,6 +50,7 @@ import java.text.BreakIterator;
  * @see InlineLayoutBox
  */
 public class InlineBox implements Styleable {
+    @Nullable
     private Element _element;
 
     private String _originalText;
@@ -132,7 +134,7 @@ public class InlineBox implements Styleable {
     }
 
     @Override
-    public void setElement(Element element) {
+    public void setElement(@Nullable Element element) {
         _element = element;
     }
 

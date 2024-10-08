@@ -19,7 +19,9 @@
  */
 package org.xhtmlrenderer.demo.browser.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.graphics.Device;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.demo.browser.DemoMarker;
 import org.xhtmlrenderer.demo.browser.DirectoryLister;
 import org.xhtmlrenderer.demo.browser.PlainTextXMLReader;
@@ -34,9 +36,6 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.transform.sax.SAXSource;
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +47,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
-@ParametersAreNonnullByDefault
 public class BrowserUserAgent extends NaiveUserAgent {
 
     private final DemosNavigation _demos;
@@ -135,6 +133,7 @@ public class BrowserUserAgent extends NaiveUserAgent {
         super.setBaseURL(resolveURI(url));
     }
 
+    @Nullable
     public String resolveFullURI(String uri) {
         uri = resolveURI(uri);
         if (uri == null) {

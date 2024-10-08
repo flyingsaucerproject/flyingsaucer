@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -53,9 +55,6 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBoxData;
 import org.xhtmlrenderer.render.InlineBox;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -81,7 +80,6 @@ import static org.xhtmlrenderer.css.newmatch.CascadedStyle.createLayoutPropertyD
  * content for purposes of inserting anonymous block boxes and calculating
  * the kind of content contained in a given block box.
  */
-@ParametersAreNonnullByDefault
 public class BoxBuilder {
     private static final Logger log = LoggerFactory.getLogger(BoxBuilder.class);
 
@@ -141,6 +139,7 @@ public class BoxBuilder {
         }
     }
 
+    @Nullable
     public static TableBox createMarginTable(
             LayoutContext c,
             PageInfo pageInfo,
@@ -244,6 +243,7 @@ public class BoxBuilder {
         return cellCount > 0 ? result : null;
     }
 
+    @Nullable
     private static TableCellBox createMarginBox(
             LayoutContext c,
             CascadedStyle cascadedStyle,
@@ -498,8 +498,8 @@ public class BoxBuilder {
     }
 
     private static void createAnonymousTableContent(LayoutContext c, BlockBox source,
-                                                    IdentValue next, 
-                                                    List<Styleable> childrenForAnonymous, 
+                                                    IdentValue next,
+                                                    List<Styleable> childrenForAnonymous,
                                                     List<Styleable> childrenWithAnonymous) {
         ChildBoxInfo nested = lookForBlockContent(childrenForAnonymous);
         IdentValue anonDisplay;
@@ -622,6 +622,7 @@ public class BoxBuilder {
         return result;
     }
 
+    @Nullable
     private static IdentValue getNextTableNestingLevel(IdentValue display) {
         if (display == IdentValue.TABLE || display == IdentValue.INLINE_TABLE) {
             return IdentValue.TABLE_ROW_GROUP;
@@ -636,6 +637,7 @@ public class BoxBuilder {
         }
     }
 
+    @Nullable
     private static IdentValue getPreviousTableNestingLevel(IdentValue display) {
         if (display == IdentValue.TABLE_CELL) {
             return IdentValue.TABLE_ROW;
@@ -703,6 +705,7 @@ public class BoxBuilder {
         return false;
     }
 
+    @Nullable
     private static CounterFunction makeCounterFunction(FSFunction function, LayoutContext c, CalculatedStyle style) {
         if (function.getName().equals("counter")) {
             List<PropertyValue> params = function.getParameters();
@@ -788,7 +791,7 @@ public class BoxBuilder {
 
     private static List<Styleable> createGeneratedContentList(
             LayoutContext c, Element element, PropertyValue propValue,
-            String peName, CalculatedStyle style, int mode, ChildBoxInfo info) {
+            String peName, CalculatedStyle style, int mode, @Nullable ChildBoxInfo info) {
         List<PropertyValue> values = propValue.getValues();
 
         if (values == null) {

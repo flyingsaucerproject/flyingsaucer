@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.css.style.derived;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -34,7 +35,7 @@ public class DerivedValueFactory {
     private static final Map<String, FSDerivedValue> CACHED_COLORS = new HashMap<>();
 
     public static FSDerivedValue newDerivedValue(
-            CalculatedStyle style, CSSName cssName, PropertyValue value) {
+            @Nullable CalculatedStyle style, CSSName cssName, PropertyValue value) {
         if (value.getCssValueType() == CSSValue.CSS_INHERIT) {
             return style.getParent().valueByName(cssName);
         }
