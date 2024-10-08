@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -83,6 +84,7 @@ public class Java2DRenderer {
     private final SharedContext sharedContext;
     private Java2DOutputDevice outputDevice;
 
+    @Nullable
     private Document doc;
     private Box root;
 
@@ -305,10 +307,9 @@ public class Java2DRenderer {
     }
 
     private LayoutContext newLayoutContext() {
-        LayoutContext result = sharedContext.newLayoutContextInstance();
-        result.setFontContext(new Java2DFontContext(outputDevice.getGraphics()));
-
-        sharedContext.getTextRenderer().setup(result.getFontContext());
+        Java2DFontContext fontContext = new Java2DFontContext(outputDevice.getGraphics());
+        LayoutContext result = sharedContext.newLayoutContextInstance(fontContext);
+        sharedContext.getTextRenderer().setup(fontContext);
 
         return result;
     }

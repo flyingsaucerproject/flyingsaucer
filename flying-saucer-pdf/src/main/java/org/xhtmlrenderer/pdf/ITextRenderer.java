@@ -291,10 +291,9 @@ public class ITextRenderer {
     }
 
     private LayoutContext newLayoutContext() {
-        LayoutContext result = _sharedContext.newLayoutContextInstance();
-        result.setFontContext(new ITextFontContext());
-
-        _sharedContext.getTextRenderer().setup(result.getFontContext());
+        ITextFontContext fontContext = new ITextFontContext();
+        LayoutContext result = _sharedContext.newLayoutContextInstance(fontContext);
+        _sharedContext.getTextRenderer().setup(fontContext);
 
         return result;
     }

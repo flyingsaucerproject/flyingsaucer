@@ -56,6 +56,7 @@ import java.util.Map;
 public class LayoutContext implements CssContext {
     private final SharedContext _sharedContext;
 
+    @Nullable
     private Layer _rootLayer;
 
     private StyleTracker _firstLines;
@@ -66,7 +67,7 @@ public class LayoutContext implements CssContext {
     private LinkedList<BlockFormattingContext> _bfcs;
     private LinkedList<Layer> _layers;
 
-    private FontContext _fontContext;
+    private final FontContext _fontContext;
 
     private final ContentFunctionFactory _contentFunctionFactory = new ContentFunctionFactory();
 
@@ -109,13 +110,14 @@ public class LayoutContext implements CssContext {
     }
 
     //the stuff that needs to have a separate instance for each run.
-    LayoutContext(SharedContext sharedContext) {
+    LayoutContext(SharedContext sharedContext, FontContext fontContext) {
         _sharedContext = sharedContext;
         _bfcs = new LinkedList<>();
         _layers = new LinkedList<>();
 
         _firstLines = new StyleTracker();
         _firstLetters = new StyleTracker();
+        this._fontContext = fontContext;
     }
 
     public void reInit(boolean keepLayers) {
@@ -316,10 +318,6 @@ public class LayoutContext implements CssContext {
         return _fontContext;
     }
 
-    public void setFontContext(FontContext fontContext) {
-        _fontContext = fontContext;
-    }
-
     public ContentFunctionFactory getContentFunctionFactory() {
         return _contentFunctionFactory;
     }
@@ -369,6 +367,7 @@ public class LayoutContext implements CssContext {
          * This is different because it needs to work even when the counter-properties cascade,
          * and it should also logically be redefined on each level (think list-items within list-items)
          */
+        @Nullable
         private CounterContext _parent;
 
         /**
@@ -457,6 +456,7 @@ public class LayoutContext implements CssContext {
             }
         }
 
+        @Nullable
         private Integer getCounter(String name) {
             Integer value = _counters.get(name);
             if (value != null) return value;
