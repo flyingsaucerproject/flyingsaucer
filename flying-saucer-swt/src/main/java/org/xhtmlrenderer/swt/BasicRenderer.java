@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -91,8 +92,10 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     // TODO layout_context should not be stored!
     private LayoutContext _layout_context;
 
+    @Nullable
     private Image _layout_image; // Image and GC used in layout_context
 
+    @Nullable
     private GC _layout_gc;
 
     private float _fontScalingFactor = 1.2F;
@@ -101,8 +104,10 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     private float _maxFontScale = 3.0F;
 
+    @Nullable
     private Document _doc;
 
+    @Nullable
     private BlockBox _rootBox;
 
     private final Set<DocumentListener> _documentListeners = new HashSet<>();
@@ -117,6 +122,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     private Point _drawnSize = new Point(0, 0);
 
+    @Nullable
     private Image _offscreen;
 
     private SpecialRedraw _specialRedraw;
@@ -319,15 +325,14 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
      * @return a new {@link LayoutContext}
      */
     protected LayoutContext newLayoutcontext() {
-        LayoutContext result = _sharedContext.newLayoutContextInstance();
-
         if (_layout_gc == null) {
             _layout_image = new Image(getDisplay(), 1, 1);
             _layout_gc = new GC(_layout_image);
         }
 
-        result.setFontContext(new SWTFontContext(_layout_gc));
-        _sharedContext.getTextRenderer().setup(result.getFontContext());
+        SWTFontContext fontContext = new SWTFontContext(_layout_gc);
+        LayoutContext result = _sharedContext.newLayoutContextInstance(fontContext);
+        _sharedContext.getTextRenderer().setup(fontContext);
 
         return result;
     }
@@ -885,10 +890,12 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return nsh.getDocumentTitle(_doc);
     }
 
+    @Nullable
     public Box getRootBox() {
         return _rootBox;
     }
 
+    @Nullable
     public Layer getRootLayer() {
         return getRootBox() == null ? null : getRootBox().getLayer();
     }

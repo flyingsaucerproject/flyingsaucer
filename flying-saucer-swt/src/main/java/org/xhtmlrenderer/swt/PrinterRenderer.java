@@ -24,6 +24,7 @@ import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.Shell;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -91,11 +92,9 @@ public class PrinterRenderer implements UserInterface {
      * @return a new {@link LayoutContext}
      */
     protected LayoutContext newLayoutcontext(GC gc) {
-        LayoutContext result = _sharedContext.newLayoutContextInstance();
-
-        result.setFontContext(new SWTFontContext(gc));
-        _sharedContext.getTextRenderer().setup(result.getFontContext());
-
+        SWTFontContext fontContext = new SWTFontContext(gc);
+        LayoutContext result = _sharedContext.newLayoutContextInstance(fontContext);
+        _sharedContext.getTextRenderer().setup(fontContext);
         return result;
     }
 
@@ -212,6 +211,7 @@ public class PrinterRenderer implements UserInterface {
         print(loadDocument(url), url, nsh, jobName, startPage, endPage);
     }
 
+    @Nullable
     protected Document loadDocument(final String uri) {
         XMLResource xmlResource = _sharedContext.getUac().getXMLResource(uri);
         if (xmlResource == null) {

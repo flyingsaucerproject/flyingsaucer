@@ -128,8 +128,8 @@ public final class SharedContext {
         replacedElementFactory.setFormSubmissionListener(fsl);
     }
 
-    public LayoutContext newLayoutContextInstance() {
-        return new LayoutContext(this);
+    public LayoutContext newLayoutContextInstance(FontContext fontContext) {
+        return new LayoutContext(this, fontContext);
     }
 
     public RenderingContext newRenderingContextInstance(OutputDevice outputDevice, FontContext fontContext) {
