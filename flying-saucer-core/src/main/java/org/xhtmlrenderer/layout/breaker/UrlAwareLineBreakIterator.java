@@ -1,6 +1,5 @@
 package org.xhtmlrenderer.layout.breaker;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.text.BreakIterator;
 import java.text.CharacterIterator;
 
@@ -8,7 +7,6 @@ import java.text.CharacterIterator;
  * BreakIterator implementation that improves line breaking for URLs. Break points are supported
  * before path fragments.
  */
-@ParametersAreNonnullByDefault
 public class UrlAwareLineBreakIterator extends BreakIterator {
 
     private static final String BREAKING_CHARS = ".,:;!?- \n\r\t/";
@@ -24,11 +22,11 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
     public int preceding(int offset) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    
+
     public int last() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    
+
     public int previous() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -113,15 +111,15 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
     public int first() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    
+
     public void setText(CharacterIterator newText) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    
+
     public int current() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    
+
     public CharacterIterator getText() {
         return delegate.getText();
     }

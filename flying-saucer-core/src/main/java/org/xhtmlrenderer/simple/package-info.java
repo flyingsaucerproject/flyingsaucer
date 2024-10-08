@@ -26,4 +26,7 @@
  * </ul>
  * <!-- Put @see and @since tags down here. -->
  */
+@NullMarked
 package org.xhtmlrenderer.simple;
+
+import org.jspecify.annotations.NullMarked;

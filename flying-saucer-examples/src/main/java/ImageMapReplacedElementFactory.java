@@ -18,6 +18,9 @@
  * }}}
  */
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -33,10 +36,6 @@ import org.xhtmlrenderer.swing.SwingReplacedElement;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -58,7 +57,7 @@ import static java.util.Objects.requireNonNull;
  *
  * Sample is incomplete in current state and meant as a starting point for future work.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory {
    private final ImageMapListener listener;
    private static final String IMG_USEMAP_ATTR = "usemap";
@@ -119,7 +118,6 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
     }
 
     // See SwingReplacedElementFactory#replaceImage
-   @Nonnull
    @CheckReturnValue
    protected ReplacedElement replaceImageMap(UserAgentCallback uac, LayoutContext context, Element elem, String usemapAttr, int cssWidth, int cssHeight) {
       ReplacedElement re;
@@ -173,7 +171,7 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
         return (str1 == null && str2 == null) || (str1 != null && str1.equalsIgnoreCase(str2));
     }
 
-    @ParametersAreNonnullByDefault
+    @NullMarked
     private static final class ImageMapReplacedElement extends SwingReplacedElement {
       private final Map<Shape, String> areas;
 
@@ -307,7 +305,6 @@ public class ImageMapReplacedElementFactory extends SwingReplacedElementFactory 
          }
       }
 
-      @Nonnull
       @CheckReturnValue
       private static JComponent create(Image image, int targetWidth, int targetHeight) {
          final JLabel component = new JLabel(new ImageIcon(image));

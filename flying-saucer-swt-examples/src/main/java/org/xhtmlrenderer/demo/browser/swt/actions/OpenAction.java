@@ -22,9 +22,8 @@ package org.xhtmlrenderer.demo.browser.swt.actions;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MenuItem;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
-
-import javax.annotation.Nullable;
 
 public class OpenAction extends AbstractAction {
 

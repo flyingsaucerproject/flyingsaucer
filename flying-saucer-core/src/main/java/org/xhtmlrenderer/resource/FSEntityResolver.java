@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.resource;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.util.GeneralUtil;
@@ -131,6 +132,7 @@ public class FSEntityResolver implements EntityResolver2 {
     }
 
     @Override
+    @Nullable
     public InputSource getExternalSubset(String name, String baseURI) {
         return name.equalsIgnoreCase("html") ? newHTML5DoctypeSource() : null;
     }
@@ -164,7 +166,8 @@ public class FSEntityResolver implements EntityResolver2 {
     public Map<String, String> getEntities() {
         return new HashMap<>(entities);
     }
-    
+
+    @Nullable
     public String getEntity(String url) {
         return entities.get(url);
     }

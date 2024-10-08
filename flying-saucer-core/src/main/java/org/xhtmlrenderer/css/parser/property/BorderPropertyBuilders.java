@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -130,6 +131,7 @@ public class BorderPropertyBuilders {
             return PrimitivePropertyBuilders.BORDER_STYLES.get(ident.FS_ID);
         }
 
+        @Nullable
         private CSSPrimitiveValue convertToBorderWidth(CSSPrimitiveValue value) {
             int type = value.getPrimitiveType();
             if (type != CSSPrimitiveValue.CSS_IDENT && ! isLength(value)) {
@@ -152,6 +154,7 @@ public class BorderPropertyBuilders {
             }
         }
 
+        @Nullable
         private CSSPrimitiveValue convertToBorderColor(CSSPrimitiveValue value) {
             int type = value.getPrimitiveType();
             if (type != CSSPrimitiveValue.CSS_IDENT && type != CSSPrimitiveValue.CSS_RGBCOLOR) {

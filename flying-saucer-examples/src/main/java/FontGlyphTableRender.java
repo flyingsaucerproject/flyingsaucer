@@ -17,8 +17,11 @@
  */
 
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -37,8 +40,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DefaultHandler2;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
@@ -64,10 +65,10 @@ import static javax.xml.parsers.SAXParserFactory.newInstance;
  *
  * @author Patrick Wright
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class FontGlyphTableRender {
     private static final Logger log = LoggerFactory.getLogger(FontGlyphTableRender.class);
-    
+
     private static final int TO_SWING = 1;
     private static final int TO_PDF = 2;
     private static final String OUTPUT_ENTITIES = "entities";
@@ -77,6 +78,7 @@ public class FontGlyphTableRender {
     private int curFrom;
 
     private String outputType = OUTPUT_CODEPOINTS;
+    @Nullable
     private Font currentFont;
     private JFrame frame;
     private XHTMLPanel xpanel;
@@ -207,7 +209,7 @@ public class FontGlyphTableRender {
         frame.setVisible(true);
     }
 
-    @Nonnull
+    @CheckReturnValue
     private JButton createChooseFontButton() {
         JButton chooseFontFileBtn = new JButton("...");
         chooseFontFileBtn.addActionListener(e -> {
@@ -261,6 +263,7 @@ public class FontGlyphTableRender {
         nextBtn.setEnabled(outputType.equals(OUTPUT_CODEPOINTS) && Math.pow(2, 16) - curFrom != 0);
     }
 
+    @Nullable
     private Font loadFont(String fontPath) throws IOException {
         Font font;
         try {

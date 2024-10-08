@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.test;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -14,7 +15,6 @@ import org.xhtmlrenderer.swing.ImageReplacedElement;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -27,7 +27,6 @@ import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
 /**
  * @author patrick
  */
-@ParametersAreNonnullByDefault
 public class SwingImageReplacer extends ElementReplacer {
     private static final Logger log = LoggerFactory.getLogger(SwingImageReplacer.class);
     private final Map<Element, ReplacedElement> imageComponents = new HashMap<>();
@@ -119,6 +118,7 @@ public class SwingImageReplacer extends ElementReplacer {
      * @param e The element by which the image is keyed
      * @return The ReplacedElement for the image, or null if there is none.
      */
+    @Nullable
     protected ReplacedElement lookupImageReplacedElement(Element e) {
         return imageComponents.get(e);
     }

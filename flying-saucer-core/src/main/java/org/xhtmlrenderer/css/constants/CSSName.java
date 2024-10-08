@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.css.constants;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.CSSParser;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.property.BackgroundPropertyBuilder;
@@ -39,12 +41,10 @@ import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -57,7 +57,6 @@ import java.util.TreeMap;
  *
  * @author Patrick Wright
  */
-@ParametersAreNonnullByDefault
 @CheckReturnValue
 public final class CSSName implements Comparable<CSSName> {
     /**
@@ -83,7 +82,7 @@ public final class CSSName implements Comparable<CSSName> {
     /**
      * Used to assign unique int id values to new CSSNames created in this class
      */
-    private static int maxAssigned;
+    private static final AtomicInteger maxAssigned = new AtomicInteger(0);
 
     /**
      * The CSS 2 property name, e.g. "border"
@@ -104,6 +103,7 @@ public final class CSSName implements Comparable<CSSName> {
 
     private final boolean implemented;
 
+    @Nullable
     private final PropertyBuilder builder;
 
     /**
@@ -1667,9 +1667,9 @@ public final class CSSName implements Comparable<CSSName> {
 
     private CSSName(
             String propName, String initialValue, boolean inherits,
-            boolean implemented, PropertyBuilder builder) {
+            boolean implemented, @Nullable PropertyBuilder builder) {
         this.propName = propName;
-        this.FS_ID = CSSName.maxAssigned++;
+        this.FS_ID = maxAssigned.getAndIncrement();
         this.initialValue = initialValue;
         this.propertyInherits = inherits;
         this.implemented = implemented;
@@ -1690,7 +1690,7 @@ public final class CSSName implements Comparable<CSSName> {
      * Returns a count of all CSS properties known to this class, shorthand and primitive.
      */
     public static int countCSSNames() {
-        return CSSName.maxAssigned;
+        return maxAssigned.get();
     }
 
     /**
@@ -1733,14 +1733,15 @@ public final class CSSName implements Comparable<CSSName> {
         return cssName.initialValue;
     }
 
-    public static FSDerivedValue initialDerivedValue(CSSName cssName) {
-        return cssName.initialDerivedValue;
+    public FSDerivedValue initialDerivedValue() {
+        return initialDerivedValue;
     }
 
     public static boolean isImplemented(CSSName cssName) {
         return cssName.implemented;
     }
 
+    @Nullable
     public static PropertyBuilder getPropertyBuilder(CSSName cssName) {
         return cssName.builder;
     }
@@ -1777,7 +1778,7 @@ public final class CSSName implements Comparable<CSSName> {
             String initialValue,
             Object inherit,
             boolean implemented,
-            PropertyBuilder builder
+            @Nullable PropertyBuilder builder
     ) {
         CSSName cssName = new CSSName(
                 propName, initialValue, (inherit == INHERITS), implemented, builder);
@@ -1819,7 +1820,7 @@ public final class CSSName implements Comparable<CSSName> {
 
     //Assumed to be consistent with equals because CSSName is in essence an enum
     @Override
-    public int compareTo(@Nullable CSSName object) {
+    public int compareTo(CSSName object) {
         if (object == null) throw new NullPointerException("Cannot compare " + this + " to null");
         return FS_ID - object.FS_ID;//will throw ClassCastException according to Comparable if not a CSSName
     }
@@ -1837,6 +1838,7 @@ public final class CSSName implements Comparable<CSSName> {
         return FS_ID;
     }
 
+    @CheckReturnValue
     public record CSSSideProperties(CSSName top, CSSName right, CSSName bottom, CSSName left) {
     }
 }

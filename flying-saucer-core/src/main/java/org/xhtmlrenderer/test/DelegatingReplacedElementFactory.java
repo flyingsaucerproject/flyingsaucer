@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.test;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
@@ -27,9 +29,6 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +37,6 @@ import java.util.Map;
 /**
  * @author patrick
  */
-@ParametersAreNonnullByDefault
 public class DelegatingReplacedElementFactory implements ReplacedElementFactory {
     private final List<ElementReplacer> replacers = new ArrayList<>();
     private final Map<String, ElementReplacer> byNameReplacers = new HashMap<>();

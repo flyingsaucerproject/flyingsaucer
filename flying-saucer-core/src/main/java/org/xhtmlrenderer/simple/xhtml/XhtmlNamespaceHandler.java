@@ -18,14 +18,11 @@
  */
 package org.xhtmlrenderer.simple.xhtml;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.simple.extend.XhtmlCssOnlyNamespaceHandler;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 
 /**
@@ -35,7 +32,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  *
  * @author Torbjoern Gannholm
  */
-@ParametersAreNonnullByDefault
 public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     @Override
     @CheckReturnValue
@@ -57,7 +53,6 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     }
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getNonCssStyling(Element e) {
         return switch (e.getNodeName()) {
@@ -224,6 +219,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         return true;
     }
 
+    @Nullable
     private Element findTable(Element cell) {
         Node n = cell.getParentNode();
         Element next;
@@ -254,6 +250,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         return null;
     }
 
+    @Nullable
     public XhtmlForm createForm(Element e) {
         if(e == null) {
             return new XhtmlForm("", "get");

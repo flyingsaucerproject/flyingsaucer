@@ -19,18 +19,16 @@
  */
 package org.xhtmlrenderer.resource;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xml.sax.InputSource;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 
 /**
  * @author Patrick Wright
  */
-@ParametersAreNonnullByDefault
 public abstract class AbstractResource implements Resource {
     private final InputSource inputSource;
     private final long createTimeStamp;

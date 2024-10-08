@@ -1,9 +1,8 @@
 package org.xhtmlrenderer.util;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,7 +23,6 @@ import static java.nio.file.Files.newOutputStream;
 /**
  * @author patrick
  */
-@ParametersAreNonnullByDefault
 public class IOUtil {
     public static void copyFile(File page, File outputDir) throws IOException {
         File outputFile = new File(outputDir, page.getName());
@@ -61,6 +59,7 @@ public class IOUtil {
      * and reading from it. will return the stream, or null if unable to open or read or a timeout occurred. Does not
      * buffer the stream.
      */
+    @Nullable
     public static InputStream openStreamAtUrl(String uri) {
         try {
             URLConnection uc = new URL(uri).openConnection();
@@ -68,7 +67,7 @@ public class IOUtil {
             uc.setReadTimeout(30 * 1000);
             uc.setRequestProperty("Accept", "*/*");
             uc.connect();
-            
+
             return uc.getInputStream();
         } catch (java.net.MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
@@ -101,9 +100,8 @@ public class IOUtil {
         return null;
     }
 
-    @Nullable
     @CheckReturnValue
-    public static byte[] readBytes(String uri) {
+    public static byte @Nullable [] readBytes(String uri) {
         try (InputStream is = getInputStream(uri)) {
             if (is == null) return null;
             return readBytes(is);
@@ -113,7 +111,6 @@ public class IOUtil {
         }
     }
 
-    @Nonnull
     @CheckReturnValue
     public static byte[] readBytes(Path file) throws IOException {
         try (InputStream is = newInputStream(file)) {
@@ -121,7 +118,6 @@ public class IOUtil {
         }
     }
 
-    @Nonnull
     @CheckReturnValue
     public static byte[] readBytes(InputStream is) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream(is.available());

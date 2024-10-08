@@ -21,10 +21,9 @@ package org.xhtmlrenderer.demo.browser.swt.actions;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MenuItem;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.demo.browser.swt.Browser;
 import org.xhtmlrenderer.demo.browser.swt.DemosNavigation.Demo;
-
-import javax.annotation.Nullable;
 
 public class DemoAction extends AbstractAction {
 

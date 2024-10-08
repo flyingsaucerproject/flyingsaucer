@@ -2,13 +2,13 @@ package org.xhtmlrenderer.pdf;
 
 import com.codeborne.pdftest.PDF;
 import com.lowagie.text.DocumentException;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.resource.XMLResource;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,14 +62,14 @@ public class PDFRenderTest {
         return new PDF(output);
     }
 
-    @ParametersAreNonnullByDefault
     private static class ResourceLoaderUserAgent extends ITextUserAgent {
         private ResourceLoaderUserAgent(ITextOutputDevice outputDevice, int dotsPerPixel) {
             super(outputDevice, dotsPerPixel);
         }
 
         @Override
-        protected InputStream resolveAndOpenStream(String uri) {
+        @Nullable
+        protected InputStream resolveAndOpenStream(@Nullable String uri) {
             InputStream is = super.resolveAndOpenStream(uri);
             log.info("IN resolveAndOpenStream() {}", uri);
             return is;

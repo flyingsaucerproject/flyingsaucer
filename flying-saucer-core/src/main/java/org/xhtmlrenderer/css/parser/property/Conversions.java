@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -193,6 +194,7 @@ public class Conversions {
         BORDER_WIDTHS.put("thick", new PropertyValue(CSSPrimitiveValue.CSS_PX, 3.0f, "3px"));
     }
 
+    @Nullable
     public static FSRGBColor getColor(String ident) {
         return COLORS.get(ident);
     }

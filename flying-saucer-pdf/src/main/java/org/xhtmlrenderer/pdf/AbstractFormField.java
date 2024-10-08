@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.pdf;
 
 import com.lowagie.text.pdf.PdfTemplate;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -28,11 +29,8 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.util.Util;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 
-@ParametersAreNonnullByDefault
 public abstract class AbstractFormField implements ITextReplacedElement {
     protected static final String DEFAULT_CHECKED_STATE = "Yes";
     protected static final String OFF_STATE = "Off"; // required per the spec

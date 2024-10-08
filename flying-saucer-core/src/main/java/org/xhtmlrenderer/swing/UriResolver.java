@@ -1,18 +1,16 @@
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 
-@ParametersAreNonnullByDefault
 public class UriResolver {
+    @Nullable
     private String _baseUri;
 
     @Nullable
@@ -22,7 +20,6 @@ public class UriResolver {
         return resolveUri(uri);
     }
 
-    @Nonnull
     @CheckReturnValue
     public String resolveUri(final String uri) {
         if (_baseUri == null) {//first try to set a base URL
@@ -53,12 +50,12 @@ public class UriResolver {
         }
     }
 
-    public void setBaseUri(final String baseUri) {
+    public void setBaseUri(@Nullable String baseUri) {
         _baseUri = baseUri;
     }
 
-    @Nonnull
     @CheckReturnValue
+    @Nullable
     public String getBaseUri() {
         return _baseUri;
     }

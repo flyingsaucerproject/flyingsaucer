@@ -33,14 +33,12 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.Util;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import static org.xhtmlrenderer.util.TextUtil.readTextContentOrNull;
 
-@ParametersAreNonnullByDefault
 public class SelectFormField extends AbstractFormField {
     private static final String FIELD_TYPE = "Select";
 

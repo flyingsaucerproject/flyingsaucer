@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.PageElementPosition;
 import org.xhtmlrenderer.css.newmatch.PageInfo;
@@ -66,13 +67,16 @@ public final class Layer {
     public static final short PAGED_MODE_SCREEN = 1;
     public static final short PAGED_MODE_PRINT = 2;
 
+    @Nullable
     private final Layer _parent;
     private boolean _stackingContext;
+    @Nullable
     private List<Layer> _children;
     private final Box _master;
 
     private Box _end;
 
+    @Nullable
     private List<BlockBox> _floats;
 
     private boolean _fixedBackground;
@@ -93,7 +97,7 @@ public final class Layer {
         setStackingContext(true);
     }
 
-    public Layer(Layer parent, Box master) {
+    public Layer(@Nullable Layer parent, Box master) {
         _parent = parent;
         _master = master;
         setStackingContext(
@@ -102,6 +106,7 @@ public final class Layer {
         master.setContainingLayer(this);
     }
 
+    @Nullable
     public Layer getParent() {
         return _parent;
     }
@@ -329,6 +334,7 @@ public final class Layer {
         return _floats == null ? emptyList() : _floats;
     }
 
+    @Nullable
     public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         if (isRootLayer() || isStackingContext()) {
             Box result = find(cssCtx, absX, absY, getSortedLayers(POSITIVE), findAnonymous);
@@ -368,6 +374,7 @@ public final class Layer {
         return null;
     }
 
+    @Nullable
     private Box find(CssContext cssCtx, int absX, int absY, List<Layer> layers, boolean findAnonymous) {
         // Work backwards since layers are painted forwards and we're looking
         // for the top-most box
@@ -387,6 +394,7 @@ public final class Layer {
     // we're about to draw and returns a map with the last cell in a given table
     // we'll paint as a key and a sorted list of borders as values.  These are
     // then painted after we've drawn the background for this cell.
+    @Nullable
     private Map<TableCellBox, List<CollapsedBorderSide>> collectCollapsedTableBorders(List<Box> blocks) {
         Map<TableBox, List<CollapsedBorderSide>> cellBordersByTable = new HashMap<>();
         Map<TableBox, TableCellBox> triggerCellsByTable = new HashMap<>();

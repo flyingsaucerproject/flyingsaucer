@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
@@ -27,9 +29,6 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.StreamResource;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,11 +51,10 @@ import java.io.InputStream;
  *
  * @author Torbjoern Gannholm
  */
-@ParametersAreNonnullByDefault
 public class DelegatingUserAgent implements UserAgentCallback, DocumentListener {
     private final UriResolver _uriResolver;
+    @Nullable
     private ImageResourceLoader _imageResourceLoader;
-
 
     /**
      * Creates a new instance of NaiveUserAgent with a max image cache of 16 images.
@@ -65,6 +63,15 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
         this._uriResolver = new UriResolver();
     }
 
+    public DelegatingUserAgent(ImageResourceLoader imageResourceLoader) {
+        _imageResourceLoader = imageResourceLoader;
+        this._uriResolver = new UriResolver();
+    }
+
+    /**
+     * @deprecated Pass loader right to the constructor (instead of using setter)
+     */
+    @Deprecated
     public void setImageResourceLoader(ImageResourceLoader loader) {
         _imageResourceLoader = loader;
     }
@@ -123,6 +130,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri Location of the XML source.
      * @return An XMLResource containing the image.
      */
+    @Nullable
     public XMLResource getXMLResource(String uri) {
         String ruri = _uriResolver.resolve(uri);
         try (StreamResource sr = new StreamResource(ruri)) {
@@ -134,9 +142,8 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
         }
     }
 
-    @Nullable
     @CheckReturnValue
-    public byte[] getBinaryResource(String uri) {
+    public byte @Nullable [] getBinaryResource(String uri) {
         String ruri = _uriResolver.resolve(uri);
         try (StreamResource sr = new StreamResource(ruri)) {
             sr.connect();
@@ -153,7 +160,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri A URI which might have been visited.
      * @return Always false; visits are not tracked in the NaiveUserAgent.
      */
-    public boolean isVisited(String uri) {
+    public boolean isVisited(@Nullable String uri) {
         return false;
     }
 
@@ -162,7 +169,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      *
      * @param uri A URI which anchors other, possibly relative URIs.
      */
-    public void setBaseURL(String uri) {
+    public void setBaseURL(@Nullable String uri) {
         _uriResolver.setBaseUri(uri);
     }
 

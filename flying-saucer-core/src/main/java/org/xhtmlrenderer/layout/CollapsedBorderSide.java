@@ -19,13 +19,11 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BorderPainter;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static org.xhtmlrenderer.newtable.TableCellBox.compareBorders;
 
@@ -53,7 +51,7 @@ public class CollapsedBorderSide implements Comparable<CollapsedBorderSide> {
     }
 
     @Override
-    public int compareTo(@Nonnull CollapsedBorderSide that) {
+    public int compareTo(CollapsedBorderSide that) {
         CollapsedBorderValue v1 = getCollapsedBorder(this);
         CollapsedBorderValue v2 = getCollapsedBorder(that);
         CollapsedBorderValue result = compareBorders(v1, v2, true);

@@ -2,9 +2,8 @@ package org.xhtmlrenderer.pdf;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,7 +29,6 @@ import static java.nio.file.Files.newOutputStream;
  * @author Pete Brant
  * @author Patrick Wright
  */
-@ParametersAreNonnullByDefault
 public class PDFRenderer {
     private static final Map<String, Character> versionMap = new HashMap<>();
 

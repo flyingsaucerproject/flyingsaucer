@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,8 +39,6 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Util;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -84,7 +83,6 @@ import java.util.logging.Level;
  *
  * @author Nick Reddel
  */
-@ParametersAreNonnullByDefault
 public class SelectionHighlighter implements MouseMotionListener, MouseListener {
 
     private static final String PARA_EQUIV = "&!<p2equiv!";
@@ -425,7 +423,6 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         // lastModified = modified;
     }
 
-    @Nonnull
     private static NodeFilter createFilter(Range range, Range acceptRange) {
         final Range tr = range;
         NodeFilter f = n -> {
@@ -559,6 +556,7 @@ public class SelectionHighlighter implements MouseMotionListener, MouseListener 
         return inlineLayoutBoxes;
     }
 
+    @Nullable
     ViewModelInfo infoFromPoint(MouseEvent e) {
         checkDocument();
         Range r = docRange.createRange();

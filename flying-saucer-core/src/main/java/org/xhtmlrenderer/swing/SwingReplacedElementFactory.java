@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -36,10 +38,6 @@ import org.xhtmlrenderer.simple.extend.form.FormField;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -53,7 +51,6 @@ import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
 /**
  * A ReplacedElementFactory where Elements are replaced by Swing components.
  */
-@ParametersAreNonnullByDefault
 public class SwingReplacedElementFactory implements ReplacedElementFactory {
     private static final Logger log = LoggerFactory.getLogger(SwingReplacedElementFactory.class);
 
@@ -188,7 +185,6 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * @param cssHeight Target height for the element
      * @return A ReplacedElement to substitute for one that can't be generated.
      */
-    @Nonnull
     @CheckReturnValue
     protected ReplacedElement newIrreplaceableImageElement(int cssWidth, int cssHeight) {
         try {

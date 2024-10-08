@@ -23,7 +23,6 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.swing.Java2DRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
@@ -53,7 +52,6 @@ import static java.util.logging.Level.SEVERE;
 /**
  * @author rk
  */
-@ParametersAreNonnullByDefault
 public class Printer implements Runnable, DocumentListener, Printable, PrintJobListener {
     private final static String template = "printingtemplate.xhtml";
 

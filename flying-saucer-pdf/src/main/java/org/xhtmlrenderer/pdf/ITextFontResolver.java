@@ -19,8 +19,10 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -37,10 +39,6 @@ import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.SupportedEmbeddedFontTypes;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -62,7 +60,6 @@ import static org.xhtmlrenderer.pdf.TrueTypeUtil.extractDescription;
 import static org.xhtmlrenderer.util.FontUtil.isEmbeddedBase64Font;
 import static org.xhtmlrenderer.util.SupportedEmbeddedFontTypes.getExtension;
 
-@ParametersAreNonnullByDefault
 public class ITextFontResolver implements FontResolver {
     private static final Logger log = LoggerFactory.getLogger(ITextFontResolver.class);
     private static final String OTF = ".otf";
@@ -111,6 +108,8 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
         return resolveFont(spec.families, spec.size, spec.fontWeight, spec.fontStyle);
@@ -196,7 +195,6 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
-    @Nonnull
     @CheckReturnValue
     private File[] filesWithExtensions(File f, String... extensions) {
         return requireNonNull(f.listFiles((d, name) -> {
@@ -262,7 +260,6 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
-    @Nonnull
     @CheckReturnValue
     private static Collection<String> getFontFamilyNames(BaseFont font, @Nullable String fontFamilyNameOverride) {
         if (fontFamilyNameOverride != null) {
@@ -286,7 +283,7 @@ public class ITextFontResolver implements FontResolver {
      */
     private void addFontFaceFont(@Nullable String fontFamilyNameOverride, @Nullable IdentValue fontWeightOverride,
                                  @Nullable IdentValue fontStyleOverride, String uri, String encoding, boolean embedded,
-                                 byte[] ttfAfm, @Nullable byte[] pfb)
+                                 byte[] ttfAfm, byte @Nullable [] pfb)
             throws DocumentException, IOException {
         String lower = uri.toLowerCase();
         if (fontSupported(lower)) {
@@ -324,7 +321,6 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
-    @Nonnull
     @CheckReturnValue
     private static FontDescription fontDescription(@Nullable IdentValue fontWeightOverride, @Nullable IdentValue fontStyleOverride,
                                                    String uri, byte[] ttfAfm, BaseFont font) {
@@ -341,13 +337,11 @@ public class ITextFontResolver implements FontResolver {
         return description;
     }
 
-    @Nonnull
     @CheckReturnValue
     private byte[] readFile(String path) throws IOException {
         return IOUtil.readBytes(Paths.get(path));
     }
 
-    @Nonnull
     @CheckReturnValue
     private FontFamily getFontFamily(String fontFamilyName) {
         FontFamily fontFamily = getFonts().get(fontFamilyName);
@@ -358,9 +352,9 @@ public class ITextFontResolver implements FontResolver {
         return fontFamily;
     }
 
-    @Nonnull
+    @Nullable
     @CheckReturnValue
-    private FSFont resolveFont(@Nullable String[] families, float size, IdentValue weight, IdentValue style) {
+    private FSFont resolveFont(String @Nullable [] families, float size, IdentValue weight, IdentValue style) {
         if (!(style == IdentValue.NORMAL || style == IdentValue.OBLIQUE
                 || style == IdentValue.ITALIC)) {
             style = IdentValue.NORMAL;
@@ -409,6 +403,7 @@ public class ITextFontResolver implements FontResolver {
         return result;
     }
 
+    @Nullable
     private FSFont resolveFont(String fontFamily, float size, IdentValue weight, IdentValue style) {
         String normalizedFontFamily = normalizeFontFamily(fontFamily);
 

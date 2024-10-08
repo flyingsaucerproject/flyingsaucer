@@ -18,6 +18,8 @@
 
 
 import com.lowagie.text.DocumentException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.pdf.ITextOutputDevice;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -25,7 +27,6 @@ import org.xhtmlrenderer.pdf.ITextUserAgent;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xml.sax.InputSource;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,7 @@ import java.nio.file.Paths;
 
 import static java.nio.file.Files.newOutputStream;
 
+@NullMarked
 public class PDFRender {
     public static void main(String[] args) throws IOException, DocumentException {
         if (args.length != 2) {
@@ -63,14 +65,15 @@ public class PDFRender {
         }
     }
 
-    @ParametersAreNonnullByDefault
+    @NullMarked
     private static class ResourceLoaderUserAgent extends ITextUserAgent {
         private ResourceLoaderUserAgent(ITextOutputDevice outputDevice, int dotsPerPixel) {
             super(outputDevice, dotsPerPixel);
         }
 
         @Override
-        protected InputStream resolveAndOpenStream(String uri) {
+        @Nullable
+        protected InputStream resolveAndOpenStream(@Nullable String uri) {
             InputStream is = super.resolveAndOpenStream(uri);
             System.out.println("IN resolveAndOpenStream() " + uri);
             return is;

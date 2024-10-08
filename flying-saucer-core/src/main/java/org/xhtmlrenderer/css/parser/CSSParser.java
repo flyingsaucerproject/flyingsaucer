@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.MarginBoxName;
@@ -57,9 +58,11 @@ public class CSSParser {
     private static final Set<String> SUPPORTED_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
     private static final Set<String> CSS21_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
 
+    @Nullable
     private Token _saved;
     private final Lexer _lexer;
     private final CSSErrorHandler _errorHandler;
+    @Nullable
     private String _uri;
 
     private final Map<String, String> _namespaces = new HashMap<>();
@@ -104,6 +107,7 @@ public class CSSParser {
         }
     }
 
+    @Nullable
     public PropertyValue parsePropertyValue(CSSName cssName, int origin, String expr) {
         _uri = cssName + " property value";
         try {
@@ -1356,7 +1360,7 @@ public class CSSParser {
     private List<PropertyValue> expr(boolean literal) throws IOException {
         //System.out.println("expr()");
         List<PropertyValue> result = new ArrayList<>(10);
-        result.add(term(literal));
+        result.add(term(literal, null));
         LOOP: while (true) {
             Token t = la();
             boolean operator = false;
@@ -1391,11 +1395,7 @@ public class CSSParser {
                 case Token.URI:
                 case Token.HASH:
                 case Token.FUNCTION:
-                    PropertyValue term = term(literal);
-                    if (operatorToken != null) {
-                        term.setOperator(operatorToken);
-                    }
-                    result.add(term);
+                    result.add(term(literal, operatorToken));
                     break;
                 default:
                     if (operator) {
@@ -1456,7 +1456,7 @@ public class CSSParser {
 //        TIME S* | FREQ S* ]
 //    | STRING S* | IDENT S* | URI S* | hexcolor | function
 //    ;
-    private PropertyValue term(boolean literal) throws IOException {
+    private PropertyValue term(boolean literal, @Nullable Token operatorToken) throws IOException {
         //System.out.println("term()");
         float sign = 1;
         Token t = la();
@@ -1464,7 +1464,7 @@ public class CSSParser {
             sign = unary_operator();
             t = la();
         }
-        PropertyValue result;
+        final PropertyValue result;
         switch (t.getType()) {
             case Token.ANGLE:
             case Token.TIME:
@@ -1475,7 +1475,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSS_NUMBER,
                         sign*Float.parseFloat(getTokenValue(t)),
-                        sign(sign) + getTokenValue(t));
+                        sign(sign) + getTokenValue(t),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1483,7 +1484,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSS_PERCENTAGE,
                         sign*Float.parseFloat(extractNumber(t)),
-                        sign(sign) + getTokenValue(t));
+                        sign(sign) + getTokenValue(t),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1491,7 +1493,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_EMS,
                         sign*Float.parseFloat(extractNumber(t)),
-                        sign(sign) + getTokenValue(t));
+                        sign(sign) + getTokenValue(t),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1499,7 +1502,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_EXS,
                         sign*Float.parseFloat(extractNumber(t)),
-                        sign(sign) + getTokenValue(t));
+                        sign(sign) + getTokenValue(t),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1507,7 +1511,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PX,
                         sign*Float.parseFloat(extractNumber(t)),
-                        sign(sign) + getTokenValue(t));
+                        sign(sign) + getTokenValue(t),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1515,7 +1520,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_CM,
                         sign*Float.parseFloat(extractNumber(t)),
-                        sign(sign) + getTokenValue(t));
+                        sign(sign) + getTokenValue(t),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1523,7 +1529,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_MM,
                         sign*Float.parseFloat(extractNumber(t)),
-                        sign(sign) + getTokenValue(t));
+                        sign(sign) + getTokenValue(t),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1531,7 +1538,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_IN,
                         sign*Float.parseFloat(extractNumber(t)),
-                        sign(sign) + getTokenValue(t));
+                        sign(sign) + getTokenValue(t),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1539,7 +1547,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PT,
                         sign*Float.parseFloat(extractNumber(t)),
-                        sign(sign) + getTokenValue(t));
+                        sign(sign) + getTokenValue(t),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1547,7 +1556,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PC,
                         sign*Float.parseFloat(extractNumber(t)),
-                        sign(sign) + getTokenValue(t));
+                        sign(sign) + getTokenValue(t),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1556,7 +1566,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_STRING,
                         s,
-                        getRawTokenValue());
+                        getRawTokenValue(),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1565,7 +1576,8 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_IDENT,
                         value,
-                        value);
+                        value,
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
@@ -1573,15 +1585,16 @@ public class CSSParser {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_URI,
                         getTokenValue(t),
-                        getRawTokenValue());
+                        getRawTokenValue(),
+                        operatorToken);
                 next();
                 skip_whitespace();
                 break;
             case Token.HASH:
-                result = hexcolor();
+                result = hexcolor(operatorToken);
                 break;
             case Token.FUNCTION:
-                result = function();
+                result = function(operatorToken);
                 break;
             default:
                 throw new CSSParseException(t, new Token[] { Token.TK_NUMBER,
@@ -1597,9 +1610,9 @@ public class CSSParser {
 //  function
 //    : FUNCTION S* expr ')' S*
 //    ;
-    private PropertyValue function() throws IOException {
+    private PropertyValue function(Token operatorToken) throws IOException {
         //System.out.println("function()");
-        PropertyValue result;
+        final PropertyValue result;
         Token t = next();
         if (t == Token.TK_FUNCTION) {
             String f = getTokenValue(t);
@@ -1612,16 +1625,16 @@ public class CSSParser {
             }
 
             if (f.equals("rgb(")) {
-                result = new PropertyValue(createRGBColorFromFunction(params));
+                result = new PropertyValue(createRGBColorFromFunction(params), operatorToken);
             } else if (f.equals("cmyk(")) {
                 if (! isSupportCMYKColors()) {
                     throw new CSSParseException(
                             "The current output device does not support CMYK colors", getCurrentLine());
                 }
                 //in accordance to http://www.w3.org/TR/css3-gcpm/#cmyk-colors
-                result = new PropertyValue(createCMYKColorFromFunction(params));
+                result = new PropertyValue(createCMYKColorFromFunction(params), operatorToken);
             } else {
-                result = new PropertyValue(new FSFunction(f.substring(0, f.length()-1), params));
+                result = new PropertyValue(new FSFunction(f.substring(0, f.length()-1), params), operatorToken);
             }
 
             skip_whitespace();
@@ -1652,7 +1665,7 @@ public class CSSParser {
 
     private float parseCMYKColorComponent(PropertyValue value, int paramNo) {
         short type = value.getPrimitiveType();
-        float result;
+        final float result;
         if (type == CSS_NUMBER) {
             result = value.getFloatValue();
         } else if (type == CSS_PERCENTAGE) {
@@ -1724,9 +1737,9 @@ public class CSSParser {
 // hexcolor
 //   : HASH S*
 //   ;
-    private PropertyValue hexcolor() throws IOException {
+    private PropertyValue hexcolor(Token operatorToken) throws IOException {
         //System.out.println("hexcolor()");
-        PropertyValue result;
+        final PropertyValue result;
         Token t = next();
         if (t == Token.TK_HASH) {
             String s = getTokenValue(t);
@@ -1746,7 +1759,7 @@ public class CSSParser {
                         convertToInteger(s.charAt(2), s.charAt(3)),
                         convertToInteger(s.charAt(4), s.charAt(5)));
             }
-            result = new PropertyValue(color);
+            result = new PropertyValue(color, operatorToken);
             skip_whitespace();
         } else {
             push(t);

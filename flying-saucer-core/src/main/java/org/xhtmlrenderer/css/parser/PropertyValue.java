@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
@@ -43,24 +44,32 @@ public class PropertyValue implements CSSPrimitiveValue {
     private final short _type;
     private final short _cssValueType;
 
-    private String _stringValue;
+    @Nullable
+    private final String _stringValue;
     private float _floatValue;
-    private String[] _stringArrayValue;
+    private final String @Nullable [] _stringArrayValue;
 
     private final String _cssText;
 
-    private FSColor _FSColor;
+    @Nullable
+    private final FSColor _FSColor;
 
+    @Nullable
     private IdentValue _identValue;
 
     private final short _propertyValueType;
 
-    private Token _operator;
+    @Nullable
+    private final Token _operator;
 
     private List<?> _values;
     private FSFunction _function;
 
     public PropertyValue(short type, float floatValue, String cssText) {
+        this(type, floatValue, cssText, null);
+    }
+
+    public PropertyValue(short type, float floatValue, String cssText, @Nullable Token operatorToken) {
         _type = type;
         _floatValue = floatValue;
         _cssValueType = CSSValue.CSS_PRIMITIVE_VALUE;
@@ -71,18 +80,37 @@ public class PropertyValue implements CSSPrimitiveValue {
         } else {
             _propertyValueType = VALUE_TYPE_LENGTH;
         }
+        _stringValue = null;
+        _stringArrayValue = null;
+        _FSColor = null;
+        _operator = operatorToken;
     }
 
     public PropertyValue(FSColor color) {
+        this(color, null);
+    }
+
+    public PropertyValue(FSColor color, @Nullable Token operatorToken) {
         _type = CSSPrimitiveValue.CSS_RGBCOLOR;
         _cssValueType = CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = color.toString();
         _FSColor = color;
 
         _propertyValueType = VALUE_TYPE_COLOR;
+        _stringValue = null;
+        _stringArrayValue = null;
+        _operator = operatorToken;
     }
 
     public PropertyValue(short type, String stringValue, String cssText) {
+        this(type, stringValue, cssText, null);
+    }
+
+    public PropertyValue(short type, String stringValue, String cssText, @Nullable Token operatorToken) {
+        this(type, stringValue, cssText, null, operatorToken);
+    }
+
+    public PropertyValue(short type, String stringValue, String cssText, String @Nullable [] stringArrayValue, @Nullable Token operatorToken) {
         _type = type;
         _stringValue = stringValue;
         // Must be a case-insensitive compare since ident values aren't normalized
@@ -95,6 +123,9 @@ public class PropertyValue implements CSSPrimitiveValue {
         } else {
             _propertyValueType = VALUE_TYPE_STRING;
         }
+        _stringArrayValue = ArrayUtil.cloneOrEmpty(stringArrayValue);
+        _FSColor = null;
+        _operator = operatorToken;
     }
 
     public PropertyValue(IdentValue ident) {
@@ -105,6 +136,9 @@ public class PropertyValue implements CSSPrimitiveValue {
 
         _propertyValueType = VALUE_TYPE_IDENT;
         _identValue = ident;
+        _stringArrayValue = null;
+        _FSColor = null;
+        _operator = null;
     }
 
     public PropertyValue(List<?> values) {
@@ -114,15 +148,27 @@ public class PropertyValue implements CSSPrimitiveValue {
 
         _values = values;
         _propertyValueType = VALUE_TYPE_LIST;
+        _stringValue = null;
+        _stringArrayValue = null;
+        _FSColor = null;
+        _operator = null;
     }
 
     public PropertyValue(FSFunction function) {
+        this(function, null);
+    }
+
+    public PropertyValue(FSFunction function, @Nullable Token operatorToken) {
         _type = CSSPrimitiveValue.CSS_UNKNOWN;
         _cssValueType = CSSValue.CSS_CUSTOM;
         _cssText = function.toString();
 
         _function = function;
         _propertyValueType = VALUE_TYPE_FUNCTION;
+        _stringValue = null;
+        _stringArrayValue = null;
+        _FSColor = null;
+        _operator = operatorToken;
     }
 
     @Override
@@ -154,6 +200,7 @@ public class PropertyValue implements CSSPrimitiveValue {
         throw new UnsupportedOperationException("Unsupported operation: getRectValue");
     }
 
+    @Nullable
     @Override
     public String getStringValue() throws DOMException {
         return _stringValue;
@@ -184,10 +231,12 @@ public class PropertyValue implements CSSPrimitiveValue {
         throw new UnsupportedOperationException("Unsupported operation: setCssText");
     }
 
+    @Nullable
     public FSColor getFSColor() {
         return _FSColor;
     }
 
+    @Nullable
     public IdentValue getIdentValue() {
         return _identValue;
     }
@@ -200,20 +249,13 @@ public class PropertyValue implements CSSPrimitiveValue {
         return _propertyValueType;
     }
 
+    @Nullable
     public Token getOperator() {
         return _operator;
     }
 
-    public void setOperator(Token operator) {
-        _operator = operator;
-    }
-
     public String[] getStringArrayValue() {
         return ArrayUtil.cloneOrEmpty(_stringArrayValue);
-    }
-
-    public void setStringArrayValue(String[] stringArrayValue) {
-        _stringArrayValue = ArrayUtil.cloneOrEmpty(stringArrayValue);
     }
 
     public String toString() {

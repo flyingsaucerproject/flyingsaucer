@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.DelegatingUserAgent;
 import org.xhtmlrenderer.util.GeneralUtil;
@@ -26,9 +29,6 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.transform.sax.SAXSource;
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +51,6 @@ import java.util.List;
  * As a NaiveUserAgent, the PanelManager is also a DocumentListener, but must be added to the source of document
  * events (like a RootPanel subclass).
  */
-@ParametersAreNonnullByDefault
 public class PanelManager extends DelegatingUserAgent {
     private int index = -1;
     private final List<String> history = new ArrayList<>();
@@ -107,6 +106,7 @@ public class PanelManager extends DelegatingUserAgent {
             return ref.toExternalForm();
     }
 
+    @NonNull
     @Override
     public XMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);

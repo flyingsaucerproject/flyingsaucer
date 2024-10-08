@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.context;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
@@ -26,7 +27,6 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -36,7 +36,6 @@ import java.util.Map;
  *
  * @author Torbjoern Gannholm
  */
-@ParametersAreNonnullByDefault
 public class StandardAttributeResolver implements AttributeResolver {
     private final NamespaceHandler nsh;
     private final UserAgentCallback uac;
@@ -66,6 +65,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the class attribute of the StandardAttributeResolver object
      */
     @Override
+    @Nullable
     public String getClass(Node e) {
         return classAttributeCache.computeIfAbsent(e, (x) -> nsh.getClass((Element) e));
     }
@@ -74,11 +74,13 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the iD attribute of the StandardAttributeResolver object
      */
     @Override
+    @Nullable
     public String getID(Node e) {
         return nsh.getID((Element) e);
     }
 
     @Override
+    @Nullable
     public String getNonCssStyling(Node e) {
         return nsh.getNonCssStyling((Element) e);
     }
@@ -87,6 +89,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * Gets the elementStyling attribute of the StandardAttributeResolver object
      */
     @Override
+    @Nullable
     public String getElementStyling(Node e) {
         return nsh.getElementStyling((Element) e);
     }

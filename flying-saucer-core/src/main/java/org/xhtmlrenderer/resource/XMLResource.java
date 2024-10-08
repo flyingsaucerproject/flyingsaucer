@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.resource;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
@@ -35,8 +36,6 @@ import org.xml.sax.ext.EntityResolver2;
 import org.xml.sax.helpers.XMLFilterImpl;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -61,7 +60,6 @@ import java.util.logging.Level;
 /**
  * @author Patrick Wright
  */
-@ParametersAreNonnullByDefault
 public class XMLResource extends AbstractResource {
     private Document document;
     private static final XMLResourceBuilder XML_RESOURCE_BUILDER;
@@ -358,6 +356,7 @@ public class XMLResource extends AbstractResource {
         }
 
         @Override
+        @Nullable
         public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
             EntityResolver resolver = getEntityResolver();
             if (resolver instanceof EntityResolver2) {

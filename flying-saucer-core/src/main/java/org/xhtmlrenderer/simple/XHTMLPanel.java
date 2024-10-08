@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.simple;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -30,8 +31,6 @@ import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -43,15 +42,15 @@ import java.net.URL;
  * Java program. It is scrolling aware so you can safely drop it into a
  * {@link javax.swing.JScrollPane}. The most common usage is to stuff a {@link URL}
  * into it and then add it to your JFrame. Ex:</p>
- * 
+ *
  * <pre>{@code
  * import org.xhtmlrenderer.simple.*;
- * 
+ *
  * public static void main(String[] args) {
- * 
+ *
  * // set up the xhtml panel XHTMLPanel xhtml = new XHTMLPanel();
  * xhtml.setDocument(new URL("http://myserver.com/page.xhtml"));
- * 
+ *
  * JScrollPane scroll = new JScrollPane(xhtml);
  * JFrame frame = new JFrame("Demo");
  * frame.getContentPane().add(scroll);
@@ -70,7 +69,7 @@ import java.net.URL;
  * documents from a uri ({@link #setDocument(String uri)}),
  * from a Document instance ({@link #setDocument(Document)}) or from an InputStream
  * ({@link org.xhtmlrenderer.swing.BasicPanel#setDocument(java.io.InputStream,String)}).</p>
- * 
+ *
  * <p>
  * XHTMLPanel also lets you make simple changes with simple methods like
  * {@link #setFontScalingFactor(float)}. If you want to make other changes you will
@@ -97,7 +96,6 @@ import java.net.URL;
  * @see <a href="http://xhtmlrenderer.dev.java.net">The Flying Saucer Home Page</a>
  * @see RenderingContext
  */
-@ParametersAreNonnullByDefault
 public class XHTMLPanel extends BasicPanel {
     private static final long serialVersionUID = 1L;
 

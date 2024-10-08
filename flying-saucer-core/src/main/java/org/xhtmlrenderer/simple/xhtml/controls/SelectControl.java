@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.simple.xhtml.controls;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.simple.xhtml.XhtmlForm;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

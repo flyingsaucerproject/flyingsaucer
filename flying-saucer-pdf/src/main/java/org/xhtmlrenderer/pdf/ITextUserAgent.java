@@ -32,7 +32,6 @@ import org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -40,7 +39,6 @@ import java.net.URISyntaxException;
 
 import static org.xhtmlrenderer.util.IOUtil.readBytes;
 
-@ParametersAreNonnullByDefault
 public class ITextUserAgent extends NaiveUserAgent {
     private static final int IMAGE_CACHE_CAPACITY = 32;
 

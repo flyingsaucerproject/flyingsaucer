@@ -32,11 +32,9 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.io.IOException;
 
-@ParametersAreNonnullByDefault
 public class CheckboxFormField extends AbstractFormField {
   private static final String FIELD_TYPE = "Checkbox";
 

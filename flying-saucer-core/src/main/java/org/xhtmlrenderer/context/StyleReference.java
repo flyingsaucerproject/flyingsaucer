@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.context;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -149,6 +150,7 @@ public class StyleReference {
     /**
      * Gets the pseudoElementStyle attribute of the StyleReference object
      */
+    @Nullable
     public CascadedStyle getPseudoElementStyle(Node node, String pseudoElement) {
         Element e;
         if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -163,7 +165,7 @@ public class StyleReference {
      * Gets the CascadedStyle for an element. This must then be converted in the
      * current context to a CalculatedStyle (use getDerivedStyle)
      */
-    public CascadedStyle getCascadedStyle(Element e, boolean restyle) {
+    public CascadedStyle getCascadedStyle(@Nullable Element e, boolean restyle) {
         if (e == null) return CascadedStyle.emptyCascadedStyle;
         return _matcher.getCascadedStyle(e, restyle);
     }

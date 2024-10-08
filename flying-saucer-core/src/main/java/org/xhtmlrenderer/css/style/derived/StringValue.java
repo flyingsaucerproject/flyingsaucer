@@ -26,13 +26,11 @@ import org.xhtmlrenderer.css.style.DerivedValue;
 import org.xhtmlrenderer.util.ArrayUtil;
 
 public class StringValue extends DerivedValue {
-    private String[] _stringAsArray;
+    private final String[] _stringAsArray;
 
     public StringValue(CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getStringValue());
-        if (value.getStringArrayValue() != null) {
-            _stringAsArray = value.getStringArrayValue();
-        }
+        _stringAsArray = value.getStringArrayValue();
     }
 
     public String[] asStringArray() {

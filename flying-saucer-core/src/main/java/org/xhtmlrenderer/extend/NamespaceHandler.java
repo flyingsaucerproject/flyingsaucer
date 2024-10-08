@@ -19,15 +19,13 @@
  */
 package org.xhtmlrenderer.extend;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 /**
@@ -36,13 +34,11 @@ import java.util.List;
  *
  * @author Torbjoern Gannholm
  */
-@ParametersAreNonnullByDefault
 public interface NamespaceHandler {
 
     /**
      * @return the namespace handled
      */
-    @Nonnull
     @CheckReturnValue
     String getNamespace();
 
@@ -66,7 +62,6 @@ public interface NamespaceHandler {
      * @return all links to CSS stylesheets (type="text/css") in this
      *         document
      */
-    @Nonnull
     @CheckReturnValue
     List<StylesheetInfo> getStylesheets(Document doc);
 
@@ -74,11 +69,9 @@ public interface NamespaceHandler {
      * may return null. Required to return null if attribute does not exist and
      * not null if attribute exists.
      */
-    @Nonnull
     @CheckReturnValue
     String getAttributeValue(Element e, String attrName);
 
-    @Nonnull
     @CheckReturnValue
     String getAttributeValue(Element e, @Nullable String namespaceURI, String attrName);
 
@@ -101,7 +94,6 @@ public interface NamespaceHandler {
     @CheckReturnValue
     String getNonCssStyling(Element e);
 
-    @Nonnull
     @CheckReturnValue
     String getLang(Element e);
 

@@ -18,6 +18,8 @@
  */
 package org.xhtmlrenderer.layout.breaker;
 
+import org.jspecify.annotations.Nullable;
+
 import java.text.BreakIterator;
 
 /**
@@ -26,6 +28,7 @@ import java.text.BreakIterator;
 public class BreakPoint implements Comparable<BreakPoint> {
 
     private int position;
+    @Nullable
     private String hyphen;
 
     public BreakPoint(int position) {

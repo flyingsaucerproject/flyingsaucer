@@ -18,6 +18,8 @@
  */
 package org.xhtmlrenderer.simple.extend;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,10 +32,6 @@ import org.xhtmlrenderer.simple.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -48,10 +46,10 @@ import static org.xhtmlrenderer.util.TextUtil.readTextContent;
  * Handles xhtml but only css styling is honored,
  * no presentational html attributes (see css 2.1 spec, 6.4.4)
  */
-@ParametersAreNonnullByDefault
 public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     private static final String _namespace = "http://www.w3.org/1999/xhtml";
+    @Nullable
     private static volatile StylesheetInfo _defaultStylesheet;
     private static boolean _defaultStylesheetError;
 
@@ -61,7 +59,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @return The namespace value
      */
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getNamespace() {
         return _namespace;
@@ -71,7 +68,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * Gets the class attribute of the XhtmlNamespaceHandler object
      */
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getClass(Element e) {
         return e.getAttribute("class");
@@ -117,7 +113,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @return The elementStyling value
      */
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getElementStyling(Element e) {
         StringBuilder style = new StringBuilder();
@@ -225,7 +220,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * @return The document's title, or "" if none found
      */
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getDocumentTitle(Document doc) {
         String title = "";
@@ -242,6 +236,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return title;
     }
 
+    @Nullable
     private Element findFirstChild(Element parent, String targetName) {
         NodeList children = parent.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
@@ -254,6 +249,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return null;
     }
 
+    @Nullable
     protected StylesheetInfo readStyleElement(Element style) {
         String media = style.getAttribute("media");
         if (media.isEmpty()) {
@@ -283,6 +279,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
     }
 
+    @Nullable
     protected StylesheetInfo readLinkElement(Element link) {
         String rel = link.getAttribute("rel").toLowerCase();
         if (rel.contains("alternate")) {
@@ -323,7 +320,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
      * Gets the stylesheetLinks attribute of the XhtmlNamespaceHandler object
      */
     @Override
-    @Nonnull
     @CheckReturnValue
     public List<StylesheetInfo> getStylesheets(Document doc) {
         //get the processing-instructions (actually for XmlDocuments)
@@ -400,6 +396,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
     }
 
+    @Nullable
     private InputStream getDefaultStylesheetStream() {
         String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
         InputStream stream = getClass().getResourceAsStream(defaultStyleSheet);
@@ -444,7 +441,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getLang(@Nullable Element e) {
         if (e == null) {

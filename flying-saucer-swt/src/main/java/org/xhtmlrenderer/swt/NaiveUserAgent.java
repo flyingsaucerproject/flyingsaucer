@@ -19,9 +19,11 @@
  */
 package org.xhtmlrenderer.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
@@ -30,9 +32,6 @@ import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +51,6 @@ import static org.xhtmlrenderer.util.IOUtil.getInputStream;
  *
  * @author Vianney le Clément
  */
-@ParametersAreNonnullByDefault
 public class NaiveUserAgent implements UserAgentCallback {
 
     /**
@@ -121,7 +119,7 @@ public class NaiveUserAgent implements UserAgentCallback {
      *
      * @return An ImageResource containing the image.
      */
-    protected ImageResource createImageResource(String uri, InputStream is) {
+    protected ImageResource createImageResource(@Nullable String uri, InputStream is) {
         return new ImageResource(uri, new SWTFSImage(new Image(_device, is), this, uri));
     }
 

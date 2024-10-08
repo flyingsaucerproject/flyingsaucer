@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.Objects;
 
 public class FSRGBColor implements FSColor {
@@ -36,7 +38,7 @@ public class FSRGBColor implements FSColor {
         _green = validateColor("Green", green);
         _blue = validateColor("Blue", blue);
     }
-    
+
     private int validateColor(String name, int color) {
         if (color < 0 || color > 255) {
             throw new IllegalArgumentException(String.format("%s %s is out of range [0, 255]", name, color));
@@ -109,7 +111,7 @@ public class FSRGBColor implements FSColor {
     }
 
     // Taken from java.awt.Color to avoid dependency on it
-    private static float[] RGBtoHSB(int r, int g, int b, float[] hsbvals) {
+    private static float[] RGBtoHSB(int r, int g, int b, float @Nullable [] hsbvals) {
         float hue, saturation, brightness;
         if (hsbvals == null) {
             hsbvals = new float[3];

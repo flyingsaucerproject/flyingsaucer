@@ -19,20 +19,19 @@
  */
 package org.xhtmlrenderer.resource;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xhtmlrenderer.swing.MutableFSImage;
 import org.xml.sax.InputSource;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 /**
  * @author Administrator
  */
-@ParametersAreNonnullByDefault
 public class ImageResource extends AbstractResource {
+    @Nullable
     private final String _imageUri;
+    @Nullable
     private final FSImage _img;
 
     //HACK: at least for now, till we know what we want to do here
@@ -42,6 +41,7 @@ public class ImageResource extends AbstractResource {
         _img = img;
     }
 
+    @Nullable
     public FSImage getImage() {
         return _img;
     }
@@ -50,6 +50,7 @@ public class ImageResource extends AbstractResource {
         return !(_img instanceof MutableFSImage) || ((MutableFSImage) _img).isLoaded();
     }
 
+    @Nullable
     public String getImageUri() {
         return _imageUri;
     }

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.style.derived;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.DerivedValue;
@@ -27,6 +28,7 @@ import java.util.List;
 
 public class ListValue extends DerivedValue {
     public static final String[] NO_VALUES = new String[0];
+    @Nullable
     private final List<Object> _values;
 
     public ListValue(CSSName name, PropertyValue value) {
@@ -34,6 +36,7 @@ public class ListValue extends DerivedValue {
         _values = value.getValues();
     }
 
+    @Nullable
     @SuppressWarnings("unchecked")
     public <T> List<T> getValues() {
         return (List<T>) _values;

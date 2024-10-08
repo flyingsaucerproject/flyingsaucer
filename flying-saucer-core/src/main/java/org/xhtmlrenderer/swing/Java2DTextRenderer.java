@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -29,7 +30,6 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.LineMetricsAdapter;
 import org.xhtmlrenderer.util.Configuration;
 
-import javax.annotation.Nonnull;
 import java.awt.*;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
@@ -76,7 +76,7 @@ public class Java2DTextRenderer implements TextRenderer {
         }
     }
 
-    @Nonnull
+    @CheckReturnValue
     @SuppressWarnings("unchecked")
     private static Map<RenderingHints.Key, Object> getFontDesktopHints() {
         Toolkit tk = Toolkit.getDefaultToolkit();

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.context.ContentFunctionFactory;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -39,7 +40,6 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.PageBox;
 
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +60,7 @@ public class LayoutContext implements CssContext {
 
     private StyleTracker _firstLines;
     private StyleTracker _firstLetters;
+    @Nullable
     private MarkerData _currentMarkerData;
 
     private LinkedList<BlockFormattingContext> _bfcs;
@@ -298,11 +299,12 @@ public class LayoutContext implements CssContext {
         return _firstLetters;
     }
 
+    @Nullable
     public MarkerData getCurrentMarkerData() {
         return _currentMarkerData;
     }
 
-    public void setCurrentMarkerData(MarkerData currentMarkerData) {
+    public void setCurrentMarkerData(@Nullable MarkerData currentMarkerData) {
         _currentMarkerData = currentMarkerData;
     }
 

@@ -17,6 +17,8 @@
  */
 
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -30,7 +32,6 @@ import org.xhtmlrenderer.swing.ImageResourceLoader;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.GeneralUtil;
 
-import javax.annotation.Nonnull;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -45,13 +46,14 @@ import java.net.URL;
  *
  * @author Patrick Wright
  */
+@NullMarked
 public class BrowsePanel {
     private static final Logger log = LoggerFactory.getLogger(BrowsePanel.class);
 
-    private String uri;
-    private XHTMLPanel panel;
-    private JFrame frame;
-    private UserAgentCallback uac;
+    @Nullable private String uri;
+    @Nullable private XHTMLPanel panel;
+    @Nullable private JFrame frame;
+    @Nullable private UserAgentCallback uac;
 
     public static void main(String[] args) {
         try {
@@ -87,11 +89,8 @@ public class BrowsePanel {
     }
 
     private void setupUserAgentCallback(XHTMLPanel panel) {
-        uac = new DelegatingUserAgent();
-
-        ImageResourceLoader irl = new ImageResourceLoader();
-        irl.setRepaintListener(panel);
-        ((DelegatingUserAgent) uac).setImageResourceLoader(irl);
+        ImageResourceLoader irl = new ImageResourceLoader(panel);
+        uac = new DelegatingUserAgent(irl);
 
         panel.getSharedContext().setUserAgentCallback(uac);
         panel.getSharedContext().setReplacedElementFactory(new SwingReplacedElementFactory(panel, irl));
@@ -109,12 +108,12 @@ public class BrowsePanel {
                 frame.setTitle(panel.getDocumentTitle());
             }
 
-            public void onLayoutException(@Nonnull Throwable t) {
+            public void onLayoutException(Throwable t) {
                 panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 panel.setDocument(getErrorDocument("can't layout: " + t.getMessage()).getDocument());
             }
 
-            public void onRenderException(@Nonnull Throwable t) {
+            public void onRenderException(Throwable t) {
                 panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 panel.setDocument(getErrorDocument("can't render: " + t.getMessage()).getDocument());
             }

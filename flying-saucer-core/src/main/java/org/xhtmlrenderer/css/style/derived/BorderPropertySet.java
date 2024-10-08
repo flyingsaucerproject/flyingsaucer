@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.css.style.derived;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -182,7 +183,7 @@ public class BorderPropertySet extends RectPropertySet {
 
     public static BorderPropertySet newInstance(
             CalculatedStyle style,
-            CssContext ctx
+            @Nullable CssContext ctx
     ) {
         return new BorderPropertySet(style, ctx);
     }
