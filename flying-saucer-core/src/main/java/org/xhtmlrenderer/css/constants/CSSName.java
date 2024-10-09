@@ -20,7 +20,6 @@
  */
 package org.xhtmlrenderer.css.constants;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.CSSParser;
 import org.xhtmlrenderer.css.parser.PropertyValue;
@@ -57,7 +56,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Patrick Wright
  */
-@CheckReturnValue
 public final class CSSName implements Comparable<CSSName> {
     /**
      * marker var, used for initialization
@@ -1838,7 +1836,6 @@ public final class CSSName implements Comparable<CSSName> {
         return FS_ID;
     }
 
-    @CheckReturnValue
     public record CSSSideProperties(CSSName top, CSSName right, CSSName bottom, CSSName left) {
     }
 }
