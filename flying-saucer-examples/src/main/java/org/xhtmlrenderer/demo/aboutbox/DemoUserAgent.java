@@ -51,6 +51,7 @@ import java.util.Map;
 public class DemoUserAgent implements UserAgentCallback {
     private static final Logger log = LoggerFactory.getLogger(DemoUserAgent.class);
 
+    @Nullable
     private String baseUrl;
     private int index = -1;
     private final List<String> history = new ArrayList<>();
@@ -82,6 +83,7 @@ public class DemoUserAgent implements UserAgentCallback {
         return new CSSResource(null);
     }
 
+    @CheckReturnValue
     @Override
     public ImageResource getImageResource(String uri) {
         uri = resolveURI(uri);
@@ -208,6 +210,8 @@ public class DemoUserAgent implements UserAgentCallback {
             return ref.toExternalForm();
     }
 
+    @CheckReturnValue
+    @Nullable
     @Override
     public String getBaseURL() {
         return baseUrl;

@@ -1,5 +1,8 @@
 package org.xhtmlrenderer.util;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +16,9 @@ import java.net.URLConnection;
  */
 public class StreamResource implements AutoCloseable {
     private final String _uri;
+    @Nullable
     private URLConnection _conn;
+    @Nullable
     private InputStream _inputStream;
 
     public StreamResource(final String uri) {
@@ -21,8 +26,14 @@ public class StreamResource implements AutoCloseable {
     }
 
     public void connect() {
+        _conn = establishConnection(_uri);
+    }
+
+    @CheckReturnValue
+    @Nullable
+    private static URLConnection establishConnection(String uri) {
         try {
-            _conn = new URL(_uri).openConnection();
+            URLConnection conn = new URL(uri).openConnection();
 
             // If using Java 5+ you can set timeouts for the URL connection--useful if the remote
             // server is down etc.; the default timeout is pretty long
@@ -37,17 +48,18 @@ public class StreamResource implements AutoCloseable {
             System.setProperty("sun.net.client.defaultConnectTimeout", String.valueOf(10 * 1000));
             System.setProperty("sun.net.client.defaultReadTimeout", String.valueOf(30 * 1000));
 
-            _conn.setRequestProperty("Accept", "*/*");
+            conn.setRequestProperty("Accept", "*/*");
 
-            _conn.connect();
-            _conn.getContentLength();
+            conn.connect();
+            conn.getContentLength();
         } catch (java.net.MalformedURLException e) {
-            XRLog.exception("bad URL given: " + _uri, e);
+            XRLog.exception("bad URL given: %s".formatted(uri), e);
         } catch (FileNotFoundException e) {
-            XRLog.exception("item at URI " + _uri + " not found");
+            XRLog.exception("item at URI %s not found: %s".formatted(uri, e));
         } catch (IOException e) {
-            XRLog.exception("IO problem for " + _uri, e);
+            XRLog.exception("IO problem for %s".formatted(uri), e);
         }
+        return null;
     }
 
     public BufferedInputStream bufferedStream() throws IOException {

@@ -20,27 +20,26 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.util.ImageUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static org.xhtmlrenderer.util.ImageUtil.convertToBufferedImage;
+
 public abstract class AWTFSImage implements FSImage {
     private static final FSImage NULL_FS_IMAGE = new NullImage();
 
-    public static FSImage createImage(Image img) {
+    @CheckReturnValue
+    public static FSImage createImage(@Nullable Image img) {
         if (img == null) {
             return NULL_FS_IMAGE;
-        } else {
-            BufferedImage bimg;
-            if (img instanceof BufferedImage) {
-                bimg = ImageUtil.makeCompatible((BufferedImage) img);
-            } else {
-                bimg = ImageUtil.convertToBufferedImage(img, BufferedImage.TYPE_INT_ARGB);
-            }
-            return new NewAWTFSImage(bimg);
         }
+        BufferedImage bufferedImage = convertToBufferedImage(img, BufferedImage.TYPE_INT_ARGB);
+        return new NewAWTFSImage(bufferedImage);
     }
 
     protected AWTFSImage() {
