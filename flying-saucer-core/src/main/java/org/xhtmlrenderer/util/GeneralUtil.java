@@ -20,6 +20,9 @@
  */
 package org.xhtmlrenderer.util;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.io.InputStream;
 import java.net.URL;
 
@@ -28,6 +31,8 @@ import java.net.URL;
  * @author Patrick Wright
  */
 public class GeneralUtil {
+    @Nullable
+    @CheckReturnValue
     public static InputStream openStreamFromClasspath(Object obj, String resource) {
         InputStream readStream = null;
         try {
@@ -47,6 +52,8 @@ public class GeneralUtil {
         return readStream;
     }
 
+    @Nullable
+    @CheckReturnValue
     public static URL getURLFromClasspath(Object obj, String resource) {
         URL url = null;
         try {
@@ -81,7 +88,8 @@ public class GeneralUtil {
             System.out.println("  " + ste.getClassName() + "." + ste.getMethodName() + "(ln " + ste.getLineNumber() + ")");
         }
     }
-    
+
+    @CheckReturnValue
     public static boolean isMacOSX() {
         try {
             if (System.getProperty("os.name").toLowerCase().startsWith("mac os x")) {

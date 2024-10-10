@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.util.GeneralUtil;
 
 import java.io.File;
@@ -27,9 +30,13 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static java.util.Objects.requireNonNullElseGet;
+
 
 public class DirectoryLister {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryLister.class);
 
+    @CheckReturnValue
     public static String list(File file) {
         StringBuilder sb = new StringBuilder();
 
@@ -54,17 +61,18 @@ public class DirectoryLister {
         sb.append("<hr />");
 
         if (file.isDirectory()) {
+            File parent = file.getAbsoluteFile().getParentFile();
             try {
-                File parent = file.getParentFile();
-                if ( parent != null ) {
-                    String loc = GeneralUtil.htmlEscapeSpace(file.getAbsoluteFile().getParentFile().toURI().toURL().toExternalForm()).toString();
+                if (parent != null) {
+                    String loc = GeneralUtil.htmlEscapeSpace(parent.toURI().toURL().toExternalForm()).toString();
                     sb.append("<a class='dir' href='").append(loc).append("'>Up to higher level directory</a>");
                 }
             } catch (MalformedURLException e) {
                 // skip
+                log.warn("Cannot convert parent folder name to URL: {}, caused by: {}", parent, e.toString());
             }
             sb.append("<table style='width: 75%'>");
-            File[] files = file.listFiles();
+            File[] files = requireNonNullElseGet(file.listFiles(), () -> new File[0]);
             for (File f : files) {
                 if (f.isHidden()) continue;
                 long len = f.length();
@@ -83,6 +91,7 @@ public class DirectoryLister {
                     sb.append("<td><a class='").append(cls).append("' href='").append(loc).append("'>").append(f.getName()).append("</a></td>");
                     sb.append("<td>").append(lenDesc).append("</td>").append("<td>").append(lastMod).append("</td>");
                 } catch (MalformedURLException e) {
+                    log.warn("Cannot convert file name to URL: {}, caused by: {}", f, e.toString());
                     sb.append(f.getAbsolutePath());
                 }
                 sb.append("</tr>");
