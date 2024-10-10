@@ -19,17 +19,21 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.layout.LayoutContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContentLimitContainer {
+    @Nullable
     private ContentLimitContainer _parent;
 
     private final int _initialPageNo;
     private final List<ContentLimit> _contentLimits = new ArrayList<>();
 
+    @Nullable
     private PageBox _lastPage;
 
     public ContentLimitContainer(LayoutContext c, int startAbsY) {
@@ -44,10 +48,14 @@ public class ContentLimitContainer {
         return _initialPageNo + _contentLimits.size() - 1;
     }
 
+    @Nullable
+    @CheckReturnValue
     public ContentLimit getContentLimit(int pageNo) {
         return getContentLimit(pageNo, false);
     }
 
+    @Nullable
+    @CheckReturnValue
     private ContentLimit getContentLimit(int pageNo, boolean addAsNeeded) {
         if (addAsNeeded) {
             while (_contentLimits.size() < (pageNo - _initialPageNo + 1)) {
@@ -113,11 +121,13 @@ public class ContentLimitContainer {
         c._lastPage = page;
     }
 
+    @Nullable
+    @CheckReturnValue
     public ContentLimitContainer getParent() {
         return _parent;
     }
 
-    public void setParent(ContentLimitContainer parent) {
+    public void setParent(@Nullable ContentLimitContainer parent) {
         _parent = parent;
     }
 

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -771,6 +772,7 @@ public class TableCellBox extends BlockBox {
         return result;
     }
 
+    @CheckReturnValue
     private Rectangle getCollapsedBorderBounds(CssContext c) {
         BorderPropertySet border = getCollapsedPaintingBorder();
         Rectangle bounds = getPaintingBorderEdge(c);
@@ -782,6 +784,7 @@ public class TableCellBox extends BlockBox {
         return bounds;
     }
 
+    @CheckReturnValue
     @Override
     public Rectangle getPaintingClipEdge(CssContext c) {
         if (hasCollapsedPaintingBorder()) {
