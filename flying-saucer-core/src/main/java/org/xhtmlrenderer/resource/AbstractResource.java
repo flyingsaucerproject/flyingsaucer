@@ -21,18 +21,18 @@ package org.xhtmlrenderer.resource;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
+import org.xhtmlrenderer.util.InputSources;
 import org.xml.sax.InputSource;
 
-import java.io.BufferedInputStream;
 import java.io.InputStream;
 
 /**
  * @author Patrick Wright
  */
 public abstract class AbstractResource implements Resource {
+    @Nullable
     private final InputSource inputSource;
     private final long createTimeStamp;
-    private long elapsedLoadTime;
 
     protected AbstractResource(@Nullable InputSource source) {
         this.inputSource = source;
@@ -40,7 +40,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     protected AbstractResource(@Nullable InputStream is) {
-        this(is == null ? null : new InputSource(new BufferedInputStream(is)));
+        this(InputSources.fromStream(is));
     }
 
     @Nullable
@@ -52,14 +52,5 @@ public abstract class AbstractResource implements Resource {
     @CheckReturnValue
     public long getResourceLoadTimeStamp() {
         return this.createTimeStamp;
-    }
-
-    @CheckReturnValue
-    public long getElapsedLoadTime() {
-        return elapsedLoadTime;
-    }
-
-    void setElapsedLoadTime(long elapsedLoadTime) {
-        this.elapsedLoadTime = elapsedLoadTime;
     }
 }
