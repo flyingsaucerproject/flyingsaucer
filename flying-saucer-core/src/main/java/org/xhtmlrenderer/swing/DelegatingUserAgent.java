@@ -29,9 +29,7 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.IOUtil;
-import org.xhtmlrenderer.util.StreamResource;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -140,10 +138,8 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
     @Nullable
     public XMLResource getXMLResource(String uri) {
         String resolvedUri = _uriResolver.resolve(uri);
-        try (StreamResource sr = new StreamResource(resolvedUri)) {
-            sr.connect();
-            BufferedInputStream bis = sr.bufferedStream();
-            return XMLResource.load(bis);
+        try (InputStream in = IOUtil.getInputStream(resolvedUri)) {
+            return XMLResource.load(in);
         } catch (IOException e) {
             log.warn("Failed to load XML resource from %s".formatted(resolvedUri), e);
             return null;
@@ -153,13 +149,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
     @CheckReturnValue
     public byte @Nullable [] getBinaryResource(String uri) {
         String resolvedUri = _uriResolver.resolve(uri);
-        try (StreamResource sr = new StreamResource(resolvedUri)) {
-            sr.connect();
-            return IOUtil.readBytes(sr.bufferedStream());
-        } catch (IOException e) {
-            log.warn("Failed to load binary resource from {}: {}", resolvedUri, e.toString());
-            return null;
-        }
+        return IOUtil.readBytes(resolvedUri);
     }
 
 

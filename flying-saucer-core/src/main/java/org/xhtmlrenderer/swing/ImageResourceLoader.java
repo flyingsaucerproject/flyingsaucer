@@ -4,8 +4,8 @@ import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
-import org.xhtmlrenderer.util.StreamResource;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+
+import static org.xhtmlrenderer.util.ImageUtil.isEmbeddedBase64Image;
 
 public class ImageResourceLoader {
     public static final RepaintListener NO_OP_REPAINT_LISTENER = doLayout -> XRLog.general(Level.FINE, "No-op repaint requested");
@@ -57,37 +59,28 @@ public class ImageResourceLoader {
     }
 
     public static ImageResource loadImageResourceFromUri(final String uri) {
-        if (ImageUtil.isEmbeddedBase64Image(uri)) {
+        if (isEmbeddedBase64Image(uri)) {
             return loadEmbeddedBase64ImageResource(uri);
-        } else {
-            StreamResource sr = new StreamResource(uri);
-            InputStream is;
-            ImageResource ir = null;
-            try {
-                sr.connect();
-                is = sr.bufferedStream();
-                try {
-                    BufferedImage img = ImageIO.read(is);
-                    if (img == null) {
-                        throw new IOException("ImageIO.read() returned null");
-                    }
-                    ir = createImageResource(uri, img);
-                } catch (FileNotFoundException e) {
-                    XRLog.exception("Can't read image file; image at URI '" + uri + "' not found");
-                } catch (IOException e) {
-                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
-                } finally {
-                    sr.close();
-                }
-            } catch (IOException e) {
-                // couldn't open stream at URI...
-                XRLog.exception("Can't open stream for URI '" + uri + "': " + e.getMessage());
-            }
-            if (ir == null) {
-                ir = createImageResource(uri, null);
-            }
-            return ir;
         }
+
+        try (InputStream is = IOUtil.getInputStream(uri)) {
+            try {
+                BufferedImage img = ImageIO.read(is);
+                if (img == null) {
+                    throw new IOException("ImageIO.read() returned null");
+                }
+                return createImageResource(uri, img);
+            } catch (FileNotFoundException e) {
+                XRLog.exception("Can't read image file; image at URI '" + uri + "' not found");
+            } catch (IOException e) {
+                XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
+            }
+        } catch (IOException e) {
+            // couldn't open stream at URI...
+            XRLog.exception("Can't open stream for URI '" + uri + "': " + e.getMessage());
+        }
+
+        return createImageResource(uri, null);
     }
 
     public static ImageResource loadEmbeddedBase64ImageResource(final String uri) {
@@ -118,7 +111,7 @@ public class ImageResourceLoader {
     }
 
     public synchronized ImageResource get(final String uri, final int width, final int height) {
-        if (ImageUtil.isEmbeddedBase64Image(uri)) {
+        if (isEmbeddedBase64Image(uri)) {
             ImageResource resource = loadEmbeddedBase64ImageResource(uri);
             resource.getImage().scale(width, height);
             return resource;

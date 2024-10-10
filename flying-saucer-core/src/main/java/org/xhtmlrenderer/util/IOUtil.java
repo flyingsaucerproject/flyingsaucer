@@ -91,7 +91,7 @@ public class IOUtil {
     public static InputStream getInputStream(@Nullable String uri) {
         if (uri == null) return null;
         try {
-            return new URL(uri).openStream();
+            return new BufferedInputStream(new URL(uri).openStream());
         } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (FileNotFoundException e) {
