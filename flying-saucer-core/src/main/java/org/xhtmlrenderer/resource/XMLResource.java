@@ -19,9 +19,11 @@
  */
 package org.xhtmlrenderer.resource;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.InputSources;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xml.sax.EntityResolver;
@@ -65,30 +67,29 @@ public class XMLResource extends AbstractResource {
     private static final XMLResourceBuilder XML_RESOURCE_BUILDER = new XMLResourceBuilder();
     private static final AtomicBoolean useConfiguredParser = new AtomicBoolean(true);
 
-    private Document document;
+    private final Document document;
+    private final long elapsedLoadTime;
 
-    private XMLResource(InputStream stream) {
-        super(stream);
-    }
-
-    private XMLResource(@Nullable InputSource source) {
+    private XMLResource(@Nullable InputSource source, Document document, long elapsedLoadTime) {
         super(source);
+        this.document = document;
+        this.elapsedLoadTime = elapsedLoadTime;
     }
 
     public static XMLResource load(URL source) {
-        return load(new InputSource(source.toString()));
+        return load(InputSources.fromURL(source));
     }
 
     public static XMLResource load(InputStream stream) {
-        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(stream));
+        return XML_RESOURCE_BUILDER.createXMLResource(InputSources.fromStream(stream));
     }
 
     public static XMLResource load(InputSource source) {
-        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(source));
+        return XML_RESOURCE_BUILDER.createXMLResource(source);
     }
 
     public static XMLResource load(Reader reader) {
-        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(new InputSource(reader)));
+        return XML_RESOURCE_BUILDER.createXMLResource(new InputSource(reader));
     }
 
     public static XMLResource load(String xml) {
@@ -103,9 +104,9 @@ public class XMLResource extends AbstractResource {
         return document;
     }
 
-    /*package*/
-    void setDocument(Document document) {
-        this.document = document;
+    @CheckReturnValue
+    public long getElapsedLoadTime() {
+        return elapsedLoadTime;
     }
 
     public static XMLReader newXMLReader() {
@@ -176,44 +177,32 @@ public class XMLResource extends AbstractResource {
         private final XMLReaderPool parserPool = new XMLReaderPool();
         private final IdentityTransformerPool transformerPool = new IdentityTransformerPool();
 
-        private XMLResource createXMLResource(XMLResource target) {
+        private XMLResource createXMLResource(InputSource inputSource) {
             long start = System.currentTimeMillis();
-            Document document = parse(target);
-            long end = System.currentTimeMillis();
+            Document document = parse(inputSource);
+            long elapsedLoadTime = System.currentTimeMillis() - start;
+            XRLog.load("Loaded document in " + elapsedLoadTime + "ms");
 
-            target.setElapsedLoadTime(end - start);
-            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
-
-            target.setDocument(document);
-            return target;
+            return new XMLResource(inputSource, document, elapsedLoadTime);
         }
 
-        private Document parse(XMLResource target) {
+        private Document parse(InputSource inputSource) {
             XMLReader xmlReader = parserPool.get();
             try {
-                return transform(new SAXSource(xmlReader, target.getResourceInputSource()));
+                return transform(new SAXSource(xmlReader, inputSource));
             } finally {
                 parserPool.release(xmlReader);
             }
         }
 
         XMLResource createXMLResource(Source source) {
-            Document document;
-
-            long st = System.currentTimeMillis();
-
-            document = transform(source);
-
-            long end = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
+            Document document = transform(source);
+            long elapsedLoadTime = System.currentTimeMillis() - start;
 
             //HACK: should rather use a default constructor
-            XMLResource target = new XMLResource((InputSource) null);
-
-            target.setElapsedLoadTime(end - st);
-
-            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
-
-            target.setDocument(document);
+            XMLResource target = new XMLResource(null, document, elapsedLoadTime);
+            XRLog.load("Loaded document in " + elapsedLoadTime + " ms.");
             return target;
         }
 
