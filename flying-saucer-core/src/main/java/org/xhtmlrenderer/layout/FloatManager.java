@@ -65,7 +65,7 @@ public class FloatManager {
     private void save(BlockBox current, Layer layer, BlockFormattingContext bfc, int direction) {
         Point p = bfc.getOffset();
         getFloats(direction).add(new BoxOffset(current, p.x, p.y));
-        layer.addFloat(current, bfc);
+        layer.addFloat(current);
         current.getFloatedBoxData().setManager(this);
 
         current.calcCanvasLocation();

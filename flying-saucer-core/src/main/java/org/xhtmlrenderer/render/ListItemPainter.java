@@ -49,7 +49,7 @@ public class ListItemPainter {
 
             if (markerData.getGlyphMarker() != null) {
                 drawGlyph(c, box, style, listStyle);
-            } else if (markerData.getTextMarker() != null){
+            } else if (markerData.getTextMarker() != null) {
                 drawText(c, box, listStyle);
             }
         }
@@ -58,15 +58,13 @@ public class ListItemPainter {
     private static void drawImage(RenderingContext c, BlockBox box, MarkerData markerData) {
         MarkerData.ImageMarker marker = markerData.getImageMarker();
         FSImage img = marker.getImage();
-        if (img != null) {
-            int x = getReferenceX(c, box);
-            // FIXME: findbugs possible loss of precision, cf. int / (float)2
-            x += -marker.getLayoutWidth() +
-                    (marker.getLayoutWidth() / 2 - img.getWidth() / 2);
-            c.getOutputDevice().drawImage(img,
-                    x,
-                    getListItemCenterBaseline(box) - img.getHeight() / 2);
-        }
+        int x = getReferenceX(c, box);
+        // FIXME: findbugs possible loss of precision, cf. int / (float)2
+        x += -marker.getLayoutWidth() +
+                (marker.getLayoutWidth() / 2 - img.getWidth() / 2);
+        c.getOutputDevice().drawImage(img,
+                x,
+                getListItemCenterBaseline(box) - img.getHeight() / 2);
     }
 
     private static int getReferenceX(RenderingContext c, BlockBox box) {

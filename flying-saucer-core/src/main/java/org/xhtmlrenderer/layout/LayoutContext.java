@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.context.ContentFunctionFactory;
 import org.xhtmlrenderer.context.StyleReference;
@@ -302,6 +303,7 @@ public class LayoutContext implements CssContext {
     }
 
     @Nullable
+    @CheckReturnValue
     public MarkerData getCurrentMarkerData() {
         return _currentMarkerData;
     }

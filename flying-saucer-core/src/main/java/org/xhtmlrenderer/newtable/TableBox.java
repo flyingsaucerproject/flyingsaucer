@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -146,7 +147,7 @@ public class TableBox extends BlockBox {
 
         if (isMarginAreaRoot()) {
             _tableLayout = new MarginTableLayout(this);
-        } else if (getStyle().isIdent(CSSName.TABLE_LAYOUT, IdentValue.AUTO) || getStyle().isAutoWidth()) {
+        } else if (style.isIdent(CSSName.TABLE_LAYOUT, IdentValue.AUTO) || style.isAutoWidth()) {
             _tableLayout = new AutoTableLayout(this);
         } else {
             _tableLayout = new FixedTableLayout(this);
@@ -385,7 +386,7 @@ public class TableBox extends BlockBox {
     }
 
     @Override
-    public void analyzePageBreaks(LayoutContext c, ContentLimitContainer container) {
+    public void analyzePageBreaks(LayoutContext c, @Nullable ContentLimitContainer container) {
         _contentLimitContainer = new ContentLimitContainer(c, getAbsY());
         _contentLimitContainer.setParent(container);
 
@@ -721,6 +722,7 @@ public class TableBox extends BlockBox {
         return false;
     }
 
+    @Nullable
     protected TableSectionBox sectionAbove(
             TableSectionBox section, boolean skipEmptySections) {
         TableSectionBox prevSection = (TableSectionBox)section.getPreviousSibling();
@@ -757,6 +759,7 @@ public class TableBox extends BlockBox {
         return nextSection;
     }
 
+    @Nullable
     protected TableCellBox cellAbove(TableCellBox cell) {
         // Find the section and row to look in
         int r = cell.getRow();

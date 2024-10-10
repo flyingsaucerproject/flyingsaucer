@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -602,6 +604,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         _inlineChildren.remove(i);
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     protected Box getPrevious(Box child) {
         for (int i = 0; i < _inlineChildren.size() - 1; i++) {
@@ -619,6 +623,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         return null;
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     protected Box getNext(Box child) {
         for (int i = 0; i < _inlineChildren.size() - 1; i++) {
@@ -705,6 +711,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public InlineText findTrailingText() {
         if (getInlineChildCount() == 0) {
             return null;
@@ -740,6 +748,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         setTextDecorations(decorations);
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         PaintingInfo pI = getPaintingInfo();

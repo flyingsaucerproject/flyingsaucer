@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -45,12 +47,20 @@ import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.layout.PersistentBFC;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.newtable.TableRowBox;
+import org.xhtmlrenderer.render.MarkerData.ImageMarker;
+import org.xhtmlrenderer.render.MarkerData.TextMarker;
 
 import java.awt.*;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.xhtmlrenderer.css.constants.CSSName.DISPLAY;
+import static org.xhtmlrenderer.css.constants.IdentValue.CIRCLE;
+import static org.xhtmlrenderer.css.constants.IdentValue.DISC;
+import static org.xhtmlrenderer.css.constants.IdentValue.NONE;
+import static org.xhtmlrenderer.css.constants.IdentValue.SQUARE;
 
 /**
  * A block box as defined in the CSS spec.  It also provides a base class for
@@ -69,24 +79,31 @@ public class BlockBox extends Box implements InlinePaintable {
 
     protected static final int NO_BASELINE = Integer.MIN_VALUE;
 
+    @Nullable
     private MarkerData _markerData;
 
     private int _listCounter;
 
+    @Nullable
     private PersistentBFC _persistentBFC;
 
+    @Nullable
     private Box _staticEquivalent;
 
     private boolean _needPageClear;
 
+    @Nullable
     private ReplacedElement _replacedElement;
 
     private int _childrenContentType;
 
+    @Nullable
     private List<Styleable> _inlineContent;
 
     private boolean _topMarginCalculated;
     private boolean _bottomMarginCalculated;
+
+    @Nullable
     private MarginCollapseResult _pendingCollapseCalculation;
 
     private int _minWidth;
@@ -96,9 +113,12 @@ public class BlockBox extends Box implements InlinePaintable {
     private boolean _dimensionsCalculated;
     private boolean _needShrinkToFitCalculation;
 
+    @Nullable
     private CascadedStyle _firstLineStyle;
+    @Nullable
     private CascadedStyle _firstLetterStyle;
 
+    @Nullable
     private FloatedBoxData _floatedBoxData;
 
     private int _childrenHeight;
@@ -142,7 +162,7 @@ public class BlockBox extends Box implements InlinePaintable {
             result.append(' ');
         }
         result.append('(');
-        result.append(getStyle().getIdent(CSSName.DISPLAY).toString());
+        result.append(getStyle().getIdent(DISPLAY));
         result.append(") ");
 
         if (getStyle().isRunning()) {
@@ -215,7 +235,7 @@ public class BlockBox extends Box implements InlinePaintable {
                             }
                         } else {
                             result.append(indent).append("  ");
-                            result.append(styleable.toString());
+                            result.append(styleable);
                         }
                         if (i.hasNext()) {
                             result.append('\n');
@@ -268,111 +288,89 @@ public class BlockBox extends Box implements InlinePaintable {
         return parent instanceof LineBox || parent instanceof InlineLayoutBox;
     }
 
+    @Nullable
     public LineBox getLineBox() {
-        if (! isInline()) {
+        if (!isInline()) {
             return null;
-        } else {
-            Box b = getParent();
-            while (! (b instanceof LineBox)) {
-                b = b.getParent();
-            }
-            return (LineBox) b;
         }
+        Box b = getParent();
+        while (!(b instanceof LineBox)) {
+            b = b.getParent();
+        }
+        return (LineBox) b;
     }
 
     public void paintDebugOutline(RenderingContext c) {
         c.getOutputDevice().drawDebugOutline(c, this, FSRGBColor.RED);
     }
 
+    @Nullable
     public MarkerData getMarkerData() {
         return _markerData;
     }
 
-    public void setMarkerData(MarkerData markerData) {
-        _markerData = markerData;
+    @CheckReturnValue
+    private MarkerData initMarkerData(LayoutContext c) {
+        if (_markerData == null) {
+            _markerData = createMarkerData(c);
+        }
+        return _markerData;
     }
 
-    public void createMarkerData(LayoutContext c) {
-        if (getMarkerData() != null)
-        {
-            return;
-        }
-
+    @CheckReturnValue
+    private MarkerData createMarkerData(LayoutContext c) {
         StrutMetrics strutMetrics = InlineBoxing.createDefaultStrutMetrics(c, this);
-
-        boolean imageMarker = false;
-
-        MarkerData result = new MarkerData();
-        result.setStructMetrics(strutMetrics);
 
         CalculatedStyle style = getStyle();
         IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
 
         String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
-        if (! image.equals("none")) {
-            result.setImageMarker(makeImageMarker(c, strutMetrics, image));
-            imageMarker = result.getImageMarker() != null;
+        ImageMarker imageMarker = makeImageMarker(c, strutMetrics, image);
+        if (imageMarker != null) {
+            return new MarkerData(strutMetrics, imageMarker, null, null);
         }
-
-        if (listStyle != IdentValue.NONE && ! imageMarker) {
-            if (listStyle == IdentValue.CIRCLE || listStyle == IdentValue.SQUARE ||
-                    listStyle == IdentValue.DISC) {
-                result.setGlyphMarker(makeGlyphMarker(strutMetrics));
-            } else {
-                result.setTextMarker(makeTextMarker(c, listStyle));
-            }
+        else if (listStyle == CIRCLE || listStyle == SQUARE || listStyle == DISC) {
+            return new MarkerData(strutMetrics, null, makeGlyphMarker(strutMetrics), null);
+        } else if (listStyle != NONE) {
+            return new MarkerData(strutMetrics, null, null, makeTextMarker(c, listStyle));
+        } else {
+            return new MarkerData(strutMetrics, null, null, null);
         }
-
-        setMarkerData(result);
     }
 
     private MarkerData.GlyphMarker makeGlyphMarker(StrutMetrics strutMetrics) {
         int diameter = (int) ((strutMetrics.getAscent() + strutMetrics.getDescent()) / 3);
 
-        MarkerData.GlyphMarker result = new MarkerData.GlyphMarker();
-        result.setDiameter(diameter);
-        result.setLayoutWidth(diameter * 3);
-
-        return result;
+        return new MarkerData.GlyphMarker(diameter, diameter * 3);
     }
 
-
-    private MarkerData.ImageMarker makeImageMarker(
+    @Nullable
+    @CheckReturnValue
+    private ImageMarker makeImageMarker(
             LayoutContext c, StrutMetrics structMetrics, String image) {
-        FSImage img;
-        if (!image.equals("none")) {
-            img = c.getUac().getImageResource(image).getImage();
-            if (img != null) {
-                if (img.getHeight() > structMetrics.getAscent()) {
-                    img.scale(-1, (int) structMetrics.getAscent());
-                }
-                MarkerData.ImageMarker result = new MarkerData.ImageMarker();
-                result.setImage(img);
-                result.setLayoutWidth(img.getWidth() * 2);
-                return result;
-            }
+        if ("none".equals(image)) {
+            return null;
         }
-        return null;
+        FSImage img = c.getUac().getImageResource(image).getImage();
+        if (img == null) {
+            return null;
+        }
+        if (img.getHeight() > structMetrics.getAscent()) {
+            img.scale(-1, (int) structMetrics.getAscent());
+        }
+        return new ImageMarker(img, img.getWidth() * 2);
     }
 
-    private MarkerData.TextMarker makeTextMarker(LayoutContext c, IdentValue listStyle) {
-        String text;
-
+    private TextMarker makeTextMarker(LayoutContext c, IdentValue listStyle) {
         int listCounter = getListCounter();
-        text = CounterFunction.createCounterText(listStyle, listCounter);
-
-        text += ".  ";
+        String text = CounterFunction.createCounterText(listStyle, listCounter) + ".  ";
 
         int w = c.getTextRenderer().getWidth(
                 c.getFontContext(),
                 getStyle().getFSFont(c),
                 text);
 
-        MarkerData.TextMarker result = new MarkerData.TextMarker();
-        result.setText(text);
-        result.setLayoutWidth(w);
-
-        return result;
+        return new TextMarker(text, w);
     }
 
     public int getListCounter() {
@@ -383,6 +381,8 @@ public class BlockBox extends Box implements InlinePaintable {
         _listCounter = listCounter;
     }
 
+    @Nullable
+    @CheckReturnValue
     public PersistentBFC getPersistentBFC() {
         return _persistentBFC;
     }
@@ -391,6 +391,8 @@ public class BlockBox extends Box implements InlinePaintable {
         _persistentBFC = persistentBFC;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Box getStaticEquivalent() {
         return _staticEquivalent;
     }
@@ -539,7 +541,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return _replacedElement;
     }
 
-    public void setReplacedElement(ReplacedElement replacedElement) {
+    public void setReplacedElement(@Nullable ReplacedElement replacedElement) {
         _replacedElement = replacedElement;
     }
 
@@ -841,8 +843,8 @@ public class BlockBox extends Box implements InlinePaintable {
 
         boolean didSetMarkerData = false;
         if (getStyle().isListItem()) {
-            createMarkerData(c);
-            c.setCurrentMarkerData(getMarkerData());
+            MarkerData markerData = initMarkerData(c);
+            c.setCurrentMarkerData(markerData);
             didSetMarkerData = true;
         }
 
@@ -1084,13 +1086,12 @@ public class BlockBox extends Box implements InlinePaintable {
         return _inlineContent;
     }
 
-    public void setInlineContent(List<Styleable> inlineContent) {
+    public final void setInlineContent(List<Styleable> inlineContent) {
         _inlineContent = inlineContent;
-        if (inlineContent != null) {
-            for (Styleable child : inlineContent) {
-                if (child instanceof Box) {
-                    ((Box) child).setContainingBlock(this);
-                }
+
+        for (Styleable child : inlineContent) {
+            if (child instanceof Box) {
+                ((Box) child).setContainingBlock(this);
             }
         }
     }
@@ -1628,8 +1629,8 @@ public class BlockBox extends Box implements InlinePaintable {
                 CSSName.TEXT_INDENT, getContentWidth(), c);
 
         if (getStyle().isListItem() && getStyle().isListMarkerInside()) {
-            createMarkerData(c);
-            textIndent += getMarkerData().getLayoutWidth();
+            MarkerData markerData = initMarkerData(c);
+            textIndent += markerData.getLayoutWidth();
         }
 
         int childMinWidth = 0;
@@ -2068,16 +2069,6 @@ public class BlockBox extends Box implements InlinePaintable {
         }
 
         return flowRoot.isRoot();
-    }
-
-    @Override
-    public Box getDocumentParent() {
-        Box staticEquivalent = getStaticEquivalent();
-        if (staticEquivalent != null) {
-            return staticEquivalent;
-        } else {
-            return getParent();
-        }
     }
 
     public boolean isContainsInlineContent(LayoutContext c) {
