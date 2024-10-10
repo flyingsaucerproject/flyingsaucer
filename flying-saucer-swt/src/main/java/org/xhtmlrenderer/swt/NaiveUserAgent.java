@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.xhtmlrenderer.util.IOUtil.getInputStream;
+import static org.xhtmlrenderer.util.ImageUtil.isEmbeddedBase64Image;
 
 /**
  * Naive user agent, copy of org.xhtmlrenderer.swing.NaiveUserAgent (but
@@ -59,6 +60,7 @@ public class NaiveUserAgent implements UserAgentCallback {
     private final int _imageCacheCapacity = 16;
     private final Map<String, ImageResource> _imageCache = new LinkedHashMap<>(_imageCacheCapacity, 0.75f, true);
 
+    @Nullable
     private String _baseURL;
 
     private final Device _device;
@@ -77,34 +79,33 @@ public class NaiveUserAgent implements UserAgentCallback {
 
     @Override
     public ImageResource getImageResource(String uri) {
-        ImageResource ir;
-        if (ImageUtil.isEmbeddedBase64Image(uri)) {
-            ir = loadEmbeddedBase64ImageResource(uri);
-        } else {
-            uri = resolveURI(uri);
-            ir = _imageCache.get(uri);
-            // TODO: check that cached image is still valid
-            if (ir == null) {
-                    try (InputStream is = getInputStream(resolveURI(uri))) {
-                        if (is != null) {
-                            ir = createImageResource(uri, is);
-                            if (_imageCache.size() >= _imageCacheCapacity) {
-                                // prevent the cache from growing too big
-                                ImageResource old = _imageCache
-                                        .remove(_imageCache.keySet().iterator().next());
-                                ((SWTFSImage) old.getImage()).getImage().dispose();
-                            }
-                            _imageCache.put(uri, ir);
+        if (isEmbeddedBase64Image(uri)) {
+            return loadEmbeddedBase64ImageResource(uri);
+        }
+
+        uri = resolveURI(uri);
+        ImageResource ir = _imageCache.get(uri);
+        // TODO: check that cached image is still valid
+        if (ir == null) {
+                try (InputStream is = getInputStream(resolveURI(uri))) {
+                    if (is != null) {
+                        ir = createImageResource(uri, is);
+                        if (_imageCache.size() >= _imageCacheCapacity) {
+                            // prevent the cache from growing too big
+                            ImageResource old = _imageCache
+                                    .remove(_imageCache.keySet().iterator().next());
+                            ((SWTFSImage) old.getImage()).getImage().dispose();
                         }
-                    } catch (SWTException | IOException e) {
-                        XRLog.exception(
-                                "Can't read image file; unexpected problem for URI '"
-                                + uri + "'", e);
+                        _imageCache.put(uri, ir);
                     }
-            }
-            if (ir == null) {
-                ir = new ImageResource(uri, null);
-            }
+                } catch (SWTException | IOException e) {
+                    XRLog.exception(
+                            "Can't read image file; unexpected problem for URI '"
+                            + uri + "'", e);
+                }
+        }
+        if (ir == null) {
+            ir = new ImageResource(uri, null);
         }
         return ir;
     }
@@ -178,8 +179,8 @@ public class NaiveUserAgent implements UserAgentCallback {
             if (_baseURL == null) { // still not set -> fallback to current working directory
                 try {
                     setBaseURL(new File(".").toURI().toURL().toExternalForm());
-                } catch (Exception e1) {
-                    XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for " + uri);
+                } catch (IOException e) {
+                    XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for %s (caused by: %s)".formatted(uri, e));
                     return null;
                 }
             }
@@ -213,6 +214,8 @@ public class NaiveUserAgent implements UserAgentCallback {
         return null;
     }
 
+    @CheckReturnValue
+    @Nullable
     @Override
     public String getBaseURL() {
         return _baseURL;
@@ -229,9 +232,8 @@ public class NaiveUserAgent implements UserAgentCallback {
     }
 
     @Override
-    @Nullable
     @CheckReturnValue
-    public byte[] getBinaryResource(String uri) {
+    public byte @Nullable [] getBinaryResource(String uri) {
         return IOUtil.readBytes(resolveURI(uri));
     }
 }

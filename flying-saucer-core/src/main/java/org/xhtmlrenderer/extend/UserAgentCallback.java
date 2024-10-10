@@ -63,6 +63,7 @@ public interface UserAgentCallback {
      * @param uri Location of the image
      * @return An ImageResource for the content at the URI.
      */
+    @CheckReturnValue
     ImageResource getImageResource(String uri);
 
     /**
@@ -71,6 +72,7 @@ public interface UserAgentCallback {
      * @param uri Location of the XML
      * @return A XMLResource for the content at the URI.
      */
+    @CheckReturnValue
     @Nullable
     XMLResource getXMLResource(String uri);
 
@@ -102,6 +104,8 @@ public interface UserAgentCallback {
     /**
      * @return the base uri, possibly in the implementations private uri-space
      */
+    @CheckReturnValue
+    @Nullable
     String getBaseURL();
 
     /**

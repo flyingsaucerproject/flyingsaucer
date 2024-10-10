@@ -20,10 +20,12 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfReader;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
@@ -38,6 +40,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.xhtmlrenderer.util.IOUtil.readBytes;
+import static org.xhtmlrenderer.util.ImageUtil.isEmbeddedBase64Image;
 
 public class ITextUserAgent extends NaiveUserAgent {
     private static final int IMAGE_CACHE_CAPACITY = 32;
@@ -55,53 +58,58 @@ public class ITextUserAgent extends NaiveUserAgent {
         return dotsPerPixel;
     }
 
+    @CheckReturnValue
     @Override
     public ImageResource getImageResource(String uriStr) {
         String unresolvedUri = uriStr;
-        if (!ImageUtil.isEmbeddedBase64Image(uriStr)) {
+        if (!isEmbeddedBase64Image(uriStr)) {
             uriStr = resolveURI(uriStr);
         }
         ImageResource resource = _imageCache.get(unresolvedUri);
 
         if (resource == null) {
-            if (ImageUtil.isEmbeddedBase64Image(uriStr)) {
-                resource = loadEmbeddedBase64ImageResource(uriStr);
-                _imageCache.put(unresolvedUri, resource);
-            } else {
-                try (InputStream is = resolveAndOpenStream(uriStr)) {
-                    if (is != null) {
-                        try (ContentTypeDetectingInputStreamWrapper cis = new ContentTypeDetectingInputStreamWrapper(is)) {
-                            if (cis.isPdf()) {
-                                URI uri = new URI(uriStr);
-                                PdfReader reader = _outputDevice.getReader(uri);
-                                PDFAsImage image = new PDFAsImage(uri);
-                                Rectangle rect = reader.getPageSizeWithRotation(1);
-                                image.setInitialWidth(rect.getWidth() * _outputDevice.getDotsPerPoint());
-                                image.setInitialHeight(rect.getHeight() * _outputDevice.getDotsPerPoint());
-                                resource = new ImageResource(uriStr, image);
-                            } else {
-                                Image image = Image.getInstance(readBytes(cis));
-                                scaleToOutputResolution(image);
-                                resource = new ImageResource(uriStr, new ITextFSImage(image));
-                            }
-                        }
-                        _imageCache.put(unresolvedUri, resource);
-                    }
-                } catch (BadElementException | IOException | URISyntaxException e) {
-                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
-                }
-            }
+            resource = loadImageResource(uriStr);
+            _imageCache.put(unresolvedUri, resource);
         }
         if (resource != null) {
             FSImage image = resource.getImage();
             if (image instanceof ITextFSImage) {
                 image = (FSImage) ((ITextFSImage) resource.getImage()).clone();
             }
-            resource = new ImageResource(resource.getImageUri(), image);
+            return new ImageResource(resource.getImageUri(), image);
         } else {
-            resource = new ImageResource(uriStr, null);
+            return new ImageResource(uriStr, null);
         }
-        return resource;
+    }
+
+    @CheckReturnValue
+    @Nullable
+    private ImageResource loadImageResource(String uriStr) {
+        if (isEmbeddedBase64Image(uriStr)) {
+            return loadEmbeddedBase64ImageResource(uriStr);
+        }
+        try (InputStream is = resolveAndOpenStream(uriStr)) {
+            if (is != null) {
+                try (ContentTypeDetectingInputStreamWrapper cis = new ContentTypeDetectingInputStreamWrapper(is)) {
+                    if (cis.isPdf()) {
+                        URI uri = new URI(uriStr);
+                        PdfReader reader = _outputDevice.getReader(uri);
+                        PDFAsImage image = new PDFAsImage(uri);
+                        Rectangle rect = reader.getPageSizeWithRotation(1);
+                        image.setInitialWidth(rect.getWidth() * _outputDevice.getDotsPerPoint());
+                        image.setInitialHeight(rect.getHeight() * _outputDevice.getDotsPerPoint());
+                        return new ImageResource(uriStr, image);
+                    } else {
+                        Image image = Image.getInstance(readBytes(cis));
+                        scaleToOutputResolution(image);
+                        return new ImageResource(uriStr, new ITextFSImage(image));
+                    }
+                }
+            }
+        } catch (BadElementException | IOException | URISyntaxException e) {
+            XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
+        }
+        return null;
     }
 
     private ImageResource loadEmbeddedBase64ImageResource(final String uri) {

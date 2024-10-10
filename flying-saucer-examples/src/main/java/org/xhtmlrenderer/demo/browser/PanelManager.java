@@ -96,7 +96,7 @@ public class PanelManager extends DelegatingUserAgent {
                 }
                 ref = new URL(base, uri);
             } catch (MalformedURLException e) {
-                Uu.p("URI/URL is malformed: " + burl + " or " + uri);
+                Uu.p("URI/URL is malformed: %s or %s (caused by: %s)".formatted(burl, uri, e));
             }
         }
 
@@ -179,14 +179,14 @@ public class PanelManager extends DelegatingUserAgent {
      * Returns true if the link has been visited by the user in this session. Visit tracking is not persisted.
      */
     @Override
-    public boolean isVisited(String uri) {
+    public boolean isVisited(@Nullable String uri) {
         if (uri == null) return false;
         uri = resolveURI(uri);
         return history.contains(uri);
     }
 
     @Override
-    public void setBaseURL(String url) {
+    public void setBaseURL(@Nullable String url) {
         String burl = resolveURI(url);
         if (burl == null) burl = "error:FileNotFound";
 
