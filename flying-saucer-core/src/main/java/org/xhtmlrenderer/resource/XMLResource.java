@@ -34,11 +34,9 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.EntityResolver2;
 import org.xml.sax.helpers.XMLFilterImpl;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -54,21 +52,20 @@ import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
+
+import static javax.xml.parsers.SAXParserFactory.newInstance;
 
 
 /**
  * @author Patrick Wright
  */
 public class XMLResource extends AbstractResource {
-    private Document document;
-    private static final XMLResourceBuilder XML_RESOURCE_BUILDER;
-    private static boolean useConfiguredParser;
+    private static final XMLResourceBuilder XML_RESOURCE_BUILDER = new XMLResourceBuilder();
+    private static final AtomicBoolean useConfiguredParser = new AtomicBoolean(true);
 
-    static {
-        XML_RESOURCE_BUILDER = new XMLResourceBuilder();
-        useConfiguredParser = true;
-    }
+    private Document document;
 
     private XMLResource(InputStream stream) {
         super(stream);
@@ -115,31 +112,30 @@ public class XMLResource extends AbstractResource {
         XMLReader xmlReader = null;
         String xmlReaderClass = Configuration.valueFor("xr.load.xml-reader");
 
-        //TODO: if it doesn't find the parser, note that in a static boolean--otherwise
+        //TODO: if it doesn't find the parser, note that in a static boolean - otherwise
         // you get exceptions on every load
-        try {
-            if (xmlReaderClass != null &&
-                    !xmlReaderClass.equalsIgnoreCase("default") &&
-                    XMLResource.useConfiguredParser) {
-                try {
-                    Class.forName(xmlReaderClass);
-                } catch (Exception ex) {
-                    XMLResource.useConfiguredParser = false;
-                    XRLog.load(Level.WARNING,
-                            "The XMLReader class you specified as a configuration property " +
-                            "could not be found. Class.forName() failed on "
-                            + xmlReaderClass + ". Please check classpath. Use value 'default' in " +
-                            "FS configuration if necessary. Will now try JDK default.");
+        if (useConfiguredParser.get()) {
+            try {
+                if (xmlReaderClass != null && !xmlReaderClass.equalsIgnoreCase("default")) {
+                    try {
+                        Class<?> readerClass = Class.forName(xmlReaderClass);
+                        xmlReader = (XMLReader) readerClass.getDeclaredConstructor().newInstance();
+                    } catch (Exception ex) {
+                        useConfiguredParser.set(false);
+                        XRLog.load(Level.SEVERE, """
+                                The XMLReader class could not be found: '%s'.
+                                Caused by: %s.
+                                Falling back to JDK default xml reader.
+                                Hint: Use value 'default' in FS configuration if necessary.
+                                """.formatted(xmlReaderClass, ex));
+                    }
                 }
-                if (XMLResource.useConfiguredParser) {
-                    xmlReader = XMLReaderFactory.createXMLReader(xmlReaderClass);
-                }
+            } catch (Exception ex) {
+                XRLog.load(Level.WARNING,
+                        "Could not instantiate custom XMLReader class for XML parsing: "
+                                + xmlReaderClass + ". Please check classpath. Use value 'default' in " +
+                                "FS configuration if necessary. Will now try JDK default.", ex);
             }
-        } catch (Exception ex) {
-            XRLog.load(Level.WARNING,
-                    "Could not instantiate custom XMLReader class for XML parsing: "
-                    + xmlReaderClass + ". Please check classpath. Use value 'default' in " +
-                    "FS configuration if necessary. Will now try JDK default.", ex);
         }
         if (xmlReader == null) {
             try {
@@ -152,7 +148,7 @@ public class XMLResource extends AbstractResource {
                             "No value for system property 'org.xml.sax.driver'.");
                 }
                 */
-                xmlReader = XMLReaderFactory.createXMLReader();
+                xmlReader = newInstance().newSAXParser().getXMLReader();
             } catch (Exception ex) {
                 XRLog.general(ex.getMessage());
             }
@@ -160,7 +156,7 @@ public class XMLResource extends AbstractResource {
         if (xmlReader == null) {
             try {
                 XRLog.load(Level.WARNING, "falling back on the default parser");
-                SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+                SAXParser parser = newInstance().newSAXParser();
                 xmlReader = parser.getXMLReader();
             } catch (Exception ex) {
                 XRLog.general(Level.WARNING, ex.getMessage(), ex);
@@ -178,7 +174,7 @@ public class XMLResource extends AbstractResource {
     private static class XMLResourceBuilder {
 
         private final XMLReaderPool parserPool = new XMLReaderPool();
-        private final IdentityTransformerPool traxPool = new IdentityTransformerPool();
+        private final IdentityTransformerPool transformerPool = new IdentityTransformerPool();
 
         private XMLResource createXMLResource(XMLResource target) {
             long start = System.currentTimeMillis();
@@ -223,13 +219,13 @@ public class XMLResource extends AbstractResource {
 
         private Document transform(Source source) {
             DOMResult result = new DOMResult();
-            Transformer idTransform = traxPool.get();
+            Transformer idTransform = transformerPool.get();
             try {
                 idTransform.transform(source, result);
             } catch (Exception ex) {
                 throw new XRRuntimeException("Can't load the XML resource (using TrAX transformer). " + ex.getMessage(), ex);
             } finally {
-                traxPool.release(idTransform);
+                transformerPool.release(idTransform);
             }
             return (Document) result.getNode();
         }
@@ -333,10 +329,10 @@ public class XMLResource extends AbstractResource {
                         " set to " +
                         xmlReader.getFeature(featureUri));
             } catch (SAXNotSupportedException ex) {
-                XRLog.load(Level.WARNING, "SAX feature not supported on this XMLReader: " + featureUri);
+                XRLog.load(Level.WARNING, "SAX feature not supported on this XMLReader: " + featureUri, ex);
             } catch (SAXNotRecognizedException ex) {
                 XRLog.load(Level.WARNING, "SAX feature not recognized on this XMLReader: " + featureUri +
-                        ". Feature may be properly named, but not recognized by this parser.");
+                        ". Feature may be properly named, but not recognized by this parser.", ex);
             }
         }
 
@@ -380,7 +376,7 @@ public class XMLResource extends AbstractResource {
     }
 
     private static class IdentityTransformerPool extends ObjectPool<Transformer> {
-        private final TransformerFactory traxFactory;
+        private final TransformerFactory transformerFactory;
         private IdentityTransformerPool(int capacity) {
             super(capacity);
             TransformerFactory tf = TransformerFactory.newInstance();
@@ -389,7 +385,7 @@ public class XMLResource extends AbstractResource {
             } catch (TransformerConfigurationException e) {
                 XRLog.init(Level.WARNING, "Problem configuring TrAX factory", e);
             }
-            this.traxFactory = tf;
+            this.transformerFactory = tf;
         }
 
         private IdentityTransformerPool() {
@@ -399,7 +395,7 @@ public class XMLResource extends AbstractResource {
         @Override
         protected Transformer newValue() {
             try {
-                return traxFactory.newTransformer();
+                return transformerFactory.newTransformer();
             } catch (TransformerConfigurationException ex) {
                 throw new XRRuntimeException("Failed on configuring TrAX transformer.", ex);
             }
