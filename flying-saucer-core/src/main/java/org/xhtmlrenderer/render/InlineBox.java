@@ -18,6 +18,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -59,9 +60,12 @@ public class InlineBox implements Styleable {
     private boolean _startsHere;
     private boolean _endsHere;
 
+    @Nullable
     private CalculatedStyle _style;
 
+    @Nullable
     private ContentFunction _contentFunction;
+    @Nullable
     private FSFunction _function;
 
     private boolean _minMaxCalculated;
@@ -70,11 +74,13 @@ public class InlineBox implements Styleable {
 
     private int _firstLineWidth;
 
+    @Nullable
     private String _pseudoElementOrClass;
 
+    @Nullable
     private final Text _textNode;
 
-    public InlineBox(String text, Text textNode) {
+    public InlineBox(String text, @Nullable Text textNode) {
         _text = text;
         _originalText = text;
         _textNode = textNode;
@@ -118,16 +124,20 @@ public class InlineBox implements Styleable {
         _startsHere = startsHere;
     }
 
+    @CheckReturnValue
+    @Nullable
     @Override
     public CalculatedStyle getStyle() {
         return _style;
     }
 
     @Override
-    public void setStyle(CalculatedStyle style) {
+    public void setStyle(@Nullable CalculatedStyle style) {
         _style = style;
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public Element getElement() {
         return _element;
@@ -383,6 +393,8 @@ public class InlineBox implements Styleable {
         return _firstLineWidth;
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public String getPseudoElementOrClass() {
         return _pseudoElementOrClass;
@@ -474,6 +486,8 @@ public class InlineBox implements Styleable {
         _originalText = "";
     }
 
+    @Nullable
+    @CheckReturnValue
     public Text getTextNode() {
         return _textNode;
     }

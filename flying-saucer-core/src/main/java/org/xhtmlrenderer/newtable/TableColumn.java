@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -48,11 +49,15 @@ public class TableColumn implements Styleable {
         return _element;
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public String getPseudoElementOrClass() {
         return null;
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public CalculatedStyle getStyle() {
         return _style;
@@ -64,7 +69,7 @@ public class TableColumn implements Styleable {
     }
 
     @Override
-    public void setStyle(CalculatedStyle style) {
+    public void setStyle(@Nullable CalculatedStyle style) {
         _style = style;
     }
 

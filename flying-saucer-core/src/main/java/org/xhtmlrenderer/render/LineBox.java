@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -56,15 +58,19 @@ public class LineBox extends Box implements InlinePaintable {
     private boolean _containsContent;
     private boolean _containsBlockLevelContent;
 
+    @Nullable
     private FloatDistances _floatDistances;
 
+    @Nullable
     private List<TextDecoration> _textDecorations;
 
     private int _paintingTop;
     private int _paintingHeight;
 
+    @Nullable
     private List<Box> _nonFlowContent;
 
+    @Nullable
     private MarkerData _markerData;
 
     private boolean _containsDynamicFunction;
@@ -287,7 +293,7 @@ public class LineBox extends Box implements InlinePaintable {
         return _floatDistances;
     }
 
-    public void setFloatDistances(FloatDistances floatDistances) {
+    public void setFloatDistances(@Nullable FloatDistances floatDistances) {
         _floatDistances = floatDistances;
     }
 
@@ -346,6 +352,8 @@ public class LineBox extends Box implements InlinePaintable {
         return false;
     }
 
+    @Nullable
+    @CheckReturnValue
     public List<TextDecoration> getTextDecorations() {
         return _textDecorations;
     }
@@ -383,6 +391,7 @@ public class LineBox extends Box implements InlinePaintable {
         }
     }
 
+    @CheckReturnValue
     public List<Box> getNonFlowContent() {
         return _nonFlowContent == null ? emptyList() : _nonFlowContent;
     }
@@ -432,6 +441,8 @@ public class LineBox extends Box implements InlinePaintable {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public MarkerData getMarkerData() {
         return _markerData;
     }
@@ -456,6 +467,7 @@ public class LineBox extends Box implements InlinePaintable {
         _contentStart = contentOffset;
     }
 
+    @Nullable
     public InlineText findTrailingText() {
         if (getChildCount() == 0) {
             return null;
@@ -489,6 +501,8 @@ public class LineBox extends Box implements InlinePaintable {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         PaintingInfo pI = getPaintingInfo();

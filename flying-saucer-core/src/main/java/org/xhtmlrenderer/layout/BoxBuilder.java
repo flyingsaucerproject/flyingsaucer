@@ -789,15 +789,11 @@ public class BoxBuilder {
         return e.getAttribute(value.getStringValue());
     }
 
+    @CheckReturnValue
     private static List<Styleable> createGeneratedContentList(
             LayoutContext c, Element element, PropertyValue propValue,
-            String peName, CalculatedStyle style, int mode, @Nullable ChildBoxInfo info) {
+            @Nullable String peName, CalculatedStyle style, int mode, @Nullable ChildBoxInfo info) {
         List<PropertyValue> values = propValue.getValues();
-
-        if (values == null) {
-            // content: normal or content: none
-            return emptyList();
-        }
 
         List<Styleable> result = new ArrayList<>(values.size());
 
@@ -823,8 +819,6 @@ public class BoxBuilder {
                     if (cFunc != null) {
                         //TODO: counter functions may be called with non-ordered list-style-types, e.g. disc
                         content = cFunc.evaluate();
-                        contentFunction = null;
-                        function = null;
                     } else if (mode == CONTENT_LIST_MARGIN_BOX && isElementFunction(value.getFunction())) {
                         BlockBox target = getRunningBlock(c, value);
                         if (target != null) {
@@ -879,6 +873,8 @@ public class BoxBuilder {
         return result;
     }
 
+    @Nullable
+    @CheckReturnValue
     public static BlockBox getRunningBlock(LayoutContext c, PropertyValue value) {
         List<PropertyValue> params = value.getFunction().getParameters();
         String ident = params.get(0).getStringValue();
@@ -1055,7 +1051,7 @@ public class BoxBuilder {
     }
 
     private static InlineBox createInlineBox(
-            String text, Element parent, CalculatedStyle parentStyle, Text node) {
+            String text, Element parent, CalculatedStyle parentStyle, @Nullable Text node) {
         InlineBox result = new InlineBox(text, node);
 
         if (parentStyle.isInline() && ! (parent.getParentNode() instanceof Document)) {

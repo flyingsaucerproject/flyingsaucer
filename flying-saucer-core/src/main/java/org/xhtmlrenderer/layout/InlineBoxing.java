@@ -480,7 +480,7 @@ public class InlineBoxing {
     }
 
     private static void positionVertically(
-            LayoutContext c, Box container, LineBox current, MarkerData markerData) {
+            LayoutContext c, Box container, LineBox current, @Nullable MarkerData markerData) {
         if (current.getChildCount() == 0 || ! current.isContainsVisibleContent()) {
             current.setHeight(0);
         } else {
@@ -749,7 +749,7 @@ public class InlineBoxing {
                                  BlockBox block, int minHeight,
                                  int maxAvailableWidth, List<FloatLayoutResult> pendingFloats,
                                  boolean hasFirstLinePCs, List<Layer> pendingInlineLayers,
-                                 MarkerData markerData, int contentStart, boolean alwaysBreak) {
+                                 @Nullable MarkerData markerData, int contentStart, boolean alwaysBreak) {
         current.setContentStart(contentStart);
         current.prunePendingInlineBoxes();
 

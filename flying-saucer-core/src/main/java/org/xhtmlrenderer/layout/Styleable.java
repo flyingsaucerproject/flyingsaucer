@@ -34,8 +34,11 @@ import org.xhtmlrenderer.render.InlineLayoutBox;
  * (e.g. {@code :before} and {@code :after} pseudo-elements)
  */
 public interface Styleable {
+    @Nullable
+    @CheckReturnValue
     CalculatedStyle getStyle();
-    void setStyle(CalculatedStyle style);
+
+    void setStyle(@Nullable CalculatedStyle style);
 
     @Nullable
     @CheckReturnValue
@@ -43,5 +46,7 @@ public interface Styleable {
 
     void setElement(@Nullable Element e);
 
+    @Nullable
+    @CheckReturnValue
     String getPseudoElementOrClass();
 }
