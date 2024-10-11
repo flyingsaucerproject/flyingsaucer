@@ -886,7 +886,7 @@ public class BoxBuilder {
         String ident = params.get(0).getStringValue();
         PageElementPosition position = null;
         if (params.size() == 2) {
-            position = PageElementPosition.valueOf(params.get(1).getStringValue());
+            position = PageElementPosition.byIdent(params.get(1).getStringValue());
         }
         if (position == null) {
             position = PageElementPosition.FIRST;
