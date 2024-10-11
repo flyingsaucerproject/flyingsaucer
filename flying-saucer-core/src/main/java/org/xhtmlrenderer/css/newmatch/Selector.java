@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.TreeResolver;
@@ -28,6 +30,8 @@ import org.xhtmlrenderer.util.XRLog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+
+import static org.xhtmlrenderer.css.newmatch.Selector.Axis.DESCENDANT_AXIS;
 
 
 /**
@@ -40,8 +44,7 @@ public class Selector {
     private Ruleset _parent;
     private Selector chainedSelector;
     private Selector siblingSelector;
-
-    private int _axis;
+    private Axis _axis = DESCENDANT_AXIS;
     private String _name;
     private String _namespaceURI;
     private int _pc;
@@ -56,9 +59,7 @@ public class Selector {
 
     private List<Condition> conditions;
 
-    public static final int DESCENDANT_AXIS = 0;
-    public static final int CHILD_AXIS = 1;
-    public static final int IMMEDIATE_SIBLING_AXIS = 2;
+    public enum Axis {DESCENDANT_AXIS, CHILD_AXIS, IMMEDIATE_SIBLING_AXIS}
 
     public static final int VISITED_PSEUDOCLASS = 2;
     public static final int HOVER_PSEUDOCLASS = 4;
@@ -350,7 +351,8 @@ public class Selector {
      *
      * @return The axis value
      */
-    public int getAxis() {
+    @CheckReturnValue
+    public Axis getAxis() {
         return _axis;
     }
 
@@ -400,16 +402,16 @@ public class Selector {
      *
      * @return The appropriateSibling value
      */
+    @Nullable
+    @CheckReturnValue
     Node getAppropriateSibling(Node e, TreeResolver treeRes) {
-        Node sibling = null;
-        switch (_axis) {
-            case IMMEDIATE_SIBLING_AXIS:
-                sibling = treeRes.getPreviousSiblingElement(e);
-                break;
-            default:
+        return switch (_axis) {
+            case IMMEDIATE_SIBLING_AXIS -> treeRes.getPreviousSiblingElement(e);
+            case DESCENDANT_AXIS, CHILD_AXIS -> {
                 XRLog.exception("Bad sibling axis");
-        }
-        return sibling;
+                yield null;
+            }
+        };
     }
 
     /**
@@ -451,7 +453,7 @@ public class Selector {
         _parent = ruleset;
     }
 
-    public void setAxis(int axis) {
+    public void setAxis(Axis axis) {
         _axis = axis;
     }
 
