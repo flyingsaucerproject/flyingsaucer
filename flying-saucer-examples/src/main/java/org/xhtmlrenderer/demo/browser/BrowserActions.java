@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
+import org.xhtmlrenderer.demo.browser.actions.FontSizeAction.FontSizeChange;
 import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.simple.XHTMLPanel;
@@ -255,19 +256,19 @@ public class BrowserActions {
 
         generate_diff = new GenerateDiffAction(root);
 
-        increase_font = new FontSizeAction(root, FontSizeAction.INCREMENT);
+        increase_font = new FontSizeAction(root, FontSizeChange.INCREMENT);
         increase_font.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         increase_font.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
 
-        reset_font = new FontSizeAction(root, FontSizeAction.RESET);
+        reset_font = new FontSizeAction(root, FontSizeChange.RESET);
         reset_font.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_0,
                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         reset_font.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
 
-        decrease_font = new FontSizeAction(root, FontSizeAction.DECREMENT);
+        decrease_font = new FontSizeAction(root, FontSizeChange.DECREMENT);
         decrease_font.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,
                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));

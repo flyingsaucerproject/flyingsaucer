@@ -8,33 +8,32 @@ import java.awt.event.ActionEvent;
 public class FontSizeAction extends AbstractAction {
 
     private final BrowserStartup root;
-    public static final int DECREMENT = 0;
-    public static final int INCREMENT = 1;
-    public static final int RESET = 2;
-    private final int whichDirection;
+    public enum FontSizeChange {
+        DECREMENT,
+        INCREMENT,
+        RESET
+    }
+    private final FontSizeChange whichDirection;
 
-    public FontSizeAction(BrowserStartup root, int which) {
+    public FontSizeAction(BrowserStartup root, FontSizeChange which) {
         super("FontSize");
         this.root = root;
         this.whichDirection = which;
     }
 
-    public FontSizeAction(BrowserStartup root, float scale, int which) {
+    public FontSizeAction(BrowserStartup root, float scale, FontSizeChange which) {
         this(root, which);
         this.root.panel.view.setFontScalingFactor(scale);
     }
 
     public void actionPerformed(ActionEvent evt) {
         switch (whichDirection) {
-            case INCREMENT:
+            case INCREMENT ->
                 root.panel.view.incrementFontSize();
-                break;
-            case RESET:
+            case RESET ->
                 root.panel.view.resetFontSize();
-                break;
-            case DECREMENT:
+            case DECREMENT ->
                 root.panel.view.decrementFontSize();
-                break;
         }
     }
 }
