@@ -68,9 +68,11 @@ import static org.xhtmlrenderer.css.constants.IdentValue.SQUARE;
  */
 public class BlockBox extends Box implements InlinePaintable {
 
-    public static final int POSITION_VERTICALLY = 1;
-    public static final int POSITION_HORIZONTALLY = 2;
-    public static final int POSITION_BOTH = POSITION_VERTICALLY | POSITION_HORIZONTALLY;
+    public enum Position {
+        VERTICALLY,
+        HORIZONTALLY,
+        BOTH
+    }
 
     public static final int CONTENT_UNKNOWN = 0;
     public static final int CONTENT_INLINE = 1;
@@ -474,7 +476,7 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
-    public void positionAbsolute(CssContext cssCtx, int direction) {
+    public void positionAbsolute(CssContext cssCtx, Position direction) {
         CalculatedStyle style = getStyle();
         int cbContentHeight = getContainingBlock().getContentAreaEdge(0, 0, cssCtx).height;
 
@@ -485,7 +487,7 @@ public class BlockBox extends Box implements InlinePaintable {
             boundingBox = getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
         }
 
-        if ((direction & POSITION_HORIZONTALLY) != 0) {
+        if (direction == Position.HORIZONTALLY || direction == Position.BOTH) {
             setX(0);
             if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
                 setX((int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx));
@@ -496,7 +498,7 @@ public class BlockBox extends Box implements InlinePaintable {
             setX(getX() + boundingBox.x);
         }
 
-        if ((direction & POSITION_VERTICALLY) != 0) {
+        if (direction == Position.VERTICALLY || direction == Position.BOTH) {
             setY(0);
             if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
                 setY((int) style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx));
@@ -518,7 +520,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
         calcCanvasLocation();
 
-        if ((direction & POSITION_VERTICALLY) != 0 &&
+        if ((direction == Position.VERTICALLY || direction == Position.BOTH) &&
                 getStyle().isTopAuto() && getStyle().isBottomAuto()) {
             alignToStaticEquivalent();
         }
