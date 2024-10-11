@@ -29,6 +29,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -643,7 +644,7 @@ public abstract class Box implements Styleable {
             }
 
             int delta = page.getBottom() + c.getExtraSpaceTop() - (getAbsY() +
-                    getMarginBorderPadding(c, CalculatedStyle.TOP) + getHeight());
+                    getMarginBorderPadding(c, Edge.TOP) + getHeight());
 
             if (page == c.getRootLayer().getLastPage()) {
                 c.getRootLayer().addPage(c);
@@ -826,17 +827,16 @@ public abstract class Box implements Styleable {
         }
     }
 
-    public int getMarginBorderPadding(CssContext cssCtx, int which) {
+    public int getMarginBorderPadding(CssContext cssCtx, Edge edge) {
         BorderPropertySet border = getBorder(cssCtx);
         RectPropertySet margin = getMargin(cssCtx);
         RectPropertySet padding = getPadding(cssCtx);
 
-        return switch (which) {
-            case CalculatedStyle.LEFT -> (int) (margin.left() + border.left() + padding.left());
-            case CalculatedStyle.RIGHT -> (int) (margin.right() + border.right() + padding.right());
-            case CalculatedStyle.TOP -> (int) (margin.top() + border.top() + padding.top());
-            case CalculatedStyle.BOTTOM -> (int) (margin.bottom() + border.bottom() + padding.bottom());
-            default -> throw new IllegalArgumentException("Unsupported margin style: " + which);
+        return switch (edge) {
+            case LEFT -> (int) (margin.left() + border.left() + padding.left());
+            case RIGHT -> (int) (margin.right() + border.right() + padding.right());
+            case TOP -> (int) (margin.top() + border.top() + padding.top());
+            case BOTTOM -> (int) (margin.bottom() + border.bottom() + padding.bottom());
         };
     }
 

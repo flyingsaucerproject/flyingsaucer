@@ -660,24 +660,23 @@ public class CalculatedStyle {
         return style._border;
     }
 
-    public static final int LEFT = 1;
-    public static final int RIGHT = 2;
+    public enum Edge {
+        LEFT,
+        RIGHT,
+        TOP,
+        BOTTOM,
+    }
 
-    public static final int TOP = 3;
-    public static final int BOTTOM = 4;
-
-    public int getMarginBorderPadding(
-            CssContext cssCtx, int cbWidth, int which) {
+    public int getMarginBorderPadding(CssContext cssCtx, int cbWidth, Edge edge) {
         BorderPropertySet border = getBorder(cssCtx);
         RectPropertySet margin = getMarginRect(cbWidth, cssCtx);
         RectPropertySet padding = getPaddingRect(cbWidth, cssCtx);
 
-        return switch (which) {
+        return switch (edge) {
             case LEFT -> (int) (margin.left() + border.left() + padding.left());
             case RIGHT -> (int) (margin.right() + border.right() + padding.right());
             case TOP -> (int) (margin.top() + border.top() + padding.top());
             case BOTTOM -> (int) (margin.bottom() + border.bottom() + padding.bottom());
-            default -> throw new IllegalArgumentException("Unsupported margin calculation style: " + which);
         };
     }
 

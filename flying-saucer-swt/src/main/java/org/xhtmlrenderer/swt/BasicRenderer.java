@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.FSCanvas;
@@ -720,9 +720,9 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
                 out.clip(content);
 
                 int left = PAGE_PAINTING_CLEARANCE
-                        + page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+                        + page.getMarginBorderPadding(c, Edge.LEFT);
                 int top = page.getPaintingTop()
-                        + page.getMarginBorderPadding(c, CalculatedStyle.TOP) - page.getTop();
+                        + page.getMarginBorderPadding(c, Edge.TOP) - page.getTop();
 
                 out.translate(left, top);
                 root.paint(c);

@@ -30,6 +30,7 @@ import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -49,10 +50,10 @@ import static org.xhtmlrenderer.css.constants.CSSName.FS_PAGE_ORIENTATION;
 import static org.xhtmlrenderer.css.constants.CSSName.FS_PAGE_WIDTH;
 import static org.xhtmlrenderer.css.constants.IdentValue.LANDSCAPE;
 import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
-import static org.xhtmlrenderer.css.style.CalculatedStyle.BOTTOM;
-import static org.xhtmlrenderer.css.style.CalculatedStyle.LEFT;
-import static org.xhtmlrenderer.css.style.CalculatedStyle.RIGHT;
-import static org.xhtmlrenderer.css.style.CalculatedStyle.TOP;
+import static org.xhtmlrenderer.css.style.CalculatedStyle.Edge.BOTTOM;
+import static org.xhtmlrenderer.css.style.CalculatedStyle.Edge.LEFT;
+import static org.xhtmlrenderer.css.style.CalculatedStyle.Edge.RIGHT;
+import static org.xhtmlrenderer.css.style.CalculatedStyle.Edge.TOP;
 
 public class PageBox {
     private static final MarginArea[] MARGIN_AREA_DEFS = {
@@ -333,9 +334,8 @@ public class PageBox {
         _outerPageWidth = containingBlockWidth;
     }
 
-    public int getMarginBorderPadding(CssContext cssCtx, int which) {
-        return getStyle().getMarginBorderPadding(
-                cssCtx, getOuterPageWidth(), which);
+    public int getMarginBorderPadding(CssContext cssCtx, Edge edge) {
+        return getStyle().getMarginBorderPadding(cssCtx, getOuterPageWidth(), edge);
     }
 
     public PageInfo getPageInfo() {

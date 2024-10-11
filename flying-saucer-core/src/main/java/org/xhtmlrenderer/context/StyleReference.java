@@ -40,7 +40,6 @@ import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
