@@ -91,7 +91,7 @@ public class ContentFunctionFactory {
         }
 
         protected boolean isCounter(FSFunction function, String counterName) {
-            if (function.getName().equals("counter")) {
+            if (function.is("counter")) {
                 List<PropertyValue> parameters = function.getParameters();
                 if (parameters.size() == 1 || parameters.size() == 2) {
                     PropertyValue param = parameters.get(0);
@@ -175,7 +175,7 @@ public class ContentFunctionFactory {
 
         @Override
         public boolean canHandle(LayoutContext c, FSFunction function) {
-            if (c.isPrint() && function.getName().equals("target-counter")) {
+            if (c.isPrint() && function.is("target-counter")) {
                 List<PropertyValue> parameters = function.getParameters();
                 if (parameters.size() == 2 || parameters.size() == 3) {
                     FSFunction f = parameters.get(0).getFunction();
@@ -279,7 +279,7 @@ public class ContentFunctionFactory {
 
         @Override
         public boolean canHandle(LayoutContext c, FSFunction function) {
-            if (c.isPrint() && function.getName().equals("leader")) {
+            if (c.isPrint() && function.is("leader")) {
                 List<PropertyValue> parameters = function.getParameters();
                 if (parameters.size() == 1) {
                     PropertyValue param = parameters.get(0);

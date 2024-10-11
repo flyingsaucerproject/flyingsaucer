@@ -98,9 +98,8 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
     }
 
     private boolean isFunctionAllowed(FSFunction function) {
-        String name = function.getName();
-        return name.equals("attr") || name.equals("counter") || name.equals("counters") ||
-            name.equals("element") || name.startsWith("-fs") || name.equals("target-counter") ||
-            name.equals("leader");
+        return function.is("attr") || function.is("counter") || function.is("counters") ||
+                function.is("element") || function.getName().startsWith("-fs") || function.is("target-counter") ||
+                function.is("leader");
     }
 }

@@ -1422,7 +1422,7 @@ public class PrimitivePropertyBuilders {
                     checkValidity(cssName, getAllowed(), ident);
                 } else if (value.getPropertyValueType() == VALUE_TYPE_FUNCTION) {
                     FSFunction function = value.getFunction();
-                    if (function.getName().equals("running")) {
+                    if (function.is("running")) {
                         List<PropertyValue> params = function.getParameters();
                         if (params.size() == 1) {
                             PropertyValue param = params.get(0);
