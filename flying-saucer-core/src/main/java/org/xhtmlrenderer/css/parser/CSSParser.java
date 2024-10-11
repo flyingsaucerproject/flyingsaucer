@@ -247,7 +247,8 @@ public class CSSParser {
         try {
             Token t = next();
             if (t == Token.TK_IMPORT_SYM) {
-                StylesheetInfo info = new StylesheetInfo(stylesheet.getOrigin(), "text/css", null);
+                String uri;
+                List<String> mediaTypes = new ArrayList<>(1);
 
                 skip_whitespace();
                 t = next();
@@ -256,7 +257,7 @@ public class CSSParser {
                     case URI:
                         // first see if we can set URI via URL
                         try {
-                            info.setUri(new URL(new URL(stylesheet.getURI()), getTokenValue(t)).toString());
+                            uri = new URL(new URL(stylesheet.getURI()), getTokenValue(t)).toString();
                         } catch (MalformedURLException mue) {
                             // not a valid URL, may be a custom protocol which the user expects to handle
                             // in the user agent
@@ -271,7 +272,7 @@ public class CSSParser {
                                 String tokenValue = getTokenValue(t);
                                 String resolvedUri = parent.resolve(tokenValue).toString();
                                 System.out.println("Token: " + tokenValue + " resolved " + resolvedUri);
-                                info.setUri(resolvedUri);
+                                uri = resolvedUri;
                             } catch (URISyntaxException use) {
                                 throw new CSSParseException("Invalid URL, " + use.getMessage(), getCurrentLine(), use);
                             }
@@ -280,7 +281,7 @@ public class CSSParser {
                         skip_whitespace();
                         t = la();
                         if (t == Token.TK_IDENT) {
-                            info.addMedium(medium());
+                            mediaTypes.add(medium());
                             while (true) {
                                 t = la();
                                 if (t == Token.TK_COMMA) {
@@ -288,7 +289,7 @@ public class CSSParser {
                                     skip_whitespace();
                                     t = la();
                                     if (t == Token.TK_IDENT) {
-                                        info.addMedium(medium());
+                                        mediaTypes.add(medium());
                                     } else {
                                         throw new CSSParseException(
                                                 t, Token.TK_IDENT, getCurrentLine());
@@ -313,14 +314,14 @@ public class CSSParser {
                             t, new Token[] { Token.TK_STRING, Token.TK_URI }, getCurrentLine());
                 }
 
-                if (info.getMedia().isEmpty()) {
-                    info.addMedium("all");
+                if (mediaTypes.isEmpty()) {
+                    mediaTypes.add("all");
                 }
+                StylesheetInfo info = new StylesheetInfo(stylesheet.getOrigin(), "text/css", uri, mediaTypes, null, null);
                 stylesheet.addImportRule(info);
             } else {
                 push(t);
-                throw new CSSParseException(
-                        t, Token.TK_IMPORT_SYM, getCurrentLine());
+                throw new CSSParseException(t, Token.TK_IMPORT_SYM, getCurrentLine());
             }
         } catch (CSSParseException e) {
             error(e, "@import rule", true);

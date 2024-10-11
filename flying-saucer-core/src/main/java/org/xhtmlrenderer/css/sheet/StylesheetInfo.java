@@ -20,10 +20,11 @@
 package org.xhtmlrenderer.css.sheet;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A reference to a stylesheet. If no stylesheet is set, the matcher will try to
@@ -39,12 +40,13 @@ import java.util.List;
 public class StylesheetInfo {
 
     private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also, might save a lookup if it's already looked up
-    private String title;
+    private final String title;
+    @Nullable
     private String uri;
     private final Origin origin;
     @Nullable
     private final String type;
-    private List<String> mediaTypes = new ArrayList<>();
+    private final List<String> mediaTypes;
     @Nullable
     private final String content;
 
@@ -57,9 +59,13 @@ public class StylesheetInfo {
         AUTHOR
     }
 
-    public StylesheetInfo(Origin origin, @Nullable String type, @Nullable String content) {
+    public StylesheetInfo(Origin origin, @Nullable String type, @Nullable String uri, List<String> mediaTypes,
+                          String title, @Nullable String content) {
         this.origin = origin;
         this.type = type;
+        this.uri = uri;
+        this.mediaTypes = mediaTypes;
+        this.title = title;
         this.content = content;
     }
 
@@ -78,39 +84,19 @@ public class StylesheetInfo {
      *
      * @param uri  The new uri value
      */
-    public void setUri( String uri ) {
+    public void setUri(@Nullable String uri) {
         this.uri = uri;
     }
 
-    /**
-     * Sets the media attribute of the StylesheetInfo object
-     *
-     * @param media  The new media value
-     */
-    public void setMedia( String media ) {
-        String[] mediaTypes = media.split(",");
-        List<String> l = new ArrayList<>(mediaTypes.length);
-        for (String mediaType : mediaTypes) {
-            l.add(mediaType.trim().toLowerCase());
+    public static List<String> mediaTypes(String media) {
+        if (media.isEmpty()) {
+            //default for HTML is "screen", but that is silly and firefox seems to assume "all"
+            return List.of("all");
         }
-        this.mediaTypes = l;
-    }
 
-    public void setMedia(List<String> mediaTypes) {
-        this.mediaTypes = mediaTypes;
-    }
-
-    public void addMedium(String medium) {
-        mediaTypes.add(medium);
-    }
-
-    /**
-     * Sets the title attribute of the StylesheetInfo object
-     *
-     * @param title  The new title value
-     */
-    public void setTitle( String title ) {
-        this.title = title;
+        return Stream.of(media.split(","))
+                .map(mediaType -> mediaType.trim().toLowerCase())
+                .toList();
     }
 
     /**
@@ -127,6 +113,8 @@ public class StylesheetInfo {
      *
      * @return   The uri value
      */
+    @Nullable
+    @CheckReturnValue
     public String getUri() {
         return uri;
     }
@@ -136,6 +124,8 @@ public class StylesheetInfo {
      *
      * @return   The media value
      */
+    @NonNull
+    @CheckReturnValue
     public List<String> getMedia() {
         return mediaTypes;
     }
@@ -159,6 +149,8 @@ public class StylesheetInfo {
      *
      * @return   The title value
      */
+    @Nullable
+    @CheckReturnValue
     public String getTitle() {
         return title;
     }

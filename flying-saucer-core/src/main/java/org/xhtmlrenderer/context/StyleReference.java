@@ -48,8 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
-
 
 /**
  * @author Torbjoern Gannholm
@@ -181,14 +179,11 @@ public class StyleReference {
      */
     public void flushStyleSheets() {
         String uri = _uac.getBaseURL();
-        StylesheetInfo info = new StylesheetInfo(AUTHOR, null, null);
-        info.setUri(uri);
         if (_stylesheetFactory.containsStylesheet(uri)) {
             _stylesheetFactory.removeCachedStylesheet(uri);
             XRLog.cssParse("Removing stylesheet '" + uri + "' from cache by request.");
         } else {
             XRLog.cssParse("Requested removing stylesheet '" + uri + "', but it's not in cache.");
-
         }
     }
 
@@ -224,8 +219,7 @@ public class StyleReference {
                 ref.setUri(uri);
             } else {
                 ref.setUri(_uac.getBaseURL() + "#inline_style_" + (++inlineStyleCount));
-                Stylesheet sheet = _stylesheetFactory.parse(
-                        new StringReader(ref.getContent()), ref);
+                Stylesheet sheet = _stylesheetFactory.parse(new StringReader(ref.getContent()), ref);
                 ref.setStylesheet(sheet);
                 ref.setUri(null);
             }
