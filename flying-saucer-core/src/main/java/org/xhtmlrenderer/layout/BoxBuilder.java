@@ -40,7 +40,7 @@ import org.xhtmlrenderer.css.newmatch.PageInfo;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
@@ -163,12 +163,12 @@ public class BoxBuilder {
                                 CSSName.DISPLAY,
                                 new PropertyValue(IdentValue.TABLE),
                                 true,
-                                StylesheetInfo.USER),
+                                Origin.USER),
                         new PropertyDeclaration(
                                 CSSName.WIDTH,
                                 new PropertyValue(CSSPrimitiveValue.CSS_PERCENTAGE, 100.0f, "100%"),
                                 true,
-                                StylesheetInfo.USER)
+                                Origin.USER)
                 ));
         TableBox result = (TableBox)createBlockBox(tableStyle, info, false);
         result.setMarginAreaRoot(true);

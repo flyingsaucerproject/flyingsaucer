@@ -22,6 +22,7 @@ package org.xhtmlrenderer.css.extend;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.io.Reader;
 
@@ -35,7 +36,7 @@ import java.io.Reader;
  */
 public interface StylesheetFactory {
     Stylesheet parse(Reader reader, StylesheetInfo info);
-    Ruleset parseStyleDeclaration(int author, String style);
+    Ruleset parseStyleDeclaration(Origin origin, String style);
 
     Stylesheet getStylesheet(StylesheetInfo si);
 }

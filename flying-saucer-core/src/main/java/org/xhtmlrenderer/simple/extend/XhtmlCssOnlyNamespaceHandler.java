@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.USER_AGENT;
 import static org.xhtmlrenderer.util.TextUtil.readTextContent;
 
 /**
@@ -255,11 +257,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         if (media.isEmpty()) {
             media = "all";
         }//default for HTML is "screen", but that is silly and firefox seems to assume "all"
-        StylesheetInfo info = new StylesheetInfo();
+        StylesheetInfo info = new StylesheetInfo(AUTHOR);
         info.setMedia(media);
         info.setType(style.getAttribute("type"));
         info.setTitle(style.getAttribute("title"));
-        info.setOrigin(StylesheetInfo.AUTHOR);
 
         StringBuilder buf = new StringBuilder();
         Node current = style.getFirstChild();
@@ -294,15 +295,12 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             return null;
         }
 
-        StylesheetInfo info = new StylesheetInfo();
+        StylesheetInfo info = new StylesheetInfo(AUTHOR);
 
         if (type.isEmpty()) {
             type = "text/css";
         } // HACK is not entirely correct because default may be set by META tag or HTTP headers
         info.setType(type);
-
-        info.setOrigin(StylesheetInfo.AUTHOR);
-
         info.setUri(link.getAttribute("href"));
         String media = link.getAttribute("media");
         if (media.isEmpty()) {
@@ -372,9 +370,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 return null;
             }
 
-            StylesheetInfo info = new StylesheetInfo();
+            StylesheetInfo info = new StylesheetInfo(USER_AGENT);
             info.setUri(getNamespace());
-            info.setOrigin(StylesheetInfo.USER_AGENT);
             info.setMedia("all");
             info.setType("text/css");
 

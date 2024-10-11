@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.css.sheet;
 
 import org.xhtmlrenderer.css.newmatch.Selector;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,11 +32,11 @@ import java.util.List;
  * @author Patrick Wright
  */
 public class Ruleset {
-    private final int _origin;
+    private final Origin _origin;
     private final List<PropertyDeclaration> _props = new ArrayList<>();
     private final List<Selector> _fsSelectors = new ArrayList<>();
 
-    public Ruleset(int orig) {
+    public Ruleset(Origin orig) {
         _origin = orig;
     }
 
@@ -65,7 +66,7 @@ public class Ruleset {
         return _fsSelectors;
     }
 
-    public int getOrigin() {
+    public Origin getOrigin() {
         return _origin;
     }
 

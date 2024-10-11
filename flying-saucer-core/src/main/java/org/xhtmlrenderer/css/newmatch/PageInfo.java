@@ -25,7 +25,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.MarginBoxName;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,12 +78,12 @@ public class PageInfo {
                     CSSName.VERTICAL_ALIGN,
                     new PropertyValue(marginBox.getInitialVerticalAlign()),
                     false,
-                    StylesheetInfo.USER_AGENT));
+                    Origin.USER_AGENT));
         all.add(new PropertyDeclaration(
                 CSSName.TEXT_ALIGN,
                 new PropertyValue(marginBox.getInitialTextAlign()),
                 false,
-                StylesheetInfo.USER_AGENT));
+                Origin.USER_AGENT));
 
 
         return new CascadedStyle(all);

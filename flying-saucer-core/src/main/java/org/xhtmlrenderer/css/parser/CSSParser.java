@@ -36,6 +36,7 @@ import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.RulesetContainer;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -76,8 +77,7 @@ public class CSSParser {
         _errorHandler = errorHandler;
     }
 
-    public Stylesheet parseStylesheet(String uri, int origin, Reader reader)
-            throws IOException {
+    public Stylesheet parseStylesheet(String uri, Origin origin, Reader reader) throws IOException {
         _uri = uri;
         reset(reader);
 
@@ -87,7 +87,7 @@ public class CSSParser {
         return result;
     }
 
-    public Ruleset parseDeclaration(int origin, String text) {
+    public Ruleset parseDeclaration(Origin origin, String text) {
         try {
             // XXX Set this to something more reasonable
             _uri = "style attribute";
@@ -111,7 +111,7 @@ public class CSSParser {
     }
 
     @Nullable
-    public PropertyValue parsePropertyValue(CSSName cssName, int origin, String expr) {
+    public PropertyValue parsePropertyValue(CSSName cssName, Origin origin, String expr) {
         _uri = cssName + " property value";
         try {
             reset(new StringReader(expr));
@@ -247,8 +247,7 @@ public class CSSParser {
         try {
             Token t = next();
             if (t == Token.TK_IMPORT_SYM) {
-                StylesheetInfo info = new StylesheetInfo();
-                info.setOrigin(stylesheet.getOrigin());
+                StylesheetInfo info = new StylesheetInfo(stylesheet.getOrigin());
                 info.setType("text/css");
 
                 skip_whitespace();

@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.css.sheet;
 
 import org.xhtmlrenderer.css.constants.MarginBoxName;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ public class PageRule implements RulesetContainer {
     private String _name;
     private String _pseudoPage;
     private Ruleset _ruleset;
-    private int _origin;
+    private final Origin _origin;
 
     private final Map<MarginBoxName, List<PropertyDeclaration>> _marginBoxes = new HashMap<>();
 
@@ -39,7 +40,7 @@ public class PageRule implements RulesetContainer {
     private int _specificityG;
     private int _specificityH;
 
-    public PageRule(int origin) {
+    public PageRule(Origin origin) {
         _origin = origin;
     }
 
@@ -73,12 +74,8 @@ public class PageRule implements RulesetContainer {
     }
 
     @Override
-    public int getOrigin() {
+    public Origin getOrigin() {
         return _origin;
-    }
-
-    public void setOrigin(int origin) {
-        _origin = origin;
     }
 
     public String getName() {
@@ -116,7 +113,7 @@ public class PageRule implements RulesetContainer {
     public boolean applies(String pageName, String pseudoPage) {
         if (_name == null && _pseudoPage == null) {
             return true;
-        } else if (_name == null && 
+        } else if (_name == null &&
                 (_pseudoPage.equals(pseudoPage) ||
                         (_pseudoPage.equals("right") && pseudoPage != null && pseudoPage.equals("first")))) { // assume first page is a right page
             return true;

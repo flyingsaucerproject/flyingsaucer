@@ -5,6 +5,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.List;
 
@@ -25,47 +26,47 @@ class SizePropertyBuilderTest {
 
     @Test
     void buildDeclarationsFromOneValue() {
-        List<PropertyDeclaration> result = builder.buildDeclarations(cssName, List.of(width), 6, false);
+        List<PropertyDeclaration> result = builder.buildDeclarations(cssName, List.of(width), Origin.USER, false);
 
         assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
-                new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), new PropertyValue(AUTO), false, 6),
-                new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, 6),
-                new PropertyDeclaration(getByPropertyName("-fs-page-height"), width, false, 6)
+                new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), new PropertyValue(AUTO), false, Origin.USER),
+                new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, Origin.USER),
+                new PropertyDeclaration(getByPropertyName("-fs-page-height"), width, false, Origin.USER)
         );
     }
 
     @Test
     void buildDeclarationsFromTwoValues() {
-        List<PropertyDeclaration> result = builder.buildDeclarations(cssName, List.of(width, height), 6, false);
+        List<PropertyDeclaration> result = builder.buildDeclarations(cssName, List.of(width, height), Origin.USER_AGENT, false);
 
         assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
-                new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), new PropertyValue(AUTO), false, 6),
-                new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, 6),
-                new PropertyDeclaration(getByPropertyName("-fs-page-height"), height, false, 6)
+                new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), new PropertyValue(AUTO), false, Origin.USER_AGENT),
+                new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, Origin.USER_AGENT),
+                new PropertyDeclaration(getByPropertyName("-fs-page-height"), height, false, Origin.USER_AGENT)
         );
     }
 
     @Test
     void buildDeclarationsFromThreeValues() {
-        List<PropertyDeclaration> result = builder.buildDeclarations(cssName, List.of(width, height, landscape), 0, false);
+        List<PropertyDeclaration> result = builder.buildDeclarations(cssName, List.of(width, height, landscape), Origin.USER_AGENT, false);
 
         assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
-                new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, 0),
-                new PropertyDeclaration(getByPropertyName("-fs-page-height"), height, false, 0),
-                new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), landscape, false, 0)
+                new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, Origin.USER_AGENT),
+                new PropertyDeclaration(getByPropertyName("-fs-page-height"), height, false, Origin.USER_AGENT),
+                new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), landscape, false, Origin.USER_AGENT)
         );
     }
 
     @Test
     void declarationMustHaveAtLeastOneValue() {
-        assertThatThrownBy(() -> builder.buildDeclarations(cssName, emptyList(), 6, false))
+        assertThatThrownBy(() -> builder.buildDeclarations(cssName, emptyList(), Origin.AUTHOR, false))
                 .isInstanceOf(CSSParseException.class)
                 .hasMessageStartingWith("Found 0 values for size");
     }
 
     @Test
     void declarationMustHaveAtMostThreeValue() {
-        assertThatThrownBy(() -> builder.buildDeclarations(cssName, List.of(width, height, landscape, landscape), 6, false))
+        assertThatThrownBy(() -> builder.buildDeclarations(cssName, List.of(width, height, landscape, landscape), Origin.AUTHOR, false))
                 .isInstanceOf(CSSParseException.class)
                 .hasMessageStartingWith("Found 4 values for size");
     }

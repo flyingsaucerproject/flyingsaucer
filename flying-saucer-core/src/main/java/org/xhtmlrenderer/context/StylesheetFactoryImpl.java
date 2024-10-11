@@ -25,6 +25,7 @@ import org.xhtmlrenderer.css.parser.CSSParser;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.Configuration;
@@ -98,7 +99,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         }
     }
 
-    public Ruleset parseStyleDeclaration(int origin, String styleDeclaration) {
+    public Ruleset parseStyleDeclaration(Origin origin, String styleDeclaration) {
         return _cssParser.parseDeclaration(origin, styleDeclaration);
     }
 

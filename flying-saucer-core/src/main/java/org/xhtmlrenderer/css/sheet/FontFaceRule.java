@@ -20,16 +20,17 @@
 package org.xhtmlrenderer.css.sheet;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 public class FontFaceRule implements RulesetContainer {
-    private int _origin;
+    private final Origin _origin;
     private Ruleset _ruleset;
     private CalculatedStyle _calculatedStyle;
 
-    public FontFaceRule(int origin) {
+    public FontFaceRule(Origin origin) {
         _origin = origin;
     }
 
@@ -42,12 +43,8 @@ public class FontFaceRule implements RulesetContainer {
     }
 
     @Override
-    public int getOrigin() {
+    public Origin getOrigin() {
         return _origin;
-    }
-
-    public void setOrigin(int origin) {
-        _origin = origin;
     }
 
     public CalculatedStyle getCalculatedStyle() {
