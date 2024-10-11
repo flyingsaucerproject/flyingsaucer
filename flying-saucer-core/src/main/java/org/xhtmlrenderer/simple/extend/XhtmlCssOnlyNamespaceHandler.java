@@ -43,6 +43,7 @@ import java.util.Map;
 
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.USER_AGENT;
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.mediaTypes;
 import static org.xhtmlrenderer.util.TextUtil.readTextContent;
 
 /**
@@ -260,14 +261,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             return null;
         }
 
+        String type = style.getAttribute("type");
         String media = style.getAttribute("media");
-        if (media.isEmpty()) {
-            media = "all";
-        }//default for HTML is "screen", but that is silly and firefox seems to assume "all"
-        StylesheetInfo info = new StylesheetInfo(AUTHOR, style.getAttribute("type"), css);
-        info.setMedia(media);
-        info.setTitle(style.getAttribute("title"));
-        return info;
+        String title = style.getAttribute("title");
+        return new StylesheetInfo(AUTHOR, type, null, mediaTypes(media), title, css);
     }
 
     @NonNull
@@ -295,20 +292,10 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             return null;
         }
 
+        String uri = link.getAttribute("href");
         String type = detectType(link);
-        StylesheetInfo info = new StylesheetInfo(AUTHOR, type, null);
-
-        info.setUri(link.getAttribute("href"));
-        String media = link.getAttribute("media");
-        if (media.isEmpty()) {
-            media = "all";
-        }
-        info.setMedia(media);
-
         String title = link.getAttribute("title");
-        info.setTitle(title);
-
-        return info;
+        return new StylesheetInfo(AUTHOR, type, uri, mediaTypes(link.getAttribute("media")), title, null);
     }
 
     @Nullable
@@ -378,9 +365,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 return null;
             }
 
-            StylesheetInfo info = new StylesheetInfo(USER_AGENT, "text/css", null);
-            info.setUri(getNamespace());
-            info.setMedia("all");
+            StylesheetInfo info = new StylesheetInfo(USER_AGENT, "text/css", getNamespace(), mediaTypes(""), null, null);
 
             try (InputStream is = getDefaultStylesheetStream()) {
                 if (_defaultStylesheetError) {

@@ -22,6 +22,7 @@
 package org.xhtmlrenderer.simple;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -42,6 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.mediaTypes;
 
 /**
  * Handles a general XML document
@@ -196,28 +198,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
             //TODO: handle other stylesheet types
             if (!Objects.equals(type, "text/css")) continue; // for now
 
-            StylesheetInfo info = new StylesheetInfo(AUTHOR, type, null);
-
-            m = _hrefPattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String href = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                info.setUri(href);
-            }
-            m = _titlePattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String title = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                info.setTitle(title);
-            }
-            m = _mediaPattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String media = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                info.setMedia(media);
-            } else {
-                info.addMedium("screen");
-            }
+            StylesheetInfo info = new StylesheetInfo(AUTHOR, type, detectUri(pi), mediaTypes(detectMediaTypes(pi)), detectTitle(pi), null);
             list.add(info);
         }
 
@@ -228,6 +209,40 @@ public class NoNamespaceHandler implements NamespaceHandler {
     @CheckReturnValue
     private String detectType(String pi) {
         Matcher m = _typePattern.matcher(pi);
+        if (m.find()) {
+            int start = m.end();
+            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+        }
+        return null;
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private String detectUri(String pi) {
+        Matcher m = _hrefPattern.matcher(pi);
+        if (m.find()) {
+            int start = m.end();
+            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+        }
+        return null;
+    }
+
+    @NonNull
+    @CheckReturnValue
+    private String detectMediaTypes(String pi) {
+        Matcher m = _mediaPattern.matcher(pi);
+        if (m.find()) {
+            int start = m.end();
+            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+        } else {
+            return "screen";
+        }
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private String detectTitle(String pi) {
+        Matcher m = _titlePattern.matcher(pi);
         if (m.find()) {
             int start = m.end();
             return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
