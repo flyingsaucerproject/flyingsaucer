@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ public class StylesheetInfo {
     @Nullable
     private final String type;
     private List<String> mediaTypes = new ArrayList<>();
-    private String content;
+    @Nullable
+    private final String content;
 
     /**
      * Origin of stylesheet
@@ -55,9 +57,10 @@ public class StylesheetInfo {
         AUTHOR
     }
 
-    public StylesheetInfo(Origin origin, @Nullable String type) {
+    public StylesheetInfo(Origin origin, @Nullable String type, @Nullable String content) {
         this.origin = origin;
         this.type = type;
+        this.content = content;
     }
 
     /**
@@ -169,12 +172,10 @@ public class StylesheetInfo {
         return stylesheet;
     }
 
+    @Nullable
+    @CheckReturnValue
     public String getContent() {
         return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public boolean isInline() {
