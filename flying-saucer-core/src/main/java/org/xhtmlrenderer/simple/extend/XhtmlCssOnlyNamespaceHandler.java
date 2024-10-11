@@ -19,6 +19,7 @@
 package org.xhtmlrenderer.simple.extend;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
@@ -252,15 +253,26 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
 
     @Nullable
+    @CheckReturnValue
     protected StylesheetInfo readStyleElement(Element style) {
+        String css = extractContent(style);
+        if (css.isEmpty()) {
+            return null;
+        }
+
         String media = style.getAttribute("media");
         if (media.isEmpty()) {
             media = "all";
         }//default for HTML is "screen", but that is silly and firefox seems to assume "all"
-        StylesheetInfo info = new StylesheetInfo(AUTHOR, style.getAttribute("type"));
+        StylesheetInfo info = new StylesheetInfo(AUTHOR, style.getAttribute("type"), css);
         info.setMedia(media);
         info.setTitle(style.getAttribute("title"));
+        return info;
+    }
 
+    @NonNull
+    @CheckReturnValue
+    private static String extractContent(Element style) {
         StringBuilder buf = new StringBuilder();
         Node current = style.getFirstChild();
         while (current != null) {
@@ -270,13 +282,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             current = current.getNextSibling();
         }
 
-        String css = buf.toString().trim();
-        if (!css.isEmpty()) {
-            info.setContent(css);
-            return info;
-        } else {
-            return null;
-        }
+        return buf.toString().trim();
     }
 
     @Nullable
@@ -290,7 +296,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
 
         String type = detectType(link);
-        StylesheetInfo info = new StylesheetInfo(AUTHOR, type);
+        StylesheetInfo info = new StylesheetInfo(AUTHOR, type, null);
 
         info.setUri(link.getAttribute("href"));
         String media = link.getAttribute("media");
@@ -372,7 +378,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 return null;
             }
 
-            StylesheetInfo info = new StylesheetInfo(USER_AGENT, "text/css");
+            StylesheetInfo info = new StylesheetInfo(USER_AGENT, "text/css", null);
             info.setUri(getNamespace());
             info.setMedia("all");
 

@@ -196,7 +196,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
             //TODO: handle other stylesheet types
             if (!Objects.equals(type, "text/css")) continue; // for now
 
-            StylesheetInfo info = new StylesheetInfo(AUTHOR, type);
+            StylesheetInfo info = new StylesheetInfo(AUTHOR, type, null);
 
             m = _hrefPattern.matcher(pi);
             if (m.find()) {

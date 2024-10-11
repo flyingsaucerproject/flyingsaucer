@@ -181,7 +181,7 @@ public class StyleReference {
      */
     public void flushStyleSheets() {
         String uri = _uac.getBaseURL();
-        StylesheetInfo info = new StylesheetInfo(AUTHOR, null);
+        StylesheetInfo info = new StylesheetInfo(AUTHOR, null, null);
         info.setUri(uri);
         if (_stylesheetFactory.containsStylesheet(uri)) {
             _stylesheetFactory.removeCachedStylesheet(uri);
