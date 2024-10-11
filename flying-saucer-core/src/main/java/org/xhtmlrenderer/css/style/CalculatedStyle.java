@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.css.style;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -182,6 +184,8 @@ public class CalculatedStyle {
      * @param matched the CascadedStyle to apply
      * @return The derived child style
      */
+    @NonNull
+    @CheckReturnValue
     public CalculatedStyle deriveStyle(CascadedStyle matched) {
         String fingerprint = matched.getFingerprint();
         return _childCache.computeIfAbsent(fingerprint, (key) -> new CalculatedStyle(this, matched));

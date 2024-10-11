@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.render;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -74,8 +75,7 @@ public class PageBox {
 
     private static final int LEADING_TRAILING_SPLIT = 5;
 
-    @Nullable
-    private CalculatedStyle _style;
+    private final CalculatedStyle _style;
 
     private int _top;
     private int _bottom;
@@ -85,19 +85,25 @@ public class PageBox {
 
     private int _pageNo;
 
-    private int _outerPageWidth;
+    private final int _outerPageWidth;
 
     @Nullable
     private PageDimensions _pageDimensions;
 
-    @Nullable
-    private PageInfo _pageInfo;
+    @NonNull
+    private final PageInfo _pageInfo;
 
     @Nullable
     private final MarginAreaContainer[] _marginAreas = new MarginAreaContainer[MARGIN_AREA_DEFS.length];
 
     @Nullable
     private Element _metadata;
+
+    public PageBox(PageInfo pageInfo, CssContext cssContext, CalculatedStyle style) {
+        _pageInfo = pageInfo;
+        _style = style;
+        _outerPageWidth = getWidth(cssContext);
+    }
 
     public int getWidth(CssContext cssCtx) {
         return getPageDimensions(cssCtx).width();
@@ -209,10 +215,6 @@ public class PageBox {
 
     public CalculatedStyle getStyle() {
         return _style;
-    }
-
-    public void setStyle(CalculatedStyle style) {
-        _style = style;
     }
 
     public int getBottom() {
@@ -333,20 +335,12 @@ public class PageBox {
         return _outerPageWidth;
     }
 
-    public void setOuterPageWidth(int containingBlockWidth) {
-        _outerPageWidth = containingBlockWidth;
-    }
-
     public int getMarginBorderPadding(CssContext cssCtx, Edge edge) {
         return getStyle().getMarginBorderPadding(cssCtx, getOuterPageWidth(), edge);
     }
 
     public PageInfo getPageInfo() {
         return _pageInfo;
-    }
-
-    public void setPageInfo(PageInfo pageInfo) {
-        _pageInfo = pageInfo;
     }
 
     @Nullable
@@ -451,7 +445,7 @@ public class PageBox {
     private record MarginAreaContainer(MarginArea area, TableBox table) {
     }
 
-    private abstract static class MarginArea {
+    private abstract static sealed class MarginArea {
         private final MarginBoxName[] _marginBoxNames;
 
         public abstract Dimension getLayoutDimension(CssContext c, PageBox page, RectPropertySet margin);
@@ -477,7 +471,7 @@ public class PageBox {
         }
     }
 
-    private static class TopLeftCorner extends MarginArea {
+    private static final class TopLeftCorner extends MarginArea {
         private TopLeftCorner() {
             super(MarginBoxName.TOP_LEFT_CORNER);
         }
@@ -498,7 +492,7 @@ public class PageBox {
 
     }
 
-    private static class TopRightCorner extends MarginArea {
+    private static final class TopRightCorner extends MarginArea {
         private TopRightCorner() {
             super(MarginBoxName.TOP_RIGHT_CORNER);
         }
@@ -519,7 +513,7 @@ public class PageBox {
         }
     }
 
-    private static class BottomRightCorner extends MarginArea {
+    private static final class BottomRightCorner extends MarginArea {
         private BottomRightCorner() {
             super(MarginBoxName.BOTTOM_RIGHT_CORNER);
         }
@@ -540,7 +534,7 @@ public class PageBox {
         }
     }
 
-    private static class BottomLeftCorner extends MarginArea {
+    private static final class BottomLeftCorner extends MarginArea {
         private BottomLeftCorner() {
             super(MarginBoxName.BOTTOM_LEFT_CORNER);
         }
@@ -560,7 +554,7 @@ public class PageBox {
         }
     }
 
-    private static class LeftMarginArea extends MarginArea {
+    private static final class LeftMarginArea extends MarginArea {
         private LeftMarginArea() {
             super(new MarginBoxName[] {
                     MarginBoxName.LEFT_TOP,
@@ -587,7 +581,7 @@ public class PageBox {
         }
     }
 
-    private static class RightMarginArea extends MarginArea {
+    private static final class RightMarginArea extends MarginArea {
         private RightMarginArea() {
             super(new MarginBoxName[] {
                     MarginBoxName.RIGHT_TOP,
@@ -615,7 +609,7 @@ public class PageBox {
         }
     }
 
-    private static class TopMarginArea extends MarginArea {
+    private static final class TopMarginArea extends MarginArea {
         private TopMarginArea() {
             super(new MarginBoxName[] {
                     MarginBoxName.TOP_LEFT,
@@ -639,7 +633,7 @@ public class PageBox {
         }
     }
 
-    private static class BottomMarginArea extends MarginArea {
+    private static final class BottomMarginArea extends MarginArea {
         private BottomMarginArea() {
             super(new MarginBoxName[] {
                     MarginBoxName.BOTTOM_LEFT,

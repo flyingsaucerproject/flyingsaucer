@@ -777,8 +777,6 @@ public final class Layer {
 
     @CheckReturnValue
     public static PageBox createPageBox(CssContext c, String pseudoPage) {
-        PageBox result = new PageBox();
-
         String pageName = null;
         // HACK We only create pages during layout, but the OutputDevice
         // queries page positions and since pages are created lazily, changing
@@ -788,13 +786,8 @@ public final class Layer {
         }
 
         PageInfo pageInfo = c.getCss().getPageStyle(pageName, pseudoPage);
-        result.setPageInfo(pageInfo);
-
         CalculatedStyle cs = new EmptyStyle().deriveStyle(pageInfo.getPageStyle());
-        result.setStyle(cs);
-        result.setOuterPageWidth(result.getWidth(c));
-
-        return result;
+        return new PageBox(pageInfo, c, cs);
     }
 
     @Nullable
