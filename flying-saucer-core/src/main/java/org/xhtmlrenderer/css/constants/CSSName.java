@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.css.constants;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.CSSParser;
 import org.xhtmlrenderer.css.parser.PropertyValue;
@@ -1747,6 +1748,8 @@ public final class CSSName implements Comparable<CSSName> {
     /**
      * Gets the byPropertyName attribute of the CSSName class
      */
+    @Nullable
+    @CheckReturnValue
     public static CSSName getByPropertyName(String propName) {
         return ALL_PROPERTY_NAMES.get(propName);
     }

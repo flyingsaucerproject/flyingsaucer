@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -45,18 +46,16 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableSet;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_NUMBER;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PERCENTAGE;
 import static org.xhtmlrenderer.css.newmatch.Selector.Axis.CHILD_AXIS;
 import static org.xhtmlrenderer.css.newmatch.Selector.Axis.DESCENDANT_AXIS;
 import static org.xhtmlrenderer.css.newmatch.Selector.Axis.IMMEDIATE_SIBLING_AXIS;
+import static org.xhtmlrenderer.css.parser.Token.Type.AT_RULE;
 
 public class CSSParser {
     private static final Set<String> SUPPORTED_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
@@ -204,34 +203,29 @@ public class CSSParser {
                     break;
                 }
                 switch (t.getType()) {
-                    case Token.PAGE_SYM:
-                        page(stylesheet);
-                        break;
-                    case Token.MEDIA_SYM:
-                        media(stylesheet);
-                        break;
-                    case Token.FONT_FACE_SYM:
-                        font_face(stylesheet);
-                        break;
-                    case Token.IMPORT_SYM:
+                    case PAGE_SYM -> page(stylesheet);
+                    case MEDIA_SYM -> media(stylesheet);
+                    case FONT_FACE_SYM -> font_face(stylesheet);
+                    case IMPORT_SYM -> {
                         next();
                         error(new CSSParseException("@import not allowed here", getCurrentLine()),
                                 "@import rule", true);
                         recover(false, false);
-                        break;
-                    case Token.NAMESPACE_SYM:
+                    }
+                    case NAMESPACE_SYM -> {
                         next();
                         error(new CSSParseException("@namespace not allowed here", getCurrentLine()),
                                 "@namespace rule", true);
                         recover(false, false);
-                        break;
-                    case Token.AT_RULE:
+                    }
+                    case AT_RULE -> {
                         next();
                         error(new CSSParseException(
                                 "Invalid at-rule", getCurrentLine()), "at-rule", true);
                         recover(false, false);
-                        // fall through
-                    default:
+                        ruleset(stylesheet);
+                    }
+                    default ->
                         ruleset(stylesheet);
                 }
                 skip_whitespace_and_cdocdc();
@@ -260,8 +254,8 @@ public class CSSParser {
                 skip_whitespace();
                 t = next();
                 switch (t.getType()) {
-                    case Token.STRING:
-                    case Token.URI:
+                    case STRING:
+                    case URI:
                         // first see if we can set URI via URL
                         try {
                             info.setUri(new URL(new URL(stylesheet.getURI()), getTokenValue(t)).toString());
@@ -422,7 +416,7 @@ public class CSSParser {
                                 break;
                             }
                             switch (t.getType()) {
-                                case Token.RBRACE:
+                                case RBRACE:
                                     next();
                                     break LOOP;
                                 default:
@@ -646,8 +640,8 @@ public class CSSParser {
         //System.out.println("operator()");
         Token t = la();
         switch (t.getType()) {
-            case Token.VIRGULE:
-            case Token.COMMA:
+            case VIRGULE:
+            case COMMA:
                 next();
                 skip_whitespace();
                 break;
@@ -721,25 +715,27 @@ public class CSSParser {
         while (true) {
             t = la();
             switch (t.getType()) {
-                case Token.SEMICOLON:
+                case SEMICOLON -> {
                     next();
                     skip_whitespace();
-                    continue;
-                case Token.RBRACE:
+                }
+                case RBRACE -> {
                     break LOOP;
-                case Token.AT_RULE:
+                }
+                case AT_RULE -> {
                     if (expectAtRule) {
                         break LOOP;
                     } else {
                         declaration(ruleset, inFontFace);
                     }
-                    // FIXME: intentional fall-thru here?
-                case Token.EOF:
+                }
+                case EOF -> {
                     if (expectEOF) {
                         break LOOP;
                     }
-                    // fall through
-                default:
+                    declaration(ruleset, inFontFace);
+                }
+                default ->
                     declaration(ruleset, inFontFace);
             }
         }
@@ -804,33 +800,26 @@ public class CSSParser {
         while (true) {
             Token t = la();
             switch (t.getType()) {
-                case Token.PLUS:
-                case Token.GREATER:
-                case Token.S:
+                case PLUS, GREATER, S -> {
                     combinators.add(combinator());
                     t = la();
                     switch (t.getType()) {
-                        case Token.IDENT:
-                        case Token.ASTERISK:
-                        case Token.HASH:
-                        case Token.PERIOD:
-                        case Token.LBRACKET:
-                        case Token.COLON:
-                            selectors.add(simple_selector(ruleset));
-                            break;
-                        default:
-                            throw new CSSParseException(t, new Token[] { Token.TK_IDENT,
-                                    Token.TK_ASTERISK, Token.TK_HASH, Token.TK_PERIOD,
-                                    Token.TK_LBRACKET, Token.TK_COLON }, getCurrentLine());
+                        case IDENT, ASTERISK, HASH, PERIOD, LBRACKET, COLON -> selectors.add(simple_selector(ruleset));
+                        default -> throw new CSSParseException(t, new Token[]{Token.TK_IDENT,
+                                Token.TK_ASTERISK, Token.TK_HASH, Token.TK_PERIOD,
+                                Token.TK_LBRACKET, Token.TK_COLON}, getCurrentLine());
                     }
-                    break;
-                default:
+                }
+                default -> {
                     break LOOP;
+                }
             }
         }
         ruleset.addFSSelector(mergeSimpleSelectors(selectors, combinators));
     }
 
+    @Nullable
+    @CheckReturnValue
     private Selector mergeSimpleSelectors(List<Selector> selectors, List<Token> combinators) {
         int count = selectors.size();
         if (count == 1) {
@@ -902,9 +891,9 @@ public class CSSParser {
         selector.setParent(ruleset);
         Token t = la();
         switch (t.getType()) {
-            case Token.ASTERISK:
-            case Token.IDENT:
-            case Token.VERTICAL_BAR:
+            case ASTERISK,
+                 IDENT,
+                 VERTICAL_BAR -> {
                 NamespacePair pair = typed_value(false);
                 selector.setNamespaceURI(pair.getNamespaceURI());
                 selector.setName(pair.getName());
@@ -912,55 +901,53 @@ public class CSSParser {
                 LOOP: while (true) {
                     t = la();
                     switch (t.getType()) {
-                        case Token.HASH:
+                        case HASH -> {
                             t = next();
                             selector.addIDCondition(getTokenValue(t, true));
-                            break;
-                        case Token.PERIOD:
-                            class_selector(selector);
-                            break;
-                        case Token.LBRACKET:
-                            attrib(selector);
-                            break;
-                        case Token.COLON:
-                            pseudo(selector);
-                            break;
-                        default:
+                        }
+                        case PERIOD -> class_selector(selector);
+                        case LBRACKET -> attrib(selector);
+                        case COLON -> pseudo(selector);
+                        default -> {
                             break LOOP;
+                        }
                     }
                 }
-                break;
-            default:
+            }
+            default -> {
                 boolean found = false;
-                LOOP: while (true) {
+                LOOP:
+                while (true) {
                     t = la();
                     switch (t.getType()) {
-                        case Token.HASH:
+                        case HASH -> {
                             t = next();
                             selector.addIDCondition(getTokenValue(t, true));
                             found = true;
-                            break;
-                        case Token.PERIOD:
+                        }
+                        case PERIOD -> {
                             class_selector(selector);
                             found = true;
-                            break;
-                        case Token.LBRACKET:
+                        }
+                        case LBRACKET -> {
                             attrib(selector);
                             found = true;
-                            break;
-                        case Token.COLON:
+                        }
+                        case COLON -> {
                             pseudo(selector);
                             found = true;
-                            break;
-                        default:
+                        }
+                        default -> {
                             if (!found) {
-                                throw new CSSParseException(t, new Token[] { Token.TK_HASH,
-                                        Token.TK_PERIOD, Token.TK_LBRACKET, Token.TK_COLON },
+                                throw new CSSParseException(t, new Token[]{Token.TK_HASH,
+                                        Token.TK_PERIOD, Token.TK_LBRACKET, Token.TK_COLON},
                                         getCurrentLine());
                             }
                             break LOOP;
+                        }
                     }
                 }
+            }
         }
         return selector;
     }
@@ -1007,7 +994,7 @@ public class CSSParser {
         }
 
         String namespaceURI = null;
-        if (prefix != null && prefix != TreeResolver.NO_NAMESPACE) {
+        if (prefix != null && !prefix.equals(TreeResolver.NO_NAMESPACE)) {
             namespaceURI = _namespaces.get(prefix.toLowerCase());
             if (namespaceURI == null) {
                 throw new CSSParseException("There is no namespace with prefix " + prefix + " defined",
@@ -1085,12 +1072,12 @@ public class CSSParser {
                 skip_whitespace();
                 t = la();
                 switch (t.getType()) {
-                    case Token.EQUALS:
-                    case Token.INCLUDES:
-                    case Token.DASHMATCH:
-                    case Token.PREFIXMATCH:
-                    case Token.SUFFIXMATCH:
-                    case Token.SUBSTRINGMATCH:
+                    case EQUALS,
+                         INCLUDES,
+                         DASHMATCH,
+                         PREFIXMATCH,
+                         SUFFIXMATCH,
+                         SUBSTRINGMATCH -> {
                         existenceMatch = false;
                         Token selectorType = next();
                         skip_whitespace();
@@ -1098,35 +1085,35 @@ public class CSSParser {
                         if (t == Token.TK_IDENT || t == Token.TK_STRING) {
                             String value = getTokenValue(t, true);
                             switch (selectorType.getType()) {
-                                case Token.EQUALS:
+                                case EQUALS -> {
                                     selector.addAttributeEqualsCondition(attrNamespaceURI, attrName, value);
-                                    break;
-                                case Token.DASHMATCH:
+                                }
+                                case DASHMATCH -> {
                                     selector.addAttributeMatchesFirstPartCondition(attrNamespaceURI, attrName, value);
-                                    break;
-                                case Token.INCLUDES:
+                                }
+                                case INCLUDES -> {
                                     selector.addAttributeMatchesListCondition(attrNamespaceURI, attrName, value);
-                                    break;
-                                case Token.PREFIXMATCH:
+                                }
+                                case PREFIXMATCH -> {
                                     selector.addAttributePrefixCondition(attrNamespaceURI, attrName, value);
-                                    break;
-                                case Token.SUFFIXMATCH:
+                                }
+                                case SUFFIXMATCH -> {
                                     selector.addAttributeSuffixCondition(attrNamespaceURI, attrName, value);
-                                    break;
-                                case Token.SUBSTRINGMATCH:
+                                }
+                                case SUBSTRINGMATCH -> {
                                     selector.addAttributeSubstringCondition(attrNamespaceURI, attrName, value);
-                                    break;
+                                }
                             }
                             skip_whitespace();
                         } else {
                             push(t);
                             throw new CSSParseException(t,
-                                    new Token[] { Token.TK_IDENT, Token.TK_STRING },
+                                    new Token[]{Token.TK_IDENT, Token.TK_STRING},
                                     getCurrentLine());
                         }
                         skip_whitespace();
                         t = la();
-                        break;
+                    }
                 }
                 if (existenceMatch) {
                     selector.addAttributeExistsCondition(attrNamespaceURI, attrName);
@@ -1234,20 +1221,21 @@ public class CSSParser {
         if (t == Token.TK_COLON) {
             t = next();
             switch (t.getType()) {
-                case Token.COLON:
+                case COLON -> {
                     t = next();
                     addPseudoElement(t, selector);
-                    break;
-                case Token.IDENT:
+                }
+                case IDENT -> {
                     addPseudoClassOrElement(t, selector);
-                    break;
-                case Token.FUNCTION:
+                }
+                case FUNCTION -> {
                     addPseudoClassOrElementFunction(t, selector);
-                    break;
-                default:
+                }
+                default -> {
                     push(t);
                     throw new CSSParseException(t,
-                            new Token[] { Token.TK_IDENT, Token.TK_FUNCTION }, getCurrentLine());
+                            new Token[]{Token.TK_IDENT, Token.TK_FUNCTION}, getCurrentLine());
+                }
             }
         } else {
             push(t);
@@ -1255,7 +1243,7 @@ public class CSSParser {
         }
     }
 
-    private boolean checkCSSName(CSSName cssName, String propertyName) {
+    private boolean checkCSSName(@Nullable CSSName cssName, String propertyName) {
         if (cssName == null) {
             _errorHandler.error(
                     _uri,
@@ -1370,49 +1358,48 @@ public class CSSParser {
             boolean operator = false;
             Token operatorToken = null;
             switch (t.getType()) {
-                case Token.VIRGULE:
-                case Token.COMMA:
+                case VIRGULE,
+                     COMMA -> {
                     operatorToken = t;
                     operator();
                     t = la();
                     operator = true;
-                    break;
+                }
             }
             switch (t.getType()) {
-                case Token.PLUS:
-                case Token.MINUS:
-                case Token.NUMBER:
-                case Token.PERCENTAGE:
-                case Token.PX:
-                case Token.CM:
-                case Token.MM:
-                case Token.IN:
-                case Token.PT:
-                case Token.PC:
-                case Token.EMS:
-                case Token.EXS:
-                case Token.ANGLE:
-                case Token.TIME:
-                case Token.FREQ:
-                case Token.STRING:
-                case Token.IDENT:
-                case Token.URI:
-                case Token.HASH:
-                case Token.FUNCTION:
-                    result.add(term(literal, operatorToken));
-                    break;
-                default:
+                case PLUS,
+                     MINUS,
+                     NUMBER,
+                     PERCENTAGE,
+                     PX,
+                     CM,
+                     MM,
+                     IN,
+                     PT,
+                     PC,
+                     EMS,
+                     EXS,
+                     ANGLE,
+                     TIME,
+                     FREQ,
+                     STRING,
+                     IDENT,
+                     URI,
+                     HASH,
+                     FUNCTION -> result.add(term(literal, operatorToken));
+                default -> {
                     if (operator) {
-                        throw new CSSParseException(t, new Token[] {
+                        throw new CSSParseException(t, new Token[]{
                                 Token.TK_NUMBER, Token.TK_PLUS, Token.TK_MINUS,
                                 Token.TK_PERCENTAGE, Token.TK_PX, Token.TK_EMS, Token.TK_EXS,
                                 Token.TK_PC, Token.TK_MM, Token.TK_CM, Token.TK_IN, Token.TK_PT,
                                 Token.TK_ANGLE, Token.TK_TIME, Token.TK_FREQ, Token.TK_STRING,
-                                Token.TK_IDENT, Token.TK_URI, Token.TK_HASH, Token.TK_FUNCTION },
+                                Token.TK_IDENT, Token.TK_URI, Token.TK_HASH, Token.TK_FUNCTION},
                                 getCurrentLine());
                     } else {
                         break LOOP;
                     }
+                }
             }
         }
 
@@ -1470,102 +1457,103 @@ public class CSSParser {
         }
         final PropertyValue result;
         switch (t.getType()) {
-            case Token.ANGLE:
-            case Token.TIME:
-            case Token.FREQ:
-            case Token.DIMENSION:
+            case ANGLE,
+                 TIME,
+                 FREQ,
+                 DIMENSION -> {
                 throw new CSSParseException("Unsupported CSS unit " + extractUnit(t), getCurrentLine());
-            case Token.NUMBER:
+            }
+            case NUMBER -> {
                 result = new PropertyValue(
                         CSS_NUMBER,
-                        sign*Float.parseFloat(getTokenValue(t)),
+                        sign * Float.parseFloat(getTokenValue(t)),
                         sign(sign) + getTokenValue(t),
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.PERCENTAGE:
+            }
+            case PERCENTAGE -> {
                 result = new PropertyValue(
                         CSS_PERCENTAGE,
-                        sign*Float.parseFloat(extractNumber(t)),
+                        sign * Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t),
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.EMS:
+            }
+            case EMS -> {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_EMS,
-                        sign*Float.parseFloat(extractNumber(t)),
+                        sign * Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t),
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.EXS:
+            }
+            case EXS -> {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_EXS,
-                        sign*Float.parseFloat(extractNumber(t)),
+                        sign * Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t),
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.PX:
+            }
+            case PX -> {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PX,
-                        sign*Float.parseFloat(extractNumber(t)),
+                        sign * Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t),
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.CM:
+            }
+            case CM -> {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_CM,
-                        sign*Float.parseFloat(extractNumber(t)),
+                        sign * Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t),
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.MM:
+            }
+            case MM -> {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_MM,
-                        sign*Float.parseFloat(extractNumber(t)),
+                        sign * Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t),
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.IN:
+            }
+            case IN -> {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_IN,
-                        sign*Float.parseFloat(extractNumber(t)),
+                        sign * Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t),
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.PT:
+            }
+            case PT -> {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PT,
-                        sign*Float.parseFloat(extractNumber(t)),
+                        sign * Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t),
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.PC:
+            }
+            case PC -> {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_PC,
-                        sign*Float.parseFloat(extractNumber(t)),
+                        sign * Float.parseFloat(extractNumber(t)),
                         sign(sign) + getTokenValue(t),
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.STRING:
+            }
+            case STRING -> {
                 String s = getTokenValue(t);
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_STRING,
@@ -1574,8 +1562,8 @@ public class CSSParser {
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.IDENT:
+            }
+            case IDENT -> {
                 String value = getTokenValue(t, literal);
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_IDENT,
@@ -1584,8 +1572,8 @@ public class CSSParser {
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.URI:
+            }
+            case URI -> {
                 result = new PropertyValue(
                         CSSPrimitiveValue.CSS_URI,
                         getTokenValue(t),
@@ -1593,20 +1581,21 @@ public class CSSParser {
                         operatorToken);
                 next();
                 skip_whitespace();
-                break;
-            case Token.HASH:
+            }
+            case HASH -> {
                 result = hexcolor(operatorToken);
-                break;
-            case Token.FUNCTION:
+            }
+            case FUNCTION -> {
                 result = function(operatorToken);
-                break;
-            default:
+            }
+            default -> {
                 throw new CSSParseException(t, new Token[] { Token.TK_NUMBER,
                         Token.TK_PERCENTAGE, Token.TK_PX, Token.TK_EMS, Token.TK_EXS,
                         Token.TK_PC, Token.TK_MM, Token.TK_CM, Token.TK_IN, Token.TK_PT,
                         Token.TK_ANGLE, Token.TK_TIME, Token.TK_FREQ, Token.TK_STRING,
                         Token.TK_IDENT, Token.TK_URI, Token.TK_HASH, Token.TK_FUNCTION },
                         getCurrentLine());
+                }
         }
         return result;
     }
@@ -1862,11 +1851,11 @@ public class CSSParser {
                 return;
             }
             switch (t.getType()) {
-                case Token.LBRACE:
+                case LBRACE -> {
                     foundBlock = true;
                     braces++;
-                    break;
-                case Token.RBRACE:
+                }
+                case RBRACE -> {
                     if (braces == 0) {
                         if (stopBeforeBlockClose) {
                             push(t);
@@ -1878,12 +1867,12 @@ public class CSSParser {
                             break LOOP;
                         }
                     }
-                    break;
-                case Token.SEMICOLON:
-                    if (braces == 0 && ((! needBlock) || foundBlock)) {
+                }
+                case SEMICOLON -> {
+                    if (braces == 0 && ((!needBlock) || foundBlock)) {
                         break LOOP;
                     }
-                    break;
+                }
             }
         }
         skip_whitespace();
@@ -1905,18 +1894,14 @@ public class CSSParser {
     }
 
     private String getTokenValue(Token t, boolean literal) {
-        int start;
-        int count;
-        switch (t.getType()) {
-            case Token.STRING:
-                count = _lexer.yylength();
-                return processEscapes(_lexer.yytext().toCharArray(), 1, count-1);
-            case Token.HASH:
-                count = _lexer.yylength();
-                return processEscapes(_lexer.yytext().toCharArray(), 1, count);
-            case Token.URI:
+        return switch (t.getType()) {
+            case STRING ->
+                    processEscapes(_lexer.yytext().toCharArray(), 1, _lexer.yylength() - 1);
+            case HASH ->
+                    processEscapes(_lexer.yytext().toCharArray(), 1, _lexer.yylength());
+            case URI -> {
                 char[] ch = _lexer.yytext().toCharArray();
-                start = 4;
+                int start = 4;
                 while (ch[start] == '\t' || ch[start] == '\r' ||
                         ch[start] == '\n' || ch[start] == '\f') {
                     start++;
@@ -1924,7 +1909,7 @@ public class CSSParser {
                 if (ch[start] == '\'' || ch[start] == '"') {
                     start++;
                 }
-                int end = ch.length-2;
+                int end = ch.length - 2;
                 while (ch[end] == '\t' || ch[end] == '\r' ||
                         ch[end] == '\n' || ch[end] == '\f') {
                     end--;
@@ -1933,13 +1918,13 @@ public class CSSParser {
                     end--;
                 }
 
-                String uriResult = processEscapes(ch, start, end+1);
+                String uriResult = processEscapes(ch, start, end + 1);
 
                 // Relative URIs are resolved relative to CSS file, not XHTML file
                 if (isRelativeURI(uriResult) && _uri != null) {
                     int lastSlash = _uri.lastIndexOf('/');
                     if (lastSlash != -1) {
-                        uriResult = _uri.substring(0, lastSlash+1) + uriResult;
+                        uriResult = _uri.substring(0, lastSlash + 1) + uriResult;
                     }
                 } else if (isServerRelativeURI(uriResult) && _uri != null) {
                     int uriOffset = _uri.indexOf("://") + 3;
@@ -1949,23 +1934,24 @@ public class CSSParser {
                     }
                 }
 
-                return uriResult;
-            case Token.AT_RULE:
-            case Token.IDENT:
-            case Token.FUNCTION:
-                start = 0;
-                count = _lexer.yylength();
-                if (t.getType() == Token.AT_RULE) {
+                yield uriResult;
+            }
+            case AT_RULE,
+                 IDENT,
+                 FUNCTION -> {
+                int start = 0;
+                int count = _lexer.yylength();
+                if (t.getType() == AT_RULE) {
                     start++;
                 }
                 String result = processEscapes(_lexer.yytext().toCharArray(), start, count);
-                if (! literal) {
+                if (!literal) {
                     result = result.toLowerCase();
                 }
-                return result;
-            default:
-                return _lexer.yytext();
-        }
+                yield result;
+            }
+            default -> _lexer.yytext();
+        };
     }
 
     private boolean isRelativeURI(String uri) {
@@ -2072,6 +2058,6 @@ public class CSSParser {
     }
 
     private static Set<String> setOf(String... values) {
-        return unmodifiableSet(new HashSet<>(asList(values)));
+        return Set.of(values);
     }
 }
