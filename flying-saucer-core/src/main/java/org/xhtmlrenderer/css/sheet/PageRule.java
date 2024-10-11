@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.MarginBoxName;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
@@ -110,7 +111,7 @@ public class PageRule implements RulesetContainer {
         return result;
     }
 
-    public boolean applies(String pageName, String pseudoPage) {
+    public boolean applies(@Nullable String pageName, String pseudoPage) {
         if (_name == null && _pseudoPage == null) {
             return true;
         } else if (_name == null &&

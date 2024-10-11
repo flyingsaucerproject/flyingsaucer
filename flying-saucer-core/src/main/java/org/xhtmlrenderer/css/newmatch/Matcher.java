@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -105,7 +107,9 @@ public class Matcher {
         }
     }
 
-    public PageInfo getPageCascadedStyle(String pageName, String pseudoPage) {
+    @NonNull
+    @CheckReturnValue
+    public PageInfo getPageCascadedStyle(@Nullable String pageName, String pseudoPage) {
         List<PropertyDeclaration> props = new ArrayList<>();
         Map<MarginBoxName, List<PropertyDeclaration>> marginBoxes = new HashMap<>();
 
