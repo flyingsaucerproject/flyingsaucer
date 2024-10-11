@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import org.jspecify.annotations.Nullable;
@@ -64,6 +65,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_PRINT;
 
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to the inch
@@ -417,7 +419,7 @@ public class ITextRenderer {
         _outputDevice.setWriter(writer);
         _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.getHeight());
 
-        _root.getLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
+        _root.getLayer().assignPagePaintingPositions(c, PAGED_MODE_PRINT);
 
         int pageCount = _root.getLayer().getPages().size();
         c.setPageCount(pageCount);
@@ -468,9 +470,9 @@ public class ITextRenderer {
     private void paintPage(RenderingContext c, PdfWriter writer, PageBox page) {
         provideMetadataToPage(writer, page);
 
-        page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
-        page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
-        page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
+        page.paintBackground(c, 0, PAGED_MODE_PRINT);
+        page.paintMarginAreas(c, 0, PAGED_MODE_PRINT);
+        page.paintBorder(c, 0, PAGED_MODE_PRINT);
 
         Shape working = _outputDevice.getClip();
 
@@ -502,6 +504,8 @@ public class ITextRenderer {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     private String stringifyMetadata(Element element) {
         Element target = getFirstChildElement(element);
         if (target == null) {
@@ -525,6 +529,8 @@ public class ITextRenderer {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     private static Element getFirstChildElement(Element element) {
         Node n = element.getFirstChild();
         while (n != null) {

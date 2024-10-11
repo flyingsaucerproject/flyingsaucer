@@ -75,6 +75,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_SCREEN;
 import static org.xhtmlrenderer.util.XRLog.exception;
 
 /**
@@ -639,7 +640,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         if (_layout_context.isPrint()) {
             rootLayer.trimEmptyPages(intrinsic_size.height);
             if (rootLayer.getLastPage() != null) {
-                rootLayer.assignPagePaintingPositions(_layout_context, Layer.PAGED_MODE_SCREEN,
+                rootLayer.assignPagePaintingPositions(_layout_context, PAGED_MODE_SCREEN,
                         PAGE_PAINTING_CLEARANCE);
                 _drawnSize = new Point(rootLayer.getMaxPageWidth(_layout_context,
                         PAGE_PAINTING_CLEARANCE), rootLayer.getLastPage().getPaintingBottom()
@@ -705,9 +706,9 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
             bounds.width += 1;
             bounds.height += 1;
             if (working.intersects(bounds)) {
-                page.paintBackground(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
-                page.paintMarginAreas(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
-                page.paintBorder(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
+                page.paintBackground(c, PAGE_PAINTING_CLEARANCE, PAGED_MODE_SCREEN);
+                page.paintMarginAreas(c, PAGE_PAINTING_CLEARANCE, PAGED_MODE_SCREEN);
+                page.paintBorder(c, PAGE_PAINTING_CLEARANCE, PAGED_MODE_SCREEN);
 
                 Color old = gc.getForeground();
                 gc.setForeground(gc.getDevice().getSystemColor(SWT.COLOR_BLACK));

@@ -48,6 +48,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_PRINT;
+import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_SCREEN;
 import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
 
 /**
@@ -176,7 +178,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
                 calcCenteredPageLeftOffset(root.getMaxPageWidth(c, 0)) :
                 PAGE_PAINTING_CLEARANCE_WIDTH;
         root.assignPagePaintingPositions(
-                c, Layer.PAGED_MODE_SCREEN, PAGE_PAINTING_CLEARANCE_HEIGHT);
+                c, PAGED_MODE_SCREEN, PAGE_PAINTING_CLEARANCE_HEIGHT);
 
         setPreferredSize(new Dimension(
                 root.getMaxPageWidth(c, pagePaintingClearanceWidth),
@@ -204,9 +206,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
             bounds.width += 1;
             bounds.height += 1;
             if (working.intersects(bounds)) {
-                page.paintBackground(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
-                page.paintMarginAreas(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
-                page.paintBorder(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
+                page.paintBackground(c, pagePaintingClearanceWidth, PAGED_MODE_SCREEN);
+                page.paintMarginAreas(c, pagePaintingClearanceWidth, PAGED_MODE_SCREEN);
+                page.paintBorder(c, pagePaintingClearanceWidth, PAGED_MODE_SCREEN);
 
                 Color old = g.getColor();
 
@@ -256,9 +258,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         c.setPageCount(root.getPages().size());
         c.setPage(pageNo, page);
 
-        page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
-        page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
-        page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
+        page.paintBackground(c, 0, PAGED_MODE_PRINT);
+        page.paintMarginAreas(c, 0, PAGED_MODE_PRINT);
+        page.paintBorder(c, 0, PAGED_MODE_PRINT);
 
         Shape working = g.getClip();
 
@@ -279,7 +281,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
     public void assignPagePrintPositions(Graphics2D g) {
         RenderingContext c = newRenderingContext(g);
-        getRootLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
+        getRootLayer().assignPagePaintingPositions(c, PAGED_MODE_PRINT);
     }
 
     public void printTree() {
