@@ -681,7 +681,7 @@ public class BoxBuilder {
     }
 
     private static boolean isAttrFunction(FSFunction function) {
-        if (function.getName().equals("attr")) {
+        if (function.is("attr")) {
             List<PropertyValue> params = function.getParameters();
             if (params.size() == 1) {
                 PropertyValue value = params.get(0);
@@ -693,7 +693,7 @@ public class BoxBuilder {
     }
 
     public static boolean isElementFunction(FSFunction function) {
-        if (function.getName().equals("element")) {
+        if (function.is("element")) {
             List<PropertyValue> params = function.getParameters();
             if (params.isEmpty() || params.size() > 2) {
                 return false;
@@ -713,7 +713,7 @@ public class BoxBuilder {
 
     @Nullable
     private static CounterFunction makeCounterFunction(FSFunction function, LayoutContext c, CalculatedStyle style) {
-        if (function.getName().equals("counter")) {
+        if (function.is("counter")) {
             List<PropertyValue> params = function.getParameters();
             if (params.isEmpty() || params.size() > 2) {
                 return null;
@@ -748,7 +748,7 @@ public class BoxBuilder {
             int counterValue = c.getCounterContext(style).getCurrentCounterValue(counter);
 
             return new CounterFunction(counterValue, listStyleType);
-        } else if (function.getName().equals("counters")) {
+        } else if (function.is("counters")) {
             List<PropertyValue> params = function.getParameters();
             if (params.size() < 2 || params.size() > 3) {
                 return null;
