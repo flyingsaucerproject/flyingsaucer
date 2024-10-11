@@ -97,11 +97,7 @@ public class StyleReference {
         List<Stylesheet> result = new ArrayList<>(infos.size() + 15);
         for (StylesheetInfo info : infos) {
             if (info.appliesToMedia(medium)) {
-                Stylesheet sheet = info.getStylesheet();
-
-                if (sheet == null) {
-                    sheet = _stylesheetFactory.getStylesheet(info);
-                }
+                Stylesheet sheet = _stylesheetFactory.getStylesheet(info);
 
                 if (sheet != null) {
                     if (!sheet.getImportRules().isEmpty()) {
@@ -203,34 +199,13 @@ public class StyleReference {
         List<StylesheetInfo> infos = new ArrayList<>();
         long st = System.currentTimeMillis();
 
-        StylesheetInfo defaultStylesheet = _nsh.getDefaultStylesheet(_stylesheetFactory);
-        if (defaultStylesheet != null) {
-            infos.add(defaultStylesheet);
-        }
+        _nsh.getDefaultStylesheet().ifPresent(defaultStylesheet -> infos.add(defaultStylesheet));
 
-        List<StylesheetInfo> refs = _nsh.getStylesheets(_doc);
-        int inlineStyleCount = 0;
-
-        for (StylesheetInfo ref : refs) {
-            String uri;
-
-            if (!ref.isInline()) {
-                uri = _uac.resolveURI(ref.getUri());
-                ref.setUri(uri);
-            } else {
-                ref.setUri(_uac.getBaseURL() + "#inline_style_" + (++inlineStyleCount));
-                Stylesheet sheet = _stylesheetFactory.parse(new StringReader(ref.getContent()), ref);
-                ref.setStylesheet(sheet);
-                ref.setUri(null);
-            }
-        }
-        infos.addAll(refs);
+        infos.addAll(_nsh.getStylesheets(_doc));
 
         // TODO: here we should also get user stylesheet from userAgent
 
-        long el = System.currentTimeMillis() - st;
-        XRLog.load("TIME: parse stylesheets  " + el + "ms");
-
+        XRLog.load("TIME: parse stylesheets in " + (System.currentTimeMillis() - st) + " ms.");
         return infos;
     }
 

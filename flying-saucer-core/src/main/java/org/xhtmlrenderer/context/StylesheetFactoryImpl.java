@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.context;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.parser.CSSParser;
@@ -33,6 +34,7 @@ import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,6 +43,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.synchronizedMap;
 
 /**
@@ -68,11 +71,15 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     }
 
     public Stylesheet parse(Reader reader, StylesheetInfo info) {
+        return parse(reader, info.getUri(), info.getOrigin());
+    }
+
+    public Stylesheet parse(Reader reader, String uri, Origin origin) {
         try {
-            return _cssParser.parseStylesheet(info.getUri(), info.getOrigin(), reader);
+            return _cssParser.parseStylesheet(uri, origin, reader);
         } catch (IOException e) {
-            XRLog.cssParse(Level.WARNING, "Couldn't parse stylesheet at URI " + info.getUri() + ": " + e.getMessage(), e);
-            return new Stylesheet(info.getUri(), info.getOrigin());
+            XRLog.cssParse(Level.WARNING, "Couldn't parse stylesheet at URI " + uri + ": " + e.getMessage(), e);
+            return new Stylesheet(uri, origin);
         }
     }
 
@@ -81,8 +88,10 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      */
     @Nullable
     private Stylesheet parse(StylesheetInfo info) {
-        CSSResource cr = _userAgentCallback.getCSSResource(info.getUri());
-        if (cr==null) return null;
+        CSSResource cr = info.getContent()
+                .map(css -> new CSSResource(new ByteArrayInputStream(css.getBytes(UTF_8))))
+                .orElseGet(() -> _userAgentCallback.getCSSResource(info.getUri()));
+
         // Whether by accident or design, InputStream will never be null
         // since the null resource stream is wrapped in a BufferedInputStream
         InputSource inputSource=cr.getResourceInputSource();
@@ -90,7 +99,8 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         InputStream is = inputSource.getByteStream();
         if (is==null) return null;
         try {
-            return parse(new InputStreamReader(is, Configuration.valueFor("xr.stylesheets.charset-name", "UTF-8")), info);
+            String charset = Configuration.valueFor("xr.stylesheets.charset-name", "UTF-8");
+            return parse(new InputStreamReader(is, charset), info);
         } catch (UnsupportedEncodingException e) {
             // Shouldn't happen
             throw new RuntimeException(e.getMessage(), e);
@@ -146,6 +156,8 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      * @return The stylesheet
      */
     //TODO: this looks a bit odd
+    @Nullable
+    @CheckReturnValue
     public Stylesheet getStylesheet(StylesheetInfo info) {
         XRLog.load("Requesting stylesheet: " + info.getUri());
 

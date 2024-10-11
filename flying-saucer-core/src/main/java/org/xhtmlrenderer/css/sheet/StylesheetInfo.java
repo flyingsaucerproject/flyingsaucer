@@ -24,6 +24,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -38,14 +39,8 @@ import java.util.stream.Stream;
  * @author   Torbjoern Gannholm
  */
 public class StylesheetInfo {
-
-    private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also, might save a lookup if it's already looked up
-    private final String title;
-    @Nullable
-    private String uri;
+    private final String uri;
     private final Origin origin;
-    @Nullable
-    private final String type;
     private final List<String> mediaTypes;
     @Nullable
     private final String content;
@@ -59,13 +54,11 @@ public class StylesheetInfo {
         AUTHOR
     }
 
-    public StylesheetInfo(Origin origin, @Nullable String type, @Nullable String uri, List<String> mediaTypes,
-                          String title, @Nullable String content) {
+    public StylesheetInfo(Origin origin, String uri, List<String> mediaTypes,
+                          @Nullable String content) {
         this.origin = origin;
-        this.type = type;
         this.uri = uri;
         this.mediaTypes = mediaTypes;
-        this.title = title;
         this.content = content;
     }
 
@@ -77,15 +70,6 @@ public class StylesheetInfo {
         String mLowerCase = m.toLowerCase();
         return mLowerCase.equals("all") ||
             mediaTypes.contains("all") || mediaTypes.contains(mLowerCase);
-    }
-
-    /**
-     * Sets the uri attribute of the StylesheetInfo object
-     *
-     * @param uri  The new uri value
-     */
-    public void setUri(@Nullable String uri) {
-        this.uri = uri;
     }
 
     public static List<String> mediaTypes(String media) {
@@ -100,20 +84,10 @@ public class StylesheetInfo {
     }
 
     /**
-     * Sets the stylesheet attribute of the StylesheetInfo object
-     *
-     * @param stylesheet  The new stylesheet value
-     */
-    public void setStylesheet( Stylesheet stylesheet ) {
-        this.stylesheet = stylesheet;
-    }
-
-    /**
      * Gets the uri attribute of the StylesheetInfo object
      *
      * @return   The uri value
      */
-    @Nullable
     @CheckReturnValue
     public String getUri() {
         return uri;
@@ -139,39 +113,14 @@ public class StylesheetInfo {
         return origin;
     }
 
-    @Nullable
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Gets the title attribute of the StylesheetInfo object
-     *
-     * @return   The title value
-     */
-    @Nullable
     @CheckReturnValue
-    public String getTitle() {
-        return title;
+    public Optional<String> getContent() {
+        return Optional.ofNullable(content);
     }
 
-    /**
-     * Gets the stylesheet attribute of the StylesheetInfo object
-     *
-     * @return   The stylesheet value
-     */
-    public Stylesheet getStylesheet() {
-        return stylesheet;
-    }
-
-    @Nullable
-    @CheckReturnValue
-    public String getContent() {
-        return content;
-    }
-
-    public boolean isInline() {
-        return this.content != null;
+    @Override
+    public String toString() {
+        return "CSS %s".formatted(uri);
     }
 }
 
