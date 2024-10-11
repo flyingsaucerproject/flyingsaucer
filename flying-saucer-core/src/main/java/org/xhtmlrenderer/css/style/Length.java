@@ -19,6 +19,10 @@
  */
 package org.xhtmlrenderer.css.style;
 
+import static org.xhtmlrenderer.css.style.Length.LengthType.FIXED;
+import static org.xhtmlrenderer.css.style.Length.LengthType.PERCENT;
+import static org.xhtmlrenderer.css.style.Length.LengthType.VARIABLE;
+
 // A simplified version of KHTML's Length type.  It's very convenient to be able
 // to treat length values (including auto) in a uniform matter when calculating
 // table column widths.  Our own LengthValue is too heavyweight for this purpose and
@@ -28,34 +32,31 @@ public class Length {
     // DPI)
     public static final int MAX_WIDTH = Integer.MAX_VALUE / 2;
 
-    public static final int VARIABLE = 1;
-    public static final int FIXED = 2;
-    public static final int PERCENT = 3;
+    public static final Length ZERO = new Length();
 
-    private int _type = VARIABLE;
-    private long _value = 0;
-
-    public Length() {
+    public enum LengthType {
+        VARIABLE,
+        FIXED,
+        PERCENT,
     }
 
-    public Length(long value, int type) {
+    private final LengthType _type;
+    private final long _value;
+
+    private Length() {
+        this(0, VARIABLE);
+    }
+
+    public Length(long value, LengthType type) {
         _value = value;
         _type = type;
-    }
-
-    public void setValue(long value) {
-        _value = value;
     }
 
     public long value() {
         return _value;
     }
 
-    public void setType(int type) {
-        _type = type;
-    }
-
-    public int type() {
+    public LengthType type() {
         return _type;
     }
 
@@ -76,7 +77,6 @@ public class Length {
             case FIXED -> _value;
             case PERCENT -> maxWidth * _value / 100;
             case VARIABLE -> maxWidth;
-            default -> -1;
         };
     }
 
@@ -89,25 +89,11 @@ public class Length {
     }
 
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append("(type=");
-        switch (_type) {
-        case FIXED:
-            result.append("fixed");
-            break;
-        case PERCENT:
-            result.append("percent");
-            break;
-        case VARIABLE:
-            result.append("variable");
-            break;
-        default:
-            result.append("unknown");
-        }
-        result.append(", value=");
-        result.append(_value);
-        result.append(")");
-
-        return result.toString();
+        String type = switch (_type) {
+            case FIXED -> "fixed";
+            case PERCENT -> "percent";
+            case VARIABLE -> "variable";
+        };
+        return "Length (type=%s, value=%d)".formatted(type, _value);
     }
 }

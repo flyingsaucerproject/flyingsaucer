@@ -61,6 +61,8 @@ import static org.xhtmlrenderer.css.style.CssKnowledge.MAY_HAVE_FIRST_LINE;
 import static org.xhtmlrenderer.css.style.CssKnowledge.OVERFLOW_APPLICABLE;
 import static org.xhtmlrenderer.css.style.CssKnowledge.TABLE_SECTIONS;
 import static org.xhtmlrenderer.css.style.CssKnowledge.UNDER_TABLE_LAYOUT;
+import static org.xhtmlrenderer.css.style.Length.LengthType.FIXED;
+import static org.xhtmlrenderer.css.style.Length.LengthType.PERCENT;
 
 /**
  * A set of properties that apply to a single Element, derived from all matched
@@ -1038,20 +1040,16 @@ public class CalculatedStyle {
     }
 
     public Length asLength(CssContext c, CSSName cssName) {
-        Length result = new Length();
-
         FSDerivedValue value = valueByName(cssName);
         if (value instanceof LengthValue || value instanceof NumberValue) {
             if (value.hasAbsoluteUnit()) {
-                result.setValue((int) value.getFloatProportionalTo(cssName, 0, c));
-                result.setType(Length.FIXED);
+                return new Length((int) value.getFloatProportionalTo(cssName, 0, c), FIXED);
             } else {
-                result.setValue((int) value.asFloat());
-                result.setType(Length.PERCENT);
+                return new Length((int) value.asFloat(), PERCENT);
             }
         }
 
-        return result;
+        return Length.ZERO;
     }
 
     public boolean isShowEmptyCells() {
