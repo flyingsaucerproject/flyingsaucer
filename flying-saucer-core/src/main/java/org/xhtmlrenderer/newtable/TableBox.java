@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -45,6 +46,8 @@ import java.util.logging.Level;
 
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparingInt;
+import static org.xhtmlrenderer.css.style.Length.LengthType.PERCENT;
+import static org.xhtmlrenderer.css.style.Length.ZERO;
 
 // Much of this code is directly inspired by (and even copied from)
 // the equivalent code in KHTML (including the idea of "effective columns" to
@@ -663,6 +666,8 @@ public class TableBox extends BlockBox {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public TableColumn colElement(int col) {
         List<TableColumn> styleColumns = getStyleColumns();
         if (styleColumns.isEmpty()) {
@@ -968,7 +973,7 @@ public class TableBox extends BlockBox {
         private void initWidths() {
             _widths = new ArrayList<>(_table.numEffCols());
             for (int i = 0; i < _table.numEffCols(); i++) {
-                _widths.add(new Length());
+                _widths.add(ZERO);
             }
         }
 
@@ -1000,7 +1005,7 @@ public class TableBox extends BlockBox {
                     if (cCol + i >= nEffCols) {
                         table.appendColumn(span - usedSpan);
                         nEffCols++;
-                        _widths.add(new Length());
+                        _widths.add(ZERO);
                     }
                     int eSpan = table.spanOfEffCol(cCol + i);
                     if ((w.isFixed() || w.isPercent()) && w.value() > 0) {
@@ -1216,7 +1221,7 @@ public class TableBox extends BlockBox {
                 }
 
                 if ((w.isFixed() && w.value() == 0) || (w.isPercent() && w.value() == 0)) {
-                    w = new Length();
+                    w = ZERO;
                 }
                 int cEffCol = table.colToEffCol(cCol);
                 if (!w.isVariable() && span == 1 && cEffCol < nEffCols) {
@@ -1266,15 +1271,15 @@ public class TableBox extends BlockBox {
                             l.setMaxWidth(cell.getMaxWidth());
                         }
 
-                        Length w = cell.getOuterStyleOrColWidth(c);
-                        w.setValue(Math.min(Length.MAX_WIDTH, Math.max(0, w.value())));
+                        Length outerLength = cell.getOuterStyleOrColWidth(c);
+                        Length w = new Length(Math.min(Length.MAX_WIDTH, Math.max(0, outerLength.value())), outerLength.type());
 
                         switch (w.type()) {
-                            case Length.FIXED:
+                            case FIXED:
                                 if (w.value() > 0 && !l.width().isPercent()) {
                                     if (l.width().isFixed()) {
                                         if (w.value() > l.width().value()) {
-                                            l.width().setValue(w.value());
+                                            l.setWidth(w);
                                         }
                                     } else {
                                         l.setWidth(w);
@@ -1284,7 +1289,7 @@ public class TableBox extends BlockBox {
                                     }
                                 }
                                 break;
-                            case Length.PERCENT:
+                            case PERCENT:
                                 if (w.value() > 0
                                         && (!l.width().isPercent() || w.value() > l.width().value())) {
                                     l.setWidth(w);
@@ -1333,7 +1338,7 @@ public class TableBox extends BlockBox {
                 int span = cell.getStyle().getColSpan();
                 Length w = cell.getOuterStyleOrColWidth(c);
                 if (w.value() == 0) {
-                    w = new Length(); // make it Variable
+                    w = ZERO; // make it Variable
                 }
 
                 int col = _table.colToEffCol(cell.getCol());
@@ -1350,18 +1355,18 @@ public class TableBox extends BlockBox {
 
                 while (lastCol < nEffCols && span > 0) {
                     switch (layoutStruct[lastCol].width().type()) {
-                        case Length.PERCENT:
+                        case PERCENT:
                             totalPercent += layoutStruct[lastCol].width().value();
                             allColsAreFixed = false;
                             break;
-                        case Length.FIXED:
+                        case FIXED:
                             if (layoutStruct[lastCol].width().value() > 0) {
                                 fixedWidth += layoutStruct[lastCol].width().value();
                                 allColsArePercent = false;
                                 break;
                             }
                             // fall through
-                        case Length.VARIABLE:
+                        case VARIABLE:
                             haveVariable = true;
                             // fall through
                         default:
@@ -1373,7 +1378,7 @@ public class TableBox extends BlockBox {
                             //   <tr><td>1</td><td colspan=2 width=100%>2-3</td></tr>
                             // </table>
                             if (!layoutStruct[lastCol].effWidth().isPercent()) {
-                                layoutStruct[lastCol].setEffWidth(new Length());
+                                layoutStruct[lastCol].setEffWidth(ZERO);
                                 allColsArePercent = false;
                             } else {
                                 totalPercent += layoutStruct[lastCol].effWidth().value();
@@ -1393,7 +1398,7 @@ public class TableBox extends BlockBox {
                 if (w.isPercent()) {
                     if (totalPercent > w.value() || allColsArePercent) {
                         // can't satisfy this condition, treat as variable
-                        w = new Length();
+                        w = ZERO;
                     } else {
                         int spanMax = Math.max(maxWidth, cMaxWidth);
                         tMaxWidth = Math.max(tMaxWidth, spanMax * 100L / w.value());
@@ -1415,10 +1420,9 @@ public class TableBox extends BlockBox {
                                 totalWidth -= layoutStruct[pos].effMaxWidth();
                                 percentMissing -= percent;
                                 if (percent > 0) {
-                                    layoutStruct[pos].setEffWidth(new Length(percent,
-                                            Length.PERCENT));
+                                    layoutStruct[pos].setEffWidth(new Length(percent, PERCENT));
                                 } else {
-                                    layoutStruct[pos].setEffWidth(new Length());
+                                    layoutStruct[pos].setEffWidth(ZERO);
                                 }
                             }
                         }
@@ -1594,19 +1598,19 @@ public class TableBox extends BlockBox {
                 available -= w;
                 Length width = layoutStruct[i].effWidth();
                 switch (width.type()) {
-                case Length.PERCENT:
-                    havePercent = true;
-                    totalPercent += width.value();
-                    break;
-                case Length.FIXED:
-                    numFixed++;
-                    totalFixed += layoutStruct[i].effMaxWidth();
-                    // fall through
-                    break;
-                case Length.VARIABLE:
-                    numVariable++;
-                    totalVariable += layoutStruct[i].effMaxWidth();
-                    allocVariable += w;
+                    case PERCENT -> {
+                        havePercent = true;
+                        totalPercent += width.value();
+                    }
+                    case FIXED -> {
+                        numFixed++;
+                        totalFixed += layoutStruct[i].effMaxWidth();
+                    }
+                    case VARIABLE -> {
+                        numVariable++;
+                        totalVariable += layoutStruct[i].effMaxWidth();
+                        allocVariable += w;
+                    }
                 }
             }
 
@@ -1808,8 +1812,8 @@ public class TableBox extends BlockBox {
         }
 
         protected static class Layout {
-            private Length _width = new Length();
-            private Length _effWidth = new Length();
+            private Length _width = ZERO;
+            private Length _effWidth = ZERO;
             private long _minWidth = 1;
             private long _maxWidth = 1;
             private long _effMinWidth;

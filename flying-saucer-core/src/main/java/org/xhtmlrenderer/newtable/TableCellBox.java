@@ -172,11 +172,10 @@ public class TableCellBox extends BlockBox {
         RectPropertySet padding = getPadding(c);
         bordersAndPadding += (int)padding.left() + (int)padding.right();
 
-        result.setValue(result.value() + bordersAndPadding);
-
-        return result;
+        return new Length(result.value() + bordersAndPadding, result.type());
     }
 
+    @CheckReturnValue
     public Length getOuterStyleOrColWidth(CssContext c) {
         Length result = getOuterStyleWidth(c);
         if (getStyle().getColSpan() > 1 || ! result.isVariable()) {
