@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class Stylesheet implements RulesetContainer {
      * The info for this stylesheet
      */
     private final String _uri;
-    private final int _origin;
+    private final Origin _origin;
 
     private final List<FontFaceRule> _fontFaceRules = new ArrayList<>();
     private final List<StylesheetInfo> _importRules = new ArrayList<>();
@@ -48,7 +50,7 @@ public class Stylesheet implements RulesetContainer {
     /**
      * Creates a new instance of Stylesheet
      */
-    public Stylesheet(String uri, int origin) {
+    public Stylesheet(String uri, Origin origin) {
         _uri = uri;
         _origin = origin;
     }
@@ -59,7 +61,7 @@ public class Stylesheet implements RulesetContainer {
      * @return The origin value
      */
     @Override
-    public int getOrigin() {
+    public Origin getOrigin() {
         return _origin;
     }
 

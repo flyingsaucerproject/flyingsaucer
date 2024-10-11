@@ -22,8 +22,6 @@ package org.xhtmlrenderer.css.sheet;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 /**
  * A reference to a stylesheet. If no stylesheet is set, the matcher will try to
  * find the stylesheet by uri, first from the StylesheetFactory cache, then by
@@ -40,20 +38,23 @@ public class StylesheetInfo {
     private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also, might save a lookup if it's already looked up
     private String title;
     private String uri;
-    private int origin = USER_AGENT;
+    private final Origin origin;
     private String type;
     private List<String> mediaTypes = new ArrayList<>();
     private String content;
 
-    /** Origin of stylesheet - user agent  */
-    public static final int USER_AGENT = 0;
+    /**
+     * Origin of stylesheet
+     */
+    public enum Origin {
+        USER_AGENT,
+        USER,
+        AUTHOR
+    }
 
-    /** Origin of stylesheet - user  */
-    public static final int USER = 1;
-
-    /** Origin of stylesheet - author  */
-    public static final int AUTHOR = 2;
-
+    public StylesheetInfo(Origin origin) {
+        this.origin = origin;
+    }
 
     /**
      * @param m  a single media identifier
@@ -94,15 +95,6 @@ public class StylesheetInfo {
 
     public void addMedium(String medium) {
         mediaTypes.add(medium);
-    }
-
-    /**
-     * Sets the origin attribute of the StylesheetInfo object
-     *
-     * @param origin  The new origin value
-     */
-    public void setOrigin( int origin ) {
-        this.origin = origin;
     }
 
     /**
@@ -155,7 +147,7 @@ public class StylesheetInfo {
      *
      * @return   The origin value
      */
-    public int getOrigin() {
+    public Origin getOrigin() {
         return origin;
     }
 

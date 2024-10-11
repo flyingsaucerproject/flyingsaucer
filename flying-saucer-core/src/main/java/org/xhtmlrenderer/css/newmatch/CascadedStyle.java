@@ -24,7 +24,6 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,6 +35,7 @@ import java.util.TreeMap;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.USER;
 
 
 /**
@@ -71,7 +71,7 @@ public class CascadedStyle {
         CSSPrimitiveValue val = new PropertyValue(display);
 
         List<PropertyDeclaration> props = singletonList(
-                new PropertyDeclaration(CSSName.DISPLAY, val, true, StylesheetInfo.USER));
+                new PropertyDeclaration(CSSName.DISPLAY, val, true, USER));
 
         return new CascadedStyle(props);
     }
@@ -114,7 +114,7 @@ public class CascadedStyle {
             CSSName cssName, IdentValue display) {
         CSSPrimitiveValue val = new PropertyValue(display);
         // Urk... kind of ugly, but we really want this value to be used
-        return new PropertyDeclaration(cssName, val, true, StylesheetInfo.USER);
+        return new PropertyDeclaration(cssName, val, true, USER);
     }
 
     /**

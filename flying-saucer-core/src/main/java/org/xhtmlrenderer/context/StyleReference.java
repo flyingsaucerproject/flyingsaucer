@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
+
 
 /**
  * @author Torbjoern Gannholm
@@ -179,9 +181,8 @@ public class StyleReference {
      */
     public void flushStyleSheets() {
         String uri = _uac.getBaseURL();
-        StylesheetInfo info = new StylesheetInfo();
+        StylesheetInfo info = new StylesheetInfo(AUTHOR);
         info.setUri(uri);
-        info.setOrigin(StylesheetInfo.AUTHOR);
         if (_stylesheetFactory.containsStylesheet(uri)) {
             _stylesheetFactory.removeCachedStylesheet(uri);
             XRLog.cssParse("Removing stylesheet '" + uri + "' from cache by request.");

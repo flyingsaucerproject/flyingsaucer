@@ -28,6 +28,7 @@ import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.Token;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -135,7 +136,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -158,7 +159,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -196,7 +197,7 @@ public class PrimitivePropertyBuilders {
     private static class GenericBorderWidth extends AbstractPropertyBuilder {
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -224,14 +225,15 @@ public class PrimitivePropertyBuilders {
 
     private static class GenericBorderCornerRadius extends AbstractPropertyBuilder  {
         @Override
-        public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin,
-                                                           boolean important, boolean inheritAllowed) {
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin,
+                boolean important, boolean inheritAllowed) {
             assertFoundUpToValues(cssName, values, 2);
 
-            PropertyValue first = (PropertyValue)values.get(0);
+            PropertyValue first = (PropertyValue) values.get(0);
             PropertyValue second = null;
             if (values.size() == 2) {
-                second = (PropertyValue)values.get(1);
+                second = (PropertyValue) values.get(1);
             }
 
             checkInheritAllowed(first, inheritAllowed);
@@ -241,12 +243,12 @@ public class PrimitivePropertyBuilders {
             }
 
             checkLengthOrPercentType(cssName, first);
-             if (second == null) {
-                 return createTwoValueResponse(cssName, first, first, origin, important);
-             } else {
-                 checkLengthOrPercentType(cssName, second);
-                 return createTwoValueResponse(cssName, first, second, origin, important);
-             }
+            if (second == null) {
+                return createTwoValueResponse(cssName, first, first, origin, important);
+            } else {
+                checkLengthOrPercentType(cssName, second);
+                return createTwoValueResponse(cssName, first, second, origin, important);
+            }
         }
     }
 
@@ -255,7 +257,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -285,7 +287,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -313,7 +315,7 @@ public class PrimitivePropertyBuilders {
     private static class LengthLike extends AbstractPropertyBuilder {
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -344,7 +346,8 @@ public class PrimitivePropertyBuilders {
 
     private static class ColOrRowSpan extends AbstractPropertyBuilder {
         @Override
-        public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+        public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values,
+                                                           Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -364,7 +367,7 @@ public class PrimitivePropertyBuilders {
     private static class PlainInteger extends AbstractPropertyBuilder {
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -389,7 +392,7 @@ public class PrimitivePropertyBuilders {
     private static class Length extends AbstractPropertyBuilder {
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -415,7 +418,7 @@ public class PrimitivePropertyBuilders {
     private static class SingleString extends AbstractPropertyBuilder {
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             checkSingleValue(cssName, values)
             CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -436,7 +439,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             checkSingleValue(cssName, values);
             CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -506,7 +509,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -542,7 +545,8 @@ public class PrimitivePropertyBuilders {
         });
 
         @Override
-        public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+        public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values,
+                                                           Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundUpToValues(cssName, values, 2);
 
             CSSPrimitiveValue first = values.get(0);
@@ -607,7 +611,7 @@ public class PrimitivePropertyBuilders {
     public static class BackgroundPosition extends AbstractPropertyBuilder {
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundUpToValues(cssName, values, 2);
 
             CSSPrimitiveValue first = values.get(0);
@@ -720,7 +724,7 @@ public class PrimitivePropertyBuilders {
         }
 
         private List<PropertyDeclaration> createTwoPercentValueResponse(
-                float percent1, float percent2, boolean important, int origin) {
+                float percent1, float percent2, boolean important, Origin origin) {
             PropertyValue value1 = new PropertyValue(
                     CSSPrimitiveValue.CSS_PERCENTAGE, percent1, percent1 + "%");
             PropertyValue value2 = new PropertyValue(
@@ -907,7 +911,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             if (values.size() == 1) {
                 CSSPrimitiveValue value = values.get(0);
                 checkInheritAllowed(value, inheritAllowed);
@@ -989,7 +993,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -1028,7 +1032,7 @@ public class PrimitivePropertyBuilders {
         // normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -1120,7 +1124,7 @@ public class PrimitivePropertyBuilders {
     public static class FSPDFFontEncoding extends AbstractPropertyBuilder {
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -1231,7 +1235,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -1350,7 +1354,7 @@ public class PrimitivePropertyBuilders {
     public static class Page extends AbstractPropertyBuilder {
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -1406,7 +1410,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -1501,7 +1505,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             if (values.size() == 1) {
                 CSSPrimitiveValue value = values.get(0);
                 boolean goWithSingle = false;
@@ -1655,7 +1659,7 @@ public class PrimitivePropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
             CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
@@ -1677,7 +1681,7 @@ public class PrimitivePropertyBuilders {
     private static List<PropertyDeclaration> createTwoValueResponse(
             CSSName cssName,
             CSSPrimitiveValue value1, CSSPrimitiveValue value2,
-            int origin, boolean important) {
+            Origin origin, boolean important) {
 
         PropertyDeclaration result = new PropertyDeclaration(
                 cssName,

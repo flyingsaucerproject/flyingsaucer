@@ -1805,7 +1805,7 @@ public final class CSSName implements Comparable<CSSName> {
         for (CSSName cssName : ALL_PRIMITIVE_PROPERTY_NAMES.values()) {
             if (cssName.initialValue.charAt(0) != '=' && cssName.implemented) {
                 PropertyValue value = parser.parsePropertyValue(
-                        cssName, StylesheetInfo.USER_AGENT, cssName.initialValue);
+                        cssName, StylesheetInfo.Origin.USER_AGENT, cssName.initialValue);
 
                 if (value == null) {
                     XRLog.exception("Unable to derive initial value for " + cssName);

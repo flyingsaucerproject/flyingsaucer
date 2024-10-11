@@ -26,6 +26,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -36,7 +37,7 @@ import static org.w3c.dom.css.CSSValue.CSS_INHERIT;
 
 public abstract class AbstractPropertyBuilder implements PropertyBuilder {
     @Override
-    public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important) {
+    public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important) {
         return buildDeclarations(cssName, values, origin, important, true);
     }
 
@@ -179,7 +180,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
     }
 
     @Nullable
-    protected List<PropertyDeclaration> checkInheritAll(CSSName[] all, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+    protected List<PropertyDeclaration> checkInheritAll(CSSName[] all, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
         if (values.size() == 1) {
             CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);

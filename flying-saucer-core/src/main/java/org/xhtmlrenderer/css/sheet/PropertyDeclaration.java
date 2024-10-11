@@ -23,6 +23,7 @@ import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.PropertyValue;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 
 /**
@@ -46,12 +47,7 @@ public class PropertyDeclaration {
      */
     private final boolean important;
 
-    /**
-     * Origin constant from the list defined in {@link Stylesheet}. See {@link
-     * StylesheetInfo#USER_AGENT}, {@link StylesheetInfo#USER}, and {@link
-     * StylesheetInfo#AUTHOR}.
-     */
-    private final int origin;
+    private final Origin origin;
     private IdentValue _identVal;
     private boolean identIsSet;
     private String _fingerprint;
@@ -94,15 +90,13 @@ public class PropertyDeclaration {
      * @param value   The CSSValue to wrap
      * @param imp     True if property was declared important! and false if
      *                not.
-     * @param orig    int constant from {@link Stylesheet} for the origin of
-     *                the property declaration, that is, the origin of the style sheet
-     *                where it was declared. See {@link StylesheetInfo#USER_AGENT}, {@link
-     *                StylesheetInfo#USER}, and {@link StylesheetInfo#AUTHOR}.
+     * @param orig    origin of the property declaration, that is, the origin of the style sheet
+     *                where it was declared.
      */
     public PropertyDeclaration(CSSName cssName,
                                CSSPrimitiveValue value,
                                boolean imp,
-                               int orig) {
+                               Origin orig) {
         this.propName = cssName.toString();
         this.cssName = cssName;
         this.cssPrimitiveValue = value;
@@ -142,7 +136,7 @@ public class PropertyDeclaration {
      * Returns an int representing the combined origin and importance of the
      * property as declared. The int is assigned such that default origin and
      * importance is 0, and highest an important! property defined by the user
-     * (origin is Stylesheet.USER). The combined value would allow this property
+     * (origin is {@link StylesheetInfo.Origin#USER}). The combined value would allow this property
      * to be sequenced in the CSS cascade along with other properties matched to
      * the same element with the same property name. In that sort, the highest
      * sequence number returned from this method would take priority in the
@@ -152,19 +146,11 @@ public class PropertyDeclaration {
      * sequentially by 1 for each increase in origin/importance.
      */
     public int getImportanceAndOrigin() {
-        if (origin == StylesheetInfo.USER_AGENT) {
-            return PropertyDeclaration.USER_AGENT;
-        } else if (origin == StylesheetInfo.USER) {
-            if (important) {
-                return PropertyDeclaration.USER_IMPORTANT;
-            }
-            return PropertyDeclaration.USER_NORMAL;
-        } else {
-            if (important) {
-                return PropertyDeclaration.AUTHOR_IMPORTANT;
-            }
-            return PropertyDeclaration.AUTHOR_NORMAL;
-        }
+        return switch (origin) {
+            case USER_AGENT -> USER_AGENT;
+            case USER -> important ? USER_IMPORTANT : USER_NORMAL;
+            case AUTHOR -> important ? AUTHOR_IMPORTANT : AUTHOR_NORMAL;
+        };
     }
 
     /**
@@ -197,7 +183,7 @@ public class PropertyDeclaration {
         return important;
     }
 
-    public int getOrigin() {
+    public Origin getOrigin() {
         return origin;
     }
 }

@@ -51,6 +51,7 @@ import static java.util.Collections.synchronizedMap;
 import static java.util.Collections.synchronizedSet;
 import static java.util.Comparator.comparingLong;
 import static org.xhtmlrenderer.css.newmatch.Selector.Axis.IMMEDIATE_SIBLING_AXIS;
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
 
 
 /**
@@ -215,7 +216,7 @@ public class Matcher {
                 return null;
             }
 
-            return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
+            return _styleFactory.parseStyleDeclaration(AUTHOR, style);
         }
     }
 
@@ -228,7 +229,7 @@ public class Matcher {
             if (Util.isNullOrEmpty(style)) {
                 return null;
             }
-            return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
+            return _styleFactory.parseStyleDeclaration(AUTHOR, style);
         }
     }
 
