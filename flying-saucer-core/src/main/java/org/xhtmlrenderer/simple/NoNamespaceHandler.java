@@ -31,7 +31,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
-import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -39,6 +38,7 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -198,7 +198,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
             //TODO: handle other stylesheet types
             if (!Objects.equals(type, "text/css")) continue; // for now
 
-            StylesheetInfo info = new StylesheetInfo(AUTHOR, type, detectUri(pi), mediaTypes(detectMediaTypes(pi)), detectTitle(pi), null);
+            StylesheetInfo info = new StylesheetInfo(AUTHOR, detectUri(pi), mediaTypes(detectMediaTypes(pi)), null);
             list.add(info);
         }
 
@@ -239,21 +239,10 @@ public class NoNamespaceHandler implements NamespaceHandler {
         }
     }
 
-    @Nullable
-    @CheckReturnValue
-    private String detectTitle(String pi) {
-        Matcher m = _titlePattern.matcher(pi);
-        if (m.find()) {
-            int start = m.end();
-            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-        }
-        return null;
-    }
-
     @Override
-    @Nullable
-    public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
-        return null;
+    @CheckReturnValue
+    public Optional<StylesheetInfo> getDefaultStylesheet() {
+        return Optional.empty();
     }
 
 }

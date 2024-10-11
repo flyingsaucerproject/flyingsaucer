@@ -77,6 +77,7 @@ public class CSSParser {
         _errorHandler = errorHandler;
     }
 
+    @CheckReturnValue
     public Stylesheet parseStylesheet(String uri, Origin origin, Reader reader) throws IOException {
         _uri = uri;
         reset(reader);
@@ -317,7 +318,7 @@ public class CSSParser {
                 if (mediaTypes.isEmpty()) {
                     mediaTypes.add("all");
                 }
-                StylesheetInfo info = new StylesheetInfo(stylesheet.getOrigin(), "text/css", uri, mediaTypes, null, null);
+                StylesheetInfo info = new StylesheetInfo(stylesheet.getOrigin(), uri, mediaTypes, null);
                 stylesheet.addImportRule(info);
             } else {
                 push(t);

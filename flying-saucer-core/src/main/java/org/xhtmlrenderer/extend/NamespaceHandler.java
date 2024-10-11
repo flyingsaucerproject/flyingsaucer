@@ -23,10 +23,10 @@ import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides knowledge specific to a certain document type, like resolving
@@ -45,9 +45,8 @@ public interface NamespaceHandler {
     /**
      * @return the default CSS stylesheet for this namespace
      */
-    @Nullable
     @CheckReturnValue
-    StylesheetInfo getDefaultStylesheet(StylesheetFactory factory);
+    Optional<StylesheetInfo> getDefaultStylesheet();
 
     /**
      * @param doc the document

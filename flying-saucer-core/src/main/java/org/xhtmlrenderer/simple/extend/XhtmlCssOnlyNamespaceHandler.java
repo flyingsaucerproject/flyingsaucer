@@ -26,21 +26,20 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xhtmlrenderer.css.extend.StylesheetFactory;
-import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.simple.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.XRLog;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElseGet;
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.USER_AGENT;
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.mediaTypes;
@@ -55,7 +54,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     private static final String _namespace = "http://www.w3.org/1999/xhtml";
     @Nullable
     private static volatile StylesheetInfo _defaultStylesheet;
-    private static boolean _defaultStylesheetError;
+    private static final AtomicLong inlineCssCounter = new AtomicLong();
 
     /**
      * Gets the namespace attribute of the XhtmlNamespaceHandler object
@@ -261,10 +260,9 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             return null;
         }
 
-        String type = style.getAttribute("type");
         String media = style.getAttribute("media");
-        String title = style.getAttribute("title");
-        return new StylesheetInfo(AUTHOR, type, null, mediaTypes(media), title, css);
+        String uri = "inline:" + inlineCssCounter.incrementAndGet(); // just some unique value to cache by
+        return new StylesheetInfo(AUTHOR, uri, mediaTypes(media), css);
     }
 
     @NonNull
@@ -293,20 +291,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
 
         String uri = link.getAttribute("href");
-        String type = detectType(link);
-        String title = link.getAttribute("title");
-        return new StylesheetInfo(AUTHOR, type, uri, mediaTypes(link.getAttribute("media")), title, null);
-    }
-
-    @Nullable
-    @CheckReturnValue
-    private String detectType(Element link) {
-        String type = link.getAttribute("type");
-        return switch (type) {
-            case "text/css" -> type;
-            case "" -> "text/css"; // HACK is not entirely correct because default may be set by META tag or HTTP headers
-            default -> null;
-        };
+        return new StylesheetInfo(AUTHOR, uri, mediaTypes(link.getAttribute("media")), null);
     }
 
     /**
@@ -326,17 +311,14 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             while (current != null) {
                 if (current.getNodeType() == Node.ELEMENT_NODE) {
                     Element elem = (Element)current;
-                    StylesheetInfo info = null;
-                    String elemName = elem.getLocalName();
-                    if (elemName == null)
-                    {
-                        elemName = elem.getTagName();
-                    }
-                    if (elemName.equals("link")) {
-                        info = readLinkElement(elem);
-                    } else if (elemName.equals("style")) {
-                        info = readStyleElement(elem);
-                    }
+
+                    String elemName = requireNonNullElseGet(elem.getLocalName(), () -> elem.getTagName());
+
+                    StylesheetInfo info = switch (elemName) {
+                        case "link" -> readLinkElement(elem);
+                        case "style" -> readStyleElement(elem);
+                        default -> null;
+                    };
                     if (info != null) {
                         result.add(info);
                     }
@@ -349,53 +331,21 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
 
     @Override
-    @Nullable
     @CheckReturnValue
-    public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
-        if (_defaultStylesheet != null) {
-            return _defaultStylesheet;
+    public Optional<StylesheetInfo> getDefaultStylesheet() {
+        if (_defaultStylesheet == null) {
+            _defaultStylesheet = new StylesheetInfo(USER_AGENT, getDefaultStylesheetUrl().toString(), mediaTypes(""), null);
         }
-
-        synchronized (XhtmlCssOnlyNamespaceHandler.class) {
-            if (_defaultStylesheet != null) {
-                return _defaultStylesheet;
-            }
-
-            if (_defaultStylesheetError) {
-                return null;
-            }
-
-            StylesheetInfo info = new StylesheetInfo(USER_AGENT, "text/css", getNamespace(), mediaTypes(""), null, null);
-
-            try (InputStream is = getDefaultStylesheetStream()) {
-                if (_defaultStylesheetError) {
-                    return null;
-                }
-
-                Stylesheet sheet = factory.parse(new InputStreamReader(is), info);
-                info.setStylesheet(sheet);
-            } catch (IOException e) {
-                _defaultStylesheetError = true;
-                XRLog.exception("Could not parse default stylesheet", e);
-            }
-
-            _defaultStylesheet = info;
-
-            return _defaultStylesheet;
-        }
+        return Optional.ofNullable(_defaultStylesheet);
     }
 
-    @Nullable
-    private InputStream getDefaultStylesheetStream() {
+    @NonNull
+    @CheckReturnValue
+    private URL getDefaultStylesheetUrl() {
         String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
-        InputStream stream = getClass().getResourceAsStream(defaultStyleSheet);
-        if (stream == null) {
-            XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
-                    "This file must be on your CLASSPATH. Please check before continuing.");
-            _defaultStylesheetError = true;
-        }
-
-        return stream;
+        return requireNonNull(getClass().getResource(defaultStyleSheet), () ->
+                "Can't load default CSS from " + defaultStyleSheet + "." +
+                        "This file must be on your CLASSPATH. Please check before continuing.");
     }
 
     private Map<String, String> getMetaInfo(Document doc) {
