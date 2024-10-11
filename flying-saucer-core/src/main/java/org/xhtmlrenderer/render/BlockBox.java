@@ -863,7 +863,7 @@ public class BlockBox extends Box implements InlinePaintable {
         if (! isReplaced())
             layoutChildren(c, contentStart);
         else {
-            setState(Box.DONE);
+            setState(State.DONE);
         }
         c.translate(-getTx(), -getTy());
 
@@ -966,7 +966,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     protected void layoutChildren(LayoutContext c, int contentStart) {
-        setState(Box.CHILDREN_FLUX);
+        setState(State.CHILDREN_FLUX);
         ensureChildren(c);
 
         if (getFirstLetterStyle() != null) {
@@ -992,7 +992,7 @@ public class BlockBox extends Box implements InlinePaintable {
             c.getFirstLinesTracker().removeLast();
         }
 
-        setState(Box.DONE);
+        setState(State.DONE);
     }
 
     protected void layoutInlineChildren(
