@@ -32,6 +32,7 @@ import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 import org.xhtmlrenderer.newtable.TableBox;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.BlockBox.Position;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxDimensions;
 import org.xhtmlrenderer.render.InlineLayoutBox;
@@ -514,7 +515,7 @@ public final class Layer {
         fixed.setAbsY(0);
 
         fixed.setContainingBlock(new ViewportBox(rect));
-        ((BlockBox)fixed).positionAbsolute(c, BlockBox.POSITION_BOTH);
+        ((BlockBox)fixed).positionAbsolute(c, Position.BOTH);
 
         fixed.calcPaintingInfo(c, false);
     }
@@ -578,7 +579,7 @@ public final class Layer {
 
     private void position(LayoutContext c) {
         if (getMaster().getStyle().isAbsolute() && ! c.isPrint()) {
-            ((BlockBox)getMaster()).positionAbsolute(c, BlockBox.POSITION_BOTH);
+            ((BlockBox)getMaster()).positionAbsolute(c, Position.BOTH);
         } else if (getMaster().getStyle().isRelative() &&
                 (isInline() || ((BlockBox)getMaster()).isInline())) {
             getMaster().positionRelative(c);
@@ -709,12 +710,12 @@ public final class Layer {
         BlockBox master = (BlockBox)child.getMaster();
         if (child.getMaster().getStyle().isBottomAuto()) {
             // Set top, left
-            master.positionAbsolute(c, BlockBox.POSITION_BOTH);
+            master.positionAbsolute(c, Position.BOTH);
             master.positionAbsoluteOnPage(c);
             c.reInit(true);
             ((BlockBox)child.getMaster()).layout(c);
             // Set right
-            master.positionAbsolute(c, BlockBox.POSITION_HORIZONTALLY);
+            master.positionAbsolute(c, Position.HORIZONTALLY);
         } else {
             // FIXME Not right in the face of pagination, but what
             // to do?  Not sure if just laying out and positioning
@@ -727,7 +728,7 @@ public final class Layer {
             master.reset(c);
             BoxDimensions after = master.getBoxDimensions();
             master.setBoxDimensions(before);
-            master.positionAbsolute(c, BlockBox.POSITION_BOTH);
+            master.positionAbsolute(c, Position.BOTH);
             master.positionAbsoluteOnPage(c);
             master.setBoxDimensions(after);
 
