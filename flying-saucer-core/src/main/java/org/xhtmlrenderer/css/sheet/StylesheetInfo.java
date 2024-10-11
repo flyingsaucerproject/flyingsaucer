@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +41,8 @@ public class StylesheetInfo {
     private String title;
     private String uri;
     private final Origin origin;
-    private String type;
+    @Nullable
+    private final String type;
     private List<String> mediaTypes = new ArrayList<>();
     private String content;
 
@@ -52,8 +55,9 @@ public class StylesheetInfo {
         AUTHOR
     }
 
-    public StylesheetInfo(Origin origin) {
+    public StylesheetInfo(Origin origin, @Nullable String type) {
         this.origin = origin;
+        this.type = type;
     }
 
     /**
@@ -95,15 +99,6 @@ public class StylesheetInfo {
 
     public void addMedium(String medium) {
         mediaTypes.add(medium);
-    }
-
-    /**
-     * Sets the type attribute of the StylesheetInfo object
-     *
-     * @param type  The new type value
-     */
-    public void setType( String type ) {
-        this.type = type;
     }
 
     /**
@@ -151,11 +146,7 @@ public class StylesheetInfo {
         return origin;
     }
 
-    /**
-     * Gets the type attribute of the StylesheetInfo object
-     *
-     * @return   The type value
-     */
+    @Nullable
     public String getType() {
         return type;
     }

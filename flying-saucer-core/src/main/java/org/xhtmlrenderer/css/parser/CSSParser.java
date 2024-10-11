@@ -247,8 +247,7 @@ public class CSSParser {
         try {
             Token t = next();
             if (t == Token.TK_IMPORT_SYM) {
-                StylesheetInfo info = new StylesheetInfo(stylesheet.getOrigin());
-                info.setType("text/css");
+                StylesheetInfo info = new StylesheetInfo(stylesheet.getOrigin(), "text/css");
 
                 skip_whitespace();
                 t = next();

@@ -37,6 +37,7 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -179,8 +180,10 @@ public class NoNamespaceHandler implements NamespaceHandler {
             Node node = nl.item(i);
             if (node.getNodeType() != Node.PROCESSING_INSTRUCTION_NODE) continue;
             ProcessingInstruction piNode = (ProcessingInstruction) node;
-            if (!piNode.getTarget().equals("xml-stylesheet")) continue;
-            StylesheetInfo info = new StylesheetInfo(AUTHOR);
+            if (!piNode.getTarget().equals("xml-stylesheet")) {
+                continue;
+            }
+
             String pi = piNode.getData();
             Matcher m = _alternatePattern.matcher(pi);
             if (m.matches()) {
@@ -189,14 +192,12 @@ public class NoNamespaceHandler implements NamespaceHandler {
                 //TODO: handle alternate stylesheets
                 if (alternate.equals("yes")) continue;//DON'T get alternate stylesheets for now
             }
-            m = _typePattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String type = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                //TODO: handle other stylesheet types
-                if (!type.equals("text/css")) continue;//for now
-                info.setType(type);
-            }
+            String type = detectType(pi);
+            //TODO: handle other stylesheet types
+            if (!Objects.equals(type, "text/css")) continue; // for now
+
+            StylesheetInfo info = new StylesheetInfo(AUTHOR, type);
+
             m = _hrefPattern.matcher(pi);
             if (m.find()) {
                 int start = m.end();
@@ -221,6 +222,17 @@ public class NoNamespaceHandler implements NamespaceHandler {
         }
 
         return list;
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private String detectType(String pi) {
+        Matcher m = _typePattern.matcher(pi);
+        if (m.find()) {
+            int start = m.end();
+            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+        }
+        return null;
     }
 
     @Override
