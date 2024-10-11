@@ -257,9 +257,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         if (media.isEmpty()) {
             media = "all";
         }//default for HTML is "screen", but that is silly and firefox seems to assume "all"
-        StylesheetInfo info = new StylesheetInfo(AUTHOR);
+        StylesheetInfo info = new StylesheetInfo(AUTHOR, style.getAttribute("type"));
         info.setMedia(media);
-        info.setType(style.getAttribute("type"));
         info.setTitle(style.getAttribute("title"));
 
         StringBuilder buf = new StringBuilder();
@@ -290,17 +289,9 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
             return null;
         }
 
-        String type = link.getAttribute("type");
-        if (!(type.isEmpty() || type.equals("text/css"))) {
-            return null;
-        }
+        String type = detectType(link);
+        StylesheetInfo info = new StylesheetInfo(AUTHOR, type);
 
-        StylesheetInfo info = new StylesheetInfo(AUTHOR);
-
-        if (type.isEmpty()) {
-            type = "text/css";
-        } // HACK is not entirely correct because default may be set by META tag or HTTP headers
-        info.setType(type);
         info.setUri(link.getAttribute("href"));
         String media = link.getAttribute("media");
         if (media.isEmpty()) {
@@ -312,6 +303,17 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         info.setTitle(title);
 
         return info;
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private String detectType(Element link) {
+        String type = link.getAttribute("type");
+        return switch (type) {
+            case "text/css" -> type;
+            case "" -> "text/css"; // HACK is not entirely correct because default may be set by META tag or HTTP headers
+            default -> null;
+        };
     }
 
     /**
@@ -370,10 +372,9 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 return null;
             }
 
-            StylesheetInfo info = new StylesheetInfo(USER_AGENT);
+            StylesheetInfo info = new StylesheetInfo(USER_AGENT, "text/css");
             info.setUri(getNamespace());
             info.setMedia("all");
-            info.setType("text/css");
 
             try (InputStream is = getDefaultStylesheetStream()) {
                 if (_defaultStylesheetError) {
