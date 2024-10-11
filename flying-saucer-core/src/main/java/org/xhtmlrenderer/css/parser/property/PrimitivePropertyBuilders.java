@@ -37,6 +37,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.w3c.dom.css.CSSValue.CSS_INHERIT;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
 
 public class PrimitivePropertyBuilders {
     // none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset
@@ -1415,7 +1416,7 @@ public class PrimitivePropertyBuilders {
                     IdentValue ident = checkIdent(value);
 
                     checkValidity(cssName, getAllowed(), ident);
-                } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+                } else if (value.getPropertyValueType() == VALUE_TYPE_FUNCTION) {
                     FSFunction function = value.getFunction();
                     if (function.getName().equals("running")) {
                         List<PropertyValue> params = function.getParameters();

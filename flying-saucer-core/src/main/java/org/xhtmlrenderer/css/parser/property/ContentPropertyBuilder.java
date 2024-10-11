@@ -33,6 +33,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
 
 public class ContentPropertyBuilder extends AbstractPropertyBuilder {
 
@@ -66,7 +67,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
                 continue;
             } else if (type == CSSPrimitiveValue.CSS_STRING) {
                 resultValues.add(value);
-            } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+            } else if (value.getPropertyValueType() == VALUE_TYPE_FUNCTION) {
                 if (!isFunctionAllowed(value.getFunction())) {
                     throw new CSSParseException(
                             "Function " + value.getFunction().getName() + " is not allowed here", -1);

@@ -66,6 +66,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.xhtmlrenderer.css.newmatch.CascadedStyle.createLayoutPropertyDeclaration;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
 
 /**
  * This class is responsible for creating the box tree from the DOM.  This is
@@ -806,7 +807,7 @@ public class BoxBuilder {
             short type = value.getPrimitiveType();
             if (type == CSSPrimitiveValue.CSS_STRING) {
                 content = value.getStringValue();
-            } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+            } else if (value.getPropertyValueType() == VALUE_TYPE_FUNCTION) {
                 if (mode == CONTENT_LIST_DOCUMENT && isAttrFunction(value.getFunction())) {
                     content = getAttributeValue(value.getFunction(), element);
                 } else {

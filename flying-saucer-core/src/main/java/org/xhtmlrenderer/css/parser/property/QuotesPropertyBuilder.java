@@ -34,6 +34,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.xhtmlrenderer.css.constants.CSSName.QUOTES;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
 
 public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
 
@@ -88,7 +89,7 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
         short type = value.getPrimitiveType();
         if (type == CSSPrimitiveValue.CSS_URI) {
             throw new CSSParseException("URI is not allowed here", -1);
-        } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+        } else if (value.getPropertyValueType() == VALUE_TYPE_FUNCTION) {
             throw new CSSParseException("Function " + value.getFunction().getName() + " is not allowed here", -1);
         } else if (type == CSSPrimitiveValue.CSS_IDENT) {
             throw new CSSParseException("Identifier is not a valid value for the quotes property", -1);
