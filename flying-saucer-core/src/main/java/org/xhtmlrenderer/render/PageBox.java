@@ -34,7 +34,7 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BoxBuilder;
-import org.xhtmlrenderer.layout.Layer;
+import org.xhtmlrenderer.layout.Layer.PagedMode;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.newtable.TableBox;
 
@@ -52,7 +52,6 @@ import static org.xhtmlrenderer.css.style.CalculatedStyle.BOTTOM;
 import static org.xhtmlrenderer.css.style.CalculatedStyle.LEFT;
 import static org.xhtmlrenderer.css.style.CalculatedStyle.RIGHT;
 import static org.xhtmlrenderer.css.style.CalculatedStyle.TOP;
-import static org.xhtmlrenderer.layout.Layer.PAGED_MODE_SCREEN;
 
 public class PageBox {
     private static final MarginArea[] MARGIN_AREA_DEFS = {
@@ -86,11 +85,13 @@ public class PageBox {
     @Nullable
     private PageDimensions _pageDimensions;
 
+    @Nullable
     private PageInfo _pageInfo;
 
     @Nullable
     private final MarginAreaContainer[] _marginAreas = new MarginAreaContainer[MARGIN_AREA_DEFS.length];
 
+    @Nullable
     private Element _metadata;
 
     public int getWidth(CssContext cssCtx) {
@@ -282,23 +283,26 @@ public class PageBox {
                 getHeight(cssCtx) - (int) margin.top() - (int) margin.bottom());
     }
 
-    public void paintBorder(RenderingContext c, int additionalClearance, short mode) {
-        int top = (mode == PAGED_MODE_SCREEN) ? getPaintingTop() : 0;
+    public void paintBorder(RenderingContext c, int additionalClearance, PagedMode mode) {
+        int top = switch (mode) {
+            case PAGED_MODE_SCREEN -> getPaintingTop();
+            case PAGED_MODE_PRINT -> 0;
+        };
         c.getOutputDevice().paintBorder(c,
                 getStyle(),
                 getBorderEdge(additionalClearance, top, c),
                 BorderPainter.ALL);
     }
 
-    public void paintBackground(RenderingContext c, int additionalClearance, short mode) {
-        Rectangle bounds = (mode == PAGED_MODE_SCREEN) ?
-                getScreenPaintingBounds(c, additionalClearance) :
-                getPrintPaintingBounds(c);
-
+    public void paintBackground(RenderingContext c, int additionalClearance, PagedMode mode) {
+        Rectangle bounds = switch (mode) {
+            case PAGED_MODE_SCREEN -> getScreenPaintingBounds(c, additionalClearance);
+            case PAGED_MODE_PRINT -> getPrintPaintingBounds(c);
+        };
         c.getOutputDevice().paintBackground(c, getStyle(), bounds, bounds, getStyle().getBorder(c));
     }
 
-    public void paintMarginAreas(RenderingContext c, int additionalClearance, short mode) {
+    public void paintMarginAreas(RenderingContext c, int additionalClearance, PagedMode mode) {
         for (int i = 0; i < MARGIN_AREA_DEFS.length; i++) {
             MarginAreaContainer container = _marginAreas[i];
             if (container != null) {
@@ -341,6 +345,8 @@ public class PageBox {
         _pageInfo = pageInfo;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Element getMetadata() {
         return _metadata;
     }
@@ -445,8 +451,10 @@ public class PageBox {
         private final MarginBoxName[] _marginBoxNames;
 
         public abstract Dimension getLayoutDimension(CssContext c, PageBox page, RectPropertySet margin);
+
+        @CheckReturnValue
         public abstract Point getPaintingPosition(
-                RenderingContext c, PageBox page, int additionalClearance, short mode);
+                RenderingContext c, PageBox page, int additionalClearance, PagedMode mode);
 
         private MarginArea(MarginBoxName marginBoxName) {
             _marginBoxNames = new MarginBoxName[] { marginBoxName };
@@ -476,17 +484,11 @@ public class PageBox {
         }
 
         @Override
-        public Point getPaintingPosition(
-                RenderingContext c, PageBox page, int additionalClearance, short mode) {
-            int top;
-            if (mode == PAGED_MODE_SCREEN) {
-                top = page.getPaintingTop();
-            } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = 0;
-            } else {
-                throw new IllegalArgumentException("Illegal mode");
-            }
-
+        public Point getPaintingPosition(RenderingContext c, PageBox page, int additionalClearance, PagedMode mode) {
+            int top = switch (mode) {
+                case PAGED_MODE_SCREEN -> page.getPaintingTop();
+                case PAGED_MODE_PRINT -> 0;
+            };
             return new Point(additionalClearance, top);
         }
 
@@ -503,18 +505,12 @@ public class PageBox {
         }
 
         @Override
-        public Point getPaintingPosition(
-                RenderingContext c, PageBox page, int additionalClearance, short mode) {
+        public Point getPaintingPosition(RenderingContext c, PageBox page, int additionalClearance, PagedMode mode) {
             int left = additionalClearance + page.getWidth(c) - (int)page.getMargin(c).right();
-            int top;
-            if (mode == PAGED_MODE_SCREEN) {
-                top = page.getPaintingTop();
-            } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = 0;
-            } else {
-                throw new IllegalArgumentException("Illegal mode");
-            }
-
+            int top = switch (mode) {
+                case PAGED_MODE_SCREEN -> page.getPaintingTop();
+                case PAGED_MODE_PRINT -> 0;
+            };
             return new Point(left, top);
         }
     }
@@ -530,19 +526,12 @@ public class PageBox {
         }
 
         @Override
-        public Point getPaintingPosition(
-                RenderingContext c, PageBox page, int additionalClearance, short mode) {
+        public Point getPaintingPosition(RenderingContext c, PageBox page, int additionalClearance, PagedMode mode) {
             int left = additionalClearance + page.getWidth(c) - (int)page.getMargin(c).right();
-            int top;
-
-            if (mode == PAGED_MODE_SCREEN) {
-                top = page.getPaintingBottom() - (int)page.getMargin(c).bottom();
-            } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = page.getHeight(c) - (int)page.getMargin(c).bottom();
-            } else {
-                throw new IllegalArgumentException("Illegal mode");
-            }
-
+            int top = switch (mode) {
+                case PAGED_MODE_SCREEN -> page.getPaintingBottom() - (int)page.getMargin(c).bottom();
+                case PAGED_MODE_PRINT -> page.getHeight(c) - (int)page.getMargin(c).bottom();
+            };
             return new Point(left, top);
         }
     }
@@ -558,18 +547,11 @@ public class PageBox {
         }
 
         @Override
-        public Point getPaintingPosition(
-                RenderingContext c, PageBox page, int additionalClearance, short mode) {
-
-            int top;
-            if (mode == PAGED_MODE_SCREEN) {
-                top = page.getPaintingBottom() - (int)page.getMargin(c).bottom();
-            } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = page.getHeight(c) - (int)page.getMargin(c).bottom();
-            } else {
-                throw new IllegalArgumentException("Illegal mode");
-            }
-
+        public Point getPaintingPosition(RenderingContext c, PageBox page, int additionalClearance, PagedMode mode) {
+            int top = switch (mode) {
+                case PAGED_MODE_SCREEN -> page.getPaintingBottom() - (int)page.getMargin(c).bottom();
+                case PAGED_MODE_PRINT -> page.getHeight(c) - (int)page.getMargin(c).bottom();
+            };
             return new Point(additionalClearance, top);
         }
     }
@@ -588,17 +570,11 @@ public class PageBox {
         }
 
         @Override
-        public Point getPaintingPosition(
-                RenderingContext c, PageBox page, int additionalClearance, short mode) {
-            int top;
-            if (mode == PAGED_MODE_SCREEN) {
-                top = page.getPaintingTop() + (int)page.getMargin(c).top();
-            } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = (int)page.getMargin(c).top();
-            } else {
-                throw new IllegalArgumentException("Illegal mode");
-            }
-
+        public Point getPaintingPosition(RenderingContext c, PageBox page, int additionalClearance, PagedMode mode) {
+            int top = switch (mode) {
+                case PAGED_MODE_SCREEN -> page.getPaintingTop() + (int)page.getMargin(c).top();
+                case PAGED_MODE_PRINT -> (int) page.getMargin(c).top();
+            };
             return new Point(additionalClearance, top);
         }
 
@@ -621,18 +597,12 @@ public class PageBox {
         }
 
         @Override
-        public Point getPaintingPosition(
-                RenderingContext c, PageBox page, int additionalClearance, short mode) {
+        public Point getPaintingPosition(RenderingContext c, PageBox page, int additionalClearance, PagedMode mode) {
             int left = additionalClearance + page.getWidth(c) - (int)page.getMargin(c).right();
-            int top;
-            if (mode == PAGED_MODE_SCREEN) {
-                top = page.getPaintingTop() + (int)page.getMargin(c).top();
-            } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = (int)page.getMargin(c).top();
-            } else {
-                throw new IllegalArgumentException("Illegal mode");
-            }
-
+            int top = switch (mode) {
+                case PAGED_MODE_SCREEN -> page.getPaintingTop() + (int)page.getMargin(c).top();
+                case PAGED_MODE_PRINT -> (int) page.getMargin(c).top();
+            };
             return new Point(left, top);
         }
 
@@ -655,18 +625,12 @@ public class PageBox {
         }
 
         @Override
-        public Point getPaintingPosition(
-                RenderingContext c, PageBox page, int additionalClearance, short mode) {
+        public Point getPaintingPosition(RenderingContext c, PageBox page, int additionalClearance, PagedMode mode) {
             int left = additionalClearance + (int)page.getMargin(c).left();
-            int top;
-            if (mode == PAGED_MODE_SCREEN) {
-                top = page.getPaintingTop();
-            } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = 0;
-            } else {
-                throw new IllegalArgumentException("Illegal mode");
-            }
-
+            int top = switch (mode) {
+                case PAGED_MODE_SCREEN -> page.getPaintingTop();
+                case PAGED_MODE_PRINT -> 0;
+            };
             return new Point(left, top);
         }
     }
@@ -686,18 +650,12 @@ public class PageBox {
 
         @Override
         public Point getPaintingPosition(
-                RenderingContext c, PageBox page, int additionalClearance, short mode) {
+                RenderingContext c, PageBox page, int additionalClearance, PagedMode mode) {
             int left = additionalClearance + (int)page.getMargin(c).left();
-            int top;
-
-            if (mode == PAGED_MODE_SCREEN) {
-                top = page.getPaintingBottom() - (int)page.getMargin(c).bottom();
-            } else if (mode == Layer.PAGED_MODE_PRINT) {
-                top = page.getHeight(c) - (int)page.getMargin(c).bottom();
-            } else {
-                throw new IllegalArgumentException("Illegal mode");
-            }
-
+            int top = switch (mode) {
+                case PAGED_MODE_SCREEN -> page.getPaintingBottom() - (int)page.getMargin(c).bottom();
+                case PAGED_MODE_PRINT -> page.getHeight(c) - (int)page.getMargin(c).bottom();
+            };
             return new Point(left, top);
         }
     }

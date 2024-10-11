@@ -47,6 +47,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_PRINT;
+
 /**
  * A renderer for an SWT Printer. Instances must be disposed with
  * {@link PrinterRenderer#dispose()}.
@@ -151,7 +153,7 @@ public class PrinterRenderer implements UserInterface {
             Layer root = rootBox.getLayer();
             Dimension intrinsic_size = root.getPaintingDimension(layout);
             root.trimEmptyPages(intrinsic_size.height);
-            root.assignPagePaintingPositions(layout, Layer.PAGED_MODE_PRINT);
+            root.assignPagePaintingPositions(layout, PAGED_MODE_PRINT);
 
             // RENDER
             c = newRenderingContext(gc);
@@ -176,9 +178,9 @@ public class PrinterRenderer implements UserInterface {
                     return;
                 }
 
-                page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
-                page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
-                page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
+                page.paintBackground(c, 0, PAGED_MODE_PRINT);
+                page.paintMarginAreas(c, 0, PAGED_MODE_PRINT);
+                page.paintBorder(c, 0, PAGED_MODE_PRINT);
 
                 Rectangle content = page.getPrintClippingBounds(c);
                 c.getOutputDevice().clip(content);

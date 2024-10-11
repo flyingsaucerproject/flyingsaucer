@@ -66,8 +66,10 @@ import static java.util.Comparator.comparingInt;
  * completed layout).
  */
 public final class Layer {
-    public static final short PAGED_MODE_SCREEN = 1;
-    public static final short PAGED_MODE_PRINT = 2;
+    public enum PagedMode {
+        PAGED_MODE_SCREEN,
+        PAGED_MODE_PRINT
+    }
 
     @Nullable
     private final Layer _parent;
@@ -902,22 +904,19 @@ public final class Layer {
         }
     }
 
-    public void assignPagePaintingPositions(CssContext cssCtx, short mode) {
+    public void assignPagePaintingPositions(CssContext cssCtx, PagedMode mode) {
         assignPagePaintingPositions(cssCtx, mode, 0);
     }
 
     public void assignPagePaintingPositions(
-            CssContext cssCtx, int mode, int additionalClearance) {
+            CssContext cssCtx, PagedMode mode, int additionalClearance) {
         List<PageBox> pages = getPages();
         int paintingTop = additionalClearance;
         for (PageBox page : pages) {
             page.setPaintingTop(paintingTop);
-            if (mode == PAGED_MODE_SCREEN) {
-                page.setPaintingBottom(paintingTop + page.getHeight(cssCtx));
-            } else if (mode == PAGED_MODE_PRINT) {
-                page.setPaintingBottom(paintingTop + page.getContentHeight(cssCtx));
-            } else {
-                throw new IllegalArgumentException("Illegal mode");
+            switch (mode) {
+                case PAGED_MODE_SCREEN -> page.setPaintingBottom(paintingTop + page.getHeight(cssCtx));
+                case PAGED_MODE_PRINT -> page.setPaintingBottom(paintingTop + page.getContentHeight(cssCtx));
             }
             paintingTop = page.getPaintingBottom() + additionalClearance;
         }
