@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.StyleReference;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
@@ -479,9 +479,9 @@ public class ITextRenderer {
         Rectangle content = page.getPrintClippingBounds(c);
         _outputDevice.clip(content);
 
-        int top = -page.getPaintingTop() + page.getMarginBorderPadding(c, CalculatedStyle.TOP);
+        int top = -page.getPaintingTop() + page.getMarginBorderPadding(c, Edge.TOP);
 
-        int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+        int left = page.getMarginBorderPadding(c, Edge.LEFT);
 
         _outputDevice.translate(left, top);
         _root.getLayer().paint(c);

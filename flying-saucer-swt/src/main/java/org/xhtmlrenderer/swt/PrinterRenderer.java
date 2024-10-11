@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -186,8 +186,8 @@ public class PrinterRenderer implements UserInterface {
                 c.getOutputDevice().clip(content);
 
                 int top = -page.getPaintingTop()
-                        + page.getMarginBorderPadding(c, CalculatedStyle.TOP);
-                int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+                        + page.getMarginBorderPadding(c, Edge.TOP);
+                int left = page.getMarginBorderPadding(c, Edge.LEFT);
 
                 c.getOutputDevice().translate(left, top);
                 root.paint(c);

@@ -48,7 +48,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
@@ -339,8 +339,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             PageBox page = _root.getLayer().getPage(c, bounds.y);
 
             float bottom = getDeviceLength(page.getBottom() - (bounds.y + bounds.height)
-                    + page.getMarginBorderPadding(c, CalculatedStyle.BOTTOM));
-            float left = getDeviceLength(page.getMarginBorderPadding(c, CalculatedStyle.LEFT) + bounds.x);
+                    + page.getMarginBorderPadding(c, Edge.BOTTOM));
+            float left = getDeviceLength(page.getMarginBorderPadding(c, Edge.LEFT) + bounds.x);
 
             return new com.lowagie.text.Rectangle(left, bottom, left + getDeviceLength(bounds.width), bottom
                     + getDeviceLength(bounds.height));
@@ -356,7 +356,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
         PageBox page = _root.getLayer().getPage(c, getPageRefY(box));
         if (page != null) {
-            int distanceFromTop = page.getMarginBorderPadding(c, CalculatedStyle.TOP);
+            int distanceFromTop = page.getMarginBorderPadding(c, Edge.TOP);
             distanceFromTop += box.getAbsY() + box.getMargin(c).top() - page.getTop();
             result = new PdfDestination(PdfDestination.XYZ, 0, page.getHeight(c) / _dotsPerPoint - distanceFromTop / _dotsPerPoint, 0);
             result.addPage(_writer.getPageReference(_startPageNo + page.getPageNo() + 1));
@@ -986,7 +986,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
         if (box != null) {
             PageBox page = root.getLayer().getPage(c, getPageRefY(box));
-            int distanceFromTop = page.getMarginBorderPadding(c, CalculatedStyle.TOP);
+            int distanceFromTop = page.getMarginBorderPadding(c, Edge.TOP);
             distanceFromTop += box.getAbsY() - page.getTop();
             target = new PdfDestination(PdfDestination.XYZ, 0, normalizeY(distanceFromTop / _dotsPerPoint), 0);
             target.addPage(_writer.getPageReference(_startPageNo + page.getPageNo() + 1));
@@ -1282,8 +1282,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             return null;
         }
 
-        float x = box.getAbsX() + page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
-        float y = (page.getBottom() - (box.getAbsY() + box.getHeight())) + page.getMarginBorderPadding(c, CalculatedStyle.BOTTOM);
+        float x = box.getAbsX() + page.getMarginBorderPadding(c, Edge.LEFT);
+        float y = (page.getBottom() - (box.getAbsY() + box.getHeight())) + page.getMarginBorderPadding(c, Edge.BOTTOM);
         x /= _dotsPerPoint;
         y /= _dotsPerPoint;
 

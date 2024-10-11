@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -378,7 +379,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
 
     public int getLeftMarginBorderPadding(CssContext cssCtx) {
         if (_startsHere) {
-            return getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT);
+            return getMarginBorderPadding(cssCtx, Edge.LEFT);
         } else {
             return 0;
         }
@@ -386,7 +387,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
 
     public int getRightMarginPaddingBorder(CssContext cssCtx) {
         if (_endsHere) {
-            return getMarginBorderPadding(cssCtx, CalculatedStyle.RIGHT);
+            return getMarginBorderPadding(cssCtx, Edge.RIGHT);
         } else {
             return 0;
         }

@@ -25,6 +25,7 @@ import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
@@ -153,9 +154,9 @@ public class InlineBoxing {
 
                     //To break the line well, assume we don't just want to paint padding on next line
                     pendingLeftMBP += style.getMarginBorderPadding(
-                            c, maxAvailableWidth, CalculatedStyle.LEFT);
+                            c, maxAvailableWidth, Edge.LEFT);
                     pendingRightMBP += style.getMarginBorderPadding(
-                            c, maxAvailableWidth, CalculatedStyle.RIGHT);
+                            c, maxAvailableWidth, Edge.RIGHT);
                 }
 
                 LineBreakContext lbContext = new LineBreakContext();
@@ -201,7 +202,7 @@ public class InlineBoxing {
 
                         if (currentIB.isStartsHere()) {
                             pendingLeftMBP -= currentIB.getStyle().getMarginBorderPadding(
-                                    c, maxAvailableWidth, CalculatedStyle.LEFT);
+                                    c, maxAvailableWidth, Edge.LEFT);
                         }
 
                         needFirstLetter = false;
@@ -237,7 +238,7 @@ public class InlineBoxing {
                             if (currentIB.isStartsHere()) {
                                 int marginBorderPadding =
                                         currentIB.getStyle().getMarginBorderPadding(
-                                                c, maxAvailableWidth, CalculatedStyle.LEFT);
+                                                c, maxAvailableWidth, Edge.LEFT);
                                 pendingLeftMBP -= marginBorderPadding;
                                 remainingWidth -= marginBorderPadding;
                             }
@@ -274,7 +275,7 @@ public class InlineBoxing {
 
                 if (iB.isEndsHere()) {
                     int rightMBP = style.getMarginBorderPadding(
-                            c, maxAvailableWidth, CalculatedStyle.RIGHT);
+                            c, maxAvailableWidth, Edge.RIGHT);
 
                     pendingRightMBP -= rightMBP;
                     remainingWidth -= rightMBP;
@@ -346,7 +347,7 @@ public class InlineBoxing {
 
                     if (currentIB != null && currentIB.isStartsHere()) {
                         pendingLeftMBP -= currentIB.getStyle().getMarginBorderPadding(
-                                c, maxAvailableWidth, CalculatedStyle.LEFT);
+                                c, maxAvailableWidth, Edge.LEFT);
                     }
 
                     needFirstLetter = false;

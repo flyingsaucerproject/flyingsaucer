@@ -26,6 +26,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.layout.TextUtil;
@@ -190,7 +191,7 @@ public class InlineBox implements Styleable {
             }
             int length = getTextWidth(c, target);
             if (last == 0) {
-                length += getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.LEFT);
+                length += getStyle().getMarginBorderPadding(c, cbWidth, Edge.LEFT);
             }
             if (length > _maxWidth) {
                 _maxWidth = length;
@@ -206,7 +207,7 @@ public class InlineBox implements Styleable {
             target = target.trim();
         }
         int length = getTextWidth(c, target);
-        length += getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.RIGHT);
+        length += getStyle().getMarginBorderPadding(c, cbWidth, Edge.RIGHT);
         if (length > _maxWidth) {
             _maxWidth = length;
         }
@@ -324,7 +325,7 @@ public class InlineBox implements Styleable {
         maxWidth += wordWidth;
 
         if (isStartsHere()) {
-            int leftMBP = getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.LEFT);
+            int leftMBP = getStyle().getMarginBorderPadding(c, cbWidth, Edge.LEFT);
             if (firstWord + leftMBP > _minWidth) {
                 _minWidth = firstWord + leftMBP;
             }
@@ -332,7 +333,7 @@ public class InlineBox implements Styleable {
         }
 
         if (isEndsHere()) {
-            int rightMBP = getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.RIGHT);
+            int rightMBP = getStyle().getMarginBorderPadding(c, cbWidth, Edge.RIGHT);
             if (lastWord + rightMBP > _minWidth) {
                 _minWidth = lastWord + rightMBP;
             }
@@ -355,8 +356,8 @@ public class InlineBox implements Styleable {
     }
 
     private int getInlineMBP(LayoutContext c, int cbWidth) {
-        return getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.LEFT) +
-            getStyle().getMarginBorderPadding(c, cbWidth, CalculatedStyle.RIGHT);
+        return getStyle().getMarginBorderPadding(c, cbWidth, Edge.LEFT) +
+            getStyle().getMarginBorderPadding(c, cbWidth, Edge.RIGHT);
     }
 
     public void calcMinMaxWidth(LayoutContext c, int cbWidth, boolean trimLeadingSpace) {

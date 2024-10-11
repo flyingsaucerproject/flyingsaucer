@@ -21,7 +21,7 @@ package org.xhtmlrenderer.swing;
 
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -220,9 +220,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
                 g.clip(content);
 
                 int left = pagePaintingClearanceWidth +
-                    page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+                    page.getMarginBorderPadding(c, Edge.LEFT);
                 int top = page.getPaintingTop()
-                    + page.getMarginBorderPadding(c, CalculatedStyle.TOP)
+                    + page.getMarginBorderPadding(c, Edge.TOP)
                     - page.getTop();
 
                 g.translate(left, top);
@@ -268,9 +268,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         g.clip(content);
 
         int top = -page.getPaintingTop() +
-            page.getMarginBorderPadding(c, CalculatedStyle.TOP);
+            page.getMarginBorderPadding(c, Edge.TOP);
 
-        int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+        int left = page.getMarginBorderPadding(c, Edge.LEFT);
 
         g.translate(left, top);
         root.paint(c);
