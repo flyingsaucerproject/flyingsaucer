@@ -203,7 +203,7 @@ public class TableRowBox extends BlockBox {
             section.setNeedCellWidthCalc(false);
         }
 
-        if (getChildrenContentType() != CONTENT_EMPTY) {
+        if (getChildrenContentType() != ContentType.EMPTY) {
             for (Box box : getChildren()) {
                 TableCellBox cell = (TableCellBox) box;
 

@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.render;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -61,6 +62,7 @@ import static org.xhtmlrenderer.css.constants.IdentValue.CIRCLE;
 import static org.xhtmlrenderer.css.constants.IdentValue.DISC;
 import static org.xhtmlrenderer.css.constants.IdentValue.NONE;
 import static org.xhtmlrenderer.css.constants.IdentValue.SQUARE;
+import static org.xhtmlrenderer.render.BlockBox.ContentType.UNKNOWN;
 
 /**
  * A block box as defined in the CSS spec.  It also provides a base class for
@@ -74,10 +76,12 @@ public class BlockBox extends Box implements InlinePaintable {
         BOTH
     }
 
-    public static final int CONTENT_UNKNOWN = 0;
-    public static final int CONTENT_INLINE = 1;
-    public static final int CONTENT_BLOCK = 2;
-    public static final int CONTENT_EMPTY = 4;
+    public enum ContentType {
+        UNKNOWN,
+        INLINE,
+        BLOCK,
+        EMPTY
+    }
 
     protected static final int NO_BASELINE = Integer.MIN_VALUE;
 
@@ -97,7 +101,7 @@ public class BlockBox extends Box implements InlinePaintable {
     @Nullable
     private ReplacedElement _replacedElement;
 
-    private int _childrenContentType;
+    private ContentType _childrenContentType = UNKNOWN;
 
     @Nullable
     private List<Styleable> _inlineContent;
@@ -172,10 +176,10 @@ public class BlockBox extends Box implements InlinePaintable {
         }
 
         result.append(switch (getChildrenContentType()) {
-            case CONTENT_BLOCK -> "(B) ";
-            case CONTENT_INLINE -> "(I) ";
-            case CONTENT_EMPTY -> "(E) ";
-            default -> "";
+            case BLOCK -> "(B) ";
+            case INLINE -> "(I) ";
+            case EMPTY -> "(E) ";
+            case UNKNOWN -> "";
         });
 
         result.append(getExtraBoxDescription());
@@ -216,15 +220,15 @@ public class BlockBox extends Box implements InlinePaintable {
         result.append(" styleMargin=[").append(styleMargin.top()).append(", ").append(styleMargin.right())
                 .append(", ").append(styleMargin.bottom()).append(", ").append(styleMargin.right()).append("] ");
 
-        if (getChildrenContentType() != CONTENT_EMPTY) {
+        if (getChildrenContentType() != ContentType.EMPTY) {
             result.append('\n');
         }
 
         switch (getChildrenContentType()) {
-            case CONTENT_BLOCK:
+            case BLOCK:
                 dumpBoxes(c, indent, getChildren(), which, result);
                 break;
-            case CONTENT_INLINE:
+            case INLINE:
                 if (which == Box.DUMP_RENDER) {
                     dumpBoxes(c, indent, getChildren(), which, result);
                 } else {
@@ -559,7 +563,7 @@ public class BlockBox extends Box implements InlinePaintable {
             getReplacedElement().detach(c);
             setReplacedElement(null);
         }
-        if (getChildrenContentType() == CONTENT_INLINE) {
+        if (getChildrenContentType() == ContentType.INLINE) {
             removeAllChildren();
         }
 
@@ -956,7 +960,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     public void ensureChildren(LayoutContext c) {
-        if (getChildrenContentType() == CONTENT_UNKNOWN) {
+        if (getChildrenContentType() == UNKNOWN) {
             BoxBuilder.createChildren(c, this);
         }
     }
@@ -973,12 +977,12 @@ public class BlockBox extends Box implements InlinePaintable {
         }
 
         switch (getChildrenContentType()) {
-            case CONTENT_INLINE:
+            case INLINE -> {
                 layoutInlineChildren(c, contentStart, calcInitialBreakAtLine(c), true);
-                break;
-            case CONTENT_BLOCK:
+            }
+            case BLOCK -> {
                 BlockBoxing.layoutContent(c, this, contentStart);
-                break;
+            }
         }
 
         if (getFirstLetterStyle() != null) {
@@ -1076,11 +1080,13 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
-    public int getChildrenContentType() {
+    @NonNull
+    @CheckReturnValue
+    public ContentType getChildrenContentType() {
         return _childrenContentType;
     }
 
-    public void setChildrenContentType(int contentType) {
+    public void setChildrenContentType(ContentType contentType) {
         _childrenContentType = contentType;
     }
 
@@ -1190,7 +1196,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
                 if (isMayCollapseMarginsWithChildren() && isNoTopPaddingOrBorder(c)) {
                     ensureChildren(c);
-                    if (getChildrenContentType() == CONTENT_BLOCK) {
+                    if (getChildrenContentType() == ContentType.BLOCK) {
                         for (Box box : getChildren()) {
                             BlockBox child = (BlockBox) box;
                             child.collapseTopMargin(c, false, result);
@@ -1228,7 +1234,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 if (isMayCollapseMarginsWithChildren() &&
                         ! getStyle().isTable() && isNoBottomPaddingOrBorder(c)) {
                     ensureChildren(c);
-                    if (getChildrenContentType() == CONTENT_BLOCK) {
+                    if (getChildrenContentType() == ContentType.BLOCK) {
                         for (int i = getChildCount() - 1; i >= 0; i--) {
                             BlockBox child = (BlockBox) getChild(i);
 
@@ -1273,7 +1279,7 @@ public class BlockBox extends Box implements InlinePaintable {
         setBottomMarginCalculated(true);
 
         ensureChildren(c);
-        if (getChildrenContentType() == CONTENT_BLOCK) {
+        if (getChildrenContentType() == ContentType.BLOCK) {
             for (Box box : getChildren()) {
                 BlockBox child = (BlockBox) box;
                 child.collapseEmptySubtreeMargins(c, result);
@@ -1296,9 +1302,9 @@ public class BlockBox extends Box implements InlinePaintable {
         }
 
         ensureChildren(c);
-        if (getChildrenContentType() == CONTENT_INLINE) {
+        if (getChildrenContentType() == ContentType.INLINE) {
             return false;
-        } else if (getChildrenContentType() == CONTENT_BLOCK) {
+        } else if (getChildrenContentType() == ContentType.BLOCK) {
             for (Box box : getChildren()) {
                 BlockBox child = (BlockBox) box;
                 if (child.isSkipWhenCollapsingMargins() || !child.isVerticalMarginsAdjoin(c)) {
@@ -1541,16 +1547,9 @@ public class BlockBox extends Box implements InlinePaintable {
 
                 ensureChildren(c);
 
-                if (getChildrenContentType() == CONTENT_BLOCK ||
-                        getChildrenContentType() == CONTENT_INLINE) {
-                    switch (getChildrenContentType()) {
-                        case CONTENT_BLOCK:
-                            calcMinMaxWidthBlockChildren(c);
-                            break;
-                        case CONTENT_INLINE:
-                            calcMinMaxWidthInlineChildren(c);
-                            break;
-                    }
+                switch (getChildrenContentType()) {
+                    case BLOCK -> calcMinMaxWidthBlockChildren(c);
+                    case INLINE -> calcMinMaxWidthInlineChildren(c);
                 }
 
                 if (minimumMaxWidth > _maxWidth) {
@@ -1763,7 +1762,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
     // FIXME Should be expanded into generic restyle facility
     public void styleText(LayoutContext c, CalculatedStyle style) {
-        if (getChildrenContentType() == CONTENT_INLINE) {
+        if (getChildrenContentType() == ContentType.INLINE) {
             Deque<CalculatedStyle> styles = new LinkedList<>();
             styles.add(style);
             for (Styleable child : _inlineContent) {
@@ -1946,10 +1945,10 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private void findLastLineBox(LastLineBoxContext context) {
-        int type = getChildrenContentType();
+        ContentType type = getChildrenContentType();
         int count = getChildCount();
         if (count > 0) {
-            if (type == CONTENT_INLINE) {
+            if (type == ContentType.INLINE) {
                 for (int i = count - 1; i >= 0; i--) {
                     LineBox child = (LineBox) getChild(i);
                     if (child.getHeight() > 0) {
@@ -1959,7 +1958,7 @@ public class BlockBox extends Box implements InlinePaintable {
                         }
                     }
                 }
-            } else if (type == CONTENT_BLOCK) {
+            } else if (type == ContentType.BLOCK) {
                 for (int i = count - 1; i >= 0; i--) {
                     ((BlockBox) getChild(i)).findLastLineBox(context);
                     if (context.current == 0) {
@@ -1971,17 +1970,17 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private LineBox findLastLineBox() {
-        int type = getChildrenContentType();
+        ContentType type = getChildrenContentType();
         int count = getChildCount();
         if (count > 0) {
-            if (type == CONTENT_INLINE) {
+            if (type == ContentType.INLINE) {
                 for (int i = count - 1; i >= 0; i--) {
                     LineBox result = (LineBox) getChild(i);
                     if (result.getHeight() > 0) {
                         return result;
                     }
                 }
-            } else if (type == CONTENT_BLOCK) {
+            } else if (type == ContentType.BLOCK) {
                 for (int i = count - 1; i >= 0; i--) {
                     LineBox result = ((BlockBox) getChild(i)).findLastLineBox();
                     if (result != null) {
@@ -1995,17 +1994,17 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private LineBox findFirstLineBox() {
-        int type = getChildrenContentType();
+        ContentType type = getChildrenContentType();
         int count = getChildCount();
         if (count > 0) {
-            if (type == CONTENT_INLINE) {
+            if (type == ContentType.INLINE) {
                 for (int i = 0; i < count; i++) {
                     LineBox result = (LineBox) getChild(i);
                     if (result.getHeight() > 0) {
                         return result;
                     }
                 }
-            } else if (type == CONTENT_BLOCK) {
+            } else if (type == ContentType.BLOCK) {
                 for (int i = 0; i < count; i++) {
                     LineBox result = ((BlockBox) getChild(i)).findFirstLineBox();
                     if (result != null) {
@@ -2076,9 +2075,9 @@ public class BlockBox extends Box implements InlinePaintable {
     public boolean isContainsInlineContent(LayoutContext c) {
         ensureChildren(c);
         return switch (getChildrenContentType()) {
-            case CONTENT_INLINE -> true;
-            case CONTENT_EMPTY -> false;
-            case CONTENT_BLOCK -> {
+            case INLINE -> true;
+            case EMPTY -> false;
+            case BLOCK -> {
                 for (Box value : getChildren()) {
                     BlockBox box = (BlockBox) value;
                     if (box.isContainsInlineContent(c)) {
@@ -2087,7 +2086,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 }
                 yield false;
             }
-            default -> throw new RuntimeException("internal error: no children");
+            case UNKNOWN -> throw new RuntimeException("internal error: no children");
         };
 
     }

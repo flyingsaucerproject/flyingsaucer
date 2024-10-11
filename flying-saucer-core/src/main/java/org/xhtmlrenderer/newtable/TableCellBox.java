@@ -255,7 +255,7 @@ public class TableCellBox extends BlockBox {
         // XXX Not quite right, but good enough for now
         // (e.g. absolute boxes will be counted as content here when the spec
         // says the cell should be treated as empty).
-        return showEmpty || getChildrenContentType() != BlockBox.CONTENT_EMPTY;
+        return showEmpty || getChildrenContentType() != ContentType.EMPTY;
 
     }
 

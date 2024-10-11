@@ -51,6 +51,7 @@ import org.xhtmlrenderer.newtable.TableRowBox;
 import org.xhtmlrenderer.newtable.TableSectionBox;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.BlockBox.ContentType;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBoxData;
 import org.xhtmlrenderer.render.InlineBox;
@@ -179,14 +180,14 @@ public class BoxBuilder {
         result.setStyle(tableStyle);
         result.setElement(source);
         result.setAnonymous(true);
-        result.setChildrenContentType(BlockBox.CONTENT_BLOCK);
+        result.setChildrenContentType(ContentType.BLOCK);
 
         CalculatedStyle tableSectionStyle = pageStyle.createAnonymousStyle(IdentValue.TABLE_ROW_GROUP);
         TableSectionBox section = (TableSectionBox)createBlockBox(tableSectionStyle, info, false);
         section.setStyle(tableSectionStyle);
         section.setElement(source);
         section.setAnonymous(true);
-        section.setChildrenContentType(BlockBox.CONTENT_BLOCK);
+        section.setChildrenContentType(ContentType.BLOCK);
 
         result.addChild(section);
 
@@ -197,7 +198,7 @@ public class BoxBuilder {
             row.setStyle(tableRowStyle);
             row.setElement(source);
             row.setAnonymous(true);
-            row.setChildrenContentType(BlockBox.CONTENT_BLOCK);
+            row.setChildrenContentType(ContentType.BLOCK);
 
             row.setHeightOverride(height);
 
@@ -218,7 +219,7 @@ public class BoxBuilder {
                         row.setStyle(tableRowStyle);
                         row.setElement(source);
                         row.setAnonymous(true);
-                        row.setChildrenContentType(BlockBox.CONTENT_BLOCK);
+                        row.setChildrenContentType(ContentType.BLOCK);
 
                         row.setHeightOverride(height);
 
@@ -308,18 +309,18 @@ public class BoxBuilder {
             if (info.isContainsBlockLevelContent()) {
                 insertAnonymousBlocks(
                         c.getSharedContext(), owner, children, info.isLayoutRunningBlocks());
-                owner.setChildrenContentType(BlockBox.CONTENT_BLOCK);
+                owner.setChildrenContentType(ContentType.BLOCK);
             } else {
                 WhitespaceStripper.stripInlineContent(children);
                 if (!children.isEmpty()) {
                     owner.setInlineContent(children);
-                    owner.setChildrenContentType(BlockBox.CONTENT_INLINE);
+                    owner.setChildrenContentType(ContentType.INLINE);
                 } else {
-                    owner.setChildrenContentType(BlockBox.CONTENT_EMPTY);
+                    owner.setChildrenContentType(ContentType.EMPTY);
                 }
             }
         } else {
-            owner.setChildrenContentType(BlockBox.CONTENT_EMPTY);
+            owner.setChildrenContentType(ContentType.EMPTY);
         }
     }
 
@@ -592,7 +593,7 @@ public class BoxBuilder {
             anonBox.setFromCaptionedTable(true);
             anonBox.setElement(table.getElement());
 
-            anonBox.setChildrenContentType(BlockBox.CONTENT_BLOCK);
+            anonBox.setChildrenContentType(ContentType.BLOCK);
             anonBox.addAllChildren(topCaptions);
             anonBox.addChild(table);
             anonBox.addAllChildren(bottomCaptions);
@@ -961,7 +962,7 @@ public class BoxBuilder {
             result.setStyle(style);
             result.setInlineContent(inlineBoxes);
             result.setElement(element);
-            result.setChildrenContentType(BlockBox.CONTENT_INLINE);
+            result.setChildrenContentType(ContentType.INLINE);
             result.setPseudoElementOrClass(peName);
 
             if (! style.isLaidOutInInlineContext()) {
