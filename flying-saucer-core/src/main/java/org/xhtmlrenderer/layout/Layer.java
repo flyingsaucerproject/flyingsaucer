@@ -243,7 +243,7 @@ public final class Layer {
         BoxRangeHelper helper = new BoxRangeHelper(c.getOutputDevice(), rangeLists.getBlock());
 
         for (int i = 0; i < blocks.size(); i++) {
-            helper.popClipRegions(c, i);
+            helper.popClipRegions(i);
 
             Box box = blocks.get(i);
             box.paintBackground(c);
@@ -264,7 +264,7 @@ public final class Layer {
             helper.pushClipRegion(c, i);
         }
 
-        helper.popClipRegions(c, blocks.size());
+        helper.popClipRegions(blocks.size());
     }
 
     private void paintInlineContent(RenderingContext c, List<Box> lines, BoxRangeLists rangeLists) {
@@ -272,12 +272,12 @@ public final class Layer {
                 c.getOutputDevice(), rangeLists.getInline());
 
         for (int i = 0; i < lines.size(); i++) {
-            helper.popClipRegions(c, i);
+            helper.popClipRegions(i);
             helper.pushClipRegion(c, i);
             ((InlinePaintable) lines.get(i)).paintInline(c);
         }
 
-        helper.popClipRegions(c, lines.size());
+        helper.popClipRegions(lines.size());
     }
 
     private void paintSelection(RenderingContext c, List<Box> lines) {
@@ -473,7 +473,7 @@ public final class Layer {
         BoxRangeHelper helper = new BoxRangeHelper(c.getOutputDevice(), rangeLists.getBlock());
 
         for (int i = 0; i < blocks.size(); i++) {
-            helper.popClipRegions(c, i);
+            helper.popClipRegions(i);
 
             BlockBox box = (BlockBox)blocks.get(i);
             box.paintListMarker(c);
@@ -481,14 +481,14 @@ public final class Layer {
             helper.pushClipRegion(c, i);
         }
 
-        helper.popClipRegions(c, blocks.size());
+        helper.popClipRegions(blocks.size());
     }
 
     private void paintReplacedElements(RenderingContext c, List<Box> blocks, BoxRangeLists rangeLists) {
         BoxRangeHelper helper = new BoxRangeHelper(c.getOutputDevice(), rangeLists.getBlock());
 
         for (int i = 0; i < blocks.size(); i++) {
-            helper.popClipRegions(c, i);
+            helper.popClipRegions(i);
 
             BlockBox box = (BlockBox)blocks.get(i);
             if (box.isReplaced()) {
@@ -498,7 +498,7 @@ public final class Layer {
             helper.pushClipRegion(c, i);
         }
 
-        helper.popClipRegions(c, blocks.size());
+        helper.popClipRegions(blocks.size());
     }
 
     private void positionFixedLayer(RenderingContext c) {

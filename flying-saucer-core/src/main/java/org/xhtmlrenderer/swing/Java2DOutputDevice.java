@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.extend.FSGlyphVector;
@@ -235,6 +237,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         _graphics.fillOval(x, y, width, height);
     }
 
+    @Nullable
+    @CheckReturnValue
     public Object getRenderingHint(Key key) {
         return _graphics.getRenderingHint(key);
     }

@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.extend;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
@@ -83,6 +85,8 @@ public interface OutputDevice {
     void setStroke(Stroke s);
     Stroke getStroke();
 
+    @Nullable
+    @CheckReturnValue
     Object getRenderingHint(Key key);
     void setRenderingHint(Key key, Object value);
 
