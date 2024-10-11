@@ -85,20 +85,20 @@ public class LineBox extends Box implements InlinePaintable {
     }
 
     @Override
-    public String dump(LayoutContext c, String indent, int which) {
-        if (which != Box.DUMP_RENDER) {
-            throw new IllegalArgumentException(String.format("Unsupported which: %d (expected: %d)", which, Box.DUMP_RENDER));
+    public String dump(LayoutContext c, String indent, Dump which) {
+        if (which != Dump.RENDER) {
+            throw new IllegalArgumentException(String.format("Unsupported which: %d (expected: %d)", which, Dump.RENDER));
         }
 
         StringBuilder result = new StringBuilder(indent);
         result.append(this);
         result.append('\n');
 
-        dumpBoxes(c, indent, getNonFlowContent(), Box.DUMP_RENDER, result);
+        dumpBoxes(c, indent, getNonFlowContent(), Dump.RENDER, result);
         if (!getNonFlowContent().isEmpty()) {
             result.append('\n');
         }
-        dumpBoxes(c, indent, getChildren(), Box.DUMP_RENDER, result);
+        dumpBoxes(c, indent, getChildren(), Dump.RENDER, result);
 
         return result.toString();
     }

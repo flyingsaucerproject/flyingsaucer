@@ -206,7 +206,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     @Override
-    public String dump(LayoutContext c, String indent, int which) {
+    public String dump(LayoutContext c, String indent, Dump which) {
         StringBuilder result = new StringBuilder(indent);
 
         ensureChildren(c);
@@ -229,7 +229,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 dumpBoxes(c, indent, getChildren(), which, result);
                 break;
             case INLINE:
-                if (which == Box.DUMP_RENDER) {
+                if (which == Dump.RENDER) {
                     dumpBoxes(c, indent, getChildren(), which, result);
                 } else {
                     for (Iterator<Styleable> i = getInlineContent().iterator(); i.hasNext();) {

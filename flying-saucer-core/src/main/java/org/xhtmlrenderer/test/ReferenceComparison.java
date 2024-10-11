@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Box.Dump;
 import org.xhtmlrenderer.swing.BoxRenderer;
 import org.xhtmlrenderer.util.IOUtil;
 
@@ -133,13 +134,13 @@ public class ReferenceComparison {
         LayoutContext layoutContext = renderer.getLayoutContext();
         String inputFileName = source.getName();
         String refRendered = trimTrailingLS(readReference(referenceDir, inputFileName, RENDER_SFX));
-        String rendered = trimTrailingLS(box.dump(layoutContext, "", Box.DUMP_RENDER));
+        String rendered = trimTrailingLS(box.dump(layoutContext, "", Dump.RENDER));
         if (!compareLines(refRendered, rendered, stat)) {
             storeFailed(failedDirectory, new File(referenceDir, inputFileName), RENDER_SFX, rendered);
         }
 
         final String refLaidOut = trimTrailingLS(readReference(referenceDir, inputFileName, LAYOUT_SFX));
-        final String laidOut = trimTrailingLS(box.dump(layoutContext, "", Box.DUMP_LAYOUT));
+        final String laidOut = trimTrailingLS(box.dump(layoutContext, "", Dump.LAYOUT));
         if (!compareLines(refLaidOut, laidOut, stat)) {
             storeFailed(failedDirectory, new File(referenceDir, inputFileName), LAYOUT_SFX, laidOut);
         }
