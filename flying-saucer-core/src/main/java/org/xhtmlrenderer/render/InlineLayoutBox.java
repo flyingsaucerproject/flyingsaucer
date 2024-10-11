@@ -817,8 +817,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     @Override
-    public String dump(LayoutContext c, String indent, int which) {
-        if (which != Box.DUMP_RENDER) {
+    public String dump(LayoutContext c, String indent, Dump which) {
+        if (which != Dump.RENDER) {
             throw new IllegalArgumentException("Which " + which + " not supported");
         }
 

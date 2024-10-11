@@ -109,11 +109,11 @@ public abstract class Box implements Styleable {
     protected Box() {
     }
 
-    public abstract String dump(LayoutContext c, String indent, int which);
+    public abstract String dump(LayoutContext c, String indent, Dump which);
 
     protected void dumpBoxes(
             LayoutContext c, String indent, List<Box> boxes,
-            int which, StringBuilder result) {
+            Dump which, StringBuilder result) {
         for (Iterator<Box> i = boxes.iterator(); i.hasNext(); ) {
             Box b = i.next();
             result.append(b.dump(c, indent + "  ", which));
@@ -249,9 +249,10 @@ public abstract class Box implements Styleable {
 
     private volatile State _state = NOTHING;
 
-    public static final int DUMP_RENDER = 2;
-
-    public static final int DUMP_LAYOUT = 1;
+    public enum Dump {
+        RENDER,
+        LAYOUT
+    }
 
     public State getState() {
         return _state;
