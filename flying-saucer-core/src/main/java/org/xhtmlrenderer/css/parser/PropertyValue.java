@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -29,17 +30,28 @@ import org.w3c.dom.css.Rect;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.util.ArrayUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableList;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_COLOR;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_IDENT;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_LENGTH;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_LIST;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_NUMBER;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_STRING;
+
 public class PropertyValue implements CSSPrimitiveValue {
-    public static final short VALUE_TYPE_NUMBER = 1;
-    public static final short VALUE_TYPE_LENGTH = 2;
-    public static final short VALUE_TYPE_COLOR = 3;
-    public static final short VALUE_TYPE_IDENT = 4;
-    public static final short VALUE_TYPE_STRING = 5;
-    public static final short VALUE_TYPE_LIST = 6;
-    public static final short VALUE_TYPE_FUNCTION = 7;
+    public enum Type {
+        VALUE_TYPE_NUMBER,
+        VALUE_TYPE_LENGTH,
+        VALUE_TYPE_COLOR,
+        VALUE_TYPE_IDENT,
+        VALUE_TYPE_STRING,
+        VALUE_TYPE_LIST,
+        VALUE_TYPE_FUNCTION
+    }
 
     private final short _type;
     private final short _cssValueType;
@@ -57,13 +69,14 @@ public class PropertyValue implements CSSPrimitiveValue {
     @Nullable
     private IdentValue _identValue;
 
-    private final short _propertyValueType;
+    private final Type _propertyValueType;
 
     @Nullable
     private final Token _operator;
 
-    private List<?> _values;
-    private FSFunction _function;
+    private final List<?> _values;
+    @Nullable
+    private final FSFunction _function;
 
     public PropertyValue(short type, float floatValue, String cssText) {
         this(type, floatValue, cssText, null);
@@ -75,13 +88,11 @@ public class PropertyValue implements CSSPrimitiveValue {
         _cssValueType = CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = cssText;
 
-        if (type == CSSPrimitiveValue.CSS_NUMBER && floatValue != 0.0f) {
-            _propertyValueType = VALUE_TYPE_NUMBER;
-        } else {
-            _propertyValueType = VALUE_TYPE_LENGTH;
-        }
+        _propertyValueType = (type == CSS_NUMBER && floatValue != 0.0f) ? VALUE_TYPE_NUMBER : VALUE_TYPE_LENGTH;
         _stringValue = null;
         _stringArrayValue = null;
+        _values = emptyList();
+        _function = null;
         _FSColor = null;
         _operator = operatorToken;
     }
@@ -99,6 +110,8 @@ public class PropertyValue implements CSSPrimitiveValue {
         _propertyValueType = VALUE_TYPE_COLOR;
         _stringValue = null;
         _stringArrayValue = null;
+        _values = emptyList();
+        _function = null;
         _operator = operatorToken;
     }
 
@@ -118,18 +131,16 @@ public class PropertyValue implements CSSPrimitiveValue {
         _cssValueType = _stringValue.equalsIgnoreCase("inherit") ? CSSValue.CSS_INHERIT : CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = cssText;
 
-        if (type == CSSPrimitiveValue.CSS_IDENT) {
-            _propertyValueType = VALUE_TYPE_IDENT;
-        } else {
-            _propertyValueType = VALUE_TYPE_STRING;
-        }
+        _propertyValueType = (type == CSS_IDENT) ? VALUE_TYPE_IDENT : VALUE_TYPE_STRING;
         _stringArrayValue = ArrayUtil.cloneOrEmpty(stringArrayValue);
+        _values = emptyList();
+        _function = null;
         _FSColor = null;
         _operator = operatorToken;
     }
 
     public PropertyValue(IdentValue ident) {
-        _type = CSSPrimitiveValue.CSS_IDENT;
+        _type = CSS_IDENT;
         _stringValue = ident.toString();
         _cssValueType = _stringValue.equals("inherit") ? CSSValue.CSS_INHERIT : CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = ident.toString();
@@ -137,6 +148,8 @@ public class PropertyValue implements CSSPrimitiveValue {
         _propertyValueType = VALUE_TYPE_IDENT;
         _identValue = ident;
         _stringArrayValue = null;
+        _values = emptyList();
+        _function = null;
         _FSColor = null;
         _operator = null;
     }
@@ -150,6 +163,7 @@ public class PropertyValue implements CSSPrimitiveValue {
         _propertyValueType = VALUE_TYPE_LIST;
         _stringValue = null;
         _stringArrayValue = null;
+        _function = null;
         _FSColor = null;
         _operator = null;
     }
@@ -165,6 +179,7 @@ public class PropertyValue implements CSSPrimitiveValue {
 
         _function = function;
         _propertyValueType = VALUE_TYPE_FUNCTION;
+        _values = emptyList();
         _stringValue = null;
         _stringArrayValue = null;
         _FSColor = null;
@@ -245,7 +260,7 @@ public class PropertyValue implements CSSPrimitiveValue {
         _identValue = identValue;
     }
 
-    public short getPropertyValueType() {
+    public Type getPropertyValueType() {
         return _propertyValueType;
     }
 
@@ -264,21 +279,24 @@ public class PropertyValue implements CSSPrimitiveValue {
 
     public <T> List<T> getValues() {
         //noinspection unchecked
-        return new ArrayList<>((List<T>) _values);
+        return unmodifiableList((List<T>) _values);
     }
 
+    @Nullable
     public FSFunction getFunction() {
         return _function;
     }
 
+    @CheckReturnValue
     public String getFingerprint() {
-        if (getPropertyValueType() == VALUE_TYPE_IDENT) {
-            if (_identValue == null) {
-                _identValue = IdentValue.getByIdentString(getStringValue());
+        return switch (getPropertyValueType()) {
+            case VALUE_TYPE_IDENT -> {
+                if (_identValue == null) {
+                    _identValue = IdentValue.getByIdentString(getStringValue());
+                }
+                yield "I" + _identValue.FS_ID;
             }
-            return "I" + _identValue.FS_ID;
-        } else {
-            return getCssText();
-        }
+            default -> getCssText();
+        };
     }
 }

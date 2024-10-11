@@ -48,6 +48,7 @@ import static org.xhtmlrenderer.css.constants.CSSName.FS_PAGE_HEIGHT;
 import static org.xhtmlrenderer.css.constants.CSSName.FS_PAGE_ORIENTATION;
 import static org.xhtmlrenderer.css.constants.CSSName.FS_PAGE_WIDTH;
 import static org.xhtmlrenderer.css.constants.IdentValue.LANDSCAPE;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
 import static org.xhtmlrenderer.css.style.CalculatedStyle.BOTTOM;
 import static org.xhtmlrenderer.css.style.CalculatedStyle.LEFT;
 import static org.xhtmlrenderer.css.style.CalculatedStyle.RIGHT;
@@ -368,7 +369,7 @@ public class PageBox {
                     List<PropertyValue> values = value.getValues();
                     if (values.size() == 1) {
                         PropertyValue funcVal = values.get(0);
-                        if (funcVal.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+                        if (funcVal.getPropertyValueType() == VALUE_TYPE_FUNCTION) {
                             FSFunction func = funcVal.getFunction();
                             if (BoxBuilder.isElementFunction(func)) {
                                 BlockBox metadata = BoxBuilder.getRunningBlock(c, funcVal);
