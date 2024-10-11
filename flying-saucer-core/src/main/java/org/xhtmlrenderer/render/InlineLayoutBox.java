@@ -81,7 +81,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     }
 
     private InlineLayoutBox() {
-        setState(Box.DONE);
+        setState(State.DONE);
     }
 
     public InlineLayoutBox copyOf() {

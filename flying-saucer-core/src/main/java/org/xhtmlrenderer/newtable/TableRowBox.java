@@ -194,7 +194,7 @@ public class TableRowBox extends BlockBox {
 
     @Override
     protected void layoutChildren(LayoutContext c, int contentStart) {
-        setState(Box.CHILDREN_FLUX);
+        setState(State.CHILDREN_FLUX);
         ensureChildren(c);
 
         TableSectionBox section = getSection();
@@ -212,7 +212,7 @@ public class TableRowBox extends BlockBox {
             }
         }
 
-        setState(Box.DONE);
+        setState(State.DONE);
     }
 
     private void alignBaselineAlignedCells(LayoutContext c) {

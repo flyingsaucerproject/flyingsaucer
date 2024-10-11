@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import static java.util.Objects.requireNonNullElseGet;
+import static org.xhtmlrenderer.render.Box.State.NOTHING;
 
 public abstract class Box implements Styleable {
     @Nullable
@@ -239,32 +240,33 @@ public abstract class Box implements Styleable {
         return _boxes;
     }
 
-    public static final int NOTHING = 0;
-    public static final int FLUX = 1;
-    public static final int CHILDREN_FLUX = 2;
-    public static final int DONE = 3;
+    public enum State {
+        NOTHING,
+        FLUX,
+        CHILDREN_FLUX,
+        DONE
+    }
 
-    private volatile int _state = NOTHING;
+    private volatile State _state = NOTHING;
 
     public static final int DUMP_RENDER = 2;
 
     public static final int DUMP_LAYOUT = 1;
 
-    public int getState() {
+    public State getState() {
         return _state;
     }
 
-    public void setState(int state) {
+    public void setState(State state) {
         _state = state;
     }
 
-    public static String stateToString(int state) {
+    public static String stateToString(State state) {
         return switch (state) {
             case NOTHING -> "NOTHING";
             case FLUX -> "FLUX";
             case CHILDREN_FLUX -> "CHILDREN_FLUX";
             case DONE -> "DONE";
-            default -> "unknown";
         };
     }
 
