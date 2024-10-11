@@ -50,6 +50,7 @@ import java.util.TreeMap;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Collections.synchronizedSet;
 import static java.util.Comparator.comparingLong;
+import static org.xhtmlrenderer.css.newmatch.Selector.Axis.IMMEDIATE_SIBLING_AXIS;
 
 
 /**
@@ -265,12 +266,14 @@ public class Matcher {
             List<Selector> mappedSelectors = new LinkedList<>();
             StringBuilder key = new StringBuilder();
             for (Selector axe : axes) {
-                if (axe.getAxis() == Selector.DESCENDANT_AXIS) {
-                    //carry it forward to other descendants
-                    childAxes.add(axe);
-                } else if (axe.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
-                    throw new RuntimeException("Selector axis==" + Selector.IMMEDIATE_SIBLING_AXIS);
+                switch (axe.getAxis()) {
+                    case DESCENDANT_AXIS -> childAxes.add(axe); // carry it forward to other descendants
+                    case IMMEDIATE_SIBLING_AXIS ->
+                            throw new RuntimeException("Selector axis: " + IMMEDIATE_SIBLING_AXIS);
+                    case CHILD_AXIS -> {
+                    }
                 }
+
                 if (!axe.matches(e, _attRes, _treeRes)) {
                     continue;
                 }
@@ -301,10 +304,13 @@ public class Matcher {
                 Selector chain = axe.getChainedSelector();
                 if (chain == null) {
                     mappedSelectors.add(axe);
-                } else if (chain.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
-                    throw new RuntimeException("Selector axis==" + Selector.IMMEDIATE_SIBLING_AXIS);
                 } else {
-                    childAxes.add(chain);
+                    switch (chain.getAxis()) {
+                        case IMMEDIATE_SIBLING_AXIS ->
+                                throw new RuntimeException("Selector axis: " + IMMEDIATE_SIBLING_AXIS);
+                        case CHILD_AXIS,
+                             DESCENDANT_AXIS -> childAxes.add(chain);
+                    }
                 }
             }
             if (children == null) children = new HashMap<>();

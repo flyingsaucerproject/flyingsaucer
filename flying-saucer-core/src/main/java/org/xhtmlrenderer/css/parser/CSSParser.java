@@ -25,6 +25,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.MarginBoxName;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.newmatch.Selector;
+import org.xhtmlrenderer.css.newmatch.Selector.Axis;
 import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
 import org.xhtmlrenderer.css.sheet.FontFaceRule;
 import org.xhtmlrenderer.css.sheet.MediaRule;
@@ -53,6 +54,9 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_NUMBER;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PERCENTAGE;
+import static org.xhtmlrenderer.css.newmatch.Selector.Axis.CHILD_AXIS;
+import static org.xhtmlrenderer.css.newmatch.Selector.Axis.DESCENDANT_AXIS;
+import static org.xhtmlrenderer.css.newmatch.Selector.Axis.IMMEDIATE_SIBLING_AXIS;
 
 public class CSSParser {
     private static final Set<String> SUPPORTED_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
@@ -833,7 +837,7 @@ public class CSSParser {
             return selectors.get(0);
         }
 
-        int lastDescendantOrChildAxis = Selector.DESCENDANT_AXIS;
+        Axis lastDescendantOrChildAxis = DESCENDANT_AXIS;
         Selector result = null;
         for (int i = 0; i < count - 1; i++) {
             Selector first = selectors.get(i);
@@ -848,13 +852,13 @@ public class CSSParser {
 
             boolean sibling = false;
             if (combinator == Token.TK_S) {
-                second.setAxis(Selector.DESCENDANT_AXIS);
-                lastDescendantOrChildAxis = Selector.DESCENDANT_AXIS;
+                second.setAxis(DESCENDANT_AXIS);
+                lastDescendantOrChildAxis = DESCENDANT_AXIS;
             } else if (combinator == Token.TK_GREATER) {
-                second.setAxis(Selector.CHILD_AXIS);
-                lastDescendantOrChildAxis = Selector.CHILD_AXIS;
+                second.setAxis(CHILD_AXIS);
+                lastDescendantOrChildAxis = CHILD_AXIS;
             } else if (combinator == Token.TK_PLUS) {
-                first.setAxis(Selector.IMMEDIATE_SIBLING_AXIS);
+                first.setAxis(IMMEDIATE_SIBLING_AXIS);
                 sibling = true;
             }
 
