@@ -67,6 +67,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.xhtmlrenderer.css.newmatch.CascadedStyle.createLayoutPropertyDeclaration;
 import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
+import static org.xhtmlrenderer.layout.BoxBuilder.MarginDirection.HORIZONTAL;
+import static org.xhtmlrenderer.layout.BoxBuilder.MarginDirection.VERTICAL;
 
 /**
  * This class is responsible for creating the box tree from the DOM.  This is
@@ -84,8 +86,10 @@ import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTIO
 public class BoxBuilder {
     private static final Logger log = LoggerFactory.getLogger(BoxBuilder.class);
 
-    public static final int MARGIN_BOX_VERTICAL = 1;
-    public static final int MARGIN_BOX_HORIZONTAL = 2;
+    public enum MarginDirection {
+        VERTICAL,
+        HORIZONTAL
+    }
 
     private static final int CONTENT_LIST_DOCUMENT = 1;
     private static final int CONTENT_LIST_MARGIN_BOX = 2;
@@ -146,7 +150,7 @@ public class BoxBuilder {
             PageInfo pageInfo,
             MarginBoxName[] names,
             int height,
-            int direction)
+            MarginDirection direction)
     {
         if (! pageInfo.hasAny(names)) {
             return null;
@@ -187,7 +191,7 @@ public class BoxBuilder {
         result.addChild(section);
 
         TableRowBox row = null;
-        if (direction == MARGIN_BOX_HORIZONTAL) {
+        if (direction == HORIZONTAL) {
             CalculatedStyle tableRowStyle = pageStyle.createAnonymousStyle(IdentValue.TABLE_ROW);
             row = (TableRowBox)createBlockBox(tableRowStyle, info, false);
             row.setStyle(tableRowStyle);
@@ -201,14 +205,14 @@ public class BoxBuilder {
         }
 
         int cellCount = 0;
-        boolean alwaysCreate = names.length > 1 && direction == MARGIN_BOX_HORIZONTAL;
+        boolean alwaysCreate = names.length > 1 && direction == HORIZONTAL;
 
         for (MarginBoxName name : names) {
             CascadedStyle cellStyle = pageInfo.createMarginBoxStyle(name, alwaysCreate);
             if (cellStyle != null) {
                 TableCellBox cell = createMarginBox(c, cellStyle, alwaysCreate);
                 if (cell != null) {
-                    if (direction == MARGIN_BOX_VERTICAL) {
+                    if (direction == VERTICAL) {
                         CalculatedStyle tableRowStyle = pageStyle.createAnonymousStyle(IdentValue.TABLE_ROW);
                         row = (TableRowBox) createBlockBox(tableRowStyle, info, false);
                         row.setStyle(tableRowStyle);
@@ -226,7 +230,7 @@ public class BoxBuilder {
             }
         }
 
-        if (direction == MARGIN_BOX_VERTICAL && cellCount > 0) {
+        if (direction == VERTICAL && cellCount > 0) {
             int rHeight = 0;
             for (Box box : section.getChildren()) {
                 TableRowBox r = (TableRowBox) box;

@@ -35,6 +35,7 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BoxBuilder;
+import org.xhtmlrenderer.layout.BoxBuilder.MarginDirection;
 import org.xhtmlrenderer.layout.Layer.PagedMode;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.newtable.TableBox;
@@ -54,6 +55,8 @@ import static org.xhtmlrenderer.css.style.CalculatedStyle.Edge.BOTTOM;
 import static org.xhtmlrenderer.css.style.CalculatedStyle.Edge.LEFT;
 import static org.xhtmlrenderer.css.style.CalculatedStyle.Edge.RIGHT;
 import static org.xhtmlrenderer.css.style.CalculatedStyle.Edge.TOP;
+import static org.xhtmlrenderer.layout.BoxBuilder.MarginDirection.HORIZONTAL;
+import static org.xhtmlrenderer.layout.BoxBuilder.MarginDirection.VERTICAL;
 
 public class PageBox {
     private static final MarginArea[] MARGIN_AREA_DEFS = {
@@ -469,8 +472,8 @@ public class PageBox {
             return _marginBoxNames;
         }
 
-        public int getDirection() {
-            return BoxBuilder.MARGIN_BOX_HORIZONTAL;
+        public MarginDirection getDirection() {
+            return HORIZONTAL;
         }
     }
 
@@ -579,8 +582,8 @@ public class PageBox {
             return new Point(additionalClearance, top);
         }
 
-        public int getDirection() {
-            return BoxBuilder.MARGIN_BOX_VERTICAL;
+        public MarginDirection getDirection() {
+            return VERTICAL;
         }
     }
 
@@ -607,8 +610,8 @@ public class PageBox {
             return new Point(left, top);
         }
 
-        public int getDirection() {
-            return BoxBuilder.MARGIN_BOX_VERTICAL;
+        public MarginDirection getDirection() {
+            return VERTICAL;
         }
     }
 
