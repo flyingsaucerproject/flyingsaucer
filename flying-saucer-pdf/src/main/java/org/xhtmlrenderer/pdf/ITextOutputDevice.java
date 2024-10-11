@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.CMYKColor;
@@ -39,6 +40,7 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfString;
 import com.lowagie.text.pdf.PdfTextArray;
 import com.lowagie.text.pdf.PdfWriter;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -456,6 +458,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _transform.translate(tx, ty);
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public Object getRenderingHint(Key key) {
         return null;
@@ -605,8 +609,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private void followPath(Shape s, int drawType) {
         PdfContentByte cb = _currentPage;
-        if (s == null)
-            return;
 
         if (drawType == STROKE) {
             if (!(_stroke instanceof BasicStroke)) {
@@ -753,7 +755,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private boolean isMakeDash(boolean oldOk, BasicStroke nStroke, BasicStroke oStroke) {
         if (oldOk) {
             if (nStroke.getDashArray() != null) {
-                return nStroke.getDashPhase() != oStroke.getDashPhase() 
+                return nStroke.getDashPhase() != oStroke.getDashPhase()
                         || !Arrays.equals(nStroke.getDashArray(), oStroke.getDashArray());
             } else {
                 return oStroke.getDashArray() != null;

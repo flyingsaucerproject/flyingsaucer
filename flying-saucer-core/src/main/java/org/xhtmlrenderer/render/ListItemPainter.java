@@ -20,12 +20,15 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.FSImage;
 
-import java.awt.*;
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_DEFAULT;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
+import static java.util.Objects.requireNonNullElse;
+import static org.xhtmlrenderer.css.constants.CSSName.LIST_STYLE_TYPE;
 
 /**
  * A utility class to paint list markers (all types).
@@ -43,14 +46,12 @@ public class ListItemPainter {
             drawImage(c, box, markerData);
         } else {
             CalculatedStyle style = box.getStyle();
-            IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
-
             c.getOutputDevice().setColor(style.getColor());
 
             if (markerData.getGlyphMarker() != null) {
-                drawGlyph(c, box, style, listStyle);
+                drawGlyph(c, box, style);
             } else if (markerData.getTextMarker() != null) {
-                drawText(c, box, listStyle);
+                drawText(c, box);
             }
         }
     }
@@ -77,18 +78,17 @@ public class ListItemPainter {
         }
     }
 
-    private static void drawGlyph(RenderingContext c, BlockBox box,
-            CalculatedStyle style, IdentValue listStyle) {
+    private static void drawGlyph(RenderingContext c, BlockBox box, CalculatedStyle style) {
         // save the old AntiAliasing setting, then force it on
-        Object aa_key = c.getOutputDevice().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-        c.getOutputDevice().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+        Object aa_key = c.getOutputDevice().getRenderingHint(KEY_ANTIALIASING);
+        c.getOutputDevice().setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 
         // calculations for bullets
         MarkerData.GlyphMarker marker = box.getMarkerData().getGlyphMarker();
         int x = getReferenceX(c, box) - marker.getLayoutWidth();
         int y = getListItemCenterBaseline(box) - marker.getDiameter() / 2;
 
+        IdentValue listStyle = style.getIdent(LIST_STYLE_TYPE);
         if (listStyle == IdentValue.DISC) {
             c.getOutputDevice().fillOval(x, y, marker.getDiameter(), marker.getDiameter());
         } else if (listStyle == IdentValue.SQUARE) {
@@ -98,8 +98,7 @@ public class ListItemPainter {
         }
 
         // restore the old AntiAliasing setting
-        c.getOutputDevice().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                aa_key == null ? RenderingHints.VALUE_ANTIALIAS_DEFAULT : aa_key);
+        c.getOutputDevice().setRenderingHint(KEY_ANTIALIASING, requireNonNullElse(aa_key, VALUE_ANTIALIAS_DEFAULT));
     }
 
     private static int getListItemCenterBaseline(final BlockBox box) {
@@ -114,22 +113,20 @@ public class ListItemPainter {
         }
     }
 
-    private static void drawText(RenderingContext c, BlockBox box, IdentValue listStyle) {
+    private static void drawText(RenderingContext c, BlockBox box) {
         MarkerData.TextMarker text = box.getMarkerData().getTextMarker();
 
-        int x = getReferenceX(c, box);
-        x += -text.getLayoutWidth();
-        int y = getReferenceBaseline(c, box);
+        int x = getReferenceX(c, box) - text.getLayoutWidth();
+        int y = getReferenceBaseline(box);
 
         c.getOutputDevice().setColor(box.getStyle().getColor());
         c.getOutputDevice().setFont(box.getStyle().getFSFont(c));
-        c.getTextRenderer().drawString(
-                c.getOutputDevice(), text.getText(), x, y);
+        c.getTextRenderer().drawString(c.getOutputDevice(), text.getText(), x, y);
     }
 
-    private static int getReferenceBaseline(RenderingContext c, BlockBox box) {
+    private static int getReferenceBaseline(BlockBox box) {
         MarkerData markerData = box.getMarkerData();
-        StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
+        StrutMetrics strutMetrics = markerData.getStructMetrics();
 
         if (markerData.getReferenceLine() != null) {
             return markerData.getReferenceLine().getAbsY() + strutMetrics.getBaseline();

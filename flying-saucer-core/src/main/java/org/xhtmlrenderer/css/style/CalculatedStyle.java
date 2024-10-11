@@ -403,6 +403,10 @@ public class CalculatedStyle {
         return null;
     }
 
+    public int getIntPropertyProportionalTo(CSSName cssName, float baseValue, CssContext ctx) {
+        return (int) getFloatPropertyProportionalTo(cssName, baseValue, ctx);
+    }
+
     public float getFloatPropertyProportionalTo(CSSName cssName, float baseValue, CssContext ctx) {
         return valueByName(cssName).getFloatProportionalTo(cssName, baseValue, ctx);
     }

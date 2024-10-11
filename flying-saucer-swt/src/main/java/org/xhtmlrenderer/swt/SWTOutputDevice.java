@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -26,6 +27,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
+import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -51,6 +53,7 @@ import java.awt.geom.PathIterator;
  * @author Vianney le Clément
  *
  */
+@NullUnmarked
 public class SWTOutputDevice extends AbstractOutputDevice {
 
     private final GC _gc;
@@ -319,6 +322,8 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public Object getRenderingHint(Key key) {
         if (RenderingHints.KEY_ANTIALIASING.equals(key)) {
             switch (_gc.getAntialias()) {
