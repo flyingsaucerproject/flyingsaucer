@@ -50,7 +50,7 @@
     <dependency>
       <groupId>com.github.librepdf</groupId>
       <artifactId>openpdf</artifactId>
-      <version>2.0.3</version>
+      <version>${openpdf.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
