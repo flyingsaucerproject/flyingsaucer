@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.util;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.logging.Level;
 
 /**
@@ -28,7 +30,7 @@ public interface XRLogger {
 
     void log(String where, Level level, String msg);
 
-    void log(String where, Level level, String msg, Throwable th);
+    void log(String where, Level level, String msg, @Nullable Throwable th);
 
     void setLevel(String logger, Level level);
 
