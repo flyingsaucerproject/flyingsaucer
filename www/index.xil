@@ -8,15 +8,6 @@ h3(fs_heading){ clear: none }. An XML/XHTML/CSS 2.1 Renderer
 
 _(in 100% Java)_
 
-h2(fs_heading){ clear: both }. Download Now!
-
-table(properties){width: 100% }.
-| *Status* | *Type* | *URL* | *Description* | *MD5 Sum* 
-| *STABLE* | Binary Zip | "flyingsaucer-R8.zip":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8.zip | For using Flying Saucer in your own programs (3.0M) | "MD5 Checksum":sig/flyingsaucer-R8.zip.md5.txt "SHA Checksum":sig/flyingsaucer-R8.zip.asc.txt
-| *STABLE* | Source Bundle Zip | "flyingsaucer-R8-src.zip":http://pigeonholdings.com/projects/flyingsaucer/R8/downloads/flyingsaucer-R8-src.zip | Includes source, demo programs, sample code, etc.  (7.5M) | "MD5 Checksum":sig/flyingsaucer-R8-src.zip.md5.txt "SHA Checksum":sig/flyingsaucer-R8-src.zip.asc.txt
-
-If you'd like to access _everything_, please use our source code repository (CVS); see the link to CVS on the left side of this page.
-
 h2(fs_heading){ clear: left }. Quick News
 
 p{font-size: 14pt}. Release 7 No Longer Available
@@ -85,14 +76,14 @@ There's also a blog entry by Dieter Wimberger "Customizable IM frontend with XHT
 
 h2(fs_heading). Demos
 
-Check out our spiffy "demo apps":demos.html. 
+Check out our spiffy "demo apps":demos.html.
 
 
 h2(fs_heading). Helping Out
 
 We need help!
 
-If you want to contribute or just see what's going on then please join the dev ${mailing-list}! We need developers, beta testers, doc writers, evangelists, and users. 
+If you want to contribute or just see what's going on then please join the dev ${mailing-list}! We need developers, beta testers, doc writers, evangelists, and users.
 
 Keep up with new releases: !https://java-net.dev.java.net/branding/images/xml.gif!:http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS
 
