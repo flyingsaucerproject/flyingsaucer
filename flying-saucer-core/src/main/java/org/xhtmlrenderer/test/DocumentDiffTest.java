@@ -40,43 +40,6 @@ import java.util.logging.Level;
 import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
 
 public class DocumentDiffTest {
-    private static final int width = 500;
-    private static final int height = 500;
-
-    private void runTests(File dir, int width, int height) throws Exception {
-        File[] files = dir.listFiles();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                runTests(file, width, height);
-                continue;
-            }
-            if (file.getName().endsWith(".xhtml")) {
-                String testfile = file.getAbsolutePath();
-                String difffile = testfile.substring(0, testfile.length() - 6) + ".diff";
-                XRLog.log("unittests", Level.WARNING, "test file = " + testfile);
-                boolean is_correct = compareTestFile(testfile, difffile, width, height);
-                XRLog.log("unittests", Level.WARNING, "is correct = " + is_correct);
-            }
-        }
-
-    }
-
-    public void generateDiffs(File dir, int width, int height) throws Exception {
-        File[] files = dir.listFiles();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                generateDiffs(file, width, height);
-                continue;
-            }
-            if (file.getName().endsWith(".xhtml")) {
-                String testfile = file.getAbsolutePath();
-                String difffile = testfile.substring(0, testfile.length() - 6) + ".diff";
-                generateTestFile(testfile, difffile, width, height);
-                Uu.p("generated = " + difffile);
-            }
-        }
-
-    }
 
     public static void generateTestFile(String test, String diff, int width, int height) throws Exception {
         Uu.p("test = " + test);
@@ -127,30 +90,6 @@ public class DocumentDiffTest {
     private static void getDiff(Box box, String tab) {
         for (int i = 0; i < box.getChildCount(); i++) {
             getDiff(box.getChild(i), tab + " ");
-        }
-    }
-
-    /**
-     * The main program for the DocumentDiffTest class
-     *
-     * @param args The command line arguments
-     */
-    public static void main(String[] args) throws Exception {
-
-        XRLog.setLevel("plumbing.general", Level.OFF);
-        //String testfile = "tests/diff/background/01.xhtml";
-        //String difffile = "tests/diff/background/01.diff";
-        String file;
-        if (args.length == 0) {
-            file = "tests/diff";
-        } else {
-            file = args[0];
-        }
-        DocumentDiffTest ddt = new DocumentDiffTest();
-        if (new File(file).isDirectory()) {
-            ddt.runTests(new File(file), width, height);
-        } else {
-            System.out.println(xhtmlToDiff(file, 1280, 768));
         }
     }
 
