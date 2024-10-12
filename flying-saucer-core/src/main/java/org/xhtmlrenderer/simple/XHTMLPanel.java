@@ -46,8 +46,6 @@ import java.net.URL;
  * <pre>{@code
  * import org.xhtmlrenderer.simple.*;
  *
- * public static void main(String[] args) {
- *
  * // set up the xhtml panel XHTMLPanel xhtml = new XHTMLPanel();
  * xhtml.setDocument(new URL("http://myserver.com/page.xhtml"));
  *
@@ -57,7 +55,6 @@ import java.net.URL;
  * frame.pack();
  * frame.setSize(500,600);
  * frame.show();
- * }
  * }</pre>
  * <p>
  * <p>XHTMLPanel renders XHTML and XML which can be loaded as valid {@link Document}
@@ -97,8 +94,6 @@ import java.net.URL;
  * @see RenderingContext
  */
 public class XHTMLPanel extends BasicPanel {
-    private static final long serialVersionUID = 1L;
-
     private float fontScalingFactor = 1.2F;
     private float minFontScale = 0.50F;
     private float maxFontScale = 3.0F;
