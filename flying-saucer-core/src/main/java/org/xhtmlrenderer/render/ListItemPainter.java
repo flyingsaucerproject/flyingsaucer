@@ -65,7 +65,7 @@ public class ListItemPainter {
                 (marker.getLayoutWidth() / 2 - img.getWidth() / 2);
         c.getOutputDevice().drawImage(img,
                 x,
-                getListItemCenterBaseline(box) - img.getHeight() / 2);
+                getListItemCenterBaseline(c, box) - img.getHeight() / 2);
     }
 
     private static int getReferenceX(RenderingContext c, BlockBox box) {
@@ -86,7 +86,7 @@ public class ListItemPainter {
         // calculations for bullets
         MarkerData.GlyphMarker marker = box.getMarkerData().getGlyphMarker();
         int x = getReferenceX(c, box) - marker.getLayoutWidth();
-        int y = getListItemCenterBaseline(box) - marker.getDiameter() / 2;
+        int y = getListItemCenterBaseline(c, box) - marker.getDiameter() / 2;
 
         IdentValue listStyle = style.getIdent(LIST_STYLE_TYPE);
         if (listStyle == IdentValue.DISC) {
@@ -101,8 +101,13 @@ public class ListItemPainter {
         c.getOutputDevice().setRenderingHint(KEY_ANTIALIASING, requireNonNullElse(aa_key, VALUE_ANTIALIAS_DEFAULT));
     }
 
-    private static int getListItemCenterBaseline(final BlockBox box) {
-        return box.getAbsY() + getHeightOfFirstChild(box) / 2;
+    private static int getListItemCenterBaseline(final RenderingContext c, final BlockBox box) {
+        return box.getAbsY()
+                + getHeightOfFirstChild(box) / 2
+                + (int) box.getMargin(c).top() / 2
+                - (int) box.getMargin(c).bottom() / 2
+                + (int) box.getPadding(c).top() / 2
+                - (int) box.getPadding(c).bottom() / 2;
     }
 
     private static int getHeightOfFirstChild(final Box box) {
