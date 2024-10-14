@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -116,10 +117,14 @@ public class RenderingContext implements CssContext {
         return sharedContext.getFontResolver();
     }
 
+    @Nullable
+    @CheckReturnValue
     public FSFont getFont(FontSpecification font) {
         return sharedContext.getFont(font);
     }
 
+    @Nullable
+    @CheckReturnValue
     public FSCanvas getCanvas() {
         return sharedContext.getCanvas();
     }
@@ -213,6 +218,8 @@ public class RenderingContext implements CssContext {
         return initialPageNo;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Box getBoxById(String id) {
         return sharedContext.getBoxById(id);
     }
