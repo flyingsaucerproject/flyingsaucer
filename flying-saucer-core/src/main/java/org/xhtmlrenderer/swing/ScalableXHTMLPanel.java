@@ -34,6 +34,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.print.PrinterGraphics;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ScalableXHTMLPanel extends {@link org.xhtmlrenderer.simple.XHTMLPanel} to allow zoom on output.
@@ -47,11 +48,10 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
     public static final int SCALE_POLICY_FIT_HEIGHT = 0x02;
     public static final int SCALE_POLICY_FIT_WHOLE = SCALE_POLICY_FIT_WIDTH + SCALE_POLICY_FIT_HEIGHT;
 
-    private static final long serialVersionUID = 1L;
-
     private int scalePolicy = SCALE_POLICY_NONE;
     private double scale = -1.0d;
-    private final java.util.List<ScaleChangeListener> scListeners = new ArrayList<>();
+    private final List<ScaleChangeListener> scListeners = new ArrayList<>();
+
     /**
      * The lastly calculated layout size
      */

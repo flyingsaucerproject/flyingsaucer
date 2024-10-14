@@ -17,8 +17,7 @@
  * just as you would expect from a browsable XHTML document. Drop your {@link org.xhtmlrenderer.simple.XHTMLPanel}
  * in a {@link org.xhtmlrenderer.simple.FSScrollPane} and your users can move up or down by line or page, and jump to
  * the start or end of the document, just as they are used to.</p>
- * <p>{@link org.xhtmlrenderer.simple.XHTMLPrintable} supports the AWT {@link java.awt.print.Printable} interface,
- * allowing you to print a document without rendering it onscreen first.</p>
+ *
  * <h2>Related Documentation</h2>
  * For overviews, tutorials, examples, guides, and tool documentation, please see:
  * <ul>

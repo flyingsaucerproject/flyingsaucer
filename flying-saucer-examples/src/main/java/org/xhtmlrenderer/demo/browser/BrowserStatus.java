@@ -3,23 +3,18 @@ package org.xhtmlrenderer.demo.browser;
 import javax.swing.*;
 import java.awt.*;
 
-public class BrowserStatus extends JPanel {
-    private static final long serialVersionUID = 1L;
+public final class BrowserStatus extends JPanel {
+    public final JLabel text;
+    public final JLabel memory;
 
-    public JLabel text, memory;
-
-    public void init() {
-        createComponents();
+    public BrowserStatus() {
+        text = new JLabel("Status");
+        memory = new JLabel("? MB / ? MB");
         createLayout();
         createEvents();
     }
 
-    public void createComponents() {
-        text = new JLabel("Status");
-        memory = new JLabel("? MB / ? MB");
-    }
-
-    public void createLayout() {
+    private void createLayout() {
         setLayout(new BorderLayout(5, 5));
         add("Center", text);
         add("East", memory);
@@ -29,7 +24,7 @@ public class BrowserStatus extends JPanel {
         return new Insets(3, 4, 3, 4);
     }
 
-    public void createEvents() {
+    private void createEvents() {
 
         new Thread(() -> {
             while (true) {

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -64,7 +65,8 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     private CellRendererPane cellRendererPane;
     private final Set<DocumentListener> documentListeners = new HashSet<>();
     private boolean defaultFontFromComponent;
-    protected SharedContext sharedContext;
+    private final SharedContext sharedContext;
+    @Nullable
     private volatile LayoutContext layoutContext;
     @Nullable
     private JScrollPane enclosingScrollPane;
@@ -78,9 +80,9 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     /*
      * ========= UserInterface implementation ===============
      */
-    public Element hovered_element;
-    public Element active_element;
-    public Element focus_element;
+    @Nullable Element hovered_element;
+    @Nullable Element active_element;
+    @Nullable Element focus_element;
 
     // On-demand repaint requests for async image loading
     private long lastRepaintRunAt = System.currentTimeMillis();
@@ -88,13 +90,16 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     private boolean repaintRequestPending;
     private long pendingRepaintCount;
 
-    public RootPanel() {
+    public RootPanel(SharedContext sharedContext) {
+        this.sharedContext = sharedContext;
     }
 
     public SharedContext getSharedContext() {
         return sharedContext;
     }
 
+    @Nullable
+    @CheckReturnValue
     public LayoutContext getLayoutContext() {
         return layoutContext;
     }
@@ -367,19 +372,11 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             }*/
         } catch (ThreadDeath t) {
             throw t;
-        } catch (Throwable t) {
+        } catch (Error | RuntimeException t) {
             if (hasDocumentListeners()) {
                 fireOnLayoutException(t);
             } else {
-                if (t instanceof Error) {
-                    throw (Error)t;
-                }
-                if (t instanceof RuntimeException) {
-                    throw (RuntimeException)t;
-                }
-
-                // "Shouldn't" happen
-                XRLog.exception(t.getMessage(), t);
+                throw t;
             }
         }
     }
@@ -501,7 +498,12 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         return e == focus_element;
     }
 
+
+    /**
+     * Lays out the current document again, and re-renders.
+     */
     protected void relayout() {
+        getSharedContext().flushFonts();
         if (doc != null) {
             setNeedRelayout(true);
             repaint();

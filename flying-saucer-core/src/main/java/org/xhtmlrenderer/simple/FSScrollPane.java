@@ -62,8 +62,6 @@ import java.awt.event.KeyEvent;
  * @author Patrick Wright
  */
 public class FSScrollPane extends JScrollPane {
-    private static final long serialVersionUID = 2L;
-
     /** Constant used for mapping a key binding to "scroll down 1 page" */
     public static final String PAGE_DOWN = "page-down";
 
@@ -81,12 +79,6 @@ public class FSScrollPane extends JScrollPane {
 
     /** Constant used for mapping a key binding to "scroll to top of document" */
     public static final String PAGE_START = "page-start";
-
-
-    public FSScrollPane() {
-        this(null);
-    }
-
 
     /** Instantiates a new FSScrollPane around the given Panel; see class documentation. */
     public FSScrollPane(JPanel view) {
@@ -119,11 +111,11 @@ public class FSScrollPane extends JScrollPane {
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), LINE_UP);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_MASK), PAGE_END);
+                put(KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_DOWN_MASK), PAGE_END);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), PAGE_END);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_MASK), PAGE_START);
+                put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_DOWN_MASK), PAGE_START);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), PAGE_START);
 
@@ -133,8 +125,6 @@ public class FSScrollPane extends JScrollPane {
     private void setDefaultActionMap(JComponent view) {
         view.getActionMap().put(PAGE_DOWN,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -143,8 +133,6 @@ public class FSScrollPane extends JScrollPane {
                 });
         view.getActionMap().put(PAGE_END,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -153,8 +141,6 @@ public class FSScrollPane extends JScrollPane {
                 });
         view.getActionMap().put(PAGE_UP,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -163,8 +149,6 @@ public class FSScrollPane extends JScrollPane {
                 });
         view.getActionMap().put(PAGE_START,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -173,8 +157,6 @@ public class FSScrollPane extends JScrollPane {
                 });
         view.getActionMap().put(LINE_DOWN,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -183,8 +165,6 @@ public class FSScrollPane extends JScrollPane {
                 });
         view.getActionMap().put(LINE_UP,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();

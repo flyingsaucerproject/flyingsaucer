@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
@@ -73,7 +74,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     protected BasicPanel(UserAgentCallback uac) {
-        sharedContext = new SharedContext(uac);
+        super(new SharedContext(uac));
         mouseTracker = new MouseTracker(this);
         formSubmissionListener = query -> {
             System.out.println("Form Submitted!");
@@ -87,7 +88,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
                     JOptionPane.INFORMATION_MESSAGE
             );
         };
-        sharedContext.setFormSubmissionListener(formSubmissionListener);
+        getSharedContext().setFormSubmissionListener(formSubmissionListener);
         init();
     }
 
@@ -145,19 +146,11 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
             }
         } catch (ThreadDeath t) {
             throw t;
-        } catch (Throwable t) {
+        } catch (Error | RuntimeException t) {
             if (hasDocumentListeners()) {
                 fireOnRenderException(t);
             } else {
-                if (t instanceof Error) {
-                    throw (Error)t;
-                }
-                if (t instanceof RuntimeException) {
-                    throw (RuntimeException)t;
-                }
-
-                // "Shouldn't" happen
-                XRLog.exception(t.getMessage(), t);
+                throw t;
             }
         }
     }
@@ -307,10 +300,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     public void setLayout(LayoutManager l) {
     }
 
-    public void setSharedContext(SharedContext ctx) {
-        sharedContext = ctx;
-    }
-
     @Override
     public void setSize(Dimension d) {
         XRLog.layout(Level.FINEST, "set size called");
@@ -413,6 +402,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         setDocument(this.doc, getSharedContext().getBaseURL(), getSharedContext().getNamespaceHandler());
     }
 
+    @CheckReturnValue
     public URL getURL() {
         try {
             return new URL(getSharedContext().getUac().getBaseURL());
@@ -421,6 +411,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         }
     }
 
+    @CheckReturnValue
     public Document getDocument() {
         return doc;
     }
@@ -437,7 +428,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     protected Document loadDocument(final String uri) {
-        XMLResource xmlResource = sharedContext.getUac().getXMLResource(uri);
+        XMLResource xmlResource = getSharedContext().getUac().getXMLResource(uri);
         return xmlResource.getDocument();
     }
 
@@ -548,6 +539,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
     public void setFormSubmissionListener(FormSubmissionListener fsl) {
         formSubmissionListener =fsl;
-        sharedContext.setFormSubmissionListener(formSubmissionListener);
+        getSharedContext().setFormSubmissionListener(formSubmissionListener);
     }
 }

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
 import org.xhtmlrenderer.demo.browser.actions.FontSizeAction.FontSizeChange;
 import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
@@ -29,254 +30,132 @@ import org.xhtmlrenderer.util.Uu;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URL;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import static java.awt.event.InputEvent.ALT_MASK;
+import static java.awt.event.InputEvent.ALT_DOWN_MASK;
+import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 import static java.awt.event.KeyEvent.VK_LEFT;
+import static java.util.Objects.requireNonNull;
 
 public class BrowserActions {
-    public Action open_file, export_pdf , quit, print;
-    public Action forward, backward, refresh, reload, load, stop, print_preview, goHome;
-    public Action generate_diff, usersManual, aboutPage;
-    public final BrowserStartup root;
+    private static final Logger logger = Logger.getLogger("app.browser");
 
-    public Action increase_font, decrease_font, reset_font;
+    final Action open_file;
+    final Action export_pdf;
+    final Action quit;
+    final Action forward, backward, refresh, reload, load, print_preview, goHome;
+    final Action generate_diff, usersManual, aboutPage;
+    private final BrowserStartup root;
+    final Action increase_font, decrease_font, reset_font;
+    final Action goToPage;
 
-    public Action goToPage;
-
-    /**
-     * The system logger for app.browser
-     */
-    public static final Logger logger = Logger.getLogger("app.browser");
-
-    public BrowserActions(BrowserStartup root) {
+    public BrowserActions(BrowserStartup root, String startPage) {
         this.root = root;
-    }
 
-    public void init() {
-        URL url = getImageUrl("images/process-stop.png");
-        stop = new AbstractAction("Stop", new ImageIcon(url)) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                // TODO: stop not coded
-                System.out.println("stop called");
-                // root.panel.view.stop();
-            }
-        };
-        // TODO: need right API call for ESC
-        //stop.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE));
-        stop.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
+        open_file = action("Open File...", e -> openAndShowFile());
 
-        open_file = new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent evt) {
-                        openAndShowFile();
-                    }
-                };
-        open_file.putValue(Action.NAME, "Open File...");
         setAccel(open_file, KeyEvent.VK_O);
         setMnemonic(open_file, KeyEvent.VK_O);
 
 
-        export_pdf = new AbstractAction() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    exportToPdf();
-                }
-            };
-        export_pdf.putValue(Action.NAME, "Export PDF...");
-        //is OpenPDF in classpath?
-        try {
-            Class.forName("com.lowagie.text.DocumentException");
-        } catch (ClassNotFoundException ignore) {
-            export_pdf.setEnabled(false);
-        }
+        export_pdf = action("Export PDF...", e -> exportToPdf());
+        export_pdf.setEnabled(isOpenPdfInClasspath());
 
-        /*setAccel(export_pdf, KeyEvent.VK_E);
-        setMnemonic(export_pdf, new Integer(KeyEvent.VK_E));*/
+        quit = action("Quit", e -> System.exit(0));
 
-        /* printing disabled for R6
-        url = getImageUrl("images/document-print.png");
-        print = new PrintAction(root, new ImageIcon(url));
-        setAccel(print, KeyEvent.VK_P);
-        setMnemonic(print, new Integer(KeyEvent.VK_P));
-        */
-
-        quit = new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent evt) {
-                        System.exit(0);
-                    }
-                };
-
-        setName(quit, "Quit");
         setAccel(quit, KeyEvent.VK_Q);
         setMnemonic(quit, KeyEvent.VK_Q);
 
-        url = getImageUrl("images/go-previous.png");
-        backward = new EmptyAction("Back", "Go back one page", new ImageIcon(url)) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    root.panel.goBack();
-                    root.panel.view.repaint();
-                } catch (Exception ex) {
-                    Uu.p(ex);
-                }
-            }
-        };
+        backward = new EmptyAction("Back", "Go back one page", imageIcon("images/go-previous.png"), e -> {
+            root.panel.goBack();
+            root.panel.view.repaint();
+        });
 
         backward.setEnabled(false);
-        backward.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(VK_LEFT, ALT_MASK));
+        backward.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(VK_LEFT, ALT_DOWN_MASK));
 
 
-        url = getImageUrl("images/go-next.png");
-        forward = new EmptyAction("Forward", "Go forward one page", new ImageIcon(url)) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    root.panel.goForward();
-                    root.panel.view.repaint();
-                } catch (Exception ex) {
-                    Uu.p(ex);
-                }
-            }
-        };
+        forward = new EmptyAction("Forward", "Go forward one page", imageIcon("images/go-next.png"), e -> {
+            root.panel.goForward();
+            root.panel.view.repaint();
+        });
         forward.setEnabled(false);
         forward.putValue(Action.ACCELERATOR_KEY,
-                KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
-                        ALT_MASK));
+                KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, ALT_DOWN_MASK));
 
-        url = getImageUrl("images/view-refresh.png");
-        refresh = new EmptyAction("Refresh", "Refresh page", new ImageIcon(url)) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    root.panel.view.invalidate();
-                    root.panel.view.repaint();
-                } catch (Exception ex) {
-                    Uu.p(ex);
-                }
-            }
-        };
+        refresh = new EmptyAction("Refresh", "Refresh page", imageIcon("images/view-refresh.png"), e -> {
+            root.panel.view.invalidate();
+            root.panel.view.repaint();
+        });
         refresh.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke("F5"));
 
-        url = getImageUrl("images/view-refresh.png");
-        reload = new EmptyAction("Reload", "Reload page", new ImageIcon(url)) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    root.panel.reloadPage();
-                    root.panel.view.repaint();
-                } catch (Exception ex) {
-                    Uu.p(ex);
-                }
-            }
-        };
-        reload.putValue(Action.ACCELERATOR_KEY,
-                KeyStroke.getKeyStroke(KeyEvent.VK_F5,
-                        InputEvent.SHIFT_MASK));
+        reload = new EmptyAction("Reload", "Reload page", imageIcon("images/view-refresh.png"), e -> {
+            root.panel.reloadPage();
+            root.panel.view.repaint();
+        });
+        reload.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F5, SHIFT_DOWN_MASK));
         reload.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
 
-        print_preview = new EmptyAction("Print Preview", "Print preview mode", null) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                togglePrintPreview();
-            }
-        };
+        print_preview = new EmptyAction("Print Preview", "Print preview mode", null, e -> togglePrintPreview());
         print_preview.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_V);
 
-        load = new AbstractAction("Load") {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    String url_text = root.panel.url.getText();
-                    root.panel.loadPage(url_text);
-                    root.panel.view.repaint();
-                } catch (Exception ex) {
-                    Uu.p(ex);
-                }
-            }
-        };
+        load = action("Load", e -> {
+            String url_text = root.panel.url.getText();
+            root.panel.loadPage(url_text);
+            root.panel.view.repaint();
+        });
+        goToPage = new EmptyAction("Go", "Go to URL in address bar", imageIcon("images/media-playback-start_16x16.png"), e -> {
+            String url_text = root.panel.url.getText();
+            root.panel.loadPage(url_text);
+            root.panel.view.repaint();
+        });
 
-        url = getImageUrl("images/media-playback-start_16x16.png");
-        goToPage = new EmptyAction("Go", "Go to URL in address bar", new ImageIcon(url)) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    String url_text = root.panel.url.getText();
-                    root.panel.loadPage(url_text);
-                    root.panel.view.repaint();
-                } catch (Exception ex) {
-                    Uu.p(ex);
-                }
-            }
-        };
+        goHome = new EmptyAction("Go Home", "Browser homepage", imageIcon("images/go-home.png"), e -> {
+            root.panel.loadPage(startPage);
+            root.panel.view.repaint();
+        });
 
-        url = getImageUrl("images/go-home.png");
-        goHome = new EmptyAction("Go Home", "Browser homepage", new ImageIcon(url)) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    root.panel.loadPage(root.startPage);
-                    root.panel.view.repaint();
-                } catch (Exception ex) {
-                    Uu.p(ex);
-                }
-            }
-        };
+        usersManual = new EmptyAction("FS User's Guide", "Flying Saucer User's Guide", null, e -> {
+            root.panel.loadPage("/users-guide-r8.html");
+            root.panel.view.repaint();
+        });
 
-        usersManual = new EmptyAction("FS User's Guide", "Flying Saucer User's Guide", null) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    root.panel.loadPage("/users-guide-r8.html");
-                    root.panel.view.repaint();
-                } catch (Exception ex) {
-                    Uu.p(ex);
-                }
-            }
-        };
-
-        aboutPage = new EmptyAction("About", "About the Browser Demo", null) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    showAboutDialog();
-                } catch (Exception ex) {
-                    Uu.p(ex);
-                }
-            }
-        };
+        aboutPage = new EmptyAction("About", "About the Browser Demo", null, e -> showAboutDialog());
 
         generate_diff = new GenerateDiffAction(root);
 
-        increase_font = new FontSizeAction(root, FontSizeChange.INCREMENT);
+        increase_font = new FontSizeAction("Increase", root, FontSizeChange.INCREMENT);
         increase_font.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
-                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         increase_font.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
 
-        reset_font = new FontSizeAction(root, FontSizeChange.RESET);
+        reset_font = new FontSizeAction("Normal", root, FontSizeChange.RESET);
         reset_font.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_0,
-                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         reset_font.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
 
-        decrease_font = new FontSizeAction(root, FontSizeChange.DECREMENT);
+        decrease_font = new FontSizeAction("Decrease", root, FontSizeChange.DECREMENT);
         decrease_font.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,
-                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         decrease_font.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_D);
+    }
 
-        setName(increase_font, "Increase");
-        setName(reset_font, "Normal");
-        setName(decrease_font, "Decrease");
+    @CheckReturnValue
+    private boolean isOpenPdfInClasspath() {
+        try {
+            Class.forName("com.lowagie.text.DocumentException");
+            return true;
+        } catch (ClassNotFoundException ignore) {
+            return false;
+        }
     }
 
     private void showAboutDialog() {
@@ -328,7 +207,7 @@ public class BrowserActions {
                 sharedContext.setInteractive(false);
             }
             print_preview.putValue(Action.SHORT_DESCRIPTION,
-                    ! sharedContext.isPrint() ? "Print preview" : "Normal view");
+                    !sharedContext.isPrint() ? "Print preview" : "Normal view");
             root.panel.reloadPage();
             root.panel.view.repaint();
         } catch (Exception ex) {
@@ -352,7 +231,7 @@ public class BrowserActions {
     private void exportToPdf() {
         try {
             FileDialog fd = new FileDialog(root.frame, "Save as PDF", FileDialog.SAVE);
-            fd.setVisible( true );
+            fd.setVisible(true);
             if (fd.getFile() != null) {
                 File outTarget = new File(fd.getDirectory(), fd.getFile());
                 root.panel.exportToPdf(outTarget.getAbsolutePath());
@@ -362,40 +241,40 @@ public class BrowserActions {
         }
     }
 
-
-    /**
-     * Sets the name attribute of the BrowserActions object
-     *
-     * @param act  The new name value
-     * @param name The new name value
-     */
-    public static void setName(Action act, String name) {
-        act.putValue(Action.NAME, name);
-    }
-
     /**
      * Sets the accel attribute of the BrowserActions object
-     *
-     * @param act The new accel value
-     * @param key The new accel value
      */
     public static void setAccel(Action act, int key) {
         act.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(key,
-                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
     }
 
     /**
      * Sets the mnemonic attribute of the BrowserActions object
-     *
-     * @param act  The new mnemonic value
-     * @param mnem The new mnemonic value
      */
-    public static void setMnemonic(Action act, Integer mnem) {
-        act.putValue(Action.MNEMONIC_KEY, mnem);
+    public static void setMnemonic(Action action, int mnemonicValue) {
+        action.putValue(Action.MNEMONIC_KEY, mnemonicValue);
     }
 
-    public static URL getImageUrl(String url) {
-        return BrowserActions.class.getClassLoader().getResource(url);
+    @CheckReturnValue
+    private static ImageIcon imageIcon(String url) {
+        URL imageUrl = requireNonNull(BrowserActions.class.getClassLoader().getResource(url),
+                () -> "Resource not found in classpath: " + url);
+        return new ImageIcon(imageUrl);
+    }
+
+    @CheckReturnValue
+    private Action action(String name, Consumer<ActionEvent> handler) {
+        return new AbstractAction(name) {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    handler.accept(event);
+                } catch (Exception ex) {
+                    Uu.p(ex);
+                }
+            }
+        };
     }
 }
