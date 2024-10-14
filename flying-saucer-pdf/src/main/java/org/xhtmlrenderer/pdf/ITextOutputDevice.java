@@ -139,7 +139,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private List<Bookmark> _bookmarks = new ArrayList<>();
 
-    private final List<Metadata> _metadata = new ArrayList<>();
+    private final List<@Nullable Metadata> _metadata = new ArrayList<>();
 
     private Box _root;
 
@@ -1090,12 +1090,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
      * @return the content value of the first found metadata element; otherwise
      *         null.
      */
+    @Nullable
+    @CheckReturnValue
     public String getMetadataByName(String name) {
-        if (name != null) {
-            for (Metadata m : _metadata) {
-                if ((m != null) && m.getName().equalsIgnoreCase(name)) {
-                    return m.getContent();
-                }
+        for (Metadata m : _metadata) {
+            if ((m != null) && m.getName().equalsIgnoreCase(name)) {
+                return m.getContent();
             }
         }
         return null;

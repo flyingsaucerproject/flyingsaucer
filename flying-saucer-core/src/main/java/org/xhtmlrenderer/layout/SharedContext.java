@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -45,6 +46,7 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.swing.Java2DTextRenderer;
+import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -55,6 +57,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static java.util.Objects.requireNonNull;
 
 /**
  * The SharedContext is that which is kept between successive layout and render runs.
@@ -87,24 +90,41 @@ public final class SharedContext {
 
     private int dotsPerPixel = 1;
 
+    @Nullable
     private Map<Element, CalculatedStyle> styleMap;
 
     private ReplacedElementFactory replacedElementFactory;
+    @Nullable
     private Rectangle temporaryCanvas;
 
     private LineBreakingStrategy lineBreakingStrategy = new DefaultLineBreakingStrategy();
 
     public SharedContext() {
+        this(new NaiveUserAgent());
+    }
+
+    public SharedContext(UserAgentCallback userAgent, FontResolver fontResolver,
+                         ReplacedElementFactory replacedElementFactory,
+                         TextRenderer textRenderer,
+                         float dpi, int dotsPerPixel) {
+        uac = requireNonNull(userAgent);
+        this.css = new StyleReference(userAgent);
+        this.fontResolver = requireNonNull(fontResolver);
+        this.replacedElementFactory = replacedElementFactory;
+        this.textRenderer = requireNonNull(textRenderer);
+        media = "screen";
+        setDPI(dpi);
+        setDotsPerPixel(dotsPerPixel);
     }
 
     public SharedContext(UserAgentCallback uac) {
         fontResolver = new AWTFontResolver();
         replacedElementFactory = new SwingReplacedElementFactory();
-        setMedia("screen");
-        this.uac = uac;
-        setCss(new StyleReference(uac));
+        this.media = "screen";
+        this.uac = requireNonNull(uac);
+        this.css = new StyleReference(uac);
         XRLog.render("Using CSS implementation from: " + getCss().getClass().getName());
-        setTextRenderer(new Java2DTextRenderer());
+        this.textRenderer = new Java2DTextRenderer();
         try {
             setDPI(Toolkit.getDefaultToolkit().getScreenResolution());
         } catch (HeadlessException e) {
@@ -114,13 +134,13 @@ public final class SharedContext {
 
 
     public SharedContext(UserAgentCallback uac, FontResolver fr, ReplacedElementFactory ref, TextRenderer tr, float dpi) {
-        fontResolver = fr;
+        fontResolver = requireNonNull(fr);
         replacedElementFactory = ref;
-        setMedia("screen");
+        this.media = "screen";
         this.uac = uac;
-        setCss(new StyleReference(uac));
+        this.css = new StyleReference(uac);
         XRLog.render("Using CSS implementation from: " + getCss().getClass().getName());
-        setTextRenderer(tr);
+        this.textRenderer = requireNonNull(tr);
         setDPI(dpi);
     }
 
@@ -148,6 +168,7 @@ public final class SharedContext {
      *
      * @return The fontResolver value
      */
+    @CheckReturnValue
     public FontResolver getFontResolver() {
         return fontResolver;
     }
@@ -161,6 +182,7 @@ public final class SharedContext {
     /**
      * The media for this context
      */
+    @CheckReturnValue
     public String getMedia() {
         return media;
     }
@@ -171,8 +193,10 @@ public final class SharedContext {
     private boolean debug_draw_inline_boxes;
     private boolean debug_draw_font_metrics;
 
+    @Nullable
     private FSCanvas canvas;
 
+    @CheckReturnValue
     public TextRenderer getTextRenderer() {
         return textRenderer;
     }
@@ -222,6 +246,8 @@ public final class SharedContext {
         this.css = css;
     }
 
+    @Nullable
+    @CheckReturnValue
     public FSCanvas getCanvas() {
         return canvas;
     }
@@ -235,6 +261,7 @@ public final class SharedContext {
     }
 
 
+    @Nullable
     public Rectangle getFixedRectangle() {
         if (getCanvas() == null) {
             return temporaryCanvas;
@@ -245,12 +272,14 @@ public final class SharedContext {
         }
     }
 
+    @Nullable
     private NamespaceHandler namespaceHandler;
 
     public void setNamespaceHandler(NamespaceHandler nh) {
         namespaceHandler = nh;
     }
 
+    @Nullable
     public NamespaceHandler getNamespaceHandler() {
         return namespaceHandler;
     }
@@ -259,6 +288,8 @@ public final class SharedContext {
         idMap.put(id, box);
     }
 
+    @Nullable
+    @CheckReturnValue
     public Box getBoxById(String id) {
         return idMap.get(id);
     }
@@ -278,7 +309,7 @@ public final class SharedContext {
      * @param textRenderer The new textRenderer value
      */
     public void setTextRenderer(TextRenderer textRenderer) {
-        this.textRenderer = textRenderer;
+        this.textRenderer = requireNonNull(textRenderer);
     }
 
     /**
@@ -291,7 +322,7 @@ public final class SharedContext {
      * @param media The new media value
      */
     public void setMedia(String media) {
-        this.media = media;
+        this.media = requireNonNull(media);
     }
 
     /**
@@ -299,6 +330,7 @@ public final class SharedContext {
      *
      * @return The uac value
      */
+    @CheckReturnValue
     public UserAgentCallback getUac() {
         return uac;
     }
@@ -308,11 +340,8 @@ public final class SharedContext {
     }
 
     public void setUserAgentCallback(UserAgentCallback userAgentCallback) {
-        StyleReference styleReference = getCss();
-        if (styleReference != null) {
-            styleReference.setUserAgentCallback(userAgentCallback);
-        }
-        uac = userAgentCallback;
+        getCss().setUserAgentCallback(userAgentCallback);
+        uac = requireNonNull(userAgentCallback);
     }
 
     /**
@@ -348,14 +377,16 @@ public final class SharedContext {
         return mm_per_dot;
     }
 
+    @Nullable
+    @CheckReturnValue
     public FSFont getFont(FontSpecification spec) {
-        return getFontResolver().resolveFont(this, spec);
+        return fontResolver.resolveFont(this, spec);
     }
 
     //strike-through offset should always be half of the height of lowercase x...
     //and it is defined even for fonts without 'x'!
     public float getXHeight(FontContext fontContext, FontSpecification fs) {
-        FSFont font = getFontResolver().resolveFont(this, fs);
+        FSFont font = fontResolver.resolveFont(this, fs);
         FSFontMetrics fm = getTextRenderer().getFSFontMetrics(fontContext, font, " ");
         float sto = fm.getStrikethroughOffset();
         return fm.getAscent() - 2 * Math.abs(sto) + fm.getStrikethroughThickness();
@@ -406,11 +437,7 @@ public final class SharedContext {
 
     public void setPrint(boolean print) {
         this.print = print;
-        if (print) {
-            setMedia("print");
-        } else {
-            setMedia("screen");
-        }
+        setMedia(print ? "print" : "screen");
     }
 
     /**
@@ -440,14 +467,13 @@ public final class SharedContext {
      * add a new font mapping, or replace an existing one
      */
     public void setFontMapping(String name, Font font) {
-        FontResolver resolver = getFontResolver();
-        if (resolver instanceof AWTFontResolver) {
-            ((AWTFontResolver)resolver).setFontMapping(name, font);
+        if (fontResolver instanceof AWTFontResolver) {
+            ((AWTFontResolver) fontResolver).setFontMapping(name, font);
         }
     }
 
     public void setFontResolver(FontResolver resolver) {
-        fontResolver = resolver;
+        fontResolver = requireNonNull(resolver);
     }
 
     public int getDotsPerPixel() {
@@ -507,9 +533,7 @@ public final class SharedContext {
             throw new NullPointerException("replacedElementFactory may not be null");
         }
 
-        if (this.replacedElementFactory != null) {
-            this.replacedElementFactory.reset();
-        }
+        this.replacedElementFactory.reset();
         this.replacedElementFactory = ref;
     }
 

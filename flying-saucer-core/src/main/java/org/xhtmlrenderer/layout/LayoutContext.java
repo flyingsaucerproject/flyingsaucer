@@ -281,11 +281,14 @@ public class LayoutContext implements CssContext {
         return _sharedContext.getXHeight(getFontContext(), parentFont);
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public FSFont getFont(FontSpecification font) {
         return _sharedContext.getFont(font);
     }
 
+    @CheckReturnValue
     public UserAgentCallback getUac() {
         return _sharedContext.getUac();
     }

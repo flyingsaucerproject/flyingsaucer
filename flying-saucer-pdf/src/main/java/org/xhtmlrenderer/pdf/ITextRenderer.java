@@ -26,7 +26,6 @@ import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -61,6 +60,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -75,20 +75,25 @@ public class ITextRenderer {
     private final SharedContext _sharedContext;
     private final ITextOutputDevice _outputDevice;
 
+    @Nullable
     private Document _doc;
+    @Nullable
     private BlockBox _root;
 
     private final float _dotsPerPoint;
 
     private com.lowagie.text.Document _pdfDoc;
+    @Nullable
     private PdfWriter _writer;
 
+    @Nullable
     private PDFEncryption _pdfEncryption;
 
     // note: not hard-coding a default version in the _pdfVersion field as this
     // may change between iText releases
     // check for null before calling writer.setPdfVersion()
     // use one of the values in PDFWriter.VERSION...
+    @Nullable
     private Character _pdfVersion;
 
     private final char[] validPdfVersions = {
@@ -100,11 +105,11 @@ public class ITextRenderer {
             PdfWriter.VERSION_1_7
     };
 
+    @Nullable
     private Integer _pdfXConformance;
 
+    @Nullable
     private PDFCreationListener _listener;
-
-    private boolean _timeouted;
 
     public ITextRenderer(File file) throws IOException {
         this();
@@ -155,18 +160,12 @@ public class ITextRenderer {
                          TextRenderer textRenderer) {
         _dotsPerPoint = dotsPerPoint;
         _outputDevice = outputDevice;
-        _sharedContext = new SharedContext();
-        _sharedContext.setUserAgentCallback(userAgent);
-        _sharedContext.setCss(new StyleReference(userAgent));
+        _sharedContext = new SharedContext(userAgent, fontResolver, replacedElementFactory, textRenderer,
+                72 * _dotsPerPoint);
+
         _outputDevice.setSharedContext(_sharedContext);
-        _sharedContext.setFontResolver(fontResolver);
-        _sharedContext.setReplacedElementFactory(replacedElementFactory);
-        _sharedContext.setTextRenderer(textRenderer);
-        _sharedContext.setDPI(72 * _dotsPerPoint);
-        _sharedContext.setDotsPerPixel(dotsPerPixel);
         _sharedContext.setPrint(true);
         _sharedContext.setInteractive(false);
-        _timeouted= false;
     }
 
     public Document getDocument() {
@@ -246,15 +245,12 @@ public class ITextRenderer {
     }
 
     public void setPDFVersion(char _v) {
-        for (char validPdfVersion : validPdfVersions) {
-            if (_v == validPdfVersion) {
-                _pdfVersion = _v;
-                return;
-            }
+        if (Arrays.binarySearch(validPdfVersions, _v) < 0) {
+            throw new IllegalArgumentException("""
+                    Invalid PDF version character: "%s"; use one of constants PdfWriter.VERSION_1_N.
+                    """.formatted(_v).trim());
         }
-        throw new IllegalArgumentException("""
-                Invalid PDF version character: "%s"; use one of constants PdfWriter.VERSION_1_N.
-                """.formatted(_v).trim());
+        _pdfVersion = _v;
     }
 
     public char getPDFVersion() {
@@ -427,7 +423,7 @@ public class ITextRenderer {
         setDidValues(doc); // set PDF header fields from meta data
         for (int i = 0; i < pageCount; i++) {
 
-            if (isTimeouted() || Thread.currentThread().isInterrupted())
+            if (Thread.currentThread().isInterrupted())
                 throw new RuntimeException("Timeout occurred");
 
             PageBox currentPage = pages.get(i);
@@ -597,17 +593,5 @@ public class ITextRenderer {
 
     public void setListener(PDFCreationListener listener) {
         _listener = listener;
-    }
-
-    public PdfWriter getWriter() {
-        return _writer;
-    }
-
-    public void setTimeouted(boolean timeouted) {
-        _timeouted= timeouted;
-    }
-
-    public boolean isTimeouted() {
-        return _timeouted;
     }
 }

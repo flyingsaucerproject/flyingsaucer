@@ -95,7 +95,9 @@ public class Java2DRenderer {
      * Whether we've completed rendering; image will only be rendered once.
      */
     private boolean rendered;
+    @Nullable
     private String sourceDocument;
+    @Nullable
     private String sourceDocumentBase;
     private final int width;
     private final int height;
@@ -324,14 +326,6 @@ public class Java2DRenderer {
 
         UserAgentCallback userAgent = new NaiveUserAgent();
         sharedContext = new SharedContext(userAgent);
-
-        AWTFontResolver fontResolver = new AWTFontResolver();
-        sharedContext.setFontResolver(fontResolver);
-
-        SwingReplacedElementFactory replacedElementFactory = new SwingReplacedElementFactory();
-        sharedContext.setReplacedElementFactory(replacedElementFactory);
-
-        sharedContext.setTextRenderer(new Java2DTextRenderer());
         sharedContext.setDPI(72 * (float) Java2DRenderer.DEFAULT_DOTS_PER_POINT);
         sharedContext.setDotsPerPixel(Java2DRenderer.DEFAULT_DOTS_PER_PIXEL);
         sharedContext.setPrint(false);

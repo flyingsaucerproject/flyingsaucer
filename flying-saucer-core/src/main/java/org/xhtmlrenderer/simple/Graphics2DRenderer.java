@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.simple;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.layout.SharedContext;
 
@@ -55,6 +56,7 @@ public class Graphics2DRenderer {
     /**
      * Dimensions of the image to render, in pixels.
      */
+    @Nullable
     protected Dimension dim;
 
     /**
@@ -73,7 +75,7 @@ public class Graphics2DRenderer {
      * @param g2  the canvas to layout on.
      * @param dim dimensions of the container for the document
      */
-    public void layout(Graphics2D g2, Dimension dim) {
+    public void layout(Graphics2D g2, @Nullable Dimension dim) {
         this.dim = dim;
         if (dim != null) {
             panel.setSize(dim);
@@ -113,15 +115,6 @@ public class Graphics2DRenderer {
      */
     public void setDocument(Document doc, String base_url) {
         panel.setDocument(doc, base_url);
-    }
-
-    /**
-     * Sets the SharedContext for rendering.
-     *
-     * @param ctx The new renderingContext value
-     */
-    public void setSharedContext(SharedContext ctx) {
-        panel.setSharedContext(ctx);
     }
 
     /**
