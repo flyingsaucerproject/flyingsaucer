@@ -15,15 +15,11 @@ public class FontSizeAction extends AbstractAction {
     }
     private final FontSizeChange whichDirection;
 
-    public FontSizeAction(BrowserStartup root, FontSizeChange which) {
+    public FontSizeAction(String name, BrowserStartup root, FontSizeChange which) {
         super("FontSize");
         this.root = root;
         this.whichDirection = which;
-    }
-
-    public FontSizeAction(BrowserStartup root, float scale, FontSizeChange which) {
-        this(root, which);
-        this.root.panel.view.setFontScalingFactor(scale);
+        putValue(Action.NAME, name);
     }
 
     public void actionPerformed(ActionEvent evt) {

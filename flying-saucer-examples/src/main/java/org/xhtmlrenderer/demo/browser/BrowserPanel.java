@@ -52,42 +52,33 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BrowserPanel extends JPanel implements DocumentListener {
+public final class BrowserPanel extends JPanel implements DocumentListener {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(BrowserPanel.class);
-
-    private static final long serialVersionUID = 1L;
-    private static final int maxLineLength = 80;
-
-    private JButton forward;
-    private JButton backward;
-    private JButton reload;
-    private JButton goHome;
-    private JButton font_inc;
-    private JButton font_rst;
-    private JButton font_dec;
-    JTextField url;
-    BrowserStatus status;
-    public ScalableXHTMLPanel view;
-    private JScrollPane scroll;
-    private final BrowserStartup root;
-    private final BrowserPanelListener listener;
-    private JButton print_preview;
-
     private static final Logger logger = Logger.getLogger("app.browser");
 
-    private PanelManager manager;
-    JButton goToPage;
-    JToolBar toolbar;
+    private static final int maxLineLength = 80;
+
+    private final JButton forward;
+    private final JButton backward;
+    private final JButton reload;
+    private final JButton goHome;
+    final JTextField url;
+    final BrowserStatus status;
+    public final ScalableXHTMLPanel view;
+    private final JScrollPane scroll;
+    private final BrowserStartup root;
+    private final BrowserPanelListener listener;
+    private final JButton print_preview;
+    private final PanelManager manager;
+    private final JButton goToPage;
+    final JToolBar toolbar;
 
     public BrowserPanel(BrowserStartup root, BrowserPanelListener listener) {
         this.root = root;
         this.listener = listener;
-    }
 
-    public void init() {
         forward = new JButton();
         backward = new JButton();
-        JButton stop = new JButton();
         reload = new JButton();
         goToPage = new JButton();
         goHome = new JButton();
@@ -124,19 +115,20 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         loadCustomFonts();
 
         status = new BrowserStatus();
-        status.init();
 
-        initToolbar();
+        toolbar = initToolbar();
 
         int text_width = 200;
         view.setPreferredSize(new Dimension(text_width, text_width));
 
         setLayout(new BorderLayout());
         this.add(scroll, BorderLayout.CENTER);
+
+        createActions();
     }
 
-    private void initToolbar() {
-        toolbar = new JToolBar();
+    private JToolBar initToolbar() {
+        JToolBar toolbar = new JToolBar();
         toolbar.setRollover(true);
         toolbar.add(backward);
         toolbar.add(forward);
@@ -147,6 +139,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         // disabled for R6
         // toolbar.add(print);
         toolbar.setFloatable(false);
+        return toolbar;
     }
 
     private void loadCustomFonts() {
@@ -229,7 +222,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
     }
 
-    public void createActions() {
+    private void createActions() {
         // set text to "" to avoid showing action text in button--
         // we only want it in menu items
         backward.setAction(root.actions.backward);

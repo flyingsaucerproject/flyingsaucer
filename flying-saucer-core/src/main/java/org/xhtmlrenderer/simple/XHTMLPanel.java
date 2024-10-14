@@ -79,7 +79,7 @@ import java.net.URL;
  * ctx.setLogging(true); // turn on logging
  * ctx.setValidating(true); // turn on doctype validation
  * ctx.addFont(fnt,"Arial"); // redefine a font
- * ctx.setDomImplementation("com.cooldom.DomImpl");
+ * ctx.setDomImplementation("com.cool.dom.DomImpl");
  * </pre>
  * <p>
  * <p>XHTMLPanel comes with a pre-installed MouseListener which handles :hover events used for rollovers
@@ -129,15 +129,6 @@ public class XHTMLPanel extends BasicPanel {
         if (Configuration.isTrue("xr.use.listeners", true)) {
             resetMouseTracker();
         }
-    }
-
-    /**
-     * Lays out the current document again, and re-renders.
-     */
-    @Override
-    public void relayout() {
-        sharedContext.flushFonts();
-        super.relayout();
     }
 
     /**
@@ -202,20 +193,6 @@ public class XHTMLPanel extends BasicPanel {
                 loadDocument(file.toURI().toURL().toExternalForm()),
                 parentURL
         );
-    }
-
-    /**
-     * Sets the {@link RenderingContext} attribute of the XHTMLPanel object. Generally
-     * you should not use this unless you have a heavily customized context to
-     * use. To modify just some rendering behavior, consider using
-     * {@link #getSharedContext()} to retrieve the current context, and using
-     * mutators to change its behavior.
-     *
-     * @param ctx A new RenderingContext to use for rendering.
-     */
-    @Override
-    public void setSharedContext(SharedContext ctx) {
-        super.setSharedContext(ctx);
     }
 
     /**

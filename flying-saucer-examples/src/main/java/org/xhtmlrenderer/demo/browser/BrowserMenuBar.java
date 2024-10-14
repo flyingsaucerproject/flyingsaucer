@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.demo.browser.actions.ZoomAction;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.DOMInspector;
@@ -42,25 +44,26 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
-public class BrowserMenuBar extends JMenuBar {
+import static java.util.Objects.requireNonNull;
+
+public final class BrowserMenuBar extends JMenuBar {
     private final BrowserStartup root;
-    private JMenu file;
-    private JMenu edit;
-    private JMenu view;
-    private JMenu go;
-    private JMenu debug;
-    private JMenu demos;
+    private final JMenu file;
+    private final JMenu view;
+    private final JMenu go;
+    private final JMenu debug;
+    private final JMenu demos;
+    @Nullable
     private String lastDemoOpened;
 
-    private Map<String, String> allDemos;
-    private JMenu help;
+    private final Map<String, String> allDemos = populateDemoList();
+    private final JMenu help;
 
     public BrowserMenuBar(BrowserStartup root) {
         this.root = root;
-    }
 
-    public void init() {
         file = new JMenu("Browser");
         file.setMnemonic('B');
 
@@ -78,7 +81,6 @@ public class BrowserMenuBar extends JMenuBar {
 
         JMenuItem view_source = new JMenuItem("Page Source");
         view_source.setEnabled(false);
-        view.add(root.actions.stop);
         view.add(root.actions.refresh);
         view.add(root.actions.reload);
         view.add(new JSeparator());
@@ -92,10 +94,13 @@ public class BrowserMenuBar extends JMenuBar {
 
         go = new JMenu("Go");
         go.setMnemonic('G');
+
+        createLayout();
+        createActions();
     }
 
 
-    public void createLayout() {
+    private void createLayout() {
         final ScalableXHTMLPanel panel = root.panel.view;
 
         file.add(root.actions.open_file);
@@ -105,16 +110,9 @@ public class BrowserMenuBar extends JMenuBar {
         file.add(root.actions.quit);
         add(file);
 
-        /*
-        // TODO: we can get the document and format it, but need syntax highlighting
-        // and a tab or separate window, dialog, etc.
-        view_source.setAction(new ViewSourceAction(panel));
-        view.add(view_source);
-        */
-
         JMenu zoom = new JMenu("Zoom");
         zoom.setMnemonic('Z');
-        ScaleFactor[] factors = initializeScales();
+        List<ScaleFactor> factors = initializeScales();
         ButtonGroup zoomGroup = new ButtonGroup();
         for (ScaleFactor factor : factors) {
             JRadioButtonMenuItem item = new JRadioButtonMenuItem(new ZoomAction(panel, factor));
@@ -138,9 +136,6 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add(new NextDemoAction());
         demos.add(new PriorDemoAction());
         demos.add(new JSeparator());
-        allDemos = new LinkedHashMap<>();
-
-        populateDemoList();
 
         for (Map.Entry<String, String> entry : allDemos.entrySet()) {
             demos.add(new LoadAction(entry.getKey(), entry.getValue()));
@@ -203,28 +198,29 @@ public class BrowserMenuBar extends JMenuBar {
         add(help);
     }
 
-    private void populateDemoList() {
+    private static Map<String, String> populateDemoList() {
         List<String> demoList = new ArrayList<>();
-        URL url = BrowserMenuBar.class.getResource("/demos/file-list.txt");
-                
-        if (url != null) {
-            try (InputStream is = url.openStream()) {
-                InputStreamReader reader = new InputStreamReader(is);
-                try (LineNumberReader lnr = new LineNumberReader(reader)) {
-                    String line;
-                    while ((line = lnr.readLine()) != null) {
-                        demoList.add(line);
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        String name = "/demos/file-list.txt";
+        URL url = requireNonNull(BrowserMenuBar.class.getResource(name), () -> "Resource not found in classpath: " + name);
 
-            for (String s : demoList) {
-                String[] s1 = s.split(",");
-                allDemos.put(s1[0], s1[1]);
+        try (InputStream is = url.openStream()) {
+            InputStreamReader reader = new InputStreamReader(is);
+            try (LineNumberReader lnr = new LineNumberReader(reader)) {
+                String line;
+                while ((line = lnr.readLine()) != null) {
+                    demoList.add(line);
+                }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String s : demoList) {
+            String[] s1 = s.split(",");
+            result.put(s1[0], s1[1]);
+        }
+        return result;
     }
 
     private JRadioButtonMenuItem addLevel(JMenu menu, ButtonGroup group, String title, int level) {
@@ -235,7 +231,7 @@ public class BrowserMenuBar extends JMenuBar {
     }
 
 
-    public void createActions() {
+    private void createActions() {
         if (Configuration.isTrue("xr.use.listeners", true)) {
             List<FSMouseListener> l = root.panel.view.getMouseTrackingListeners();
             for (FSMouseListener listener : l) {
@@ -262,25 +258,27 @@ public class BrowserMenuBar extends JMenuBar {
         }
     }
 
-    private ScaleFactor[] initializeScales() {
-        ScaleFactor[] scales = new ScaleFactor[11];
-        int i = 0;
-        scales[i++] = new ScaleFactor(1.0d, "Normal (100%)");
-        scales[i++] = new ScaleFactor(2.0d, "200%");
-        scales[i++] = new ScaleFactor(1.5d, "150%");
-        scales[i++] = new ScaleFactor(0.85d, "85%");
-        scales[i++] = new ScaleFactor(0.75d, "75%");
-        scales[i++] = new ScaleFactor(0.5d, "50%");
-        scales[i++] = new ScaleFactor(0.33d, "33%");
-        scales[i++] = new ScaleFactor(0.25d, "25%");
-        scales[i++] = new ScaleFactor(ScaleFactor.PAGE_WIDTH, "Page width");
-        scales[i++] = new ScaleFactor(ScaleFactor.PAGE_HEIGHT, "Page height");
-        scales[i++] = new ScaleFactor(ScaleFactor.PAGE_WHOLE, "Whole page");
-        return scales;
+    @CheckReturnValue
+    private List<ScaleFactor> initializeScales() {
+        return List.of(
+                new ScaleFactor(1.0d, "Normal (100%)"),
+                new ScaleFactor(2.0d, "200%"),
+                new ScaleFactor(1.5d, "150%"),
+                new ScaleFactor(0.85d, "85%"),
+                new ScaleFactor(0.75d, "75%"),
+                new ScaleFactor(0.5d, "50%"),
+                new ScaleFactor(0.33d, "33%"),
+                new ScaleFactor(0.25d, "25%"),
+                new ScaleFactor(ScaleFactor.PAGE_WIDTH, "Page width"),
+                new ScaleFactor(ScaleFactor.PAGE_HEIGHT, "Page height"),
+                new ScaleFactor(ScaleFactor.PAGE_WHOLE, "Whole page")
+        );
     }
 
     final class ShowDOMInspectorAction extends AbstractAction {
+        @Nullable
         private DOMInspector inspector;
+        @Nullable
         private JFrame inspectorFrame;
 
         ShowDOMInspectorAction() {
@@ -294,7 +292,7 @@ public class BrowserMenuBar extends JMenuBar {
                 inspectorFrame = new JFrame("DOM Tree Inspector");
             }
             if (inspector == null) {
-                inspector = new DOMInspector(root.panel.view.getDocument(), root.panel.view.getSharedContext(), root.panel.view.getSharedContext().getCss());
+                inspector = new DOMInspector(root.panel.view.getDocument(), root.panel.view.getSharedContext().getCss());
 
                 inspectorFrame.getContentPane().add(inspector);
 
@@ -302,7 +300,7 @@ public class BrowserMenuBar extends JMenuBar {
                 inspectorFrame.setSize(500, 600);
                 inspectorFrame.setVisible(true);
             } else {
-                inspector.setForDocument(root.panel.view.getDocument(), root.panel.view.getSharedContext(), root.panel.view.getSharedContext().getCss());
+                inspector.setForDocument(root.panel.view.getDocument(), root.panel.view.getSharedContext().getCss());
             }
             inspectorFrame.setVisible(true);
         }
@@ -365,7 +363,7 @@ public class BrowserMenuBar extends JMenuBar {
         NextDemoAction() {
             super("Next Demo Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         }
 
         /**
@@ -407,7 +405,7 @@ public class BrowserMenuBar extends JMenuBar {
         PriorDemoAction() {
             super("Prior Demo Page");
             putValue(MNEMONIC_KEY, KeyEvent.VK_P);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         }
 
         /**
@@ -483,32 +481,20 @@ public class BrowserMenuBar extends JMenuBar {
 
 
 class EmptyAction extends AbstractAction {
-    EmptyAction(String name, Icon icon) {
-        this(name, "", icon);
-    }
+    private final Consumer<ActionEvent> handler;
 
-    EmptyAction(String name, String shortDesc, Icon icon) {
+    EmptyAction(String name, String shortDesc, @Nullable Icon icon, Consumer<ActionEvent> handler) {
         super(name, icon);
+        this.handler = handler;
         putValue(Action.SHORT_DESCRIPTION, shortDesc);
     }
 
-    EmptyAction(String name, int accel) {
-        this(name);
-        putValue(Action.ACCELERATOR_KEY,
-                KeyStroke.getKeyStroke(accel,
-                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-    }
-
-    EmptyAction(String name) {
-        super(name);
-    }
-
     @Override
-    public final void putValue(String key, Object newValue) {
-        super.putValue(key, newValue);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent evt) {
+    public void actionPerformed(ActionEvent event) {
+        try {
+            handler.accept(event);
+        } catch (Exception ex) {
+            Uu.p(ex);
+        }
     }
 }
