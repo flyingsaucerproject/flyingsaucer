@@ -269,12 +269,12 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      */
     public void reset() {
         forms.clear();
-        //imageComponents.clear();
+        imageComponents.clear();
     }
 
     public void remove(Element e) {
         forms.remove(e);
-        imageComponents.remove(e); // FIXME doesn't really work because e should be `CacheKey`, not `Element`
+        imageComponents.keySet().removeIf(ck -> ck.elem.equals(e));
     }
 
     public void setFormSubmissionListener(FormSubmissionListener fsl) {
