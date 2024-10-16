@@ -109,6 +109,11 @@ public abstract class Box implements Styleable {
     protected Box() {
     }
 
+    protected Box(@Nullable Box parent, @Nullable CalculatedStyle style) {
+        this._parent = parent;
+        this._style = style;
+    }
+
     public abstract String dump(LayoutContext c, String indent, Dump which);
 
     protected void dumpBoxes(
@@ -471,6 +476,7 @@ public abstract class Box implements Styleable {
         c.getOutputDevice().paintBackground(c, getStyle(), canvasBounds, canvasBounds, BorderPropertySet.EMPTY_BORDER);
     }
 
+    @Nullable
     public Layer getContainingLayer() {
         return _containingLayer;
     }

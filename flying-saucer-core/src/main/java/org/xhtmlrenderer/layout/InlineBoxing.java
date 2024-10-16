@@ -913,23 +913,17 @@ public class InlineBoxing {
     }
 
     private static LineBox newLine(LayoutContext c, int y, Box box) {
-        LineBox result = new LineBox();
-        result.setStyle(box.getStyle().createAnonymousStyle(IdentValue.BLOCK));
-        result.setParent(box);
+        LineBox result = new LineBox(box, box.getStyle().createAnonymousStyle(IdentValue.BLOCK));
         result.initContainingLayer(c);
-
         result.setY(y);
-
         result.calcCanvasLocation();
-
         return result;
     }
 
+    @Nullable
     private static InlineLayoutBox addOpenInlineBoxes(
             LayoutContext c, LineBox line, List<InlineBox> openParents, int cbWidth,
             Map<InlineBox, InlineLayoutBox> iBMap) {
-        List<InlineBox> result = new ArrayList<>();
-
         InlineLayoutBox currentIB = null;
         InlineLayoutBox previousIB = null;
 
@@ -944,8 +938,6 @@ public class InlineBoxing {
             }
 
             iBMap.put(iB, currentIB);
-
-            result.add(iB);
 
             if (first) {
                 line.addChildForLayout(c, currentIB);

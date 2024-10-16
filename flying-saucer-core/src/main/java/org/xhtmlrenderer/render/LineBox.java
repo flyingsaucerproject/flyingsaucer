@@ -44,6 +44,7 @@ import java.util.List;
 
 import static java.lang.System.lineSeparator;
 import static java.util.Collections.emptyList;
+import static org.xhtmlrenderer.render.Box.Dump.RENDER;
 
 /**
  * A line box contains a single line of text (or other inline content).  It
@@ -82,24 +83,25 @@ public class LineBox extends Box implements InlinePaintable {
     @Nullable
     private JustificationInfo _justificationInfo;
 
-    public LineBox() {
+    public LineBox(@Nullable Box parent, @Nullable CalculatedStyle style) {
+        super(parent, style);
     }
 
     @Override
     public String dump(LayoutContext c, String indent, Dump which) {
-        if (which != Dump.RENDER) {
-            throw new IllegalArgumentException(String.format("Unsupported which: %d (expected: %d)", which, Dump.RENDER));
+        if (which != RENDER) {
+            throw new IllegalArgumentException(String.format("Unsupported which: %s (expected: %s)", which, RENDER));
         }
 
         StringBuilder result = new StringBuilder(indent);
         result.append(this);
         result.append('\n');
 
-        dumpBoxes(c, indent, getNonFlowContent(), Dump.RENDER, result);
+        dumpBoxes(c, indent, getNonFlowContent(), RENDER, result);
         if (!getNonFlowContent().isEmpty()) {
             result.append('\n');
         }
-        dumpBoxes(c, indent, getChildren(), Dump.RENDER, result);
+        dumpBoxes(c, indent, getChildren(), RENDER, result);
 
         return result.toString();
     }
