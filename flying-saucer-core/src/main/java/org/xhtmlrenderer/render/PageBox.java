@@ -361,7 +361,7 @@ public class PageBox {
         List<PropertyDeclaration> props = getPageInfo().getXMPPropertyList();
         if (props != null && !props.isEmpty()) {
             for (PropertyDeclaration decl : props) {
-                if (decl.getCSSName() == CSSName.CONTENT) {
+                if (decl.getCSSName().equals(CSSName.CONTENT)) {
                     PropertyValue value = (PropertyValue) decl.getValue();
                     List<PropertyValue> values = value.getValues();
                     if (values.size() == 1) {
@@ -576,6 +576,7 @@ public class PageBox {
             return new Point(additionalClearance, top);
         }
 
+        @Override
         public MarginDirection getDirection() {
             return VERTICAL;
         }
@@ -604,6 +605,7 @@ public class PageBox {
             return new Point(left, top);
         }
 
+        @Override
         public MarginDirection getDirection() {
             return VERTICAL;
         }

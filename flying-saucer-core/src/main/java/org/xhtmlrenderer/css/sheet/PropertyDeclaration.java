@@ -109,8 +109,9 @@ public class PropertyDeclaration {
      *
      * @return A string representation of the object.
      */
+    @Override
     public String toString() {
-        return getPropertyName() + ": " + getValue().toString();
+        return "%s: %s".formatted(getPropertyName(), getValue().toString());
     }
 
     public IdentValue asIdentValue() {

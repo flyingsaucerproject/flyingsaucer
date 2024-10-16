@@ -188,8 +188,9 @@ public class BorderPropertySet extends RectPropertySet {
         return new BorderPropertySet(style, ctx);
     }
 
+    @Override
     public String toString() {
-        return "BorderPropertySet[top=" + _top + ",right=" + _right + ",bottom=" + _bottom + ",left=" + _left + "]";
+        return "BorderPropertySet[top=%s,right=%s,bottom=%s,left=%s]".formatted(_top, _right, _bottom, _left);
     }
 
     public boolean noTop() {

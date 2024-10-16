@@ -59,6 +59,7 @@ public class CSSParseException extends RuntimeException {
         _genericMessage = null;
     }
 
+    @Override
     public String getMessage() {
         if (_genericMessage != null) {
             return _genericMessage + " at line " + (_line+1) + ".";

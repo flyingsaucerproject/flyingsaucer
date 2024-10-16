@@ -49,8 +49,9 @@ public class RectPropertySet {
         );
     }
 
+    @Override
     public String toString() {
-        return "RectPropertySet[top=" + _top + ",right=" + _right + ",bottom=" + _bottom + ",left=" + _left + "]";
+        return "RectPropertySet[top=%s,right=%s,bottom=%s,left=%s]".formatted(_top, _right, _bottom, _left);
     }
 
     public float top() {

@@ -49,6 +49,7 @@ public enum PageElementPosition {
         this._ident = ident;
     }
 
+    @Override
     public String toString() {
         return _ident;
     }

@@ -34,7 +34,6 @@ import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.TextDecoration;
 
 import java.awt.*;
-import java.awt.RenderingHints.Key;
 
 public interface OutputDevice {
     void drawText(RenderingContext c, InlineText inlineText);
@@ -87,8 +86,9 @@ public interface OutputDevice {
 
     @Nullable
     @CheckReturnValue
-    Object getRenderingHint(Key key);
-    void setRenderingHint(Key key, Object value);
+    Object getRenderingHint(RenderingHints.Key key);
+
+    void setRenderingHint(RenderingHints.Key key, Object value);
 
     boolean isSupportsSelection();
 

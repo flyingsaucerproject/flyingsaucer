@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Locale.ROOT;
+
 
 /**
  * Part of a Selector
@@ -431,7 +433,7 @@ abstract class Condition {
         }
 
         static NthChildCondition fromString(String number) {
-            number = number.trim().toLowerCase();
+            number = number.trim().toLowerCase(ROOT);
 
             if ("even".equals(number)) {
                 return new NthChildCondition(2, 0);

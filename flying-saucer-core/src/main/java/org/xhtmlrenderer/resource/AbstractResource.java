@@ -45,11 +45,13 @@ public abstract class AbstractResource implements Resource {
 
     @Nullable
     @CheckReturnValue
+    @Override
     public InputSource getResourceInputSource() {
         return this.inputSource;
     }
 
     @CheckReturnValue
+    @Override
     public long getResourceLoadTimeStamp() {
         return this.createTimeStamp;
     }

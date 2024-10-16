@@ -49,8 +49,7 @@ public class DocumentDiffTest {
 
     public static String xhtmlToDiff(String xhtml, int width, int height) throws Exception {
         Document doc = XMLUtil.documentFromFile(xhtml);
-        Graphics2DRenderer renderer = new Graphics2DRenderer();
-        renderer.setDocument(doc, new File(xhtml).toURI().toURL().toString());
+        Graphics2DRenderer renderer = new Graphics2DRenderer(doc, new File(xhtml).toURI().toURL().toString());
 
         BufferedImage buff = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         withGraphics(buff, g -> {

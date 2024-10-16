@@ -80,18 +80,22 @@ public class RenderingContext implements CssContext {
         return sharedContext.getDPI();
     }
 
+    @Override
     public float getMmPerDot() {
         return sharedContext.getMmPerPx();
     }
 
+    @Override
     public int getDotsPerPixel() {
         return sharedContext.getDotsPerPixel();
     }
 
+    @Override
     public float getFontSize2D(FontSpecification font) {
         return sharedContext.getFont(font).getSize2D();
     }
 
+    @Override
     public float getXHeight(FontSpecification parentFont) {
         return sharedContext.getXHeight(getFontContext(), parentFont);
     }
@@ -119,6 +123,7 @@ public class RenderingContext implements CssContext {
 
     @Nullable
     @CheckReturnValue
+    @Override
     public FSFont getFont(FontSpecification font) {
         return sharedContext.getFont(font);
     }
@@ -202,10 +207,14 @@ public class RenderingContext implements CssContext {
         return pageNo;
     }
 
+    @CheckReturnValue
+    @Override
     public StyleReference getCss() {
         return sharedContext.getCss();
     }
 
+    @CheckReturnValue
+    @Override
     public FSFontMetrics getFSFontMetrics(FSFont font) {
         return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
     }

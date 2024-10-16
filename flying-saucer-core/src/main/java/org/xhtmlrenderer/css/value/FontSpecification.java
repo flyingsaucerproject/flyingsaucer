@@ -15,8 +15,9 @@ public class FontSpecification {
     public IdentValue fontStyle;
     public IdentValue variant;
 
+    @Override
     public String toString() {
-        return String.format("Font specification:  families: %s size: %s weight: %s style: %s variant: %s", 
+        return String.format("Font specification:  families: %s size: %s weight: %s style: %s variant: %s",
                 asList(families), size, fontWeight, fontStyle, variant);
     }
 }

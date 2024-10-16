@@ -461,7 +461,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     @Nullable
     @CheckReturnValue
     @Override
-    public Object getRenderingHint(Key key) {
+    public Object getRenderingHint(RenderingHints.Key key) {
         return null;
     }
 
