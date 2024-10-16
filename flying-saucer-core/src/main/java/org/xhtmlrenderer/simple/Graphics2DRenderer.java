@@ -35,7 +35,7 @@ import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
  * for rendering documents directly to images.</p>
  * <p>
  * <p>Graphics2DRenderer supports the {@link XHTMLPanel#setDocument(Document)},
- * {@link XHTMLPanel#doLayout()}, and {@link XHTMLPanel#render()} methods from
+ * {@link XHTMLPanel#doLayout()} method from
  * {@link XHTMLPanel}, as well as easy-to-use static utility methods.
  * For example, to render a document in an image that is 600 pixels wide use the
  * {@link #renderToImageAutoSize(String,int,int)} method like this:</p>
@@ -46,25 +46,22 @@ import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
  *
  * @author Joshua Marinacci
  */
-
-public class Graphics2DRenderer {
+public final class Graphics2DRenderer {
     /**
      * The panel we are using to render the document.
      */
     private final XHTMLPanel panel;
 
-    /**
-     * Dimensions of the image to render, in pixels.
-     */
-    @Nullable
-    protected Dimension dim;
-
-    /**
-     * Creates a new renderer with no document specified.
-     */
-    public Graphics2DRenderer() {
+    public Graphics2DRenderer(String url) {
         panel = new XHTMLPanel();
         panel.setInteractive(false);
+        panel.setDocument(url);
+    }
+
+    public Graphics2DRenderer(Document doc, String base_url) {
+        panel = new XHTMLPanel();
+        panel.setInteractive(false);
+        panel.setDocument(doc, base_url);
     }
 
     // ASK maybe we could change the graphics2d to be a font rendering context?
@@ -76,7 +73,6 @@ public class Graphics2DRenderer {
      * @param dim dimensions of the container for the document
      */
     public void layout(Graphics2D g2, @Nullable Dimension dim) {
-        this.dim = dim;
         if (dim != null) {
             panel.setSize(dim);
         }
@@ -94,27 +90,6 @@ public class Graphics2DRenderer {
             g2.setClip(getMinimumSize());
         }
         panel.paintComponent(g2);
-    }
-
-
-    /**
-     * Set the document to be rendered, lays it out, and
-     * renders it.
-     *
-     * @param url the URL for the document to render.
-     */
-    public void setDocument(String url) {
-        panel.setDocument(url);
-    }
-
-    /**
-     * Sets the document to render, lays it out, and renders it.
-     *
-     * @param doc      the Document to render
-     * @param base_url base URL for relative links within the Document.
-     */
-    public void setDocument(Document doc, String base_url) {
-        panel.setDocument(doc, base_url);
     }
 
     /**
@@ -174,8 +149,8 @@ public class Graphics2DRenderer {
      * @return Returns an Image containing the rendered document.
      */
     public static BufferedImage renderToImage(String url, int width, int height, int bufferedImageType) {
-        Graphics2DRenderer g2r = new Graphics2DRenderer();
-        g2r.setDocument(url);
+        Graphics2DRenderer g2r = new Graphics2DRenderer(url);
+
         Dimension dim = new Dimension(width, height);
         BufferedImage buff = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), bufferedImageType);
         withGraphics(buff, g -> {
@@ -188,8 +163,8 @@ public class Graphics2DRenderer {
         /**
      * A static utility method to automatically create an image from a
      * document, where height is determined based on document content.
-     * To estimate a size before rendering, use {@link #setDocument(String)}
-     * and then {@link #getMinimumSize()}. The rendered image supports transparency.
+     * To estimate a size before rendering, use {@link #getMinimumSize()}.
+     * The rendered image supports transparency.
      *
      * @param url    java.net.URL for the document to render.
      * @param width  Width in pixels of the layout container
@@ -202,8 +177,7 @@ public class Graphics2DRenderer {
     /**
      * A static utility method to automatically create an image from a
      * document, where height is determined based on document content.
-     * To estimate a size before rendering, use {@link #setDocument(String)}
-     * and then {@link #getMinimumSize()}.
+     * To estimate a size before rendering, use {@link #getMinimumSize()}.
      *
      * @param url    java.net.URL for the document to render.
      * @param width  Width in pixels of the layout container
@@ -212,8 +186,7 @@ public class Graphics2DRenderer {
      * @return Returns java.awt.Image containing the rendered document.
      */
     public static BufferedImage renderToImageAutoSize(String url, int width, int bufferedImageType) {
-        Graphics2DRenderer g2r = new Graphics2DRenderer();
-        g2r.setDocument(url);
+        Graphics2DRenderer g2r = new Graphics2DRenderer(url);
         Dimension dim = new Dimension(width, 1000);
 
         // do layout with temp buffer
