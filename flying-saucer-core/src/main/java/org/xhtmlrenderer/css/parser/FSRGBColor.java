@@ -92,37 +92,31 @@ public class FSRGBColor implements FSColor {
     @CheckReturnValue
     @Override
     public FSColor lightenColor() {
-        float[] hsb = RGBtoHSB(getRed(), getGreen(), getBlue(), null);
-        float hBase = hsb[0];
-        float sBase = hsb[1];
-        float bBase = hsb[2];
-
-        float sLighter = 0.35f*bBase*sBase;
-        float bLighter = 0.6999f + 0.3f*bBase;
-
-        int[] rgb = HSBtoRGB(hBase, sLighter, bLighter);
-        return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
+        HSBColor hsb = toHSB();
+        float sLighter = 0.35f * hsb.brightness() * hsb.saturation();
+        float bLighter = 0.6999f + 0.3f * hsb.brightness();
+        return new HSBColor(hsb.hue(), sLighter, bLighter).toRGB();
     }
 
     @CheckReturnValue
     @Override
     public FSColor darkenColor() {
-        float[] hsb = RGBtoHSB(getRed(), getGreen(), getBlue(), null);
-        float hBase = hsb[0];
-        float sBase = hsb[1];
-        float bBase = hsb[2];
+        HSBColor hsb = toHSB();
+        float hBase = hsb.hue();
+        float sBase = hsb.saturation();
+        float bBase = hsb.brightness();
         float bDarker = 0.56f * bBase;
 
-        int[] rgb = HSBtoRGB(hBase, sBase, bDarker);
-        return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
+        return new HSBColor(hBase, sBase, bDarker).toRGB();
+    }
+
+    private HSBColor toHSB() {
+        return RGBtoHSB(getRed(), getGreen(), getBlue());
     }
 
     // Taken from java.awt.Color to avoid dependency on it
-    private static float[] RGBtoHSB(int r, int g, int b, float @Nullable [] hsbvals) {
+    private static HSBColor RGBtoHSB(int r, int g, int b) {
         float hue, saturation, brightness;
-        if (hsbvals == null) {
-            hsbvals = new float[3];
-        }
         int cmax = Math.max(r, g);
         if (b > cmax)
             cmax = b;
@@ -151,56 +145,7 @@ public class FSRGBColor implements FSColor {
             if (hue < 0)
                 hue = hue + 1.0f;
         }
-        hsbvals[0] = hue;
-        hsbvals[1] = saturation;
-        hsbvals[2] = brightness;
-        return hsbvals;
-    }
 
-    // Taken from java.awt.Color to avoid dependency on it
-    private static int[] HSBtoRGB(float hue, float saturation, float brightness) {
-        int r = 0, g = 0, b = 0;
-        if (saturation == 0) {
-            r = g = b = (int) (brightness * 255.0f + 0.5f);
-        } else {
-            float h = (hue - (float) Math.floor(hue)) * 6.0f;
-            float f = h - (float) java.lang.Math.floor(h);
-            float p = brightness * (1.0f - saturation);
-            float q = brightness * (1.0f - saturation * f);
-            float t = brightness * (1.0f - (saturation * (1.0f - f)));
-            switch ((int) h) {
-                case 0:
-                    r = (int) (brightness * 255.0f + 0.5f);
-                    g = (int) (t * 255.0f + 0.5f);
-                    b = (int) (p * 255.0f + 0.5f);
-                    break;
-                case 1:
-                    r = (int) (q * 255.0f + 0.5f);
-                    g = (int) (brightness * 255.0f + 0.5f);
-                    b = (int) (p * 255.0f + 0.5f);
-                    break;
-                case 2:
-                    r = (int) (p * 255.0f + 0.5f);
-                    g = (int) (brightness * 255.0f + 0.5f);
-                    b = (int) (t * 255.0f + 0.5f);
-                    break;
-                case 3:
-                    r = (int) (p * 255.0f + 0.5f);
-                    g = (int) (q * 255.0f + 0.5f);
-                    b = (int) (brightness * 255.0f + 0.5f);
-                    break;
-                case 4:
-                    r = (int) (t * 255.0f + 0.5f);
-                    g = (int) (p * 255.0f + 0.5f);
-                    b = (int) (brightness * 255.0f + 0.5f);
-                    break;
-                case 5:
-                    r = (int) (brightness * 255.0f + 0.5f);
-                    g = (int) (p * 255.0f + 0.5f);
-                    b = (int) (q * 255.0f + 0.5f);
-                    break;
-            }
-        }
-        return new int[] { r, g, b };
+        return new HSBColor(hue, saturation, brightness);
     }
 }
