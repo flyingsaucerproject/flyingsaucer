@@ -25,28 +25,27 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import javax.swing.*;
 import java.awt.*;
 
+import static java.util.Objects.requireNonNull;
+
 public class SwingReplacedElement implements ReplacedElement {
     private final JComponent _component;
-    private Dimension intrinsicSize;
+    private final Dimension intrinsicSize;
 
-    public SwingReplacedElement(JComponent component) {
-        _component = component;
+    public SwingReplacedElement(JComponent component, Dimension intrinsicSize) {
+        _component = requireNonNull(component);
+        this.intrinsicSize = requireNonNull(intrinsicSize);
     }
 
     public JComponent getJComponent() {
         return _component;
     }
 
-    public void setIntrinsicSize(Dimension intrinsicSize){
-        this.intrinsicSize = intrinsicSize;
-    }
-
     public int getIntrinsicHeight() {
-        return intrinsicSize == null ? _component.getSize().height : intrinsicSize.height;
+        return intrinsicSize.height;
     }
 
     public int getIntrinsicWidth() {
-        return intrinsicSize == null ? _component.getSize().width : intrinsicSize.width;
+        return intrinsicSize.width;
     }
 
     public void setLocation(int x, int y) {

@@ -43,6 +43,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
+
 /**
  * A {@link Box} which contains the portion of an inline element laid out on a
  * single line.  It may contain content from several {@link InlineBox} objects
@@ -65,12 +68,12 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
 
     private int _inlineWidth;
 
+    @Nullable
     private List<TextDecoration> _textDecorations;
 
     private int _containingBlockWidth;
 
-    public InlineLayoutBox(LayoutContext c, Element elem, CalculatedStyle style, int cbWidth) {
-        this();
+    public InlineLayoutBox(LayoutContext c, @Nullable Element elem, @Nullable CalculatedStyle style, int cbWidth) {
         setElement(elem);
         setStyle(style);
         setContainingBlockWidth(cbWidth);
@@ -443,12 +446,14 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         return false;
     }
 
+    @Nullable
+    @CheckReturnValue
     public List<TextDecoration> getTextDecorations() {
         return _textDecorations;
     }
 
     public void setTextDecorations(List<TextDecoration> textDecoration) {
-        _textDecorations = textDecoration;
+        _textDecorations = unmodifiableList(requireNonNull(textDecoration));
     }
 
     private void addToContentList(List<Box> list) {
