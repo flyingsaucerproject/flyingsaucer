@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -42,6 +44,7 @@ public class TableRowBox extends BlockBox {
     private int _baseline;
     private boolean _haveBaseline;
     private int _heightOverride;
+    @Nullable
     private ContentLimitContainer _contentLimitContainer;
 
     private int _extraSpaceTop;
@@ -547,11 +550,13 @@ public class TableRowBox extends BlockBox {
         }
     }
 
+    @CheckReturnValue
+    @Nullable
     public ContentLimitContainer getContentLimitContainer() {
         return _contentLimitContainer;
     }
 
-    public void setContentLimitContainer(ContentLimitContainer contentLimitContainer) {
+    public void setContentLimitContainer(@Nullable ContentLimitContainer contentLimitContainer) {
         _contentLimitContainer = contentLimitContainer;
     }
 

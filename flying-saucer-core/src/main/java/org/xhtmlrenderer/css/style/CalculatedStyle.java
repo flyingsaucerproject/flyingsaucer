@@ -196,6 +196,7 @@ public class CalculatedStyle {
         return _parent;
     }
 
+    @Override
     public String toString() {
         return genStyleKey();
     }

@@ -797,7 +797,7 @@ public final class Layer {
     }
 
     @Nullable
-    @CheckReturnValue
+    @CanIgnoreReturnValue
     public PageBox getLastPage(CssContext c, Box box) {
         return getPage(c, box.getAbsY() + box.getHeight() - 1);
     }

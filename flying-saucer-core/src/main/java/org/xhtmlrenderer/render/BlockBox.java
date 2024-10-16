@@ -146,6 +146,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return "";
     }
 
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append(getClass().getSimpleName());
@@ -543,6 +544,7 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
+    @Nullable
     public ReplacedElement getReplacedElement() {
         return _replacedElement;
     }
@@ -1109,7 +1111,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     protected boolean isMayCollapseMarginsWithChildren() {
-        return (! isRoot()) && getStyle().isMayCollapseMarginsWithChildren();
+        return !isRoot() && getStyle().isMayCollapseMarginsWithChildren();
     }
 
     // This will require a rethink if we ever truly layout incrementally
@@ -2094,7 +2096,7 @@ public class BlockBox extends Box implements InlinePaintable {
     public boolean checkPageContext(LayoutContext c) {
         if (! getStyle().isIdent(CSSName.PAGE, IdentValue.AUTO)) {
             String pageName = getStyle().getStringProperty(CSSName.PAGE);
-            if ( (! pageName.equals(c.getPageName())) && isInDocumentFlow() &&
+            if ( !pageName.equals(c.getPageName()) && isInDocumentFlow() &&
                     isContainsInlineContent(c)) {
                 c.setPendingPageName(pageName);
                 return true;

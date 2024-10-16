@@ -22,11 +22,11 @@ package org.xhtmlrenderer.css.extend;
 import org.w3c.dom.Node;
 
 /**
+ * Gives the css matcher access to the information it needs about the tree structure.
+ * <p>
+ * Elements are the "things" in the tree structure that can be matched by the matcher.
+ *
  * @author scott
- *         <p>
- *         Gives the css matcher access to the information it needs about the tree structure.
- *         <p>
- *         Elements are the "things" in the tree structure that can be matched by the matcher.
  */
 public interface TreeResolver {
     // XXX Where should this go (used by parser, TreeResolver, and AttributeResolver

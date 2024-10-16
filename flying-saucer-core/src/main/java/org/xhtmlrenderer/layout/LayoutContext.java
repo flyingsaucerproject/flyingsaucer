@@ -93,6 +93,7 @@ public class LayoutContext implements CssContext {
         return _sharedContext.getTextRenderer();
     }
 
+    @CheckReturnValue
     @Override
     public StyleReference getCss() {
         return _sharedContext.getCss();
@@ -361,6 +362,7 @@ public class LayoutContext implements CssContext {
         return _counterContextMap.get(style);
     }
 
+    @CheckReturnValue
     @Override
     public FSFontMetrics getFSFontMetrics(FSFont font) {
         return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");

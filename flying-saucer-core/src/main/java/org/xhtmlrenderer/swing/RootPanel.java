@@ -125,25 +125,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         repaint();
     }
 
-    // iterates over all boxes and, if they have a BG url assigned, makes a call to the UAC
-    // to request it. when running with async image loading, this means BG images will start
-    // loading before the box ever shows on screen
-    private void requestBGImages(final Box box) {
-        if (box.getChildCount() == 0) return;
-        for (Box cb : box.getChildren()) {
-            CalculatedStyle style = cb.getStyle();
-            if (!style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
-                String uri = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
-                XRLog.load(Level.FINE, "Greedily loading background property " + uri);
-                try {
-                    getSharedContext().getUac().getImageResource(uri);
-                } catch (Exception ignore) {
-                }
-            }
-            requestBGImages(cb);
-        }
-    }
-
     public void resetScrollPosition() {
         if (enclosingScrollPane != null) {
             JScrollBar scrollBar = enclosingScrollPane.getVerticalScrollBar();
@@ -210,7 +191,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     }
 
     /**
-     * Overrides the default implementation unconfigure any {@link JScrollPane}
+     * Overrides the default implementation un-configure any {@link JScrollPane}
      * parent.
      */
     @Override
@@ -271,8 +252,8 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     public Rectangle getScreenExtents() {
         Rectangle extents;
         if (enclosingScrollPane != null) {
-            Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
-            extents = new Rectangle(0, 0, bnds.width, bnds.height);
+            Rectangle bounds = enclosingScrollPane.getViewportBorderBounds();
+            extents = new Rectangle(0, 0, bounds.width, bounds.height);
         } else {
             extents = new Rectangle(getWidth(), getHeight());
             Insets insets = getInsets();

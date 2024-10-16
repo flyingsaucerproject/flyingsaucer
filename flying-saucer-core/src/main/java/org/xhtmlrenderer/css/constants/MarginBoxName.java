@@ -68,6 +68,7 @@ public class MarginBoxName {
         return val;
     }
 
+    @Override
     public String toString() {
         return _ident;
     }
@@ -76,10 +77,12 @@ public class MarginBoxName {
         return ALL.get(ident);
     }
 
+    @Override
     public int hashCode() {
         return FS_ID;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof MarginBoxName)) {
             return false;
