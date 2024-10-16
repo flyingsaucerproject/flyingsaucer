@@ -10,6 +10,8 @@ Z-index,demo:demos/zindex.xhtml
 Cursors,demo:demos/cursors.xhtml
 Report,demo:demos/report.xhtml
 Forms,demo:demos/forms.xhtml
+Legacy Tables,demo:demos/fullscreen-table.xhtml
+CSS Tables,demo:demos/fullscreen-css-table.xhtml
 Recipe in XML,demo:demos/cream-chicken-rice.xml
 Centered Fluid,demo:demos/centered-fluid.xhtml
 Centered Fluid Auto Margin,demo:demos/centered-fluid-automargin.xhtml
