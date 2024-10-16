@@ -536,30 +536,6 @@ public final class SharedContext {
         this.replacedElementFactory = ref;
     }
 
-    public void removeElementReferences(Element e) {
-        String id = namespaceHandler.getID(e);
-        if (id != null && !id.isEmpty()) {
-            removeBoxId(id);
-        }
-
-        if (styleMap != null) {
-            styleMap.remove(e);
-        }
-
-        getCss().removeStyle(e);
-        getReplacedElementFactory().remove(e);
-
-        if (e.hasChildNodes()) {
-            NodeList children = e.getChildNodes();
-            for (int i = 0; i < children.getLength(); i++) {
-                Node child = children.item(i);
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    removeElementReferences((Element)child);
-                }
-            }
-        }
-    }
-
     public LineBreakingStrategy getLineBreakingStrategy() {
         return lineBreakingStrategy;
     }

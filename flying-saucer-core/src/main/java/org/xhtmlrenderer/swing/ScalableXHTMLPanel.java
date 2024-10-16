@@ -59,12 +59,6 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
     private Dimension lastLayoutSize;
 
     /**
-     * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
-     */
-    public ScalableXHTMLPanel() {
-    }
-
-    /**
      * Instantiates a panel with a custom {@link org.xhtmlrenderer.extend.UserAgentCallback}
      * implementation.
      *
