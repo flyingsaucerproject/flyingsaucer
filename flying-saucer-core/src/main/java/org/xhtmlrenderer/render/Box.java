@@ -268,15 +268,6 @@ public abstract class Box implements Styleable {
         _state = state;
     }
 
-    public static String stateToString(State state) {
-        return switch (state) {
-            case NOTHING -> "NOTHING";
-            case FLUX -> "FLUX";
-            case CHILDREN_FLUX -> "CHILDREN_FLUX";
-            case DONE -> "DONE";
-        };
-    }
-
     @Nullable
     @CheckReturnValue
     @Override
