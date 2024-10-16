@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -51,7 +52,7 @@ public abstract class FormField {
     private final BlockBox box;
     protected Integer intrinsicWidth;
     protected Integer intrinsicHeight;
-    
+
     protected FormField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         _element = e;
         _parentForm = form;
@@ -73,6 +74,7 @@ public abstract class FormField {
         return _parentForm;
     }
 
+    @CheckReturnValue
     public Dimension getIntrinsicSize(){
 
         int width = intrinsicWidth == null ? 0 : intrinsicWidth;

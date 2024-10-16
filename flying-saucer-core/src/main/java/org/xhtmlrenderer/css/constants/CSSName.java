@@ -1681,6 +1681,7 @@ public final class CSSName implements Comparable<CSSName> {
      *
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         return this.propName;
     }
@@ -1827,7 +1828,7 @@ public final class CSSName implements Comparable<CSSName> {
     }
 
     // FIXME equals, hashcode
-
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CSSName cssName)) return false;
@@ -1835,6 +1836,7 @@ public final class CSSName implements Comparable<CSSName> {
         return FS_ID == cssName.FS_ID;
     }
 
+    @Override
     public int hashCode() {
         return FS_ID;
     }

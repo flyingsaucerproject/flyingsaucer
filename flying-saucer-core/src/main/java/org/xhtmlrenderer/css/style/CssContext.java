@@ -27,7 +27,9 @@ public interface CssContext {
     // FIXME Doesn't really belong here, but this is
     // the only common interface of LayoutContext
     // and RenderingContext
+    @CheckReturnValue
     StyleReference getCss();
 
+    @CheckReturnValue
     FSFontMetrics getFSFontMetrics(FSFont font);
 }

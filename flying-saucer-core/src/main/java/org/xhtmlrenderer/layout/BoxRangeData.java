@@ -50,7 +50,8 @@ public class BoxRangeData {
         _clip = clip;
     }
 
+    @Override
     public String toString() {
-        return "[range= " + _range + ", box=" + _box + ", clip=" + _clip + "]";
+        return "[range= %s, box=%s, clip=%s]".formatted(_range, _box, _clip);
     }
 }

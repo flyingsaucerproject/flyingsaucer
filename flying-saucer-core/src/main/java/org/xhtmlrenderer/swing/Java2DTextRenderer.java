@@ -179,6 +179,7 @@ public class Java2DTextRenderer implements TextRenderer {
         threshold = fontsize;
     }
 
+    @CheckReturnValue
     @Override
     public FSFontMetrics getFSFontMetrics(FontContext fc, FSFont font, String string ) {
         Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();

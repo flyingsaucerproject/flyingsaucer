@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class MediaRule implements RulesetContainer {
         _mediaTypes.add(medium);
     }
 
+    @CheckReturnValue
     public boolean matches(String medium) {
         if (medium.equalsIgnoreCase("all") || _mediaTypes.contains("all")) {
             return true;

@@ -79,6 +79,7 @@ public class LineBox extends Box implements InlinePaintable {
 
     private int _baseline;
 
+    @Nullable
     private JustificationInfo _justificationInfo;
 
     public LineBox() {

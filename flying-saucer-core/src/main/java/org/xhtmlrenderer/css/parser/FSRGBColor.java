@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser;
 
-import org.jspecify.annotations.Nullable;
+import com.google.errorprone.annotations.CheckReturnValue;
 
 import java.util.Objects;
 
@@ -62,6 +62,7 @@ public class FSRGBColor implements FSColor {
         return _red;
     }
 
+    @Override
     public String toString() {
         return '#' + toString(_red) + toString(_green) + toString(_blue);
     }
@@ -75,6 +76,7 @@ public class FSRGBColor implements FSColor {
         }
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof FSRGBColor that)) return false;
@@ -82,10 +84,13 @@ public class FSRGBColor implements FSColor {
         return _blue == that._blue && _green == that._green && _red == that._red;
     }
 
+    @Override
     public int hashCode() {
         return Objects.hash(_red, _green, _blue);
     }
 
+    @CheckReturnValue
+    @Override
     public FSColor lightenColor() {
         float[] hsb = RGBtoHSB(getRed(), getGreen(), getBlue(), null);
         float hBase = hsb[0];
@@ -99,6 +104,8 @@ public class FSRGBColor implements FSColor {
         return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
     }
 
+    @CheckReturnValue
+    @Override
     public FSColor darkenColor() {
         float[] hsb = RGBtoHSB(getRed(), getGreen(), getBlue(), null);
         float hBase = hsb[0];
