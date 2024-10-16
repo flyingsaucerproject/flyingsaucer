@@ -103,7 +103,7 @@ public class Matcher {
     public CascadedStyle getPECascadedStyle(Element e, String pseudoElement) {
         synchronized (e) {
             Mapper em = getMapper(e);
-            return em.getPECascadedStyle(e, pseudoElement);
+            return em.getPECascadedStyle(pseudoElement);
         }
     }
 
@@ -351,7 +351,7 @@ public class Matcher {
          * We assume that restyle has already been done by a getCascadedStyle if necessary.
          */
         @Nullable
-        public CascadedStyle getPECascadedStyle(Node e, String pseudoElement) {
+        public CascadedStyle getPECascadedStyle(String pseudoElement) {
             Iterator<Map.Entry<String, List<Selector>>> si = pseudoSelectors.entrySet().iterator();
             if (!si.hasNext()) {
                 return null;
