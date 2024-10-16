@@ -37,7 +37,6 @@ import org.xhtmlrenderer.render.RenderingContext;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.RenderingHints.Key;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -239,11 +238,11 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
 
     @Nullable
     @CheckReturnValue
-    public Object getRenderingHint(Key key) {
+    public Object getRenderingHint(RenderingHints.Key key) {
         return _graphics.getRenderingHint(key);
     }
 
-    public void setRenderingHint(Key key, Object value) {
+    public void setRenderingHint(RenderingHints.Key key, Object value) {
         _graphics.setRenderingHint(key, value);
     }
 
