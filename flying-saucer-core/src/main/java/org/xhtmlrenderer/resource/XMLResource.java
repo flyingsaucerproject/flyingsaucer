@@ -39,6 +39,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -56,9 +57,6 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
-
-import static javax.xml.parsers.SAXParserFactory.newInstance;
-
 
 /**
  * @author Patrick Wright
@@ -149,7 +147,7 @@ public class XMLResource extends AbstractResource {
                             "No value for system property 'org.xml.sax.driver'.");
                 }
                 */
-                xmlReader = newInstance().newSAXParser().getXMLReader();
+                xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
             } catch (Exception ex) {
                 XRLog.general(ex.getMessage());
             }
@@ -157,7 +155,7 @@ public class XMLResource extends AbstractResource {
         if (xmlReader == null) {
             try {
                 XRLog.load(Level.WARNING, "falling back on the default parser");
-                SAXParser parser = newInstance().newSAXParser();
+                SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
                 xmlReader = parser.getXMLReader();
             } catch (Exception ex) {
                 XRLog.general(Level.WARNING, ex.getMessage(), ex);
