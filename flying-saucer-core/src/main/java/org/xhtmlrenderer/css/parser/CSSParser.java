@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Locale.ROOT;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_NUMBER;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PERCENTAGE;
 import static org.xhtmlrenderer.css.newmatch.Selector.Axis.CHILD_AXIS;
@@ -117,9 +118,9 @@ public class CSSParser {
         try {
             reset(new StringReader(expr));
             List<PropertyValue> values = expr(
-                    cssName == CSSName.FONT_FAMILY ||
-                    cssName == CSSName.FONT_SHORTHAND ||
-                    cssName == CSSName.FS_PDF_FONT_ENCODING);
+                    cssName.equals(CSSName.FONT_FAMILY) ||
+                    cssName.equals(CSSName.FONT_SHORTHAND) ||
+                    cssName.equals(CSSName.FS_PDF_FONT_ENCODING));
 
             PropertyBuilder builder = CSSName.getPropertyBuilder(cssName);
             List<PropertyDeclaration> props;
@@ -995,7 +996,7 @@ public class CSSParser {
 
         String namespaceURI = null;
         if (prefix != null && !prefix.equals(TreeResolver.NO_NAMESPACE)) {
-            namespaceURI = _namespaces.get(prefix.toLowerCase());
+            namespaceURI = _namespaces.get(prefix.toLowerCase(ROOT));
             if (namespaceURI == null) {
                 throw new CSSParseException("There is no namespace with prefix " + prefix + " defined",
                         getCurrentLine());
@@ -1290,9 +1291,9 @@ public class CSSParser {
                     skip_whitespace();
 
                     List<PropertyValue> values = expr(
-                            cssName == CSSName.FONT_FAMILY ||
-                            cssName == CSSName.FONT_SHORTHAND ||
-                            cssName == CSSName.FS_PDF_FONT_ENCODING);
+                            CSSName.FONT_FAMILY.equals(cssName) ||
+                            CSSName.FONT_SHORTHAND.equals(cssName) ||
+                            CSSName.FS_PDF_FONT_ENCODING.equals(cssName));
                     boolean important = false;
 
                     t = la();
@@ -1869,7 +1870,7 @@ public class CSSParser {
                     }
                 }
                 case SEMICOLON -> {
-                    if (braces == 0 && ((!needBlock) || foundBlock)) {
+                    if (braces == 0 && (!needBlock || foundBlock)) {
                         break LOOP;
                     }
                 }
@@ -1946,7 +1947,7 @@ public class CSSParser {
                 }
                 String result = processEscapes(_lexer.yytext().toCharArray(), start, count);
                 if (!literal) {
-                    result = result.toLowerCase();
+                    result = result.toLowerCase(ROOT);
                 }
                 yield result;
             }

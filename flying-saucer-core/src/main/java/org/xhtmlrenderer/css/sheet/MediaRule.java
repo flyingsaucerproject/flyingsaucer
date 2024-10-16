@@ -25,6 +25,8 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Locale.ROOT;
+
 public class MediaRule implements RulesetContainer {
     private final List<String> _mediaTypes = new ArrayList<>();
     private final List<Ruleset> _contents = new ArrayList<>();
@@ -40,11 +42,8 @@ public class MediaRule implements RulesetContainer {
 
     @CheckReturnValue
     public boolean matches(String medium) {
-        if (medium.equalsIgnoreCase("all") || _mediaTypes.contains("all")) {
-            return true;
-        } else {
-            return _mediaTypes.contains(medium.toLowerCase());
-        }
+        return medium.equalsIgnoreCase("all") || _mediaTypes.contains("all") ||
+                _mediaTypes.contains(medium.toLowerCase(ROOT));
     }
 
     @Override
