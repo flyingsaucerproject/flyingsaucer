@@ -1408,13 +1408,13 @@ public class TableBox extends BlockBox {
                         long percentMissing = w.value() - totalPercent;
                         int totalWidth = 0;
                         for (int pos = col; pos < lastCol; pos++) {
-                            if (!(layoutStruct[pos].width().isPercent())) {
+                            if (!layoutStruct[pos].width().isPercent()) {
                                 totalWidth += layoutStruct[pos].effMaxWidth();
                             }
                         }
 
                         for (int pos = col; pos < lastCol && totalWidth > 0; pos++) {
-                            if (!(layoutStruct[pos].width().isPercent())) {
+                            if (!layoutStruct[pos].width().isPercent()) {
                                 long percent = percentMissing * layoutStruct[pos].effMaxWidth()
                                         / totalWidth;
                                 totalWidth -= layoutStruct[pos].effMaxWidth();

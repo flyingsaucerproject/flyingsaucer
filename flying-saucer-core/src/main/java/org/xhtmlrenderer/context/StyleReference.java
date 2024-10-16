@@ -54,7 +54,9 @@ import java.util.logging.Level;
  * @author Torbjoern Gannholm
  */
 public class StyleReference {
+    @Nullable
     private NamespaceHandler _nsh;
+    @Nullable
     private Document _doc;
     private final StylesheetFactoryImpl _stylesheetFactory;
 
@@ -62,6 +64,7 @@ public class StyleReference {
      * Instance of our element-styles matching class. Will be null if new rules
      * have been added since last match.
      */
+    @Nullable
     private Matcher _matcher;
 
     private UserAgentCallback _uac;

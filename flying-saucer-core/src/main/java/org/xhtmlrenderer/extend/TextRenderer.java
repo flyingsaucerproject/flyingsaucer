@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.extend;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
@@ -40,6 +41,7 @@ public interface TextRenderer {
     float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector);
     Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y);
 
+    @CheckReturnValue
     FSFontMetrics getFSFontMetrics(
             FontContext context, FSFont font, String string);
 

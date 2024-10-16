@@ -127,6 +127,7 @@ public abstract class Box implements Styleable {
         return getContentWidth() + getLeftMBP() + getRightMBP();
     }
 
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append(getClass().getSimpleName());

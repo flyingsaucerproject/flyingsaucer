@@ -36,30 +36,19 @@ import java.util.Optional;
  */
 public interface NamespaceHandler {
 
-    /**
-     * @return the namespace handled
-     */
     @CheckReturnValue
     String getNamespace();
 
-    /**
-     * @return the default CSS stylesheet for this namespace
-     */
     @CheckReturnValue
     Optional<StylesheetInfo> getDefaultStylesheet();
 
-    /**
-     * @param doc the document
-     * @return the title for this document, if any exists
-     */
     @Nullable
     @CheckReturnValue
     String getDocumentTitle(Document doc);
 
     /**
      * @param doc the document
-     * @return all links to CSS stylesheets (type="text/css") in this
-     *         document
+     * @return all links to CSS stylesheets (type="text/css") in this document
      */
     @CheckReturnValue
     List<StylesheetInfo> getStylesheets(Document doc);

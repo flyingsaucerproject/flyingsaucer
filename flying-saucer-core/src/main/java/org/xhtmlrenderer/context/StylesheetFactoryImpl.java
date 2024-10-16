@@ -70,10 +70,12 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         _cssParser = new CSSParser((uri, message) -> XRLog.cssParse(Level.WARNING, "(" + uri + ") " + message));
     }
 
+    @Override
     public Stylesheet parse(Reader reader, StylesheetInfo info) {
         return parse(reader, info.getUri(), info.getOrigin());
     }
 
+    @Override
     public Stylesheet parse(Reader reader, String uri, Origin origin) {
         try {
             return _cssParser.parseStylesheet(uri, origin, reader);
@@ -109,6 +111,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         }
     }
 
+    @Override
     public Ruleset parseStyleDeclaration(Origin origin, String styleDeclaration) {
         return _cssParser.parseDeclaration(origin, styleDeclaration);
     }
@@ -158,6 +161,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     //TODO: this looks a bit odd
     @Nullable
     @CheckReturnValue
+    @Override
     public Stylesheet getStylesheet(StylesheetInfo info) {
         XRLog.load("Requesting stylesheet: " + info.getUri());
 

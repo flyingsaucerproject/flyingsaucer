@@ -88,6 +88,7 @@ public class Length {
         };
     }
 
+    @Override
     public String toString() {
         String type = switch (_type) {
             case FIXED -> "fixed";

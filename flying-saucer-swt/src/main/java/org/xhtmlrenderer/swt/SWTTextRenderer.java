@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
@@ -64,6 +65,8 @@ public class SWTTextRenderer implements TextRenderer {
         gc.drawText(string, (int) x, (int) y, SWT.DRAW_TRANSPARENT);
     }
 
+    @CheckReturnValue
+    @Override
     public FSFontMetrics getFSFontMetrics(FontContext context, FSFont font,
             String string) {
         return new SWTFontMetricsAdapter((SWTFontContext) context,

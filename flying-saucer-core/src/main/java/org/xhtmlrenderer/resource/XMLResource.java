@@ -254,14 +254,17 @@ public class XMLResource extends AbstractResource {
             xmlReader.setEntityResolver(FSEntityResolver.instance());
             xmlReader.setErrorHandler(new ErrorHandler() {
 
+                @Override
                 public void error(SAXParseException ex) {
                     XRLog.load(ex.getMessage());
                 }
 
+                @Override
                 public void fatalError(SAXParseException ex) {
                     XRLog.load(ex.getMessage());
                 }
 
+                @Override
                 public void warning(SAXParseException ex) {
                     XRLog.load(ex.getMessage());
                 }
