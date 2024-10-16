@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.Locale.ROOT;
+
 /**
  * A reference to a stylesheet. If no stylesheet is set, the matcher will try to
  * find the stylesheet by uri, first from the StylesheetFactory cache, then by
@@ -67,7 +69,7 @@ public class StylesheetInfo {
      * @return   true if the stylesheet referenced applies to the medium
      */
     public boolean appliesToMedia(String m) {
-        String mLowerCase = m.toLowerCase();
+        String mLowerCase = m.toLowerCase(ROOT);
         return mLowerCase.equals("all") ||
             mediaTypes.contains("all") || mediaTypes.contains(mLowerCase);
     }
@@ -79,7 +81,7 @@ public class StylesheetInfo {
         }
 
         return Stream.of(media.split(","))
-                .map(mediaType -> mediaType.trim().toLowerCase())
+                .map(mediaType -> mediaType.trim().toLowerCase(ROOT))
                 .toList();
     }
 
