@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * This class wraps an input stream and detects if it contains certain content using "magic numbers".
  *
@@ -44,7 +46,7 @@ public class ContentTypeDetectingInputStreamWrapper extends BufferedInputStream 
         return true;
     }
 
-    private static final byte[] MAGIC_BYTES_PDF = "%PDF".getBytes();
+    private static final byte[] MAGIC_BYTES_PDF = "%PDF".getBytes(UTF_8);
 
     public boolean isPdf() {
         return streamStartsWithMagicBytes(MAGIC_BYTES_PDF);
