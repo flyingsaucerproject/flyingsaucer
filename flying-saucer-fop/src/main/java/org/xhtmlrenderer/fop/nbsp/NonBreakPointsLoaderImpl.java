@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -58,17 +57,14 @@ public class NonBreakPointsLoaderImpl implements NonBreakPointsLoader {
 
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path)) {
             if (is == null) return null;
-            BufferedReader r = new BufferedReader(new InputStreamReader(is, UTF_8));
-            List<String> result = new ArrayList<>();
-            String line;
-            while ((line = r.readLine()) != null) {
-                if (line.isEmpty() || line.startsWith("#")) continue;
-                result.add(line);
+            try (BufferedReader r = new BufferedReader(new InputStreamReader(is, UTF_8))) {
+                return r.lines()
+                        .filter(line -> !line.isEmpty())
+                        .filter(line -> !line.startsWith("#"))
+                        .toList();
             }
-            return result;
         } catch (IOException e) {
             throw new RuntimeException("Error while loading nbsp file from path " + path, e);
         }
     }
-
 }

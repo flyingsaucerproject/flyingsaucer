@@ -17,31 +17,35 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+
 public class ListsTest {
     private static final Logger log = LoggerFactory.getLogger(ListsTest.class);
 
     @ParameterizedTest
     @ValueSource(strings = {"page-with-lists.html", "list-sample.xhtml"})
     void pageWithLists(String fileName) throws IOException, ParserConfigurationException, SAXException {
-        InputStream htmlStream = getClass().getClassLoader().getResourceAsStream(fileName);
-        String htmlContent = new String(htmlStream.readAllBytes());
+        try (InputStream htmlStream = requireNonNull(getClass().getClassLoader().getResourceAsStream(fileName))) {
+            String htmlContent = new String(htmlStream.readAllBytes(), UTF_8);
 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(new InputSource(new StringReader(htmlContent)));
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new InputSource(new StringReader(htmlContent)));
 
-        ITextRenderer renderer = new ITextRenderer();
+            ITextRenderer renderer = new ITextRenderer();
 
-        ITextUserAgent userAgent = new ITextUserAgent(renderer.getOutputDevice(), Math.round(renderer.getOutputDevice().getDotsPerPoint()));
-        renderer.getSharedContext().setUserAgentCallback(userAgent);
+            ITextUserAgent userAgent = new ITextUserAgent(renderer.getOutputDevice(), Math.round(renderer.getOutputDevice().getDotsPerPoint()));
+            renderer.getSharedContext().setUserAgentCallback(userAgent);
 
-        renderer.setDocument(document, null);
+            renderer.setDocument(document, null);
 
-        File result = new File("target", fileName + ".pdf");
-        try (FileOutputStream outputStream = new FileOutputStream(result)) {
-            renderer.layout();
-            renderer.createPDF(outputStream);
+            File result = new File("target", fileName + ".pdf");
+            try (FileOutputStream outputStream = new FileOutputStream(result)) {
+                renderer.layout();
+                renderer.createPDF(outputStream);
+            }
+            log.info("PDF with lists: {}", result.getAbsolutePath());
         }
-        log.info("PDF with lists: {}", result.getAbsolutePath());
     }
 }

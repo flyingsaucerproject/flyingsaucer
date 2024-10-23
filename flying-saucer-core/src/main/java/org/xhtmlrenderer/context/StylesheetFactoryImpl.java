@@ -30,7 +30,6 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
@@ -39,7 +38,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -98,16 +96,12 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         // since the null resource stream is wrapped in a BufferedInputStream
         InputSource inputSource=cr.getResourceInputSource();
         if (inputSource==null) return null;
-        InputStream is = inputSource.getByteStream();
-        if (is==null) return null;
-        try {
+        try (InputStream is = inputSource.getByteStream()) {
+            if (is == null) return null;
             String charset = Configuration.valueFor("xr.stylesheets.charset-name", "UTF-8");
             return parse(new InputStreamReader(is, charset), info);
-        } catch (UnsupportedEncodingException e) {
-            // Shouldn't happen
+        } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
-        } finally {
-            IOUtil.close(is);
         }
     }
 

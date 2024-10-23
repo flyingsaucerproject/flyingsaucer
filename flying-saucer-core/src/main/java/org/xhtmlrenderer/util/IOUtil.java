@@ -127,6 +127,11 @@ public class IOUtil {
         return result.toByteArray();
     }
 
+    /**
+     * @deprecated Use try-with-resources idiom instead.
+     */
+    @Deprecated
+    @SuppressWarnings("EmptyCatch")
     public static void close(@Nullable Closeable in) {
         if (in != null) {
             try {
