@@ -39,7 +39,6 @@ import java.awt.*;
  * Render text with SWT.
  *
  * @author Vianney le Clément
- *
  */
 public class SWTTextRenderer implements TextRenderer {
 
@@ -52,11 +51,13 @@ public class SWTTextRenderer implements TextRenderer {
             "xr.text.aa-fontsize-threshhold", 0));
     }
 
+    @Override
     public void setup(FontContext context) {
         GC gc = ((SWTFontContext) context).getGC();
         gc.setTextAntialias(_antialiasing ? SWT.ON : SWT.OFF);
     }
 
+    @Override
     public void drawString(OutputDevice outputDevice, String string, float x,
             float y) {
         GC gc = ((SWTOutputDevice) outputDevice).getGC();
@@ -73,6 +74,7 @@ public class SWTTextRenderer implements TextRenderer {
             (SWTFSFont) font);
     }
 
+    @Override
     public int getWidth(FontContext context, FSFont font, String string) {
         GC gc = ((SWTFontContext) context).getGC();
         Font previous = gc.getFont();
@@ -82,38 +84,46 @@ public class SWTTextRenderer implements TextRenderer {
         return width;
     }
 
+    @Override
     public float getFontScale() {
         return _scale;
     }
 
+    @Override
     public void setFontScale(float scale) {
         _scale = scale;
     }
 
+    @Override
     public void setSmoothingThreshold(float fontsize) {
         _antialiasing = (fontsize >= 0);
     }
 
+    @Override
     public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: drawGlyphVector");
     }
 
+    @Override
     public void drawString(OutputDevice outputDevice, String string, float x, float y,
             JustificationInfo info) {
         // TODO handle justification
         drawString(outputDevice, string, x, y);
     }
 
+    @Override
     public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font,
             FSGlyphVector fsGlyphVector, int index, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
+    @Override
     public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font,
             FSGlyphVector fsGlyphVector) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
+    @Override
     public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }

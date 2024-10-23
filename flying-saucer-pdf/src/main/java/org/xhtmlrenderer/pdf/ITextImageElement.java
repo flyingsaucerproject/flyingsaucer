@@ -36,18 +36,22 @@ public class ITextImageElement implements ITextReplacedElement {
         _image = image;
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return _image.getWidth();
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return _image.getHeight();
     }
 
+    @Override
     public Point getLocation() {
         return _location;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }
@@ -56,14 +60,17 @@ public class ITextImageElement implements ITextReplacedElement {
         return _image;
     }
 
+    @Override
     public void detach(LayoutContext c) {
     }
 
+    @Override
     public boolean isRequiresInteractivePaint() {
         // N/A
         return false;
     }
 
+    @Override
     public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
         Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
         ReplacedElement element = box.getReplacedElement();
@@ -72,10 +79,12 @@ public class ITextImageElement implements ITextReplacedElement {
             contentBounds.x, contentBounds.y);
     }
 
+    @Override
     public int getBaseline() {
         return 0;
     }
 
+    @Override
     public boolean hasBaseline() {
         return false;
     }

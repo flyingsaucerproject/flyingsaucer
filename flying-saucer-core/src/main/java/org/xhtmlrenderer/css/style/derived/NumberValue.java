@@ -32,14 +32,17 @@ public class NumberValue extends DerivedValue {
         _floatValue = value.getFloatValue();
     }
 
+    @Override
     public float asFloat() {
         return _floatValue;
     }
 
+    @Override
     public float getFloatProportionalTo(CSSName cssName, float baseValue, CssContext ctx) {
         return _floatValue;
     }
 
+    @Override
     public boolean hasAbsoluteUnit() {
         return true;
     }

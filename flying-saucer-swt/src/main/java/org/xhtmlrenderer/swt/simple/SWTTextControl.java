@@ -43,9 +43,10 @@ public class SWTTextControl extends SWTXhtmlControl {
         super(control, parent, c, style, uac);
     }
 
+    @Override
     protected Control createSWTControl(FormControl control,
-            BasicRenderer parent, LayoutContext c, CalculatedStyle style,
-            UserAgentCallback uac) {
+                                       BasicRenderer parent, LayoutContext c, CalculatedStyle style,
+                                       UserAgentCallback uac) {
         final TextControl tc = (TextControl) control;
 
         int sty = SWT.BORDER;
@@ -90,6 +91,7 @@ public class SWTTextControl extends SWTXhtmlControl {
         return text;
     }
 
+    @Override
     public int getIdealWidth() {
         Text text = (Text) getSWTControl();
         String old = text.getText();
@@ -100,6 +102,7 @@ public class SWTTextControl extends SWTXhtmlControl {
         return width;
     }
 
+    @Override
     public int getIdealHeight() {
         Text text = (Text) getSWTControl();
         String old = text.getText();

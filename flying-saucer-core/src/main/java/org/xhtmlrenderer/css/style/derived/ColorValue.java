@@ -39,6 +39,7 @@ public class ColorValue extends DerivedValue {
      *
      * @return The rGBColorValue value
      */
+    @Override
     public FSColor asColor() {
         return _color;
     }

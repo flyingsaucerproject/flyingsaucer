@@ -31,6 +31,7 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
  *
  */
 public class SWTFSImage implements FSImage {
+    @Nullable
     private final UserAgentCallback _uac;
     @Nullable
     private final String _uri;
@@ -45,7 +46,7 @@ public class SWTFSImage implements FSImage {
         this(null, null, null);
     }
 
-    public SWTFSImage(@Nullable Image image, UserAgentCallback uac, @Nullable String uri) {
+    public SWTFSImage(@Nullable Image image, @Nullable UserAgentCallback uac, @Nullable String uri) {
         _uac = uac;
         _uri = uri;
         _image = image;
@@ -79,6 +80,7 @@ public class SWTFSImage implements FSImage {
         return _image;
     }
 
+    @Override
     public int getHeight() {
         return _height;
     }
@@ -89,6 +91,7 @@ public class SWTFSImage implements FSImage {
         _height = height;
     }
 
+    @Override
     public int getWidth() {
         return _width;
     }
@@ -99,6 +102,7 @@ public class SWTFSImage implements FSImage {
         _width = width;
     }
 
+    @Override
     public void scale(int width, int height) {
         if (width < 0 && height < 0) {
             return;

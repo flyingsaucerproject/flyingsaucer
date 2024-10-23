@@ -51,11 +51,13 @@ public class SwingImageReplacer extends ElementReplacer {
         return replaceImage(uac, context, box.getElement(), cssWidth, cssHeight);
     }
 
+    @Override
     public void clear(Element element) {
         log.info("cleared image components for element {}", element);
         imageComponents.remove(element);
     }
 
+    @Override
     public void reset() {
         log.info("cleared image components");
         imageComponents.clear();

@@ -61,7 +61,7 @@
     <dependency>
       <groupId>com.google.errorprone</groupId>
       <artifactId>error_prone_annotations</artifactId>
-      <version>2.34.0</version>
+      <version>${error_prone.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -198,6 +198,17 @@
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
+          <compilerArgs>
+            <arg>-XDcompilePolicy=simple</arg>
+            <arg>-Xplugin:ErrorProne</arg>
+          </compilerArgs>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.google.errorprone</groupId>
+              <artifactId>error_prone_core</artifactId>
+              <version>${error_prone.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
 
@@ -285,6 +296,7 @@
     <pdfbox.version>3.0.3</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
     <java.version>17</java.version>
+    <error_prone.version>2.34.0</error_prone.version>
   </properties>
 
 </project>

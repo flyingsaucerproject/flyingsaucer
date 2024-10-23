@@ -39,12 +39,15 @@ public class LinkListener implements MouseListener {
         parent.addMouseListener(this);
     }
 
+    @Override
     public void mouseDoubleClick(MouseEvent e) {
     }
 
+    @Override
     public void mouseDown(MouseEvent e) {
     }
 
+    @Override
     public void mouseUp(MouseEvent e) {
         String uri = findLink(e.x, e.y);
         if (uri != null) {

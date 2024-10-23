@@ -405,6 +405,7 @@ public class InlineBox implements Styleable {
         _pseudoElementOrClass = pseudoElementOrClass;
     }
 
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("InlineBox: ");

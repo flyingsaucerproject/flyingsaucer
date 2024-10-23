@@ -42,11 +42,13 @@ public class CheckboxFormField extends AbstractFormField {
     initDimensions(c, box, cssWidth, cssHeight);
   }
 
+  @Override
   protected String getFieldType()
   {
     return FIELD_TYPE;
   }
 
+  @Override
   public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     PdfContentByte cb = outputDevice.getCurrentPage();
 
@@ -78,10 +80,12 @@ public class CheckboxFormField extends AbstractFormField {
     }
   }
 
+  @Override
   public int getBaseline() {
     return 0;
   }
 
+  @Override
   public boolean hasBaseline() {
     return false;
   }

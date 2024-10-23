@@ -53,6 +53,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     }
 
 
+    @Override
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         if (inlineText.isSelected()) {
             InlineLayoutBox iB = inlineText.getParent();
@@ -141,6 +142,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                 iB.getAbsY() + iB.getBaseline());
     }
 
+    @Override
     public void drawBorderLine(
             Shape bounds, int side, int lineWidth, boolean solid) {
        /* int x = bounds.x;
@@ -170,6 +172,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         draw(bounds);
     }
 
+    @Override
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
         ReplacedElement replaced = box.getReplacedElement();
         if (replaced instanceof SwingReplacedElement) {
@@ -187,6 +190,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         }
     }
 
+    @Override
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor rgb) {
             _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
@@ -200,26 +204,32 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         _graphics.drawLine(x1, y1, x2, y2);
     }
 
+    @Override
     public void drawRect(int x, int y, int width, int height) {
         _graphics.drawRect(x, y, width, height);
     }
 
+    @Override
     public void fillRect(int x, int y, int width, int height) {
         _graphics.fillRect(x, y, width, height);
     }
 
+    @Override
     public void setClip(Shape s) {
         _graphics.setClip(s);
     }
 
+    @Override
     public Shape getClip() {
         return _graphics.getClip();
     }
 
+    @Override
     public void clip(Shape s) {
         _graphics.clip(s);
     }
 
+    @Override
     public void translate(double tx, double ty) {
         _graphics.translate(tx, ty);
     }
@@ -228,52 +238,64 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         return _graphics;
     }
 
+    @Override
     public void drawOval(int x, int y, int width, int height) {
         _graphics.drawOval(x, y, width, height);
     }
 
+    @Override
     public void fillOval(int x, int y, int width, int height) {
         _graphics.fillOval(x, y, width, height);
     }
 
     @Nullable
     @CheckReturnValue
+    @Override
     public Object getRenderingHint(RenderingHints.Key key) {
         return _graphics.getRenderingHint(key);
     }
 
+    @Override
     public void setRenderingHint(RenderingHints.Key key, Object value) {
         _graphics.setRenderingHint(key, value);
     }
 
+    @Override
     public void setFont(FSFont font) {
         _graphics.setFont(((AWTFSFont)font).getAWTFont());
     }
 
+    @Override
     public void setStroke(Stroke s) {
         _graphics.setStroke(s);
     }
 
+    @Override
     public Stroke getStroke() {
         return _graphics.getStroke();
     }
 
+    @Override
     public void fill(Shape s) {
         _graphics.fill(s);
     }
 
+    @Override
     public void draw(Shape s) {
         _graphics.draw(s);
     }
 
+    @Override
     public void drawImage(FSImage image, int x, int y) {
         _graphics.drawImage(((AWTFSImage)image).getImage(), x, y, null);
     }
 
+    @Override
     public boolean isSupportsSelection() {
         return true;
     }
 
+    @Override
     public boolean isSupportsCMYKColors() {
         return true;
     }

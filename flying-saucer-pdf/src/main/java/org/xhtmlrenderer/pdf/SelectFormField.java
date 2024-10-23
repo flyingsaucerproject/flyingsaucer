@@ -141,6 +141,7 @@ public class SelectFormField extends AbstractFormField {
         return result;
     }
 
+    @Override
     protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
         if (cssWidth != -1) {
             setWidth(cssWidth);
@@ -174,10 +175,12 @@ public class SelectFormField extends AbstractFormField {
         return !Util.isNullOrEmpty(e.getAttribute("multiple"));
     }
 
+    @Override
     protected String getFieldType() {
         return FIELD_TYPE;
     }
 
+    @Override
     public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
         PdfWriter writer = outputDevice.getWriter();
 
@@ -242,10 +245,12 @@ public class SelectFormField extends AbstractFormField {
         field.setDefaultAppearanceString(tp);
     }
 
+    @Override
     public int getBaseline() {
         return _baseline;
     }
 
+    @Override
     public boolean hasBaseline() {
         return true;
     }

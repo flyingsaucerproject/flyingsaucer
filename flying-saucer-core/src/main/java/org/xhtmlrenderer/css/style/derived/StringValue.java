@@ -33,10 +33,12 @@ public class StringValue extends DerivedValue {
         _stringAsArray = value.getStringArrayValue();
     }
 
+    @Override
     public String[] asStringArray() {
         return ArrayUtil.cloneOrEmpty(_stringAsArray);
     }
 
+    @Override
     public String toString() {
         return getStringValue();
     }

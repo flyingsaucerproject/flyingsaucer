@@ -25,6 +25,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -38,6 +39,7 @@ import org.xhtmlrenderer.swt.SWTFSImage;
 
 public class SWTButtonControl extends SWTXhtmlControl {
 
+    @Nullable
     private Image _image = null;
 
     public SWTButtonControl(FormControl control, BasicRenderer parent,
@@ -45,9 +47,10 @@ public class SWTButtonControl extends SWTXhtmlControl {
         super(control, parent, c, style, uac);
     }
 
+    @Override
     protected Control createSWTControl(FormControl control,
-            BasicRenderer parent, LayoutContext c, CalculatedStyle style,
-            UserAgentCallback uac) {
+                                       BasicRenderer parent, LayoutContext c, CalculatedStyle style,
+                                       UserAgentCallback uac) {
 
         final ButtonControl bc = (ButtonControl) control;
         final Button button = new Button(parent, SWT.PUSH);
@@ -70,6 +73,7 @@ public class SWTButtonControl extends SWTXhtmlControl {
 
         if (bc.getType().equals("submit")) {
             button.addSelectionListener(new SelectionAdapter() {
+                @Override
                 public void widgetSelected(SelectionEvent e) {
                     if (bc.press()) {
                         bc.getForm().submit();
@@ -80,6 +84,7 @@ public class SWTButtonControl extends SWTXhtmlControl {
             parent.getShell().setDefaultButton(button);
         } else if (bc.getType().equals("reset")) {
             button.addSelectionListener(new SelectionAdapter() {
+                @Override
                 public void widgetSelected(SelectionEvent e) {
                     if (bc.press()) {
                         bc.getForm().reset();
@@ -88,6 +93,7 @@ public class SWTButtonControl extends SWTXhtmlControl {
             });
         } else {
             button.addSelectionListener(new SelectionAdapter() {
+                @Override
                 public void widgetSelected(SelectionEvent e) {
                     bc.press();
                 }
@@ -97,16 +103,19 @@ public class SWTButtonControl extends SWTXhtmlControl {
         return button;
     }
 
+    @Override
     public int getIdealHeight() {
         getSWTControl().pack();
         return getSWTControl().getSize().y;
     }
 
+    @Override
     public int getIdealWidth() {
         getSWTControl().pack();
         return getSWTControl().getSize().x;
     }
 
+    @Override
     public void dispose() {
         super.dispose();
         if (_image != null) {

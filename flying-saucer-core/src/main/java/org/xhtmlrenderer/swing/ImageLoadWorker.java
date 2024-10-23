@@ -48,6 +48,7 @@ class ImageLoadWorker extends Thread {
         setName("ImageLoadWorker(" + counter.incrementAndGet() + ")");
     }
 
+    @Override
     public void run() {
         try {
             while (true) {

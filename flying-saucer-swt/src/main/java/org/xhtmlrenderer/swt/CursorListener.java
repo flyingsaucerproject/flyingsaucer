@@ -45,6 +45,7 @@ public class CursorListener implements MouseMoveListener {
         parent.addMouseMoveListener(this);
     }
 
+    @Override
     public void mouseMove(MouseEvent e) {
         Box box = _parent.find(e.x, e.y);
         if (box == null) {

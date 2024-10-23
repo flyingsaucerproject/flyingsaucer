@@ -1,5 +1,7 @@
 package org.xhtmlrenderer.layout.breaker;
 
+import org.jspecify.annotations.Nullable;
+
 import java.text.BreakIterator;
 import java.text.CharacterIterator;
 
@@ -12,25 +14,31 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
     private static final String BREAKING_CHARS = ".,:;!?- \n\r\t/";
 
     private final BreakIterator delegate = BreakIterator.getLineInstance();
+    @Nullable
     private String text;
+    @Nullable
     private Range currentRange;
 
     public UrlAwareLineBreakIterator(String text) {
         setText(text);
     }
 
+    @Override
     public int preceding(int offset) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
     public int last() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
     public int previous() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
     public int next() {
         checkNotAheadOfDelegate();
 
@@ -96,34 +104,42 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
         return next == BreakIterator.DONE;
     }
 
+    @Override
     public int next(int n) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
     public boolean isBoundary(int offset) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
     public int following(int offset) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
     public int first() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
     public void setText(CharacterIterator newText) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
     public int current() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
     public CharacterIterator getText() {
         return delegate.getText();
     }
 
+    @Override
     public final void setText(String newText) {
         delegate.setText(newText);
         text = newText;
@@ -169,6 +185,7 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
             return stop;
         }
 
+        @Override
         public String toString() {
             return "[" + start + ", " + stop + ")";
         }

@@ -34,13 +34,16 @@ import java.awt.*;
 public class ITextTextRenderer implements TextRenderer {
     private static final float TEXT_MEASURING_DELTA = 0.01f;
 
+    @Override
     public void setup(FontContext context) {
     }
 
+    @Override
     public void drawString(OutputDevice outputDevice, String string, float x, float y) {
         ((ITextOutputDevice)outputDevice).drawString(string, x, y, null);
     }
 
+    @Override
     public void drawString(
             OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
         ((ITextOutputDevice)outputDevice).drawString(string, x, y, info);
@@ -69,6 +72,7 @@ public class ITextTextRenderer implements TextRenderer {
         return result;
     }
 
+    @Override
     public int getWidth(FontContext context, FSFont font, String string) {
         BaseFont bf = ((ITextFSFont)font).getFontDescription().getFont();
         float result = bf.getWidthPoint(string, font.getSize2D());
@@ -79,28 +83,35 @@ public class ITextTextRenderer implements TextRenderer {
         }
     }
 
+    @Override
     public void setFontScale(float scale) {
     }
 
+    @Override
     public float getFontScale() {
         return 1.0f;
     }
 
+    @Override
     public void setSmoothingThreshold(float fontsize) {
     }
 
+    @Override
     public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
+    @Override
     public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
+    @Override
     public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }
 
+    @Override
     public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: drawGlyphVector");
     }

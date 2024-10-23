@@ -103,6 +103,7 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
         return re;
     }
 
+    @Override
     public void remove(Element e) {
         super.remove(e);
         ReplacedElement re = _controls.get(e);
@@ -116,6 +117,7 @@ public class SWTXhtmlReplacedElementFactory extends SWTReplacedElementFactory {
         _controls.remove(e);
     }
 
+    @Override
     public void reset() {
         super.reset();
         _forms.clear();

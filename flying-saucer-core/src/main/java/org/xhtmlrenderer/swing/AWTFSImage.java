@@ -55,18 +55,22 @@ public abstract class AWTFSImage implements FSImage {
             this.img = img;
         }
 
+        @Override
         public int getWidth() {
             return img.getWidth(null);
         }
 
+        @Override
         public int getHeight() {
             return img.getHeight(null);
         }
 
+        @Override
         public BufferedImage getImage() {
             return img;
         }
 
+        @Override
         public void scale(int width, int height) {
             if (width > 0 || height > 0) {
                 int currentWith = getWidth();
@@ -92,17 +96,21 @@ public abstract class AWTFSImage implements FSImage {
     private static final class NullImage extends AWTFSImage {
         private static final BufferedImage EMPTY_IMAGE = ImageUtil.createTransparentImage(1, 1);
 
+        @Override
         public int getWidth() {
             return 0;
         }
 
+        @Override
         public int getHeight() {
             return 0;
         }
 
+        @Override
         public void scale(int width, int height) {
         }
 
+        @Override
         public BufferedImage getImage() {
             return EMPTY_IMAGE;
         }
