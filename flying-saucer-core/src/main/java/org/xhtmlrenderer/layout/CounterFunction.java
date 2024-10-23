@@ -24,6 +24,8 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.util.Locale.ROOT;
+
 public class CounterFunction {
     private final IdentValue _listStyleType;
     private int _counterValue;
@@ -56,13 +58,13 @@ public class CounterFunction {
 
     public static String createCounterText(IdentValue listStyle, int listCounter) {
         if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
-            return toLatin(listCounter).toLowerCase();
+            return toLatin(listCounter).toLowerCase(ROOT);
         } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
-            return toLatin(listCounter).toUpperCase();
+            return toLatin(listCounter).toUpperCase(ROOT);
         } else if (listStyle == IdentValue.LOWER_ROMAN) {
-            return toRoman(listCounter).toLowerCase();
+            return toRoman(listCounter).toLowerCase(ROOT);
         } else if (listStyle == IdentValue.UPPER_ROMAN) {
-            return toRoman(listCounter).toUpperCase();
+            return toRoman(listCounter).toUpperCase(ROOT);
         } else if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
             return (listCounter >= 10 ? "" : "0") + listCounter;
         } else { // listStyle == IdentValue.DECIMAL or anything else

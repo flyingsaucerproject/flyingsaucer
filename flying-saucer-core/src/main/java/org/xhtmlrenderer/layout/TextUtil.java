@@ -31,7 +31,7 @@ import static java.lang.Character.INITIAL_QUOTE_PUNCTUATION;
 import static java.lang.Character.OTHER_PUNCTUATION;
 import static java.lang.Character.SPACE_SEPARATOR;
 import static java.lang.Character.START_PUNCTUATION;
-
+import static java.util.Locale.ROOT;
 
 public class TextUtil {
 
@@ -43,17 +43,17 @@ public class TextUtil {
 
     static String transformText(String text, IdentValue transform, IdentValue fontVariant) {
         if (transform == IdentValue.LOWERCASE) {
-            text = text.toLowerCase();
+            text = text.toLowerCase(ROOT);
         }
         if (transform == IdentValue.UPPERCASE) {
-            text = text.toUpperCase();
+            text = text.toUpperCase(ROOT);
         }
         if (transform == IdentValue.CAPITALIZE) {
             text = capitalizeWords(text);
         }
 
         if (fontVariant == IdentValue.SMALL_CAPS) {
-            text = text.toUpperCase();
+            text = text.toUpperCase(ROOT);
         }
         return text;
     }
@@ -132,7 +132,7 @@ public class TextUtil {
         for (int i = 0; i < text.length(); i++) {
             String ch = text.substring(i, i + 1);
             if (cap) {
-                sb.append(ch.toUpperCase());
+                sb.append(ch.toUpperCase(ROOT));
             } else {
                 sb.append(ch);
             }

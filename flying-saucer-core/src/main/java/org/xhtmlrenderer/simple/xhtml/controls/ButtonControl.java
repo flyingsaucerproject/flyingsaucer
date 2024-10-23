@@ -25,6 +25,8 @@ import org.xhtmlrenderer.simple.xhtml.XhtmlForm;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Locale.ROOT;
+
 public class ButtonControl extends AbstractControl {
 
     private String _type;
@@ -42,7 +44,7 @@ public class ButtonControl extends AbstractControl {
             _label = getValue();
         }
 
-        _type = e.getAttribute("type").toLowerCase();
+        _type = e.getAttribute("type").toLowerCase(ROOT);
         if (!_type.equals("reset") && !_type.equals("button")) {
             _type = "submit";
         }

@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static java.util.Locale.ROOT;
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElseGet;
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
@@ -282,7 +283,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     @Nullable
     protected StylesheetInfo readLinkElement(Element link) {
-        String rel = link.getAttribute("rel").toLowerCase();
+        String rel = link.getAttribute("rel").toLowerCase(ROOT);
         if (rel.contains("alternate")) {
             return null;
         }//DON'T get alternate stylesheets
