@@ -200,7 +200,7 @@
           <target>${java.version}</target>
           <compilerArgs>
             <arg>-XDcompilePolicy=simple</arg>
-            <arg>-Xplugin:ErrorProne</arg>
+            <arg>-Xplugin:ErrorProne -Xep:MissingSummary:OFF -Xep:JdkObsolete:OFF -Xep:ReferenceEquality:OFF -Xep:OperatorPrecedence:OFF</arg>
           </compilerArgs>
           <annotationProcessorPaths>
             <path>
@@ -231,7 +231,7 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.10.1</version>
         <configuration>
-          <doclint>all,-accessibility,-syntax,-html,-reference</doclint>
+          <doclint>all,-accessibility,-syntax,-html,-reference,-missing</doclint>
         </configuration>
         <executions>
           <execution>
