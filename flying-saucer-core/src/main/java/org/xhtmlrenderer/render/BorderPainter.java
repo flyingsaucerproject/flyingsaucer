@@ -72,7 +72,7 @@ public class BorderPainter {
      * @param side what side you want
      * @param border border props
      * @param drawInterior if you want it to be 2d or not, if false it will be just a line
-     * @param scaledOffset insets the border by multipling border widths by this variable, best use would be 1 or .5, cant see it for much other than that
+     * @param scaledOffset insets the border by multiplying border widths by this variable, best use would be 1 or .5, cant see it for much other than that
      * @return a path for the side chosen!
      */
     public static Path2D generateBorderShape(Rectangle bounds, int side, BorderPropertySet border, boolean drawInterior, float scaledOffset) {
@@ -85,7 +85,7 @@ public class BorderPainter {
      * @param side what side you want
      * @param border border props
      * @param drawInterior if you want it to be 2d or not, if false it will be just a line
-     * @param scaledOffset insets the border by multipling border widths by this variable, best use would be 1 or .5, cant see it for much other than that
+     * @param scaledOffset insets the border by multiplying border widths by this variable, best use would be 1 or .5, cant see it for much other than that
      * @param widthScale scales the border widths by this factor, useful for drawing half borders for border types like groove or double
      * @return a path for the side chosen!
      */

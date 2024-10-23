@@ -480,5 +480,10 @@ public class Selector {
     public void setNamespaceURI(String namespaceURI) {
         _namespaceURI = namespaceURI;
     }
+
+    @Override
+    public String toString() {
+        return "%s{%s}".formatted(getClass().getSimpleName(), _name);
+    }
 }
 

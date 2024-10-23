@@ -55,9 +55,11 @@ import static org.xhtmlrenderer.css.style.Length.ZERO;
 // to the KHTML developers for making such an amazing piece of software!
 public class TableBox extends BlockBox {
     private final List<ColumnData> _columns = new ArrayList<>();
-    private int[] _columnPos;
+    private int @Nullable [] _columnPos;
+    @Nullable
     private TableLayout _tableLayout;
 
+    @Nullable
     private List<TableColumn> _styleColumns;
 
     private int _pageClearance;
@@ -1182,7 +1184,9 @@ public class TableBox extends BlockBox {
 
     private static class AutoTableLayout implements TableLayout {
         private final TableBox _table;
+        @Nullable
         private Layout[] _layoutStruct;
+        @Nullable
         private List<TableCellBox> _spanCells;
 
         private AutoTableLayout(TableBox table) {
@@ -1195,6 +1199,7 @@ public class TableBox extends BlockBox {
             _spanCells = null;
         }
 
+        @Nullable
         protected Layout[] getLayoutStruct() {
             return _layoutStruct;
         }
@@ -1515,10 +1520,6 @@ public class TableBox extends BlockBox {
             return tMaxWidth;
         }
 
-        private boolean shouldScaleColumns(TableBox table) {
-            return true;
-        }
-
         @Override
         public void calcMinMaxWidth(LayoutContext c) {
             TableBox table = _table;
@@ -1547,12 +1548,9 @@ public class TableBox extends BlockBox {
                 }
             }
 
-            if (shouldScaleColumns(table)) {
-                maxNonPercent = (maxNonPercent * 100 + 50) / Math.max(remainingPercent, 1);
-                maxWidth = Math.max(maxNonPercent, maxWidth);
-                maxWidth = Math.max(maxWidth, maxPercent);
-            }
-
+            maxNonPercent = (maxNonPercent * 100 + 50) / Math.max(remainingPercent, 1);
+            maxWidth = Math.max(maxNonPercent, maxWidth);
+            maxWidth = Math.max(maxWidth, maxPercent);
             maxWidth = Math.max(maxWidth, spanMaxWidth);
 
             int bs = table.marginsBordersPaddingAndSpacing(c, true);

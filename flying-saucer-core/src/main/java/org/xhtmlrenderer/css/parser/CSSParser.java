@@ -79,7 +79,7 @@ public class CSSParser {
     }
 
     @CheckReturnValue
-    public Stylesheet parseStylesheet(String uri, Origin origin, Reader reader) throws IOException {
+    public Stylesheet parseStylesheet(@Nullable String uri, Origin origin, Reader reader) throws IOException {
         _uri = uri;
         reset(reader);
 

@@ -798,6 +798,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public Shape getClip() {
         try {
