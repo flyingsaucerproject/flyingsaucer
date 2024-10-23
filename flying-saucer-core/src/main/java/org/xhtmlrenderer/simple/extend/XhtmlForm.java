@@ -35,7 +35,6 @@ import javax.swing.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Represents a form object
@@ -132,18 +131,18 @@ public class XhtmlForm {
         String action = _parentFormElement.getAttribute("action");
         data.append(action).append("?");
 
-        AtomicBoolean first = new AtomicBoolean(true);
+        boolean first = true;
         for (Map.Entry<Element, FormField> entry : _componentCache.entrySet()) {
             FormField field = entry.getValue();
 
             if (field.includeInSubmission(source)) {
                 for (String value : field.getFormDataStrings()) {
-                    if (!first.get()) {
+                    if (!first) {
                         data.append('&');
                     }
 
                     data.append(value);
-                    first.set(false);
+                    first = false;
                 }
             }
         }

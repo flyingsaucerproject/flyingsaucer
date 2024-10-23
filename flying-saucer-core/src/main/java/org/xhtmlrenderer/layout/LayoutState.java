@@ -22,7 +22,7 @@ package org.xhtmlrenderer.layout;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.render.MarkerData;
 
-import java.util.LinkedList;
+import java.util.Deque;
 
 /**
  * A bean which captures all state necessary to lay out an arbitrary box.
@@ -36,18 +36,18 @@ public class LayoutState {
 
     private MarkerData _currentMarkerData;
 
-    private LinkedList<BlockFormattingContext> _BFCs;
+    private Deque<BlockFormattingContext> _BFCs;
 
     private String _pageName;
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
     private int _noPageBreak;
 
-    public LinkedList<BlockFormattingContext> getBFCs() {
+    public Deque<BlockFormattingContext> getBFCs() {
         return _BFCs;
     }
 
-    public void setBFCs(LinkedList<BlockFormattingContext> s) {
+    public void setBFCs(Deque<BlockFormattingContext> s) {
         _BFCs = s;
     }
 

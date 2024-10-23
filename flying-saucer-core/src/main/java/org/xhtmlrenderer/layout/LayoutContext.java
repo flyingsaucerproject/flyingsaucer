@@ -42,9 +42,10 @@ import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.PageBox;
 
 import java.awt.*;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -65,8 +66,8 @@ public class LayoutContext implements CssContext {
     @Nullable
     private MarkerData _currentMarkerData;
 
-    private LinkedList<BlockFormattingContext> _bfcs;
-    private LinkedList<Layer> _layers;
+    private final Deque<BlockFormattingContext> _bfcs = new ArrayDeque<>();
+    private final Deque<Layer> _layers = new ArrayDeque<>();
 
     private final FontContext _fontContext;
 
@@ -119,9 +120,6 @@ public class LayoutContext implements CssContext {
     //the stuff that needs to have a separate instance for each run.
     LayoutContext(SharedContext sharedContext, FontContext fontContext) {
         _sharedContext = sharedContext;
-        _bfcs = new LinkedList<>();
-        _layers = new LinkedList<>();
-
         _firstLines = new StyleTracker();
         _firstLetters = new StyleTracker();
         this._fontContext = fontContext;
@@ -132,11 +130,11 @@ public class LayoutContext implements CssContext {
         _firstLetters = new StyleTracker();
         _currentMarkerData = null;
 
-        _bfcs = new LinkedList<>();
+        _bfcs.clear();
 
         if (! keepLayers) {
             _rootLayer = null;
-            _layers = new LinkedList<>();
+            _layers.clear();
         }
 
         _extraSpaceTop = 0;
@@ -168,7 +166,8 @@ public class LayoutContext implements CssContext {
 
         _currentMarkerData = layoutState.getCurrentMarkerData();
 
-        _bfcs = layoutState.getBFCs();
+        _bfcs.clear();
+        _bfcs.addAll(layoutState.getBFCs());
 
         if (isPrint()) {
             setPageName(layoutState.getPageName());
