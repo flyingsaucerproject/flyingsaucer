@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 
 public final class BrowserMenuBar extends JMenuBar {
@@ -204,7 +205,7 @@ public final class BrowserMenuBar extends JMenuBar {
         URL url = requireNonNull(BrowserMenuBar.class.getResource(name), () -> "Resource not found in classpath: " + name);
 
         try (InputStream is = url.openStream()) {
-            InputStreamReader reader = new InputStreamReader(is);
+            InputStreamReader reader = new InputStreamReader(is, UTF_8);
             try (LineNumberReader lnr = new LineNumberReader(reader)) {
                 String line;
                 while ((line = lnr.readLine()) != null) {

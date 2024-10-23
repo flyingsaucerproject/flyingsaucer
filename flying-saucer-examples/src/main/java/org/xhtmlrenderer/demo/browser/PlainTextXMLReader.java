@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Read plain text file as if it was xml with a text-tag around it.
  * <p>
@@ -31,7 +33,7 @@ public class PlainTextXMLReader implements XMLReader {
     private final BufferedReader text;
 
     public PlainTextXMLReader(InputStream is) {
-        text = new BufferedReader(new InputStreamReader(is));
+        text = new BufferedReader(new InputStreamReader(is, UTF_8));
     }
 
     @Override
