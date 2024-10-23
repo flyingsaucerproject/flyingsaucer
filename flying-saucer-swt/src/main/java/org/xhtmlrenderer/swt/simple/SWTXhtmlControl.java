@@ -84,6 +84,7 @@ public abstract class SWTXhtmlControl implements SWTFormControl {
             BasicRenderer parent, LayoutContext c, CalculatedStyle style,
             UserAgentCallback uac);
 
+    @Override
     public void dispose() {
         _swtControl.dispose();
         if (_foreground != null) {
@@ -94,10 +95,12 @@ public abstract class SWTXhtmlControl implements SWTFormControl {
         }
     }
 
+    @Override
     public Control getSWTControl() {
         return _swtControl;
     }
 
+    @Override
     public FormControl getFormControl() {
         return _control;
     }

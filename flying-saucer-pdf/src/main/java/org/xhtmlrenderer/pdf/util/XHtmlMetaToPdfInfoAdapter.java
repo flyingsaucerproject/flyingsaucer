@@ -139,6 +139,7 @@ public class XHtmlMetaToPdfInfoAdapter extends DefaultPDFCreationListener {
      *
      * @see PDFCreationListener
      */
+    @Override
     public void onClose( ITextRenderer renderer ) {
         XRLog.render(Level.FINEST, "handling onClose event ..." );
         addPdfMetaValuesToPdfDocument( renderer );

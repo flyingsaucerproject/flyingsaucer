@@ -36,14 +36,17 @@ public class PDFAsImage implements FSImage {
         _source = source;
     }
 
+    @Override
     public int getWidth() {
         return (int)_width;
     }
 
+    @Override
     public int getHeight() {
         return (int)_height;
     }
 
+    @Override
     public void scale(int width, int height) {
         float targetWidth = width;
         float targetHeight = height;

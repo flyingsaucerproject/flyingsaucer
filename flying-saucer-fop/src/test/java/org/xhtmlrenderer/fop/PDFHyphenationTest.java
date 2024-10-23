@@ -72,7 +72,7 @@ public class PDFHyphenationTest {
         OutputStream os = Files.newOutputStream(temp);
         generatePDF(XML, os);
         System.out.println("Generated file: " + temp);
-        
+
         PDF pdf = new PDF(temp.toFile());
         assertThat(pdf).containsText(
                 "Velice dlouhy text",

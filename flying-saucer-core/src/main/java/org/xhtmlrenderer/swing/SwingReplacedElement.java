@@ -40,36 +40,44 @@ public class SwingReplacedElement implements ReplacedElement {
         return _component;
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return intrinsicSize.height;
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return intrinsicSize.width;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         _component.setLocation(x, y);
     }
 
+    @Override
     public Point getLocation() {
         return _component.getLocation();
     }
 
+    @Override
     public void detach(LayoutContext c) {
         if (c.isInteractive()) {
             ((RootPanel)c.getCanvas()).remove(getJComponent());
         }
     }
 
+    @Override
     public boolean isRequiresInteractivePaint() {
         return false;
     }
 
+    @Override
     public int getBaseline() {
         return 0;
     }
 
+    @Override
     public boolean hasBaseline() {
         return false;
     }

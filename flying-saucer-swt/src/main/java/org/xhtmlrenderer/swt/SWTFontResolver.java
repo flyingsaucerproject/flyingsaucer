@@ -89,6 +89,7 @@ public class SWTFontResolver implements FontResolver {
         _system_font = new SWTFSFont(systemFont, systemFont.getFontData()[0].getHeight(), true);
     }
 
+    @Override
     public void flushCache() {
         for (SWTFSFont swtfsFont : _instance_hash.values()) {
             swtfsFont.dispose();

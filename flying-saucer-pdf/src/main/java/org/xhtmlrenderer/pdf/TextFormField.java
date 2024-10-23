@@ -54,6 +54,7 @@ public class TextFormField extends AbstractFormField {
     _baseline = (int) (getHeight() / 2 + (fontSize * 0.3f));
   }
 
+  @Override
   protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
     if (cssWidth != -1) {
       setWidth(cssWidth);
@@ -74,11 +75,12 @@ public class TextFormField extends AbstractFormField {
     }
   }
 
-  protected String getFieldType()
-  {
+  @Override
+  protected String getFieldType() {
     return FIELD_TYPE;
   }
 
+  @Override
   public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     PdfWriter writer = outputDevice.getWriter();
 
@@ -177,18 +179,19 @@ public class TextFormField extends AbstractFormField {
     }
   }
 
+  @Override
   @CheckReturnValue
   protected String getValue(Element e) {
     return e.getAttribute("value");
   }
 
-  public int getBaseline()
-  {
+  @Override
+  public int getBaseline() {
     return _baseline;
   }
 
-  public boolean hasBaseline()
-  {
+  @Override
+  public boolean hasBaseline() {
     return true;
   }
 }

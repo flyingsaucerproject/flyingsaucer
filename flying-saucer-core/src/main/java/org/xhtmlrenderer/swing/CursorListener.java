@@ -30,6 +30,7 @@ import java.awt.*;
  * on which the mouse is located.
  */
 public class CursorListener extends DefaultFSMouseListener {
+    @Override
     public void onMouseOver(BasicPanel panel, Box box) {
         Cursor c = box.getStyle().getCursor();
 

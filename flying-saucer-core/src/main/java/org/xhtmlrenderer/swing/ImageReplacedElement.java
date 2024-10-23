@@ -82,26 +82,32 @@ public class ImageReplacedElement implements ReplacedElement {
         _image = image;
     }
 
+    @Override
     public void detach(LayoutContext c) {
         // nothing to do in this case
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return _image.getHeight(null);
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return _image.getWidth(null);
     }
 
+    @Override
     public Point getLocation() {
         return _location;
     }
 
+    @Override
     public boolean isRequiresInteractivePaint() {
         return true;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }
@@ -113,10 +119,12 @@ public class ImageReplacedElement implements ReplacedElement {
         return _image;
     }
 
+    @Override
     public int getBaseline() {
         return 0;
     }
 
+    @Override
     public boolean hasBaseline() {
         return false;
     }

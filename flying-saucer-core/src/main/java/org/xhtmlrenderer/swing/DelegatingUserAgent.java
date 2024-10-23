@@ -108,6 +108,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri Location of the CSS source.
      * @return A CSSResource containing the parsed CSS.
      */
+    @Override
     @CheckReturnValue
     public CSSResource getCSSResource(String uri) {
         return new CSSResource(resolveAndOpenStream(uri));
@@ -121,6 +122,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri Location of the image source.
      * @return An ImageResource containing the image.
      */
+    @Override
     @CheckReturnValue
     public ImageResource getImageResource(String uri) {
         return _imageResourceLoader.get(resolveURI(uri));
@@ -136,6 +138,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      */
     @CheckReturnValue
     @Nullable
+    @Override
     public XMLResource getXMLResource(String uri) {
         String resolvedUri = _uriResolver.resolve(uri);
         try (InputStream in = IOUtil.getInputStream(resolvedUri)) {
@@ -147,6 +150,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
     }
 
     @CheckReturnValue
+    @Override
     public byte @Nullable [] getBinaryResource(String uri) {
         String resolvedUri = _uriResolver.resolve(uri);
         return IOUtil.readBytes(resolvedUri);
@@ -159,6 +163,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri A URI which might have been visited.
      * @return Always false; visits are not tracked in the NaiveUserAgent.
      */
+    @Override
     public boolean isVisited(@Nullable String uri) {
         return false;
     }
@@ -168,6 +173,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      *
      * @param uri A URI which anchors other, possibly relative URIs.
      */
+    @Override
     public void setBaseURL(@Nullable String uri) {
         _uriResolver.setBaseUri(uri);
     }
@@ -181,6 +187,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      */
     @Nullable
     @CheckReturnValue
+    @Override
     public String resolveURI(@Nullable String uri) {
         return _uriResolver.resolve(uri);
     }
@@ -190,19 +197,24 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      */
     @CheckReturnValue
     @Nullable
+    @Override
     public String getBaseURL() {
         return _uriResolver.getBaseUri();
     }
 
+    @Override
     public void documentStarted() {
         _imageResourceLoader.stopLoading();
         shrinkImageCache();
     }
 
+    @Override
     public void documentLoaded() { /* ignore*/ }
 
+    @Override
     public void onLayoutException(Throwable t) { /* ignore*/ }
 
+    @Override
     public void onRenderException(Throwable t) { /* ignore*/ }
 
     public void setRepaintListener(RepaintListener listener) {

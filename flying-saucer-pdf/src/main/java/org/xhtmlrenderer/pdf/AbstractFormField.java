@@ -117,26 +117,32 @@ public abstract class AbstractFormField implements ITextReplacedElement {
         return Util.isNullOrEmpty(e.getAttribute("selected"));
     }
 
+    @Override
     public void detach(LayoutContext c) {
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return getHeight();
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return getWidth();
     }
 
+    @Override
     public Point getLocation() {
         return new Point(getX(), getY());
     }
 
+    @Override
     public boolean isRequiresInteractivePaint() {
         // N/A
         return false;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         setX(x);
         setY(y);

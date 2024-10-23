@@ -267,16 +267,19 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Clears out any references to elements or items created by this factory so far.
      */
+    @Override
     public void reset() {
         forms.clear();
         imageComponents.clear();
     }
 
+    @Override
     public void remove(Element e) {
         forms.remove(e);
         imageComponents.keySet().removeIf(ck -> ck.elem.equals(e));
     }
 
+    @Override
     public void setFormSubmissionListener(FormSubmissionListener fsl) {
         this.formSubmissionListener = fsl;
     }

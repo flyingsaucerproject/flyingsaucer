@@ -72,18 +72,22 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
         _image = ImageUtil.createCompatibleBufferedImage(_targetWidth, _targetHeight);
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return  _loaded ? _image.getHeight(null) : _targetHeight;
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return _loaded ? _image.getWidth(null) : _targetWidth;
     }
 
+    @Override
     public Point getLocation() {
         return _location;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }
@@ -91,6 +95,7 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
     /**
      * The image we're replacing.
      */
+    @Override
     public Image getImage() {
         if (!_loaded && _imageResource.isLoaded()) {
             Image image = ((AWTFSImage) _imageResource.getImage()).getImage();

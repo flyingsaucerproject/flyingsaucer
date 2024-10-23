@@ -34,6 +34,7 @@ public class PlainTextXMLReader implements XMLReader {
         text = new BufferedReader(new InputStreamReader(is));
     }
 
+    @Override
     public boolean getFeature(String s) throws SAXNotRecognizedException {
         if (s.equals("http://xml.org/sax/features/namespaces")) {
             return true;
@@ -44,6 +45,7 @@ public class PlainTextXMLReader implements XMLReader {
         throw new SAXNotRecognizedException(s);
     }
 
+    @Override
     public void setFeature(String s, boolean b) throws SAXNotRecognizedException, SAXNotSupportedException {
         if (s.equals("http://xml.org/sax/features/namespaces")) {
             if (!b)
@@ -60,46 +62,57 @@ public class PlainTextXMLReader implements XMLReader {
         throw new SAXNotRecognizedException(s);
     }
 
+    @Override
     public Object getProperty(String s) throws SAXNotRecognizedException {
         throw new SAXNotRecognizedException(s);
     }
 
+    @Override
     public void setProperty(String s, Object o) throws SAXNotRecognizedException {
         throw new SAXNotRecognizedException(s);
     }
 
+    @Override
     public void setEntityResolver(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
     }
 
+    @Override
     public EntityResolver getEntityResolver() {
         return entityResolver;
     }
 
+    @Override
     public void setDTDHandler(DTDHandler dtdHandler) {
         this.dtdHandler = dtdHandler;
     }
 
+    @Override
     public DTDHandler getDTDHandler() {
         return dtdHandler;
     }
 
+    @Override
     public void setContentHandler(ContentHandler contentHandler) {
         this.contentHandler = contentHandler;
     }
 
+    @Override
     public ContentHandler getContentHandler() {
         return contentHandler;
     }
 
+    @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
     }
 
+    @Override
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 
+    @Override
     public void parse(InputSource inputSource) throws IOException, SAXException {
         contentHandler.startDocument();
         contentHandler.startElement("http://www.w3.org/1999/xhtml", "pre", "pre", new AttributesImpl());
@@ -116,6 +129,7 @@ public class PlainTextXMLReader implements XMLReader {
         contentHandler.endDocument();
     }
 
+    @Override
     public void parse(String s) throws SAXException {
         throw new SAXNotRecognizedException(s);
     }

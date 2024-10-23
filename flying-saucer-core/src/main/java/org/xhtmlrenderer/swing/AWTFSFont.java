@@ -30,6 +30,7 @@ public class AWTFSFont implements FSFont {
         _font = font;
     }
 
+    @Override
     public float getSize2D() {
         return _font.getSize2D();
     }

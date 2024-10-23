@@ -150,6 +150,7 @@ class TextField extends InputField {
     private static class TextFieldJTextField extends JTextField {
         //override getColumnWidth to base on 'o' instead of 'm'.  more like other browsers
         private int columnWidth = 0;
+        @Override
         protected int getColumnWidth() {
             if (columnWidth == 0) {
                 FontMetrics metrics = getFontMetrics(getFont());

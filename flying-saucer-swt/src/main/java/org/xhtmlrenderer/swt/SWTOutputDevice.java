@@ -95,6 +95,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         }
     }
 
+    @Override
     public void clip(Shape s) {
         if (s == null) {
             return;
@@ -108,6 +109,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         }
     }
 
+    @Override
     public void setClip(Shape s) {
         Path path = convertToPath(s);
         if (path == null) {
@@ -122,6 +124,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         _clippingArea = (s == null ? null : new Area(s));
     }
 
+    @Override
     public Shape getClip() {
         return _clippingArea;
     }
@@ -131,8 +134,9 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         _gc.drawLine(x1, y1, x2, y2);
     }
 
+    @Override
     public void drawBorderLine(Shape bounds, int side,
-            int lineWidth, boolean solid) {
+                               int lineWidth, boolean solid) {
         /*int x = bounds.x;
         int y = bounds.y;
         int w = bounds.width;
@@ -160,6 +164,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         draw(bounds);
     }
 
+    @Override
     public void drawImage(FSImage image, int x, int y) {
         Image img = ((SWTFSImage) image).getImage();
         if (img == null) {
@@ -182,36 +187,41 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         }
     }
 
+    @Override
     public void drawOval(int x, int y, int width, int height) {
         _gc.drawOval(x, y, width, height);
     }
 
+    @Override
     public void drawRect(int x, int y, int width, int height) {
         _gc.drawRectangle(x, y, width, height);
     }
 
-
-
+    @Override
     public void draw(Shape s) {
         Path p = convertToPath(s);
         _gc.drawPath(p);
         p.dispose();
     }
 
+    @Override
     public void fill(Shape s) {
         Path p = convertToPath(s);
         _gc.fillPath(p);
         p.dispose();
     }
 
+    @Override
     public void fillOval(int x, int y, int width, int height) {
         _gc.fillOval(x, y, width, height);
     }
 
+    @Override
     public void fillRect(int x, int y, int width, int height) {
         _gc.fillRectangle(x, y, width, height);
     }
 
+    @Override
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
         ReplacedElement replaced = box.getReplacedElement();
         java.awt.Point location = replaced.getLocation();
@@ -242,23 +252,26 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         _awt_color = color;
     }
 
+    @Override
     public void setFont(FSFont font) {
         _gc.setFont(((SWTFSFont) font).getSWTFont());
     }
 
+    @Override
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor rgb) {
             setColor(new java.awt.Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
         } else {
             throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
-
     }
 
+    @Override
     public Stroke getStroke() {
         return _stroke;
     }
 
+    @Override
     public void setStroke(Stroke s) {
         _stroke = s;
 
@@ -309,6 +322,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         _gc.setLineDash(dashes);
     }
 
+    @Override
     public void translate(double tx, double ty) {
         if (_transform == null) {
             _transform = new Transform(_gc.getDevice());
@@ -324,6 +338,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
 
     @Nullable
     @CheckReturnValue
+    @Override
     public Object getRenderingHint(Key key) {
         if (RenderingHints.KEY_ANTIALIASING.equals(key)) {
             switch (_gc.getAntialias()) {
@@ -338,6 +353,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         return null;
     }
 
+    @Override
     public void setRenderingHint(Key key, Object value) {
         if (RenderingHints.KEY_ANTIALIASING.equals(key)) {
             int antialias = SWT.DEFAULT;
@@ -387,17 +403,19 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         return path;
     }
 
+    @Override
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         // TODO support selection drawing
     }
 
+    @Override
     public boolean isSupportsSelection() {
         // TODO support selection drawing
         return false;
     }
 
+    @Override
     public boolean isSupportsCMYKColors() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
-
 }

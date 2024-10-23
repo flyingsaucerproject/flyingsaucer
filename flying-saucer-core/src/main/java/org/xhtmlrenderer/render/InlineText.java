@@ -164,6 +164,7 @@ public class InlineText {
                 value);
     }
 
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("InlineText: ");

@@ -57,6 +57,7 @@ public class LengthValue extends DerivedValue {
         _lengthPrimitiveType = value.getPrimitiveType();
     }
 
+    @Override
     public float asFloat() {
         return _lengthAsFloat;
     }
@@ -69,6 +70,7 @@ public class LengthValue extends DerivedValue {
      * @param cssName   Name of the property
      * @return the absolute value or computed absolute value
      */
+    @Override
     public float getFloatProportionalTo(CSSName cssName,
                                         float baseValue,
                                         CssContext ctx) {
@@ -81,10 +83,12 @@ public class LengthValue extends DerivedValue {
                 ctx);
     }
 
+    @Override
     public boolean hasAbsoluteUnit() {
         return ValueConstants.isAbsoluteUnit(getCssSacUnitType());
     }
 
+    @Override
     public boolean isDependentOnFontSize() {
         return _lengthPrimitiveType == CSSPrimitiveValue.CSS_EXS ||
                     _lengthPrimitiveType == CSSPrimitiveValue.CSS_EMS;

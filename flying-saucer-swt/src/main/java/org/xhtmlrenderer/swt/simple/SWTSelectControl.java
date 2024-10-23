@@ -49,9 +49,10 @@ public class SWTSelectControl extends SWTXhtmlControl {
         super(control, parent, c, style, uac);
     }
 
+    @Override
     protected Control createSWTControl(FormControl control,
-            BasicRenderer parent, LayoutContext c, CalculatedStyle style,
-            UserAgentCallback uac) {
+                                       BasicRenderer parent, LayoutContext c, CalculatedStyle style,
+                                       UserAgentCallback uac) {
         final SelectControl sc = (SelectControl) control;
         Map<String, String> options = sc.getOptions();
         _values = new ArrayList<>(options.keySet());
@@ -65,6 +66,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
             list.setItems(_labels.toArray(new String[0]));
 
             list.addSelectionListener(new SelectionAdapter() {
+                @Override
                 public void widgetSelected(SelectionEvent e) {
                     if (sc.isMultiple()) {
                         int[] indices = list.getSelectionIndices();
@@ -125,6 +127,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
             combo.setItems(_labels.toArray(new String[0]));
 
             combo.addSelectionListener(new SelectionAdapter() {
+                @Override
                 public void widgetSelected(SelectionEvent e) {
                     int selection = combo.getSelectionIndex();
                     if (selection < 0) {
@@ -159,6 +162,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
         }
     }
 
+    @Override
     public int getIdealHeight() {
         if (_combo) {
             getSWTControl().pack();
@@ -179,6 +183,7 @@ public class SWTSelectControl extends SWTXhtmlControl {
         }
     }
 
+    @Override
     public int getIdealWidth() {
         getSWTControl().pack();
         return getSWTControl().getSize().x;

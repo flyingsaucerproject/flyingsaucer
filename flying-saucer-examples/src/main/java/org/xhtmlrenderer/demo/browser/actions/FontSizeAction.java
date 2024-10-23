@@ -22,6 +22,7 @@ public class FontSizeAction extends AbstractAction {
         putValue(Action.NAME, name);
     }
 
+    @Override
     public void actionPerformed(ActionEvent evt) {
         switch (whichDirection) {
             case INCREMENT ->

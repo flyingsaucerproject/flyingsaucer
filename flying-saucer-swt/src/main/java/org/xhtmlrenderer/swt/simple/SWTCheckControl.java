@@ -39,9 +39,10 @@ public class SWTCheckControl extends SWTXhtmlControl {
         super(control, parent, c, style, uac);
     }
 
+    @Override
     protected Control createSWTControl(FormControl control,
-            BasicRenderer parent, LayoutContext c, CalculatedStyle style,
-            UserAgentCallback uac) {
+                                       BasicRenderer parent, LayoutContext c, CalculatedStyle style,
+                                       UserAgentCallback uac) {
         final CheckControl cc = (CheckControl) control;
 
         final Button button = new Button(parent, (cc.isRadio() ? SWT.RADIO
@@ -50,6 +51,7 @@ public class SWTCheckControl extends SWTXhtmlControl {
         button.setSelection(cc.isSuccessful());
 
         button.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 if (!button.getSelection() && cc.isRadio()) {
                     button.setSelection(true);
@@ -69,11 +71,13 @@ public class SWTCheckControl extends SWTXhtmlControl {
         return button;
     }
 
+    @Override
     public int getIdealHeight() {
         getSWTControl().pack();
         return getSWTControl().getSize().y;
     }
 
+    @Override
     public int getIdealWidth() {
         getSWTControl().pack();
         return getSWTControl().getSize().x;

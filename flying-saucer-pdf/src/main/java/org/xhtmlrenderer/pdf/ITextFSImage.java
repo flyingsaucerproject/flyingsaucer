@@ -29,14 +29,17 @@ public class ITextFSImage implements FSImage, Cloneable {
         _image = image;
     }
 
+    @Override
     public int getWidth() {
         return (int)_image.getPlainWidth();
     }
 
+    @Override
     public int getHeight() {
         return (int)_image.getPlainHeight();
     }
 
+    @Override
     public void scale(int width, int height) {
         if (width > 0 || height > 0) {
             int currentWith = getWidth();
@@ -62,6 +65,7 @@ public class ITextFSImage implements FSImage, Cloneable {
         return _image;
     }
 
+    @Override
     public Object clone() {
         return new ITextFSImage(Image.getInstance(_image));
     }

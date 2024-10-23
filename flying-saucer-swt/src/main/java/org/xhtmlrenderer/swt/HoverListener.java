@@ -49,6 +49,7 @@ public class HoverListener implements MouseMoveListener {
         parent.addMouseMoveListener(this);
     }
 
+    @Override
     public void mouseMove(MouseEvent e) {
         LayoutContext c = _parent.getLayoutContext();
         if (c == null) {

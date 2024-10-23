@@ -29,6 +29,7 @@ public class ITextFSFontMetrics implements FSFontMetrics {
     private float _underlineOffset;
     private float _underlineThickness;
 
+    @Override
     public float getAscent() {
         return _ascent;
     }
@@ -36,6 +37,8 @@ public class ITextFSFontMetrics implements FSFontMetrics {
     public void setAscent(float ascent) {
         _ascent = ascent;
     }
+
+    @Override
     public float getDescent() {
         return _descent;
     }
@@ -44,6 +47,7 @@ public class ITextFSFontMetrics implements FSFontMetrics {
         _descent = descent;
     }
 
+    @Override
     public float getStrikethroughOffset() {
         return _strikethroughOffset;
     }
@@ -52,6 +56,7 @@ public class ITextFSFontMetrics implements FSFontMetrics {
         _strikethroughOffset = strikethroughOffset;
     }
 
+    @Override
     public float getStrikethroughThickness() {
         return _strikethroughThickness;
     }
@@ -60,6 +65,7 @@ public class ITextFSFontMetrics implements FSFontMetrics {
         _strikethroughThickness = strikethroughThickness;
     }
 
+    @Override
     public float getUnderlineOffset() {
         return _underlineOffset;
     }
@@ -68,6 +74,7 @@ public class ITextFSFontMetrics implements FSFontMetrics {
         _underlineOffset = underlineOffset;
     }
 
+    @Override
     public float getUnderlineThickness() {
         return _underlineThickness;
     }
@@ -75,6 +82,4 @@ public class ITextFSFontMetrics implements FSFontMetrics {
     public void setUnderlineThickness(float underlineThickness) {
         _underlineThickness = underlineThickness;
     }
-
-
 }

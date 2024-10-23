@@ -792,6 +792,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         _containingBlockWidth = containingBlockWidth;
     }
 
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append(getClass().getSimpleName());

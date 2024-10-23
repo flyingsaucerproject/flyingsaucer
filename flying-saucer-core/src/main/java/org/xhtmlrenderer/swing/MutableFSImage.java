@@ -43,18 +43,22 @@ public class MutableFSImage extends AWTFSImage {
         img = ImageUtil.createTransparentImage(10, 10);
     }
 
+    @Override
     public synchronized BufferedImage getImage() {
         return img;
     }
 
+    @Override
     public synchronized int getWidth() {
         return img.getWidth(null);
     }
 
+    @Override
     public synchronized int getHeight() {
         return img.getHeight(null);
     }
 
+    @Override
     public synchronized void scale(int width, int height) {
         img.getScaledInstance(width, height, Image.SCALE_DEFAULT);
     }

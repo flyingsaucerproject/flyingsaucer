@@ -144,13 +144,16 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
         return _imageComponents.get(e);
     }
 
+    @Override
     public void remove(Element e) {
         _imageComponents.remove(e);
     }
 
+    @Override
     public void setFormSubmissionListener(FormSubmissionListener listener) {
     }
 
+    @Override
     public void reset() {
         _imageComponents.clear();    }
 

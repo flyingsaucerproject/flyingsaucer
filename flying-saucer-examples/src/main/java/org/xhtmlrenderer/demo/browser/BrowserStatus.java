@@ -20,6 +20,7 @@ public final class BrowserStatus extends JPanel {
         add("East", memory);
     }
 
+    @Override
     public Insets getInsets() {
         return new Insets(3, 4, 3, 4);
     }

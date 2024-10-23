@@ -25,6 +25,7 @@ public class EmptyReplacedElement extends AbstractFormField {
     _height = height;
   }
 
+  @Override
   public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     PdfWriter writer = outputDevice.getWriter();
 
@@ -43,38 +44,38 @@ public class EmptyReplacedElement extends AbstractFormField {
     acroForm.addHiddenField(name, value);
   }
 
-  public int getIntrinsicWidth()
-  {
+  @Override
+  public int getIntrinsicWidth() {
     return _width;
   }
 
-  public int getIntrinsicHeight()
-  {
+  @Override
+  public int getIntrinsicHeight() {
     return _height;
   }
 
-  public Point getLocation()
-  {
+  @Override
+  public Point getLocation() {
     return _location;
   }
 
-  public void setLocation(int x, int y)
-  {
+  @Override
+  public void setLocation(int x, int y) {
     _location = new Point(0, 0);
   }
 
-  protected String getFieldType()
-  {
+  @Override
+  protected String getFieldType() {
     return FIELD_TYPE;
   }
 
-  public boolean hasBaseline()
-  {
+  @Override
+  public boolean hasBaseline() {
     return false;
   }
 
-  public int getBaseline()
-  {
+  @Override
+  public int getBaseline() {
     return 0;
   }
 }
