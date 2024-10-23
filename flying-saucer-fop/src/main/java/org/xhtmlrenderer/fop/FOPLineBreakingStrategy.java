@@ -35,6 +35,8 @@ import java.util.Arrays;
 import java.util.TreeSet;
 
 /**
+ * Word wrapping capability
+ *
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class FOPLineBreakingStrategy implements LineBreakingStrategy {

@@ -71,8 +71,7 @@ import java.net.URL;
  * XHTMLPanel also lets you make simple changes with simple methods like
  * {@link #setFontScalingFactor(float)}. If you want to make other changes you will
  * need to get the rendering context ({@link #getSharedContext()}) and call methods on
- * that. Ex: {@code </p>} @{code <p/>}
- * <p>
+ * that. Ex: {@code
  * <pre>
  * XHTMLPanel xhtml = new XHTMLPanel();
  * RenderingContext ctx = xhtml.getRenderingContext();
@@ -81,7 +80,7 @@ import java.net.URL;
  * ctx.addFont(fnt,"Arial"); // redefine a font
  * ctx.setDomImplementation("com.cool.dom.DomImpl");
  * </pre>
- * <p>
+ * }
  * <p>XHTMLPanel comes with a pre-installed MouseListener which handles :hover events used for rollovers
  * ( @see org.xhtmlrenderer.swing.HoverListener ). XHTMLPanel also comes with a pre-installed LinkListener
  * used to follow links.  ( @see org.xhtmlrenderer.swing.LinkListener )

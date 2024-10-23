@@ -26,9 +26,8 @@ import org.xhtmlrenderer.css.extend.TreeResolver;
 import static java.util.Objects.requireNonNullElseGet;
 
 /**
+ * works for a w3c DOM tree
  * @author scott
- *         <p>
- *         works for a w3c DOM tree
  */
 public class DOMTreeResolver implements TreeResolver {
     @Override

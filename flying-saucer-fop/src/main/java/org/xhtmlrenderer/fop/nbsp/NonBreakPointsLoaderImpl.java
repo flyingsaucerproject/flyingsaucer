@@ -31,6 +31,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyList;
 
 /**
+ * Loads non-breaking points for a given language
+ *
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class NonBreakPointsLoaderImpl implements NonBreakPointsLoader {
