@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
+import static java.util.Locale.ROOT;
 
 /**
  * Uses code from iText's DefaultFontMapper and TrueTypeFont classes.  See
@@ -34,7 +35,7 @@ public class TrueTypeUtil {
         String[][] names = font.getFullFontName();
 
         for (String[] name : names) {
-            String lower = name[3].toLowerCase();
+            String lower = name[3].toLowerCase(ROOT);
             if (lower.contains("italic")) {
                 return IdentValue.ITALIC;
             } else if (lower.contains("oblique")) {
@@ -85,7 +86,7 @@ public class TrueTypeUtil {
 
     @CheckReturnValue
     private static String getTTCName(String name) {
-        int index = name.toLowerCase().indexOf(".ttc,");
+        int index = name.toLowerCase(ROOT).indexOf(".ttc,");
         return index < 0 ? name : name.substring(0, index + 4);
     }
 

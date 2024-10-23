@@ -26,6 +26,8 @@ import org.jspecify.annotations.Nullable;
 import java.io.InputStream;
 import java.net.URL;
 
+import static java.util.Locale.ROOT;
+
 
 /**
  * @author Patrick Wright
@@ -92,7 +94,7 @@ public class GeneralUtil {
     @CheckReturnValue
     public static boolean isMacOSX() {
         try {
-            if (System.getProperty("os.name").toLowerCase().startsWith("mac os x")) {
+            if (System.getProperty("os.name").toLowerCase(ROOT).startsWith("mac os x")) {
                 return true;
             }
         } catch (SecurityException e) {

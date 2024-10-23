@@ -54,6 +54,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
+import static java.util.Locale.ROOT;
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElseGet;
 import static org.xhtmlrenderer.pdf.TrueTypeUtil.extractDescription;
@@ -198,7 +199,7 @@ public class ITextFontResolver implements FontResolver {
     @CheckReturnValue
     private File[] filesWithExtensions(File f, String... extensions) {
         return requireNonNull(f.listFiles((d, name) -> {
-            String lower = name.toLowerCase();
+            String lower = name.toLowerCase(ROOT);
             return Stream.of(extensions).anyMatch(extension -> lower.endsWith(extension));
         }));
     }
@@ -221,7 +222,7 @@ public class ITextFontResolver implements FontResolver {
     public void addFont(String path, @Nullable String fontFamilyNameOverride,
                         String encoding, boolean embedded, @Nullable String pathToPFB)
             throws DocumentException, IOException {
-        String lower = path.toLowerCase();
+        String lower = path.toLowerCase(ROOT);
         if (lower.endsWith(OTF) || lower.endsWith(TTF) || lower.contains(TTC_COMMA)) {
             BaseFont font = BaseFont.createFont(path, encoding, embedded);
             addFont(font, path, fontFamilyNameOverride);
@@ -270,7 +271,7 @@ public class ITextFontResolver implements FontResolver {
     }
 
     private boolean fontSupported(String uri) {
-        String lower = uri.toLowerCase();
+        String lower = uri.toLowerCase(ROOT);
         if (isEmbeddedBase64Font(uri)) {
             return SupportedEmbeddedFontTypes.isSupported(uri);
         } else {
@@ -285,7 +286,7 @@ public class ITextFontResolver implements FontResolver {
                                  @Nullable IdentValue fontStyleOverride, String uri, String encoding, boolean embedded,
                                  byte[] ttfAfm, byte @Nullable [] pfb)
             throws DocumentException, IOException {
-        String lower = uri.toLowerCase();
+        String lower = uri.toLowerCase(ROOT);
         if (fontSupported(lower)) {
             String fontName = isEmbeddedBase64Font(uri) ? fontFamilyNameOverride + getExtension(uri) : uri;
             BaseFont font = BaseFont.createFont(fontName, encoding, embedded, false, ttfAfm, pfb);

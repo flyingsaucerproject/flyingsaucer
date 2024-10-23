@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import static java.util.Locale.ROOT;
 
 /**
  * Handles xhtml documents, including presentational html attributes (see css 2.1 spec, 6.4.4).
@@ -108,7 +109,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         applyTableContentAlign(e, style);
         s = getAttribute(e, "bgcolor");
         if (s != null) {
-            s = s.toLowerCase();
+            s = s.toLowerCase(ROOT);
             style.append("background-color: ");
             if (looksLikeAMangledColor(s)) {
                 style.append('#');
@@ -150,7 +151,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         }
         s = getAttribute(e, "bgcolor");
         if (s != null) {
-            s = s.toLowerCase();
+            s = s.toLowerCase(ROOT);
             style.append("background-color: ");
             if (looksLikeAMangledColor(s)) {
                 style.append('#');
@@ -179,7 +180,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     private void applyFloatingAlign(Element e, StringBuilder style) {
         String s = getAttribute(e, "align");
         if (s != null) {
-            s = s.toLowerCase().trim();
+            s = s.toLowerCase(ROOT).trim();
             switch (s) {
                 case "left":
                     style.append("float: left;");
@@ -198,7 +199,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         String s;
         s = getAttribute(e, "align");
         if (s != null) {
-            s = s.toLowerCase().trim();
+            s = s.toLowerCase(ROOT).trim();
             if (s.equals("left") || s.equals("right") ||
                     s.equals("center") || s.equals("justify")) {
                 style.append("text-align: ");
@@ -212,13 +213,13 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         String s = getAttribute(e, "align");
         if (s != null) {
             style.append("text-align: ");
-            style.append(s.toLowerCase());
+            style.append(s.toLowerCase(ROOT));
             style.append(";");
         }
         s = getAttribute(e, "valign");
         if (s != null) {
             style.append("vertical-align: ");
-            style.append(s.toLowerCase());
+            style.append(s.toLowerCase(ROOT));
             style.append(";");
         }
     }
