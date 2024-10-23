@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.render.MarkerData;
 
 import java.util.LinkedList;
@@ -50,6 +51,7 @@ public class LayoutState {
         _BFCs = s;
     }
 
+    @Nullable
     public MarkerData getCurrentMarkerData() {
         return _currentMarkerData;
     }

@@ -76,6 +76,7 @@ public interface OutputDevice {
     void fillOval(int x, int y, int width, int height);
 
     void clip(Shape s);
+    @Nullable
     Shape getClip();
     void setClip(Shape s);
 

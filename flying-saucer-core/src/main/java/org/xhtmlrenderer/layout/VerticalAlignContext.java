@@ -197,10 +197,6 @@ public class VerticalAlignContext {
             _verticalAlignContext = vaContext;
         }
 
-        public Box getRoot() {
-            return _root;
-        }
-
         public VerticalAlignContext getVerticalAlignContext() {
             return _verticalAlignContext;
         }

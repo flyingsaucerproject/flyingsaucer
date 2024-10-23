@@ -77,16 +77,21 @@ public class LayoutContext implements CssContext {
 
     private final Map<CalculatedStyle, CounterContext> _counterContextMap = new HashMap<>();
 
+    @Nullable
     private String _pendingPageName;
+    @Nullable
     private String _pageName;
 
     private int _noPageBreak;
 
+    @Nullable
     private Layer _rootDocumentLayer;
+    @Nullable
     private PageBox _page;
 
     private boolean _mayCheckKeepTogether = true;
 
+    @Nullable
     private BreakAtLineContext _breakAtLineContext;
 
     public TextRenderer getTextRenderer() {
@@ -490,6 +495,8 @@ public class LayoutContext implements CssContext {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public String getPageName() {
         return _pageName;
     }
@@ -510,14 +517,18 @@ public class LayoutContext implements CssContext {
         return _noPageBreak == 0;
     }
 
+    @Nullable
+    @CheckReturnValue
     public String getPendingPageName() {
         return _pendingPageName;
     }
 
-    public void setPendingPageName(String pendingPageName) {
+    public void setPendingPageName(@Nullable String pendingPageName) {
         _pendingPageName = pendingPageName;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Layer getRootDocumentLayer() {
         return _rootDocumentLayer;
     }
@@ -526,6 +537,8 @@ public class LayoutContext implements CssContext {
         _rootDocumentLayer = rootDocumentLayer;
     }
 
+    @Nullable
+    @CheckReturnValue
     public PageBox getPage() {
         return _page;
     }
@@ -542,11 +555,13 @@ public class LayoutContext implements CssContext {
         _mayCheckKeepTogether = mayKeepTogether;
     }
 
+    @Nullable
+    @CheckReturnValue
     public BreakAtLineContext getBreakAtLineContext() {
         return _breakAtLineContext;
     }
 
-    public void setBreakAtLineContext(BreakAtLineContext breakAtLineContext) {
+    public void setBreakAtLineContext(@Nullable BreakAtLineContext breakAtLineContext) {
         _breakAtLineContext = breakAtLineContext;
     }
 }

@@ -219,6 +219,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         _graphics.setClip(s);
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public Shape getClip() {
         return _graphics.getClip();

@@ -124,6 +124,8 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         _clippingArea = (s == null ? null : new Area(s));
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public Shape getClip() {
         return _clippingArea;

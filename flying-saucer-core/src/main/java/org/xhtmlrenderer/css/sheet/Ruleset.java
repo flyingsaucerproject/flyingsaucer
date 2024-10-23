@@ -70,4 +70,8 @@ public class Ruleset {
         return _origin;
     }
 
+    @Override
+    public String toString() {
+        return "%s{%s %s %s}".formatted(getClass().getSimpleName(), _origin, _props, _fsSelectors);
+    }
 }
