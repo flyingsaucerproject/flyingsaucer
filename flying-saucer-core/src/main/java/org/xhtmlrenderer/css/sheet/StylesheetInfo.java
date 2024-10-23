@@ -65,11 +65,13 @@ public class StylesheetInfo {
     }
 
     /**
-     * @param m  a single media identifier
+     * Checks if this stylesheet applies to given medium
+     *
+     * @param media  a single media identifier
      * @return   true if the stylesheet referenced applies to the medium
      */
-    public boolean appliesToMedia(String m) {
-        String mLowerCase = m.toLowerCase(ROOT);
+    public boolean appliesToMedia(String media) {
+        String mLowerCase = media.toLowerCase(ROOT);
         return mLowerCase.equals("all") ||
             mediaTypes.contains("all") || mediaTypes.contains(mLowerCase);
     }
