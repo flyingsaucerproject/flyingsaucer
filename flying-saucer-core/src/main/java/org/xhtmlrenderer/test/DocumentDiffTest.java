@@ -37,6 +37,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.logging.Level;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
 
 public class DocumentDiffTest {
@@ -98,45 +99,35 @@ public class DocumentDiffTest {
     }
 
     private static String file_to_string(File file) throws IOException {
-        FileReader reader = null;
-        StringWriter writer = null;
-        String str;
-        try {
-            reader = new FileReader(file);
-            writer = new StringWriter();
-            char[] buf = new char[1000];
-            while (true) {
-                int n = reader.read(buf, 0, 1000);
-                if (n == -1) {
-                    break;
+        try (FileReader reader = new FileReader(file, UTF_8)) {
+            try (StringWriter writer = new StringWriter()) {
+                char[] buf = new char[1000];
+                while (true) {
+                    int n = reader.read(buf, 0, 1000);
+                    if (n == -1) {
+                        break;
+                    }
+                    writer.write(buf, 0, n);
                 }
-                writer.write(buf, 0, n);
-            }
-            str = writer.toString();
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
-            if (writer != null) {
-                writer.close();
+                return writer.toString();
             }
         }
-        return str;
     }
 
     public static void string_to_file(String text, File file)
             throws IOException {
-        try (FileWriter writer = new FileWriter(file)) {
-            StringReader reader = new StringReader(text);
-            char[] buf = new char[1000];
-            while (true) {
-                int n = reader.read(buf, 0, 1000);
-                if (n == -1) {
-                    break;
+        try (FileWriter writer = new FileWriter(file, UTF_8)) {
+            try (StringReader reader = new StringReader(text)) {
+                char[] buf = new char[1000];
+                while (true) {
+                    int n = reader.read(buf, 0, 1000);
+                    if (n == -1) {
+                        break;
+                    }
+                    writer.write(buf, 0, n);
                 }
-                writer.write(buf, 0, n);
+                writer.flush();
             }
-            writer.flush();
         }
     }
 }
