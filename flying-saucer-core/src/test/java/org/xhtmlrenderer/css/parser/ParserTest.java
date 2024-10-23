@@ -24,12 +24,12 @@ import org.xhtmlrenderer.css.newmatch.Selector;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
-import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.io.IOException;
 import java.io.StringReader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.USER_AGENT;
 
 public class ParserTest {
     private final String test = String.format("div { background-image: url('something') }%n");
@@ -45,7 +45,7 @@ public class ParserTest {
         for (int i = 0; i < 40; i++) {
             long start = System.currentTimeMillis();
             CSSParser p = new CSSParser(errorHandler);
-            Stylesheet stylesheet = p.parseStylesheet(null, Origin.USER_AGENT, new StringReader(longTest));
+            Stylesheet stylesheet = p.parseStylesheet(null, USER_AGENT, new StringReader(longTest));
             long end = System.currentTimeMillis();
             // System.out.println("Took " + (end-start) + " ms");
             total += (end-start);
@@ -58,7 +58,7 @@ public class ParserTest {
         for (int i = 0; i < 10; i++) {
             long start = System.currentTimeMillis();
             CSSParser p = new CSSParser(errorHandler);
-            Stylesheet stylesheet = p.parseStylesheet(null, Origin.USER_AGENT, new StringReader(longTest));
+            Stylesheet stylesheet = p.parseStylesheet(null, USER_AGENT, new StringReader(longTest));
             long end = System.currentTimeMillis();
             // System.out.println("Took " + (end-start) + " ms");
             total += (end-start);
@@ -72,7 +72,10 @@ public class ParserTest {
         for (int i = 0; i < 10; i++) {
             long start = System.currentTimeMillis();
             for (int j = 0; j < 10000; j++) {
-                p.parseStylesheet(null, Origin.USER_AGENT, new StringReader(test));
+                Stylesheet stylesheet = p.parseStylesheet(null, USER_AGENT, new StringReader(test));
+                assertThat(stylesheet.getURI()).isNull();
+                assertThat(stylesheet.getOrigin()).isEqualTo(USER_AGENT);
+                assertThat(stylesheet.getContents()).hasSize(1);
             }
             long end = System.currentTimeMillis();
             // System.out.println("Took " + (end-start) + " ms");
@@ -85,7 +88,7 @@ public class ParserTest {
     public void parseCss() throws IOException {
         CSSParser p = new CSSParser(errorHandler);
 
-        Stylesheet stylesheet = p.parseStylesheet(null, Origin.USER_AGENT, new StringReader(test));
+        Stylesheet stylesheet = p.parseStylesheet(null, USER_AGENT, new StringReader(test));
         assertThat(stylesheet.getContents()).hasSize(1);
         Ruleset ruleset = (Ruleset) stylesheet.getContents().get(0);
         org.assertj.core.api.Assertions.assertThat(ruleset.getFSSelectors()).hasSize(1);
