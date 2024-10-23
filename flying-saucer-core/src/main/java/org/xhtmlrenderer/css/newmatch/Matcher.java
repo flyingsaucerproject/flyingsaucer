@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -170,8 +169,8 @@ public class Matcher {
         int pCount = 0;
         for (Stylesheet stylesheet : stylesheets) {
             for (Object obj : stylesheet.getContents()) {
-                if (obj instanceof Ruleset) {
-                    for (Selector selector : ((Ruleset) obj).getFSSelectors()) {
+                if (obj instanceof Ruleset ruleSet) {
+                    for (Selector selector : ruleSet.getFSSelectors()) {
                         selector.setPos(++count);
                         sorter.put(selector.getOrder(), selector);
                     }
@@ -268,7 +267,7 @@ public class Matcher {
         Mapper mapChild(Node e) {
             List<Selector> childAxes = new ArrayList<>(axes.size() + 10);
             Map<String, List<Selector>> pseudoSelectors = new HashMap<>();
-            List<Selector> mappedSelectors = new LinkedList<>();
+            List<Selector> mappedSelectors = new ArrayList<>();
             StringBuilder key = new StringBuilder();
             for (Selector axe : axes) {
                 switch (axe.getAxis()) {
@@ -285,7 +284,7 @@ public class Matcher {
                 //Assumption: if it is a pseudo-element, it does not also have dynamic pseudo-class
                 String pseudoElement = axe.getPseudoElement();
                 if (pseudoElement != null) {
-                    List<Selector> l = pseudoSelectors.computeIfAbsent(pseudoElement, k -> new LinkedList<>());
+                    List<Selector> l = pseudoSelectors.computeIfAbsent(pseudoElement, k -> new ArrayList<>());
                     l.add(axe);
                     key.append(axe.getSelectorID()).append(":");
                     continue;

@@ -27,7 +27,6 @@ import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -138,7 +137,7 @@ public class CascadedStyle {
         //properties should already be in order of specificity
         List<List<PropertyDeclaration>> buckets = new ArrayList<>(PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT);
         for (int i = 0; i < PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT; i++) {
-            buckets.add(new LinkedList<>());
+            buckets.add(new ArrayList<>());
         }
 
         while (iter.hasNext()) {

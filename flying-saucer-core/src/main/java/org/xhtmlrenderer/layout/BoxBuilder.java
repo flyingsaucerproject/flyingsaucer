@@ -56,10 +56,11 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBoxData;
 import org.xhtmlrenderer.render.InlineBox;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -536,11 +537,11 @@ public class BoxBuilder {
      * If not, the table is returned.
      */
     private static BlockBox reorderTableContent(LayoutContext c, TableBox table) {
-        List<Box> topCaptions = new LinkedList<>();
+        List<Box> topCaptions = new ArrayList<>();
         Box header = null;
-        List<Box> bodies = new LinkedList<>();
+        List<Box> bodies = new ArrayList<>();
         Box footer = null;
-        List<Box> bottomCaptions = new LinkedList<>();
+        List<Box> bottomCaptions = new ArrayList<>();
 
         for (Box b : table.getChildren()) {
             IdentValue display = b.getStyle().getIdent(CSSName.DISPLAY);
@@ -1256,7 +1257,7 @@ public class BoxBuilder {
             SharedContext c, Box parent, List<Styleable> children, boolean layoutRunningBlocks) {
         List<Styleable> inline = new ArrayList<>();
 
-        LinkedList<InlineBox> parents = new LinkedList<>();
+        Deque<InlineBox> parents = new ArrayDeque<>();
         List<InlineBox> savedParents = null;
 
         for (Styleable child : children) {
