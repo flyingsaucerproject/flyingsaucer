@@ -8,6 +8,8 @@ import org.xhtmlrenderer.css.style.derived.ListValue;
 
 public class BorderRadiusCorner {
 
+    public static final BorderRadiusCorner UNDEFINED = new BorderRadiusCorner();
+
     private boolean _leftPercent = false;
     private boolean _rightPercent = false;
     private float _left;
@@ -25,7 +27,7 @@ public class BorderRadiusCorner {
         FSDerivedValue value = style.valueByName(fromVal);
         if (value instanceof ListValue lValues) {
             PropertyValue first = (PropertyValue)lValues.getValues().get(0);
-            PropertyValue second = lValues.getValues().size() > 1 ? 
+            PropertyValue second = lValues.getValues().size() > 1 ?
                     (PropertyValue) lValues.getValues().get(1) : first;
 
             if (fromVal.equals(CSSName.BORDER_TOP_LEFT_RADIUS) || fromVal.equals(CSSName.BORDER_BOTTOM_RIGHT_RADIUS)) {

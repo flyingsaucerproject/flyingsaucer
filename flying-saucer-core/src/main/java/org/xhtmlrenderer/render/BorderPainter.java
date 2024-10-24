@@ -288,17 +288,13 @@ public class BorderPainter {
                                         final Rectangle bounds, int currentSide,
                                         final IdentValue borderSideStyle, int xOffset) {
         if (borderSideStyle == IdentValue.RIDGE || borderSideStyle == IdentValue.GROOVE) {
-            new BorderPropertySet((int) (border.top() / 2),
-                    (int) (border.right() / 2),
-                    (int) (border.bottom() / 2),
-                    (int) (border.left() / 2));
-            BorderPropertySet borderA;
+           BorderPropertySet borderA;
            BorderPropertySet borderB;
            if (borderSideStyle == IdentValue.RIDGE) {
                 borderA = border;
-                borderB =  border.darken(borderSideStyle);
+                borderB = border.darken();
             } else {
-                borderA =  border.darken(borderSideStyle);
+                borderA = border.darken();
                 borderB = border;
             }
            paintBorderSideShape(
@@ -312,11 +308,11 @@ public class BorderPainter {
         } else if (borderSideStyle == IdentValue.OUTSET) {
             paintBorderSideShape(outputDevice, bounds,
                     border,
-                    border.darken(borderSideStyle),
+                    border.darken(),
                     0, 1, currentSide);
         } else if (borderSideStyle == IdentValue.INSET) {
             paintBorderSideShape(outputDevice, bounds,
-                    border.darken(borderSideStyle),
+                    border.darken(),
                     border,
                     0, 1, currentSide);
         } else if (borderSideStyle == IdentValue.SOLID) {

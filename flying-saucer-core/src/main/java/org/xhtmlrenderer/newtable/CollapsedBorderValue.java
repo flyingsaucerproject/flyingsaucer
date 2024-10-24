@@ -31,9 +31,9 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
  */
 public class CollapsedBorderValue {
     private final IdentValue _style;
-    private int _width;
+    private final int _width;
     private final FSColor _color;
-    private int _precedence;
+    private final int _precedence;
 
     public CollapsedBorderValue(IdentValue style, int width, FSColor color, int precedence) {
         _style = style;
@@ -54,16 +54,12 @@ public class CollapsedBorderValue {
         return _width;
     }
 
-    public void setWidth(int width) {
-        _width = width;
+    public CollapsedBorderValue withWidth(int width) {
+        return new CollapsedBorderValue(_style, width, _color, _precedence);
     }
 
     public int precedence() {
         return _precedence;
-    }
-
-    public void setPrecedence(int precedence) {
-        _precedence = precedence;
     }
 
     public boolean defined() {
