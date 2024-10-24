@@ -23,7 +23,6 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseField;
 import com.lowagie.text.pdf.PdfBorderDictionary;
-import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfFormField;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.RadioCheckField;
@@ -50,8 +49,6 @@ public class CheckboxFormField extends AbstractFormField {
 
   @Override
   public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
-    PdfContentByte cb = outputDevice.getCurrentPage();
-
     PdfWriter writer = outputDevice.getWriter();
     Element elm = box.getElement();
 

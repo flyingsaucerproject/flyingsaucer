@@ -155,7 +155,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     @Override
     public void paintCollapsedBorder(
             RenderingContext c, BorderPropertySet border, Rectangle bounds, int side) {
-        BorderPainter.paint(bounds, side, border, c, 0, false);
+        BorderPainter.paint(bounds, side, border, c, 0);
     }
 
     @Override
@@ -166,12 +166,12 @@ public abstract class AbstractOutputDevice implements OutputDevice {
 
         Rectangle borderBounds = box.getPaintingBorderEdge(c);
 
-        BorderPainter.paint(borderBounds, box.getBorderSides(), box.getBorder(c), c, 0, true);
+        BorderPainter.paint(borderBounds, box.getBorderSides(), box.getBorder(c), c, 0);
     }
 
     @Override
     public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
-        BorderPainter.paint(edge, sides, style.getBorder(c), c, 0, true);
+        BorderPainter.paint(edge, sides, style.getBorder(c), c, 0);
     }
 
     private FSImage getBackgroundImage(RenderingContext c, CalculatedStyle style) {

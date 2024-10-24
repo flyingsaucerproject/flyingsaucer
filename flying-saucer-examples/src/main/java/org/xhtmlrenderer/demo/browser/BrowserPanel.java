@@ -110,7 +110,6 @@ public final class BrowserPanel extends JPanel implements DocumentListener {
         view.setBackground(Color.LIGHT_GRAY);
         scroll = new FSScrollPane(view);
         print_preview = new JButton();
-        JButton print = new JButton();
 
         loadCustomFonts();
 
@@ -150,76 +149,6 @@ public final class BrowserPanel extends JPanel implements DocumentListener {
         } catch (Exception ex) {
             Uu.p(ex);
         }
-    }
-
-    public void createLayout() {
-        GridBagLayout gbl = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        setLayout(gbl);
-
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = c.weighty = 0.0;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        gbl.setConstraints(toolbar, c);
-        add(toolbar);
-
-        //c.gridx = 0;
-        c.gridx++;
-        c.gridy++;
-        c.weightx = c.weighty = 0.0;
-        c.insets = new Insets(5, 0, 5, 5);
-        gbl.setConstraints(backward, c);
-        add(backward);
-
-        c.gridx++;
-        gbl.setConstraints(forward, c);
-        add(forward);
-
-        c.gridx++;
-        gbl.setConstraints(reload, c);
-        add(reload);
-
-        c.gridx++;
-        c.fill = GridBagConstraints.NONE;
-        c.weightx = c.weighty = 0.0;
-        gbl.setConstraints(print_preview, c);
-        add(print_preview);
-
-        c.gridx++;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.ipadx = 5;
-        c.ipady = 5;
-        c.weightx = 10.0;
-        c.insets = new Insets(5, 0, 5, 0);
-        gbl.setConstraints(url, c);
-        url.setBorder(BorderFactory.createLoweredBevelBorder());
-        add(url);
-
-        c.gridx++;
-        c.fill = GridBagConstraints.NONE;
-        c.weightx = c.weighty = 0.0;
-        c.insets = new Insets(0, 5, 0, 0);
-        gbl.setConstraints(goToPage, c);
-        add(goToPage);
-
-        c.gridx = 0;
-        c.gridy++;
-        c.ipadx = 0;
-        c.ipady = 0;
-        c.fill = GridBagConstraints.BOTH;
-        c.gridwidth = 7;
-        c.weightx = c.weighty = 10.0;
-        gbl.setConstraints(scroll, c);
-        add(scroll);
-
-        c.gridx = 0;
-        c.gridy++;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weighty = 0.1;
-        gbl.setConstraints(status, c);
-        add(status);
-
     }
 
     private void createActions() {

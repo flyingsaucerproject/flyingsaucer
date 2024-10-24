@@ -223,7 +223,7 @@ public class ImageUtil {
         Object hint = Configuration.valueFromClassConstant("xr.image.render-quality",
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-        ScalingOptions opt = new ScalingOptions(targetWidth, targetHeight, TYPE_INT_ARGB, quality, hint);
+        ScalingOptions opt = new ScalingOptions(targetWidth, targetHeight, quality, hint);
 
         return getScaledInstance(opt, orgImage);
     }

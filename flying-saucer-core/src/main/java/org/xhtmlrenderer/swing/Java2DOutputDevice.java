@@ -82,9 +82,9 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                         iB.getAbsY() + iB.getBaseline());
                 Graphics2D graphics = getGraphics();
                 double scaleX = graphics.getTransform().getScaleX();
-                boolean allSelected = (text.length() == inlineText.getSelectionEnd()-inlineText.getSelectionStart());
-                int startX = (inlineText.getSelectionStart() == inlineText.getStart())?iB.getAbsX() + inlineText.getX():(int)Math.round(start.x/scaleX);
-                int endX = (allSelected)?startX+inlineText.getWidth():(int)Math.round((end.x + end.width)/scaleX);
+                boolean allSelected = (text.length() == inlineText.getSelectionEnd() - inlineText.getSelectionStart());
+                int startX = (inlineText.getSelectionStart() == inlineText.getStart()) ? iB.getAbsX() + inlineText.getX() : (int) Math.round(start.x / scaleX);
+                int endX = allSelected ? startX + inlineText.getWidth() : (int) Math.round((end.x + end.width) / scaleX);
                 _graphics.setColor(UIManager.getColor("TextArea.selectionBackground"));  // FIXME
                 fillRect(
                         startX,

@@ -67,15 +67,13 @@ public class ScalingOptions {
      *
      * @param targetWidth  Target width in pixels of image once scaled
      * @param targetHeight Target height in pixels of image once scaled
-     * @param type		 Type of {@link java.awt.image.BufferedImage} to create for output; see docs for
-     *                     {@link java.awt.image.BufferedImage#BufferedImage(int,int,int)}
      * @param downscalingHint   Directs downscaling quality. One of the enumerated types of
      *                          {@link org.xhtmlrenderer.util.DownscaleQuality} such as
      *                          {@link DownscaleQuality#FAST}.
      * @param hint		 Hint for interpolation to AWT image renderer, one of the Object constants from
      *                     {@link java.awt.RenderingHints} using {@link java.awt.RenderingHints#KEY_INTERPOLATION}
      */
-    public ScalingOptions(int targetWidth, int targetHeight, int type, DownscaleQuality downscalingHint, Object hint) {
+    public ScalingOptions(int targetWidth, int targetHeight, DownscaleQuality downscalingHint, Object hint) {
         this(downscalingHint, hint);
         this.setTargetHeight(Math.max(1, targetHeight));
         this.setTargetWidth(Math.max(1, targetWidth));
@@ -146,10 +144,5 @@ public class ScalingOptions {
 
     public void setTargetHeight(int targetHeight) {
         this.targetHeight = targetHeight;
-    }
-
-    public void setTargetDimensions(Dimension dim) {
-        setTargetWidth((int) dim.getWidth());
-        setTargetHeight((int) dim.getHeight());
     }
 }

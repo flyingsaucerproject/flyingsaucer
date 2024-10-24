@@ -167,7 +167,6 @@ public class NoNamespaceHandler implements NamespaceHandler {
 
     private static final Pattern _typePattern = Pattern.compile("type\\s?=\\s?");
     private static final Pattern _hrefPattern = Pattern.compile("href\\s?=\\s?");
-    private static final Pattern _titlePattern = Pattern.compile("title\\s?=\\s?");
     private static final Pattern _alternatePattern = Pattern.compile("alternate\\s?=\\s?");
     private static final Pattern _mediaPattern = Pattern.compile("media\\s?=\\s?");
 

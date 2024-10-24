@@ -71,7 +71,7 @@ public class TextFormField extends AbstractFormField {
       multiline = true;
     }
     else {
-      setHeight((int) (box.getStyle().getLineHeight(c)));
+      setHeight((int) box.getStyle().getLineHeight(c));
     }
   }
 
