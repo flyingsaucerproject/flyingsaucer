@@ -1,5 +1,18 @@
 # Changelog
 
+## 9.10.0 (24.10.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/22?closed=1
+* #411 fix center li items with margin or padding  --  thanks to Harald Amon (#420)
+* #404 Replace obsolete "jsr305" annotation library by JSpecify (#407)
+* add @NullMarked, @Nullable and @CheckReturnValue annotations to many methods/classes/packages (#407) (#413) (#414)
+* make multiple classes and fields final (#398) (#407) (#419) (#421)
+* #409 remove many unused methods (#418) (#421) (#424)
+* convert many constants to enums (#416)
+* fix multiple warning reported by Google library "error-prone" (#421)
+* #403 don't embed slf4j-api in flying-saucer-pdf-osgi (#410)  -  thanks to Konrad Windszus
+* #412 Remove unused java sources from folders "src" and "flying-saucer-examples/nomaven" (#417)
+* #409 remove unneeded module "flying-saucer-swt-examples" (#418)
+* Bump org.apache.xmlgraphics:fop from 2.9 to 2.10 (#408)
+
 ## 9.9.5 (30.09.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/21?closed=1
 * #392 Fix transparent background of resized base64 encoded images - thanks to @Openhelios (#393)
 * dispose Graphics object after using it (#397)
