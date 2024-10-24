@@ -68,6 +68,7 @@ import static org.xhtmlrenderer.render.BlockBox.ContentType.UNKNOWN;
  * A block box as defined in the CSS spec.  It also provides a base class for
  * other kinds of block content (for example table rows or cells).
  */
+@SuppressWarnings("MissingCasesInEnumSwitch")
 public class BlockBox extends Box implements InlinePaintable {
 
     public enum Position {

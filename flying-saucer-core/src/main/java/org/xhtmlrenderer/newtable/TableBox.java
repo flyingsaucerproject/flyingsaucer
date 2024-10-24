@@ -1250,6 +1250,7 @@ public class TableBox extends BlockBox {
             return 1;
         }
 
+        @SuppressWarnings("MissingCasesInEnumSwitch")
         private void recalcColumn(LayoutContext c, int effCol) {
             Layout l = _layoutStruct[effCol];
 

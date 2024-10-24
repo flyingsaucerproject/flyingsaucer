@@ -65,7 +65,7 @@ public abstract class AbstractControl implements FormControl {
             });
         }
     }
-    
+
     private static String getNameOrId(Element e) {
         String name = e.getAttribute("name");
         return name.isEmpty() ? e.getAttribute("id") : name;
@@ -201,6 +201,7 @@ public abstract class AbstractControl implements FormControl {
         return result.toString().trim();
     }
 
+    @SuppressWarnings("EmptyCatch")
     public static int getIntAttribute(Element e, String attribute, int def) {
         int result = def;
         String str = e.getAttribute(attribute);
