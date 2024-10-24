@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.util;
 
 import java.awt.*;
-import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
@@ -104,7 +103,7 @@ public class ScalingOptions {
      *
      * @return Map of rendering hints.
      */
-    protected Map<Key, Object> getRenderingHints() {
+    protected Map<RenderingHints.Key, Object> getRenderingHints() {
         return singletonMap(RenderingHints.KEY_INTERPOLATION, getRenderingHint());
     }
 

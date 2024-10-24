@@ -42,7 +42,6 @@ import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.swt.simple.SWTFormControl;
 
 import java.awt.*;
-import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
@@ -341,7 +340,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
     @Nullable
     @CheckReturnValue
     @Override
-    public Object getRenderingHint(Key key) {
+    public Object getRenderingHint(RenderingHints.Key key) {
         if (RenderingHints.KEY_ANTIALIASING.equals(key)) {
             switch (_gc.getAntialias()) {
             case SWT.DEFAULT:
@@ -356,7 +355,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
     }
 
     @Override
-    public void setRenderingHint(Key key, Object value) {
+    public void setRenderingHint(RenderingHints.Key key, Object value) {
         if (RenderingHints.KEY_ANTIALIASING.equals(key)) {
             int antialias = SWT.DEFAULT;
             if (RenderingHints.VALUE_ANTIALIAS_OFF.equals(value)) {
