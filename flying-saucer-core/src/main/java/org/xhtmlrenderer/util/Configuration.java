@@ -196,7 +196,7 @@ public class Configuration {
      * @param msg the message to log
      */
     private void println(Level level, String msg) {
-        if (logLevel != Level.OFF) {
+        if (!logLevel.equals(Level.OFF)) {
             if (configLogger == null) {
                 startupLogRecords.add(new LogRecord(level, msg));
             } else {
