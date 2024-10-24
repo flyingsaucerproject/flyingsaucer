@@ -9,17 +9,12 @@ import org.xhtmlrenderer.css.style.CssContext;
  * some rectangular area, and per-side thickness.
  */
 public class RectPropertySet {
-    //                                                                  HACK
     public static final RectPropertySet ALL_ZEROS = new RectPropertySet(0, 0, 0, 0);
 
-    protected float _top;
-    protected float _right;
-    protected float _bottom;
-    protected float _left;
-
-    protected RectPropertySet() {
-        _top = _right = _bottom = _left = 0f;
-    }
+    private float _top;
+    private float _right;
+    private float _bottom;
+    private float _left;
 
     public RectPropertySet(
             float top,
@@ -98,12 +93,7 @@ public class RectPropertySet {
     }
 
     public RectPropertySet copyOf() {
-        RectPropertySet newRect = new RectPropertySet();
-        newRect._top = _top;
-        newRect._right = _right;
-        newRect._bottom = _bottom;
-        newRect._left = _left;
-        return newRect;
+        return new RectPropertySet(_top, _right, _bottom, _left);
     }
 
     public boolean isAllZeros() {
