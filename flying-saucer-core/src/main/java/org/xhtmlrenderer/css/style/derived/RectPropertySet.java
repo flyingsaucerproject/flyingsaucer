@@ -27,7 +27,6 @@ public class RectPropertySet {
             float bottom,
             float left
     ) {
-        this();
         this._top = top;
         this._right = right;
         this._bottom = bottom;

@@ -110,17 +110,11 @@ public class TableCellBox extends BlockBox {
         _collapsedPaintingBorder = new BorderPropertySet(top, right, bottom, left);
 
         // Give the extra pixel to top and left.
-        top.setWidth((top.width()+1)/2);
-        right.setWidth(right.width()/2);
-        bottom.setWidth(bottom.width()/2);
-        left.setWidth((left.width()+1)/2);
-
-        _collapsedLayoutBorder = new BorderPropertySet(top, right, bottom, left);
-
-        _collapsedBorderTop = top;
-        _collapsedBorderRight = right;
-        _collapsedBorderBottom = bottom;
-        _collapsedBorderLeft = left;
+        _collapsedBorderTop = top.withWidth((top.width() + 1) / 2);
+        _collapsedBorderRight = right.withWidth(right.width() / 2);
+        _collapsedBorderBottom = bottom.withWidth(bottom.width() / 2);
+        _collapsedBorderLeft = left.withWidth((left.width() + 1) / 2);
+        _collapsedLayoutBorder = new BorderPropertySet(_collapsedBorderTop, _collapsedBorderRight, _collapsedBorderBottom, _collapsedBorderLeft);
     }
 
     public int getCol() {
