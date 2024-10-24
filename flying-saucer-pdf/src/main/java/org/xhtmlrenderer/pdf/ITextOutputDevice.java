@@ -69,7 +69,6 @@ import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.*;
-import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -466,7 +465,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     @Override
-    public void setRenderingHint(Key key, Object value) {
+    public void setRenderingHint(RenderingHints.Key key, Object value) {
     }
 
     @Override
