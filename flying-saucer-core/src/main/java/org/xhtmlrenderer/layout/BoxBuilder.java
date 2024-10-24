@@ -135,7 +135,7 @@ public class BoxBuilder {
         boolean parentIsNestingTableContent = isNestingTableContent(parent.getStyle().getIdent(
                 CSSName.DISPLAY));
         if (!parentIsNestingTableContent && !info.isContainsTableContent()) {
-            resolveChildren(c, parent, children, info);
+            resolveChildren(parent, children, info);
         } else {
             stripAllWhitespace(children);
             if (parentIsNestingTableContent) {
@@ -304,12 +304,10 @@ public class BoxBuilder {
         return result;
     }
 
-    private static void resolveChildren(
-            LayoutContext c, BlockBox owner, List<Styleable> children, ChildBoxInfo info) {
+    private static void resolveChildren(BlockBox owner, List<Styleable> children, ChildBoxInfo info) {
         if (!children.isEmpty()) {
             if (info.isContainsBlockLevelContent()) {
-                insertAnonymousBlocks(
-                        c.getSharedContext(), owner, children, info.isLayoutRunningBlocks());
+                insertAnonymousBlocks(owner, children, info.isLayoutRunningBlocks());
                 owner.setChildrenContentType(ContentType.BLOCK);
             } else {
                 WhitespaceStripper.stripInlineContent(children);
@@ -372,7 +370,7 @@ public class BoxBuilder {
         if (nextUp == IdentValue.TABLE) {
             rebalanceInlineContent(childrenWithAnonymous);
             info.setContainsBlockLevelContent();
-            resolveChildren(c, parent, childrenWithAnonymous, info);
+            resolveChildren(parent, childrenWithAnonymous, info);
         } else {
             resolveChildTableContent(c, parent, childrenWithAnonymous, info, nextUp);
         }
@@ -455,7 +453,7 @@ public class BoxBuilder {
             if (parent.isAnonymous()) {
                 rebalanceInlineContent(children);
             }
-            resolveChildren(c, parent, children, info);
+            resolveChildren(parent, children, info);
         } else {
             List<Styleable> childrenForAnonymous = new ArrayList<>();
             List<Styleable> childrenWithAnonymous = new ArrayList<>();
@@ -481,7 +479,7 @@ public class BoxBuilder {
             }
 
             info.setContainsBlockLevelContent();
-            resolveChildren(c, parent, childrenWithAnonymous, info);
+            resolveChildren(parent, childrenWithAnonymous, info);
         }
     }
 
@@ -1253,8 +1251,7 @@ public class BoxBuilder {
         return null;
     }
 
-    private static void insertAnonymousBlocks(
-            SharedContext c, Box parent, List<Styleable> children, boolean layoutRunningBlocks) {
+    private static void insertAnonymousBlocks(Box parent, List<Styleable> children, boolean layoutRunningBlocks) {
         List<Styleable> inline = new ArrayList<>();
 
         Deque<InlineBox> parents = new ArrayDeque<>();

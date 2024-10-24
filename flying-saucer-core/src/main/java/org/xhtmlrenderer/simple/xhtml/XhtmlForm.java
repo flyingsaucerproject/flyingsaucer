@@ -19,14 +19,7 @@
  */
 package org.xhtmlrenderer.simple.xhtml;
 
-import org.jspecify.annotations.Nullable;
-import org.w3c.dom.Element;
 import org.xhtmlrenderer.simple.extend.URLUTF8Encoder;
-import org.xhtmlrenderer.simple.xhtml.controls.ButtonControl;
-import org.xhtmlrenderer.simple.xhtml.controls.CheckControl;
-import org.xhtmlrenderer.simple.xhtml.controls.HiddenControl;
-import org.xhtmlrenderer.simple.xhtml.controls.SelectControl;
-import org.xhtmlrenderer.simple.xhtml.controls.TextControl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,20 +41,6 @@ public class XhtmlForm {
         _listeners.add(listener);
     }
 
-    public void removeFormListener(FormListener listener) {
-        _listeners.remove(listener);
-    }
-
-    @Nullable
-    public FormControl getControl(String name) {
-        for (FormControl control : _controls) {
-            if (control.getName().equals(name)) {
-                return control;
-            }
-        }
-        return null;
-    }
-
     public List<FormControl> getAllControls(String name) {
         List<FormControl> result = new ArrayList<>();
         for (FormControl control : _controls) {
@@ -74,61 +53,6 @@ public class XhtmlForm {
 
     public Iterable<FormControl> controls() {
         return _controls;
-    }
-
-    @Nullable
-    public FormControl createControl(Element e) {
-        return createControl(this, e);
-    }
-
-    @Nullable
-    public static FormControl createControl(XhtmlForm form, Element e) {
-        if (e == null)
-            return null;
-
-        FormControl control;
-        String name = e.getNodeName();
-        switch (name) {
-            case "input":
-                String type = e.getAttribute("type");
-                switch (type) {
-                    case "text":
-                    case "password":
-                        control = new TextControl(form, e);
-                        break;
-                    case "hidden":
-                        control = new HiddenControl(form, e);
-                        break;
-                    case "button":
-                    case "submit":
-                    case "reset":
-                        control = new ButtonControl(form, e);
-                        break;
-                    case "checkbox":
-                    case "radio":
-                        control = new CheckControl(form, e);
-                        break;
-                    default:
-                        return null;
-                }
-                break;
-            case "textarea":
-                control = new TextControl(form, e);
-                break;
-            case "button":
-                control = new ButtonControl(form, e);
-                break;
-            case "select":
-                control = new SelectControl(form, e);
-                break;
-            default:
-                return null;
-        }
-
-        if (form != null) {
-            form._controls.add(control);
-        }
-        return control;
     }
 
     public void reset() {

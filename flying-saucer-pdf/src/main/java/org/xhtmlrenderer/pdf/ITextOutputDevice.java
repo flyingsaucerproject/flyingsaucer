@@ -590,14 +590,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     private void ensureFillColor() {
-        if (!(_color.equals(_fillColor))) {
+        if (!_color.equals(_fillColor)) {
             _fillColor = _color;
             _currentPage.setColorFill(_fillColor);
         }
     }
 
     private void ensureStrokeColor() {
-        if (!(_color.equals(_strokeColor))) {
+        if (!_color.equals(_strokeColor)) {
             _strokeColor = _color;
             _currentPage.setColorStroke(_strokeColor);
         }
@@ -936,7 +936,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private void writeNamedDestinations(RenderingContext c) {
         Map<String, Box> idMap = getSharedContext().getIdMap();
-        if ((idMap != null) && (!idMap.isEmpty())) {
+        if (idMap != null && !idMap.isEmpty()) {
             PdfArray destinations = new PdfArray();
             try {
                 for (Entry<String, Box> entry : idMap.entrySet()) {
