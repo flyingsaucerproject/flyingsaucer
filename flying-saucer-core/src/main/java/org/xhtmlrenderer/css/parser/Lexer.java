@@ -30,6 +30,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * on 31.10.07 20:58 from the specification file
  * <tt>C:/eclipseWorkspaceQT/xhtmlrenderer/src/java/org/xhtmlrenderer/css/parser/Lexer.flex</tt>
  */
+@SuppressWarnings("UnnecessaryUnicodeEscape")
 class Lexer {
 
   /** This character denotes the end of file */

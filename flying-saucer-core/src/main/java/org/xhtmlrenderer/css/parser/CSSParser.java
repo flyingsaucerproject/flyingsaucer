@@ -59,6 +59,7 @@ import static org.xhtmlrenderer.css.newmatch.Selector.Axis.DESCENDANT_AXIS;
 import static org.xhtmlrenderer.css.newmatch.Selector.Axis.IMMEDIATE_SIBLING_AXIS;
 import static org.xhtmlrenderer.css.parser.Token.Type.AT_RULE;
 
+@SuppressWarnings("MissingCasesInEnumSwitch")
 public class CSSParser {
     private static final Set<String> SUPPORTED_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
     private static final Set<String> CSS21_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
