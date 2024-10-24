@@ -192,23 +192,23 @@ public class BorderPropertySet extends RectPropertySet {
 
     @Override
     public String toString() {
-        return "BorderPropertySet[top=%s,right=%s,bottom=%s,left=%s]".formatted(_top, _right, _bottom, _left);
+        return "BorderPropertySet[top=%s,right=%s,bottom=%s,left=%s]".formatted(top(), right(), bottom(), left());
     }
 
     public boolean noTop() {
-        return styles.top() == NONE || (int) _top == 0;
+        return styles.top() == NONE || (int) top() == 0;
     }
 
     public boolean noRight() {
-        return styles.right() == NONE || (int) _right == 0;
+        return styles.right() == NONE || (int) right() == 0;
     }
 
     public boolean noBottom() {
-        return styles.bottom() == NONE || (int) _bottom == 0;
+        return styles.bottom() == NONE || (int) bottom() == 0;
     }
 
     public boolean noLeft() {
-        return styles.left() == NONE || (int) _left == 0;
+        return styles.left() == NONE || (int) left() == 0;
     }
 
     public IdentValue topStyle() {
@@ -285,7 +285,7 @@ public class BorderPropertySet extends RectPropertySet {
                 new BorderRadiusCorner(factor * corners.bottomRight().getMaxLeft(bounds.height), factor * corners.bottomRight().getMaxRight(bounds.width)),
                 new BorderRadiusCorner(factor * corners.bottomLeft().getMaxLeft(bounds.width), factor * corners.bottomLeft().getMaxRight(bounds.height))
         );
-        return new BorderPropertySet(_top, _right, _bottom, _left,
+        return new BorderPropertySet(top(), right(), bottom(), left(),
                 styles,
                 normalizedCorners,
                 colors
