@@ -32,6 +32,7 @@ import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 
 import java.text.BreakIterator;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -43,10 +44,10 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
 
     private static final int SOFT_HYPHEN = '\u00AD';
 
-    private TreeSet<BreakPoint> getPoints(String text, String lang, CalculatedStyle style) {
+    private Set<BreakPoint> getPoints(String text, String lang, CalculatedStyle style) {
         text = new NonBreakPointsEnhancer().enhance(text, lang);
         BreakIterator breakIt = new UrlAwareLineBreakIterator(text);
-        TreeSet<BreakPoint> points = new TreeSet<>();
+        Set<BreakPoint> points = new TreeSet<>();
         int p;
         while ((p = breakIt.next()) != BreakIterator.DONE) {
             points.add(new BreakPoint(p));
