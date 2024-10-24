@@ -12,6 +12,7 @@
 * #412 Remove unused java sources from folders "src" and "flying-saucer-examples/nomaven" (#417)
 * #409 remove unneeded module "flying-saucer-swt-examples" (#418)
 * Bump org.apache.xmlgraphics:fop from 2.9 to 2.10 (#408)
+* Bump commons-io:commons-io from 2.11.0 to 2.17.0
 
 ## 9.9.5 (30.09.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/21?closed=1
 * #392 Fix transparent background of resized base64 encoded images - thanks to @Openhelios (#393)
