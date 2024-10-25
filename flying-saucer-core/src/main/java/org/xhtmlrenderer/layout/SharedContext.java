@@ -114,6 +114,14 @@ public final class SharedContext {
         media = "screen";
         setDPI(dpi);
         setDotsPerPixel(dotsPerPixel);
+        setPrint(true);
+        setInteractive(false);
+    }
+
+    public SharedContext(UserAgentCallback uac, float dpi, int pixelsPerDot) {
+        this(uac);
+        setDPI(dpi);
+        setDotsPerPixel(pixelsPerDot);
     }
 
     public SharedContext(UserAgentCallback uac) {
@@ -141,6 +149,8 @@ public final class SharedContext {
         XRLog.render("Using CSS implementation from: " + getCss().getClass().getName());
         this.textRenderer = requireNonNull(tr);
         setDPI(dpi);
+        setPrint(true);
+        setInteractive(false);
     }
 
     public void setFormSubmissionListener(FormSubmissionListener fsl) {
@@ -306,7 +316,9 @@ public final class SharedContext {
      * Sets the textRenderer attribute of the RenderingContext object
      *
      * @param textRenderer The new textRenderer value
+     * @deprecated pass textRenderer to a constructor instead of using setter
      */
+    @Deprecated
     public void setTextRenderer(TextRenderer textRenderer) {
         this.textRenderer = requireNonNull(textRenderer);
     }
@@ -466,11 +478,15 @@ public final class SharedContext {
      * add a new font mapping, or replace an existing one
      */
     public void setFontMapping(String name, Font font) {
-        if (fontResolver instanceof AWTFontResolver) {
-            ((AWTFontResolver) fontResolver).setFontMapping(name, font);
+        if (fontResolver instanceof AWTFontResolver awtFontResolver) {
+            awtFontResolver.setFontMapping(name, font);
         }
     }
 
+    /**
+     * @deprecated pass textRenderer to a constructor instead of using setter
+     */
+    @Deprecated
     public void setFontResolver(FontResolver resolver) {
         fontResolver = requireNonNull(resolver);
     }

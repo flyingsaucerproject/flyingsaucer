@@ -23,7 +23,6 @@ import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -86,6 +85,7 @@ public class Java2DRenderer {
 
     @Nullable
     private Document doc;
+    @Nullable
     private Box root;
 
     private BufferedImage outputImage;
@@ -324,10 +324,11 @@ public class Java2DRenderer {
         outputImage = ImageUtil.createCompatibleBufferedImage(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_POINT);
         outputDevice = new Java2DOutputDevice(outputImage);
 
-        UserAgentCallback userAgent = new NaiveUserAgent();
-        sharedContext = new SharedContext(userAgent);
-        sharedContext.setDPI(72 * (float) Java2DRenderer.DEFAULT_DOTS_PER_POINT);
-        sharedContext.setDotsPerPixel(Java2DRenderer.DEFAULT_DOTS_PER_PIXEL);
+        sharedContext = new SharedContext(
+                new NaiveUserAgent(),
+                72 * (float) DEFAULT_DOTS_PER_POINT,
+                DEFAULT_DOTS_PER_PIXEL
+        );
         sharedContext.setPrint(false);
         sharedContext.setInteractive(false);
     }
