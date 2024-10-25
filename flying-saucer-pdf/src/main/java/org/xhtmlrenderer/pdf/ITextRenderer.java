@@ -161,7 +161,7 @@ public class ITextRenderer {
         _dotsPerPoint = dotsPerPoint;
         _outputDevice = outputDevice;
         _sharedContext = new SharedContext(userAgent, fontResolver, replacedElementFactory, textRenderer,
-                72 * _dotsPerPoint);
+                72 * _dotsPerPoint, dotsPerPixel);
 
         _outputDevice.setSharedContext(_sharedContext);
         _sharedContext.setPrint(true);
