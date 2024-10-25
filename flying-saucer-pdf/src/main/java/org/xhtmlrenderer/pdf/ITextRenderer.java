@@ -547,10 +547,12 @@ public class ITextRenderer {
                 "\n<?xpacket end='r'?>";
     }
 
+    @CheckReturnValue
     public ITextOutputDevice getOutputDevice() {
         return _outputDevice;
     }
 
+    @CheckReturnValue
     public SharedContext getSharedContext() {
         return _sharedContext;
     }
@@ -561,14 +563,18 @@ public class ITextRenderer {
         _root.exportText(c, writer);
     }
 
+    @Nullable
+    @CheckReturnValue
     public BlockBox getRootBox() {
         return _root;
     }
 
+    @CheckReturnValue
     public float getDotsPerPoint() {
         return _dotsPerPoint;
     }
 
+    @CheckReturnValue
     public List<PagePosition> findPagePositionsByID(Pattern pattern) {
         return _outputDevice.findPagePositionsByID(newLayoutContext(), pattern);
     }
@@ -590,11 +596,19 @@ public class ITextRenderer {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public PDFCreationListener getListener() {
         return _listener;
     }
 
     public void setListener(PDFCreationListener listener) {
         _listener = listener;
+    }
+
+    @Nullable
+    @CheckReturnValue
+    public PdfWriter getWriter() {
+        return _writer;
     }
 }
