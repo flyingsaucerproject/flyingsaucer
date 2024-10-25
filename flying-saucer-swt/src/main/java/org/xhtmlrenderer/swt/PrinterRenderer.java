@@ -67,10 +67,7 @@ public class PrinterRenderer implements UserInterface {
     public PrinterRenderer(Printer printer, UserAgentCallback uac) {
         _printer = printer;
         _sharedContext = new SharedContext(uac, new SWTFontResolver(printer),
-            new SWTReplacedElementFactory(), new SWTTextRenderer(), printer
-                .getDPI().y);
-        _sharedContext.setPrint(true);
-        _sharedContext.setInteractive(false);
+            new SWTReplacedElementFactory(), new SWTTextRenderer(), printer.getDPI().y);
     }
 
     /**

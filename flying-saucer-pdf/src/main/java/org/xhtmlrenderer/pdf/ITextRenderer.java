@@ -164,22 +164,25 @@ public class ITextRenderer {
                 72 * _dotsPerPoint, dotsPerPixel);
 
         _outputDevice.setSharedContext(_sharedContext);
-        _sharedContext.setPrint(true);
-        _sharedContext.setInteractive(false);
     }
 
+    @Nullable
+    @CheckReturnValue
     public Document getDocument() {
         return _doc;
     }
 
+    @CheckReturnValue
     public ITextFontResolver getFontResolver() {
         return (ITextFontResolver) _sharedContext.getFontResolver();
     }
 
+    @CheckReturnValue
     private Document loadDocument(final String uri) {
         return _sharedContext.getUac().getXMLResource(uri).getDocument();
     }
 
+    @CheckReturnValue
     public static ITextRenderer fromUrl(String uri) {
         ITextRenderer renderer = new ITextRenderer();
         renderer.setDocument(renderer.loadDocument(uri), uri);
