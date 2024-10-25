@@ -25,7 +25,7 @@ public class PDFRenderToMultiplePagesTest {
         String[] inputs = createSimpleFakeDocuments();
         generatePDF(inputs, output);
         log.info("Sample file with {} documents rendered as PDF to {}", inputs.length, output.toURI());
-        
+
         PDF pdf = new PDF(output);
         assertThat(pdf).containsText("Page1", "Page2", "Page3");
     }
@@ -39,6 +39,8 @@ public class PDFRenderToMultiplePagesTest {
             renderer.setDocumentFromString(inputs[0]);
             renderer.layout();
             renderer.createPDF(os, false);
+
+            renderer.getWriter().setFullCompression();
 
             // each page after the first we add using layout() followed by writeNextDocument()
             for (int i = 1; i < inputs.length; i++) {
