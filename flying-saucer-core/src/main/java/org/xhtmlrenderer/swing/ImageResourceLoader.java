@@ -65,6 +65,9 @@ public class ImageResourceLoader {
 
         try (InputStream is = IOUtil.getInputStream(uri)) {
             try {
+                if (is == null) {
+                    return createImageResource(uri, null);
+                }
                 BufferedImage img = ImageIO.read(is);
                 if (img == null) {
                     throw new IOException("ImageIO.read() returned null");

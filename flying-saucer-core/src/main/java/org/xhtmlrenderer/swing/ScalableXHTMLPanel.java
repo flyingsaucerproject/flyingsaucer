@@ -167,14 +167,16 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
         AffineTransform current = g.getTransform();
 
         PaintingInfo pI = root.getMaster().getPaintingInfo();
-        Dimension layoutSize = pI.getOuterMarginCorner();
+        if (pI != null) {
+            Dimension layoutSize = pI.getOuterMarginCorner();
 
-        calculateScaleAccordingToPolicy(layoutSize);
+            calculateScaleAccordingToPolicy(layoutSize);
 
-        if (lastLayoutSize == null) {
-            lastLayoutSize = layoutSize;
-            setPreferredSize(new Dimension((int) (lastLayoutSize.width * scale), (int) (lastLayoutSize.height * scale)));
-            revalidate();
+            if (lastLayoutSize == null) {
+                lastLayoutSize = layoutSize;
+                setPreferredSize(new Dimension((int) (lastLayoutSize.width * scale), (int) (lastLayoutSize.height * scale)));
+                revalidate();
+            }
         }
 
         g.transform(AffineTransform.getScaleInstance(scale, scale));
