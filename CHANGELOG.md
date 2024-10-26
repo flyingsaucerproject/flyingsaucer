@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.10.1 (26.10.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/23?closed=1
+* #426 Fix pdf formatting (#428)
+* #425 restore method `ITestRenderer.getWriter()` (#427)
+
 ## 9.10.0 (24.10.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/22?closed=1
 * #411 fix center li items with margin or padding  --  thanks to Harald Amon (#420)
 * #404 Replace obsolete "jsr305" annotation library by JSpecify (#407)
