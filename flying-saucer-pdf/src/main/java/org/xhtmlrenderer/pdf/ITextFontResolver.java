@@ -185,14 +185,23 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
-    public void addFontDirectory(String dir, boolean embedded)
-            throws DocumentException, IOException {
+    /**
+     * Add all fonts from given directory with encoding "CP1252" (don't ask me why :) )
+     */
+    public void addFontDirectory(String dir, boolean embedded) throws DocumentException, IOException {
+        addFontDirectory(dir, BaseFont.CP1252, embedded);
+    }
+
+    /**
+     * Add all fonts from given directory (all files with extension ".otf" and ".ttf")
+     */
+    public void addFontDirectory(String dir, String encoding, boolean embedded) throws DocumentException, IOException {
         File f = new File(dir);
         if (!f.isDirectory()) {
             throw new IllegalArgumentException("%s is not a directory".formatted(dir));
         }
         for (File file : filesWithExtensions(f, OTF, TTF)) {
-            addFont(file.getAbsolutePath(), embedded);
+            addFont(file.getAbsolutePath(), encoding, embedded);
         }
     }
 
@@ -204,6 +213,9 @@ public class ITextFontResolver implements FontResolver {
         }));
     }
 
+    /**
+     * Add the font with encoding "CP1252" (don't ask me why :) )
+     */
     public void addFont(String path, boolean embedded)
             throws DocumentException, IOException {
         addFont(path, BaseFont.CP1252, embedded);
