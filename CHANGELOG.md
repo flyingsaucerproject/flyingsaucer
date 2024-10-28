@@ -1,5 +1,10 @@
 # Changelog
 
+## 9.10.2 (29.10.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/24?closed=1
+* add overloaded method `addFontDirectory(... String encoding ...)`
+* #431 fix interpretation of cell borders (#432)
+* #429 fix NoSuchElementException in LayoutContext (#433)
+
 ## 9.10.1 (26.10.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/23?closed=1
 * #426 Fix pdf formatting (#428)
 * #425 restore method `ITestRenderer.getWriter()` (#427)
