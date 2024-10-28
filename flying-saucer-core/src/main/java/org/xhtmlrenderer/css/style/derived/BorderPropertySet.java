@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.css.style.derived;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.InlineMe;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -38,11 +39,11 @@ import static org.xhtmlrenderer.css.parser.FSRGBColor.TRANSPARENT;
  */
 public class BorderPropertySet extends RectPropertySet {
     private static final Corners NO_CORNERS = new Corners(BorderRadiusCorner.UNDEFINED, BorderRadiusCorner.UNDEFINED, BorderRadiusCorner.UNDEFINED, BorderRadiusCorner.UNDEFINED);
-    private static final Styles NO_STYLES = new Styles(HIDDEN, HIDDEN, HIDDEN, HIDDEN);
+    private static final Styles NO_STYLES = new Styles(null, null, null, null);
     private static final Colors NO_COLORS = new Colors(TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT);
     public static final BorderPropertySet EMPTY_BORDER = new BorderPropertySet(0.0f, 0.0f, 0.0f, 0.0f, NO_STYLES, NO_CORNERS, NO_COLORS);
 
-    private record Styles(IdentValue top, IdentValue right, IdentValue bottom, IdentValue left) {
+    private record Styles(@Nullable IdentValue top, @Nullable IdentValue right, @Nullable IdentValue bottom, @Nullable IdentValue left) {
         private boolean hasHidden() {
             return top == HIDDEN || right == HIDDEN || bottom == HIDDEN || left == HIDDEN;
         }
@@ -211,18 +212,26 @@ public class BorderPropertySet extends RectPropertySet {
         return styles.left() == NONE || (int) left() == 0;
     }
 
+    @Nullable
+    @CheckReturnValue
     public IdentValue topStyle() {
         return styles.top();
     }
 
+    @Nullable
+    @CheckReturnValue
     public IdentValue rightStyle() {
         return styles.right();
     }
 
+    @Nullable
+    @CheckReturnValue
     public IdentValue bottomStyle() {
         return styles.bottom();
     }
 
+    @Nullable
+    @CheckReturnValue
     public IdentValue leftStyle() {
         return styles.left();
     }
