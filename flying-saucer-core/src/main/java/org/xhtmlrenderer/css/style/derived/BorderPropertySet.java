@@ -43,7 +43,7 @@ public class BorderPropertySet extends RectPropertySet {
     public static final BorderPropertySet EMPTY_BORDER = new BorderPropertySet(0.0f, 0.0f, 0.0f, 0.0f, NO_STYLES, NO_CORNERS, NO_COLORS);
 
     private record Styles(IdentValue top, IdentValue right, IdentValue bottom, IdentValue left) {
-        private boolean isHidden() {
+        private boolean hasHidden() {
             return top == HIDDEN || right == HIDDEN || bottom == HIDDEN || left == HIDDEN;
         }
     }
@@ -244,7 +244,7 @@ public class BorderPropertySet extends RectPropertySet {
     }
 
     public boolean hasHidden() {
-        return styles.isHidden();
+        return styles.hasHidden();
     }
 
     public boolean hasBorderRadius() {
