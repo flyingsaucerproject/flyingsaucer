@@ -49,6 +49,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
+
 /**
  * This class tracks state which changes over the course of a layout run.
  * Generally speaking, if possible, state information should be stored in the box
@@ -66,7 +68,7 @@ public class LayoutContext implements CssContext {
     @Nullable
     private MarkerData _currentMarkerData;
 
-    private final Deque<BlockFormattingContext> _bfcs = new ArrayDeque<>();
+    private final Deque<BlockFormattingContext> _blockFormattingContexts = new ArrayDeque<>();
     private final Deque<Layer> _layers = new ArrayDeque<>();
 
     private final FontContext _fontContext;
@@ -130,7 +132,7 @@ public class LayoutContext implements CssContext {
         _firstLetters = new StyleTracker();
         _currentMarkerData = null;
 
-        _bfcs.clear();
+        _blockFormattingContexts.clear();
 
         if (! keepLayers) {
             _rootLayer = null;
@@ -142,22 +144,9 @@ public class LayoutContext implements CssContext {
     }
 
     public LayoutState captureLayoutState() {
-        LayoutState result = new LayoutState();
-
-        result.setFirstLines(_firstLines);
-        result.setFirstLetters(_firstLetters);
-        result.setCurrentMarkerData(_currentMarkerData);
-
-        result.setBFCs(_bfcs);
-
-        if (isPrint()) {
-            result.setPageName(getPageName());
-            result.setExtraSpaceBottom(getExtraSpaceBottom());
-            result.setExtraSpaceTop(getExtraSpaceTop());
-            result.setNoPageBreak(getNoPageBreak());
-        }
-
-        return result;
+        return isPrint() ?
+                new LayoutState(_firstLines, _firstLetters, _currentMarkerData, _blockFormattingContexts, getPageName(), getExtraSpaceBottom(), getExtraSpaceTop(), getNoPageBreak()) :
+                new LayoutState(_firstLines, _firstLetters, _currentMarkerData, _blockFormattingContexts);
     }
 
     public void restoreLayoutState(LayoutState layoutState) {
@@ -166,8 +155,8 @@ public class LayoutContext implements CssContext {
 
         _currentMarkerData = layoutState.getCurrentMarkerData();
 
-        _bfcs.clear();
-        _bfcs.addAll(layoutState.getBFCs());
+        _blockFormattingContexts.clear();
+        _blockFormattingContexts.addAll(layoutState.getBFCs());
 
         if (isPrint()) {
             setPageName(layoutState.getPageName());
@@ -178,17 +167,9 @@ public class LayoutContext implements CssContext {
     }
 
     public LayoutState copyStateForRelayout() {
-        LayoutState result = new LayoutState();
-
-        result.setFirstLetters(_firstLetters.copyOf());
-        result.setFirstLines(_firstLines.copyOf());
-        result.setCurrentMarkerData(_currentMarkerData);
-
-        if (isPrint()) {
-            result.setPageName(getPageName());
-        }
-
-        return result;
+        return isPrint() ?
+                new LayoutState(_firstLines.copyOf(), _firstLetters.copyOf(), _currentMarkerData, emptyList(), getPageName(), 0, 0, 0) :
+                new LayoutState(_firstLines.copyOf(), _firstLetters.copyOf(), _currentMarkerData, emptyList());
     }
 
     public void restoreStateForRelayout(LayoutState layoutState) {
@@ -203,15 +184,15 @@ public class LayoutContext implements CssContext {
     }
 
     public BlockFormattingContext getBlockFormattingContext() {
-        return _bfcs.getLast();
+        return _blockFormattingContexts.getLast();
     }
 
     public void pushBFC(BlockFormattingContext bfc) {
-        _bfcs.add(bfc);
+        _blockFormattingContexts.add(bfc);
     }
 
     public void popBFC() {
-        _bfcs.removeLast();
+        _blockFormattingContexts.removeLast();
     }
 
     public void pushLayer(Box master) {
@@ -245,6 +226,7 @@ public class LayoutContext implements CssContext {
         return _layers.getLast();
     }
 
+    @Nullable
     public Layer getRootLayer() {
         return _rootLayer;
     }
@@ -352,7 +334,7 @@ public class LayoutContext implements CssContext {
         _extraSpaceTop = extraSpaceTop;
     }
 
-    public void resolveCounters(CalculatedStyle style, Integer startIndex) {
+    public void resolveCounters(CalculatedStyle style, @Nullable Integer startIndex) {
         //new context for child elements
         CounterContext cc = new CounterContext(style, startIndex);
         _counterContextMap.put(style, cc);
@@ -500,7 +482,7 @@ public class LayoutContext implements CssContext {
         return _pageName;
     }
 
-    public void setPageName(String currentPageName) {
+    public void setPageName(@Nullable String currentPageName) {
         _pageName = currentPageName;
     }
 

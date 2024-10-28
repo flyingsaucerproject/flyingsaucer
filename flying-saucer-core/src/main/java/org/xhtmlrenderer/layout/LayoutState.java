@@ -33,24 +33,40 @@ import java.util.Deque;
  * It is only created as needed.
  */
 public class LayoutState {
-    private StyleTracker _firstLines;
-    private StyleTracker _firstLetters;
+    private final StyleTracker _firstLines;
+    private final StyleTracker _firstLetters;
 
-    private MarkerData _currentMarkerData;
+    @Nullable
+    private final MarkerData _currentMarkerData;
 
-    private Deque<BlockFormattingContext> _BFCs;
+    private final Deque<BlockFormattingContext> _BFCs;
 
-    private String _pageName;
-    private int _extraSpaceTop;
-    private int _extraSpaceBottom;
-    private int _noPageBreak;
+    @Nullable
+    private final String _pageName;
+    private final int _extraSpaceTop;
+    private final int _extraSpaceBottom;
+    private final int _noPageBreak;
+
+    public LayoutState(StyleTracker firstLines, StyleTracker firstLetters, @Nullable MarkerData currentMarkerData,
+                       Collection<BlockFormattingContext> blockFormattingContexts,
+                       @Nullable String pageName, int extraSpaceTop, int extraSpaceBottom, int noPageBreak) {
+        this._firstLines = firstLines;
+        this._firstLetters = firstLetters;
+        this._currentMarkerData = currentMarkerData;
+        this._BFCs = new ArrayDeque<>(blockFormattingContexts);
+        this._pageName = pageName;
+        this._extraSpaceTop = extraSpaceTop;
+        this._extraSpaceBottom = extraSpaceBottom;
+        this._noPageBreak = noPageBreak;
+    }
+
+    public LayoutState(StyleTracker firstLines, StyleTracker firstLetters, @Nullable MarkerData currentMarkerData,
+                       Collection<BlockFormattingContext> blockFormattingContexts) {
+        this(firstLines, firstLetters, currentMarkerData, blockFormattingContexts, null, 0, 0, 0);
+    }
 
     public Deque<BlockFormattingContext> getBFCs() {
         return _BFCs;
-    }
-
-    public void setBFCs(Collection<BlockFormattingContext> s) {
-        _BFCs = new ArrayDeque<>(s);
     }
 
     @Nullable
@@ -58,55 +74,28 @@ public class LayoutState {
         return _currentMarkerData;
     }
 
-    public void setCurrentMarkerData(MarkerData currentMarkerData) {
-        _currentMarkerData = currentMarkerData;
-    }
-
     public StyleTracker getFirstLetters() {
         return _firstLetters;
-    }
-
-    public void setFirstLetters(StyleTracker firstLetters) {
-        _firstLetters = firstLetters;
     }
 
     public StyleTracker getFirstLines() {
         return _firstLines;
     }
 
-    public void setFirstLines(StyleTracker firstLines) {
-        _firstLines = firstLines;
-    }
-
+    @Nullable
     public String getPageName() {
         return _pageName;
-    }
-
-    public void setPageName(String pageName) {
-        _pageName = pageName;
     }
 
     public int getExtraSpaceTop() {
         return _extraSpaceTop;
     }
 
-    public void setExtraSpaceTop(int extraSpaceTop) {
-        _extraSpaceTop = extraSpaceTop;
-    }
-
     public int getExtraSpaceBottom() {
         return _extraSpaceBottom;
     }
 
-    public void setExtraSpaceBottom(int extraSpaceBottom) {
-        _extraSpaceBottom = extraSpaceBottom;
-    }
-
     public int getNoPageBreak() {
         return _noPageBreak;
-    }
-
-    public void setNoPageBreak(int noPageBreak) {
-        _noPageBreak = noPageBreak;
     }
 }
