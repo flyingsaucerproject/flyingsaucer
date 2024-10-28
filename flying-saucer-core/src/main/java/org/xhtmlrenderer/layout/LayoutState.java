@@ -22,6 +22,8 @@ package org.xhtmlrenderer.layout;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.render.MarkerData;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Deque;
 
 /**
@@ -47,8 +49,8 @@ public class LayoutState {
         return _BFCs;
     }
 
-    public void setBFCs(Deque<BlockFormattingContext> s) {
-        _BFCs = s;
+    public void setBFCs(Collection<BlockFormattingContext> s) {
+        _BFCs = new ArrayDeque<>(s);
     }
 
     @Nullable
