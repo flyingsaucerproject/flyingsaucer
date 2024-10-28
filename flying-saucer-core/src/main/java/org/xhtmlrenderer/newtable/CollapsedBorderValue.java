@@ -19,23 +19,26 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 
 /**
  * This class encapsulates all information related to a particular border side
- * along with an overall precedence (e.g. cell borders take precendence over
+ * along with an overall precedence (e.g. cell borders take precedence over
  * row borders).  It is used when comparing overlapping borders when calculating
  * collapsed borders.
  */
 public class CollapsedBorderValue {
+    @Nullable
     private final IdentValue _style;
     private final int _width;
     private final FSColor _color;
     private final int _precedence;
 
-    public CollapsedBorderValue(IdentValue style, int width, FSColor color, int precedence) {
+    public CollapsedBorderValue(@Nullable IdentValue style, int width, FSColor color, int precedence) {
         _style = style;
         _width = width;
         _color = color;
@@ -46,49 +49,61 @@ public class CollapsedBorderValue {
         return _color;
     }
 
+    @Nullable
+    @CheckReturnValue
     public IdentValue style() {
         return _style;
     }
 
+    @CheckReturnValue
     public int width() {
         return _width;
     }
 
+    @CheckReturnValue
     public CollapsedBorderValue withWidth(int width) {
         return new CollapsedBorderValue(_style, width, _color, _precedence);
     }
 
+    @CheckReturnValue
     public int precedence() {
         return _precedence;
     }
 
+    @CheckReturnValue
     public boolean defined() {
         return _style != null;
     }
 
+    @CheckReturnValue
     public boolean exists() {
         return _style != null && _style != IdentValue.NONE && _style != IdentValue.HIDDEN;
     }
 
+    @CheckReturnValue
     public boolean hidden() {
         return _style == IdentValue.HIDDEN;
     }
 
+    @CheckReturnValue
     public static CollapsedBorderValue borderLeft(BorderPropertySet border, int precedence) {
         return new CollapsedBorderValue(
                 border.leftStyle(), (int)border.left(), border.leftColor(), precedence);
     }
 
+    @CheckReturnValue
     public static CollapsedBorderValue borderRight(BorderPropertySet border, int precedence) {
         return new CollapsedBorderValue(
                 border.rightStyle(), (int)border.right(), border.rightColor(), precedence);
     }
 
+    @CheckReturnValue
     public static CollapsedBorderValue borderTop(BorderPropertySet border, int precedence) {
         return new CollapsedBorderValue(
                 border.topStyle(), (int)border.top(), border.topColor(), precedence);
     }
 
+    @CheckReturnValue
     public static CollapsedBorderValue borderBottom(BorderPropertySet border, int precedence) {
         return new CollapsedBorderValue(
                 border.bottomStyle(), (int)border.bottom(), border.bottomColor(), precedence);
