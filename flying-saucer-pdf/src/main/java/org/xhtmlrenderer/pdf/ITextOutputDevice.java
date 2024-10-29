@@ -85,6 +85,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
@@ -254,14 +255,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     @CheckReturnValue
-    private com.lowagie.text.Rectangle checkLinkArea(RenderingContext c, Box box) {
+    private Optional<com.lowagie.text.Rectangle> checkLinkArea(RenderingContext c, Box box) {
         com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
         String key = createRectKey(targetArea);
         if (_linkTargetAreas.contains(key)) {
-            return null;
+            return Optional.empty();
         }
         _linkTargetAreas.add(key);
-        return targetArea;
+        return Optional.of(targetArea);
     }
 
     private void processLink(RenderingContext c, Box box) {
@@ -277,36 +278,33 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                         PdfDestination dest = createDestination(c, target);
 
                         if (dest != null) {
-                            PdfAction action = new PdfAction();
-                            if (!"".equals(handler.getAttributeValue(elem, "onclick"))) {
-                                action = PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
-                            } else {
-                                action.put(PdfName.S, PdfName.GOTO);
-                                action.put(PdfName.D, dest);
-                            }
+                            PdfAction action = handler.getAttributeValue(elem, "onclick").isEmpty() ?
+                                    gotoDestination(dest) :
+                                    PdfAction.javaScript(handler.getAttributeValue(elem, "onclick"), _writer);
 
-                            com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
-                            if (targetArea == null) {
-                                return;
-                            }
+                            checkLinkArea(c, box).ifPresent(targetArea -> {
+                                targetArea.setBorder(0);
+                                targetArea.setBorderWidth(0);
 
-                            targetArea.setBorder(0);
-                            targetArea.setBorderWidth(0);
-
-                            addLinkAnnotation(action, targetArea);
+                                addLinkAnnotation(action, targetArea);
+                            });
                         }
                     }
                 } else {
                     PdfAction action = new PdfAction(uri);
-
-                    com.lowagie.text.Rectangle targetArea = checkLinkArea(c, box);
-                    if (targetArea == null) {
-                        return;
-                    }
-                    addLinkAnnotation(action, targetArea);
+                    checkLinkArea(c, box).ifPresent(targetArea -> {
+                        addLinkAnnotation(action, targetArea);
+                    });
                 }
             }
         }
+    }
+
+    private static PdfAction gotoDestination(PdfDestination dest) {
+        PdfAction action = new PdfAction();
+        action.put(PdfName.S, PdfName.GOTO);
+        action.put(PdfName.D, dest);
+        return action;
     }
 
     private void addLinkAnnotation(final PdfAction action, final com.lowagie.text.Rectangle targetArea) {
