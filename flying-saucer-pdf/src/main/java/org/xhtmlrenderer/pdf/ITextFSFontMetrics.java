@@ -22,20 +22,26 @@ package org.xhtmlrenderer.pdf;
 import org.xhtmlrenderer.render.FSFontMetrics;
 
 public class ITextFSFontMetrics implements FSFontMetrics {
-    private float _ascent;
-    private float _descent;
-    private float _strikethroughOffset;
-    private float _strikethroughThickness;
-    private float _underlineOffset;
-    private float _underlineThickness;
+    private final float _ascent;
+    private final float _descent;
+    private final float _strikethroughOffset;
+    private final float _strikethroughThickness;
+    private final float _underlineOffset;
+    private final float _underlineThickness;
+
+    public ITextFSFontMetrics(float ascent, float descent, float strikethroughOffset, float strikethroughThickness,
+                              float underlineOffset, float underlineThickness) {
+        _ascent = ascent;
+        _descent = descent;
+        _strikethroughOffset = strikethroughOffset;
+        _strikethroughThickness = strikethroughThickness;
+        _underlineOffset = underlineOffset;
+        _underlineThickness = underlineThickness;
+    }
 
     @Override
     public float getAscent() {
         return _ascent;
-    }
-
-    public void setAscent(float ascent) {
-        _ascent = ascent;
     }
 
     @Override
@@ -43,17 +49,9 @@ public class ITextFSFontMetrics implements FSFontMetrics {
         return _descent;
     }
 
-    public void setDescent(float descent) {
-        _descent = descent;
-    }
-
     @Override
     public float getStrikethroughOffset() {
         return _strikethroughOffset;
-    }
-
-    public void setStrikethroughOffset(float strikethroughOffset) {
-        _strikethroughOffset = strikethroughOffset;
     }
 
     @Override
@@ -61,25 +59,13 @@ public class ITextFSFontMetrics implements FSFontMetrics {
         return _strikethroughThickness;
     }
 
-    public void setStrikethroughThickness(float strikethroughThickness) {
-        _strikethroughThickness = strikethroughThickness;
-    }
-
     @Override
     public float getUnderlineOffset() {
         return _underlineOffset;
     }
 
-    public void setUnderlineOffset(float underlineOffset) {
-        _underlineOffset = underlineOffset;
-    }
-
     @Override
     public float getUnderlineThickness() {
         return _underlineThickness;
-    }
-
-    public void setUnderlineThickness(float underlineThickness) {
-        _underlineThickness = underlineThickness;
     }
 }

@@ -500,7 +500,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return result;
     }
 
-    public void drawString(String s, float x, float y, JustificationInfo info) {
+    public void drawString(String s, float x, float y, @Nullable JustificationInfo info) {
         if (Configuration.isTrue("xr.renderer.replace-missing-characters", false)) {
             s = replaceMissingCharacters(s);
         }
