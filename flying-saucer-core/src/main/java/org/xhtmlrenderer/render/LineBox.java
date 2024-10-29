@@ -471,6 +471,7 @@ public class LineBox extends Box implements InlinePaintable {
     }
 
     @Nullable
+    @CheckReturnValue
     public InlineText findTrailingText() {
         if (getChildCount() == 0) {
             return null;

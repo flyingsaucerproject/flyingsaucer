@@ -366,6 +366,7 @@ public class TableCellBox extends BlockBox {
         }
     }
 
+    @CheckReturnValue
     @Override
     public Rectangle getChildrenClipEdge(RenderingContext c) {
         if (c.isPrint() && getTable().getStyle().isPaginateTable()) {
