@@ -40,7 +40,7 @@ public class ITextFSImage implements FSImage, Cloneable {
     }
 
     @Override
-    public void scale(int width, int height) {
+    public FSImage scale(int width, int height) {
         if (width > 0 || height > 0) {
             int currentWith = getWidth();
             int currentHeight = getHeight();
@@ -56,9 +56,12 @@ public class ITextFSImage implements FSImage, Cloneable {
             }
 
             if (currentWith != targetWidth || currentHeight != targetHeight) {
-                _image.scaleAbsolute(targetWidth, targetHeight);
+                Image image = Image.getInstance(_image);
+                image.scaleAbsolute(targetWidth, targetHeight);
+                return new ITextFSImage(image);
             }
         }
+        return this;
     }
 
     public Image getImage() {

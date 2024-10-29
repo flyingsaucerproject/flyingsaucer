@@ -94,10 +94,10 @@ public class ITextUserAgent extends NaiveUserAgent {
                     if (cis.isPdf()) {
                         URI uri = new URI(uriStr);
                         PdfReader reader = _outputDevice.getReader(uri);
-                        PDFAsImage image = new PDFAsImage(uri);
                         Rectangle rect = reader.getPageSizeWithRotation(1);
-                        image.setInitialWidth(rect.getWidth() * _outputDevice.getDotsPerPoint());
-                        image.setInitialHeight(rect.getHeight() * _outputDevice.getDotsPerPoint());
+                        float initialWidth = rect.getWidth() * _outputDevice.getDotsPerPoint();
+                        float initialHeight = rect.getHeight() * _outputDevice.getDotsPerPoint();
+                        PDFAsImage image = new PDFAsImage(uri, initialWidth, initialHeight);
                         return new ImageResource(uriStr, image);
                     } else {
                         Image image = Image.getInstance(readBytes(cis));

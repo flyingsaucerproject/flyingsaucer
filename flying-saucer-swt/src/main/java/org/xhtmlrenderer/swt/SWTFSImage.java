@@ -60,6 +60,14 @@ public class SWTFSImage implements FSImage {
         }
     }
 
+    private SWTFSImage(@Nullable Image image, @Nullable UserAgentCallback uac, @Nullable String uri, int width, int height) {
+        _uac = uac;
+        _uri = uri;
+        _image = image;
+        _width = width;
+        _height = height;
+    }
+
     public SWTFSImage(SWTFSImage image) {
         _uac = image._uac;
         _uri = image._uri;
@@ -103,9 +111,9 @@ public class SWTFSImage implements FSImage {
     }
 
     @Override
-    public void scale(int width, int height) {
+    public FSImage scale(int width, int height) {
         if (width < 0 && height < 0) {
-            return;
+            return this;
         } else if (width < 0) {
             width = Math.round(_width
                     * (_height == 0 ? 1 : ((float) height / _height)));
@@ -113,8 +121,7 @@ public class SWTFSImage implements FSImage {
             height = Math.round(_height
                     * (_width == 0 ? 1 : ((float) width / _width)));
         }
-        _width = width;
-        _height = height;
+        return new SWTFSImage(_image, _uac, _uri, width, height);
     }
 
 }
