@@ -4,103 +4,79 @@ import com.lowagie.text.pdf.BaseFont;
 import org.xhtmlrenderer.css.constants.IdentValue;
 
 public class FontDescription {
-    private IdentValue _style;
-    private int _weight;
-
-    private BaseFont _font;
-
-    private float _underlinePosition;
-    private float _underlineThickness;
-
-    private float _yStrikeoutSize;
-    private float _yStrikeoutPosition;
-
-    private boolean _isFromFontFace;
-
-    public FontDescription() {
-    }
+    private static final int DEFAULT_FONT_WEIGHT = 400;
+    private final IdentValue _style;
+    private final BaseFont _font;
+    private final Decorations _decorations;
+    private final boolean _isFromFontFace;
 
     public FontDescription(BaseFont font) {
-        this(font, IdentValue.NORMAL, 400);
+        this(font, false);
+    }
+
+    public FontDescription(BaseFont font, boolean isFromFontFace) {
+        this(font, isFromFontFace, IdentValue.NORMAL);
     }
 
     public FontDescription(BaseFont font, IdentValue style, int weight) {
+        this(font, false, style, defaultDecorations(font, weight));
+    }
+
+    public FontDescription(BaseFont font, boolean isFromFontFace, IdentValue style) {
+        this(font, isFromFontFace, style, defaultDecorations(font, DEFAULT_FONT_WEIGHT));
+    }
+
+    public FontDescription(BaseFont font, boolean isFromFontFace, IdentValue style, Decorations decorations) {
         _font = font;
+        _isFromFontFace = isFromFontFace;
         _style = style;
-        _weight = weight;
-        setMetricDefaults();
+        _decorations = decorations;
     }
 
     public BaseFont getFont() {
         return _font;
     }
 
-    public void setFont(BaseFont font) {
-        _font = font;
-    }
-
     public int getWeight() {
-        return _weight;
-    }
-
-    public void setWeight(int weight) {
-        _weight = weight;
+        return _decorations.weight();
     }
 
     public IdentValue getStyle() {
         return _style;
     }
 
-    public void setStyle(IdentValue style) {
-        _style = style;
-    }
-
-    public float getUnderlinePosition() {
-        return _underlinePosition;
-    }
-
     /**
      * This refers to the top of the underline stroke
      */
-    public void setUnderlinePosition(float underlinePosition) {
-        _underlinePosition = underlinePosition;
+    public float getUnderlinePosition() {
+        return _decorations.underlinePosition();
     }
 
     public float getUnderlineThickness() {
-        return _underlineThickness;
-    }
-
-    public void setUnderlineThickness(float underlineThickness) {
-        _underlineThickness = underlineThickness;
+        return _decorations.underlineThickness();
     }
 
     public float getYStrikeoutPosition() {
-        return _yStrikeoutPosition;
-    }
-
-    public void setYStrikeoutPosition(float strikeoutPosition) {
-        _yStrikeoutPosition = strikeoutPosition;
+        return _decorations.yStrikeoutPosition();
     }
 
     public float getYStrikeoutSize() {
-        return _yStrikeoutSize;
+        return _decorations.yStrikeoutSize();
     }
 
-    public void setYStrikeoutSize(float strikeoutSize) {
-        _yStrikeoutSize = strikeoutSize;
-    }
+    private static Decorations defaultDecorations(BaseFont font, int weight) {
+        int underlinePosition = -50;
+        int underlineThickness = 50;
 
-    private void setMetricDefaults() {
-        _underlinePosition = -50;
-        _underlineThickness = 50;
-
-        int[] box = _font.getCharBBox('x');
+        int[] box = font.getCharBBox('x');
         if (box != null) {
-            _yStrikeoutPosition = box[3] / 2 + 50;
-            _yStrikeoutSize = 100;
+            float yStrikeoutPosition = box[3] / 2f + 50;
+            float yStrikeoutSize = 100;
+            return new Decorations(weight, yStrikeoutSize, yStrikeoutPosition, underlinePosition, underlineThickness);
         } else {
             // Do what the JDK does, size will be calculated by ITextTextRenderer
-            _yStrikeoutPosition = _font.getFontDescriptor(BaseFont.BBOXURY, 1000.0f) / 3.0f;
+            float yStrikeoutPosition = font.getFontDescriptor(BaseFont.BBOXURY, 1000.0f) / 3.0f;
+            return new Decorations(weight, 0, yStrikeoutPosition, underlinePosition, underlineThickness);
         }
     }
 
@@ -108,12 +84,17 @@ public class FontDescription {
         return _isFromFontFace;
     }
 
-    public void setFromFontFace(boolean isFromFontFace) {
-        _isFromFontFace = isFromFontFace;
-    }
-
     @Override
     public String toString() {
-        return String.format("Font %s:%s", _font.getPostscriptFontName(), _weight);
+        return String.format("Font %s:%s", _font.getPostscriptFontName(), getWeight());
+    }
+
+    public record Decorations(
+            int weight,
+            float yStrikeoutSize,
+            float yStrikeoutPosition,
+            float underlinePosition,
+            float underlineThickness
+    ) {
     }
 }

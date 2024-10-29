@@ -269,7 +269,7 @@ public class ITextFontResolver implements FontResolver {
 
         for (String fontFamilyName : fontFamilyNames) {
             getFontFamily(fontFamilyName)
-                    .addFontDescription(extractDescription(path, font));
+                    .addFontDescription(extractDescription(path, font, null));
         }
     }
 
@@ -323,8 +323,7 @@ public class ITextFontResolver implements FontResolver {
             String fontFamilyName = font.getFamilyFontName()[0][3];
             FontFamily fontFamily = getFontFamily(fontFamilyName);
 
-            FontDescription description = new FontDescription(font);
-            description.setFromFontFace(true);
+            FontDescription description = new FontDescription(font, true);
             // XXX Need to set weight, underline position, etc.  This information
             // is contained in the AFM file (and even parsed by Type1Font), but
             // unfortunately it isn't exposed to the caller.
@@ -337,17 +336,7 @@ public class ITextFontResolver implements FontResolver {
     @CheckReturnValue
     private static FontDescription fontDescription(@Nullable IdentValue fontWeightOverride, @Nullable IdentValue fontStyleOverride,
                                                    String uri, byte[] ttfAfm, BaseFont font) {
-        FontDescription description = extractDescription(uri, ttfAfm, font);
-        description.setFromFontFace(true);
-
-        if (fontWeightOverride != null) {
-            description.setWeight(convertWeightToInt(fontWeightOverride));
-        }
-
-        if (fontStyleOverride != null) {
-            description.setStyle(fontStyleOverride);
-        }
-        return description;
+        return extractDescription(uri, ttfAfm, font, true, fontWeightOverride, fontStyleOverride);
     }
 
     @CheckReturnValue
