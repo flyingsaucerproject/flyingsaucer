@@ -109,44 +109,56 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     private static final boolean ROUND_RECT_DIMENSIONS_DOWN = Configuration.isTrue("xr.pdf.round.rect.dimensions.down", false);
 
+    @Nullable
     private PdfContentByte _currentPage;
     private float _pageHeight;
 
+    @Nullable
     private ITextFSFont _font;
 
     private AffineTransform _transform = new AffineTransform();
 
     private Color _color = Color.BLACK;
 
+    @Nullable
     private Color _fillColor;
+    @Nullable
     private Color _strokeColor;
 
+    @Nullable
     private Stroke _stroke;
+    @Nullable
     private Stroke _originalStroke;
+    @Nullable
     private Stroke _oldStroke;
 
+    @Nullable
     private Area _clip;
 
+    @Nullable
     private SharedContext _sharedContext;
     private final float _dotsPerPoint;
 
+    @Nullable
     private PdfWriter _writer;
 
     private final Map<URI, PdfReader> _readerCache = new HashMap<>();
 
+    @Nullable
     private PdfDestination _defaultDestination;
 
     private List<Bookmark> _bookmarks = new ArrayList<>();
 
     private final List<@Nullable Metadata> _metadata = new ArrayList<>();
 
+    @Nullable
     private Box _root;
 
     private int _startPageNo;
 
     private int _nextFormFieldIndex;
 
-    private Set<String> _linkTargetAreas;
+    private final Set<String> _linkTargetAreas = new HashSet<>();
 
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
@@ -156,6 +168,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _writer = writer;
     }
 
+    @Nullable
     public PdfWriter getWriter() {
         return _writer;
     }
@@ -184,7 +197,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             _defaultDestination.addPage(_writer.getPageReference(1));
         }
 
-        _linkTargetAreas = new HashSet<>();
+        _linkTargetAreas.clear();
     }
 
     public void finishPage() {
@@ -240,6 +253,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return rect.getLeft() + ":" + rect.getBottom() + ":" + rect.getRight() + ":" + rect.getTop();
     }
 
+    @CheckReturnValue
     private com.lowagie.text.Rectangle checkLinkArea(RenderingContext c, Box box) {
         com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
         String key = createRectKey(targetArea);
@@ -350,6 +364,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return length / _dotsPerPoint;
     }
 
+    @Nullable
+    @CheckReturnValue
     private PdfDestination createDestination(RenderingContext c, Box box) {
         PdfDestination result = null;
 
@@ -695,7 +711,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         coords[5] = normalizeY(coords[5]);
     }
 
-    private void setStrokeDiff(Stroke newStroke, Stroke oldStroke) {
+    private void setStrokeDiff(Stroke newStroke, @Nullable Stroke oldStroke) {
         PdfContentByte cb = _currentPage;
         if (newStroke == oldStroke)
             return;
@@ -1277,6 +1293,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return result;
     }
 
+    @Nullable
+    @CheckReturnValue
     private PagePosition calcPDFPagePosition(CssContext c, String id, Box box) {
         PageBox page = _root.getLayer().getLastPage(c, box);
         if (page == null) {
@@ -1285,17 +1303,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
         float x = box.getAbsX() + page.getMarginBorderPadding(c, Edge.LEFT);
         float y = (page.getBottom() - (box.getAbsY() + box.getHeight())) + page.getMarginBorderPadding(c, Edge.BOTTOM);
-        x /= _dotsPerPoint;
-        y /= _dotsPerPoint;
 
-        PagePosition result = new PagePosition();
-        result.setId(id);
-        result.setPageNo(page.getPageNo());
-        result.setX(x);
-        result.setY(y);
-        result.setWidth(box.getEffectiveWidth() / _dotsPerPoint);
-        result.setHeight(box.getHeight() / _dotsPerPoint);
-
-        return result;
+        return new PagePosition(id, page.getPageNo(),
+                x / _dotsPerPoint, box.getEffectiveWidth() / _dotsPerPoint,
+                y / _dotsPerPoint, box.getHeight() / _dotsPerPoint
+        );
     }
 }

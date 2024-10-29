@@ -306,6 +306,7 @@ public abstract class Box implements Styleable {
         return getBorderEdge(getAbsX(), getAbsY(), cssCtx);
     }
 
+    @CheckReturnValue
     public Rectangle getPaintingPaddingEdge(CssContext cssCtx) {
         return getPaddingEdge(getAbsX(), getAbsY(), cssCtx);
     }
@@ -314,6 +315,7 @@ public abstract class Box implements Styleable {
         return getPaintingBorderEdge(cssCtx);
     }
 
+    @CheckReturnValue
     public Rectangle getChildrenClipEdge(RenderingContext c) {
         return getPaintingPaddingEdge(c);
     }
@@ -333,6 +335,7 @@ public abstract class Box implements Styleable {
                 getHeight() - (int) margin.top() - (int) margin.bottom());
     }
 
+    @CheckReturnValue
     public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getMargin(cssCtx);
         RectPropertySet border = getBorder(cssCtx);

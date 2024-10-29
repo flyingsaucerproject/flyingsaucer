@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.css.style.CssContext;
 
 import java.awt.*;
@@ -53,6 +54,7 @@ public class ViewportBox extends BlockBox {
         return new Rectangle(-_viewport.x, -_viewport.y, _viewport.width, _viewport.height);
     }
 
+    @CheckReturnValue
     @Override
     public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         return new Rectangle(-_viewport.x, -_viewport.y, _viewport.width, _viewport.height);

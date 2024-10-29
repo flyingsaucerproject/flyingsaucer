@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Text;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.layout.FunctionData;
@@ -35,6 +37,7 @@ import java.awt.*;
  * nested within its inline element.
  */
 public class InlineText {
+    @Nullable
     private InlineLayoutBox _parent;
 
     private int _x;
@@ -45,6 +48,7 @@ public class InlineText {
 
     private int _width;
 
+    @Nullable
     private FunctionData _functionData;
 
     private boolean _containedLF = false;
@@ -52,11 +56,12 @@ public class InlineText {
     private short _selectionStart;
     private short _selectionEnd;
 
-    private float[] _glyphPositions;
+    private float @Nullable [] _glyphPositions;
 
     private boolean _trimmedLeadingSpace;
     private boolean _trimmedTrailingSpace;
-    private Text _textNode;
+    private final Text _textNode;
+
     public void trimTrailingSpace(LayoutContext c) {
         if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
@@ -71,6 +76,7 @@ public class InlineText {
         return _start == _end && ! _containedLF;
     }
 
+    @CheckReturnValue
     public String getSubstring() {
         if (getMasterText() != null) {
             if (_start == -1 || _end == -1) {
@@ -85,7 +91,11 @@ public class InlineText {
         }
     }
 
-    public void setSubstring(int start, int end) {
+    public InlineText(String masterText, Text textNode, int start, int end, int width) {
+        _masterText = masterText;
+        _textNode = textNode;
+        _width = width;
+
         if (end < start) {
             Uu.p("setting substring to: " + start + " " + end);
             throw new RuntimeException("end is less than start (%s < %s) for element %s".formatted(end, start, this));
@@ -105,10 +115,6 @@ public class InlineText {
         return _masterText;
     }
 
-    public void setMasterText(String masterText) {
-        _masterText = masterText;
-    }
-
     public int getX() {
         return _x;
     }
@@ -121,7 +127,7 @@ public class InlineText {
         return _width;
     }
 
-    public void setWidth(int width) {
+    public final void setWidth(int width) {
         _width = width;
     }
 
@@ -133,6 +139,7 @@ public class InlineText {
         c.getOutputDevice().drawSelection(c, this);
     }
 
+    @Nullable
     public InlineLayoutBox getParent() {
         return _parent;
     }
@@ -343,10 +350,6 @@ public class InlineText {
 
     public Text getTextNode() {
         return this._textNode;
-    }
-
-    public void setTextNode(Text node) {
-        this._textNode = node;
     }
 }
 

@@ -833,7 +833,6 @@ public class InlineBoxing {
 
     private static InlineText layoutText(LayoutContext c, CalculatedStyle style, int remainingWidth,
                                          LineBreakContext lbContext, boolean needFirstLetter) {
-        InlineText result = new InlineText();
         String masterText = lbContext.getMaster();
         if (needFirstLetter) {
             masterText = TextUtil.transformFirstLetterText(masterText, style);
@@ -843,10 +842,7 @@ public class InlineBoxing {
             Breaker.breakText(c, lbContext, remainingWidth, style);
         }
 
-        result.setMasterText(lbContext.getMaster());
-        result.setTextNode(lbContext.getTextNode());
-        result.setSubstring(lbContext.getStart(), lbContext.getEnd());
-        result.setWidth(lbContext.getWidth());
+        InlineText result = new InlineText(lbContext.getMaster(), lbContext.getTextNode(), lbContext.getStart(), lbContext.getEnd(), lbContext.getWidth());
 
         return result;
     }
