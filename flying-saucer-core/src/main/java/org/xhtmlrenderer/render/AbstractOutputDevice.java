@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -174,6 +176,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         BorderPainter.paint(edge, sides, style.getBorder(c), c, 0);
     }
 
+    @Nullable
     private FSImage getBackgroundImage(RenderingContext c, CalculatedStyle style) {
         if (! style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
             String uri = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
@@ -255,7 +258,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                 yoff += (int)border.top();
             }
 
-            scaleBackgroundImage(c, style, localBGImageContainer, backgroundImage);
+            backgroundImage = scaleBackgroundImage(c, style, localBGImageContainer, backgroundImage);
 
             float imageWidth = backgroundImage.getWidth();
             float imageHeight = backgroundImage.getHeight();
@@ -367,7 +370,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
     }
 
-    private void scaleBackgroundImage(CssContext c, CalculatedStyle style, Rectangle backgroundContainer, FSImage image) {
+    @CheckReturnValue
+    private FSImage scaleBackgroundImage(CssContext c, CalculatedStyle style, Rectangle backgroundContainer, FSImage image) {
         BackgroundSize backgroundSize = style.getBackgroundSize();
 
         if (! backgroundSize.isBothAuto()) {
@@ -375,24 +379,25 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                 int testHeight = (int)((double)image.getHeight() * backgroundContainer.width / image.getWidth());
                 if (backgroundSize.isContain()) {
                     if (testHeight > backgroundContainer.height) {
-                        image.scale(-1, backgroundContainer.height);
+                        return image.scale(-1, backgroundContainer.height);
                     } else {
-                        image.scale(backgroundContainer.width, -1);
+                        return image.scale(backgroundContainer.width, -1);
                     }
                 } else if (backgroundSize.isCover()) {
                     if (testHeight > backgroundContainer.height) {
-                        image.scale(backgroundContainer.width, -1);
+                        return image.scale(backgroundContainer.width, -1);
                     } else {
-                        image.scale(-1, backgroundContainer.height);
+                        return image.scale(-1, backgroundContainer.height);
                     }
                 }
             } else {
                 int scaledWidth = calcBackgroundSizeLength(c, style, backgroundSize.getWidth(), backgroundContainer.width);
                 int scaledHeight = calcBackgroundSizeLength(c, style, backgroundSize.getHeight(), backgroundContainer.height);
 
-                image.scale(scaledWidth, scaledHeight);
+                return image.scale(scaledWidth, scaledHeight);
             }
         }
+        return image;
     }
 
     private int calcBackgroundSizeLength(CssContext c, CalculatedStyle style, PropertyValue value, float boundsDim) {
@@ -419,7 +424,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
      * @return current FontSpecification.
      */
     public FontSpecification getFontSpecification() {
-    return _fontSpec;
+        return _fontSpec;
     }
 
     /**
@@ -428,6 +433,6 @@ public abstract class AbstractOutputDevice implements OutputDevice {
      * @param fs current FontSpecification.
      */
     public void setFontSpecification(FontSpecification fs) {
-    _fontSpec = fs;
+        _fontSpec = fs;
     }
 }
