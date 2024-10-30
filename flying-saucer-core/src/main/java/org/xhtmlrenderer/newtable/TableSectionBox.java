@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class TableSectionBox extends BlockBox {
-    private List<RowData> _grid = new ArrayList<>();
+    private final List<RowData> _grid = new ArrayList<>();
 
     private boolean _needCellWidthCalc;
     private boolean _needCellRecalc;
@@ -54,10 +54,6 @@ public class TableSectionBox extends BlockBox {
 
     public List<RowData> getGrid() {
         return _grid;
-    }
-
-    public void setGrid(List<RowData> grid) {
-        _grid = grid;
     }
 
     public void extendGridToColumnCount(int columnCount) {
@@ -98,6 +94,7 @@ public class TableSectionBox extends BlockBox {
         }
     }
 
+    @Nullable
     public TableCellBox cellAt(int row, int col) {
         if (row >= _grid.size()) return null;
         RowData rowData = _grid.get(row);
