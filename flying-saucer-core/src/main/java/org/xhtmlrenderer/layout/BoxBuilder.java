@@ -863,11 +863,7 @@ public class BoxBuilder {
             }
 
             if (content != null) {
-                InlineBox iB = new InlineBox(content, null);
-                iB.setContentFunction(contentFunction);
-                iB.setFunction(function);
-                iB.setElement(element);
-                iB.setPseudoElementOrClass(peName);
+                InlineBox iB = new InlineBox(content, null, contentFunction, function, element, peName);
                 iB.setStartsHere(true);
                 iB.setEndsHere(true);
 

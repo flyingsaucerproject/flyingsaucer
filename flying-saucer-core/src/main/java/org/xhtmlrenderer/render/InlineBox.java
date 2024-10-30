@@ -65,9 +65,9 @@ public class InlineBox implements Styleable {
     private CalculatedStyle _style;
 
     @Nullable
-    private ContentFunction _contentFunction;
+    private final ContentFunction _contentFunction;
     @Nullable
-    private FSFunction _function;
+    private final FSFunction _function;
 
     private boolean _minMaxCalculated;
     private int _maxWidth;
@@ -76,15 +76,25 @@ public class InlineBox implements Styleable {
     private int _firstLineWidth;
 
     @Nullable
-    private String _pseudoElementOrClass;
+    private final String _pseudoElementOrClass;
 
     @Nullable
     private final Text _textNode;
 
     public InlineBox(String text, @Nullable Text textNode) {
+        this(text, textNode, null, null, null, null);
+    }
+
+    public InlineBox(String text, @Nullable Text textNode,
+                     @Nullable ContentFunction contentFunction, @Nullable FSFunction function,
+                     @Nullable Element element, @Nullable String pseudoElementOrClass) {
         _text = text;
         _originalText = text;
         _textNode = textNode;
+        _contentFunction = contentFunction;
+        _function = function;
+        _element = element;
+        _pseudoElementOrClass = pseudoElementOrClass;
     }
 
     public String getText() {
@@ -149,18 +159,17 @@ public class InlineBox implements Styleable {
         _element = element;
     }
 
+    @Nullable
+    @CheckReturnValue
     public ContentFunction getContentFunction() {
         return _contentFunction;
-    }
-
-    public void setContentFunction(ContentFunction contentFunction) {
-        _contentFunction = contentFunction;
     }
 
     public boolean isDynamicFunction() {
         return _contentFunction != null;
     }
 
+    @CheckReturnValue
     private int getTextWidth(LayoutContext c, String s) {
         return c.getTextRenderer().getWidth(
                 c.getFontContext(),
@@ -168,6 +177,7 @@ public class InlineBox implements Styleable {
                 s);
     }
 
+    @CheckReturnValue
     private int getMaxCharWidth(LayoutContext c, String s) {
         char[] chars = s.toCharArray();
         int result = 0;
@@ -216,6 +226,7 @@ public class InlineBox implements Styleable {
         }
     }
 
+    @CheckReturnValue
     public int getSpaceWidth(LayoutContext c) {
         return c.getTextRenderer().getWidth(
                 c.getFontContext(),
@@ -224,6 +235,7 @@ public class InlineBox implements Styleable {
 
     }
 
+    @CheckReturnValue
     public int getTrailingSpaceWidth(LayoutContext c) {
         if (!_text.isEmpty() && _text.charAt(_text.length()-1) == ' ') {
             return getSpaceWidth(c);
@@ -343,6 +355,7 @@ public class InlineBox implements Styleable {
         return maxWidth;
     }
 
+    @CheckReturnValue
     private String getText(boolean trimLeadingSpace) {
         if (! trimLeadingSpace) {
             return getText();
@@ -355,6 +368,7 @@ public class InlineBox implements Styleable {
         }
     }
 
+    @CheckReturnValue
     private int getInlineMBP(LayoutContext c, int cbWidth) {
         return getStyle().getMarginBorderPadding(c, cbWidth, Edge.LEFT) +
             getStyle().getMarginBorderPadding(c, cbWidth, Edge.RIGHT);
@@ -399,10 +413,6 @@ public class InlineBox implements Styleable {
     @Override
     public String getPseudoElementOrClass() {
         return _pseudoElementOrClass;
-    }
-
-    public void setPseudoElementOrClass(String pseudoElementOrClass) {
-        _pseudoElementOrClass = pseudoElementOrClass;
     }
 
     @Override
@@ -475,12 +485,9 @@ public class InlineBox implements Styleable {
         }
     }
 
+    @Nullable
     public FSFunction getFunction() {
         return _function;
-    }
-
-    public void setFunction(FSFunction function) {
-        _function = function;
     }
 
     public void truncateText() {
