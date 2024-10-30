@@ -750,10 +750,8 @@ public final class Layer {
         int pagesCount = pages.size();
         String pseudoPage = pseudoPage(pagesCount);
         PageBox pageBox = pages.isEmpty() ?
-                createPageBox(c, pseudoPage, 0) :
-                createPageBox(c, pseudoPage, pages.get(pagesCount - 1).getBottom());
-
-        pageBox.setPageNo(pagesCount);
+                createPageBox(c, pseudoPage, 0, pagesCount) :
+                createPageBox(c, pseudoPage, pages.get(pagesCount - 1).getBottom(), pagesCount);
         pages.add(pageBox);
     }
 
@@ -776,11 +774,11 @@ public final class Layer {
 
     @CheckReturnValue
     public static PageBox createPageBox(CssContext c, String pseudoPage) {
-        return createPageBox(c, pseudoPage, 0);
+        return createPageBox(c, pseudoPage, 0, 0);
     }
 
     @CheckReturnValue
-    public static PageBox createPageBox(CssContext c, String pseudoPage, int top) {
+    public static PageBox createPageBox(CssContext c, String pseudoPage, int top, int pageNo) {
         String pageName = null;
         // HACK We only create pages during layout, but the OutputDevice
         // queries page positions and since pages are created lazily, changing
@@ -791,7 +789,7 @@ public final class Layer {
 
         PageInfo pageInfo = c.getCss().getPageStyle(pageName, pseudoPage);
         CalculatedStyle cs = new EmptyStyle().deriveStyle(pageInfo.getPageStyle());
-        return new PageBox(pageInfo, c, cs, top);
+        return new PageBox(pageInfo, c, cs, top, pageNo);
     }
 
     @Nullable
