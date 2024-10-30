@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.css.constants.CSSName.PADDING_SIDE_PROPERTIES;
 import static org.xhtmlrenderer.css.style.CssKnowledge.BLOCK_EQUIVALENTS;
 import static org.xhtmlrenderer.css.style.CssKnowledge.BORDERS_NOT_ALLOWED;
 import static org.xhtmlrenderer.css.style.CssKnowledge.LAID_OUT_IN_INLINE_CONTEXT;
@@ -474,16 +475,12 @@ public class CalculatedStyle {
      *
      * @return The paddingWidth value
      */
-    public RectPropertySet getPaddingRect(float cbWidth, CssContext ctx, boolean useCache) {
+    public RectPropertySet getPaddingRect(float cbWidth, CssContext ctx) {
         if (! _paddingAllowed) {
             return RectPropertySet.ALL_ZEROS;
         } else {
-            return getPaddingProperty(this, cbWidth, ctx, useCache);
+            return getPaddingProperty(this, cbWidth, ctx);
         }
-    }
-
-    public RectPropertySet getPaddingRect(float cbWidth, CssContext ctx) {
-        return getPaddingRect(cbWidth, ctx, true);
     }
 
     public String getStringProperty(CSSName cssName) {
@@ -593,28 +590,13 @@ public class CalculatedStyle {
 
     private static RectPropertySet getPaddingProperty(CalculatedStyle style,
                                                       float cbWidth,
-                                                      CssContext ctx,
-                                                      boolean useCache) {
-        if (! useCache) {
-            return newRectInstance(style, CSSName.PADDING_SIDE_PROPERTIES, cbWidth, ctx);
-        } else {
-            if (style._padding == null) {
-                RectPropertySet result = newRectInstance(style, CSSName.PADDING_SIDE_PROPERTIES, cbWidth, ctx);
-                boolean allZeros = result.isAllZeros();
-
-                if (allZeros) {
-                    result = RectPropertySet.ALL_ZEROS;
-                }
-
-                style._padding = result;
-
-                if (! allZeros && style._padding.hasNegativeValues()) {
-                    style._padding.resetNegativeValues();
-                }
-            }
-
-            return style._padding;
+                                                      CssContext ctx) {
+        if (style._padding == null) {
+            style._padding = newRectInstance(style, PADDING_SIDE_PROPERTIES, cbWidth, ctx)
+                    .resetNegativeValues();
         }
+
+        return style._padding;
     }
 
     private static RectPropertySet getMarginProperty(CalculatedStyle style,
@@ -625,11 +607,7 @@ public class CalculatedStyle {
             return newRectInstance(style, CSSName.MARGIN_SIDE_PROPERTIES, cbWidth, ctx);
         } else {
             if (style._margin == null) {
-                RectPropertySet result = newRectInstance(style, CSSName.MARGIN_SIDE_PROPERTIES, cbWidth, ctx);
-                if (result.isAllZeros()) {
-                    result = RectPropertySet.ALL_ZEROS;
-                }
-                style._margin = result;
+                style._margin = newRectInstance(style, CSSName.MARGIN_SIDE_PROPERTIES, cbWidth, ctx);
             }
 
             return style._margin;
@@ -640,29 +618,18 @@ public class CalculatedStyle {
                                                    CSSName.CSSSideProperties sides,
                                                    float cbWidth,
                                                    CssContext ctx) {
-        RectPropertySet rect;
-        rect = RectPropertySet.newInstance(style,
-                sides,
-                cbWidth,
-                ctx);
+        RectPropertySet rect = RectPropertySet.newInstance(style, sides, cbWidth, ctx);
+
+        if (rect.isAllZeros()) {
+            rect = RectPropertySet.ALL_ZEROS;
+        }
         return rect;
     }
 
     private static BorderPropertySet getBorderProperty(CalculatedStyle style,
                                                        @Nullable CssContext ctx) {
         if (style._border == null) {
-            BorderPropertySet result = BorderPropertySet.newInstance(style, ctx);
-
-            boolean allZeros = result.isAllZeros();
-            if (allZeros && ! result.hasHidden() && !result.hasBorderRadius()) {
-                result = BorderPropertySet.EMPTY_BORDER;
-            }
-
-            style._border = result;
-
-            if (! allZeros && style._border.hasNegativeValues()) {
-                style._border.resetNegativeValues();
-            }
+            style._border = BorderPropertySet.newInstance(style, ctx).resetNegativeValues();
         }
         return style._border;
     }

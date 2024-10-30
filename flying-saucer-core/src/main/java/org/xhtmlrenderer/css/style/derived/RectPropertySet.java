@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.css.style.derived;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -28,6 +29,7 @@ public class RectPropertySet {
         this._left = left;
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
     public static RectPropertySet newInstance(
             CalculatedStyle style,
             CSSName.CSSSideProperties sideProperties,
@@ -104,18 +106,8 @@ public class RectPropertySet {
         return _top < 0 || _right < 0 || _bottom < 0 || _left < 0;
     }
 
-    public void resetNegativeValues() {
-        if (top() < 0) {
-            setTop(0);
-        }
-        if (right() < 0) {
-            setRight(0);
-        }
-        if (bottom() < 0) {
-            setBottom(0);
-        }
-        if (left() < 0) {
-            setLeft(0);
-        }
+    @CheckReturnValue
+    public RectPropertySet resetNegativeValues() {
+        return new RectPropertySet(Math.max(0, top()), Math.max(0, right()), Math.max(0, bottom()), Math.max(0, left()));
     }
 }
