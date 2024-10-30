@@ -1006,14 +1006,7 @@ public abstract class Box implements Styleable {
     }
 
     public BoxDimensions getBoxDimensions() {
-        BoxDimensions result = new BoxDimensions();
-
-        result.setLeftMBP(getLeftMBP());
-        result.setRightMBP(getRightMBP());
-        result.setContentWidth(getContentWidth());
-        result.setHeight(getHeight());
-
-        return result;
+        return new BoxDimensions(getLeftMBP(), getRightMBP(), getContentWidth(), getHeight());
     }
 
     public void setBoxDimensions(BoxDimensions dimensions) {
