@@ -28,11 +28,8 @@ import org.xhtmlrenderer.css.parser.FSFunction;
  * @see ContentFunction
  */
 public class FunctionData {
-    private ContentFunction _contentFunction;
-    private FSFunction _function;
-
-    public FunctionData() {
-    }
+    private final ContentFunction _contentFunction;
+    private final FSFunction _function;
 
     public FunctionData(ContentFunction contentFunction, FSFunction function) {
         _contentFunction = contentFunction;
@@ -43,15 +40,7 @@ public class FunctionData {
         return _contentFunction;
     }
 
-    public void setContentFunction(ContentFunction contentFunction) {
-        _contentFunction = contentFunction;
-    }
-
     public FSFunction getFunction() {
         return _function;
-    }
-
-    public void setFunction(FSFunction function) {
-        _function = function;
     }
 }
