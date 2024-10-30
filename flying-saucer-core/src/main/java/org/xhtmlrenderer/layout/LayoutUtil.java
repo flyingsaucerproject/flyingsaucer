@@ -61,8 +61,6 @@ public class LayoutUtil {
     public static FloatLayoutResult layoutFloated(
             final LayoutContext c, LineBox currentLine, BlockBox block,
             int avail, List<FloatLayoutResult> pendingFloats) {
-        FloatLayoutResult result = new FloatLayoutResult();
-
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
 
@@ -84,11 +82,12 @@ public class LayoutUtil {
 
         c.getBlockFormattingContext().floatBox(c, block);
 
+        boolean pending = false;
         if (pendingFloats != null &&
                 (!pendingFloats.isEmpty() || block.getWidth() > avail) &&
                 currentLine.isContainsContent()) {
             block.reset(c);
-            result.setPending(true);
+            pending = true;
         } else {
             if (c.isPrint()) {
                 positionFloatOnPage(c, currentLine, block, initialY != block.getY());
@@ -96,10 +95,9 @@ public class LayoutUtil {
             }
         }
 
-        result.setBlock(block);
         c.setCurrentMarkerData(markerData);
 
-        return result;
+        return new FloatLayoutResult(pending, block);
     }
 
     private static void positionFloatOnPage(
