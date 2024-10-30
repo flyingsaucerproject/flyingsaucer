@@ -31,18 +31,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.xhtmlrenderer.layout.FloatManager.Direction.LEFT;
+import static org.xhtmlrenderer.layout.FloatManager.Direction.RIGHT;
+
 /**
  * A class that manages all floated boxes in a given block formatting context.
  * It is responsible for positioning floats and calculating clearance for
  * non-floated (block) boxes.
  */
 public class FloatManager {
-    private static final int LEFT = 1;
-    private static final int RIGHT = 2;
+    enum Direction {LEFT, RIGHT}
 
     private final List<BoxOffset> _leftFloats = new ArrayList<>();
     private final List<BoxOffset> _rightFloats = new ArrayList<>();
-
     private final Box _master;
 
     public FloatManager(Box master) {
@@ -68,7 +69,7 @@ public class FloatManager {
         }
     }
 
-    private void save(BlockBox current, Layer layer, BlockFormattingContext bfc, int direction) {
+    private void save(BlockBox current, Layer layer, BlockFormattingContext bfc, Direction direction) {
         Point p = bfc.getOffset();
         getFloats(direction).add(new BoxOffset(current, p.x, p.y));
         layer.addFloat(current);
@@ -79,7 +80,7 @@ public class FloatManager {
     }
 
     private void position(CssContext cssCtx, BlockFormattingContext bfc,
-                          BlockBox current, int direction) {
+                          BlockBox current, Direction direction) {
         moveAllTheWayOver(current, direction);
 
         alignToLastOpposingFloat(cssCtx, bfc, current, direction);
@@ -107,16 +108,16 @@ public class FloatManager {
         }
     }
 
-    private List<BoxOffset> getFloats(int direction) {
+    private List<BoxOffset> getFloats(Direction direction) {
         return direction == LEFT ? _leftFloats : _rightFloats;
     }
 
-    private List<BoxOffset> getOpposingFloats(int direction) {
+    private List<BoxOffset> getOpposingFloats(Direction direction) {
         return direction == LEFT ? _rightFloats : _leftFloats;
     }
 
     private void alignToLastFloat(CssContext cssCtx,
-                                  BlockFormattingContext bfc, BlockBox current, int direction) {
+                                  BlockFormattingContext bfc, BlockBox current, Direction direction) {
 
         List<BoxOffset> floats = getFloats(direction);
         if (!floats.isEmpty()) {
@@ -155,7 +156,7 @@ public class FloatManager {
     }
 
     private void alignToLastOpposingFloat(CssContext cssCtx,
-                                          BlockFormattingContext bfc, BlockBox current, int direction) {
+                                          BlockFormattingContext bfc, BlockBox current, Direction direction) {
 
         List<BoxOffset> floats = getOpposingFloats(direction);
         if (!floats.isEmpty()) {
@@ -177,7 +178,7 @@ public class FloatManager {
         }
     }
 
-    private void moveAllTheWayOver(BlockBox current, int direction) {
+    private void moveAllTheWayOver(BlockBox current, Direction direction) {
         if (direction == LEFT) {
             current.setX(0);
         } else if (direction == RIGHT) {
@@ -347,7 +348,7 @@ public class FloatManager {
 
     private BoxDistance getFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
                                  LineBox line, int containingBlockContentWidth,
-                                 List<BoxOffset> floatsList, int direction) {
+                                 List<BoxOffset> floatsList, Direction direction) {
         if (floatsList.isEmpty()) {
             return new BoxDistance(null, 0);
         }
@@ -429,3 +430,4 @@ public class FloatManager {
         void operate(Box floater);
     }
 }
+
