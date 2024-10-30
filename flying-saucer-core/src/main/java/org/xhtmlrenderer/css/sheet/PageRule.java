@@ -28,50 +28,41 @@ import java.util.List;
 import java.util.Map;
 
 public class PageRule implements RulesetContainer {
-    private String _name;
-    private String _pseudoPage;
-    private Ruleset _ruleset;
+    private final String _name;
+    private final String _pseudoPage;
+    private final Ruleset _ruleset;
     private final Origin _origin;
 
     private final Map<MarginBoxName, List<PropertyDeclaration>> _marginBoxes = new HashMap<>();
 
     private int _pos;
 
-    private int _specificityF;
-    private int _specificityG;
-    private int _specificityH;
+    private final int _specificityF;
+    private final int _specificityG;
+    private final int _specificityH;
 
-    public PageRule(Origin origin) {
+    public PageRule(Origin origin, @Nullable String name, @Nullable String pseudoPage, Map<MarginBoxName, List<PropertyDeclaration>> marginBoxes, Ruleset ruleset) {
         _origin = origin;
+        _name = name;
+        _specificityF = name == null ? 0 : 1;
+        _ruleset = ruleset;
+        _pseudoPage = pseudoPage;
+        _specificityG = "first".equals(pseudoPage) ? 1 : 0;
+        _specificityH = "first".equals(pseudoPage) ? 0 : 1;
+        _marginBoxes.putAll(marginBoxes);
     }
 
     public String getPseudoPage() {
         return _pseudoPage;
     }
 
-    public void setPseudoPage(String pseudoPage) {
-        _pseudoPage = pseudoPage;
-        if (pseudoPage.equals("first")) {
-            _specificityG = 1;
-        } else {
-            _specificityH = 1;
-        }
-    }
-
     public Ruleset getRuleset() {
         return _ruleset;
     }
 
-    public void setRuleset(Ruleset ruleset) {
-        _ruleset = ruleset;
-    }
-
     @Override
     public void addContent(Ruleset ruleset) {
-        if (_ruleset != null) {
-            throw new IllegalStateException("Ruleset has already been set");
-        }
-        _ruleset = ruleset;
+        throw new IllegalStateException("Ruleset has already been set");
     }
 
     @Override
@@ -83,17 +74,8 @@ public class PageRule implements RulesetContainer {
         return _name;
     }
 
-    public void setName(String name) {
-        _name = name;
-        _specificityF = 1;
-    }
-
     public List<PropertyDeclaration> getMarginBoxProperties(MarginBoxName name) {
         return _marginBoxes.get(name);
-    }
-
-    public void addMarginBoxProperties(MarginBoxName name, List<PropertyDeclaration> props) {
-        _marginBoxes.put(name, props);
     }
 
     public Map<MarginBoxName, List<PropertyDeclaration>> getMarginBoxes() {
