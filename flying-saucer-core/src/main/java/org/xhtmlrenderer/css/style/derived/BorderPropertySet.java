@@ -13,6 +13,7 @@ import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 
 import java.awt.*;
 
+import static java.lang.Math.max;
 import static org.xhtmlrenderer.css.constants.CSSName.BORDER_BOTTOM_COLOR;
 import static org.xhtmlrenderer.css.constants.CSSName.BORDER_BOTTOM_LEFT_RADIUS;
 import static org.xhtmlrenderer.css.constants.CSSName.BORDER_BOTTOM_RIGHT_RADIUS;
@@ -188,7 +189,11 @@ public class BorderPropertySet extends RectPropertySet {
             CalculatedStyle style,
             @Nullable CssContext ctx
     ) {
-        return new BorderPropertySet(style, ctx);
+        BorderPropertySet result = new BorderPropertySet(style, ctx);
+        return result.isAllZeros() && !result.hasHidden() && !result.hasBorderRadius() ?
+                BorderPropertySet.EMPTY_BORDER :
+                result;
+
     }
 
     @Override
@@ -305,8 +310,13 @@ public class BorderPropertySet extends RectPropertySet {
      * helper function for normalizeBorderRadius. Gets the max side width for each of the corners or the side width whichever is larger
      */
     private float getSideLength(BorderRadiusCorner left, BorderRadiusCorner right, float sideLength) {
-        return Math.max(sideLength, left.getMaxRight(sideLength) + right.getMaxLeft(sideLength));
+        return max(sideLength, left.getMaxRight(sideLength) + right.getMaxLeft(sideLength));
     }
 
+    @CheckReturnValue
+    @Override
+    public BorderPropertySet resetNegativeValues() {
+        return new BorderPropertySet(max(0, top()), max(0, right()), max(0, bottom()), max(0, left()), styles, corners, colors);
+    }
 }
 
