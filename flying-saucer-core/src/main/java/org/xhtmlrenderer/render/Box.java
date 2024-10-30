@@ -106,12 +106,14 @@ public abstract class Box implements Styleable {
 
     private boolean _anonymous;
 
-    protected Box() {
-    }
-
     protected Box(@Nullable Box parent, @Nullable CalculatedStyle style) {
         this._parent = parent;
-        this._style = style;
+        this.setStyle(style);
+    }
+
+    protected Box(@Nullable Element element, @Nullable CalculatedStyle style) {
+        this._element = element;
+        this.setStyle(style);
     }
 
     public abstract String dump(LayoutContext c, String indent, Dump which);

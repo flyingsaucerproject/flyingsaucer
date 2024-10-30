@@ -20,6 +20,8 @@
 package org.xhtmlrenderer.newtable;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -42,12 +44,14 @@ import java.util.List;
 import java.util.Set;
 
 public class TableCellBox extends BlockBox {
-    public static final TableCellBox SPANNING_CELL = new TableCellBox();
+    public static final TableCellBox SPANNING_CELL = new TableCellBox(null, null);
 
     private int _row;
     private int _col;
 
+    @Nullable
     private TableBox _table;
+    @Nullable
     private TableSectionBox _section;
 
     private BorderPropertySet _collapsedLayoutBorder;
@@ -78,16 +82,13 @@ public class TableCellBox extends BlockBox {
     private static final int BCOL = 7;
     private static final int BTABLE = 6;
 
-    public TableCellBox() {
+    public TableCellBox(@Nullable Element source, @Nullable CalculatedStyle style) {
+        super(source, style);
     }
 
     @Override
     public BlockBox copyOf() {
-        TableCellBox result = new TableCellBox();
-        result.setStyle(getStyle());
-        result.setElement(getElement());
-
-        return result;
+        return new TableCellBox(getElement(), getStyle());
     }
 
     @Override
@@ -138,6 +139,7 @@ public class TableCellBox extends BlockBox {
         super.layout(c);
     }
 
+    @Nullable
     public TableBox getTable() {
         // cell -> row -> section -> table
         if (_table == null) {
@@ -146,6 +148,7 @@ public class TableCellBox extends BlockBox {
         return _table;
     }
 
+    @Nullable
     protected TableSectionBox getSection() {
         if (_section == null) {
             _section = (TableSectionBox)getParent().getParent();

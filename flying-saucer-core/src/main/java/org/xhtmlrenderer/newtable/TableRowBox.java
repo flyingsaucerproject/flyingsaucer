@@ -21,8 +21,10 @@ package org.xhtmlrenderer.newtable;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -50,16 +52,13 @@ public class TableRowBox extends BlockBox {
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
 
-    public TableRowBox() {
+    public TableRowBox(@Nullable Element element, @Nullable CalculatedStyle style) {
+        super(element, style);
     }
 
     @Override
     public BlockBox copyOf() {
-        TableRowBox result = new TableRowBox();
-        result.setStyle(getStyle());
-        result.setElement(getElement());
-
-        return result;
+        return new TableRowBox(getElement(), getStyle());
     }
 
     @Override

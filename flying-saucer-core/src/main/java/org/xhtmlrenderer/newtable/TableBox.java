@@ -21,6 +21,7 @@ package org.xhtmlrenderer.newtable;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -66,10 +67,15 @@ public class TableBox extends BlockBox {
 
     private boolean _marginAreaRoot;
 
+    @Nullable
     private ContentLimitContainer _contentLimitContainer;
 
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
+
+    public TableBox(@Nullable Element element, @Nullable CalculatedStyle style) {
+        super(element, style);
+    }
 
     @Override
     public boolean isMarginAreaRoot() {
@@ -82,11 +88,7 @@ public class TableBox extends BlockBox {
 
     @Override
     public BlockBox copyOf() {
-        TableBox result = new TableBox();
-        result.setStyle(getStyle());
-        result.setElement(getElement());
-
-        return result;
+        return new TableBox(getElement(), getStyle());
     }
 
     public void addStyleColumn(TableColumn col) {
@@ -147,7 +149,7 @@ public class TableBox extends BlockBox {
     }
 
     @Override
-    public void setStyle(CalculatedStyle style) {
+    public final void setStyle(CalculatedStyle style) {
         super.setStyle(style);
 
         if (isMarginAreaRoot()) {
