@@ -88,6 +88,13 @@ public class InlineBox implements Styleable {
     public InlineBox(String text, @Nullable Text textNode,
                      @Nullable ContentFunction contentFunction, @Nullable FSFunction function,
                      @Nullable Element element, @Nullable String pseudoElementOrClass) {
+        this(text, textNode, contentFunction, function, element, pseudoElementOrClass, null);
+    }
+
+    public InlineBox(String text, @Nullable Text textNode,
+                     @Nullable ContentFunction contentFunction, @Nullable FSFunction function,
+                     @Nullable Element element, @Nullable String pseudoElementOrClass,
+                     @Nullable CalculatedStyle style) {
         _text = text;
         _originalText = text;
         _textNode = textNode;
@@ -95,6 +102,7 @@ public class InlineBox implements Styleable {
         _function = function;
         _element = element;
         _pseudoElementOrClass = pseudoElementOrClass;
+        _style = style;
     }
 
     public String getText() {

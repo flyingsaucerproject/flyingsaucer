@@ -42,8 +42,7 @@ public final class AnonymousBlockBox extends BlockBox {
 
     public AnonymousBlockBox(Element element, CalculatedStyle style, List<InlineBox> savedParents,
                              List<Styleable> inlineContent) {
-        setElement(element);
-        setStyle(style);
+        super(element, style);
         setAnonymous(true);
         _openInlineBoxes = savedParents;
         setChildrenContentType(ContentType.INLINE);

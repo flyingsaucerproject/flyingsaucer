@@ -73,9 +73,13 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
 
     private int _containingBlockWidth;
 
+    private InlineLayoutBox(@Nullable Element elem, @Nullable CalculatedStyle style) {
+        super(elem, style);
+        setState(State.DONE);
+    }
+
     public InlineLayoutBox(LayoutContext c, @Nullable Element elem, @Nullable CalculatedStyle style, int cbWidth) {
-        setElement(elem);
-        setStyle(style);
+        super(elem, style);
         setContainingBlockWidth(cbWidth);
         setMarginTop(c, 0);
         setMarginBottom(c, 0);
@@ -83,21 +87,11 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         calculateHeight(c);
     }
 
-    private InlineLayoutBox() {
-        setState(State.DONE);
-    }
-
     public InlineLayoutBox copyOf() {
-        InlineLayoutBox result = new InlineLayoutBox();
-        result.setElement(getElement());
-
-        result.setStyle(getStyle());
+        InlineLayoutBox result = new InlineLayoutBox(getElement(), getStyle());
         result.setHeight(getHeight());
-
         result._pending = _pending;
-
         result.setContainingLayer(getContainingLayer());
-
         return result;
     }
 

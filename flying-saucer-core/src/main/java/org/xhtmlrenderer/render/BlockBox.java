@@ -23,6 +23,7 @@ package org.xhtmlrenderer.render;
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -132,15 +133,16 @@ public class BlockBox extends Box implements InlinePaintable {
 
     private boolean _fromCaptionedTable;
 
-    public BlockBox() {
+    protected BlockBox() {
+        this(null, null);
+    }
+
+    public BlockBox(@Nullable Element element, @Nullable CalculatedStyle style) {
+        super(element, style);
     }
 
     public BlockBox copyOf() {
-        BlockBox result = new BlockBox();
-        result.setStyle(getStyle());
-        result.setElement(getElement());
-
-        return result;
+        return new BlockBox(getElement(), getStyle());
     }
 
     protected String getExtraBoxDescription() {
@@ -2037,11 +2039,12 @@ public class BlockBox extends Box implements InlinePaintable {
         return _floatedBoxData != null;
     }
 
+    @Nullable
     public FloatedBoxData getFloatedBoxData() {
         return _floatedBoxData;
     }
 
-    public void setFloatedBoxData(FloatedBoxData floatedBoxData) {
+    public void setFloatedBoxData(@Nullable FloatedBoxData floatedBoxData) {
         _floatedBoxData = floatedBoxData;
     }
 

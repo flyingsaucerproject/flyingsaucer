@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -40,16 +43,13 @@ public class TableSectionBox extends BlockBox {
     private boolean _capturedOriginalAbsY;
     private int _originalAbsY;
 
-    public TableSectionBox() {
+    public TableSectionBox(@Nullable Element element, @Nullable CalculatedStyle style) {
+        super(element, style);
     }
 
     @Override
     public BlockBox copyOf() {
-        TableSectionBox result = new TableSectionBox();
-        result.setStyle(getStyle());
-        result.setElement(getElement());
-
-        return result;
+        return new TableSectionBox(getElement(), getStyle());
     }
 
     public List<RowData> getGrid() {
