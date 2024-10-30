@@ -180,21 +180,20 @@ public class ImageUtil {
      */
     @CheckReturnValue
     public static BufferedImage getScaledInstance(ScalingOptions opt, BufferedImage orgImage) {
-        int w = orgImage.getWidth(null);
-        int h = orgImage.getHeight(null);
+        final int w = orgImage.getWidth(null);
+        final int h = orgImage.getHeight(null);
 
         if (opt.sizeMatches(w, h)) {
             return orgImage;
         }
 
-        w = (opt.getTargetWidth() <= 0 ? w : opt.getTargetWidth());
-        h = (opt.getTargetHeight() <= 0 ? h : opt.getTargetHeight());
+        ScalingOptions normalizedOptions = opt.withTarget(
+                (opt.getTargetWidth() <= 0 ? w : opt.getTargetWidth()),
+                (opt.getTargetHeight() <= 0 ? h : opt.getTargetHeight())
+        );
 
         Scaler scaler = qualities.get(opt.getDownscalingHint());
-        opt.setTargetWidth(w);
-        opt.setTargetHeight(h);
-
-        return scaler.getScaledInstance(orgImage, opt);
+        return scaler.getScaledInstance(orgImage, normalizedOptions);
     }
 
     /**
@@ -224,7 +223,6 @@ public class ImageUtil {
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
         ScalingOptions opt = new ScalingOptions(targetWidth, targetHeight, quality, hint);
-
         return getScaledInstance(opt, orgImage);
     }
 
