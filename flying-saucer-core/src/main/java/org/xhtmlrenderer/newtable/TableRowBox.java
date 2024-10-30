@@ -52,13 +52,13 @@ public class TableRowBox extends BlockBox {
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
 
-    public TableRowBox(@Nullable Element element, @Nullable CalculatedStyle style) {
-        super(element, style);
+    public TableRowBox(@Nullable Element element, @Nullable CalculatedStyle style, boolean anonymous) {
+        super(element, style, anonymous);
     }
 
     @Override
     public BlockBox copyOf() {
-        return new TableRowBox(getElement(), getStyle());
+        return new TableRowBox(getElement(), getStyle(), isAnonymous());
     }
 
     @Override

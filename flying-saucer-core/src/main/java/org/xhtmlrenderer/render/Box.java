@@ -104,16 +104,18 @@ public abstract class Box implements Styleable {
     @Nullable
     private String _pseudoElementOrClass;
 
-    private boolean _anonymous;
+    private final boolean _anonymous;
 
     protected Box(@Nullable Box parent, @Nullable CalculatedStyle style) {
         this._parent = parent;
         this.setStyle(style);
+        _anonymous = false;
     }
 
-    protected Box(@Nullable Element element, @Nullable CalculatedStyle style) {
+    protected Box(@Nullable Element element, @Nullable CalculatedStyle style, boolean anonymous) {
         this._element = element;
         this.setStyle(style);
+        _anonymous = anonymous;
     }
 
     public abstract String dump(LayoutContext c, String indent, Dump which);
@@ -1001,10 +1003,6 @@ public abstract class Box implements Styleable {
 
     public boolean isAnonymous() {
         return _anonymous;
-    }
-
-    public void setAnonymous(boolean anonymous) {
-        _anonymous = anonymous;
     }
 
     public BoxDimensions getBoxDimensions() {

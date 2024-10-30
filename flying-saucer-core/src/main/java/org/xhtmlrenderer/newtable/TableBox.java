@@ -73,8 +73,8 @@ public class TableBox extends BlockBox {
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
 
-    public TableBox(@Nullable Element element, @Nullable CalculatedStyle style) {
-        super(element, style);
+    public TableBox(@Nullable Element element, @Nullable CalculatedStyle style, boolean anonymous) {
+        super(element, style, anonymous);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class TableBox extends BlockBox {
 
     @Override
     public BlockBox copyOf() {
-        return new TableBox(getElement(), getStyle());
+        return new TableBox(getElement(), getStyle(), isAnonymous());
     }
 
     public void addStyleColumn(TableColumn col) {

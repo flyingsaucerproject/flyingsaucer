@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Set;
 
 public class TableCellBox extends BlockBox {
-    public static final TableCellBox SPANNING_CELL = new TableCellBox(null, null);
+    public static final TableCellBox SPANNING_CELL = new TableCellBox(null, null, false);
 
     private int _row;
     private int _col;
@@ -82,13 +82,13 @@ public class TableCellBox extends BlockBox {
     private static final int BCOL = 7;
     private static final int BTABLE = 6;
 
-    public TableCellBox(@Nullable Element source, @Nullable CalculatedStyle style) {
-        super(source, style);
+    public TableCellBox(@Nullable Element source, @Nullable CalculatedStyle style, boolean anonymous) {
+        super(source, style, anonymous);
     }
 
     @Override
     public BlockBox copyOf() {
-        return new TableCellBox(getElement(), getStyle());
+        return new TableCellBox(getElement(), getStyle(), isAnonymous());
     }
 
     @Override
