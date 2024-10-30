@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.util.ArrayUtil;
 
 import java.util.List;
@@ -26,9 +27,9 @@ import java.util.List;
 public class FormFieldState {
     private final String _value;
     private final boolean _checked;
-    private final int[] _selected;
-    
-    private FormFieldState(String value, boolean checked, int[] selected) {
+    private final int @Nullable[] _selected;
+
+    private FormFieldState(String value, boolean checked, int @Nullable [] selected) {
         _value = value;
         _checked = checked;
         _selected = selected;

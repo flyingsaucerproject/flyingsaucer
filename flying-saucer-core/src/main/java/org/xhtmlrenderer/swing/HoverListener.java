@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.StyleReference;
@@ -34,6 +36,7 @@ import java.awt.*;
  * as the mouse exits the Box.
  */
 public class HoverListener extends DefaultFSMouseListener {
+    @Nullable
     private Box _previouslyHovered;
 
     @Override
@@ -64,7 +67,7 @@ public class HoverListener extends DefaultFSMouseListener {
         boolean targetedRepaint = true;
         Rectangle repaintRegion = null;
 
-        // If we moved out of the old block then unstyle it
+        // If we moved out of the old block then un-style it
         if (_previouslyHovered != null) {
             needRepaint = true;
             _previouslyHovered.restyle(c);
@@ -112,7 +115,9 @@ public class HoverListener extends DefaultFSMouseListener {
     }
 
     // look up the Element that corresponds to the Box we are hovering over
-    private Element getHoveredElement(StyleReference style, Box ib) {
+    @Nullable
+    @CheckReturnValue
+    private Element getHoveredElement(StyleReference style, @Nullable Box ib) {
         if (ib == null) {
             return null;
         }

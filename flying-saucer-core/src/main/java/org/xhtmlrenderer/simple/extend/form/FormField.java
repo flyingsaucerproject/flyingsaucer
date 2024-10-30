@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.simple.extend.form;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -128,6 +129,7 @@ public abstract class FormField {
         applyOriginalState();
     }
 
+    @Nullable
     public abstract JComponent create();
 
     protected FormFieldState loadOriginalState() {

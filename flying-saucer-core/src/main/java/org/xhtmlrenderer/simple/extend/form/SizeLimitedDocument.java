@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
+import org.jspecify.annotations.Nullable;
+
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -34,12 +36,8 @@ class SizeLimitedDocument extends PlainDocument {
         _maximumLength = maximumLength;
     }
 
-    public int getMaximumLength() {
-        return _maximumLength;
-    }
-
     @Override
-    public void insertString(int offset, String str, AttributeSet attr)
+    public void insertString(int offset, @Nullable String str, AttributeSet attr)
         throws BadLocationException {
         if (str == null) {
             return;
