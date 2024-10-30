@@ -74,7 +74,7 @@ public final class Layer {
 
     @Nullable
     private final Layer _parent;
-    private boolean _stackingContext;
+    private final boolean _stackingContext;
     @Nullable
     private List<Layer> _children;
     private final Box _master;
@@ -103,15 +103,17 @@ public final class Layer {
     private Map<String, List<BlockBox>> _runningBlocks;
 
     public Layer(Box master) {
-        this(null, master);
-        setStackingContext(true);
+        this(null, master, true);
     }
 
     public Layer(@Nullable Layer parent, Box master) {
+        this(parent, master, master.getStyle().isPositioned() && !master.getStyle().isAutoZIndex());
+    }
+
+    Layer(@Nullable Layer parent, Box master, boolean stackingContext) {
         _parent = parent;
         _master = master;
-        setStackingContext(
-                master.getStyle().isPositioned() && ! master.getStyle().isAutoZIndex());
+        _stackingContext = stackingContext;
         master.setLayer(this);
         master.setContainingLayer(this);
     }
@@ -125,10 +127,6 @@ public final class Layer {
     @CheckReturnValue
     public boolean isStackingContext() {
         return _stackingContext;
-    }
-
-    private void setStackingContext(boolean stackingContext) {
-        _stackingContext = stackingContext;
     }
 
     @CheckReturnValue
