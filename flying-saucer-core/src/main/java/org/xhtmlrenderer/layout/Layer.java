@@ -54,6 +54,10 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Comparator.comparingInt;
+import static org.xhtmlrenderer.layout.Layer.Width.AUTO;
+import static org.xhtmlrenderer.layout.Layer.Width.NEGATIVE;
+import static org.xhtmlrenderer.layout.Layer.Width.POSITIVE;
+import static org.xhtmlrenderer.layout.Layer.Width.ZERO;
 
 /**
  * All positioned content as well as content with an overflow value other
@@ -176,13 +180,10 @@ public final class Layer {
         }
     }
 
-    private static final int POSITIVE = 1;
-    private static final int ZERO = 2;
-    private static final int NEGATIVE = 3;
-    private static final int AUTO = 4;
+    enum Width {POSITIVE, ZERO, NEGATIVE, AUTO}
 
     @CheckReturnValue
-    private List<Layer> collectLayers(int which) {
+    private List<Layer> collectLayers(Width which) {
         List<Layer> result = new ArrayList<>();
 
         if (which != AUTO) {
@@ -203,7 +204,7 @@ public final class Layer {
     }
 
     @CheckReturnValue
-    private List<Layer> getStackingContextLayers(int which) {
+    private List<Layer> getStackingContextLayers(Width which) {
         List<Layer> result = new ArrayList<>();
 
         List<Layer> children = getChildren();
@@ -224,7 +225,7 @@ public final class Layer {
     }
 
     @CheckReturnValue
-    private List<Layer> getSortedLayers(int which) {
+    private List<Layer> getSortedLayers(Width which) {
         List<Layer> result = collectLayers(which);
         result.sort(new ZIndexComparator());
         return result;
