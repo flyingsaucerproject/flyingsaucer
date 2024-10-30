@@ -127,9 +127,9 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                                 i, new Point2D.Double(point.getX() + adjust, point.getY()));
                     }
                     if (ch == ' ' || ch == '\u00a0' || ch == '\u3000') {
-                        adjust += info.getSpaceAdjust();
+                        adjust += info.spaceAdjust();
                     } else {
-                        adjust += info.getNonSpaceAdjust();
+                        adjust += info.nonSpaceAdjust();
                     }
                 }
 
