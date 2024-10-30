@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -41,7 +43,11 @@ public class FloatManager {
     private final List<BoxOffset> _leftFloats = new ArrayList<>();
     private final List<BoxOffset> _rightFloats = new ArrayList<>();
 
-    private Box _master;
+    private final Box _master;
+
+    public FloatManager(Box master) {
+        _master = master;
+    }
 
     public void floatBox(LayoutContext c, Layer layer, BlockFormattingContext bfc, BlockBox box) {
         if (box.getStyle().isFloatedLeft()) {
@@ -373,10 +379,6 @@ public class FloatManager {
         }
     }
 
-    public void setMaster(Box owner) {
-        _master = owner;
-    }
-
     public Box getMaster() {
         return _master;
     }
@@ -387,6 +389,8 @@ public class FloatManager {
                 floater.getStyle().isFloatedLeft() ? getFloats(LEFT) : getFloats(RIGHT));
     }
 
+    @Nullable
+    @CheckReturnValue
     private Point getOffset(BlockBox floater, List<BoxOffset> floats) {
         for (BoxOffset boxOffset : floats) {
             BlockBox box = boxOffset.box();
@@ -418,7 +422,7 @@ public class FloatManager {
     private record BoxOffset(BlockBox box, int x, int y) {
     }
 
-    private record BoxDistance(BlockBox box, int distance) {
+    private record BoxDistance(@Nullable BlockBox box, int distance) {
     }
 
     public interface FloatOperation {
