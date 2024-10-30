@@ -35,7 +35,12 @@ public class LineBreakContext {
     private boolean _needsNewLine;
     private int _width;
     private boolean _endsOnNL;
-    private Text _textNode;
+    private final Text _textNode;
+
+    public LineBreakContext(String master, Text textNode) {
+        this._master = master;
+        this._textNode = textNode;
+    }
 
     public int getLast() {
         return _master.length();
@@ -132,9 +137,5 @@ public class LineBreakContext {
 
     public Text getTextNode() {
         return this._textNode;
-    }
-
-    public void setTextNode(Text _text) {
-        this._textNode = _text;
     }
 }
