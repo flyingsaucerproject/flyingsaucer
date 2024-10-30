@@ -97,14 +97,6 @@ public class URLUTF8Encoder {
         return buf.toString();
     }
 
-    public static String encode( char[] chars ) {
-        StringBuilder buf = new StringBuilder();
-        for (int ch : chars) {
-            append(buf, ch);
-        }
-        return buf.toString();
-    }
-
     private static void append( StringBuilder buf, int ch ) {
         if ( 'A' <= ch && ch <= 'Z' ) {// 'A'..'Z'
             buf.append( (char)ch );
