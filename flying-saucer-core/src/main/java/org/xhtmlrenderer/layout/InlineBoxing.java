@@ -790,31 +790,44 @@ public class InlineBoxing {
     }
 
     private static void alignLine(final LayoutContext c, final LineBox current, final int maxAvailableWidth) {
-        if (! current.isContainsDynamicFunction() && ! current.getParent().getStyle().isTextJustify()) {
-            current.setFloatDistances(new FloatDistances() {
-                @Override
-                public int getLeftFloatDistance() {
-                    return c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
-                }
-
-                @Override
-                public int getRightFloatDistance() {
-                    return c.getBlockFormattingContext().getRightFloatDistance(c, current, maxAvailableWidth);
-                }
-            });
-        } else {
-            FloatDistances distances = new FloatDistances();
-            distances.setLeftFloatDistance(
-                    c.getBlockFormattingContext().getLeftFloatDistance(
-                            c, current, maxAvailableWidth));
-            distances.setRightFloatDistance(
-                    c.getBlockFormattingContext().getRightFloatDistance(
-                            c, current, maxAvailableWidth));
-            current.setFloatDistances(distances);
-        }
+        FloatDistances distances = (!current.isContainsDynamicFunction() && !current.getParent().getStyle().isTextJustify()) ?
+                new DynamicFloatDistances(c, current, maxAvailableWidth) :
+                new StaticFloatDistances(c, current, maxAvailableWidth);
+        current.setFloatDistances(distances);
         current.align(false);
         if (! current.isContainsDynamicFunction() && ! current.getParent().getStyle().isTextJustify()) {
             current.setFloatDistances(null);
+        }
+    }
+
+    private record StaticFloatDistances(int leftFloatDistance, int rightFloatDistance) implements FloatDistances {
+        private StaticFloatDistances(LayoutContext c, LineBox current, int maxAvailableWidth) {
+            this(
+                    c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth),
+                    c.getBlockFormattingContext().getRightFloatDistance(c, current, maxAvailableWidth)
+            );
+        }
+    }
+
+    private static class DynamicFloatDistances implements FloatDistances {
+        private final LayoutContext c;
+        private final LineBox current;
+        private final int maxAvailableWidth;
+
+        private DynamicFloatDistances(LayoutContext c, LineBox current, int maxAvailableWidth) {
+            this.c = c;
+            this.current = current;
+            this.maxAvailableWidth = maxAvailableWidth;
+        }
+
+        @Override
+        public int leftFloatDistance() {
+            return c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
+        }
+
+        @Override
+        public int rightFloatDistance() {
+            return c.getBlockFormattingContext().getRightFloatDistance(c, current, maxAvailableWidth);
         }
     }
 
