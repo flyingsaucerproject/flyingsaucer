@@ -74,12 +74,12 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     private int _containingBlockWidth;
 
     private InlineLayoutBox(@Nullable Element elem, @Nullable CalculatedStyle style) {
-        super(elem, style);
+        super(elem, style, false);
         setState(State.DONE);
     }
 
     public InlineLayoutBox(LayoutContext c, @Nullable Element elem, @Nullable CalculatedStyle style, int cbWidth) {
-        super(elem, style);
+        super(elem, style, false);
         setContainingBlockWidth(cbWidth);
         setMarginTop(c, 0);
         setMarginBottom(c, 0);

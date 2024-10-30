@@ -134,15 +134,15 @@ public class BlockBox extends Box implements InlinePaintable {
     private boolean _fromCaptionedTable;
 
     protected BlockBox() {
-        this(null, null);
+        this(null, null, false);
     }
 
-    public BlockBox(@Nullable Element element, @Nullable CalculatedStyle style) {
-        super(element, style);
+    public BlockBox(@Nullable Element element, @Nullable CalculatedStyle style, boolean anonymous) {
+        super(element, style, anonymous);
     }
 
     public BlockBox copyOf() {
-        return new BlockBox(getElement(), getStyle());
+        return new BlockBox(getElement(), getStyle(), isAnonymous());
     }
 
     protected String getExtraBoxDescription() {

@@ -43,13 +43,13 @@ public class TableSectionBox extends BlockBox {
     private boolean _capturedOriginalAbsY;
     private int _originalAbsY;
 
-    public TableSectionBox(@Nullable Element element, @Nullable CalculatedStyle style) {
-        super(element, style);
+    public TableSectionBox(@Nullable Element element, @Nullable CalculatedStyle style, boolean anonymous) {
+        super(element, style, anonymous);
     }
 
     @Override
     public BlockBox copyOf() {
-        return new TableSectionBox(getElement(), getStyle());
+        return new TableSectionBox(getElement(), getStyle(), isAnonymous());
     }
 
     public List<RowData> getGrid() {
