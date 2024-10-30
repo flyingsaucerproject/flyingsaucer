@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.render;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -730,30 +731,29 @@ public abstract class Box implements Styleable {
         _element = element;
     }
 
-    public void setMarginTop(CssContext cssContext, int marginTop) {
-        ensureWorkingMargin(cssContext);
-        _workingMargin.setTop(marginTop);
+    protected final void setMarginTop(CssContext cssContext, int marginTop) {
+        ensureWorkingMargin(cssContext).setTop(marginTop);
     }
 
-    public void setMarginBottom(CssContext cssContext, int marginBottom) {
-        ensureWorkingMargin(cssContext);
-        _workingMargin.setBottom(marginBottom);
+    protected void setMarginBottom(CssContext cssContext, int marginBottom) {
+        ensureWorkingMargin(cssContext).setBottom(marginBottom);
     }
 
     public void setMarginLeft(CssContext cssContext, int marginLeft) {
-        ensureWorkingMargin(cssContext);
-        _workingMargin.setLeft(marginLeft);
+        ensureWorkingMargin(cssContext).setLeft(marginLeft);
     }
 
-    public void setMarginRight(CssContext cssContext, int marginRight) {
-        ensureWorkingMargin(cssContext);
-        _workingMargin.setRight(marginRight);
+    protected void setMarginRight(CssContext cssContext, int marginRight) {
+        ensureWorkingMargin(cssContext).setRight(marginRight);
     }
 
-    private void ensureWorkingMargin(CssContext cssContext) {
+    @NonNull
+    @CheckReturnValue
+    private RectPropertySet ensureWorkingMargin(CssContext cssContext) {
         if (_workingMargin == null) {
             _workingMargin = getStyleMargin(cssContext).copyOf();
         }
+        return _workingMargin;
     }
 
     public RectPropertySet getMargin(CssContext cssContext) {

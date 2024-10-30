@@ -71,16 +71,17 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     @Nullable
     private List<TextDecoration> _textDecorations;
 
-    private int _containingBlockWidth;
+    private final int _containingBlockWidth;
 
     private InlineLayoutBox(@Nullable Element elem, @Nullable CalculatedStyle style) {
         super(elem, style, false);
         setState(State.DONE);
+        _containingBlockWidth = 0;
     }
 
     public InlineLayoutBox(LayoutContext c, @Nullable Element elem, @Nullable CalculatedStyle style, int cbWidth) {
         super(elem, style, false);
-        setContainingBlockWidth(cbWidth);
+        _containingBlockWidth = cbWidth;
         setMarginTop(c, 0);
         setMarginBottom(c, 0);
         setPending(true);
@@ -780,10 +781,6 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
     @Override
     public int getContainingBlockWidth() {
         return _containingBlockWidth;
-    }
-
-    public void setContainingBlockWidth(int containingBlockWidth) {
-        _containingBlockWidth = containingBlockWidth;
     }
 
     @Override
