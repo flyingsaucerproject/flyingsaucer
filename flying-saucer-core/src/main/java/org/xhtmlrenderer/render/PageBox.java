@@ -83,7 +83,7 @@ public class PageBox {
     private int _paintingTop;
     private int _paintingBottom;
 
-    private int _pageNo;
+    private final int _pageNo;
 
     private final int _outerPageWidth;
 
@@ -99,12 +99,13 @@ public class PageBox {
     @Nullable
     private Element _metadata;
 
-    public PageBox(PageInfo pageInfo, CssContext cssContext, CalculatedStyle style, int top) {
+    public PageBox(PageInfo pageInfo, CssContext cssContext, CalculatedStyle style, int top, int pageNo) {
         _pageInfo = pageInfo;
         _style = style;
         _outerPageWidth = getWidth(cssContext);
         _top = top;
         _bottom = top + getContentHeight(cssContext);
+        _pageNo = pageNo;
     }
 
     public int getWidth(CssContext cssCtx) {
@@ -322,10 +323,6 @@ public class PageBox {
 
     public int getPageNo() {
         return _pageNo;
-    }
-
-    public void setPageNo(int pageNo) {
-        _pageNo = pageNo;
     }
 
     public int getOuterPageWidth() {
