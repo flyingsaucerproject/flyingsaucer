@@ -588,22 +588,21 @@ public class InlineBoxing {
         List<TextDecoration> decorations = calculateTextDecorations(iB, iB.getBaseline(), fm);
         iB.setTextDecorations(decorations);
 
-        InlineBoxMeasurements result = new InlineBoxMeasurements();
-        result.setBaseline(iB.getY() + iB.getBaseline());
-        result.setInlineTop(iB.getY() - halfLeading);
-        result.setInlineBottom(Math.round(result.getInlineTop() + lineHeight));
-        result.setTextTop(iB.getY());
-        result.setTextBottom((int) (result.getBaseline() + fm.getDescent()));
-
         RectPropertySet padding = iB.getPadding(c);
         BorderPropertySet border = iB.getBorder(c);
 
-        result.setPaintingTop((int)Math.floor(iB.getY() - border.top() - padding.top()));
-        result.setPaintingBottom((int)Math.ceil(iB.getY() +
-                fm.getAscent() + fm.getDescent() +
-                border.bottom() + padding.bottom()));
+        int baseline = iB.getY() + iB.getBaseline();
+        int inlineTop = iB.getY() - halfLeading;
 
-        return result;
+        return new InlineBoxMeasurements(
+                baseline,
+                iB.getY(), (int) (baseline + fm.getDescent()),
+                inlineTop, Math.round(inlineTop + lineHeight),
+                (int) Math.floor(iB.getY() - border.top() - padding.top()),
+                (int) Math.ceil(iB.getY() +
+                        fm.getAscent() + fm.getDescent() +
+                        border.bottom() + padding.bottom())
+        );
     }
 
     @CheckReturnValue
@@ -706,14 +705,12 @@ public class InlineBoxing {
                     (strutM.getDescent() + strutM.getAscent())) / 2);
         }
 
-        InlineBoxMeasurements measurements = new InlineBoxMeasurements();
-        measurements.setBaseline((int) (halfLeading + strutM.getAscent()));
-        measurements.setTextTop(halfLeading);
-        measurements.setTextBottom((int) (measurements.getBaseline() + strutM.getDescent()));
-        measurements.setInlineTop(halfLeading);
-        measurements.setInlineBottom((int) (halfLeading + lineHeight));
-
-        return measurements;
+        int baseline = (int) (halfLeading + strutM.getAscent());
+        return new InlineBoxMeasurements(baseline,
+                halfLeading, (int) (baseline + strutM.getDescent()),
+                halfLeading, (int) (halfLeading + lineHeight),
+                0, 0
+        );
     }
 
     private static void positionInlineChildrenVertically(LayoutContext c, InlineLayoutBox current,
@@ -839,9 +836,9 @@ public class InlineBoxing {
             Breaker.breakText(c, lbContext, remainingWidth, style);
         }
 
-        InlineText result = new InlineText(lbContext.getMaster(), lbContext.getTextNode(), lbContext.getStart(), lbContext.getEnd(), lbContext.getWidth());
-
-        return result;
+        return new InlineText(lbContext.getMaster(), lbContext.getTextNode(),
+                lbContext.getStart(), lbContext.getEnd(),
+                lbContext.getWidth());
     }
 
     private static int processOutOfFlowContent(

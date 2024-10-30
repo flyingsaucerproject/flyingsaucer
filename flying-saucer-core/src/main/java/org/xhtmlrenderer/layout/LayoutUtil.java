@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.LineBox;
@@ -60,7 +61,7 @@ public class LayoutUtil {
 
     public static FloatLayoutResult layoutFloated(
             final LayoutContext c, LineBox currentLine, BlockBox block,
-            int avail, List<FloatLayoutResult> pendingFloats) {
+            int avail, @Nullable List<FloatLayoutResult> pendingFloats) {
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
 
