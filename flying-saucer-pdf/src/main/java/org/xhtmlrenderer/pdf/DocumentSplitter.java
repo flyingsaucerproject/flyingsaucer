@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -244,10 +245,12 @@ public class DocumentSplitter implements ContentHandler {
     }
 
     private static final class NamespaceScope {
-        private NamespaceScope _parent;
+        @Nullable
+        private final NamespaceScope _parent;
         private final List<Namespace> _namespaces = new LinkedList<>();
 
         private NamespaceScope() {
+            _parent = null;
         }
 
         private NamespaceScope(NamespaceScope parent) {
@@ -280,6 +283,7 @@ public class DocumentSplitter implements ContentHandler {
             }
         }
 
+        @Nullable
         public NamespaceScope getParent() {
             return _parent;
         }
