@@ -588,9 +588,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             if (i != len - 1) {
                 float offset;
                 if (c == ' ' || c == '\u00a0' || c == '\u3000') {
-                    offset = info.getSpaceAdjust();
+                    offset = info.spaceAdjust();
                 } else {
-                    offset = info.getNonSpaceAdjust();
+                    offset = info.nonSpaceAdjust();
                 }
                 array.add((-offset / _dotsPerPoint) * 1000 / (_font.getSize2D() / _dotsPerPoint));
             }

@@ -136,9 +136,9 @@ public class Java2DTextRenderer implements TextRenderer {
                         i, new Point2D.Double(point.getX() + adjust, point.getY()));
             }
             if (c == ' ' || c == '\u00a0' || c == '\u3000') {
-                adjust += info.getSpaceAdjust();
+                adjust += info.spaceAdjust();
             } else {
-                adjust += info.getNonSpaceAdjust();
+                adjust += info.nonSpaceAdjust();
             }
         }
     }

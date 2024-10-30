@@ -327,9 +327,9 @@ public class InlineText {
         for (int i = 0; i < len; i++) {
             char c = s.charAt(i);
             if (c == ' ' || c == '\u00a0' || c == '\u3000') {
-                result += info.getSpaceAdjust();
+                result += info.spaceAdjust();
             } else {
-                result += info.getNonSpaceAdjust();
+                result += info.nonSpaceAdjust();
             }
         }
 
