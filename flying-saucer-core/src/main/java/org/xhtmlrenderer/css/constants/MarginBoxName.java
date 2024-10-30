@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.css.constants;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,6 +76,8 @@ public class MarginBoxName {
         return _ident;
     }
 
+    @Nullable
+    @CheckReturnValue
     public static MarginBoxName valueOf(String ident) {
         return ALL.get(ident);
     }

@@ -519,21 +519,23 @@ public class CSSParser {
         //System.out.println("page()");
         Token t = next();
         try {
-            PageRule pageRule = new PageRule(stylesheet.getOrigin());
             if (t == Token.TK_PAGE_SYM) {
+                String pageName = null;
+                String pseudoPage = null;
+                Map<MarginBoxName, List<PropertyDeclaration>> margins = new HashMap<>();
+
                 skip_whitespace();
                 t = la();
                 if (t == Token.TK_IDENT) {
-                    String pageName = getTokenValue(t);
+                    pageName = getTokenValue(t);
                     if (pageName.equals("auto")) {
                         throw new CSSParseException("page name may not be auto", getCurrentLine());
                     }
                     next();
-                    pageRule.setName(pageName);
                     t = la();
                 }
                 if (t == Token.TK_COLON) {
-                    pageRule.setPseudoPage(pseudo_page());
+                    pseudoPage = pseudo_page();
                 }
                 Ruleset ruleset = new Ruleset(stylesheet.getOrigin());
 
@@ -548,7 +550,7 @@ public class CSSParser {
                             skip_whitespace();
                             break;
                         } else if (t == Token.TK_AT_RULE) {
-                            margin(stylesheet, pageRule);
+                            margins = margin(stylesheet);
                         } else {
                             declaration_list(ruleset, false, true, false);
                         }
@@ -558,7 +560,7 @@ public class CSSParser {
                     throw new CSSParseException(t, Token.TK_LBRACE, getCurrentLine());
                 }
 
-                pageRule.addContent(ruleset);
+                PageRule pageRule = new PageRule(stylesheet.getOrigin(), pageName, pseudoPage, margins, ruleset);
                 stylesheet.addContent(pageRule);
             } else {
                 push(t);
@@ -573,19 +575,22 @@ public class CSSParser {
 //  margin :
 //    margin_sym S* '{' declaration [ ';' S* declaration? ]* '}' S*
 //    ;
-    private void margin(Stylesheet stylesheet, PageRule pageRule) throws IOException {
+    private Map<MarginBoxName, List<PropertyDeclaration>> margin(Stylesheet stylesheet) throws IOException {
+        Map<MarginBoxName, List<PropertyDeclaration>> margins = new HashMap<>();
+
         Token t = next();
         if (t != Token.TK_AT_RULE) {
             error(new CSSParseException(t, Token.TK_AT_RULE, getCurrentLine()), "at rule", true);
             recover(true, false);
-            return;
+            return margins;
         }
+
         String name = getTokenValue(t);
         MarginBoxName marginBoxName = MarginBoxName.valueOf(name);
         if (marginBoxName == null) {
             error(new CSSParseException(name + " is not a valid margin box name", getCurrentLine()), "at rule", true);
             recover(true, false);
-            return;
+            return margins;
         }
 
         skip_whitespace();
@@ -600,7 +605,7 @@ public class CSSParser {
                     push(t);
                     throw new CSSParseException(t, Token.TK_RBRACE, getCurrentLine());
                 }
-                pageRule.addMarginBoxProperties(marginBoxName, ruleset.getPropertyDeclarations());
+                margins.put(marginBoxName, ruleset.getPropertyDeclarations());
             } else {
                 push(t);
                 throw new CSSParseException(t, Token.TK_LBRACE, getCurrentLine());
@@ -609,6 +614,7 @@ public class CSSParser {
             error(e, "margin box", true);
             recover(false, false);
         }
+        return margins;
     }
 
 
