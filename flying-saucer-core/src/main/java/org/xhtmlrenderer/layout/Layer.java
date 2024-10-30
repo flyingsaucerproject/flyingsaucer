@@ -746,25 +746,25 @@ public final class Layer {
     }
 
     public void addPage(CssContext c) {
-        String pseudoPage;
         List<PageBox> pages = getPages();
-        if (pages.isEmpty()) {
-            pseudoPage = "first";
-        } else if (pages.size() % 2 == 0) {
-            pseudoPage = "right";
-        } else {
-            pseudoPage = "left";
-        }
-        PageBox pageBox = createPageBox(c, pseudoPage);
-        if (pages.isEmpty()) {
-            pageBox.setTopAndBottom(c, 0);
-        } else {
-            PageBox previous = pages.get(pages.size()-1);
-            pageBox.setTopAndBottom(c, previous.getBottom());
-        }
+        int pagesCount = pages.size();
+        String pseudoPage = pseudoPage(pagesCount);
+        PageBox pageBox = pages.isEmpty() ?
+                createPageBox(c, pseudoPage, 0) :
+                createPageBox(c, pseudoPage, pages.get(pagesCount - 1).getBottom());
 
-        pageBox.setPageNo(pages.size());
+        pageBox.setPageNo(pagesCount);
         pages.add(pageBox);
+    }
+
+    private static String pseudoPage(int size) {
+        if (size == 0) {
+            return "first";
+        } else if (size % 2 == 0) {
+            return "right";
+        } else {
+            return "left";
+        }
     }
 
     public void removeLastPage() {
@@ -776,6 +776,11 @@ public final class Layer {
 
     @CheckReturnValue
     public static PageBox createPageBox(CssContext c, String pseudoPage) {
+        return createPageBox(c, pseudoPage, 0);
+    }
+
+    @CheckReturnValue
+    public static PageBox createPageBox(CssContext c, String pseudoPage, int top) {
         String pageName = null;
         // HACK We only create pages during layout, but the OutputDevice
         // queries page positions and since pages are created lazily, changing
@@ -786,7 +791,7 @@ public final class Layer {
 
         PageInfo pageInfo = c.getCss().getPageStyle(pageName, pseudoPage);
         CalculatedStyle cs = new EmptyStyle().deriveStyle(pageInfo.getPageStyle());
-        return new PageBox(pageInfo, c, cs);
+        return new PageBox(pageInfo, c, cs, top);
     }
 
     @Nullable
