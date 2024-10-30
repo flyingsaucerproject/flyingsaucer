@@ -20,43 +20,36 @@
 package org.xhtmlrenderer.render;
 
 public class BoxDimensions {
-    private int _leftMBP;
-    private int _rightMBP;
-    private int _contentWidth;
-    private int _height;
+    private final int _leftMBP;
+    private final int _rightMBP;
+    private final int _contentWidth;
+    private final int _height;
 
-    public BoxDimensions() {
+    public BoxDimensions(int leftMBP, int rightMBP, int contentWidth, int height) {
+        _leftMBP = leftMBP;
+        _rightMBP = rightMBP;
+        _contentWidth = contentWidth;
+        _height = height;
     }
 
     public int getContentWidth() {
         return _contentWidth;
     }
 
-    public void setContentWidth(int contentWidth) {
-        _contentWidth = contentWidth;
-    }
-
     public int getHeight() {
         return _height;
-    }
-
-    public void setHeight(int height) {
-        _height = height;
     }
 
     public int getLeftMBP() {
         return _leftMBP;
     }
 
-    public void setLeftMBP(int leftMBP) {
-        _leftMBP = leftMBP;
-    }
-
     public int getRightMBP() {
         return _rightMBP;
     }
 
-    public void setRightMBP(int rightMBP) {
-        _rightMBP = rightMBP;
+    @Override
+    public String toString() {
+        return "BoxDimensions{left: %s, right: %s, width: %s, height: %s}".formatted(_leftMBP, _rightMBP, _contentWidth, _height);
     }
 }
