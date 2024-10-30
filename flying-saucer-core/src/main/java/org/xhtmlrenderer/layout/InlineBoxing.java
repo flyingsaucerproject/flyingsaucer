@@ -159,12 +159,9 @@ public class InlineBoxing {
                             c, maxAvailableWidth, Edge.RIGHT);
                 }
 
-                LineBreakContext lbContext = new LineBreakContext();
-                lbContext.setMaster(iB.getText());
-                lbContext.setTextNode(iB.getTextNode());
-                if (iB.isDynamicFunction()) {
-                    lbContext.setMaster(iB.getContentFunction().getLayoutReplacementText());
-                }
+                String master = iB.isDynamicFunction() ?
+                        iB.getContentFunction().getLayoutReplacementText() : iB.getText();
+                LineBreakContext lbContext = new LineBreakContext(master, iB.getTextNode());
 
                 int q = 0;
                 do {
