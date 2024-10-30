@@ -190,21 +190,21 @@ public class LineBox extends Box implements InlinePaintable {
         int calcX = 0;
 
         if (align == IdentValue.LEFT || align == IdentValue.JUSTIFY) {
-            int floatDistance = getFloatDistances().getLeftFloatDistance();
+            int floatDistance = getFloatDistances().leftFloatDistance();
             calcX = getContentStart() + floatDistance;
             if (align == IdentValue.JUSTIFY && dynamic) {
                 justify();
             }
         } else if (align == IdentValue.CENTER) {
-            int leftFloatDistance = getFloatDistances().getLeftFloatDistance();
-            int rightFloatDistance = getFloatDistances().getRightFloatDistance();
+            int leftFloatDistance = getFloatDistances().leftFloatDistance();
+            int rightFloatDistance = getFloatDistances().rightFloatDistance();
 
             int midpoint = leftFloatDistance +
                 (getParent().getContentWidth() - leftFloatDistance - rightFloatDistance) / 2;
 
             calcX = midpoint - (getContentWidth() + getContentStart()) / 2;
         } else if (align == IdentValue.RIGHT) {
-            int floatDistance = getFloatDistances().getRightFloatDistance();
+            int floatDistance = getFloatDistances().rightFloatDistance();
             calcX = getParent().getContentWidth() - floatDistance - getContentWidth();
         }
 
@@ -217,8 +217,8 @@ public class LineBox extends Box implements InlinePaintable {
 
     public void justify() {
         if (! isLastLineWithContent()) {
-            int leftFloatDistance = getFloatDistances().getLeftFloatDistance();
-            int rightFloatDistance = getFloatDistances().getRightFloatDistance();
+            int leftFloatDistance = getFloatDistances().leftFloatDistance();
+            int rightFloatDistance = getFloatDistances().rightFloatDistance();
 
             int available = getParent().getContentWidth() -
                 leftFloatDistance - rightFloatDistance - getContentStart();
