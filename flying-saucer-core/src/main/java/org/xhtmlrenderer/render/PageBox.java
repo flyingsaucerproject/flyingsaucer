@@ -77,8 +77,8 @@ public class PageBox {
 
     private final CalculatedStyle _style;
 
-    private int _top;
-    private int _bottom;
+    private final int _top;
+    private final int _bottom;
 
     private int _paintingTop;
     private int _paintingBottom;
@@ -99,10 +99,12 @@ public class PageBox {
     @Nullable
     private Element _metadata;
 
-    public PageBox(PageInfo pageInfo, CssContext cssContext, CalculatedStyle style) {
+    public PageBox(PageInfo pageInfo, CssContext cssContext, CalculatedStyle style, int top) {
         _pageInfo = pageInfo;
         _style = style;
         _outerPageWidth = getWidth(cssContext);
+        _top = top;
+        _bottom = top + getContentHeight(cssContext);
     }
 
     public int getWidth(CssContext cssCtx) {
@@ -223,11 +225,6 @@ public class PageBox {
 
     public int getTop() {
         return _top;
-    }
-
-    public void setTopAndBottom(CssContext cssCtx, int top) {
-        _top = top;
-        _bottom = top + getContentHeight(cssCtx);
     }
 
     public int getPaintingBottom() {
