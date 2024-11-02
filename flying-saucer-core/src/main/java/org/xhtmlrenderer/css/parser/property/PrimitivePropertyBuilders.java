@@ -962,7 +962,7 @@ public class PrimitivePropertyBuilders {
 
             String text = concat(normalized, ',');
             PropertyValue result = new PropertyValue(
-                    CSSPrimitiveValue.CSS_STRING, text, text, normalized.toArray(new String[normalized.size()]), null);  // HACK cssText can be wrong
+                    CSSPrimitiveValue.CSS_STRING, text, text, normalized.toArray(new String[0]), null);  // HACK cssText can be wrong
 
             return singletonList(
                     new PropertyDeclaration(cssName, result, important, origin));
