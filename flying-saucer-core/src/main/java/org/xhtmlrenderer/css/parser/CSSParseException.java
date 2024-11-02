@@ -24,8 +24,7 @@ import org.jspecify.annotations.Nullable;
 public class CSSParseException extends RuntimeException {
     @Nullable
     private final Token _found;
-    @Nullable
-    private final Token[] _expected;
+    private final Token @Nullable [] _expected;
     private int _line;
 
     @Nullable
@@ -52,7 +51,7 @@ public class CSSParseException extends RuntimeException {
         _genericMessage = null;
     }
 
-    public CSSParseException(Token found, @Nullable Token[] expected, int line) {
+    public CSSParseException(Token found, Token @Nullable [] expected, int line) {
         _found = found;
         _expected = expected == null ? new Token[]{} : expected.clone();
         _line = line;
