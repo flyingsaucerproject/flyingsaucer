@@ -8,7 +8,7 @@
  * <p>All classes in this package are intended for ease-of-use, with no customization
  * required. To render a document quickly, use {@link org.xhtmlrenderer.simple.XHTMLPanel}--just instantiate
  * the panel, add it to a scroll pane or {@link org.xhtmlrenderer.simple.FSScrollPane}, and call
- * {@link org.xhtmlrenderer.simple.XHTMLPanel#setDocument(Document)}. You can render from a {@link org.w3c.dom.Document},
+ * {@link org.xhtmlrenderer.simple.XHTMLPanel#setDocument(org.w3c.dom.Document)}. You can render from a {@link org.w3c.dom.Document},
  * from a {@link java.net.URL}, from a file, and from an {@link java.io.InputStream}.</p>
  * <p>The {@link org.xhtmlrenderer.simple.Graphics2DRenderer} allows you to render XHTML right to image files--
  * without displaying them onscreen at all. You can use any XHTML/XML/CSS combination and
