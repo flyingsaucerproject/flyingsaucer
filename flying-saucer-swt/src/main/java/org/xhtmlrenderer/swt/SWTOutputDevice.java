@@ -299,7 +299,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
             case BasicStroke.CAP_BUTT -> SWT.CAP_FLAT;
             case BasicStroke.CAP_ROUND -> SWT.CAP_ROUND;
             case BasicStroke.CAP_SQUARE -> SWT.CAP_SQUARE;
-            default -> SWT.CAP_SQUARE;
+            default -> throw new IllegalArgumentException("Unsupported CAP value: " + bs.getEndCap());
         };
         _gc.setLineCap(gcCap);
 
@@ -308,7 +308,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
             case BasicStroke.JOIN_BEVEL -> SWT.JOIN_BEVEL;
             case BasicStroke.JOIN_MITER -> SWT.JOIN_MITER;
             case BasicStroke.JOIN_ROUND -> SWT.JOIN_ROUND;
-            default -> SWT.JOIN_MITER;
+            default -> throw new IllegalArgumentException("Unsupported line join: " + bs.getLineJoin());
         };
         _gc.setLineJoin(gcJoin);
 
