@@ -52,6 +52,8 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.util.Objects.requireNonNull;
+
 public final class BrowserPanel extends JPanel implements DocumentListener {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(BrowserPanel.class);
     private static final Logger logger = Logger.getLogger("app.browser");
@@ -145,7 +147,7 @@ public final class BrowserPanel extends JPanel implements DocumentListener {
         SharedContext rc = view.getSharedContext();
         try {
             rc.setFontMapping("Fuzz", Font.createFont(Font.TRUETYPE_FONT,
-                    new DemoMarker().getClass().getResourceAsStream("/demos/fonts/fuzz.ttf")));
+                    requireNonNull(DemoMarker.class.getResourceAsStream("/demos/fonts/fuzz.ttf"))));
         } catch (Exception ex) {
             Uu.p(ex);
         }
