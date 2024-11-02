@@ -476,7 +476,7 @@ abstract class Condition {
         @Override
         boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             int position = treeRes.getPositionOfElement(e);
-            return position >= 0 && position % 2 == 1;
+            return position % 2 == 1;
         }
     }
 

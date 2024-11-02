@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.extend;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.w3c.dom.Node;
 
 /**
@@ -62,6 +63,7 @@ public interface TreeResolver {
      * @param element The node
      * @return -1 in case of error, 0 indexed position otherwise
      */
+    @CheckReturnValue
     int getPositionOfElement(Node element);
 
     /**
