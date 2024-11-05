@@ -676,6 +676,10 @@ public class CalculatedStyle {
         return getIdent(CSSName.WORD_WRAP);
     }
 
+    public IdentValue getWordBreak() {
+        return getIdent(CSSName.WORD_BREAK);
+    }
+
     public IdentValue getHyphens() {
         return getIdent(CSSName.HYPHENS);
     }

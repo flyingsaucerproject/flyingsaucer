@@ -112,7 +112,10 @@ public class Breaker {
         }
 
         context.setEndsOnNL(false);
-        doBreakText(c, context, avail, style, false);
+
+        boolean tryToBreakAnywhere = style.getWordBreak() == IdentValue.BREAK_ALL;
+
+        doBreakText(c, context, avail, style, tryToBreakAnywhere);
     }
 
     private static int getWidth(LayoutContext c, FSFont f, String text) {
