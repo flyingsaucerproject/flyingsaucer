@@ -1065,6 +1065,18 @@ public final class CSSName implements Comparable<CSSName> {
     /**
      * Unique CSSName instance for CSS3 property.
      */
+    public static final CSSName WORD_BREAK =
+            addProperty(
+                    "word-break",
+                    PRIMITIVE,
+                    "normal",
+                    INHERITS,
+                    new PrimitivePropertyBuilders.WordBreak()
+            );
+
+    /**
+     * Unique CSSName instance for CSS3 property.
+     */
     public static final CSSName WORD_WRAP =
             addProperty(
                     "word-wrap",

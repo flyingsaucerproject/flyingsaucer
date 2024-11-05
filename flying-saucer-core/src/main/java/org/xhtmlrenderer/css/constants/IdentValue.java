@@ -73,6 +73,7 @@ public class IdentValue implements FSDerivedValue {
     public static final IdentValue BORDER_BOX = addValue("border-box");
     public static final IdentValue BOTH = addValue("both");
     public static final IdentValue BOTTOM = addValue("bottom");
+    public static final IdentValue BREAK_ALL = addValue("break-all");
     public static final IdentValue CAPITALIZE = addValue("capitalize");
     public static final IdentValue CENTER = addValue("center");
     public static final IdentValue CIRCLE = addValue("circle");

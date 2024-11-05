@@ -1599,6 +1599,18 @@ public class PrimitivePropertyBuilders {
         }
     }
 
+    public static class WordBreak extends SingleIdent {
+        // normal | break-all
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] {
+                        IdentValue.NORMAL, IdentValue.BREAK_ALL});
+
+        @Override
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+    }
+
     public static class WordWrap extends SingleIdent {
         // normal | break-word
         private static final BitSet ALLOWED = setFor(
