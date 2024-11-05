@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.11.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/25
+* Add support for `word-break:break-all` CSS property  --  thanks to Kyle Stephens (#438)
+* refactoring: remove setters and make many classes immutable (#434)
+ 
 ## 9.10.2 (29.10.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/24?closed=1
 * add overloaded method `addFontDirectory(... String encoding ...)`
 * #431 fix interpretation of cell borders (#432)
