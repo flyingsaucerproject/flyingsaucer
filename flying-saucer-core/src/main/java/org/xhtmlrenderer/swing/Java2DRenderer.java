@@ -353,10 +353,14 @@ public class Java2DRenderer {
 
     public static BufferedImage htmlAsImage(String html, int widthInPixels) throws SAXException {
         try (InputStream in = new ByteArrayInputStream(html.getBytes(UTF_8))) {
-            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
-            return new Java2DRenderer(document, widthInPixels).getImage();
+            return htmlAsImage(in, widthInPixels);
         } catch (IOException | ParserConfigurationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static BufferedImage htmlAsImage(InputStream source, int widthInPixels) throws SAXException, IOException, ParserConfigurationException {
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(source);
+        return new Java2DRenderer(document, widthInPixels).getImage();
     }
 }
