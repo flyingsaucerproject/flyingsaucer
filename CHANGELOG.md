@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.11.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/26
+* 
+
 ## 9.11.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/25?closed=1
 * Add support for `word-break:break-all` CSS property  --  thanks to Kyle Stephens (#438)
 * #440 Fix relative background image (#441)
