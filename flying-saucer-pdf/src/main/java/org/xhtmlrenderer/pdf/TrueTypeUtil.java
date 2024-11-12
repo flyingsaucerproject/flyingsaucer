@@ -1,6 +1,5 @@
 package org.xhtmlrenderer.pdf;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
@@ -36,7 +35,6 @@ public class TrueTypeUtil {
      */
     private static final boolean AVOID_MEMORY_MAPPED_FILES = true;
 
-    @CheckReturnValue
     private static IdentValue guessStyle(BaseFont font) {
         String[][] names = font.getFullFontName();
 
@@ -52,7 +50,6 @@ public class TrueTypeUtil {
         return NORMAL;
     }
 
-    @CheckReturnValue
     public static Collection<String> getFamilyNames(BaseFont font) {
         String[][] names = font.getFamilyFontName();
 
@@ -70,7 +67,6 @@ public class TrueTypeUtil {
         return result;
     }
 
-    @CheckReturnValue
     // HACK No accessor
     private static Map<String, int[]> extractTables(BaseFont font)
             throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
@@ -90,13 +86,11 @@ public class TrueTypeUtil {
         throw new NoSuchFieldException("Could not find tables field");
     }
 
-    @CheckReturnValue
     private static String getTTCName(String name) {
         int index = name.toLowerCase(ROOT).indexOf(".ttc,");
         return index < 0 ? name : name.substring(0, index + 4);
     }
 
-    @CheckReturnValue
     public static FontDescription extractDescription(String path, BaseFont font, @Nullable IdentValue fontWeightOverride) {
         try {
             Decorations decorations = readFontDecorations(path, font, fontWeightOverride);
@@ -114,7 +108,6 @@ public class TrueTypeUtil {
         }
     }
 
-    @CheckReturnValue
     public static FontDescription extractDescription(String path, byte[] contents,
                                                      BaseFont font, boolean isFromFontFace,
                                                      @Nullable IdentValue fontWeightOverride,
@@ -128,7 +121,6 @@ public class TrueTypeUtil {
         }
     }
 
-    @CheckReturnValue
     private static Decorations readFontDecorations(String path, byte[] contents, BaseFont font, @Nullable IdentValue fontWeightOverride)
             throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
         try (RandomAccessFileOrArray rf = new RandomAccessFileOrArray(contents)) {
@@ -136,7 +128,6 @@ public class TrueTypeUtil {
         }
     }
 
-    @CheckReturnValue
     private static Decorations readFontDecorations(String path, BaseFont font, RandomAccessFileOrArray rf, @Nullable IdentValue fontWeightOverride)
             throws NoSuchFieldException, IllegalAccessException, DocumentException, IOException {
         Map<String, int[]> tables = extractTables(font);

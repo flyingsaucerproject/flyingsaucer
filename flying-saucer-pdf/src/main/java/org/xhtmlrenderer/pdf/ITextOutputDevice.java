@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.CMYKColor;
@@ -254,7 +253,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         return rect.getLeft() + ":" + rect.getBottom() + ":" + rect.getRight() + ":" + rect.getTop();
     }
 
-    @CheckReturnValue
     private Optional<com.lowagie.text.Rectangle> checkLinkArea(RenderingContext c, Box box) {
         com.lowagie.text.Rectangle targetArea = calcTotalLinkArea(c, box);
         String key = createRectKey(targetArea);
@@ -363,7 +361,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     @Nullable
-    @CheckReturnValue
     private PdfDestination createDestination(RenderingContext c, Box box) {
         PdfDestination result = null;
 
@@ -472,7 +469,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     @Nullable
-    @CheckReturnValue
     @Override
     public Object getRenderingHint(RenderingHints.Key key) {
         return null;
@@ -812,7 +808,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     @Nullable
-    @CheckReturnValue
     @Override
     public Shape getClip() {
         try {
@@ -1106,7 +1101,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
      *         null.
      */
     @Nullable
-    @CheckReturnValue
     public String getMetadataByName(String name) {
         for (Metadata m : _metadata) {
             if ((m != null) && m.getName().equalsIgnoreCase(name)) {
@@ -1292,7 +1286,6 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
 
     @Nullable
-    @CheckReturnValue
     private PagePosition calcPDFPagePosition(CssContext c, String id, Box box) {
         PageBox page = _root.getLayer().getLastPage(c, box);
         if (page == null) {

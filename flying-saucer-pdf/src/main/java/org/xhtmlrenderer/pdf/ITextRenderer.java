@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import org.jspecify.annotations.Nullable;
@@ -167,22 +166,18 @@ public class ITextRenderer {
     }
 
     @Nullable
-    @CheckReturnValue
     public Document getDocument() {
         return _doc;
     }
 
-    @CheckReturnValue
     public ITextFontResolver getFontResolver() {
         return (ITextFontResolver) _sharedContext.getFontResolver();
     }
 
-    @CheckReturnValue
     private Document loadDocument(final String uri) {
         return _sharedContext.getUac().getXMLResource(uri).getDocument();
     }
 
-    @CheckReturnValue
     public static ITextRenderer fromUrl(String uri) {
         ITextRenderer renderer = new ITextRenderer();
         renderer.setDocument(renderer.loadDocument(uri), uri);
@@ -239,6 +234,7 @@ public class ITextRenderer {
         getFontResolver().importFontFaces(_sharedContext.getCss().getFontFaceRules(), _sharedContext.getUac());
     }
 
+    @Nullable
     public PDFEncryption getPDFEncryption() {
         return _pdfEncryption;
     }
@@ -504,7 +500,6 @@ public class ITextRenderer {
     }
 
     @Nullable
-    @CheckReturnValue
     private String stringifyMetadata(Element element) {
         Element target = getFirstChildElement(element);
         if (target == null) {
@@ -529,7 +524,6 @@ public class ITextRenderer {
     }
 
     @Nullable
-    @CheckReturnValue
     private static Element getFirstChildElement(Element element) {
         Node n = element.getFirstChild();
         while (n != null) {
@@ -547,12 +541,10 @@ public class ITextRenderer {
                 "\n<?xpacket end='r'?>";
     }
 
-    @CheckReturnValue
     public ITextOutputDevice getOutputDevice() {
         return _outputDevice;
     }
 
-    @CheckReturnValue
     public SharedContext getSharedContext() {
         return _sharedContext;
     }
@@ -564,17 +556,14 @@ public class ITextRenderer {
     }
 
     @Nullable
-    @CheckReturnValue
     public BlockBox getRootBox() {
         return _root;
     }
 
-    @CheckReturnValue
     public float getDotsPerPoint() {
         return _dotsPerPoint;
     }
 
-    @CheckReturnValue
     public List<PagePosition> findPagePositionsByID(Pattern pattern) {
         return _outputDevice.findPagePositionsByID(newLayoutContext(), pattern);
     }
@@ -597,7 +586,6 @@ public class ITextRenderer {
     }
 
     @Nullable
-    @CheckReturnValue
     public PDFCreationListener getListener() {
         return _listener;
     }
@@ -607,7 +595,6 @@ public class ITextRenderer {
     }
 
     @Nullable
-    @CheckReturnValue
     public PdfWriter getWriter() {
         return _writer;
     }

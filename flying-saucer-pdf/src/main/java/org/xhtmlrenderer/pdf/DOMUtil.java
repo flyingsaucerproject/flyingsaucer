@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -30,7 +29,6 @@ import java.util.List;
 
 public class DOMUtil {
     @Nullable
-    @CheckReturnValue
     public static Element getChild(Element parent, String name) {
         NodeList children = parent.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
@@ -45,7 +43,6 @@ public class DOMUtil {
         return null;
     }
 
-    @CheckReturnValue
     public static List<Element> getChildren(Element parent, String name) {
         NodeList children = parent.getChildNodes();
         List<Element> result = new ArrayList<>(children.getLength());
@@ -67,7 +64,6 @@ public class DOMUtil {
      *
      * @return a String with the text content of an element (maybe an empty string but will not be null).
      */
-    @CheckReturnValue
     public static String getText(Element parent) {
         StringBuilder sb = new StringBuilder();
         getText(parent, sb);

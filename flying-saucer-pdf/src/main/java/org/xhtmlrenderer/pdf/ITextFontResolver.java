@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
 import org.jspecify.annotations.Nullable;
@@ -110,7 +109,6 @@ public class ITextFontResolver implements FontResolver {
     }
 
     @Nullable
-    @CheckReturnValue
     @Override
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
         return resolveFont(spec.families, spec.size, spec.fontWeight, spec.fontStyle);
@@ -205,7 +203,6 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
-    @CheckReturnValue
     private File[] filesWithExtensions(File f, String... extensions) {
         return requireNonNull(f.listFiles((d, name) -> {
             String lower = name.toLowerCase(ROOT);
@@ -273,7 +270,6 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
-    @CheckReturnValue
     private static Collection<String> getFontFamilyNames(BaseFont font, @Nullable String fontFamilyNameOverride) {
         if (fontFamilyNameOverride != null) {
             return singletonList(fontFamilyNameOverride);
@@ -333,18 +329,15 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
-    @CheckReturnValue
     private static FontDescription fontDescription(@Nullable IdentValue fontWeightOverride, @Nullable IdentValue fontStyleOverride,
                                                    String uri, byte[] ttfAfm, BaseFont font) {
         return extractDescription(uri, ttfAfm, font, true, fontWeightOverride, fontStyleOverride);
     }
 
-    @CheckReturnValue
     private byte[] readFile(String path) throws IOException {
         return IOUtil.readBytes(Paths.get(path));
     }
 
-    @CheckReturnValue
     private FontFamily getFontFamily(String fontFamilyName) {
         FontFamily fontFamily = getFonts().get(fontFamilyName);
         if (fontFamily == null) {
@@ -355,7 +348,6 @@ public class ITextFontResolver implements FontResolver {
     }
 
     @Nullable
-    @CheckReturnValue
     private FSFont resolveFont(String @Nullable [] families, float size, IdentValue weight, IdentValue style) {
         if (!(style == IdentValue.NORMAL || style == IdentValue.OBLIQUE
                 || style == IdentValue.ITALIC)) {

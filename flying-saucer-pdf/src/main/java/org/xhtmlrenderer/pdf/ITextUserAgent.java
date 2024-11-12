@@ -20,7 +20,6 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
@@ -58,7 +57,6 @@ public class ITextUserAgent extends NaiveUserAgent {
         return dotsPerPixel;
     }
 
-    @CheckReturnValue
     @Override
     public ImageResource getImageResource(String uriStr) {
         String unresolvedUri = uriStr;
@@ -82,7 +80,6 @@ public class ITextUserAgent extends NaiveUserAgent {
         }
     }
 
-    @CheckReturnValue
     @Nullable
     private ImageResource loadImageResource(String uriStr) {
         if (isEmbeddedBase64Image(uriStr)) {
