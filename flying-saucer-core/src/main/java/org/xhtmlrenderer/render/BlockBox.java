@@ -366,7 +366,7 @@ public class BlockBox extends Box implements InlinePaintable {
             return null;
         }
         if (img.getHeight() > structMetrics.getAscent()) {
-            img.scale(-1, (int) structMetrics.getAscent());
+            img = img.scale(-1, (int) structMetrics.getAscent());
         }
         return new ImageMarker(img, img.getWidth() * 2);
     }

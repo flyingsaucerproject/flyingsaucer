@@ -39,6 +39,14 @@ public class PDFAsImage implements FSImage {
         _unscaledHeight = height;
     }
 
+    private PDFAsImage(URI source, float unscaledWidth, float unscaledHeight, float width, float height) {
+        _source = source;
+        _width = width;
+        _unscaledWidth = unscaledWidth;
+        _height = height;
+        _unscaledHeight = unscaledHeight;
+    }
+
     @Override
     public int getWidth() {
         return (int)_width;
@@ -62,7 +70,7 @@ public class PDFAsImage implements FSImage {
             targetHeight = getHeightAsFloat() * (targetWidth / getWidth());
         }
 
-        return new PDFAsImage(_source, targetWidth, targetHeight);
+        return new PDFAsImage(_source, _width, _height, targetWidth, targetHeight);
     }
 
     public URI getURI() {

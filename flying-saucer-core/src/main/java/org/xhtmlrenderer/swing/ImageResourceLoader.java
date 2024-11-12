@@ -116,8 +116,11 @@ public class ImageResourceLoader {
     public synchronized ImageResource get(final String uri, final int width, final int height) {
         if (isEmbeddedBase64Image(uri)) {
             ImageResource resource = loadEmbeddedBase64ImageResource(uri);
-            resource.getImage().scale(width, height);
-            return resource;
+            FSImage scaledImage = resource.getImage();
+            if (scaledImage != null) {
+                scaledImage = scaledImage.scale(width, height);
+            }
+            return new ImageResource(resource.getImageUri(), scaledImage);
         } else {
             CacheKey key = new CacheKey(uri, width, height);
             ImageResource ir = _imageCache.get(key);
