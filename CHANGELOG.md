@@ -1,8 +1,10 @@
 # Changelog
 
-## 9.11.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/25
+## 9.11.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/25?closed=1
 * Add support for `word-break:break-all` CSS property  --  thanks to Kyle Stephens (#438)
-* refactoring: remove setters and make many classes immutable (#434)
+* #440 Fix relative background image (#441)
+* Fix PDFAsImage scaling  --  thanks to JamesScrase-PortSwigger (#442)
+* refactoring: remove setters and make many classes immutable (#434) (#435) (#443)
  
 ## 9.10.2 (29.10.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/24?closed=1
 * add overloaded method `addFontDirectory(... String encoding ...)`
