@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
 import org.xhtmlrenderer.extend.FSImage;
 
 import java.net.URI;
@@ -57,6 +59,8 @@ public class PDFAsImage implements FSImage {
         return (int)_height;
     }
 
+    @NonNull
+    @CheckReturnValue
     @Override
     public FSImage scale(int width, int height) {
         float targetWidth = width;

@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.extend;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
@@ -63,7 +62,6 @@ public interface UserAgentCallback {
      * @param uri Location of the image
      * @return An ImageResource for the content at the URI.
      */
-    @CheckReturnValue
     ImageResource getImageResource(String uri);
 
     /**
@@ -72,7 +70,6 @@ public interface UserAgentCallback {
      * @param uri Location of the XML
      * @return A XMLResource for the content at the URI.
      */
-    @CheckReturnValue
     @Nullable
     XMLResource getXMLResource(String uri);
 
@@ -80,7 +77,6 @@ public interface UserAgentCallback {
      * Retrieves a binary resource located at a given URI and returns its contents
      * as a byte array or {@code null} if the resource could not be loaded.
      */
-    @CheckReturnValue
     byte @Nullable [] getBinaryResource(String uri);
 
     /**
@@ -90,7 +86,6 @@ public interface UserAgentCallback {
      * @param uri A URI which may have been visited by this user agent.
      * @return The visited value
      */
-    @CheckReturnValue
     boolean isVisited(@Nullable String uri);
 
     /**
@@ -104,7 +99,6 @@ public interface UserAgentCallback {
     /**
      * @return the base uri, possibly in the implementations private uri-space
      */
-    @CheckReturnValue
     @Nullable
     String getBaseURL();
 
@@ -117,7 +111,6 @@ public interface UserAgentCallback {
      * @return the full uri in uri-spaces known to the current implementation.
      */
     @Nullable
-    @CheckReturnValue
     String resolveURI(@Nullable String uri);
 }
 

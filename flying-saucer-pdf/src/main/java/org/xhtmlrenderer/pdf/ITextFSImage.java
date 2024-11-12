@@ -19,7 +19,9 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.Image;
+import org.jspecify.annotations.NonNull;
 import org.xhtmlrenderer.extend.FSImage;
 
 public class ITextFSImage implements FSImage, Cloneable {
@@ -39,6 +41,8 @@ public class ITextFSImage implements FSImage, Cloneable {
         return (int)_image.getPlainHeight();
     }
 
+    @NonNull
+    @CheckReturnValue
     @Override
     public FSImage scale(int width, int height) {
         if (width > 0 || height > 0) {

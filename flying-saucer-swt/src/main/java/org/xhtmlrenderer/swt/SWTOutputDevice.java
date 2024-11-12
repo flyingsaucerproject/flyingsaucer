@@ -27,6 +27,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -340,7 +342,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
     @Nullable
     @CheckReturnValue
     @Override
-    public Object getRenderingHint(RenderingHints.Key key) {
+    public Object getRenderingHint(RenderingHints.@NonNull Key key) {
         if (RenderingHints.KEY_ANTIALIASING.equals(key)) {
             switch (_gc.getAntialias()) {
             case SWT.DEFAULT:
@@ -354,6 +356,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         return null;
     }
 
+    @NullMarked
     @Override
     public void setRenderingHint(RenderingHints.Key key, Object value) {
         if (RenderingHints.KEY_ANTIALIASING.equals(key)) {

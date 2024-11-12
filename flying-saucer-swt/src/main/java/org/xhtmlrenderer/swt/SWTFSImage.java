@@ -19,8 +19,10 @@
  */
 package org.xhtmlrenderer.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -110,6 +112,8 @@ public class SWTFSImage implements FSImage {
         _width = width;
     }
 
+    @NonNull
+    @CheckReturnValue
     @Override
     public FSImage scale(int width, int height) {
         if (width < 0 && height < 0) {

@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.extend;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -86,7 +85,6 @@ public interface OutputDevice {
     Stroke getStroke();
 
     @Nullable
-    @CheckReturnValue
     Object getRenderingHint(RenderingHints.Key key);
 
     void setRenderingHint(RenderingHints.Key key, Object value);

@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.swing;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.util.ImageUtil;
@@ -70,6 +71,8 @@ public abstract class AWTFSImage implements FSImage {
             return img;
         }
 
+        @NonNull
+        @CheckReturnValue
         @Override
         public FSImage scale(int width, int height) {
             if (width > 0 || height > 0) {
@@ -107,6 +110,8 @@ public abstract class AWTFSImage implements FSImage {
             return 0;
         }
 
+        @NonNull
+        @CheckReturnValue
         @Override
         public FSImage scale(int width, int height) {
             return this;

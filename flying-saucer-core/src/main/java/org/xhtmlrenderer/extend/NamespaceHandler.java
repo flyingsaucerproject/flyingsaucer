@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.extend;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,70 +35,56 @@ import java.util.Optional;
  */
 public interface NamespaceHandler {
 
-    @CheckReturnValue
     String getNamespace();
 
-    @CheckReturnValue
     Optional<StylesheetInfo> getDefaultStylesheet();
 
     @Nullable
-    @CheckReturnValue
     String getDocumentTitle(Document doc);
 
     /**
      * @param doc the document
      * @return all links to CSS stylesheets (type="text/css") in this document
      */
-    @CheckReturnValue
     List<StylesheetInfo> getStylesheets(Document doc);
 
     /**
      * may return null. Required to return null if attribute does not exist and
      * not null if attribute exists.
      */
-    @CheckReturnValue
     String getAttributeValue(Element e, String attrName);
 
-    @CheckReturnValue
     String getAttributeValue(Element e, @Nullable String namespaceURI, String attrName);
 
     @Nullable
-    @CheckReturnValue
     String getClass(Element e);
 
     @Nullable
-    @CheckReturnValue
     String getID(Element e);
 
     @Nullable
-    @CheckReturnValue
     String getElementStyling(Element e);
 
     /**
      * @return The corresponding css properties for styling that is obtained in other ways.
      */
     @Nullable
-    @CheckReturnValue
     String getNonCssStyling(Element e);
 
-    @CheckReturnValue
     String getLang(Element e);
 
     /**
      * should return null if element is not a link
      */
     @Nullable
-    @CheckReturnValue
     String getLinkUri(Element e);
 
     @Nullable
-    @CheckReturnValue
     String getAnchorName(@Nullable Element e);
 
     /**
      * @return Returns true if the Element represents an image.
      */
-    @CheckReturnValue
     boolean isImageElement(Element e);
 
     /**
@@ -109,7 +94,6 @@ public interface NamespaceHandler {
      * @param e The Element to evaluate.
      * @return true if the Element is a &lt;form&gt; element, false otherwise.
      */
-    @CheckReturnValue
     boolean isFormElement(Element e);
 
     /**
@@ -123,7 +107,6 @@ public interface NamespaceHandler {
      * @return String containing the URI for the image.
      */
     @Nullable
-    @CheckReturnValue
     String getImageSourceURI(Element e);
 }
 
