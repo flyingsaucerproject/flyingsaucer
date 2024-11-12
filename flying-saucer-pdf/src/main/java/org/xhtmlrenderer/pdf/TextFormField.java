@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfAnnotation;
@@ -180,7 +179,6 @@ public class TextFormField extends AbstractFormField {
   }
 
   @Override
-  @CheckReturnValue
   protected String getValue(Element e) {
     return e.getAttribute("value");
   }

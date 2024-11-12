@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import com.lowagie.text.pdf.BaseFont;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
@@ -49,7 +48,6 @@ public class ITextTextRenderer implements TextRenderer {
         ((ITextOutputDevice)outputDevice).drawString(string, x, y, info);
     }
 
-    @CheckReturnValue
     @Override
     public FSFontMetrics getFSFontMetrics(FontContext context, FSFont font, String string) {
         FontDescription description = ((ITextFSFont)font).getFontDescription();
