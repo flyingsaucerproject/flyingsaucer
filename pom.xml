@@ -205,6 +205,7 @@
           <target>${java.version}</target>
           <compilerArgs>
             <arg>-XDcompilePolicy=simple</arg>
+            <arg>--should-stop=ifError=FLOW</arg>
             <arg>-Xplugin:ErrorProne -Xep:MissingSummary:OFF -Xep:JdkObsolete:OFF -Xep:ReferenceEquality:OFF -Xep:OperatorPrecedence:OFF</arg>
           </compilerArgs>
           <annotationProcessorPaths>
