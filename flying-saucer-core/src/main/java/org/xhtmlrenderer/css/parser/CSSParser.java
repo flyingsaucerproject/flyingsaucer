@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Locale.ROOT;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_NUMBER;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PERCENTAGE;
@@ -550,7 +551,7 @@ public class CSSParser {
                             skip_whitespace();
                             break;
                         } else if (t == Token.TK_AT_RULE) {
-                            margins = margin(stylesheet);
+                            margins.putAll(margin(stylesheet));
                         } else {
                             declaration_list(ruleset, false, true, false);
                         }
@@ -576,13 +577,11 @@ public class CSSParser {
 //    margin_sym S* '{' declaration [ ';' S* declaration? ]* '}' S*
 //    ;
     private Map<MarginBoxName, List<PropertyDeclaration>> margin(Stylesheet stylesheet) throws IOException {
-        Map<MarginBoxName, List<PropertyDeclaration>> margins = new HashMap<>();
-
         Token t = next();
         if (t != Token.TK_AT_RULE) {
             error(new CSSParseException(t, Token.TK_AT_RULE, getCurrentLine()), "at rule", true);
             recover(true, false);
-            return margins;
+            return emptyMap();
         }
 
         String name = getTokenValue(t);
@@ -590,7 +589,7 @@ public class CSSParser {
         if (marginBoxName == null) {
             error(new CSSParseException(name + " is not a valid margin box name", getCurrentLine()), "at rule", true);
             recover(true, false);
-            return margins;
+            return emptyMap();
         }
 
         skip_whitespace();
@@ -605,7 +604,7 @@ public class CSSParser {
                     push(t);
                     throw new CSSParseException(t, Token.TK_RBRACE, getCurrentLine());
                 }
-                margins.put(marginBoxName, ruleset.getPropertyDeclarations());
+                return Map.of(marginBoxName, ruleset.getPropertyDeclarations());
             } else {
                 push(t);
                 throw new CSSParseException(t, Token.TK_LBRACE, getCurrentLine());
@@ -614,7 +613,7 @@ public class CSSParser {
             error(e, "margin box", true);
             recover(false, false);
         }
-        return margins;
+        return emptyMap();
     }
 
 
