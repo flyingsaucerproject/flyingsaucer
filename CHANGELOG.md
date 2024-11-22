@@ -1,7 +1,7 @@
 # Changelog
 
-## 9.11.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/26
-* 
+## 9.11.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/26?closed=1
+* #447 Broken page headers in version 9.11.0 (#450)
 
 ## 9.11.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/25?closed=1
 * Add support for `word-break:break-all` CSS property  --  thanks to Kyle Stephens (#438)
