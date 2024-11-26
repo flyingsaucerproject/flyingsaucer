@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.simple;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
@@ -7,31 +8,39 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 
 /**
- * <p>XHTMLPrintable allows you to print XHTML content to a printer instead of
- * rendering it to screen.  It is an implementation of @see java.awt.print.Printable
- * so you can use it any where you would use any other Printable object. The constructor
- * requires an XHTMLPanel, so it's easiest to prepare an XHTMLPanel as normal, and then
- * wrap a printable around it.ex:
- * </p>
  * <p>
- * <pre>@{code
- * import org.xhtmlrenderer.simple.*;
- * import java.awt.print.*;
- * // . . . .
- * // xhtml_panel created earlier
+ *     XHTMLPrintable allows you to print XHTML content to a printer instead of
+ *     rendering it to screen.
+ * </p>
  *
- * PrinterJob printJob = PrinterJob.getPrinterJob();
- * printJob.setPrintable(new XHTMLPrintable(xhtml_panel));
+ * <p>
+ *   It is an implementation of {@link java.awt.print.Printable},
+ *   so you can use it whenever you would use any other Printable object. The constructor
+ *   requires an {@link XHTMLPanel}, so it's easiest to prepare an {@link XHTMLPanel} instance as normal, and then
+ *   wrap a printable around it.
+ * </p>
  *
- * if(printJob.printDialog()) {
- * printJob.print();
- * }
+ * <p>
+ *   For example:
+ * <pre>{@code
+ *   import org.xhtmlrenderer.simple.*;
+ *   import java.awt.print.*;
+ *   // . . . .
+ *   // xhtml_panel created earlier
+ *
+ *   PrinterJob printJob = PrinterJob.getPrinterJob();
+ *   printJob.setPrintable(new XHTMLPrintable(xhtml_panel));
+ *
+ *   if (printJob.printDialog()) {
+ *     printJob.print();
+ *   }
  * }</pre>
  */
 
 public class XHTMLPrintable implements Printable {
-
     private final XHTMLPanel panel;
+
+    @Nullable
     private Graphics2DRenderer g2r;
 
 
@@ -50,19 +59,18 @@ public class XHTMLPrintable implements Printable {
      * <p>The implementation of the <i>print</i> method
      * from the @see java.awt.print.Printable interface.
      */
+    @Override
     public int print(Graphics g, PageFormat pf, int page) {
         try {
-
             Graphics2D g2 = (Graphics2D) g;
 
             if (g2r == null) {
-                g2r = new Graphics2DRenderer();
+                g2r = new Graphics2DRenderer(panel.getDocument(), panel.getSharedContext().getUac().getBaseURL());
                 g2r.getSharedContext().setPrint(true);
                 g2r.getSharedContext().setInteractive(false);
                 g2r.getSharedContext().setDPI(72f);
                 g2r.getSharedContext().getTextRenderer().setSmoothingThreshold(0);
                 g2r.getSharedContext().setUserAgentCallback(panel.getSharedContext().getUserAgentCallback());
-                g2r.setDocument(panel.getDocument(), panel.getSharedContext().getUac().getBaseURL());
                 g2r.getSharedContext().setReplacedElementFactory(panel.getSharedContext().getReplacedElementFactory());
                 g2r.layout(g2, null);
                 g2r.getPanel().assignPagePrintPositions(g2);
