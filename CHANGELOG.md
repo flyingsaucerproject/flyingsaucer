@@ -1,7 +1,7 @@
 # Changelog
 
-## 9.11.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/27
-*
+## 9.11.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/27?closed=1
+* restore class XHTMLPrintable (#451)
 
 ## 9.11.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/26?closed=1
 * #447 Broken page headers in version 9.11.0 (#450)
