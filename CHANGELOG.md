@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.11.3 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/28
+* ...
+
 ## 9.11.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/27?closed=1
 * restore class XHTMLPrintable (#451)
 
