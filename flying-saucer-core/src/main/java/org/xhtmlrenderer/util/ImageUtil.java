@@ -27,6 +27,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -281,6 +283,9 @@ public class ImageUtil {
         int b64Index = imageDataUri.indexOf("base64,");
         if (b64Index != -1) {
             String b64encoded = imageDataUri.substring(b64Index + "base64,".length());
+            if (b64encoded.contains("%")) {
+                b64encoded = URLDecoder.decode(b64encoded, StandardCharsets.US_ASCII);
+            }
             return Base64.getDecoder().decode(b64encoded);
         } else {
             XRLog.load(Level.SEVERE, "Embedded XHTML images must be encoded in base 64.");
