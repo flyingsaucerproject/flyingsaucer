@@ -1,6 +1,5 @@
 package org.xhtmlrenderer.pdf;
 
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -12,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 import static com.codeborne.pdftest.assertj.Assertions.assertThat;
 import static java.util.Objects.requireNonNull;
+import static org.xhtmlrenderer.pdf.TestUtils.getFontNames;
 
 public class CssFontFaceTest {
 
@@ -41,20 +40,6 @@ public class CssFontFaceTest {
                         .as("Should contain Jacquard24 font")
                         .anyMatch(name -> name.contains("Jacquard24"));
             }
-        }
-    }
-
-    private List<String> getFontNames(PDResources res) {
-        return StreamSupport.stream(res.getFontNames().spliterator(), false)
-                .map(font -> getFontName(res, font))
-                .toList();
-    }
-
-    private String getFontName(PDResources res, COSName font) {
-        try {
-            return res.getFont(font).getFontDescriptor().getFontName();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read font name from %s".formatted(res.getCOSObject()), e);
         }
     }
 }
