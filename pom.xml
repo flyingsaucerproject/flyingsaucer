@@ -298,7 +298,7 @@
     <commons-io.version>2.18.0</commons-io.version>
     <junit.version>5.11.4</junit.version>
     <slf4j.version>2.0.16</slf4j.version>
-    <assertj.version>3.27.1</assertj.version>
+    <assertj.version>3.27.2</assertj.version>
     <pdftest.version>1.9.1</pdftest.version>
     <pdfbox.version>3.0.3</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
