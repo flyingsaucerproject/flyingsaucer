@@ -1,7 +1,9 @@
 # Changelog
 
 ## 9.11.3 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/28
-* ...
+* Add support for percent-encoded data URLs  --  thanks to Romain Moreau (#457)
+* #466 restore class `ToPDF`
+* bump PdfBox from 3.0.3 to 3.0.4 (#468)
 
 ## 9.11.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/27?closed=1
 * restore class XHTMLPrintable (#451)
