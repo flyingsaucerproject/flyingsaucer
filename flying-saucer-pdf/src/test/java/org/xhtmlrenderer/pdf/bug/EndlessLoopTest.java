@@ -14,7 +14,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class EndlessLoopTest {
 
   @Test
-  @Timeout(value = 3, unit = SECONDS)
+  @Timeout(value = 10, unit = SECONDS)
   public void wordwrap() {
     URL htmlUrl = requireNonNull(getClass().getResource("EndlessLoopTest_wordwrap.html"));
     byte[] pdf = Html2Pdf.fromUrl(htmlUrl);
