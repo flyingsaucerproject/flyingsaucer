@@ -22,7 +22,6 @@ package org.xhtmlrenderer.pdf;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPageEvent;
 import com.lowagie.text.pdf.PdfWriter;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -100,7 +99,8 @@ public class ITextRenderer {
 
     @Nullable
     private PdfPageEvent pdfPageEvent;
-    @NonNull
+
+    @Nullable
     private Dimension _dim;
 
     private boolean scaleToFit;
