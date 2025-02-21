@@ -279,8 +279,8 @@ public class ITextRenderer {
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
-        Dimension dim = root.getLayer().getPaintingDimension(c);
-        root.getLayer().trimEmptyPages(dim.height);
+        _dim = root.getLayer().getPaintingDimension(c);
+        root.getLayer().trimEmptyPages(_dim.height);
         root.getLayer().layoutPages(c);
         _root = root;
     }
