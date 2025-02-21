@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.11.4 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/29?closed=1
+* #471 restore method `setScaleToFit` (#472)
+
 ## 9.11.3 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/28?closed=1
 * Add support for percent-encoded data URLs  --  thanks to Romain Moreau (#457)
 * #466 restore class `ToPDF`
