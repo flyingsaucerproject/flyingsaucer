@@ -296,7 +296,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <openpdf.version>2.0.3</openpdf.version>
     <commons-io.version>2.18.0</commons-io.version>
-    <junit.version>5.12.0</junit.version>
+    <junit.version>5.12.1</junit.version>
     <slf4j.version>2.0.17</slf4j.version>
     <assertj.version>3.27.3</assertj.version>
     <pdftest.version>1.9.2</pdftest.version>
