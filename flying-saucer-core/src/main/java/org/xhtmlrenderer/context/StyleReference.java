@@ -215,12 +215,6 @@ public class StyleReference {
         return infos;
     }
 
-    public void removeStyle(Element e) {
-        if (_matcher != null) {
-            _matcher.removeStyle(e);
-        }
-    }
-
     public List<FontFaceRule> getFontFaceRules() {
         return _matcher.getFontFaceRules();
     }
