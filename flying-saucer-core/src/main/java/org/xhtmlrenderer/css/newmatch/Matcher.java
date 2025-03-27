@@ -51,6 +51,7 @@ import java.util.TreeMap;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Collections.synchronizedSet;
 import static java.util.Comparator.comparingLong;
+import static java.util.Objects.requireNonNullElseGet;
 import static org.xhtmlrenderer.css.newmatch.Selector.Axis.IMMEDIATE_SIBLING_AXIS;
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
 
@@ -179,12 +180,8 @@ public class Matcher {
     }
 
     private Mapper getMapper(Node e) {
-        Mapper m = _map.get(e);
-        if (m != null) {
-            return m;
-        }
-        m = matchElement(e);
-        return m;
+        return requireNonNullElseGet(_map.get(e),
+                () -> matchElement(e));
     }
 
     private Ruleset getElementStyle(Node e) {
