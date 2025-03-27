@@ -68,12 +68,12 @@ public class Matcher {
     private final Map<Node, Mapper> _map = synchronizedMap(new HashMap<>());
 
     //handle dynamic
-    private final Set<Node> _hoverElements = synchronizedSet(new HashSet<>());
-    private final Set<Node> _activeElements = synchronizedSet(new HashSet<>());
-    private final Set<Node> _focusElements = synchronizedSet(new HashSet<>());
+    private final Set<Node> _hoverElements = synchronizedSet(new HashSet<>(0));
+    private final Set<Node> _activeElements = synchronizedSet(new HashSet<>(0));
+    private final Set<Node> _focusElements = synchronizedSet(new HashSet<>(0));
     private final Set<Node> _visitElements = synchronizedSet(new HashSet<>());
-    private final List<PageRule> _pageRules = new ArrayList<>();
-    private final List<FontFaceRule> _fontFaceRules = new ArrayList<>();
+    private final List<PageRule> _pageRules = new ArrayList<>(0);
+    private final List<FontFaceRule> _fontFaceRules = new ArrayList<>(0);
 
     public Matcher(TreeResolver tr, AttributeResolver ar,
                    StylesheetFactory factory, List<Stylesheet> stylesheets, String medium) {
@@ -150,7 +150,7 @@ public class Matcher {
             if (parent != null) {
                 Mapper m = getMapper(parent);
                 child = m.mapChild(e);
-            } else {//has to be document or fragment node
+            } else { //has to be a document or a fragment node
                 child = docMapper.mapChild(e);
             }
             return child;
