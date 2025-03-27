@@ -69,9 +69,6 @@ public class Matcher {
 
     //handle dynamic
     private final Set<Node> _hoverElements = synchronizedSet(new HashSet<>(0));
-    private final Set<Node> _activeElements = synchronizedSet(new HashSet<>(0));
-    private final Set<Node> _focusElements = synchronizedSet(new HashSet<>(0));
-    private final Set<Node> _visitElements = synchronizedSet(new HashSet<>());
     private final List<PageRule> _pageRules = new ArrayList<>(0);
     private final List<FontFaceRule> _fontFaceRules = new ArrayList<>(0);
 
@@ -81,10 +78,6 @@ public class Matcher {
         _attRes = ar;
         _styleFactory = factory;
         docMapper = createDocumentMapper(stylesheets, medium);
-    }
-
-    public void removeStyle(Element e) {
-        _map.remove(e);
     }
 
     public CascadedStyle getCascadedStyle(Element e, boolean restyle) {
@@ -127,20 +120,8 @@ public class Matcher {
         return _fontFaceRules;
     }
 
-    public boolean isVisitedStyled(Node e) {
-        return _visitElements.contains(e);
-    }
-
     public boolean isHoverStyled(Node e) {
         return _hoverElements.contains(e);
-    }
-
-    public boolean isActiveStyled(Node e) {
-        return _activeElements.contains(e);
-    }
-
-    public boolean isFocusStyled(Node e) {
-        return _focusElements.contains(e);
     }
 
     private Mapper matchElement(Node e) {
@@ -289,17 +270,8 @@ public class Matcher {
                     key.add(axe.getSelectorID());
                     continue;
                 }
-                if (axe.isPseudoClass(Selector.VISITED_PSEUDOCLASS)) {
-                    _visitElements.add(e);
-                }
-                if (axe.isPseudoClass(Selector.ACTIVE_PSEUDOCLASS)) {
-                    _activeElements.add(e);
-                }
                 if (axe.isPseudoClass(Selector.HOVER_PSEUDOCLASS)) {
                     _hoverElements.add(e);
-                }
-                if (axe.isPseudoClass(Selector.FOCUS_PSEUDOCLASS)) {
-                    _focusElements.add(e);
                 }
                 if (!axe.matchesDynamic(e, _attRes, _treeRes)) {
                     continue;
