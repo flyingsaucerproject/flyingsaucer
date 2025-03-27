@@ -127,14 +127,12 @@ public class Matcher {
     private Mapper matchElement(Node e) {
         synchronized (e) {
             Node parent = _treeRes.getParentElement(e);
-            Mapper child;
+
             if (parent != null) {
-                Mapper m = getMapper(parent);
-                child = m.mapChild(e);
-            } else { //has to be a document or a fragment node
-                child = docMapper.mapChild(e);
+                return getMapper(parent).mapChild(e);
+            } else { // has to be a document or a fragment node
+                return docMapper.mapChild(e);
             }
-            return child;
         }
     }
 
