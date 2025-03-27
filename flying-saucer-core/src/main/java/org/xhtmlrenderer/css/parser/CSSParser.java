@@ -55,15 +55,17 @@ import static java.util.Collections.emptyMap;
 import static java.util.Locale.ROOT;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_NUMBER;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PERCENTAGE;
+import static org.xhtmlrenderer.css.newmatch.Selector.ACTIVE_PSEUDOCLASS;
 import static org.xhtmlrenderer.css.newmatch.Selector.Axis.CHILD_AXIS;
 import static org.xhtmlrenderer.css.newmatch.Selector.Axis.DESCENDANT_AXIS;
 import static org.xhtmlrenderer.css.newmatch.Selector.Axis.IMMEDIATE_SIBLING_AXIS;
+import static org.xhtmlrenderer.css.newmatch.Selector.FOCUS_PSEUDOCLASS;
+import static org.xhtmlrenderer.css.newmatch.Selector.HOVER_PSEUDOCLASS;
+import static org.xhtmlrenderer.css.newmatch.Selector.VISITED_PSEUDOCLASS;
 import static org.xhtmlrenderer.css.parser.Token.Type.AT_RULE;
 
 @SuppressWarnings("MissingCasesInEnumSwitch")
 public class CSSParser {
-    private static final Set<String> SUPPORTED_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
-    private static final Set<String> CSS21_PSEUDO_ELEMENTS = setOf("first-line", "first-letter", "before", "after");
 
     @Nullable
     private Token _saved;
@@ -1145,63 +1147,68 @@ public class CSSParser {
 
     private void addPseudoClassOrElement(Token t, Selector selector) {
         String value = getTokenValue(t);
-        if (value.equals("link")) {
-            selector.addLinkCondition();
-        } else if (value.equals("visited")) {
-            selector.setPseudoClass(Selector.VISITED_PSEUDOCLASS);
-        } else if (value.equals("hover")) {
-            selector.setPseudoClass(Selector.HOVER_PSEUDOCLASS);
-        } else if (value.equals("focus")) {
-            selector.setPseudoClass(Selector.FOCUS_PSEUDOCLASS);
-        } else if (value.equals("active")) {
-            selector.setPseudoClass(Selector.ACTIVE_PSEUDOCLASS);
-        } else if (value.equals("first-child")) {
-            selector.addFirstChildCondition();
-        } else if (value.equals("even")) {
-            selector.addEvenChildCondition();
-        } else if (value.equals("odd")) {
-            selector.addOddChildCondition();
-        } else if (value.equals("last-child")) {
-            selector.addLastChildCondition();
-        } else if (CSS21_PSEUDO_ELEMENTS.contains(value)){
-            selector.setPseudoElement(value);
-        } else {
-            throw new CSSParseException(value + " is not a recognized pseudo-class", getCurrentLine());
+        switch (value) {
+            case "link" ->
+                selector.addLinkCondition();
+            case "visited" ->
+                selector.setPseudoClass(VISITED_PSEUDOCLASS);
+            case "hover" ->
+                selector.setPseudoClass(HOVER_PSEUDOCLASS);
+            case "focus" ->
+                selector.setPseudoClass(FOCUS_PSEUDOCLASS);
+            case "active" ->
+                selector.setPseudoClass(ACTIVE_PSEUDOCLASS);
+            case "first-child" ->
+                selector.addFirstChildCondition();
+            case "even" ->
+                selector.addEvenChildCondition();
+            case "odd" ->
+                selector.addOddChildCondition();
+            case "last-child" ->
+                selector.addLastChildCondition();
+            case "first-line", "first-letter", "before", "after" ->
+                selector.setPseudoElement(value);
+            default ->
+                throw new CSSParseException(value + " is not a recognized pseudo-class", getCurrentLine());
         }
     }
 
     private void addPseudoClassOrElementFunction(Token t, Selector selector) throws IOException {
-        String f = getTokenValue(t);
-        f = f.substring(0, f.length()-1);
+        final String f0 = getTokenValue(t);
+        final String f = f0.substring(0, f0.length() - 1);
 
-        if (f.equals("lang")) {
-            skip_whitespace();
-            t = next();
-            if (t == Token.TK_IDENT) {
-                String lang = getTokenValue(t);
-                selector.addLangCondition(lang);
+        switch (f) {
+            case "lang" -> {
                 skip_whitespace();
                 t = next();
-            } else {
-                push(t);
-                throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
+                if (t == Token.TK_IDENT) {
+                    String lang = getTokenValue(t);
+                    selector.addLangCondition(lang);
+                    skip_whitespace();
+                    t = next();
+                } else {
+                    push(t);
+                    throw new CSSParseException(t, Token.TK_IDENT, getCurrentLine());
+                }
             }
-        } else if (f.equals("nth-child")) {
-            StringBuilder number = new StringBuilder();
-            while ((t = next()) != null && (t == Token.TK_IDENT || t == Token.TK_S || t == Token.TK_NUMBER || t == Token.TK_DIMENSION || t == Token.TK_PLUS || t == Token.TK_MINUS)) {
-                number.append(getTokenValue(t));
-            }
+            case "nth-child" -> {
+                StringBuilder number = new StringBuilder();
+                while ((t = next()) != null && (t == Token.TK_IDENT || t == Token.TK_S || t == Token.TK_NUMBER || t == Token.TK_DIMENSION || t == Token.TK_PLUS || t == Token.TK_MINUS)) {
+                    number.append(getTokenValue(t));
+                }
 
-            try {
-                selector.addNthChildCondition(number.toString());
-            } catch (CSSParseException e) {
-                e.setLine(getCurrentLine());
-                push(t);
-                throw e;
+                try {
+                    selector.addNthChildCondition(number.toString());
+                } catch (CSSParseException e) {
+                    e.setLine(getCurrentLine());
+                    push(t);
+                    throw e;
+                }
             }
-        } else {
-            push(t);
-            throw new CSSParseException(f + " is not a valid function in this context", getCurrentLine());
+            default -> {
+                push(t);
+                throw new CSSParseException(f + " is not a valid function in this context", getCurrentLine());
+            }
         }
 
         if (t != Token.TK_RPAREN) {
@@ -1212,10 +1219,12 @@ public class CSSParser {
 
     private void addPseudoElement(Token t, Selector selector) {
         String value = getTokenValue(t);
-        if (SUPPORTED_PSEUDO_ELEMENTS.contains(value)) {
-            selector.setPseudoElement(value);
-        } else {
-            throw new CSSParseException(value + " is not a recognized pseudo-element", getCurrentLine());
+        switch (value) {
+            case "first-line", "first-letter", "before", "after":
+                selector.setPseudoElement(value);
+                break;
+            default:
+                throw new CSSParseException(value + " is not a recognized pseudo-element", getCurrentLine());
         }
     }
 
