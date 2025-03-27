@@ -246,7 +246,7 @@ public class Matcher {
         private final List<Selector> axes;
         private final Map<String, List<Selector>> pseudoSelectors;
         private final List<Selector> mappedSelectors;
-        private Map<String, Mapper> children;
+        private Map<List<Integer>, Mapper> children;
 
         Mapper(Collection<Selector> selectors) {
             this(new ArrayList<>(selectors), null, null);
@@ -268,7 +268,7 @@ public class Matcher {
             List<Selector> childAxes = new ArrayList<>(axes.size() + 10);
             Map<String, List<Selector>> pseudoSelectors = new HashMap<>();
             List<Selector> mappedSelectors = new ArrayList<>();
-            StringBuilder key = new StringBuilder();
+            List<Integer> key = new ArrayList<>();
             for (Selector axe : axes) {
                 switch (axe.getAxis()) {
                     case DESCENDANT_AXIS -> childAxes.add(axe); // carry it forward to other descendants
@@ -286,7 +286,7 @@ public class Matcher {
                 if (pseudoElement != null) {
                     List<Selector> l = pseudoSelectors.computeIfAbsent(pseudoElement, k -> new ArrayList<>());
                     l.add(axe);
-                    key.append(axe.getSelectorID()).append(":");
+                    key.add(axe.getSelectorID());
                     continue;
                 }
                 if (axe.isPseudoClass(Selector.VISITED_PSEUDOCLASS)) {
@@ -304,7 +304,7 @@ public class Matcher {
                 if (!axe.matchesDynamic(e, _attRes, _treeRes)) {
                     continue;
                 }
-                key.append(axe.getSelectorID()).append(":");
+                key.add(axe.getSelectorID());
                 Selector chain = axe.getChainedSelector();
                 if (chain == null) {
                     mappedSelectors.add(axe);
@@ -318,7 +318,7 @@ public class Matcher {
                 }
             }
             if (children == null) children = new HashMap<>();
-            Mapper childMapper = children.computeIfAbsent(key.toString(), k ->
+            Mapper childMapper = children.computeIfAbsent(key, k ->
                     new Mapper(childAxes, pseudoSelectors, mappedSelectors));
             link(e, childMapper);
             return childMapper;
