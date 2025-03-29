@@ -37,7 +37,7 @@ public class BorderPainter {
     public static final int LEFT = 2;
     public static final int BOTTOM = 4;
     public static final int RIGHT = 8;
-    public static final int ALL = TOP + LEFT + BOTTOM + RIGHT;
+    public static final int ALL = TOP | LEFT | BOTTOM | RIGHT;
 
     /**
      * Generates a full round rectangle that is made of bounds and border
