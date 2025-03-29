@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.11.6 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/31
+* in progress
+
 ## 9.11.5 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/30?closed=1
 * #481 Inversion between right and left for the border-radius CSS property (#483) (#484)
 * #482 Slightly decrease memory consumption in CSS parser
