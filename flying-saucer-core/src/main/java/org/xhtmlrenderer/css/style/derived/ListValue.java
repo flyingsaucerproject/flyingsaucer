@@ -27,7 +27,8 @@ import org.xhtmlrenderer.css.style.DerivedValue;
 import java.util.List;
 
 public class ListValue extends DerivedValue {
-    public static final String[] NO_VALUES = new String[0];
+    private static final String[] NO_VALUES = new String[0];
+
     @Nullable
     private final List<Object> _values;
 
