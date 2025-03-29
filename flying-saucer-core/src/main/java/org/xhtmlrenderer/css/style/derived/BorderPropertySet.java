@@ -33,13 +33,14 @@ import static org.xhtmlrenderer.css.constants.CSSName.BORDER_TOP_WIDTH;
 import static org.xhtmlrenderer.css.constants.IdentValue.HIDDEN;
 import static org.xhtmlrenderer.css.constants.IdentValue.NONE;
 import static org.xhtmlrenderer.css.parser.FSRGBColor.TRANSPARENT;
+import static org.xhtmlrenderer.css.style.BorderRadiusCorner.UNDEFINED;
 
 /**
  * User: patrick
  * Date: Oct 21, 2005
  */
 public class BorderPropertySet extends RectPropertySet {
-    private static final Corners NO_CORNERS = new Corners(BorderRadiusCorner.UNDEFINED, BorderRadiusCorner.UNDEFINED, BorderRadiusCorner.UNDEFINED, BorderRadiusCorner.UNDEFINED);
+    private static final Corners NO_CORNERS = new Corners(UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED);
     private static final Styles NO_STYLES = new Styles(null, null, null, null);
     private static final Colors NO_COLORS = new Colors(TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT);
     public static final BorderPropertySet EMPTY_BORDER = new BorderPropertySet(0.0f, 0.0f, 0.0f, 0.0f, NO_STYLES, NO_CORNERS, NO_COLORS);
@@ -70,7 +71,7 @@ public class BorderPropertySet extends RectPropertySet {
     }
 
     private record Corners(BorderRadiusCorner topLeft, BorderRadiusCorner topRight,
-                           BorderRadiusCorner bottomLeft, BorderRadiusCorner bottomRight) {
+                           BorderRadiusCorner bottomRight, BorderRadiusCorner bottomLeft) {
     }
 
     private final Styles styles;
@@ -130,8 +131,8 @@ public class BorderPropertySet extends RectPropertySet {
                 new Corners(
                         new BorderRadiusCorner(BORDER_TOP_LEFT_RADIUS, style, ctx),
                         new BorderRadiusCorner(BORDER_TOP_RIGHT_RADIUS, style, ctx),
-                        new BorderRadiusCorner(BORDER_BOTTOM_LEFT_RADIUS, style, ctx),
-                        new BorderRadiusCorner(BORDER_BOTTOM_RIGHT_RADIUS, style, ctx)
+                        new BorderRadiusCorner(BORDER_BOTTOM_RIGHT_RADIUS, style, ctx),
+                        new BorderRadiusCorner(BORDER_BOTTOM_LEFT_RADIUS, style, ctx)
                 ),
                 new Colors(
                         style.asColor(BORDER_TOP_COLOR),
