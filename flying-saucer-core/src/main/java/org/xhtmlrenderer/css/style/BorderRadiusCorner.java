@@ -1,10 +1,15 @@
 package org.xhtmlrenderer.css.style;
 
-import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.ListValue;
+
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PERCENTAGE;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_BOTTOM_LEFT_RADIUS;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_BOTTOM_RIGHT_RADIUS;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_TOP_LEFT_RADIUS;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_TOP_RIGHT_RADIUS;
 
 public class BorderRadiusCorner {
 
@@ -12,8 +17,8 @@ public class BorderRadiusCorner {
 
     private record Length(float value, boolean percent) {}
 
-    private Length _left;
-    private Length _right;
+    private final Length _left;
+    private final Length _right;
 
     // TODO: FIXME the way values are passed from the CSS to the border corners really sucks, improve it
 
@@ -28,12 +33,14 @@ public class BorderRadiusCorner {
             PropertyValue first = (PropertyValue) lValues.getValues().get(0);
             PropertyValue second = lValues.getValues().size() > 1 ? (PropertyValue) lValues.getValues().get(1) : first;
 
-            if (fromVal.equals(CSSName.BORDER_TOP_LEFT_RADIUS) || fromVal.equals(CSSName.BORDER_BOTTOM_RIGHT_RADIUS)) {
-                setRight(fromVal, style, first, ctx);
-                setLeft(fromVal, style, second, ctx);
+            if (fromVal.equals(BORDER_TOP_LEFT_RADIUS) || fromVal.equals(BORDER_BOTTOM_RIGHT_RADIUS)) {
+                _right = calculate(fromVal, style, first, ctx);
+                _left = calculate(fromVal, style, second, ctx);
+            } else if (fromVal.equals(BORDER_TOP_RIGHT_RADIUS) || fromVal.equals(BORDER_BOTTOM_LEFT_RADIUS)) {
+                _left = calculate(fromVal, style, first, ctx);
+                _right = calculate(fromVal, style, second, ctx);
             } else {
-                setLeft(fromVal, style, first, ctx);
-                setRight(fromVal, style, second, ctx);
+                throw new IllegalArgumentException("Unknown border radius type: " + fromVal);
             }
         } else if (value instanceof LengthValue lv) {
 
@@ -42,37 +49,25 @@ public class BorderRadiusCorner {
             } else {
                 _left = _right = new Length((int) lv.getFloatProportionalTo(fromVal, 0, ctx), false);
             }
+        } else {
+            throw new IllegalArgumentException("Unknown length value: " + value);
         }
     }
 
-    private void setLeft(CSSName fromVal, CalculatedStyle style, PropertyValue value, CssContext ctx) {
-        if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_PERCENTAGE) {
-            _left = new Length(value.getFloatValue() / 100.0f, true);
-        } else {
-            _left = new Length((int) LengthValue.calcFloatProportionalValue(
+    private Length calculate(CSSName fromVal, CalculatedStyle style, PropertyValue value, CssContext ctx) {
+        return switch (value.getPrimitiveType()) {
+            case CSS_PERCENTAGE -> new Length(value.getFloatValue() / 100.0f, true);
+            default -> new Length(LengthValue.calcFloatProportionalValue(
                 style,
                 fromVal,
                 value.getCssText(),
                 value.getFloatValue(),
                 value.getPrimitiveType(),
                 0,
-                ctx), false);
-        }
-    }
-
-    private void setRight(CSSName fromVal, CalculatedStyle style, PropertyValue value, CssContext ctx) {
-        if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_PERCENTAGE) {
-            _right = new Length(value.getFloatValue() / 100.0f, true);
-        } else {
-            _right = new Length((int) LengthValue.calcFloatProportionalValue(
-                style,
-                fromVal,
-                value.getCssText(),
-                value.getFloatValue(),
-                value.getPrimitiveType(),
-                0,
-                ctx), false);
-        }
+                ctx),
+                false
+            );
+        };
     }
 
     public boolean hasRadius() {
