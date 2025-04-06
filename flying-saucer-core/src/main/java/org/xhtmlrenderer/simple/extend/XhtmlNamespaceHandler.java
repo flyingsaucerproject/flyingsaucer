@@ -42,7 +42,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     @Override
     @CheckReturnValue
     public boolean isFormElement(Element e) {
-        return e != null && e.getNodeName().equalsIgnoreCase("form");
+        return e.getNodeName().equalsIgnoreCase("form");
     }
 
     @Override
