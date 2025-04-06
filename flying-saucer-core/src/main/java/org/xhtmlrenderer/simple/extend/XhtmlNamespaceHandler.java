@@ -46,10 +46,9 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     }
 
     @Override
-    @Nullable
     @CheckReturnValue
     public String getImageSourceURI(Element e) {
-        return e != null ? e.getAttribute("src") : null;
+        return e.getAttribute("src");
     }
 
     @Override
