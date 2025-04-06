@@ -36,7 +36,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     @Override
     @CheckReturnValue
     public boolean isImageElement(Element e) {
-        return e != null && e.getNodeName().equalsIgnoreCase("img");
+        return e.getNodeName().equalsIgnoreCase("img");
     }
 
     @Override
