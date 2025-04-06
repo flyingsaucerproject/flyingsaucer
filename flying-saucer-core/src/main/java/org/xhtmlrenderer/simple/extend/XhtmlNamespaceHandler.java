@@ -65,9 +65,14 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     }
 
     private String applyBlockAlign(Element e) {
-        StringBuilder style = new StringBuilder();
-        applyTextAlign(e, style);
-        return style.toString();
+        String s = e.getAttribute("align").trim().toLowerCase(ROOT);
+        return switch (s) {
+            case "left",
+                 "right",
+                 "center",
+                 "justify" -> "text-align: " + s + ";";
+            default -> "";
+        };
     }
 
     private String applyImgStyles(Element e) {
@@ -190,20 +195,6 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
                 case "center":
                     style.append("margin-left: auto; margin-right: auto;");
                     break;
-            }
-        }
-    }
-
-    private void applyTextAlign(Element e, StringBuilder style) {
-        String s;
-        s = getAttribute(e, "align");
-        if (s != null) {
-            s = s.toLowerCase(ROOT).trim();
-            if (s.equals("left") || s.equals("right") ||
-                    s.equals("center") || s.equals("justify")) {
-                style.append("text-align: ");
-                style.append(s);
-                style.append(";");
             }
         }
     }
