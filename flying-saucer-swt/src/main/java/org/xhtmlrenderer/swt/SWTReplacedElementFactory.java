@@ -82,35 +82,33 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
      */
     @Nullable
     @CheckReturnValue
-    protected ReplacedElement replaceImage(UserAgentCallback uac,
-            LayoutContext context, Element elem, int cssWidth, int cssHeight) {
-        ReplacedElement re = null;
+    protected ReplacedElement replaceImage(UserAgentCallback uac, LayoutContext context, Element elem, int cssWidth, int cssHeight) {
         String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
 
         if (imageSrc == null || imageSrc.isEmpty()) {
-            XRLog.layout(Level.WARNING, "No source provided for img element.");
-            re = new ImageReplacedElement(new SWTFSImage(), cssWidth, cssHeight);
-        } else if (ImageUtil.isEmbeddedBase64Image(imageSrc)) {
-            SWTFSImage fsImage = (SWTFSImage) uac.getImageResource(imageSrc).getImage();
-            if (fsImage != null) {
-                re = new ImageReplacedElement(fsImage, cssWidth, cssHeight);
-            }
-        } else {
-            // lookup in cache, or instantiate
-            re = lookupImageReplacedElement(elem);
-            if (re == null) {
-                FSImage fsImage = uac.getImageResource(imageSrc).getImage();
-                if (fsImage != null) {
-                    re = new ImageReplacedElement(new SWTFSImage(
-                        (SWTFSImage) fsImage), cssWidth, cssHeight);
-                } else {
-                    // TODO: Should return "broken" image icon, e.g. "not found"
-                    re = new ImageReplacedElement(new SWTFSImage(), cssWidth,
-                        cssHeight);
-                }
-                storeImageReplacedElement(elem, re);
-            }
+            XRLog.layout(Level.WARNING, "No source provided for img element " + elem);
+            return new ImageReplacedElement(new SWTFSImage(), cssWidth, cssHeight);
         }
+
+        if (ImageUtil.isEmbeddedBase64Image(imageSrc)) {
+            SWTFSImage fsImage = (SWTFSImage) uac.getImageResource(imageSrc).getImage();
+            return fsImage == null ? null : new ImageReplacedElement(fsImage, cssWidth, cssHeight);
+        }
+
+        // lookup in cache, or instantiate
+        ReplacedElement re = lookupImageReplacedElement(elem);
+        if (re != null) {
+            return re;
+        }
+
+        FSImage fsImage = uac.getImageResource(imageSrc).getImage();
+        if (fsImage != null) {
+            re = new ImageReplacedElement(new SWTFSImage((SWTFSImage) fsImage), cssWidth, cssHeight);
+        } else {
+            // TODO: Should return "broken" image icon, e.g. "not found"
+            re = new ImageReplacedElement(new SWTFSImage(), cssWidth, cssHeight);
+        }
+        storeImageReplacedElement(elem, re);
         return re;
     }
 
