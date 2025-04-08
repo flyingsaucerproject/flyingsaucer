@@ -45,6 +45,16 @@ class XhtmlCssOnlyNamespaceHandlerTest {
         assertThat(css.getMedia()).containsExactly("all");
     }
 
+    @Test
+    void isInteger() {
+        assertThat(handler.isInteger("")).isFalse();
+        assertThat(handler.isInteger("_")).isFalse();
+        assertThat(handler.isInteger("0")).isTrue();
+        assertThat(handler.isInteger("01234")).isTrue();
+        assertThat(handler.isInteger("123a")).isFalse();
+        assertThat(handler.isInteger("a234b")).isFalse();
+    }
+
     private Document read(String name) throws IOException, SAXException, ParserConfigurationException {
         URL url = requireNonNull(getClass().getResource(name), () -> "test resource not found: " + name);
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();

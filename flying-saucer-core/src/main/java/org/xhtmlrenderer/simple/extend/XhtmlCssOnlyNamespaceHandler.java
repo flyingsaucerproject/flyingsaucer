@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Pattern;
 
 import static java.util.Locale.ROOT;
 import static java.util.Objects.requireNonNull;
@@ -52,7 +53,9 @@ import static org.xhtmlrenderer.util.TextUtil.readTextContent;
  */
 public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
-    private static final String _namespace = "http://www.w3.org/1999/xhtml";
+    private static final String NAMESPACE = "http://www.w3.org/1999/xhtml";
+    private static final Pattern RE_INTEGER = Pattern.compile("\\d+");
+
     @Nullable
     private static volatile StylesheetInfo _defaultStylesheet;
     private static final AtomicLong inlineCssCounter = new AtomicLong();
@@ -65,7 +68,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     @Override
     @CheckReturnValue
     public String getNamespace() {
-        return _namespace;
+        return NAMESPACE;
     }
 
     /**
@@ -89,21 +92,11 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     }
 
     protected String convertToLength(String value) {
-        if (isInteger(value)) {
-            return value + "px";
-        } else {
-            return value;
-        }
+        return isInteger(value) ? value + "px" : value;
     }
 
-    protected boolean isInteger(String value) {
-        for (int i = 0; i < value.length(); i++) {
-            char c = value.charAt(i);
-            if (! (c >= '0' && c <= '9')) {
-                return false;
-            }
-        }
-        return true;
+    boolean isInteger(String value) {
+        return RE_INTEGER.matcher(value).matches();
     }
 
     @Nullable
