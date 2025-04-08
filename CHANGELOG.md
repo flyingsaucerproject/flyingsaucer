@@ -1,7 +1,11 @@
 # Changelog
 
-## 9.11.6 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/31
+## 9.11.7 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/32
 * in progress
+
+## 9.11.6 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/31?closed=1
+* #486 restore public method `setDocument` with `NamespaceHandler` argument (#488)
+* refactoring: removed null checks & simplified code (#487)
 
 ## 9.11.5 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/30?closed=1
 * #481 Inversion between right and left for the border-radius CSS property (#483) (#484)
