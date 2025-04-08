@@ -226,8 +226,7 @@ public class ITextRenderer {
         }
     }
 
-    @Deprecated
-    private void setDocument(Document doc, @Nullable String url, NamespaceHandler nsh) {
+    public void setDocument(Document doc, @Nullable String url, NamespaceHandler nsh) {
         _doc = doc;
 
         getFontResolver().flushFontFaceFonts();
