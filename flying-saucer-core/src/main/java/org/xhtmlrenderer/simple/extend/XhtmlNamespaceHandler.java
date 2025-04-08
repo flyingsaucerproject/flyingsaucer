@@ -23,7 +23,10 @@ import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.util.regex.Pattern;
+
 import static java.util.Locale.ROOT;
+import static org.w3c.dom.Node.ELEMENT_NODE;
 
 /**
  * Handles xhtml documents, including presentational html attributes (see css 2.1 spec, 6.4.4).
@@ -33,6 +36,8 @@ import static java.util.Locale.ROOT;
  * @author Torbjoern Gannholm
  */
 public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
+    private static final Pattern RE_MANGLED_COLOR = Pattern.compile("[0-9a-f]{6}");
+
     @Override
     @CheckReturnValue
     public boolean isImageElement(Element e) {
@@ -84,7 +89,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     private String applyTableCellStyles(Element e) {
         StringBuilder style = new StringBuilder();
         String s;
-        //check for cellpadding
+        // check for cell padding
         Element table = findTable(e);
         if (table != null) {
             s = getAttribute(table, "cellpadding");
@@ -214,49 +219,25 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         }
     }
 
-    private boolean looksLikeAMangledColor(String s) {
-        if (s.length() != 6) {
-            return false;
-        }
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            boolean valid = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
-            if (! valid) {
-                return false;
-            }
-        }
-        return true;
+    boolean looksLikeAMangledColor(String s) {
+        return RE_MANGLED_COLOR.matcher(s).matches();
     }
 
     @Nullable
-    private Element findTable(Element cell) {
-        Node n = cell.getParentNode();
-        Element next;
-        if (n.getNodeType() == Node.ELEMENT_NODE) {
-            next = (Element)n;
-            if (next.getNodeName().equals("tr")) {
-                n = next.getParentNode();
-                if (n.getNodeType() == Node.ELEMENT_NODE) {
-                    next = (Element)n;
-                    String name = next.getNodeName();
-                    if (name.equals("table")) {
-                        return next;
-                    }
+    Element findTable(Node cell) {
+        return ancestor(cell, "table", 5);
+    }
 
-                    if (name.equals("tbody") || name.equals("tfoot") || name.equals("thead")) {
-                        n = next.getParentNode();
-                        if (n.getNodeType() == Node.ELEMENT_NODE) {
-                            next =(Element)n;
-                            if (next.getNodeName().equals("table")) {
-                                return next;
-                            }
-                        }
-                    }
-                }
-            }
+    @Nullable
+    Element ancestor(Node element, String tagName, int maxDepth) {
+        Node parent = element.getParentNode();
+        if (parent == null || maxDepth <= 0) {
+            return null;
         }
 
-        return null;
+        return parent.getNodeType() == ELEMENT_NODE && parent.getNodeName().equals(tagName) ?
+            (Element) parent :
+            ancestor(parent, tagName, maxDepth - 1);
     }
 }
 
