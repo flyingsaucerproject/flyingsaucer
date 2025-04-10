@@ -24,6 +24,7 @@ import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.TreeResolver;
+import org.xhtmlrenderer.css.parser.Token;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -46,6 +47,7 @@ public class Selector {
     private Selector siblingSelector;
     private Axis _axis = DESCENDANT_AXIS;
     private String _name;
+    private String _text;
     private String _namespaceURI;
     private int _pc;
     private String _pe;
@@ -216,6 +218,7 @@ public class Selector {
     public void addClassCondition(String className) {
         _specificityC++;
         addCondition(Condition.createClassCondition(className));
+        _text = _name + Token.TK_PERIOD.getExternalName() + className;
     }
 
     /**
@@ -436,7 +439,12 @@ public class Selector {
 
     public void setName(String name) {
         _name = name;
+        _text = name;
         _specificityD++;
+    }
+
+    public String getSelectorText() {
+    	return _text + (chainedSelector != null ? (" "+chainedSelector.getSelectorText()) : "");
     }
 
     public void setPos(int pos) {

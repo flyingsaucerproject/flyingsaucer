@@ -68,7 +68,11 @@ public final class ValueConstants {
     }
 
     public static short sacPrimitiveTypeForString(@Nullable String type) {
-        if (type == null) {
+        if ("deg".equals(type)) {
+            return CSSPrimitiveValue.CSS_DEG;
+        } else if ("rad".equals(type)) {
+            return CSSPrimitiveValue.CSS_RAD;
+        } else if (type == null) {
             //this is only valid if length is 0
             return CSSPrimitiveValue.CSS_PX;
         }

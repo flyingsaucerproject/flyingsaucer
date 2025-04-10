@@ -15,4 +15,5 @@ release.properties
 */bin
 .project
 .settings
+.DS_Store
 tags

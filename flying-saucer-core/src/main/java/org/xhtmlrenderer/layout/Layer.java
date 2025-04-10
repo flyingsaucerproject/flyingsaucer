@@ -138,6 +138,11 @@ public final class Layer {
         return (int) _master.getStyle().asFloat(CSSName.Z_INDEX);
     }
 
+    public float getOpacity() {
+    	return _master.getStyle().getOpacity();
+	}
+
+
     @CheckReturnValue
     public Box getMaster() {
         return _master;
@@ -223,9 +228,8 @@ public final class Layer {
 
         return result;
     }
-
-    @CheckReturnValue
-    private List<Layer> getSortedLayers(Width which) {
+@CheckReturnValue
+	private List<Layer> getSortedLayers(Width which) {
         List<Layer> result = collectLayers(which);
         result.sort(new ZIndexComparator());
         return result;
@@ -1079,8 +1083,7 @@ public final class Layer {
             return absoluteRequiredPageNo - sequenceStartAbsolutePageNo;
         }
     }
-
-    @Nullable
+@Nullable
     @CheckReturnValue
     private BlockBox findPageSequence(List<BlockBox> sequences, int absY) {
         for (int i = 0; i < sequences.size(); i++) {
@@ -1093,7 +1096,7 @@ public final class Layer {
         return null;
     }
 
-    @CheckReturnValue
+@CheckReturnValue
     public int getRelativePageNo(RenderingContext c) {
         List<BlockBox> sequences = getSortedPageSequences();
         int initial = 0;

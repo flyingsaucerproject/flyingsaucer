@@ -27,12 +27,24 @@ import java.io.InputStream;
 import java.net.URL;
 
 import static java.util.Locale.ROOT;
+import java.util.Locale;
 
 
 /**
  * @author Patrick Wright
  */
 public class GeneralUtil {
+    public static boolean ciEquals(final @Nullable String a, final @Nullable String b)
+    {
+        if (a == null)
+            return b == null;
+
+        if (b == null)
+            return false;
+
+        return a.toLowerCase(Locale.US).equals(b.toLowerCase(Locale.US));
+    }
+
     @Nullable
     @CheckReturnValue
     public static InputStream openStreamFromClasspath(Object obj, String resource) {

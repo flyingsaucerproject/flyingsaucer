@@ -1473,21 +1473,43 @@ public class CSSParser {
         }
         final PropertyValue result;
         switch (t.getType()) {
-            case ANGLE,
-                 TIME,
-                 FREQ,
-                 DIMENSION -> {
-                throw new CSSParseException("Unsupported CSS unit " + extractUnit(t), getCurrentLine());
-            }
-            case NUMBER -> {
-                result = new PropertyValue(
-                        CSS_NUMBER,
-                        sign * Float.parseFloat(getTokenValue(t)),
-                        sign(sign) + getTokenValue(t),
-                        operatorToken);
+            case ANGLE -> {
+                String unit = extractUnit(t);
+                short type;
+
+                if ("deg".equals(unit))
+                {
+                    type = CSSPrimitiveValue.CSS_DEG;
+                }
+                else if ("rad".equals(unit))
+                {
+                    type = CSSPrimitiveValue.CSS_RAD;
+                }
+                else
+                {
+                    throw new CSSParseException("Unsupported CSS unit " + unit, getCurrentLine());
+                }
+
+                result = new PropertyValue(type,
+                        sign * Float.parseFloat(extractNumber(t)),
+                        sign(sign) + getTokenValue(t));
+
                 next();
                 skip_whitespace();
+                break;
             }
+
+
+            case TIME, FREQ, DIMENSION -> throw new CSSParseException("Unsupported CSS unit " + extractUnit(t), getCurrentLine());
+            case NUMBER -> {
+                    result = new PropertyValue(
+                            CSS_NUMBER,
+                            sign * Float.parseFloat(getTokenValue(t)),
+                            sign(sign) + getTokenValue(t),
+                            operatorToken);
+                    next();
+                    skip_whitespace();
+                }
             case PERCENTAGE -> {
                 result = new PropertyValue(
                         CSS_PERCENTAGE,
@@ -1633,7 +1655,7 @@ public class CSSParser {
                 throw new CSSParseException(t, Token.TK_RPAREN, getCurrentLine());
             }
 
-            if (f.equals("rgb(")) {
+            if (f.equals("rgb(") || f.equals("rgba(")) {
                 result = new PropertyValue(createRGBColorFromFunction(params), operatorToken);
             } else if (f.equals("cmyk(")) {
                 if (! isSupportCMYKColors()) {
@@ -1694,17 +1716,41 @@ public class CSSParser {
     }
 
     private FSRGBColor createRGBColorFromFunction(List<PropertyValue> params) {
-        if (params.size() != 3) {
+        if (params.size() != 3 && params.size() != 4) {
             throw new CSSParseException(
-                    "The rgb() function must have exactly three parameters",
+                    "The rgb() function must have three or four parameters",
                     getCurrentLine());
         }
 
         int red = 0;
         int green = 0;
         int blue = 0;
+        float alpha = 1;
         for (int i = 0; i < params.size(); i++) {
-            float f = extractRgbValue(i, params.get(i));
+            PropertyValue value = (PropertyValue)params.get(i);
+            short type = value.getPrimitiveType();
+            if (type != CSSPrimitiveValue.CSS_PERCENTAGE &&
+                    type != CSSPrimitiveValue.CSS_NUMBER) {
+                throw new CSSParseException(
+                        "Parameter " + (i+1) + " to the rgb() function is " +
+                        "not a number or percentage", getCurrentLine());
+            }
+
+            if (type != CSSPrimitiveValue.CSS_NUMBER && i==3) {
+            	throw new CSSParseException(
+            			"Parameter alpha to the rgba() function is " +
+            		    "not a number", getCurrentLine());
+            }
+
+            float f = value.getFloatValue();
+            if (type == CSSPrimitiveValue.CSS_PERCENTAGE) {
+                f = f/100 * 255;
+            }
+            if (f < 0) {
+                f = 0;
+            } else if (f > 255) {
+                f = 255;
+            }
 
             switch (i) {
                 case 0:
@@ -1716,10 +1762,13 @@ public class CSSParser {
                 case 2:
                     blue = (int) f;
                     break;
+                case 3:
+                	alpha = f;
+                	break;
             }
         }
 
-        return new FSRGBColor(red, green, blue);
+        return new FSRGBColor(red, green, blue, alpha);
     }
 
     private float extractRgbValue(int i, PropertyValue value) {

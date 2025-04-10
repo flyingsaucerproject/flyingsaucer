@@ -49,6 +49,7 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -92,6 +93,7 @@ import java.util.regex.Pattern;
 import static com.lowagie.text.pdf.PdfObject.TEXT_UNICODE;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparingInt;
+import com.lowagie.text.pdf.PdfGState;
 
 /**
  * This class is largely based on {@link com.lowagie.text.pdf.PdfGraphics2D}.
@@ -131,6 +133,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private Stroke _originalStroke;
     @Nullable
     private Stroke _oldStroke;
+
+    private float _opacity = 1f;
 
     @Nullable
     private Area _clip;
@@ -410,10 +414,22 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         draw(bounds);
     }
 
+    public void setOpacity(float opacity) {
+    	if (opacity != _opacity) {
+    		PdfGState gs = new PdfGState();
+
+        	gs.setBlendMode(PdfGState.BM_NORMAL);
+        	gs.setFillOpacity(opacity);
+
+        	_currentPage.setGState(gs);
+        	_opacity = opacity;
+    	}
+	}
+
     @Override
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor rgb) {
-            _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+            _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), (int) (rgb.getAlpha()*255));
         } else if (color instanceof FSCMYKColor cmyk) {
             _color = new CMYKColor(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getBlack());
         } else {
@@ -602,6 +618,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         if (!_color.equals(_fillColor)) {
             _fillColor = _color;
             _currentPage.setColorFill(_fillColor);
+
+            if (_fillColor.getAlpha() < 255) {
+            	setOpacity(_fillColor.getAlpha()/255.0f);
+            }
         }
     }
 
@@ -869,6 +889,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 throw new XRRuntimeException(e.getMessage(), e);
             }
         }
+    }
+
+    @Override
+    public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height) {
     }
 
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {

@@ -23,6 +23,8 @@ import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient.StopValue;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -34,6 +36,7 @@ import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,9 +54,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public Java2DOutputDevice(BufferedImage outputImage) {
         this(outputImage.createGraphics());
     }
-
-
-    @Override
+    
+@Override
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         if (inlineText.isSelected()) {
             InlineLayoutBox iB = inlineText.getParent();
@@ -190,10 +192,22 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         }
     }
 
+    public void setOpacity(float opacity) {
+        if (opacity == 1)
+        {
+            _graphics.setComposite(AlphaComposite.SrcOver);
+        }
+        else
+        {
+            _graphics.setComposite(AlphaComposite.SrcOver.derive(opacity));
+        }
+	}
+
+
     @Override
     public void setColor(FSColor color) {
         if (color instanceof FSRGBColor rgb) {
-            _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
+            _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(),(int) (rgb.getAlpha() * 255)));
         } else {
             throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
@@ -218,15 +232,13 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void setClip(Shape s) {
         _graphics.setClip(s);
     }
-
-    @Nullable
+@Nullable
     @CheckReturnValue
     @Override
     public Shape getClip() {
         return _graphics.getClip();
     }
-
-    @Override
+@Override
     public void clip(Shape s) {
         _graphics.clip(s);
     }
@@ -281,24 +293,53 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void fill(Shape s) {
         _graphics.fill(s);
     }
-
-    @Override
+@Override
     public void draw(Shape s) {
         _graphics.draw(s);
     }
-
-    @Override
+@Override
     public void drawImage(FSImage image, int x, int y) {
         _graphics.drawImage(((AWTFSImage)image).getImage(), x, y, null);
     }
-
-    @Override
+@Override
     public boolean isSupportsSelection() {
         return true;
     }
-
-    @Override
+@Override
     public boolean isSupportsCMYKColors() {
         return true;
     }
+
+	@Override
+	public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height)
+	{
+		float[] fractions = new float[gradient.getStopPoints().size()];
+		Color[] colors = new Color[gradient.getStopPoints().size()];
+
+		float range = gradient.getStopPoints().get(gradient.getStopPoints().size() - 1).getLength() -
+				gradient.getStopPoints().get(0).getLength();
+
+		int i = 0;
+		for (StopValue pt : gradient.getStopPoints())
+		{
+	        if (pt.getColor() instanceof FSRGBColor) {
+	            FSRGBColor rgb = (FSRGBColor) pt.getColor();
+	            colors[i] = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+	        } else {
+	            throw new RuntimeException("internal error: unsupported color class " + pt.getColor().getClass().getName());
+	        }
+
+	        if (range != 0)
+	        	fractions[i] = (pt.getLength() / range);
+
+	        i++;
+		}
+
+        LinearGradientPaint paint = new LinearGradientPaint(
+                gradient.getStartX() + x, gradient.getStartY() + y,
+                gradient.getEndX() + x, gradient.getEndY() + y, fractions, colors);
+		_graphics.setPaint(paint);
+		_graphics.fillRect(x, y, width, height);
+		_graphics.setPaint(null);
+	}
 }
