@@ -19,6 +19,10 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -26,13 +30,13 @@ import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.simple.extend.DefaultFormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.simple.extend.form.FormField;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.resource.ImageResource;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,24 +46,26 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
+
 /**
  * A ReplacedElementFactory where Elements are replaced by Swing components.
  */
 public class SwingReplacedElementFactory implements ReplacedElementFactory {
+    private static final Logger log = LoggerFactory.getLogger(SwingReplacedElementFactory.class);
+
     /**
      * Cache of image components (ReplacedElements) for quick lookup, keyed by Element.
      */
-    protected Map imageComponents;
+    private final Map<CacheKey, ReplacedElement> imageComponents = new HashMap<>();
     /**
      * Cache of XhtmlForms keyed by Element.
      */
-    protected LinkedHashMap forms;
+    private final Map<Element, XhtmlForm> forms = new LinkedHashMap<>();
 
     private FormSubmissionListener formSubmissionListener;
-
     protected final RepaintListener repaintListener;
-
-    private ImageResourceLoader imageResourceLoader;
+    private final ImageResourceLoader imageResourceLoader;
 
 
     public SwingReplacedElementFactory() {
@@ -76,9 +82,9 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
         this.formSubmissionListener = new DefaultFormSubmissionListener();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Nullable
+    @CheckReturnValue
+    @Override
     public ReplacedElement createReplacedElement(
             LayoutContext context,
             BlockBox box,
@@ -115,8 +121,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
                 return new EmptyReplacedElement(0, 0);
             }
 
-            SwingReplacedElement result = new SwingReplacedElement(cc);
-            result.setIntrinsicSize(formField.getIntrinsicSize());
+            SwingReplacedElement result = new SwingReplacedElement(cc, formField.getIntrinsicSize());
 
             if (context.isInteractive()) {
                 ((Container) context.getCanvas()).add(cc);
@@ -128,31 +133,28 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Handles replacement of image elements in the document. May return the same ReplacedElement for a given image
      * on multiple calls. Image will be automatically scaled to cssWidth and cssHeight assuming these are non-zero
-     * positive values. The element is assume to have a src attribute (e.g. it's an <img> element)
+     * positive values. The element is assumed to have a src attribute (e.g. it's an {@code <img>} element).
      *
      * @param uac       Used to retrieve images on demand from some source.
-     * @param context
      * @param elem      The element with the image reference
      * @param cssWidth  Target width of the image
      * @param cssHeight Target height of the image @return A ReplacedElement for the image; will not be null.
-     * @return
      */
+    @Nullable
+    @CheckReturnValue
     protected ReplacedElement replaceImage(UserAgentCallback uac, LayoutContext context, Element elem, int cssWidth, int cssHeight) {
-        ReplacedElement re = null;
         String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
-        
-        if (imageSrc == null || imageSrc.length() == 0) {
+
+        if (imageSrc == null || imageSrc.isEmpty()) {
             XRLog.layout(Level.WARNING, "No source provided for img element.");
-            re = newIrreplaceableImageElement(cssWidth, cssHeight);
+            return newIrreplaceableImageElement(cssWidth, cssHeight);
         } else if (ImageUtil.isEmbeddedBase64Image(imageSrc)) {
             BufferedImage image = ImageUtil.loadEmbeddedBase64Image(imageSrc);
-            if (image != null) {
-                re = new ImageReplacedElement(image, cssWidth, cssHeight);
-            }
+            return image == null ? null : new ImageReplacedElement(image, cssWidth, cssHeight);
         } else {
             // lookup in cache, or instantiate
             String ruri = uac.resolveURI(imageSrc);
-            re = lookupImageReplacedElement(elem, ruri, cssWidth, cssHeight);
+            ReplacedElement re = lookupImageReplacedElement(elem, ruri, cssWidth, cssHeight);
             if (re == null) {
                 XRLog.load(Level.FINE, "Swing: Image " + ruri + " requested at "+ " to " + cssWidth + ", " + cssHeight);
                 ImageResource imageResource = imageResourceLoader.get(ruri, cssWidth, cssHeight);
@@ -163,19 +165,16 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
                 }
                 storeImageReplacedElement(elem, re, ruri, cssWidth, cssHeight);
             }
+            return re;
         }
-        return re;
     }
 
-    private ReplacedElement lookupImageReplacedElement(final Element elem, final String ruri, final int cssWidth, final int cssHeight) {
-        if (imageComponents == null) {
-            return null;
-        }
+    @Nullable
+    @CheckReturnValue
+    private ReplacedElement lookupImageReplacedElement(Element elem, String ruri, int cssWidth, int cssHeight) {
         CacheKey key = new CacheKey(elem, ruri, cssWidth, cssHeight);
-        return (ReplacedElement) imageComponents.get(key);
+        return imageComponents.get(key);
     }
-
-
 
     /**
      * Returns a ReplacedElement for some element in the stream which should be replaceable, but is not. This might
@@ -185,25 +184,22 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * @param cssHeight Target height for the element
      * @return A ReplacedElement to substitute for one that can't be generated.
      */
+    @CheckReturnValue
     protected ReplacedElement newIrreplaceableImageElement(int cssWidth, int cssHeight) {
-        BufferedImage missingImage;
-        ReplacedElement mre;
         try {
             // TODO: we can come up with something better; not sure if we should use Alt text, how text should size, etc.
-            missingImage = ImageUtil.createCompatibleBufferedImage(cssWidth, cssHeight, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = missingImage.createGraphics();
-            g.setColor(Color.BLACK);
-            g.setBackground(Color.WHITE);
-            g.setFont(new Font("Serif", Font.PLAIN, 12));
-            g.drawString("Missing", 0, 12);
-            g.dispose();
-            mre = new ImageReplacedElement(missingImage, cssWidth, cssHeight);
+            BufferedImage missingImage = ImageUtil.createCompatibleBufferedImage(cssWidth, cssHeight, BufferedImage.TYPE_INT_RGB);
+            withGraphics(missingImage, g -> {
+                g.setColor(Color.BLACK);
+                g.setBackground(Color.WHITE);
+                g.setFont(new Font("Serif", Font.PLAIN, 12));
+                g.drawString("Missing", 0, 12);
+            });
+            return new ImageReplacedElement(missingImage, cssWidth, cssHeight);
         } catch (Exception e) {
-            mre = new EmptyReplacedElement(
-                    cssWidth < 0 ? 0 : cssWidth,
-                    cssHeight < 0 ? 0 : cssHeight);
+            log.error("Failed to create image element of size %sx%s".formatted(cssWidth, cssHeight), e);
+            return new EmptyReplacedElement(Math.max(cssWidth, 0), Math.max(cssHeight, 0));
         }
-        return mre;
     }
 
     /**
@@ -211,14 +207,8 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      *
      * @param e   The element under which the image is keyed.
      * @param cc  The replaced element containing the image, or another ReplacedElement to be used in its place
-     * @param uri
-     * @param cssWidth
-     * @param cssHeight
      */
     protected void storeImageReplacedElement(Element e, ReplacedElement cc, String uri, final int cssWidth, final int cssHeight) {
-        if (imageComponents == null) {
-            imageComponents = new HashMap();
-        }
         CacheKey key = new CacheKey(e, uri, cssWidth, cssHeight);
         imageComponents.put(key, cc);
     }
@@ -227,23 +217,21 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * Retrieves a ReplacedElement for an image from cache, or null if not found.
      *
      * @param e   The element by which the image is keyed
-     * @param uri
      * @return The ReplacedElement for the image, or null if there is none.
      */
-    protected ReplacedElement lookupImageReplacedElement(Element e, String uri) {
-        return lookupImageReplacedElement(e, uri, -1, -1);
+    @Nullable
+    @CheckReturnValue
+    protected ReplacedElement lookupImageReplacedElement(Element e) {
+        return lookupImageReplacedElement(e, "", -1, -1);
     }
 
     /**
      * Adds a form to a local cache for quick lookup.
      *
-     * @param e The element under which the form is keyed (e.g. "<form>" in HTML)
+     * @param e The element under which the form is keyed (e.g. {@code <form>} in HTML)
      * @param f The form element being stored.
      */
     protected void addForm(Element e, XhtmlForm f) {
-        if (forms == null) {
-            forms = new LinkedHashMap();
-        }
         forms.put(e, f);
     }
 
@@ -253,16 +241,14 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
      * @param e The Element to which the form is keyed
      * @return The form, or null if not found.
      */
+    @Nullable
+    @CheckReturnValue
     protected XhtmlForm getForm(Element e) {
-        if (forms == null) {
-            return null;
-        }
-        return (XhtmlForm) forms.get(e);
+        return forms.get(e);
     }
 
-    /**
-     * @param e
-     */
+    @Nullable
+    @CheckReturnValue
     protected Element getParentForm(Element e, LayoutContext context) {
         Node node = e;
 
@@ -281,59 +267,23 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Clears out any references to elements or items created by this factory so far.
      */
+    @Override
     public void reset() {
-        forms = null;
-        //imageComponents = null;
+        forms.clear();
+        imageComponents.clear();
     }
 
+    @Override
     public void remove(Element e) {
-        if (forms != null) {
-            forms.remove(e);
-        }
-
-        if (imageComponents != null) {
-            imageComponents.remove(e);
-        }
+        forms.remove(e);
+        imageComponents.keySet().removeIf(ck -> ck.elem.equals(e));
     }
 
+    @Override
     public void setFormSubmissionListener(FormSubmissionListener fsl) {
         this.formSubmissionListener = fsl;
     }
 
-    private static class CacheKey {
-        final Element elem;
-        final String uri;
-        final int width;
-        final int height;
-
-        public CacheKey(final Element elem, final String uri, final int width, final int height) {
-            this.uri = uri;
-            this.width = width;
-            this.height = height;
-            this.elem = elem;
-        }
-
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (!(o instanceof CacheKey)) return false;
-
-            final CacheKey cacheKey = (CacheKey) o;
-
-            if (height != cacheKey.height) return false;
-            if (width != cacheKey.width) return false;
-            if (!elem.equals(cacheKey.elem)) return false;
-            if (!uri.equals(cacheKey.uri)) return false;
-
-            return true;
-        }
-
-        public int hashCode() {
-            int result = elem.hashCode();
-            result = 31 * result + uri.hashCode();
-            result = 31 * result + width;
-            result = 31 * result + height;
-            return result;
-        }
+    private record CacheKey(Element elem, String uri, int width, int height) {
     }
-
 }

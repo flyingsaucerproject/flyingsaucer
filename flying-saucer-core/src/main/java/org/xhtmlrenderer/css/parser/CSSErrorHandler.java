@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import org.jspecify.annotations.Nullable;
+
 public interface CSSErrorHandler {
-    public void error(String uri, String message);
+    void error(@Nullable String uri, String message);
 }

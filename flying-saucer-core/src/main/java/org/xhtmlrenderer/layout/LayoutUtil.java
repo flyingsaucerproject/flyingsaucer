@@ -20,12 +20,13 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.List;
-
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
+
+import java.util.List;
 
 /**
  * Contains utility methods to layout floated and absolute content.
@@ -46,8 +47,8 @@ public class LayoutUtil {
         }
         box.setStaticEquivalent(currentLine);
 
-        // If printing, don't layout until we know where its going
-        if (! c.isPrint()) {
+        // If printing, don't lay out until we know where it's going
+        if (!c.isPrint()) {
             box.layout(c);
         } else {
             c.pushLayer(box);
@@ -60,9 +61,7 @@ public class LayoutUtil {
 
     public static FloatLayoutResult layoutFloated(
             final LayoutContext c, LineBox currentLine, BlockBox block,
-            int avail, List pendingFloats) {
-        FloatLayoutResult result = new FloatLayoutResult();
-
+            int avail, @Nullable List<FloatLayoutResult> pendingFloats) {
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
 
@@ -84,11 +83,12 @@ public class LayoutUtil {
 
         c.getBlockFormattingContext().floatBox(c, block);
 
+        boolean pending = false;
         if (pendingFloats != null &&
-                (pendingFloats.size() > 0 || block.getWidth() > avail) &&
+                (!pendingFloats.isEmpty() || block.getWidth() > avail) &&
                 currentLine.isContainsContent()) {
             block.reset(c);
-            result.setPending(true);
+            pending = true;
         } else {
             if (c.isPrint()) {
                 positionFloatOnPage(c, currentLine, block, initialY != block.getY());
@@ -96,10 +96,9 @@ public class LayoutUtil {
             }
         }
 
-        result.setBlock(block);
         c.setCurrentMarkerData(markerData);
 
-        return result;
+        return new FloatLayoutResult(pending, block);
     }
 
     private static void positionFloatOnPage(

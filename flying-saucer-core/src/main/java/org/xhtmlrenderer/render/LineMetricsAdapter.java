@@ -27,36 +27,42 @@ import java.awt.font.LineMetrics;
  * font metrics with float precision).  Unfortunately, it doesn't seem
  * the JDK provides this.  However, looking at the JDK code, it appears the
  * metrics contained in the LineMetrics are actually the metrics of the font, not
- * the metrics of the line (and empirically strings of "X" and "j" return the same 
+ * the metrics of the line (and empirically strings of "X" and "j" return the same
  * value for getAscent()).  So... for now we use LineMetrics for font metrics.
  */
 public class LineMetricsAdapter implements FSFontMetrics {
-    private LineMetrics _lineMetrics;
-    
+    private final LineMetrics _lineMetrics;
+
     public LineMetricsAdapter(LineMetrics lineMetrics) {
         _lineMetrics = lineMetrics;
     }
 
+    @Override
     public float getAscent() {
         return _lineMetrics.getAscent();
     }
 
+    @Override
     public float getDescent() {
         return _lineMetrics.getDescent();
     }
 
+    @Override
     public float getStrikethroughOffset() {
         return _lineMetrics.getStrikethroughOffset();
     }
 
+    @Override
     public float getStrikethroughThickness() {
         return _lineMetrics.getStrikethroughThickness();
     }
 
+    @Override
     public float getUnderlineOffset() {
         return _lineMetrics.getUnderlineOffset();
     }
 
+    @Override
     public float getUnderlineThickness() {
         return _lineMetrics.getUnderlineThickness();
     }

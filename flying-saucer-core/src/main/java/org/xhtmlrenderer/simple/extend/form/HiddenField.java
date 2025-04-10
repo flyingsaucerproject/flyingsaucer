@@ -19,19 +19,22 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import javax.swing.JComponent;
-
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
+import javax.swing.*;
+
 class HiddenField extends InputField {
-    
-    public HiddenField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+
+    HiddenField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
+    @Nullable
+    @Override
     public JComponent create() {
         return null;
     }

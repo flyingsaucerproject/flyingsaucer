@@ -23,8 +23,6 @@ package org.xhtmlrenderer.simple.extend;
  * No-op implementation of a FormSubmissionListener; override the submit method in a subclass as needed.
  */
 public class DefaultFormSubmissionListener implements FormSubmissionListener {
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void submit(String query) { }
 }

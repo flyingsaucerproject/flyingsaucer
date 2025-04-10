@@ -19,11 +19,7 @@
  */
 package org.xhtmlrenderer.extend;
 
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.RenderingHints.Key;
-
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
@@ -37,61 +33,66 @@ import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.TextDecoration;
 
+import java.awt.*;
+
 public interface OutputDevice {
-    public void drawText(RenderingContext c, InlineText inlineText);
-    public void drawSelection(RenderingContext c, InlineText inlineText);
-    
-    public void drawTextDecoration(RenderingContext c, LineBox lineBox);
-    public void drawTextDecoration(
+    void drawText(RenderingContext c, InlineText inlineText);
+    void drawSelection(RenderingContext c, InlineText inlineText);
+
+    void drawTextDecoration(RenderingContext c, LineBox lineBox);
+    void drawTextDecoration(
             RenderingContext c, InlineLayoutBox iB, TextDecoration decoration);
-    
-    public void paintBorder(RenderingContext c, Box box);
-    public void paintBorder(RenderingContext c, CalculatedStyle style, 
-            Rectangle edge, int sides);
-    public void paintCollapsedBorder(
+
+    void paintBorder(RenderingContext c, Box box);
+    void paintBorder(RenderingContext c, CalculatedStyle style,
+                     Rectangle edge, int sides);
+    void paintCollapsedBorder(
             RenderingContext c, BorderPropertySet border, Rectangle bounds, int side);
-    
-    public void paintBackground(RenderingContext c, Box box);
-    public void paintBackground(
-            RenderingContext c, CalculatedStyle style, 
+
+    void paintBackground(RenderingContext c, Box box);
+    void paintBackground(
+            RenderingContext c, CalculatedStyle style,
             Rectangle bounds, Rectangle bgImageContainer,
             BorderPropertySet border);
-    
-    public void paintReplacedElement(RenderingContext c, BlockBox box);
-    
-    public void drawDebugOutline(RenderingContext c, Box box, FSColor color);
-    
-    public void setFont(FSFont font);
-    
-    public void setColor(FSColor color);
-    public void setOpacity(float opacity);
 
-    public void drawRect(int x, int y, int width, int height);
-    public void drawOval(int x, int y, int width, int height);
+    void paintReplacedElement(RenderingContext c, BlockBox box);
 
-    public void drawBorderLine(Shape bounds, int side, int width, boolean solid);
-    
-    public void drawImage(FSImage image, int x, int y);
+    void drawDebugOutline(RenderingContext c, Box box, FSColor color);
+
+    void setFont(FSFont font);
+
+    void setColor(FSColor color);
+public void setOpacity(float opacity);
+
+    void drawRect(int x, int y, int width, int height);
+     void drawOval(int x, int y, int width, int height);
+
+    void drawBorderLine(Shape bounds, int side, int width, boolean solid);
+
+     void drawImage(FSImage image, int x, int y);
     public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height);
 
-    public void draw(Shape s);
-    public void fill(Shape s);
-    public void fillRect(int x, int y, int width, int height);
-    public void fillOval(int x, int y, int width, int height);
-    
-    public void clip(Shape s);
-    public Shape getClip();
-    public void setClip(Shape s);
-    
-    public void translate(double tx, double ty);
-    
-    public void setStroke(Stroke s);
-    public Stroke getStroke();
+    void draw(Shape s);
+    void fill(Shape s);
+    void fillRect(int x, int y, int width, int height);
+    void fillOval(int x, int y, int width, int height);
 
-    public Object getRenderingHint(Key key);
-    public void setRenderingHint(Key key, Object value);
-    
-    public boolean isSupportsSelection();
-    
-    public boolean isSupportsCMYKColors();
+    void clip(Shape s);
+    @Nullable
+    Shape getClip();
+    void setClip(Shape s);
+
+    void translate(double tx, double ty);
+
+    void setStroke(Stroke s);
+    Stroke getStroke();
+
+    @Nullable
+    Object getRenderingHint(RenderingHints.Key key);
+
+    void setRenderingHint(RenderingHints.Key key, Object value);
+
+    boolean isSupportsSelection();
+
+    boolean isSupportsCMYKColors();
 }

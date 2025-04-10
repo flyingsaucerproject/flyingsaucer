@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.event.MouseEvent;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.Box;
@@ -49,6 +47,7 @@ public class LinkListener extends DefaultFSMouseListener {
      * @param panel the panel where the mouse button has been released.
      * @param box the box on which the mouse cursor is currently located
      */
+    @Override
     public void onMouseUp(BasicPanel panel, Box box) {
         checkForLink(panel, box);
     }

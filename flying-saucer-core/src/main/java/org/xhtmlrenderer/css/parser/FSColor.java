@@ -19,7 +19,11 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 public interface FSColor {
-    public FSColor lightenColor();
-    public FSColor darkenColor();
+    @CheckReturnValue
+    FSColor lightenColor();
+    @CheckReturnValue
+    FSColor darkenColor();
 }

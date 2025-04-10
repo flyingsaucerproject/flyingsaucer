@@ -24,11 +24,11 @@ import java.text.BreakIterator;
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public interface BreakPointsProvider {
-	
-	/**
-	 * return next breaking point if available.
-	 * If there are no more breaking points, return BreakPoint with position == {@link BreakIterator#DONE} (-1)
-	 */
-	BreakPoint next();
+
+    /**
+     * return next breaking point if available.
+     * If there are no more breaking points, return BreakPoint with position == {@link BreakIterator#DONE} (-1)
+     */
+    BreakPoint next();
 
 }

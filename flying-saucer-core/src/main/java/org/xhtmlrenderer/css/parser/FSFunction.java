@@ -19,36 +19,37 @@
  */
 package org.xhtmlrenderer.css.parser;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class FSFunction {
-    private String _name;
-    private List _parameters;
-    
-    public FSFunction(String name, List parameters) {
+    private final String _name;
+    private final List<PropertyValue> _parameters;
+
+    public FSFunction(String name, List<PropertyValue> parameters) {
         _name = name;
         _parameters = parameters;
     }
-    
+
+    public boolean is(String name) {
+        return _name.equals(name);
+    }
+
     public String getName() {
         return _name;
     }
-    
-    public List getParameters() {
+
+    public List<PropertyValue> getParameters() {
         return _parameters;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append(_name);
         result.append('(');
-        for (Iterator i = _parameters.iterator(); i.hasNext(); ) {
-            result.append(i.next());  // HACK
-            if(i.hasNext()) {
-            	result.append(',');
-            }
+        for (PropertyValue parameter : _parameters) {
+            result.append(parameter);  // HACK
+            result.append(',');
         }
         result.append(')');
         return result.toString();

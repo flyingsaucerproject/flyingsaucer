@@ -19,44 +19,46 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ListStylePropertyBuilder extends AbstractPropertyBuilder {
-    private static final CSSName[] ALL = new CSSName[] {
-        CSSName.LIST_STYLE_TYPE, CSSName.LIST_STYLE_POSITION, CSSName.LIST_STYLE_IMAGE }; 
-    
-    public List buildDeclarations(CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-        List result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
-        if (result != null) {
-            return result;
+    private static final CSSName[] ALL = {
+        CSSName.LIST_STYLE_TYPE, CSSName.LIST_STYLE_POSITION, CSSName.LIST_STYLE_IMAGE };
+
+    @Override
+    public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values,
+                                                       Origin origin, boolean important, boolean inheritAllowed) {
+        final List<PropertyDeclaration> inherited = checkInheritAll(ALL, values, origin, important, inheritAllowed);
+        if (inherited != null) {
+            return inherited;
         }
-        
+
         PropertyDeclaration listStyleType = null;
         PropertyDeclaration listStylePosition = null;
         PropertyDeclaration listStyleImage = null;
-        
-        for (Iterator i = values.iterator(); i.hasNext(); ) {
-            PropertyValue value = (PropertyValue)i.next();
+
+        for (CSSPrimitiveValue cssPrimitiveValue : values) {
+            PropertyValue value = (PropertyValue) cssPrimitiveValue;
             checkInheritAllowed(value, false);
             short type = value.getPrimitiveType();
             if (type == CSSPrimitiveValue.CSS_IDENT) {
-                IdentValue ident = checkIdent(CSSName.LIST_STYLE_SHORTHAND, value);
-                
+                IdentValue ident = checkIdent(value);
+
                 if (ident == IdentValue.NONE) {
                     if (listStyleType == null) {
                         listStyleType = new PropertyDeclaration(
                                 CSSName.LIST_STYLE_TYPE, value, important, origin);
                     }
-                    
+
                     if (listStyleImage == null) {
                         listStyleImage = new PropertyDeclaration(
                                 CSSName.LIST_STYLE_IMAGE, value, important, origin);
@@ -65,14 +67,14 @@ public class ListStylePropertyBuilder extends AbstractPropertyBuilder {
                     if (listStylePosition != null) {
                         throw new CSSParseException("A list-style-position value cannot be set twice", -1);
                     }
-                    
+
                     listStylePosition = new PropertyDeclaration(
                             CSSName.LIST_STYLE_POSITION, value, important, origin);
                 } else if (PrimitivePropertyBuilders.LIST_STYLE_TYPES.get(ident.FS_ID)) {
                     if (listStyleType != null) {
                         throw new CSSParseException("A list-style-type value cannot be set twice", -1);
                     }
-                    
+
                     listStyleType = new PropertyDeclaration(
                             CSSName.LIST_STYLE_TYPE, value, important, origin);
                 }
@@ -80,13 +82,13 @@ public class ListStylePropertyBuilder extends AbstractPropertyBuilder {
                 if (listStyleImage != null) {
                     throw new CSSParseException("A list-style-image value cannot be set twice", -1);
                 }
-                
+
                 listStyleImage = new PropertyDeclaration(
                         CSSName.LIST_STYLE_IMAGE, value, important, origin);
             }
         }
-        
-        result = new ArrayList(3);
+
+        List<PropertyDeclaration> result = new ArrayList<>(3);
         if (listStyleType != null) {
             result.add(listStyleType);
         }
@@ -96,7 +98,7 @@ public class ListStylePropertyBuilder extends AbstractPropertyBuilder {
         if (listStyleImage != null) {
             result.add(listStyleImage);
         }
-        
+
         return result;
     }
 }

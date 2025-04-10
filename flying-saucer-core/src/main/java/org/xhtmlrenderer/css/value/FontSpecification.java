@@ -2,14 +2,11 @@ package org.xhtmlrenderer.css.value;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 
-import java.util.Arrays;
+import static java.util.Arrays.asList;
 
 /**
- * Created by IntelliJ IDEA.
  * User: tobe
  * Date: 2005-jun-23
- * Time: 00:28:43
- * To change this template use File | Settings | File Templates.
  */
 public class FontSpecification {
     public float size;
@@ -18,14 +15,9 @@ public class FontSpecification {
     public IdentValue fontStyle;
     public IdentValue variant;
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer("Font specification: ");
-        sb
-                .append(" families: " + Arrays.asList(families).toString())
-                .append(" size: " + size)
-                .append(" weight: " + fontWeight)
-                .append(" style: " + fontStyle)
-                .append(" variant: " + variant);
-        return sb.toString();
+        return String.format("Font specification:  families: %s size: %s weight: %s style: %s variant: %s",
+                asList(families), size, fontWeight, fontStyle, variant);
     }
 }

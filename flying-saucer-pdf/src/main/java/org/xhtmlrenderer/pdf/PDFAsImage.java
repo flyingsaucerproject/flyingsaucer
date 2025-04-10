@@ -19,70 +19,70 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.net.URI;
-import java.net.URL;
-
+import org.jspecify.annotations.NonNull;
 import org.xhtmlrenderer.extend.FSImage;
 
+import java.net.URI;
+
 public class PDFAsImage implements FSImage {
-    private URI _source;
-    
-    private float _width;
-    private float _height;
-    
-    private float _unscaledWidth;
-    private float _unscaledHeight;
-    
-    public PDFAsImage(URI source) {
+    private final URI _source;
+
+    private final float _width;
+    private final float _height;
+    private final float _unscaledWidth;
+    private final float _unscaledHeight;
+
+    public PDFAsImage(URI source, float width, float height) {
         _source = source;
+        _width = width;
+        _unscaledWidth = width;
+        _height = height;
+        _unscaledHeight = height;
     }
-    
+
+    private PDFAsImage(URI source, float unscaledWidth, float unscaledHeight, float width, float height) {
+        _source = source;
+        _width = width;
+        _unscaledWidth = unscaledWidth;
+        _height = height;
+        _unscaledHeight = unscaledHeight;
+    }
+
+    @Override
     public int getWidth() {
         return (int)_width;
     }
 
+    @Override
     public int getHeight() {
         return (int)_height;
     }
 
-    public void scale(int width, int height) {
+    @NonNull
+    @Override
+    public FSImage scale(int width, int height) {
         float targetWidth = width;
         float targetHeight = height;
-        
+
         if (width == -1) {
             targetWidth = getWidthAsFloat() * (targetHeight / getHeight());
         }
-        
+
         if (height == -1) {
             targetHeight = getHeightAsFloat() * (targetWidth / getWidth());
         }
-        
-        _width = targetWidth;
-        _height = targetHeight;
+
+        return new PDFAsImage(_source, _width, _height, targetWidth, targetHeight);
     }
-    
+
     public URI getURI() {
         return _source;
     }
-    
-    public void setInitialWidth(float width) {
-        if (_width == 0) {
-            _width = width;
-            _unscaledWidth = width;
-        }
-    }
-    
-    public void setInitialHeight(float height) {
-        if (_height == 0) {
-            _height = height;
-            _unscaledHeight = height;
-        }
-    }
-    
+
     public float getWidthAsFloat() {
         return _width;
     }
-    
+
     public float getHeightAsFloat() {
         return _height;
     }
@@ -91,22 +91,14 @@ public class PDFAsImage implements FSImage {
         return _unscaledHeight;
     }
 
-    public void setUnscaledHeight(float unscaledHeight) {
-        _unscaledHeight = unscaledHeight;
-    }
-
     public float getUnscaledWidth() {
         return _unscaledWidth;
     }
 
-    public void setUnscaledWidth(float unscaledWidth) {
-        _unscaledWidth = unscaledWidth;
-    }
-    
     public float scaleHeight() {
         return _height / _unscaledHeight;
     }
-    
+
     public float scaleWidth() {
         return _width / _unscaledWidth;
     }

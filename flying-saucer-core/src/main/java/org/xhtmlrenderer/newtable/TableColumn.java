@@ -19,45 +19,57 @@
  */
 package org.xhtmlrenderer.newtable;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Styleable;
 
 /**
- * An object representing an element with <code>display: table-column</code> or
- * <code>display: table-column-group</code>.
+ * An object representing an element with {@code display: table-column} or
+ * {@code display: table-column-group}.
  */
 public class TableColumn implements Styleable {
+    @Nullable
     private Element _element;
     private CalculatedStyle _style;
-    
+
     private TableColumn _parent;
-    
+
     public TableColumn() {
     }
-    
+
     public TableColumn(Element element, CalculatedStyle style) {
         _element = element;
         _style = style;
     }
-    
+
+    @Override
     public Element getElement() {
         return _element;
     }
 
+    @Nullable
+    @CheckReturnValue
+    @Override
     public String getPseudoElementOrClass() {
         return null;
     }
 
+    @Nullable
+    @CheckReturnValue
+    @Override
     public CalculatedStyle getStyle() {
         return _style;
     }
 
-    public void setElement(Element e) {
+    @Override
+    public void setElement(@Nullable Element e) {
         _element = e;
     }
 
-    public void setStyle(CalculatedStyle style) {
+    @Override
+    public void setStyle(@Nullable CalculatedStyle style) {
         _style = style;
     }
 

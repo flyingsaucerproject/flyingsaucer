@@ -19,9 +19,19 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Image;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.resource.CSSResource;
+import org.xhtmlrenderer.resource.ImageResource;
+import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.util.IOUtil;
+import org.xhtmlrenderer.util.XRLog;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,16 +44,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import javax.imageio.ImageIO;
+import java.util.Map;
 
-import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.resource.CSSResource;
-import org.xhtmlrenderer.resource.ImageResource;
-import org.xhtmlrenderer.resource.XMLResource;
-import org.xhtmlrenderer.util.FontUtil;
-import org.xhtmlrenderer.util.ImageUtil;
-import org.xhtmlrenderer.util.XRLog;
+import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
+import static java.net.HttpURLConnection.HTTP_MOVED_TEMP;
+import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
+import static org.xhtmlrenderer.util.FontUtil.getEmbeddedBase64Data;
+import static org.xhtmlrenderer.util.FontUtil.isEmbeddedBase64Font;
+import static org.xhtmlrenderer.util.ImageUtil.isEmbeddedBase64Image;
+import static org.xhtmlrenderer.util.ImageUtil.loadEmbeddedBase64Image;
 
 /**
  * <p>NaiveUserAgent is a simple implementation of {@link UserAgentCallback} which places no restrictions on what
@@ -68,8 +77,9 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     /**
      * a (simple) LRU cache
      */
-    protected LinkedHashMap _imageCache;
-    private int _imageCacheCapacity;
+    protected final Map<String, ImageResource> _imageCache;
+    private final int _imageCacheCapacity;
+    @Nullable
     private String _baseURL;
 
     /**
@@ -85,11 +95,11 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @param imgCacheSize Number of images to hold in cache before LRU images are released.
      */
     public NaiveUserAgent(final int imgCacheSize) {
-        this._imageCacheCapacity = imgCacheSize;
+        _imageCacheCapacity = imgCacheSize;
 
         // note we do *not* override removeEldestEntry() here--users of this class must call shrinkImageCache().
         // that's because we don't know when is a good time to flush the cache
-        this._imageCache = new java.util.LinkedHashMap(_imageCacheCapacity, 0.75f, true);
+        _imageCache = new LinkedHashMap<>(_imageCacheCapacity, 0.75f, true);
     }
 
     /**
@@ -98,7 +108,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      */
     public void shrinkImageCache() {
         int ovr = _imageCache.size() - _imageCacheCapacity;
-        Iterator it = _imageCache.keySet().iterator();
+        Iterator<String> it = _imageCache.keySet().iterator();
         while (it.hasNext() && ovr-- > 0) {
             it.next();
             it.remove();
@@ -114,45 +124,41 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     /**
      * Gets a Reader for the resource identified
-     *
-     * @param uri PARAM
-     * @return The stylesheet value
      */
-    //TOdO:implement this with nio.
-    protected InputStream resolveAndOpenStream(final String uri) {
-        java.io.InputStream is = null;
+    @CheckReturnValue
+    @Nullable
+    protected InputStream resolveAndOpenStream(@Nullable String uri) {
         String resolvedUri = resolveURI(uri);
         try {
-            if (FontUtil.isEmbeddedBase64Font(uri)) {
-                is = FontUtil.getEmbeddedBase64Data(uri);
-            } else {
-                is = openStream(resolvedUri);
-            }
-        } catch (java.net.MalformedURLException e) {
+            return isEmbeddedBase64Font(uri) ? getEmbeddedBase64Data(uri) : openStream(resolvedUri);
+        } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + resolvedUri, e);
-        } catch (java.io.FileNotFoundException e) {
-            XRLog.exception("item at URI " + resolvedUri + " not found");
-        } catch (java.io.IOException e) {
+        } catch (FileNotFoundException e) {
+            XRLog.exception("item at URI " + resolvedUri + " not found: " + e);
+        } catch (IOException e) {
             XRLog.exception("IO problem for " + resolvedUri, e);
         }
-        return is;
+        return null;
     }
-    
-    protected InputStream openStream(String uri) throws MalformedURLException, IOException {
+
+    @CheckReturnValue
+    protected InputStream openStream(String uri) throws IOException {
         return openConnection(uri).getInputStream();
     }
 
     /**
      * Opens a connections to uri.
-     * 
+     *
      * This can be overwritten to customize handling of connections by type.
-     * 
+     *
      * @param uri the uri to connect to
      * @return URLConnection opened connection to uri
      * @throws IOException if an I/O exception occurs.
      */
+    @CheckReturnValue
     protected URLConnection openConnection(String uri) throws IOException {
         URLConnection connection = new URL(uri).openConnection();
+        connection.setRequestProperty("Accept", "*/*");
         if (connection instanceof HttpURLConnection) {
             connection = onHttpConnection((HttpURLConnection) connection);
         }
@@ -160,12 +166,11 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     }
 
     /**
-     * Customized handling of @link{HttpUrlConnection}.
-     * 
-     * 
+     * Customized handling of {@link URLConnection}.
+     *
      * @param origin the original connection
-     * @return @link{URLConnection} 
-     * 
+     * @return {@link URLConnection}
+     *
      * @throws MalformedURLException if an unknown protocol is specified.
      * @throws IOException if an I/O exception occurs.
      */
@@ -176,11 +181,12 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         if (needsRedirect(status)) {
             // get redirect url from "location" header field
             String newUrl = origin.getHeaderField("Location");
-            
+
             if (origin.getInstanceFollowRedirects()) {
                 XRLog.load("Connection is redirected to: " + newUrl);
-                // open the new connnection again
+                // open the new connection again
                 connection = new URL(newUrl).openConnection();
+                connection.setRequestProperty("Accept", "*/*");
             } else {
                 XRLog.load("Redirect is required but not allowed to: " + newUrl);
             }
@@ -190,22 +196,17 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     /**
      * Verify that return code of connection represents a redirection.
-     * 
+     *
      * But it is final because redirection processing is determined.
-     * 
+     *
      * @param status return code of connection
      * @return boolean true if return code is a 3xx
      */
+    @CheckReturnValue
     protected final boolean needsRedirect(int status) {
-        return 
-                status != HttpURLConnection.HTTP_OK
-                && (
-                    status == HttpURLConnection.HTTP_MOVED_TEMP
-                    || status == HttpURLConnection.HTTP_MOVED_PERM
-                    || status == HttpURLConnection.HTTP_SEE_OTHER
-                );
+        return status == HTTP_MOVED_TEMP || status == HTTP_MOVED_PERM || status == HTTP_SEE_OTHER;
     }
-    
+
     /**
      * Retrieves the CSS located at the given URI.  It's assumed the URI does point to a CSS file--the URI will
      * be accessed (using java.io or java.net), opened, read and then passed into the CSS parser.
@@ -214,6 +215,8 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @param uri Location of the CSS source.
      * @return A CSSResource containing the parsed CSS.
      */
+    @CheckReturnValue
+    @Override
     public CSSResource getCSSResource(String uri) {
         return new CSSResource(resolveAndOpenStream(uri));
     }
@@ -223,109 +226,81 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * be accessed (using java.io or java.net), opened, read and then passed into the JDK image-parsing routines.
      * The result is packed up into an ImageResource for later consumption.
      *
-     * @param uri Location of the image source.
+     * @param imageLocation Location of the image source.
      * @return An ImageResource containing the image.
      */
-    public ImageResource getImageResource(String uri) {
-        ImageResource ir;
-        if (ImageUtil.isEmbeddedBase64Image(uri)) {
-            BufferedImage image = ImageUtil.loadEmbeddedBase64Image(uri);
-            ir = createImageResource(null, image);
-        } else {
-            uri = resolveURI(uri);
-            ir = (ImageResource) _imageCache.get(uri);
-            //TODO: check that cached image is still valid
-            if (ir == null) {
-                InputStream is = resolveAndOpenStream(uri);
-                if (is != null) {
-                    try {
-                        BufferedImage img = ImageIO.read(is);
-                        if (img == null) {
-                            throw new IOException("ImageIO.read() returned null");
-                        }
-                        ir = createImageResource(uri, img);
-                        _imageCache.put(uri, ir);
-                    } catch (FileNotFoundException e) {
-                        XRLog.exception("Can't read image file; image at URI '" + uri + "' not found");
-                    } catch (IOException e) {
-                        XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
-                    } finally {
-                        try {
-                            is.close();
-                        } catch (IOException e) {
-                            // ignore
-                        }
-                    }
-                }
-            }
-            if (ir == null) {
-                ir = createImageResource(uri, null);
-            }
+    @CheckReturnValue
+    @Override
+    public ImageResource getImageResource(final String imageLocation) {
+        if (isEmbeddedBase64Image(imageLocation)) {
+            return createImageResource(null, loadEmbeddedBase64Image(imageLocation));
         }
-        return ir;
+
+        final String unresolvedUri = imageLocation;
+        ImageResource cached = _imageCache.get(unresolvedUri);
+        if (cached != null) {
+            //TODO: check that cached image is still valid
+            return cached;
+        }
+
+        final String uri = resolveURI(imageLocation);
+        try (InputStream is = resolveAndOpenStream(uri)) {
+            if (is != null) {
+                BufferedImage img = ImageIO.read(is);
+                if (img == null) {
+                    throw new IOException("ImageIO.read() returned null for URI %s".formatted(uri));
+                }
+                ImageResource ir = createImageResource(uri, img);
+                _imageCache.put(unresolvedUri, ir);
+                return ir;
+            }
+        } catch (FileNotFoundException e) {
+            XRLog.exception("Can't read image file; image at URI '%s' not found (caused by: %s)".formatted(uri, e));
+        } catch (IOException e) {
+            XRLog.exception("Can't read image file; unexpected problem for URI '%s'".formatted(uri), e);
+        }
+
+        return createImageResource(uri, null);
     }
 
     /**
-     * Factory method to generate ImageResources from a given Image. May be overridden in subclass. 
+     * Factory method to generate ImageResources from a given Image. May be overridden in subclass.
      *
      * @param uri The URI for the image, resolved to an absolute URI.
      * @param img The image to package; may be null (for example, if image could not be loaded).
      *
      * @return An ImageResource containing the image.
      */
-    protected ImageResource createImageResource(String uri, Image img) {
+    @CheckReturnValue
+    protected ImageResource createImageResource(@Nullable String uri, @Nullable Image img) {
         return new ImageResource(uri, AWTFSImage.createImage(img));
     }
 
     /**
-     * Retrieves the XML located at the given URI. It's assumed the URI does point to a XML--the URI will
+     * Retrieves the XML located at the given URI. It's assumed the URI does point to an XML--the URI will
      * be accessed (using java.io or java.net), opened, read and then passed into the XML parser (XMLReader)
      * configured for Flying Saucer. The result is packed up into an XMLResource for later consumption.
      *
      * @param uri Location of the XML source.
      * @return An XMLResource containing the image.
      */
+    @CheckReturnValue
+    @Override
     public XMLResource getXMLResource(String uri) {
-        InputStream inputStream = resolveAndOpenStream(uri);
-        XMLResource xmlResource;
-        try {
-            xmlResource = XMLResource.load(inputStream);
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // swallow
-                }
-            }
+        try (InputStream inputStream = resolveAndOpenStream(uri)) {
+            return XMLResource.load(inputStream);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Can't read XML resource from '%s'".formatted(uri), e);
         }
-        return xmlResource;
     }
 
-    public byte[] getBinaryResource(String uri) {
-        InputStream is = resolveAndOpenStream(uri);
-        if (is==null) return null;
-        try {
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buf = new byte[10240];
-            int i;
-            while ((i = is.read(buf)) != -1) {
-                result.write(buf, 0, i);
-            }
-            is.close();
-            is = null;
-
-            return result.toByteArray();
+    @Override
+    @CheckReturnValue
+    public byte @Nullable [] getBinaryResource(String uri) {
+        try (InputStream is = resolveAndOpenStream(uri)) {
+            return is == null ? null : IOUtil.readBytes(is);
         } catch (IOException e) {
-            return null;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            throw new IllegalArgumentException("Can't read binary resource from '%s'".formatted(uri), e);
         }
     }
 
@@ -335,6 +310,8 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      * @param uri A URI which might have been visited.
      * @return Always false; visits are not tracked in the NaiveUserAgent.
      */
+    @CheckReturnValue
+    @Override
     public boolean isVisited(String uri) {
         return false;
     }
@@ -344,6 +321,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      *
      * @param url A URI which anchors other, possibly relative URIs.
      */
+    @Override
     public void setBaseURL(String url) {
         _baseURL = url;
     }
@@ -356,7 +334,10 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      *
      * @return A URI as String, resolved, or null if there was an exception (for example if the URI is malformed).
      */
-    public String resolveURI(String uri) {
+    @Override
+    @Nullable
+    @CheckReturnValue
+    public String resolveURI(@Nullable String uri) {
         if (uri == null) return null;
 
         if (_baseURL == null) {//first try to set a base URL
@@ -366,11 +347,12 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
             } catch (URISyntaxException e) {
                 XRLog.exception("The default NaiveUserAgent could not use the URL as base url: " + uri, e);
             }
+
             if (_baseURL == null) { // still not set -> fallback to current working directory
                 try {
                     setBaseURL(new File(".").toURI().toURL().toExternalForm());
-                } catch (Exception e1) {
-                    XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for " + uri);
+                } catch (MalformedURLException e) {
+                    XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for '%s': %s".formatted(uri, e));
                     return null;
                 }
             }
@@ -382,13 +364,27 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         try {
             URI result = new URI(uri);
             if (result.isAbsolute()) {
+                if (result.getScheme().equals("classpath")) {
+                    try {
+                        // If this conversion succeeds, there is already a
+                        // URLStreamHandler available for the classpath
+                        // protocol. If so, just use that instead vs. relying
+                        // on the implementation below.
+                        return result.toURL().toString();
+                    } catch (MalformedURLException e) {
+                        URL resource = Thread.currentThread().getContextClassLoader().getResource(uri.substring("classpath".length() + 1));
+                        if (resource != null) {
+                            return resource.toString();
+                        }
+                    }
+                }
                 return result.toString();
             }
             XRLog.load(uri + " is not a URL; may be relative. Testing using parent URL " + _baseURL);
             URI baseURI = new URI(_baseURL);
             if(!baseURI.isOpaque()) {
                 // uri.resolve(child) only works for opaque URIs.
-                // Otherwise it would simply return child.
+                // Otherwise, it would simply return child.
                 return baseURI.resolve(result).toString();
             }
             // Fall back to previous resolution using URL
@@ -407,146 +403,24 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     /**
      * Returns the current baseUrl for this class.
      */
+    @CheckReturnValue
+    @Nullable
+    @Override
     public String getBaseURL() {
         return _baseURL;
     }
 
+    @Override
     public void documentStarted() {
         shrinkImageCache();
     }
 
+    @Override
     public void documentLoaded() { /* ignore*/ }
 
+    @Override
     public void onLayoutException(Throwable t) { /* ignore*/ }
 
+    @Override
     public void onRenderException(Throwable t) { /* ignore*/ }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.40  2009/05/15 16:20:10  pdoubleya
- * ImageResource now tracks the URI for the image that was created and handles mutable images.
- *
- * Revision 1.39  2009/04/12 11:16:51  pdoubleya
- * Remove proposed patch for URLs that are incorrectly handled on Windows; need a more reliable solution.
- *
- * Revision 1.38  2008/04/30 23:14:18  peterbrant
- * Do a better job of cleaning up open file streams (patch by Christophe Marchand)
- *
- * Revision 1.37  2007/11/23 07:03:30  pdoubleya
- * Applied patch from N. Barozzi to allow either toolkit or buffered images to be used, see https://xhtmlrenderer.dev.java.net/servlets/ReadMsg?list=dev&msgNo=3847
- *
- * Revision 1.36  2007/10/31 23:14:43  peterbrant
- * Add rudimentary support for @font-face rules
- *
- * Revision 1.35  2007/06/20 12:24:31  pdoubleya
- * Fix bug in shrink cache, trying to modify iterator without using safe remove().
- *
- * Revision 1.34  2007/06/19 21:25:41  pdoubleya
- * Cleanup for caching in NUA, making it more suitable to use as a reusable UAC. NUA is also now a document listener and uses this to try and trim its cache down. PanelManager and iTextUA are now NUA subclasses.
- *
- * Revision 1.33  2007/05/20 23:25:33  peterbrant
- * Various code cleanups (e.g. remove unused imports)
- *
- * Patch from Sean Bright
- *
- * Revision 1.32  2007/05/09 21:52:06  pdoubleya
- * Fix for rendering problems introduced by removing GraphicsUtil class. Use Image instead of BufferedImage in most cases, convert to AWT image if necessary. Not complete, requires cleanup.
- *
- * Revision 1.31  2007/05/05 21:08:27  pdoubleya
- * Changed image-related interfaces (FSImage, ImageUtil, scaling) to all use BufferedImage, since there were no Image-specific APIs we depended on, and we have more control over what we do with BIs as compared to Is.
- *
- * Revision 1.30  2007/05/05 18:05:21  pdoubleya
- * Remove references to GraphicsUtil and the class itself, no longer needed
- *
- * Revision 1.29  2007/04/10 20:46:02  pdoubleya
- * Fix, was not closing XML source stream when done
- *
- * Revision 1.28  2007/02/07 16:33:31  peterbrant
- * Initial commit of rewritten table support and associated refactorings
- *
- * Revision 1.27  2006/06/28 13:46:59  peterbrant
- * ImageIO.read() can apparently return sometimes null instead of throwing an exception when processing an invalid image
- *
- * Revision 1.26  2006/04/27 13:28:48  tobega
- * Handle situations without base url and no file access gracefully
- *
- * Revision 1.25  2006/04/25 00:23:20  peterbrant
- * Fixes from Mike Curtis
- *
- * Revision 1.23  2006/04/08 08:21:24  tobega
- * relative urls and linked stylesheets
- *
- * Revision 1.22  2006/02/02 02:47:33  peterbrant
- * Support non-AWT images
- *
- * Revision 1.21  2005/10/25 19:40:38  tobega
- * Suggestion from user to use File.toURI.toURL instead of File.toURL because the latter is buggy
- *
- * Revision 1.20  2005/10/09 09:40:27  tobega
- * Use current directory as default base URL
- *
- * Revision 1.19  2005/08/11 01:35:37  joshy
- * removed debugging
- * updated stylesheet to use right aligns
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.17  2005/06/25 19:27:47  tobega
- * UAC now supplies Resources
- *
- * Revision 1.16  2005/06/25 17:23:35  tobega
- * first refactoring of UAC: ImageResource
- *
- * Revision 1.15  2005/06/21 17:52:10  joshy
- * new hover code
- * removed some debug statements
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.14  2005/06/20 23:45:56  joshy
- * hack to fix the mangled background images on osx
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.13  2005/06/20 17:26:45  joshy
- * debugging for image issues
- * font scale stuff
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.12  2005/06/15 11:57:18  tobega
- * Making Browser a better model application with UserAgentCallback
- *
- * Revision 1.11  2005/06/15 11:53:47  tobega
- * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
- *
- * Revision 1.10  2005/06/13 06:50:16  tobega
- * Fixed a bug in table content resolution.
- * Various "tweaks" in other stuff.
- *
- * Revision 1.9  2005/06/03 00:29:49  tobega
- * fixed potential bug
- *
- * Revision 1.8  2005/06/01 21:36:44  tobega
- * Got image scaling working, and did some refactoring along the way
- *
- * Revision 1.7  2005/03/28 14:24:22  pdoubleya
- * Remove stack trace on loading images.
- *
- * Revision 1.6  2005/02/02 12:14:01  pdoubleya
- * Clean, format, buffer reader.
- *
- *
- */

@@ -36,32 +36,11 @@ class ImageLoadQueue {
     private static final ImageLoadItem KILL_SWITCH = new ImageLoadItem(null, null, null, -1, -1);
 
     // list of items to be loaded
-    private final java.util.LinkedList _loadQueue;
-
-    /**
-     * Intantiates a new queue.
-     */
-    public ImageLoadQueue() {
-        this._loadQueue = new LinkedList();
-    }
+    private final LinkedList<ImageLoadItem> _loadQueue = new LinkedList<>();
 
     /**
      * Queues a new item to be loaded. Thread-safe.
      *
-     * @param uri URI of the item to be loaded. As there is no good way of reporting failures, you should ensure
-     *            the URI is a proper URL before calling this method.
-     * @param re  container for the image to be loaded; will be updated via
-     *            {@link MutableFSImage#setImage(String,java.awt.Image,boolean)} once image is loaded
-    public synchronized void addToQueue(String uri, MutableFSImage re) {
-        this.addToQueue(uri, re, -1, -1);
-    }
-     */
-
-
-    /**
-     * Queues a new item to be loaded. Thread-safe.
-     *
-     * @param imageResourceLoader
      * @param uri URI of the item to be loaded. As there is no good way of reporting failures, you should ensure
      *            the URI is a proper URL before calling this method.
      */
@@ -87,7 +66,7 @@ class ImageLoadQueue {
                     " requested item, but queue is shutting down; returning kill switch.");
             return KILL_SWITCH;
         } else {
-            ImageLoadItem item = (ImageLoadItem) _loadQueue.removeLast();
+            ImageLoadItem item = _loadQueue.removeLast();
 
             XRLog.general(Level.FINE, "Thread " + Thread.currentThread().getName() +
                     " pulled item " + item._uri + " from queue, " + (_loadQueue.size() - 1) + " remaining");

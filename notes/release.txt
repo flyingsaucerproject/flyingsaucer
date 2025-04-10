@@ -3,9 +3,9 @@ Feb 5, 2004
 quick start:  ant test-box
 
 This is the first release of JoshyHTML, with a better name to be chosen later.
-It's goal is not to be a webbrowser, but an XHTML Strict + CSS renderer. There
+Its goal is not to be a web browser, but an XHTML Strict + CSS renderer. There
 is no network code in it at all, in fact. It accepts a DOM and renders it in a
-scrolling panel. You could make a webbrowser out of it, but since it only
+scrolling panel. You could make a web browser out of it, but since it only
 supports XHTML Strict there would be a lot of work to massage the incoming html
 and css. Not impossible though.
 
@@ -37,7 +37,7 @@ can read (ie, gif, png, and jpg).
 
 ======== CSS Properties ==============
 div supports borders, margins, padding, and backgrounds with colors or images that tile ( the repeat, repeatx, repeaty properties work)
-all of the text elements (p, h1, b, i, etc) support foreground colors and font-style (normal and italic), font-weight (normal and bold), font-size (pt's only), and font-family (serif, sans-serif, and monospace)
+all the text elements (p, h1, b, i, etc.) support foreground colors and font-style (normal and italic), font-weight (normal and bold), font-size (pt's only), and font-family (serif, sans-serif, and monospace)
 
 No other styling is provided yet. What should we work on first?
 

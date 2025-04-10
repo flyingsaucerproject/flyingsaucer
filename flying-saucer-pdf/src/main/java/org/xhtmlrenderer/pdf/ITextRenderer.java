@@ -19,34 +19,19 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfPageEvent;
+import com.lowagie.text.pdf.PdfWriter;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xhtmlrenderer.context.StyleReference;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.ReplacedElementFactory;
+import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.Layer;
@@ -61,81 +46,136 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xml.sax.InputSource;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_PRINT;
 
 public class ITextRenderer {
-    // These two defaults combine to produce an effective resolution of 96 px to
-    // the inch
+    // These two defaults combine to produce an effective resolution of 96 px to the inch
     public static final float DEFAULT_DOTS_PER_POINT = 20f * 4f / 3f;
     public static final int DEFAULT_DOTS_PER_PIXEL = 20;
 
     private final SharedContext _sharedContext;
     private final ITextOutputDevice _outputDevice;
 
+    @Nullable
     private Document _doc;
+    @Nullable
     private BlockBox _root;
 
     private final float _dotsPerPoint;
 
     private com.lowagie.text.Document _pdfDoc;
+    @Nullable
     private PdfWriter _writer;
 
+    @Nullable
     private PDFEncryption _pdfEncryption;
 
     // note: not hard-coding a default version in the _pdfVersion field as this
     // may change between iText releases
     // check for null before calling writer.setPdfVersion()
     // use one of the values in PDFWriter.VERSION...
+    @Nullable
     private Character _pdfVersion;
 
-    private final char[] validPdfVersions = new char[] { PdfWriter.VERSION_1_2, PdfWriter.VERSION_1_3, PdfWriter.VERSION_1_4,
-            PdfWriter.VERSION_1_5, PdfWriter.VERSION_1_6, PdfWriter.VERSION_1_7 };
+    @Nullable
+    private PdfPageEvent pdfPageEvent;
 
+    @Nullable
+    private Dimension _dim;
+
+    private boolean scaleToFit;
+
+    private final char[] validPdfVersions = {
+            PdfWriter.VERSION_1_2,
+            PdfWriter.VERSION_1_3,
+            PdfWriter.VERSION_1_4,
+            PdfWriter.VERSION_1_5,
+            PdfWriter.VERSION_1_6,
+            PdfWriter.VERSION_1_7
+    };
+
+    @Nullable
     private Integer _pdfXConformance;
 
-	private PDFCreationListener _listener;
+    @Nullable
+    private PDFCreationListener _listener;
 
-    private boolean _timeouted;
+    public ITextRenderer(File file) throws IOException {
+        this();
+        File parent = file.getAbsoluteFile().getParentFile();
+        setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
+    }
 
     public ITextRenderer() {
         this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
+    }
+
+    public ITextRenderer(FontResolver fontResolver) {
+        this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL, fontResolver);
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel) {
         this(dotsPerPoint, dotsPerPixel, new ITextOutputDevice(dotsPerPoint));
     }
 
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, FontResolver fontResolver) {
+        this(dotsPerPoint, dotsPerPixel, new ITextOutputDevice(dotsPerPoint), fontResolver);
+    }
+
+    public ITextRenderer(ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
+        this(outputDevice.getDotsPerPoint(), userAgent.getDotsPerPixel(), outputDevice, userAgent, new ITextFontResolver());
+    }
+
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice) {
-        this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice));
+        this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice, dotsPerPixel));
+    }
+
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, FontResolver fontResolver) {
+        this(dotsPerPoint, dotsPerPixel, outputDevice, new ITextUserAgent(outputDevice, dotsPerPixel), fontResolver);
     }
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent) {
-        _dotsPerPoint = dotsPerPoint;
-
-        _outputDevice = outputDevice;
-
-        _sharedContext = new SharedContext();
-        _sharedContext.setUserAgentCallback(userAgent);
-        _sharedContext.setCss(new StyleReference(userAgent));
-        userAgent.setSharedContext(_sharedContext);
-        _outputDevice.setSharedContext(_sharedContext);
-
-        ITextFontResolver fontResolver = new ITextFontResolver(_sharedContext);
-        _sharedContext.setFontResolver(fontResolver);
-
-        ITextReplacedElementFactory replacedElementFactory = new ITextReplacedElementFactory(_outputDevice);
-        _sharedContext.setReplacedElementFactory(replacedElementFactory);
-
-        _sharedContext.setTextRenderer(new ITextTextRenderer());
-        _sharedContext.setDPI(72 * _dotsPerPoint);
-        _sharedContext.setDotsPerPixel(dotsPerPixel);
-        _sharedContext.setPrint(true);
-        _sharedContext.setInteractive(false);
-
-        _timeouted= false;
+        this(dotsPerPoint, dotsPerPixel, outputDevice, userAgent, new ITextFontResolver());
     }
 
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent,
+            FontResolver fontResolver) {
+        this(dotsPerPoint, dotsPerPixel, outputDevice, userAgent, fontResolver,
+                new ITextReplacedElementFactory(outputDevice), new ITextTextRenderer());
+    }
+
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent,
+            FontResolver fontResolver, ReplacedElementFactory replacedElementFactory,
+            TextRenderer textRenderer) {
+        _dotsPerPoint = dotsPerPoint;
+        _outputDevice = outputDevice;
+        _sharedContext = new SharedContext(userAgent, fontResolver, replacedElementFactory, textRenderer,
+                72 * _dotsPerPoint, dotsPerPixel);
+
+        _outputDevice.setSharedContext(_sharedContext);
+    }
+
+    @Nullable
     public Document getDocument() {
         return _doc;
     }
@@ -148,32 +188,45 @@ public class ITextRenderer {
         return _sharedContext.getUac().getXMLResource(uri).getDocument();
     }
 
-    public void setDocument(String uri) {
-        setDocument(loadDocument(uri), uri);
+    public static ITextRenderer fromUrl(String uri) {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocument(renderer.loadDocument(uri), uri);
+        return renderer;
     }
 
-    public void setDocument(Document doc, String url) {
+    public void setDocument(Document doc) {
+        setDocument(doc, null);
+    }
+
+    public void setDocument(Document doc, @Nullable String url) {
         setDocument(doc, url, new XhtmlNamespaceHandler());
     }
 
-    public void setDocument(File file) throws IOException {
-
-        File parent = file.getAbsoluteFile().getParentFile();
-        setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
+    public static ITextRenderer fromString(String content) {
+        return fromString(content, null);
     }
 
-    public void setDocumentFromString(String content) {
-        setDocumentFromString(content, null);
+    public static ITextRenderer fromString(String content, @Nullable String baseUrl) {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocumentFromString(content, baseUrl);
+        return renderer;
     }
 
-    public void setDocumentFromString(String content, String baseUrl) {
-        InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
-        Document dom = XMLResource.load(is).getDocument();
-
-        setDocument(dom, baseUrl);
+    public final void setDocumentFromString(String content) {
+        setDocument(parse(content), null);
     }
 
-    public void setDocument(Document doc, String url, NamespaceHandler nsh) {
+    public final void setDocumentFromString(String content, @Nullable String baseUrl) {
+        setDocument(parse(content), baseUrl);
+    }
+
+    private Document parse(String content) {
+        try (var is = new StringReader(content)) {
+            return XMLResource.load(new InputSource(is)).getDocument();
+        }
+    }
+
+    public void setDocument(Document doc, @Nullable String url, NamespaceHandler nsh) {
         _doc = doc;
 
         getFontResolver().flushFontFaceFonts();
@@ -187,9 +240,10 @@ public class ITextRenderer {
         _sharedContext.setBaseURL(url);
         _sharedContext.setNamespaceHandler(nsh);
         _sharedContext.getCss().setDocumentContext(_sharedContext, _sharedContext.getNamespaceHandler(), doc, new NullUserInterface());
-        getFontResolver().importFontFaces(_sharedContext.getCss().getFontFaceRules());
+        getFontResolver().importFontFaces(_sharedContext.getCss().getFontFaceRules(), _sharedContext.getUac());
     }
 
+    @Nullable
     public PDFEncryption getPDFEncryption() {
         return _pdfEncryption;
     }
@@ -199,36 +253,33 @@ public class ITextRenderer {
     }
 
     public void setPDFVersion(char _v) {
-        for (int i = 0; i < validPdfVersions.length; i++) {
-            if (_v == validPdfVersions[i]) {
-                _pdfVersion = new Character(_v);
-                return;
-            }
+        if (Arrays.binarySearch(validPdfVersions, _v) < 0) {
+            throw new IllegalArgumentException("""
+                    Invalid PDF version character: "%s"; use one of constants PdfWriter.VERSION_1_N.
+                    """.formatted(_v).trim());
         }
-        throw new IllegalArgumentException("Invalid PDF version character; use "
-                + "valid constants from PdfWriter (e.g. PdfWriter.VERSION_1_2)");
+        _pdfVersion = _v;
     }
 
     public char getPDFVersion() {
-        return _pdfVersion == null ? '0' : _pdfVersion.charValue();
+        return _pdfVersion == null ? '0' : _pdfVersion;
     }
-	
-	public void setPDFXConformance(int pdfXConformance){
-		_pdfXConformance = new Integer(pdfXConformance);
-	}
-	
-	public int getPDFXConformance(){
-        return _pdfXConformance == null ? '0' : _pdfXConformance.intValue();
-	}
 
+    public void setPDFXConformance(int pdfXConformance) {
+        _pdfXConformance = pdfXConformance;
+    }
+
+    public int getPDFXConformance() {
+        return _pdfXConformance == null ? '0' : _pdfXConformance;
+    }
 
     public void layout() {
         LayoutContext c = newLayoutContext();
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
-        Dimension dim = root.getLayer().getPaintingDimension(c);
-        root.getLayer().trimEmptyPages(c, dim.height);
+        _dim = root.getLayer().getPaintingDimension(c);
+        root.getLayer().trimEmptyPages(_dim.height);
         root.getLayer().layoutPages(c);
         _root = root;
     }
@@ -239,44 +290,53 @@ public class ITextRenderer {
         return new Rectangle(0, 0, first.getContentWidth(c), first.getContentHeight(c));
     }
 
-    private RenderingContext newRenderingContext() {
-        RenderingContext result = _sharedContext.newRenderingContextInstance();
-        result.setFontContext(new ITextFontContext());
+    private RenderingContext newRenderingContext(int initialPageNo) {
+        ITextFontContext fontContext = new ITextFontContext();
+        _sharedContext.getTextRenderer().setup(fontContext);
+        return _sharedContext.newRenderingContextInstance(_outputDevice, fontContext, _root.getLayer(), initialPageNo);
+    }
 
-        result.setOutputDevice(_outputDevice);
-
-        _sharedContext.getTextRenderer().setup(result.getFontContext());
-
-        result.setRootLayer(_root.getLayer());
+    private LayoutContext newLayoutContext() {
+        ITextFontContext fontContext = new ITextFontContext();
+        LayoutContext result = _sharedContext.newLayoutContextInstance(fontContext);
+        _sharedContext.getTextRenderer().setup(fontContext);
 
         return result;
     }
 
-    private LayoutContext newLayoutContext() {
-        LayoutContext result = _sharedContext.newLayoutContextInstance();
-        result.setFontContext(new ITextFontContext());
+    public byte[] createPDF(Document source) throws DocumentException {
+        setDocument(source, source.getDocumentURI());
+        layout();
 
-        _sharedContext.getTextRenderer().setup(result.getFontContext());
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        createPDF(bos);
+        finishPDF();
+        return bos.toByteArray();
+    }
 
-        return result;
+    public void createPDF(Document source, OutputStream os) throws DocumentException {
+        setDocument(source, source.getDocumentURI());
+        layout();
+        createPDF(os);
+        finishPDF();
     }
 
     public void createPDF(OutputStream os) throws DocumentException {
         createPDF(os, true, 0);
     }
 
-    public void writeNextDocument() throws DocumentException {
+    public void writeNextDocument() {
         writeNextDocument(0);
     }
 
-    public void writeNextDocument(int initialPageNo) throws DocumentException {
-        List pages = _root.getLayer().getPages();
+    public void writeNextDocument(int initialPageNo) {
+        List<PageBox> pages = _root.getLayer().getPages();
 
-        RenderingContext c = newRenderingContext();
-        c.setInitialPageNo(initialPageNo);
-        PageBox firstPage = (PageBox) pages.get(0);
-        com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
-                firstPage.getHeight(c) / _dotsPerPoint);
+        RenderingContext c = newRenderingContext(initialPageNo);
+        PageBox firstPage = pages.get(0);
+        com.lowagie.text.Rectangle firstPageSize =
+                new com.lowagie.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
+                        firstPage.getHeight(c) / _dotsPerPoint);
 
         _outputDevice.setStartPageNo(_writer.getPageNumber());
 
@@ -302,23 +362,31 @@ public class ITextRenderer {
      * something goes wrong.
      */
     public void createPDF(OutputStream os, boolean finish, int initialPageNo) throws DocumentException {
-        List pages = _root.getLayer().getPages();
+        List<PageBox> pages = _root.getLayer().getPages();
 
-        RenderingContext c = newRenderingContext();
-        c.setInitialPageNo(initialPageNo);
-        PageBox firstPage = (PageBox) pages.get(0);
-        com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(0, 0, firstPage.getWidth(c) / _dotsPerPoint,
-                firstPage.getHeight(c) / _dotsPerPoint);
+        RenderingContext c = newRenderingContext(initialPageNo);
+
+        PageBox firstPage = pages.get(0);
+
+        int pageWidth = calculateWidth(c, firstPage);
+
+        com.lowagie.text.Rectangle firstPageSize =
+                new com.lowagie.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
+                        firstPage.getHeight(c) / _dotsPerPoint);
 
         com.lowagie.text.Document doc = new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
         PdfWriter writer = PdfWriter.getInstance(doc, os);
         if (_pdfVersion != null) {
-            writer.setPdfVersion(_pdfVersion.charValue());
+            writer.setPdfVersion(_pdfVersion);
         }
-		
-		if (_pdfXConformance != null) {
-			writer.setPDFXConformance(_pdfXConformance.intValue());
-		}
+
+        if (_pdfXConformance != null) {
+            writer.setPDFXConformance(_pdfXConformance);
+        }
+
+        if (pdfPageEvent != null) {
+            writer.setPageEvent(pdfPageEvent);
+        }
 
         if (_pdfEncryption != null) {
             writer.setEncryption(_pdfEncryption.getUserPassword(), _pdfEncryption.getOwnerPassword(),
@@ -356,15 +424,16 @@ public class ITextRenderer {
         }
     }
 
-    private void writePDF(List pages, RenderingContext c, com.lowagie.text.Rectangle firstPageSize, com.lowagie.text.Document doc,
-            PdfWriter writer) throws DocumentException {
+    private void writePDF(List<PageBox> pages, RenderingContext c, com.lowagie.text.Rectangle firstPageSize,
+            com.lowagie.text.Document doc,
+            PdfWriter writer) {
         _outputDevice.setRoot(_root);
 
         _outputDevice.start(_doc);
         _outputDevice.setWriter(writer);
         _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.getHeight());
 
-        _root.getLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
+        _root.getLayer().assignPagePaintingPositions(c, PAGED_MODE_PRINT);
 
         int pageCount = _root.getLayer().getPages().size();
         c.setPageCount(pageCount);
@@ -372,17 +441,20 @@ public class ITextRenderer {
         setDidValues(doc); // set PDF header fields from meta data
         for (int i = 0; i < pageCount; i++) {
 
-            if (isTimeouted() || Thread.currentThread().isInterrupted())
-                throw new RuntimeException("Timeout occured");
+            if (Thread.currentThread().isInterrupted()) {
+                throw new RuntimeException("Timeout occurred");
+            }
 
-            PageBox currentPage = (PageBox) pages.get(i);
+            PageBox currentPage = pages.get(i);
             c.setPage(i, currentPage);
             paintPage(c, writer, currentPage);
             _outputDevice.finishPage();
             if (i != pageCount - 1) {
-                PageBox nextPage = (PageBox) pages.get(i + 1);
-                com.lowagie.text.Rectangle nextPageSize = new com.lowagie.text.Rectangle(0, 0, nextPage.getWidth(c) / _dotsPerPoint,
-                        nextPage.getHeight(c) / _dotsPerPoint);
+                PageBox nextPage = pages.get(i + 1);
+                int pageWidth = calculateWidth(c, nextPage);
+                com.lowagie.text.Rectangle nextPageSize =
+                        new com.lowagie.text.Rectangle(0, 0, pageWidth / _dotsPerPoint,
+                                nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
                 doc.newPage();
                 _outputDevice.initializePage(writer.getDirectContent(), nextPageSize.getHeight());
@@ -415,18 +487,22 @@ public class ITextRenderer {
     private void paintPage(RenderingContext c, PdfWriter writer, PageBox page) {
         provideMetadataToPage(writer, page);
 
-        page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
-        page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
-        page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
+        page.paintBackground(c, 0, PAGED_MODE_PRINT);
+        page.paintMarginAreas(c, 0, PAGED_MODE_PRINT);
+        page.paintBorder(c, 0, PAGED_MODE_PRINT);
 
         Shape working = _outputDevice.getClip();
 
         Rectangle content = page.getPrintClippingBounds(c);
+        if (isScaleToFit()) {
+            int pageWidth = calculateWidth(c, page);
+            content.setSize(pageWidth, (int) content.getSize().getHeight());//RTD - to change
+        }
         _outputDevice.clip(content);
 
-        int top = -page.getPaintingTop() + page.getMarginBorderPadding(c, CalculatedStyle.TOP);
+        int top = -page.getPaintingTop() + page.getMarginBorderPadding(c, Edge.TOP);
 
-        int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+        int left = page.getMarginBorderPadding(c, Edge.LEFT);
 
         _outputDevice.translate(left, top);
         _root.getLayer().paint(c);
@@ -438,14 +514,9 @@ public class ITextRenderer {
     private void provideMetadataToPage(PdfWriter writer, PageBox page) {
         byte[] metadata = null;
         if (page.getMetadata() != null) {
-            try {
-                String metadataBody = stringfyMetadata(page.getMetadata());
-                if (metadataBody != null) {
-                    metadata = createXPacket(stringfyMetadata(page.getMetadata())).getBytes("UTF-8");
-                }
-            } catch (UnsupportedEncodingException e) {
-                // Can't happen
-                throw new RuntimeException(e);
+            String metadataBody = stringifyMetadata(page.getMetadata());
+            if (metadataBody != null) {
+                metadata = createXPacket(stringifyMetadata(page.getMetadata())).getBytes(UTF_8);
             }
         }
 
@@ -454,7 +525,8 @@ public class ITextRenderer {
         }
     }
 
-    private String stringfyMetadata(Element element) {
+    @Nullable
+    private String stringifyMetadata(Element element) {
         Element target = getFirstChildElement(element);
         if (target == null) {
             return null;
@@ -477,6 +549,7 @@ public class ITextRenderer {
         }
     }
 
+    @Nullable
     private static Element getFirstChildElement(Element element) {
         Node n = element.getFirstChild();
         while (n != null) {
@@ -489,12 +562,9 @@ public class ITextRenderer {
     }
 
     private String createXPacket(String metadata) {
-        StringBuffer result = new StringBuffer(metadata.length() + 50);
-        result.append("<?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?>\n");
-        result.append(metadata);
-        result.append("\n<?xpacket end='r'?>");
-
-        return result.toString();
+        return "<?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+                metadata +
+                "\n<?xpacket end='r'?>";
     }
 
     public ITextOutputDevice getOutputDevice() {
@@ -506,11 +576,12 @@ public class ITextRenderer {
     }
 
     public void exportText(Writer writer) throws IOException {
-        RenderingContext c = newRenderingContext();
+        RenderingContext c = newRenderingContext(0);
         c.setPageCount(_root.getLayer().getPages().size());
         _root.exportText(c, writer);
     }
 
+    @Nullable
     public BlockBox getRootBox() {
         return _root;
     }
@@ -519,24 +590,43 @@ public class ITextRenderer {
         return _dotsPerPoint;
     }
 
-    public List findPagePositionsByID(Pattern pattern) {
+    public List<PagePosition> findPagePositionsByID(Pattern pattern) {
         return _outputDevice.findPagePositionsByID(newLayoutContext(), pattern);
     }
 
+
     private static final class NullUserInterface implements UserInterface {
+        @Override
         public boolean isHover(Element e) {
             return false;
         }
 
+        @Override
         public boolean isActive(Element e) {
             return false;
         }
 
+        @Override
         public boolean isFocus(Element e) {
             return false;
         }
     }
 
+    private int calculateWidth(RenderingContext c, PageBox firstPage) {
+        if (isScaleToFit()) {
+            int pageWidth = firstPage.getWidth(c);
+            Rectangle pageRec = firstPage.getPrintClippingBounds(c);
+            if(_dim.getWidth() > pageRec.getWidth()) {
+                RectPropertySet margin = firstPage.getMargin(c);
+                pageWidth = (int) (_dim.getWidth() + margin.left() + margin.right());
+            }
+            return pageWidth;
+        } else {
+            return firstPage.getWidth(c);
+        }
+    }
+
+    @Nullable
     public PDFCreationListener getListener() {
         return _listener;
     }
@@ -545,15 +635,25 @@ public class ITextRenderer {
         _listener = listener;
     }
 
+    @Nullable
     public PdfWriter getWriter() {
         return _writer;
     }
 
-    public void setTimeouted(boolean timeouted) {
-        _timeouted= timeouted;
+    @Nullable
+    public PdfPageEvent getPdfPageEvent() {
+        return pdfPageEvent;
     }
 
-    public boolean isTimeouted() {
-        return _timeouted;
+    public void setPdfPageEvent(@Nullable PdfPageEvent pdfPageEvent) {
+        this.pdfPageEvent = pdfPageEvent;
+    }
+
+    public void setScaleToFit(boolean scaleToFit) {
+        this.scaleToFit = scaleToFit;
+    }
+
+    public boolean isScaleToFit() {
+        return scaleToFit;
     }
 }

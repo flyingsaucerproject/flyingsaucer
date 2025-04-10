@@ -19,19 +19,25 @@
  */
 package org.xhtmlrenderer.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 
 /**
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTFSImage implements FSImage {
+    @Nullable
     private final UserAgentCallback _uac;
+    @Nullable
     private final String _uri;
+    @Nullable
     private Image _image;
     private int _width, _height;
 
@@ -42,7 +48,7 @@ public class SWTFSImage implements FSImage {
         this(null, null, null);
     }
 
-    public SWTFSImage(Image image, UserAgentCallback uac, String uri) {
+    public SWTFSImage(@Nullable Image image, @Nullable UserAgentCallback uac, @Nullable String uri) {
         _uac = uac;
         _uri = uri;
         _image = image;
@@ -56,6 +62,14 @@ public class SWTFSImage implements FSImage {
         }
     }
 
+    private SWTFSImage(@Nullable Image image, @Nullable UserAgentCallback uac, @Nullable String uri, int width, int height) {
+        _uac = uac;
+        _uri = uri;
+        _image = image;
+        _width = width;
+        _height = height;
+    }
+
     public SWTFSImage(SWTFSImage image) {
         _uac = image._uac;
         _uri = image._uri;
@@ -66,22 +80,17 @@ public class SWTFSImage implements FSImage {
 
     /**
      * Get the SWT image. Reload it from the UAC if it was disposed.
-     * 
-     * @return
      */
+    @Nullable
     public Image getImage() {
         if (_image != null && _image.isDisposed()) {
-            SWTFSImage fsimg = (SWTFSImage) _uac.getImageResource(_uri)
-                .getImage();
-            if (fsimg == null) {
-                _image = null;
-            } else {
-                _image = fsimg._image;
-            }
+            SWTFSImage image = (SWTFSImage) _uac.getImageResource(_uri).getImage();
+            _image = image == null ? null : image._image;
         }
         return _image;
     }
 
+    @Override
     public int getHeight() {
         return _height;
     }
@@ -92,6 +101,7 @@ public class SWTFSImage implements FSImage {
         _height = height;
     }
 
+    @Override
     public int getWidth() {
         return _width;
     }
@@ -102,9 +112,12 @@ public class SWTFSImage implements FSImage {
         _width = width;
     }
 
-    public void scale(int width, int height) {
+    @NonNull
+    @CheckReturnValue
+    @Override
+    public FSImage scale(int width, int height) {
         if (width < 0 && height < 0) {
-            return;
+            return this;
         } else if (width < 0) {
             width = Math.round(_width
                     * (_height == 0 ? 1 : ((float) height / _height)));
@@ -112,8 +125,7 @@ public class SWTFSImage implements FSImage {
             height = Math.round(_height
                     * (_width == 0 ? 1 : ((float) width / _width)));
         }
-        _width = width;
-        _height = height;
+        return new SWTFSImage(_image, _uac, _uri, width, height);
     }
 
 }

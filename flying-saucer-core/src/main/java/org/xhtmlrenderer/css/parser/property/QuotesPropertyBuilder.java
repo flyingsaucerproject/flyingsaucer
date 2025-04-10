@@ -19,11 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -31,60 +27,76 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
+
+import java.util.List;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
+import static org.xhtmlrenderer.css.constants.CSSName.QUOTES;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
 
 public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
 
-    public List buildDeclarations(CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+    @Override
+    public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values,
+                                                       Origin origin, boolean important, boolean inheritAllowed) {
         if (values.size() == 1) {
-            PropertyValue value = (PropertyValue)values.get(0);
+            PropertyValue value = (PropertyValue) values.get(0);
             if (value.getCssValueType() == CSSValue.CSS_INHERIT) {
-                return Collections.EMPTY_LIST;
+                return emptyList();
             } else if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                IdentValue ident = checkIdent(CSSName.QUOTES, value);
+                IdentValue ident = checkIdent(value);
                 if (ident == IdentValue.NONE) {
-                    return Collections.singletonList(
-                            new PropertyDeclaration(CSSName.QUOTES, value, important, origin));
+                    return singletonList(
+                            new PropertyDeclaration(QUOTES, value, important, origin));
                 }
             }
         }
-        
+
         if (values.size() % 2 == 1) {
             throw new CSSParseException(
                     "Mismatched quotes " + values, -1);
         }
-        
-        List resultValues = new ArrayList();
-        for (Iterator i = values.iterator(); i.hasNext(); ) {
-            PropertyValue value = (PropertyValue)i.next();
-            
-            if (value.getOperator() != null) {
-                throw new CSSParseException(
-                        "Found unexpected operator, " + value.getOperator().getExternalName(), -1);
-            }
-            
-            short type = value.getPrimitiveType();
-            if (type == CSSPrimitiveValue.CSS_STRING) {
-                resultValues.add(value.getStringValue());
-            } else if (type == CSSPrimitiveValue.CSS_URI) {
-                throw new CSSParseException(
-                        "URI is not allowed here", -1);
-            } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
-                throw new CSSParseException(
-                        "Function " + value.getFunction().getName() + " is not allowed here", -1);
-            } else if (type == CSSPrimitiveValue.CSS_IDENT) {
-                throw new CSSParseException(
-                        "Identifier is not a valid value for the quotes property", -1);
-            } else {
-                throw new CSSParseException(
-                        value.getCssText() + " is not a value value for the quotes property", -1);
-            }
-        }
-        
-        if (resultValues.size() > 0) {
-            return Collections.singletonList(
-                    new PropertyDeclaration(CSSName.QUOTES, new PropertyValue(resultValues), important, origin));
+
+        List<String> resultValues = getStringValues(values);
+
+        if (!resultValues.isEmpty()) {
+            return singletonList(
+                    new PropertyDeclaration(QUOTES, new PropertyValue(resultValues), important, origin));
         } else {
-            return Collections.EMPTY_LIST;
+            return emptyList();
+        }
+    }
+
+    @CheckReturnValue
+    private List<String> getStringValues(List<? extends CSSPrimitiveValue> values) {
+        return values.stream()
+                .map(cssPrimitiveValue -> (PropertyValue) cssPrimitiveValue)
+                .peek(this::assertNoOperator)
+                .peek(this::assertValueIsString)
+                .map(value -> value.getStringValue())
+                .collect(toList());
+    }
+
+    private void assertNoOperator(PropertyValue cssPrimitiveValue) {
+        if (cssPrimitiveValue.getOperator() != null) {
+            throw new CSSParseException(
+                    "Found unexpected operator, " + cssPrimitiveValue.getOperator().getExternalName(), -1);
+        }
+    }
+
+    private void assertValueIsString(PropertyValue value) {
+        short type = value.getPrimitiveType();
+        if (type == CSSPrimitiveValue.CSS_URI) {
+            throw new CSSParseException("URI is not allowed here", -1);
+        } else if (value.getPropertyValueType() == VALUE_TYPE_FUNCTION) {
+            throw new CSSParseException("Function " + value.getFunction().getName() + " is not allowed here", -1);
+        } else if (type == CSSPrimitiveValue.CSS_IDENT) {
+            throw new CSSParseException("Identifier is not a valid value for the quotes property", -1);
+        } else if (type != CSSPrimitiveValue.CSS_STRING) {
+            throw new CSSParseException(value.getCssText() + " is not a value value for the quotes property", -1);
         }
     }
 }

@@ -23,9 +23,9 @@ import org.eclipse.swt.graphics.Font;
 import org.xhtmlrenderer.render.FSFont;
 
 /**
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTFSFont implements FSFont {
     private final Font _font;
@@ -42,6 +42,7 @@ public class SWTFSFont implements FSFont {
         _noDispose = noDispose;
     }
 
+    @Override
     public float getSize2D() {
         // return _font.getFontData()[0].getHeight();
         return _size;
@@ -57,10 +58,10 @@ public class SWTFSFont implements FSFont {
         }
     }
 
-    protected void finalize() throws Throwable {
+    @Override
+    protected void finalize() {
         if (!_noDispose && !_font.isDisposed()) {
             _font.dispose();
         }
     }
-
 }

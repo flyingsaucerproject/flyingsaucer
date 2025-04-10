@@ -17,6 +17,7 @@
       #posin  li { list-style-position: inside; }
       #failover li { list-style-type: square; 
           list-style-image: url(invalid.gif); }
+      #margin-padding li { border: 1px dashed #f0f0f0; }
       #shorthand li { list-style: square outside; }
       #inherit_test { list-style: square; }
       
@@ -83,6 +84,18 @@
         <li>first item</li>
         <li>second item</li>
     </ol>
+
+    <h3>List Items with Margin and Padding</h3>
+    <p>The bullets should be centered for list items with margin and padding (the dashed borders are for visualisation only).</p>
+    <ul id="margin-padding">
+        <li style="margin-top: 10px;">item with margin top</li>
+        <li style="margin-bottom: 10px;">item with margin bottom</li>
+        <li style="margin-top: 10px; margin-bottom: 20px;">item with margin top and bottom</li>
+        <li style="padding-top: 10px;">item with padding top</li>
+        <li style="padding-bottom: 10px;">item with padding bottom</li>
+        <li style="padding-top: 10px; padding-bottom: 20px;">item with padding top and bottom</li>
+        <li style="margin: 10px; padding: 5px;">item with margin and padding</li>
+    </ul>
     
     <h3>Failover</h3>
     <p>The image shouldn't load and a square should be used instead</p>

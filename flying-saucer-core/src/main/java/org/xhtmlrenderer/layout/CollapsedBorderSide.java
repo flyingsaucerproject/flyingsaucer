@@ -19,80 +19,43 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BorderPainter;
+
+import static org.xhtmlrenderer.newtable.TableCellBox.compareBorders;
 
 /**
  * A class that contains a single border side of a collapsed cell.  Collapsed
  * border sides are painted in order of priority (so for example, wider borders
  * always paint over narrower borders regardless of the relative tree order of
- * the cells in question). 
+ * the cells in question).
  */
-public class CollapsedBorderSide implements Comparable {
-    private TableCellBox _cell;
-    private int _side;
-    
+public class CollapsedBorderSide implements Comparable<CollapsedBorderSide> {
+    private final TableCellBox _cell;
+    private final int _side;
+
     public CollapsedBorderSide(TableCellBox cell, int side) {
         _side = side;
         _cell = cell;
     }
-    
+
     public TableCellBox getCell() {
         return _cell;
     }
-    
-    public void setCell(TableCellBox cell) {
-        _cell = cell;
-    }
-    
+
     public int getSide() {
         return _side;
     }
-    
-    public void setSide(int side) {
-        _side = side;
-    }
-    
-    public int compareTo(Object obj) {
-        CollapsedBorderSide c1 = this;
-        CollapsedBorderSide c2 = (CollapsedBorderSide)obj;
-        
-        CollapsedBorderValue v1 = null;
-        CollapsedBorderValue v2 = null;
-        
-        switch (c1._side) {
-            case BorderPainter.TOP:
-                v1 = c1._cell.getCollapsedBorderTop();
-                break;
-            case BorderPainter.RIGHT:
-                v1 = c1._cell.getCollapsedBorderRight();
-                break;
-            case BorderPainter.BOTTOM:
-                v1 = c1._cell.getCollapsedBorderBottom();
-                break;
-            case BorderPainter.LEFT:
-                v1 = c1._cell.getCollapsedBorderLeft();
-                break;                
-        }
-        
-        switch (c2._side) {
-            case BorderPainter.TOP:
-                v2 = c2._cell.getCollapsedBorderTop();
-                break;
-            case BorderPainter.RIGHT:
-                v2 = c2._cell.getCollapsedBorderRight();
-                break;
-            case BorderPainter.BOTTOM:
-                v2 = c2._cell.getCollapsedBorderBottom();
-                break;
-            case BorderPainter.LEFT:
-                v2 = c2._cell.getCollapsedBorderLeft();
-                break;                
-        }
-        
-        CollapsedBorderValue result = TableCellBox.compareBorders(v1, v2, true);
-        
+
+    @Override
+    public int compareTo(CollapsedBorderSide that) {
+        CollapsedBorderValue v1 = getCollapsedBorder(this);
+        CollapsedBorderValue v2 = getCollapsedBorder(that);
+        CollapsedBorderValue result = compareBorders(v1, v2, true);
+
         if (result == null) {
             return 0;
         } else {
@@ -100,18 +63,27 @@ public class CollapsedBorderSide implements Comparable {
         }
     }
 
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CollapsedBorderSide)) return false;
-
-        CollapsedBorderSide that = (CollapsedBorderSide) o;
-
-        if (_side != that._side) return false;
-        if (!_cell.equals(that._cell)) return false;
-
-        return true;
+    @Nullable
+    @CheckReturnValue
+    private static CollapsedBorderValue getCollapsedBorder(CollapsedBorderSide c1) {
+        return switch (c1._side) {
+            case BorderPainter.TOP -> c1._cell.getCollapsedBorderTop();
+            case BorderPainter.RIGHT -> c1._cell.getCollapsedBorderRight();
+            case BorderPainter.BOTTOM -> c1._cell.getCollapsedBorderBottom();
+            case BorderPainter.LEFT -> c1._cell.getCollapsedBorderLeft();
+            default -> null;
+        };
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CollapsedBorderSide that)) return false;
+
+        return _side == that._side && _cell.equals(that._cell);
+    }
+
+    @Override
     public int hashCode() {
         int result = _cell.hashCode();
         result = 31 * result + _side;

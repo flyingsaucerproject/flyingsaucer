@@ -22,35 +22,44 @@ package org.xhtmlrenderer.resource;
 
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * <p>FSCatalog loads an XML catalog file to read mappings of public IDs for
  * XML schemas/dtds, to resolve those mappings to a local store for the schemas.
  * The catalog file allows one to have a single mapping of schema IDs to local
  * files, and is useful when there are many schemas, or when schemas are broken
- * into many smaller files. Currently FSCatalog only supports the very simple
+ * into many smaller files. Currently, FSCatalog only supports the very simple
  * mapping of public id to local URI using the public element in the catalog XML.
- * <p/>
+ * <p>
  * <p>FSCatalog is not an EntityResolver; it only parses a catalog file. See
  * {@link FSEntityResolver} for entity resolution.
- * <p/>
+ * <p>
  * <p>To use, instantiate the class, and call {@link #parseCatalog(InputSource)}
  * to retrieve a {@link java.util.Map} keyed by public ids. The class uses
  * an XMLReader instance retrieved via {@link XMLResource#newXMLReader()}, so
  * XMLReader configuration (and specification) follows that of the standard XML
  * parsing in Flying Saucer.
- * <p/>
- * <p>This class is not safe for multi-threaded access.
+ * <p>
+ * <p>This class is not safe for multithreaded access.
  *
  * @author Patrick Wright
  */
@@ -67,27 +76,21 @@ public class FSCatalog {
      *
      * @param catalogURI A String URI to a catalog XML file on the classpath.
      */
-    public Map parseCatalog(String catalogURI) {
-        URL url;
-        Map map = null;
-        InputStream s = null;
+    public Map<String, String> parseCatalog(String catalogURI) {
         try {
-            url = FSCatalog.class.getClassLoader().getResource(catalogURI);
-            s = new BufferedInputStream(url.openStream());
-            map = parseCatalog(new InputSource(s));
-        } catch (Exception ex) {
+            URL url = requireNonNull(FSCatalog.class.getClassLoader().getResource(catalogURI),
+                    () -> "Catalog not found in classpath: " + catalogURI);
+            return parseCatalog(url);
+        } catch (IOException ex) {
             XRLog.xmlEntities(Level.WARNING, "Could not open XML catalog from URI '" + catalogURI + "'", ex);
-            map = new HashMap();
-        } finally {
-            try {
-                if (s != null) {
-                    s.close();
-                }
-            } catch (IOException e) {
-                // ignore..
-            }
+            throw new IllegalStateException("Cannot find " + catalogURI + " in classpath", ex);
         }
-        return map;
+    }
+
+    private Map<String, String> parseCatalog(URL url) throws IOException {
+        try (InputStream s = new BufferedInputStream(url.openStream())) {
+            return parseCatalog(new InputSource(s));
+        }
     }
 
     /**
@@ -96,12 +99,12 @@ public class FSCatalog {
      *
      * @param inputSource A SAX InputSource to a catalog XML file on the classpath.
      */
-    public Map parseCatalog(InputSource inputSource) {
+    public Map<String, String> parseCatalog(InputSource inputSource) {
         XMLReader xmlReader = XMLResource.newXMLReader();
 
         CatalogContentHandler ch = new CatalogContentHandler();
         addHandlers(xmlReader, ch);
-        setFeature(xmlReader, "http://xml.org/sax/features/validation", false);
+        setFeature(xmlReader);
 
         try {
             xmlReader.parse(inputSource);
@@ -120,18 +123,21 @@ public class FSCatalog {
             // add our own entity resolver
             xmlReader.setContentHandler(ch);
             xmlReader.setErrorHandler(new ErrorHandler() {
+                @Override
                 public void error(SAXParseException ex) {
                     if (XRLog.isLoggingEnabled()) {
                         XRLog.xmlEntities(Level.WARNING, ex.getMessage());
                     }
                 }
 
+                @Override
                 public void fatalError(SAXParseException ex) {
                     if (XRLog.isLoggingEnabled()) {
                         XRLog.xmlEntities(Level.WARNING, ex.getMessage());
                     }
                 }
 
+                @Override
                 public void warning(SAXParseException ex) {
                     if (XRLog.isLoggingEnabled()) {
                         XRLog.xmlEntities(Level.WARNING, ex.getMessage());
@@ -150,16 +156,12 @@ public class FSCatalog {
      * parse, then call getEntityMap().
      */
     private static class CatalogContentHandler extends DefaultHandler {
-        private Map entityMap;
-
-        public CatalogContentHandler() {
-            this.entityMap = new HashMap();
-        }
+        private final Map<String, String> entityMap = new HashMap<>();
 
         /**
          * Returns a Map of public Ids to local URIs
          */
-        public Map getEntityMap() {
+        private Map<String, String> getEntityMap() {
             return entityMap;
         }
 
@@ -167,10 +169,11 @@ public class FSCatalog {
          * Receive notification of the beginning of an element; here used to pick up the mappings
          * for public IDs to local URIs in the catalog.
          */
-        public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+        @Override
+        public void startElement(String namespaceURI, String localName, String qName, Attributes attributes) {
             if (localName.equalsIgnoreCase("public") ||
-                    (localName.equals("") && qName.equalsIgnoreCase("public"))) {
-                entityMap.put(atts.getValue("publicId"), atts.getValue("uri"));
+                    (localName.isEmpty() && qName.equalsIgnoreCase("public"))) {
+                entityMap.put(attributes.getValue("publicId"), attributes.getValue("uri"));
             }
         }
     }
@@ -179,22 +182,22 @@ public class FSCatalog {
      * Attempts to set requested feature on the parser; logs exception if not supported
      * or not recognized.
      */
-    private void setFeature(XMLReader xmlReader, String featureUri, boolean value) {
+    private void setFeature(XMLReader xmlReader) {
         try {
-            xmlReader.setFeature(featureUri, value);
+            xmlReader.setFeature("http://xml.org/sax/features/validation", false);
 
             XRLog.xmlEntities(Level.FINE, "SAX Parser feature: " +
-                    featureUri.substring(featureUri.lastIndexOf("/")) +
+                    "http://xml.org/sax/features/validation".substring("http://xml.org/sax/features/validation".lastIndexOf('/')) +
                     " set to " +
-                    xmlReader.getFeature(featureUri));
+                    xmlReader.getFeature("http://xml.org/sax/features/validation"));
         } catch (SAXNotSupportedException ex) {
             XRLog.xmlEntities(Level.WARNING,
-                    "SAX feature not supported on this XMLReader: " + featureUri);
+                    "SAX feature not supported on this XMLReader: " + "http://xml.org/sax/features/validation");
         } catch (SAXNotRecognizedException ex) {
             XRLog.xmlEntities(Level.WARNING,
                     "SAX feature not recognized on this XMLReader: " +
-                    featureUri + ". Feature may be properly named, but not recognized by this parser.");
+                            "http://xml.org/sax/features/validation" + ". Feature may be properly named, but not recognized by this parser.");
         }
     }
-}// end class
+}
 

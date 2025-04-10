@@ -19,61 +19,121 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
+import static org.xhtmlrenderer.css.parser.Token.Type.ANGLE;
+import static org.xhtmlrenderer.css.parser.Token.Type.ASTERISK;
+import static org.xhtmlrenderer.css.parser.Token.Type.AT_RULE;
+import static org.xhtmlrenderer.css.parser.Token.Type.CDC;
+import static org.xhtmlrenderer.css.parser.Token.Type.CDO;
+import static org.xhtmlrenderer.css.parser.Token.Type.CHARSET_SYM;
+import static org.xhtmlrenderer.css.parser.Token.Type.CM;
+import static org.xhtmlrenderer.css.parser.Token.Type.COLON;
+import static org.xhtmlrenderer.css.parser.Token.Type.COMMA;
+import static org.xhtmlrenderer.css.parser.Token.Type.DASHMATCH;
+import static org.xhtmlrenderer.css.parser.Token.Type.DIMENSION;
+import static org.xhtmlrenderer.css.parser.Token.Type.EMS;
+import static org.xhtmlrenderer.css.parser.Token.Type.EOF;
+import static org.xhtmlrenderer.css.parser.Token.Type.EQUALS;
+import static org.xhtmlrenderer.css.parser.Token.Type.EXS;
+import static org.xhtmlrenderer.css.parser.Token.Type.FONT_FACE_SYM;
+import static org.xhtmlrenderer.css.parser.Token.Type.FREQ;
+import static org.xhtmlrenderer.css.parser.Token.Type.FUNCTION;
+import static org.xhtmlrenderer.css.parser.Token.Type.GREATER;
+import static org.xhtmlrenderer.css.parser.Token.Type.HASH;
+import static org.xhtmlrenderer.css.parser.Token.Type.IDENT;
+import static org.xhtmlrenderer.css.parser.Token.Type.IMPORTANT_SYM;
+import static org.xhtmlrenderer.css.parser.Token.Type.IMPORT_SYM;
+import static org.xhtmlrenderer.css.parser.Token.Type.IN;
+import static org.xhtmlrenderer.css.parser.Token.Type.INCLUDES;
+import static org.xhtmlrenderer.css.parser.Token.Type.INVALID;
+import static org.xhtmlrenderer.css.parser.Token.Type.LBRACE;
+import static org.xhtmlrenderer.css.parser.Token.Type.LBRACKET;
+import static org.xhtmlrenderer.css.parser.Token.Type.MEDIA_SYM;
+import static org.xhtmlrenderer.css.parser.Token.Type.MINUS;
+import static org.xhtmlrenderer.css.parser.Token.Type.MM;
+import static org.xhtmlrenderer.css.parser.Token.Type.NAMESPACE_SYM;
+import static org.xhtmlrenderer.css.parser.Token.Type.NUMBER;
+import static org.xhtmlrenderer.css.parser.Token.Type.OTHER;
+import static org.xhtmlrenderer.css.parser.Token.Type.PAGE_SYM;
+import static org.xhtmlrenderer.css.parser.Token.Type.PC;
+import static org.xhtmlrenderer.css.parser.Token.Type.PERCENTAGE;
+import static org.xhtmlrenderer.css.parser.Token.Type.PERIOD;
+import static org.xhtmlrenderer.css.parser.Token.Type.PLUS;
+import static org.xhtmlrenderer.css.parser.Token.Type.PREFIXMATCH;
+import static org.xhtmlrenderer.css.parser.Token.Type.PT;
+import static org.xhtmlrenderer.css.parser.Token.Type.PX;
+import static org.xhtmlrenderer.css.parser.Token.Type.RBRACE;
+import static org.xhtmlrenderer.css.parser.Token.Type.RBRACKET;
+import static org.xhtmlrenderer.css.parser.Token.Type.RPAREN;
+import static org.xhtmlrenderer.css.parser.Token.Type.S;
+import static org.xhtmlrenderer.css.parser.Token.Type.SEMICOLON;
+import static org.xhtmlrenderer.css.parser.Token.Type.STRING;
+import static org.xhtmlrenderer.css.parser.Token.Type.SUBSTRINGMATCH;
+import static org.xhtmlrenderer.css.parser.Token.Type.SUFFIXMATCH;
+import static org.xhtmlrenderer.css.parser.Token.Type.TIME;
+import static org.xhtmlrenderer.css.parser.Token.Type.URI;
+import static org.xhtmlrenderer.css.parser.Token.Type.VERTICAL_BAR;
+import static org.xhtmlrenderer.css.parser.Token.Type.VIRGULE;
+
+@SuppressWarnings("SpellCheckingInspection")
 public class Token {
-    public static final int S = 1;
-    public static final int CDO = 2;
-    public static final int CDC = 3;
-    public static final int INCLUDES = 4;
-    public static final int DASHMATCH = 5;
-    public static final int PREFIXMATCH = 6;
-    public static final int SUFFIXMATCH = 7;
-    public static final int SUBSTRINGMATCH = 8;
-    public static final int LBRACE = 9;
-    public static final int PLUS = 10;
-    public static final int GREATER = 11;
-    public static final int COMMA = 12;
-    public static final int STRING = 13;
-    public static final int INVALID = 14;
-    public static final int IDENT = 15;
-    public static final int HASH = 16;
-    public static final int IMPORT_SYM = 17;
-    public static final int PAGE_SYM = 18;
-    public static final int MEDIA_SYM = 19;
-    public static final int CHARSET_SYM = 20;
-    public static final int NAMESPACE_SYM = 21;
-    public static final int FONT_FACE_SYM = 22;
-    public static final int AT_RULE = 23;
-    public static final int IMPORTANT_SYM = 24;
-    public static final int EMS = 25;
-    public static final int EXS = 26;
-    public static final int PX = 27;
-    public static final int CM = 28;
-    public static final int MM = 29;
-    public static final int IN = 30;
-    public static final int PT = 31;
-    public static final int PC = 32;
-    public static final int ANGLE = 33;
-    public static final int TIME = 34;
-    public static final int FREQ = 35;
-    public static final int DIMENSION = 36;
-    public static final int PERCENTAGE = 37;
-    public static final int NUMBER = 38;
-    public static final int URI = 39;
-    public static final int FUNCTION = 40;
-    public static final int OTHER = 41;
-    public static final int RBRACE = 42;
-    public static final int SEMICOLON = 43;
-    public static final int VIRGULE = 44;
-    public static final int COLON = 45;
-    public static final int MINUS = 46;
-    public static final int RPAREN = 47;
-    public static final int LBRACKET = 48;
-    public static final int RBRACKET = 49;
-    public static final int PERIOD = 50;
-    public static final int EQUALS = 51;
-    public static final int ASTERISK = 52;
-    public static final int VERTICAL_BAR = 53;
-    public static final int EOF = 54;
+    public enum Type {
+        S,
+        CDO,
+        CDC,
+        INCLUDES,
+        DASHMATCH,
+        PREFIXMATCH,
+        SUFFIXMATCH,
+        SUBSTRINGMATCH,
+        LBRACE,
+        PLUS,
+        GREATER,
+        COMMA,
+        STRING,
+        INVALID,
+        IDENT,
+        HASH,
+        IMPORT_SYM,
+        PAGE_SYM,
+        MEDIA_SYM,
+        CHARSET_SYM,
+        NAMESPACE_SYM,
+        FONT_FACE_SYM,
+        AT_RULE,
+        IMPORTANT_SYM,
+        EMS,
+        EXS,
+        PX,
+        CM,
+        MM,
+        IN,
+        PT,
+        PC,
+        ANGLE,
+        TIME,
+        FREQ,
+        DIMENSION,
+        PERCENTAGE,
+        NUMBER,
+        URI,
+        FUNCTION,
+        OTHER,
+        RBRACE,
+        SEMICOLON,
+        VIRGULE,
+        COLON,
+        MINUS,
+        RPAREN,
+        LBRACKET,
+        RBRACKET,
+        PERIOD,
+        EQUALS,
+        ASTERISK,
+        VERTICAL_BAR,
+        EOF
+    }
 
     public static final Token TK_S = new Token(S, "S", "whitespace");
     public static final Token TK_CDO = new Token(CDO, "CDO", "<!--");
@@ -130,33 +190,35 @@ public class Token {
     public static final Token TK_VERTICAL_BAR = new Token(VERTICAL_BAR, "VERTICAL_BAR", "|");
     public static final Token TK_EOF = new Token(EOF, "EOF", "end of file");
 
-  
-    private final int _type;
+
+    private final Type _type;
     private final String _name;
     private final String _externalName;
-  
-    private Token(int type, String name, String externalName) {
+
+    private Token(Type type, String name, String externalName) {
         _type = type;
         _name = name;
         _externalName = externalName;
     }
-    
-    public int getType() {
+
+    @CheckReturnValue
+    public Type getType() {
         return _type;
     }
-    
+
     public String getName() {
         return _name;
     }
-    
+
     public String getExternalName() {
         return _externalName;
     }
-    
+
+    @Override
     public String toString() {
         return _name;
     }
-    
+
     public static Token createOtherToken(String value) {
         return new Token(OTHER, "OTHER", value + " (other)");
     }

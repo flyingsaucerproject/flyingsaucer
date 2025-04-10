@@ -1,339 +1,323 @@
 package org.xhtmlrenderer.css.style.derived;
 
-import java.awt.Rectangle;
-import java.util.List;
-
-import org.w3c.dom.css.CSSPrimitiveValue;
+import com.google.errorprone.annotations.CheckReturnValue;
+import com.google.errorprone.annotations.InlineMe;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSColor;
-import org.xhtmlrenderer.css.style.BackgroundPosition;
 import org.xhtmlrenderer.css.style.BorderRadiusCorner;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 
+import java.awt.*;
+
+import static java.lang.Math.max;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_BOTTOM_COLOR;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_BOTTOM_LEFT_RADIUS;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_BOTTOM_RIGHT_RADIUS;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_BOTTOM_STYLE;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_BOTTOM_WIDTH;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_LEFT_COLOR;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_LEFT_STYLE;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_LEFT_WIDTH;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_RIGHT_COLOR;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_RIGHT_STYLE;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_RIGHT_WIDTH;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_TOP_COLOR;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_TOP_LEFT_RADIUS;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_TOP_RIGHT_RADIUS;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_TOP_STYLE;
+import static org.xhtmlrenderer.css.constants.CSSName.BORDER_TOP_WIDTH;
+import static org.xhtmlrenderer.css.constants.IdentValue.HIDDEN;
+import static org.xhtmlrenderer.css.constants.IdentValue.NONE;
+import static org.xhtmlrenderer.css.parser.FSRGBColor.TRANSPARENT;
+import static org.xhtmlrenderer.css.style.BorderRadiusCorner.UNDEFINED;
+
 /**
- * Created by IntelliJ IDEA.
  * User: patrick
  * Date: Oct 21, 2005
- * Time: 3:24:04 PM
- * To change this template use File | Settings | File Templates.
  */
 public class BorderPropertySet extends RectPropertySet {
-    public static final BorderPropertySet EMPTY_BORDER = new BorderPropertySet(0.0f, 0.0f, 0.0f, 0.0f);
-    
-    private IdentValue _topStyle;
-    private IdentValue _rightStyle;
-    private IdentValue _bottomStyle;
-    private IdentValue _leftStyle;
+    private static final Corners NO_CORNERS = new Corners(UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED);
+    private static final Styles NO_STYLES = new Styles(null, null, null, null);
+    private static final Colors NO_COLORS = new Colors(TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT);
+    public static final BorderPropertySet EMPTY_BORDER = new BorderPropertySet(0.0f, 0.0f, 0.0f, 0.0f, NO_STYLES, NO_CORNERS, NO_COLORS);
 
-    private FSColor _topColor;
-    private FSColor _rightColor;
-    private FSColor _bottomColor;
-    private FSColor _leftColor;
+    private record Styles(@Nullable IdentValue top, @Nullable IdentValue right, @Nullable IdentValue bottom, @Nullable IdentValue left) {
+        private boolean hasHidden() {
+            return top == HIDDEN || right == HIDDEN || bottom == HIDDEN || left == HIDDEN;
+        }
+    }
 
-    private BorderRadiusCorner _topLeft;
-    private BorderRadiusCorner _topRight;
-    private BorderRadiusCorner _bottomRight;
-    private BorderRadiusCorner _bottomLeft;
+    private record Colors(FSColor top, FSColor right, FSColor bottom, FSColor left) {
+        public Colors lighten() {
+            return new Colors(
+                    top.lightenColor(),
+                    right.lightenColor(),
+                    bottom.lightenColor(),
+                    left.lightenColor()
+            );
+        }
+        public Colors darken() {
+            return new Colors(
+                    top.darkenColor(),
+                    right.darkenColor(),
+                    bottom.darkenColor(),
+                    left.darkenColor()
+            );
+        }
+    }
+
+    private record Corners(BorderRadiusCorner topLeft, BorderRadiusCorner topRight,
+                           BorderRadiusCorner bottomRight, BorderRadiusCorner bottomLeft) {
+    }
+
+    private final Styles styles;
+    private final Colors colors;
+    private final Corners corners;
 
     public BorderPropertySet(BorderPropertySet border) {
-        this(border.top(), border.right(), border.bottom(), border.left());
-        this._topStyle = border.topStyle();
-        this._rightStyle = border.rightStyle();
-        this._bottomStyle = border.bottomStyle();
-        this._leftStyle = border.leftStyle();
-
-        this._topColor = border.topColor();
-        this._rightColor = border.rightColor();
-        this._bottomColor = border.bottomColor();
-        this._leftColor = border.leftColor();
-        
-        this._topLeft = border._topLeft;
-        this._topRight = border._topRight;
-        this._bottomLeft = border._bottomLeft;
-        this._bottomRight = border._bottomRight;
+        this(border.top(), border.right(), border.bottom(), border.left(), border.styles, border.corners, border.colors);
     }
-    public BorderPropertySet(
+
+    private BorderPropertySet(
             float top,
             float right,
             float bottom,
             float left,
-            BorderRadiusCorner topLeftCorner,
-            BorderRadiusCorner topRightCorner,
-            BorderRadiusCorner bottomRightCorner,
-            BorderRadiusCorner bottomLeftCorner
+            Styles styles,
+            Corners corners,
+            Colors colors
     ) {
-        this._top = top;
-        this._right = right;
-        this._bottom = bottom;
-        this._left = left;
-        
-        this._topLeft = topLeftCorner;
-        this._topRight = topRightCorner;
-        this._bottomLeft = bottomLeftCorner;
-        this._bottomRight = bottomRightCorner;
+        super(top, right, bottom, left);
+        this.styles = styles;
+        this.colors = colors;
+        this.corners = corners;
     }
 
     public BorderPropertySet(
-            float top,
-            float right,
-            float bottom,
-            float left
+            CollapsedBorderValue top,
+            CollapsedBorderValue right,
+            CollapsedBorderValue bottom,
+            CollapsedBorderValue left
     ) {
-        this._top = top;
-        this._right = right;
-        this._bottom = bottom;
-        this._left = left;
-        
-        this._topLeft = new BorderRadiusCorner();
-        this._topRight = new BorderRadiusCorner();
-        this._bottomLeft = new BorderRadiusCorner();
-        this._bottomRight = new BorderRadiusCorner();
-    }
-    
-    public BorderPropertySet(
-           CollapsedBorderValue top,
-           CollapsedBorderValue right,
-           CollapsedBorderValue bottom,
-           CollapsedBorderValue left
-    ) {
-        this(   top.width(),
+        this(top.width(),
                 right.width(),
                 bottom.width(),
-                left.width());
-        
-        this._topStyle = top.style();
-        this._rightStyle = right.style();
-        this._bottomStyle = bottom.style();
-        this._leftStyle = left.style();
-
-        this._topColor = top.color();
-        this._rightColor = right.color();
-        this._bottomColor = bottom.color();
-        this._leftColor = left.color();       
-        
-        this._topLeft = new BorderRadiusCorner();
-        this._topRight = new BorderRadiusCorner();
-        this._bottomLeft = new BorderRadiusCorner();
-        this._bottomRight = new BorderRadiusCorner(); 
+                left.width(),
+                new Styles(top.style(), right.style(), bottom.style(), left.style()),
+                NO_CORNERS,
+                new Colors(top.color(), right.color(), bottom.color(), left.color())
+        );
     }
 
     private BorderPropertySet(
             CalculatedStyle style,
             CssContext ctx
     ) {
-        _top = ( style.isIdent(CSSName.BORDER_TOP_STYLE, IdentValue.NONE) ||
-                 style.isIdent(CSSName.BORDER_TOP_STYLE, IdentValue.HIDDEN)  
-                ?
-            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_TOP_WIDTH, 0, ctx));
-        _right = ( style.isIdent(CSSName.BORDER_RIGHT_STYLE, IdentValue.NONE) || 
-                   style.isIdent(CSSName.BORDER_RIGHT_STYLE, IdentValue.HIDDEN) 
-                  ?
-            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_RIGHT_WIDTH, 0, ctx));
-        _bottom = ( style.isIdent(CSSName.BORDER_BOTTOM_STYLE, IdentValue.NONE) ||
-                    style.isIdent(CSSName.BORDER_BOTTOM_STYLE, IdentValue.HIDDEN)
-                   ?
-            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_BOTTOM_WIDTH, 0, ctx));
-        _left = ( style.isIdent(CSSName.BORDER_LEFT_STYLE, IdentValue.NONE) ||
-                  style.isIdent(CSSName.BORDER_LEFT_STYLE, IdentValue.HIDDEN)
-                 ?
-            0 : style.getFloatPropertyProportionalHeight(CSSName.BORDER_LEFT_WIDTH, 0, ctx));
-        
-        _topColor = style.asColor(CSSName.BORDER_TOP_COLOR);
-        _rightColor = style.asColor(CSSName.BORDER_RIGHT_COLOR);
-        _bottomColor = style.asColor(CSSName.BORDER_BOTTOM_COLOR);
-        _leftColor = style.asColor(CSSName.BORDER_LEFT_COLOR);
+        this(
+                calculate(style, BORDER_TOP_STYLE, BORDER_TOP_WIDTH, ctx),
+                calculate(style, BORDER_RIGHT_STYLE, BORDER_RIGHT_WIDTH, ctx),
+                calculate(style, BORDER_BOTTOM_STYLE, BORDER_BOTTOM_WIDTH, ctx),
+                calculate(style, BORDER_LEFT_STYLE, BORDER_LEFT_WIDTH, ctx),
+                new Styles(
+                        style.getIdent(BORDER_TOP_STYLE),
+                        style.getIdent(BORDER_RIGHT_STYLE),
+                        style.getIdent(BORDER_BOTTOM_STYLE),
+                        style.getIdent(BORDER_LEFT_STYLE)
+                ),
+                new Corners(
+                        new BorderRadiusCorner(BORDER_TOP_LEFT_RADIUS, style, ctx),
+                        new BorderRadiusCorner(BORDER_TOP_RIGHT_RADIUS, style, ctx),
+                        new BorderRadiusCorner(BORDER_BOTTOM_RIGHT_RADIUS, style, ctx),
+                        new BorderRadiusCorner(BORDER_BOTTOM_LEFT_RADIUS, style, ctx)
+                ),
+                new Colors(
+                        style.asColor(BORDER_TOP_COLOR),
+                        style.asColor(BORDER_RIGHT_COLOR),
+                        style.asColor(BORDER_BOTTOM_COLOR),
+                        style.asColor(BORDER_LEFT_COLOR)
+                )
+        );
+    }
 
-        _topStyle = style.getIdent(CSSName.BORDER_TOP_STYLE);
-        _rightStyle = style.getIdent(CSSName.BORDER_RIGHT_STYLE);
-        _bottomStyle = style.getIdent(CSSName.BORDER_BOTTOM_STYLE);
-        _leftStyle = style.getIdent(CSSName.BORDER_LEFT_STYLE);
-        /*
-        _topLeft = new BorderRadiusCorner(style.valueByName(CSSName.BORDER_TOP_LEFT_RADIUS), ctx);
-        _topRight = new BorderRadiusCorner(style.valueByName(CSSName.BORDER_TOP_RIGHT_RADIUS), ctx);
-        _bottomLeft = new BorderRadiusCorner(style.valueByName(CSSName.BORDER_BOTTOM_LEFT_RADIUS), ctx);
-        _bottomRight = new BorderRadiusCorner(style.valueByName(CSSName.BORDER_BOTTOM_RIGHT_RADIUS), ctx);
-        */
-        _topLeft = new BorderRadiusCorner(CSSName.BORDER_TOP_LEFT_RADIUS, style, ctx);
-        _topRight = new BorderRadiusCorner(CSSName.BORDER_TOP_RIGHT_RADIUS, style, ctx);
-        _bottomLeft = new BorderRadiusCorner(CSSName.BORDER_BOTTOM_LEFT_RADIUS, style, ctx);
-        _bottomRight = new BorderRadiusCorner(CSSName.BORDER_BOTTOM_RIGHT_RADIUS, style, ctx);
+    private static float calculate(CalculatedStyle style, CSSName borderStyle, CSSName borderWidth, CssContext ctx) {
+        return style.isIdent(borderStyle, NONE) || style.isIdent(borderStyle, HIDDEN) ? 0 :
+                style.getFloatPropertyProportionalHeight(borderWidth, 0, ctx);
+    }
+
+    @Deprecated
+    @SuppressWarnings("unused")
+    @InlineMe(replacement = "this.lighten()")
+    public final BorderPropertySet lighten(IdentValue style) {
+        return lighten();
     }
 
     /**
      * Returns the colors for brighter parts of each side for a particular decoration style
-     *
-     * @param style
-     * @return Returns
      */
-    public BorderPropertySet lighten(IdentValue style) {
-        BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = _topColor == null ? null : _topColor.lightenColor();
-        bc._bottomColor = _bottomColor == null ? null : _bottomColor.lightenColor();
-        bc._leftColor = _leftColor == null ? null : _leftColor.lightenColor();
-        bc._rightColor = _rightColor == null ? null : _rightColor.lightenColor();
-        return bc;
+    public BorderPropertySet lighten() {
+        return new BorderPropertySet(
+                top(), right(), bottom(), left(),
+                styles,
+                corners,
+                colors.lighten()
+        );
+    }
+
+    @Deprecated
+    @SuppressWarnings("unused")
+    @InlineMe(replacement = "this.darken()")
+    public final BorderPropertySet darken(IdentValue style) {
+        return darken();
     }
 
     /**
      * Returns the colors for brighter parts of each side for a particular decoration style
-     *
-     * @param style
-     * @return Returns
      */
-    public BorderPropertySet darken(IdentValue style) {
-        BorderPropertySet bc = new BorderPropertySet(this);
-        bc._topColor = _topColor == null ? null : _topColor.darkenColor();
-        bc._bottomColor = _bottomColor == null ? null : _bottomColor.darkenColor();
-        bc._leftColor = _leftColor == null ? null : _leftColor.darkenColor();
-        bc._rightColor = _rightColor == null ? null : _rightColor.darkenColor();
-        return bc;
+    public BorderPropertySet darken() {
+        return new BorderPropertySet(
+                top(), right(), bottom(), left(),
+                styles,
+                corners,
+                colors.darken()
+        );
     }
 
     public static BorderPropertySet newInstance(
             CalculatedStyle style,
-            CssContext ctx
+            @Nullable CssContext ctx
     ) {
-        return new BorderPropertySet(style, ctx);
+        BorderPropertySet result = new BorderPropertySet(style, ctx);
+        return result.isAllZeros() && !result.hasHidden() && !result.hasBorderRadius() ?
+                BorderPropertySet.EMPTY_BORDER :
+                result;
+
     }
 
+    @Override
     public String toString() {
-        return "BorderPropertySet[top=" + _top + ",right=" + _right + ",bottom=" + _bottom + ",left=" + _left + "]";
+        return "BorderPropertySet[top=%s,right=%s,bottom=%s,left=%s]".formatted(top(), right(), bottom(), left());
     }
 
     public boolean noTop() {
-        return this._topStyle == IdentValue.NONE || (int) _top == 0;
+        return styles.top() == NONE || (int) top() == 0;
     }
 
     public boolean noRight() {
-        return this._rightStyle == IdentValue.NONE || (int) _right == 0;
+        return styles.right() == NONE || (int) right() == 0;
     }
 
     public boolean noBottom() {
-        return this._bottomStyle == IdentValue.NONE || (int) _bottom == 0;
+        return styles.bottom() == NONE || (int) bottom() == 0;
     }
 
     public boolean noLeft() {
-        return this._leftStyle == IdentValue.NONE || (int) _left == 0;
+        return styles.left() == NONE || (int) left() == 0;
     }
 
+    @Nullable
+    @CheckReturnValue
     public IdentValue topStyle() {
-        return _topStyle;
+        return styles.top();
     }
 
+    @Nullable
+    @CheckReturnValue
     public IdentValue rightStyle() {
-        return _rightStyle;
+        return styles.right();
     }
 
+    @Nullable
+    @CheckReturnValue
     public IdentValue bottomStyle() {
-        return _bottomStyle;
+        return styles.bottom();
     }
 
+    @Nullable
+    @CheckReturnValue
     public IdentValue leftStyle() {
-        return _leftStyle;
+        return styles.left();
     }
 
     public FSColor topColor() {
-        return _topColor;
+        return colors.top();
     }
 
     public FSColor rightColor() {
-        return _rightColor;
+        return colors.right();
     }
 
     public FSColor bottomColor() {
-        return _bottomColor;
+        return colors.bottom();
     }
 
     public FSColor leftColor() {
-        return _leftColor;
+        return colors.left();
     }
-    
+
     public boolean hasHidden() {
-        return _topStyle == IdentValue.HIDDEN || _rightStyle == IdentValue.HIDDEN ||
-                    _bottomStyle == IdentValue.HIDDEN || _leftStyle == IdentValue.HIDDEN;
-    }    
-    
+        return styles.hasHidden();
+    }
+
     public boolean hasBorderRadius() {
         return getTopLeft().hasRadius() || getTopRight().hasRadius() || getBottomLeft().hasRadius() || getBottomRight().hasRadius();
     }
-    
-    public BorderRadiusCorner getBottomRight() {
-        return _bottomRight;
-    }
 
-    public void setBottomRight(BorderRadiusCorner bottomRight) {
-        this._bottomRight = bottomRight;
+    public BorderRadiusCorner getBottomRight() {
+        return corners.bottomRight();
     }
 
     public BorderRadiusCorner getBottomLeft() {
-        return _bottomLeft;
-    }
-
-    public void setBottomLeft(BorderRadiusCorner bottomLeft) {
-        this._bottomLeft = bottomLeft;
+        return corners.bottomLeft();
     }
 
     public BorderRadiusCorner getTopRight() {
-        return _topRight;
-    }
-
-    public void setTopRight(BorderRadiusCorner topRight) {
-        this._topRight = topRight;
+        return corners.topRight();
     }
 
     public BorderRadiusCorner getTopLeft() {
-        return _topLeft;
+        return corners.topLeft();
     }
 
-    public void setTopLeft(BorderRadiusCorner topLeft) {
-        this._topLeft = topLeft;
-    }
-    
     public BorderPropertySet normalizedInstance(Rectangle bounds) {
         float factor = 1;
-        
+
         // top
-        factor = Math.min(factor, bounds.width / getSideWidth(_topLeft, _topRight, bounds.width));
+        factor = Math.min(factor, bounds.width / getSideLength(corners.topLeft(), corners.topRight(), bounds.width));
         // bottom
-        factor = Math.min(factor, bounds.width / getSideWidth(_bottomRight, _bottomLeft, bounds.width));
+        factor = Math.min(factor, bounds.width / getSideLength(corners.bottomRight(), corners.bottomLeft(), bounds.width));
         // right
-        factor = Math.min(factor, bounds.height / getSideWidth(_topRight, _bottomRight, bounds.height));
+        factor = Math.min(factor, bounds.height / getSideLength(corners.topRight(), corners.bottomRight(), bounds.height));
         // left
-        factor = Math.min(factor, bounds.height / getSideWidth(_bottomLeft, _bottomRight, bounds.height));
-        
-        BorderPropertySet newPropSet = new BorderPropertySet(_top, _right, _bottom, _left, 
-                new BorderRadiusCorner(factor*_topLeft.getMaxLeft(bounds.height), factor*_topLeft.getMaxRight(bounds.width)), 
-                new BorderRadiusCorner(factor*_topRight.getMaxLeft(bounds.width), factor*_topRight.getMaxRight(bounds.height)), 
-                new BorderRadiusCorner(factor*_bottomRight.getMaxLeft(bounds.height), factor*_bottomRight.getMaxRight(bounds.width)), 
-                new BorderRadiusCorner(factor*_bottomLeft.getMaxLeft(bounds.width), factor*_bottomLeft.getMaxRight(bounds.height)));
-        
-        newPropSet._topColor = _topColor;
-        newPropSet._rightColor = _rightColor;
-        newPropSet._bottomColor = _bottomColor;
-        newPropSet._leftColor = _leftColor;
-        
-        newPropSet._topStyle = _topStyle;
-        newPropSet._rightStyle = _rightStyle;
-        newPropSet._bottomStyle = _bottomStyle;
-        newPropSet._leftStyle = _leftStyle;
-        
-        return newPropSet;
+        factor = Math.min(factor, bounds.height / getSideLength(corners.bottomLeft(), corners.bottomRight(), bounds.height));
+
+        Corners normalizedCorners = new Corners(
+                new BorderRadiusCorner(factor * corners.topLeft().getMaxLeft(bounds.height), factor * corners.topLeft().getMaxRight(bounds.width)),
+                new BorderRadiusCorner(factor * corners.topRight().getMaxLeft(bounds.width), factor * corners.topRight().getMaxRight(bounds.height)),
+                new BorderRadiusCorner(factor * corners.bottomRight().getMaxLeft(bounds.height), factor * corners.bottomRight().getMaxRight(bounds.width)),
+                new BorderRadiusCorner(factor * corners.bottomLeft().getMaxLeft(bounds.width), factor * corners.bottomLeft().getMaxRight(bounds.height))
+        );
+        return new BorderPropertySet(top(), right(), bottom(), left(),
+                styles,
+                normalizedCorners,
+                colors
+        );
     }
 
     /**
      * helper function for normalizeBorderRadius. Gets the max side width for each of the corners or the side width whichever is larger
-     * @param left
-     * @param right
-     * @param sideWidth
-     * @return
      */
-    private float getSideWidth(BorderRadiusCorner left, BorderRadiusCorner right, float sideWidth) {
-        return Math.max(sideWidth, left.getMaxRight(sideWidth) + right.getMaxLeft(sideWidth));
+    private float getSideLength(BorderRadiusCorner left, BorderRadiusCorner right, float sideLength) {
+        return max(sideLength, left.getMaxRight(sideLength) + right.getMaxLeft(sideLength));
     }
 
+    @CheckReturnValue
+    @Override
+    public BorderPropertySet resetNegativeValues() {
+        return new BorderPropertySet(max(0, top()), max(0, right()), max(0, bottom()), max(0, left()), styles, corners, colors);
+    }
 }
 

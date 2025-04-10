@@ -7,7 +7,8 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.21-opengrabeso</version>
+    <version>9.11.6-opengrabeso</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>flying-saucer-core</artifactId>
@@ -16,21 +17,13 @@
   <licenses>
     <license>
       <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
+      <url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
     </license>
   </licenses>
 
   <packaging>jar</packaging>
 
   <name>Flying Saucer Core Renderer</name>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
   <build>
     <resources>
@@ -39,7 +32,7 @@
       </resource>
       <resource>
         <directory>../</directory>
-        <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+        <targetPath>META-INF</targetPath>
         <includes>
           <include>LICENSE*</include>
         </includes>
@@ -50,7 +43,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
-            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            <manifestFile>target/classes/META-INF/MANIFEST.MF</manifestFile>
           </archive>
         </configuration>
       </plugin>
@@ -69,6 +62,7 @@
         <configuration>
           <instructions>
             <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.core</Bundle-SymbolicName>
+            <Automatic-Module-Name>flying.saucer</Automatic-Module-Name>
             <Bundle-Version>${project.version}</Bundle-Version>
             <!-- Dependency resolution seems not to work properly with default
               behavior of importing the exported packages. -->

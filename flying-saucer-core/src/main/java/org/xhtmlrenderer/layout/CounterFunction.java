@@ -19,15 +19,17 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.css.constants.IdentValue;
+
 import java.util.Iterator;
 import java.util.List;
 
-import org.xhtmlrenderer.css.constants.IdentValue;
+import static java.util.Locale.ROOT;
 
 public class CounterFunction {
-    private IdentValue _listStyleType;
+    private final IdentValue _listStyleType;
     private int _counterValue;
-    private List _counterValues;
+    private List<Integer> _counterValues;
     private String _separator;
 
     public CounterFunction(int counterValue, IdentValue listStyleType) {
@@ -35,7 +37,7 @@ public class CounterFunction {
         _listStyleType = listStyleType;
     }
 
-    public CounterFunction(List counterValues, String separator, IdentValue listStyleType) {
+    public CounterFunction(List<Integer> counterValues, String separator, IdentValue listStyleType) {
         _counterValues = counterValues;
         _separator = separator;
         _listStyleType = listStyleType;
@@ -45,54 +47,50 @@ public class CounterFunction {
         if (_counterValues == null) {
             return createCounterText(_listStyleType, _counterValue);
         }
-        StringBuffer sb = new StringBuffer();
-        for (Iterator i = _counterValues.iterator(); i.hasNext();) {
-            Integer value = (Integer) i.next();
-            sb.append(createCounterText(_listStyleType, value.intValue()));
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<Integer> i = _counterValues.iterator(); i.hasNext();) {
+            Integer value = i.next();
+            sb.append(createCounterText(_listStyleType, value));
             if (i.hasNext()) sb.append(_separator);
         }
         return sb.toString();
     }
 
     public static String createCounterText(IdentValue listStyle, int listCounter) {
-        String text;
         if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
-            text = toLatin(listCounter).toLowerCase();
+            return toLatin(listCounter).toLowerCase(ROOT);
         } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
-            text = toLatin(listCounter).toUpperCase();
+            return toLatin(listCounter).toUpperCase(ROOT);
         } else if (listStyle == IdentValue.LOWER_ROMAN) {
-            text = toRoman(listCounter).toLowerCase();
+            return toRoman(listCounter).toLowerCase(ROOT);
         } else if (listStyle == IdentValue.UPPER_ROMAN) {
-            text = toRoman(listCounter).toUpperCase();
+            return toRoman(listCounter).toUpperCase(ROOT);
         } else if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
-            text = (listCounter >= 10 ? "" : "0") + listCounter;
+            return (listCounter >= 10 ? "" : "0") + listCounter;
         } else { // listStyle == IdentValue.DECIMAL or anything else
-            text = Integer.toString(listCounter);
+            return Integer.toString(listCounter);
         }
-        return text;
     }
 
 
-    private static String toLatin(int val) {
-        String result = "";
-        val -= 1;
+    private static String toLatin(int index) {
+        StringBuilder result = new StringBuilder(5);
+        int val = index - 1;
         while (val >= 0) {
             int letter = val % 26;
             val = val / 26 - 1;
-            result = ((char) (letter + 65)) + result;
+            result.insert(0, (char) (letter + 65));
         }
-        return result;
+        return result.toString();
     }
 
     private static String toRoman(int val) {
         int[] ints = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
         String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ints.length; i++) {
-            int count = (int) (val / ints[i]);
-            for (int j = 0; j < count; j++) {
-                sb.append(nums[i]);
-            }
+            int count = val / ints[i];
+            sb.append(nums[i].repeat(Math.max(0, count)));
             val -= ints[i] * count;
         }
         return sb.toString();

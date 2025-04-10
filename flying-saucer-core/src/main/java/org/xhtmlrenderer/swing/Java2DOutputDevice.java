@@ -19,24 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.LinearGradientPaint;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.AlphaComposite;
-import java.awt.RenderingHints.Key;
-import java.awt.font.GlyphVector;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.logging.Level;
-
-import javax.swing.*;
-
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
@@ -47,7 +31,6 @@ import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.BorderPainter;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
@@ -55,8 +38,14 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+
 public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDevice {
-    private Graphics2D _graphics;
+    private final Graphics2D _graphics;
 
     public Java2DOutputDevice(Graphics2D graphics) {
         _graphics = graphics;
@@ -66,18 +55,18 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         this(outputImage.createGraphics());
     }
     
-
+@Override
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         if (inlineText.isSelected()) {
             InlineLayoutBox iB = inlineText.getParent();
             String text = inlineText.getSubstring();
-            if (text != null && text.length() > 0) {
+            if (text != null && !text.isEmpty()) {
                 FSFont font = iB.getStyle().getFSFont(c);
                 FSGlyphVector glyphVector = c.getTextRenderer().getGlyphVector(
                         c.getOutputDevice(),
                         font,
                         inlineText.getSubstring());
-                
+
                 Rectangle start = c.getTextRenderer().getGlyphBounds(
                         c.getOutputDevice(),
                         font,
@@ -85,7 +74,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                         inlineText.getSelectionStart(),
                         iB.getAbsX() + inlineText.getX(),
                         iB.getAbsY() + iB.getBaseline());
-                
+
                 Rectangle end = c.getTextRenderer().getGlyphBounds(
                         c.getOutputDevice(),
                         font,
@@ -95,19 +84,19 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                         iB.getAbsY() + iB.getBaseline());
                 Graphics2D graphics = getGraphics();
                 double scaleX = graphics.getTransform().getScaleX();
-                boolean allSelected = (text.length() == inlineText.getSelectionEnd()-inlineText.getSelectionStart());
-                int startX = (inlineText.getSelectionStart() == inlineText.getStart())?iB.getAbsX() + inlineText.getX():(int)Math.round(start.x/scaleX);
-                int endX = (allSelected)?startX+inlineText.getWidth():(int)Math.round((end.x + end.width)/scaleX);
+                boolean allSelected = (text.length() == inlineText.getSelectionEnd() - inlineText.getSelectionStart());
+                int startX = (inlineText.getSelectionStart() == inlineText.getStart()) ? iB.getAbsX() + inlineText.getX() : (int) Math.round(start.x / scaleX);
+                int endX = allSelected ? startX + inlineText.getWidth() : (int) Math.round((end.x + end.width) / scaleX);
                 _graphics.setColor(UIManager.getColor("TextArea.selectionBackground"));  // FIXME
                 fillRect(
                         startX,
                         iB.getAbsY(),
                         endX - startX,
                         iB.getHeight());
-                
+
                 _graphics.setColor(Color.WHITE); // FIXME
-                setFont(iB.getStyle().getFSFont(c));                
-                
+                setFont(iB.getStyle().getFSFont(c));
+
                 drawSelectedText(c, inlineText, iB, glyphVector);
             }
         }
@@ -115,8 +104,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
 
     private void drawSelectedText(RenderingContext c, InlineText inlineText, InlineLayoutBox iB, FSGlyphVector glyphVector) {
         GlyphVector vector = ((AWTFSGlyphVector)glyphVector).getGlyphVector();
-        
-        // We'd like to draw only the characters that are actually selected, but 
+
+        // We'd like to draw only the characters that are actually selected, but
         // unfortunately vector.getGlyphPixelBounds() doesn't give us accurate
         // results with the result that text can appear to jump around as it's
         // selected.  To work around this, we draw the whole string, but move
@@ -140,9 +129,9 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                                 i, new Point2D.Double(point.getX() + adjust, point.getY()));
                     }
                     if (ch == ' ' || ch == '\u00a0' || ch == '\u3000') {
-                        adjust += info.getSpaceAdjust();
+                        adjust += info.spaceAdjust();
                     } else {
-                        adjust += info.getNonSpaceAdjust();
+                        adjust += info.nonSpaceAdjust();
                     }
                 }
 
@@ -153,17 +142,18 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
                 glyphVector,
                 iB.getAbsX() + inlineText.getX(),
                 iB.getAbsY() + iB.getBaseline());
-    }    
+    }
 
+    @Override
     public void drawBorderLine(
             Shape bounds, int side, int lineWidth, boolean solid) {
        /* int x = bounds.x;
         int y = bounds.y;
         int w = bounds.width;
         int h = bounds.height;
-        
+
         int adj = solid ? 1 : 0;
-        
+
         if (side == BorderPainter.TOP) {
             drawLine(x, y + (int) (lineWidth / 2), x + w - adj, y + (int) (lineWidth / 2));
         } else if (side == BorderPainter.LEFT) {
@@ -181,9 +171,10 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
             }
             drawLine(x, y + h - offset, x + w - adj, y + h - offset);
         }*/
-    	draw(bounds);
+        draw(bounds);
     }
 
+    @Override
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
         ReplacedElement replaced = box.getReplacedElement();
         if (replaced instanceof SwingReplacedElement) {
@@ -194,7 +185,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
             pane.paintComponent(_graphics, component, canvas, contentBounds.x,  contentBounds.y, contentBounds.width, contentBounds.height,true);
         } else if (replaced instanceof ImageReplacedElement) {
             Image image = ((ImageReplacedElement)replaced).getImage();
-            
+
             Point location = replaced.getLocation();
             _graphics.drawImage(
                     image, (int)location.getX(), (int)location.getY(), null);
@@ -212,91 +203,109 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         }
 	}
 
+
+    @Override
     public void setColor(FSColor color) {
-        if (color instanceof FSRGBColor) {
-            final FSRGBColor rgb = (FSRGBColor) color;
+        if (color instanceof FSRGBColor rgb) {
             _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(),(int) (rgb.getAlpha() * 255)));
         } else {
             throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
     }
-    
+
+    @Override
     protected void drawLine(int x1, int y1, int x2, int y2) {
         _graphics.drawLine(x1, y1, x2, y2);
     }
-    
+
+    @Override
     public void drawRect(int x, int y, int width, int height) {
         _graphics.drawRect(x, y, width, height);
     }
-    
+
+    @Override
     public void fillRect(int x, int y, int width, int height) {
         _graphics.fillRect(x, y, width, height);
     }
-    
+
+    @Override
     public void setClip(Shape s) {
         _graphics.setClip(s);
     }
-
+@Nullable
+    @CheckReturnValue
+    @Override
     public Shape getClip() {
         return _graphics.getClip();
     }
-
+@Override
     public void clip(Shape s) {
         _graphics.clip(s);
     }
-    
+
+    @Override
     public void translate(double tx, double ty) {
         _graphics.translate(tx, ty);
     }
-    
+
     public Graphics2D getGraphics() {
         return _graphics;
     }
 
+    @Override
     public void drawOval(int x, int y, int width, int height) {
         _graphics.drawOval(x, y, width, height);
     }
 
+    @Override
     public void fillOval(int x, int y, int width, int height) {
         _graphics.fillOval(x, y, width, height);
     }
 
-    public Object getRenderingHint(Key key) {
+    @Nullable
+    @CheckReturnValue
+    @Override
+    public Object getRenderingHint(RenderingHints.Key key) {
         return _graphics.getRenderingHint(key);
     }
 
-    public void setRenderingHint(Key key, Object value) {
+    @Override
+    public void setRenderingHint(RenderingHints.Key key, Object value) {
         _graphics.setRenderingHint(key, value);
     }
-    
+
+    @Override
     public void setFont(FSFont font) {
         _graphics.setFont(((AWTFSFont)font).getAWTFont());
     }
 
+    @Override
     public void setStroke(Stroke s) {
         _graphics.setStroke(s);
     }
 
+    @Override
     public Stroke getStroke() {
         return _graphics.getStroke();
     }
 
+    @Override
     public void fill(Shape s) {
         _graphics.fill(s);
     }
-
+@Override
     public void draw(Shape s) {
         _graphics.draw(s);
     }
-
+@Override
     public void drawImage(FSImage image, int x, int y) {
         _graphics.drawImage(((AWTFSImage)image).getImage(), x, y, null);
     }
-
+@Override
     public boolean isSupportsSelection() {
         return true;
     }
-
+@Override
     public boolean isSupportsCMYKColors() {
         return true;
     }

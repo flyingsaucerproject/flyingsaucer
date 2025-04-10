@@ -20,12 +20,10 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -51,42 +49,69 @@ import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.layout.PersistentBFC;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.newtable.TableRowBox;
+import org.xhtmlrenderer.render.MarkerData.ImageMarker;
+import org.xhtmlrenderer.render.MarkerData.TextMarker;
+
+import java.awt.*;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.xhtmlrenderer.css.constants.CSSName.DISPLAY;
+import static org.xhtmlrenderer.css.constants.IdentValue.CIRCLE;
+import static org.xhtmlrenderer.css.constants.IdentValue.DISC;
+import static org.xhtmlrenderer.css.constants.IdentValue.NONE;
+import static org.xhtmlrenderer.css.constants.IdentValue.SQUARE;
+import static org.xhtmlrenderer.render.BlockBox.ContentType.UNKNOWN;
 
 /**
  * A block box as defined in the CSS spec.  It also provides a base class for
  * other kinds of block content (for example table rows or cells).
  */
+@SuppressWarnings("MissingCasesInEnumSwitch")
 public class BlockBox extends Box implements InlinePaintable {
 
-    public static final int POSITION_VERTICALLY = 1;
-    public static final int POSITION_HORIZONTALLY = 2;
-    public static final int POSITION_BOTH = POSITION_VERTICALLY | POSITION_HORIZONTALLY;
+    public enum Position {
+        VERTICALLY,
+        HORIZONTALLY,
+        BOTH
+    }
 
-    public static final int CONTENT_UNKNOWN = 0;
-    public static final int CONTENT_INLINE = 1;
-    public static final int CONTENT_BLOCK = 2;
-    public static final int CONTENT_EMPTY = 4;
+    public enum ContentType {
+        UNKNOWN,
+        INLINE,
+        BLOCK,
+        EMPTY
+    }
 
     protected static final int NO_BASELINE = Integer.MIN_VALUE;
 
+    @Nullable
     private MarkerData _markerData;
 
     private int _listCounter;
 
+    @Nullable
     private PersistentBFC _persistentBFC;
 
+    @Nullable
     private Box _staticEquivalent;
 
     private boolean _needPageClear;
 
+    @Nullable
     private ReplacedElement _replacedElement;
 
-    private int _childrenContentType;
+    private ContentType _childrenContentType = UNKNOWN;
 
-    private List _inlineContent;
+    @Nullable
+    private List<Styleable> _inlineContent;
 
     private boolean _topMarginCalculated;
     private boolean _bottomMarginCalculated;
+
+    @Nullable
     private MarginCollapseResult _pendingCollapseCalculation;
 
     private int _minWidth;
@@ -94,41 +119,48 @@ public class BlockBox extends Box implements InlinePaintable {
     private boolean _minMaxCalculated;
 
     private boolean _dimensionsCalculated;
-    private boolean _needShrinkToFitCalculatation;
+    private boolean _needShrinkToFitCalculation;
 
+    @Nullable
     private CascadedStyle _firstLineStyle;
+    @Nullable
     private CascadedStyle _firstLetterStyle;
 
+    @Nullable
     private FloatedBoxData _floatedBoxData;
 
     private int _childrenHeight;
 
     private boolean _fromCaptionedTable;
 
-    public BlockBox() {
-        super();
+    protected BlockBox() {
+        this(null, null, false);
+    }
+
+    public BlockBox(@Nullable Element element, @Nullable CalculatedStyle style, boolean anonymous) {
+        super(element, style, anonymous);
     }
 
     public BlockBox copyOf() {
-        BlockBox result = new BlockBox();
-        result.setStyle(getStyle());
-        result.setElement(getElement());
-
-        return result;
+        return new BlockBox(getElement(), getStyle(), isAnonymous());
     }
 
     protected String getExtraBoxDescription() {
         return "";
     }
 
+    @Override
     public String toString() {
-        StringBuffer result = new StringBuffer();
-        String className = getClass().getName();
-        result.append(className.substring(className.lastIndexOf('.') + 1));
+        StringBuilder result = new StringBuilder();
+        result.append(getClass().getSimpleName());
         result.append(": ");
-        if (getElement() != null && ! isAnonymous()) {
+        if (getElement() != null && !isAnonymous()) {
             result.append("<");
             result.append(getElement().getNodeName());
+            String id = getElement().getAttribute("id");
+            if (!id.isEmpty()) {
+                result.append(" id=\"").append(id).append("\"");
+            }
             result.append("> ");
         }
         if (isAnonymous()) {
@@ -140,35 +172,29 @@ public class BlockBox extends Box implements InlinePaintable {
             result.append(' ');
         }
         result.append('(');
-        result.append(getStyle().getIdent(CSSName.DISPLAY).toString());
+        result.append(getStyle().getIdent(DISPLAY));
         result.append(") ");
 
         if (getStyle().isRunning()) {
             result.append("(running) ");
         }
 
-        result.append('(');
-        switch (getChildrenContentType()) {
-            case CONTENT_BLOCK:
-                result.append('B');
-                break;
-            case CONTENT_INLINE:
-                result.append('I');
-                break;
-            case CONTENT_EMPTY:
-                result.append('E');
-                break;
-        }
-        result.append(") ");
+        result.append(switch (getChildrenContentType()) {
+            case BLOCK -> "(B) ";
+            case INLINE -> "(I) ";
+            case EMPTY -> "(E) ";
+            case UNKNOWN -> "";
+        });
 
         result.append(getExtraBoxDescription());
 
         appendPositioningInfo(result);
-        result.append("(" + getAbsX() + "," + getAbsY() + ")->(" + getWidth() + " x " + getHeight() + ")");
-        return result.toString();
+        appendPosition(result);
+        appendSize(result);
+        return result.toString().trim();
     }
 
-    protected void appendPositioningInfo(StringBuffer result) {
+    protected void appendPositioningInfo(StringBuilder result) {
         if (getStyle().isRelative()) {
             result.append("(relative) ");
         }
@@ -183,43 +209,43 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
-    public String dump(LayoutContext c, String indent, int which) {
-        StringBuffer result = new StringBuffer(indent);
+    @Override
+    public String dump(LayoutContext c, String indent, Dump which) {
+        StringBuilder result = new StringBuilder(indent);
 
         ensureChildren(c);
 
         result.append(this);
 
         RectPropertySet margin = getMargin(c);
-        result.append(" effMargin=[" + margin.top() + ", " + margin.right() + ", " +
-                margin.bottom() + ", " + margin.right() + "] ");
+        result.append(" effMargin=[").append(margin.top()).append(", ").append(margin.right())
+                .append(", ").append(margin.bottom()).append(", ").append(margin.right()).append("] ");
         RectPropertySet styleMargin = getStyleMargin(c);
-        result.append(" styleMargin=[" + styleMargin.top() + ", " + styleMargin.right() + ", " +
-                styleMargin.bottom() + ", " + styleMargin.right() + "] ");
+        result.append(" styleMargin=[").append(styleMargin.top()).append(", ").append(styleMargin.right())
+                .append(", ").append(styleMargin.bottom()).append(", ").append(styleMargin.right()).append("] ");
 
-        if (getChildrenContentType() != CONTENT_EMPTY) {
+        if (getChildrenContentType() != ContentType.EMPTY) {
             result.append('\n');
         }
 
         switch (getChildrenContentType()) {
-            case CONTENT_BLOCK:
+            case BLOCK:
                 dumpBoxes(c, indent, getChildren(), which, result);
                 break;
-            case CONTENT_INLINE:
-                if (which == Box.DUMP_RENDER) {
+            case INLINE:
+                if (which == Dump.RENDER) {
                     dumpBoxes(c, indent, getChildren(), which, result);
                 } else {
-                    for (Iterator i = getInlineContent().iterator(); i.hasNext();) {
-                        Styleable styleable = (Styleable) i.next();
-                        if (styleable instanceof BlockBox) {
-                            BlockBox b = (BlockBox) styleable;
+                    for (Iterator<Styleable> i = getInlineContent().iterator(); i.hasNext();) {
+                        Styleable styleable = i.next();
+                        if (styleable instanceof BlockBox b) {
                             result.append(b.dump(c, indent + "  ", which));
                             if (result.charAt(result.length() - 1) == '\n') {
                                 result.deleteCharAt(result.length() - 1);
                             }
                         } else {
-                            result.append(indent + "  ");
-                            result.append(styleable.toString());
+                            result.append(indent).append("  ");
+                            result.append(styleable);
                         }
                         if (i.hasNext()) {
                             result.append('\n');
@@ -242,6 +268,7 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
+    @Override
     public Rectangle getPaintingClipEdge(CssContext cssCtx) {
         Rectangle result = super.getPaintingClipEdge(cssCtx);
 
@@ -257,6 +284,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return result;
     }
 
+    @Override
     public void paintInline(RenderingContext c) {
         if (! getStyle().isVisible()) {
             return;
@@ -270,112 +298,89 @@ public class BlockBox extends Box implements InlinePaintable {
         return parent instanceof LineBox || parent instanceof InlineLayoutBox;
     }
 
+    @Nullable
     public LineBox getLineBox() {
-        if (! isInline()) {
+        if (!isInline()) {
             return null;
-        } else {
-            Box b = getParent();
-            while (! (b instanceof LineBox)) {
-                b = b.getParent();
-            }
-            return (LineBox) b;
         }
+        Box b = getParent();
+        while (!(b instanceof LineBox)) {
+            b = b.getParent();
+        }
+        return (LineBox) b;
     }
 
     public void paintDebugOutline(RenderingContext c) {
         c.getOutputDevice().drawDebugOutline(c, this, FSRGBColor.RED);
     }
 
+    @Nullable
     public MarkerData getMarkerData() {
         return _markerData;
     }
 
-    public void setMarkerData(MarkerData markerData) {
-        _markerData = markerData;
+    @CheckReturnValue
+    private MarkerData initMarkerData(LayoutContext c) {
+        if (_markerData == null) {
+            _markerData = createMarkerData(c);
+        }
+        return _markerData;
     }
 
-    public void createMarkerData(LayoutContext c) {
-        if (getMarkerData() != null)
-        {
-            return;
-        }
-
+    @CheckReturnValue
+    private MarkerData createMarkerData(LayoutContext c) {
         StrutMetrics strutMetrics = InlineBoxing.createDefaultStrutMetrics(c, this);
-
-        boolean imageMarker = false;
-
-        MarkerData result = new MarkerData();
-        result.setStructMetrics(strutMetrics);
 
         CalculatedStyle style = getStyle();
         IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
 
         String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
-        if (! image.equals("none")) {
-            result.setImageMarker(makeImageMarker(c, strutMetrics, image));
-            imageMarker = result.getImageMarker() != null;
+        ImageMarker imageMarker = makeImageMarker(c, strutMetrics, image);
+        if (imageMarker != null) {
+            return new MarkerData(strutMetrics, imageMarker, null, null);
         }
-
-        if (listStyle != IdentValue.NONE && ! imageMarker) {
-            if (listStyle == IdentValue.CIRCLE || listStyle == IdentValue.SQUARE ||
-                    listStyle == IdentValue.DISC) {
-                result.setGlyphMarker(makeGlyphMarker(strutMetrics));
-            } else {
-                result.setTextMarker(makeTextMarker(c, listStyle));
-            }
+        else if (listStyle == CIRCLE || listStyle == SQUARE || listStyle == DISC) {
+            return new MarkerData(strutMetrics, null, makeGlyphMarker(strutMetrics), null);
+        } else if (listStyle != NONE) {
+            return new MarkerData(strutMetrics, null, null, makeTextMarker(c, listStyle));
+        } else {
+            return new MarkerData(strutMetrics, null, null, null);
         }
-
-        setMarkerData(result);
     }
 
     private MarkerData.GlyphMarker makeGlyphMarker(StrutMetrics strutMetrics) {
         int diameter = (int) ((strutMetrics.getAscent() + strutMetrics.getDescent()) / 3);
 
-        MarkerData.GlyphMarker result = new MarkerData.GlyphMarker();
-        result.setDiameter(diameter);
-        result.setLayoutWidth(diameter * 3);
-
-        return result;
+        return new MarkerData.GlyphMarker(diameter, diameter * 3);
     }
 
-
-    private MarkerData.ImageMarker makeImageMarker(
+    @Nullable
+    @CheckReturnValue
+    private ImageMarker makeImageMarker(
             LayoutContext c, StrutMetrics structMetrics, String image) {
-        FSImage img = null;
-        if (! image.equals("none")) {
-            img = c.getUac().getImageResource(image).getImage();
-            if (img != null) {
-                StrutMetrics strutMetrics = structMetrics;
-                if (img.getHeight() > strutMetrics.getAscent()) {
-                    img.scale(-1, (int) strutMetrics.getAscent());
-                }
-                MarkerData.ImageMarker result = new MarkerData.ImageMarker();
-                result.setImage(img);
-                result.setLayoutWidth(img.getWidth() * 2);
-                return result;
-            }
+        if ("none".equals(image)) {
+            return null;
         }
-        return null;
+        FSImage img = c.getUac().getImageResource(image).getImage();
+        if (img == null) {
+            return null;
+        }
+        if (img.getHeight() > structMetrics.getAscent()) {
+            img = img.scale(-1, (int) structMetrics.getAscent());
+        }
+        return new ImageMarker(img, img.getWidth() * 2);
     }
 
-    private MarkerData.TextMarker makeTextMarker(LayoutContext c, IdentValue listStyle) {
-        String text;
-
+    private TextMarker makeTextMarker(LayoutContext c, IdentValue listStyle) {
         int listCounter = getListCounter();
-        text = CounterFunction.createCounterText(listStyle, listCounter);
-
-        text += ".  ";
+        String text = CounterFunction.createCounterText(listStyle, listCounter) + ".  ";
 
         int w = c.getTextRenderer().getWidth(
                 c.getFontContext(),
                 getStyle().getFSFont(c),
                 text);
 
-        MarkerData.TextMarker result = new MarkerData.TextMarker();
-        result.setText(text);
-        result.setLayoutWidth(w);
-
-        return result;
+        return new TextMarker(text, w);
     }
 
     public int getListCounter() {
@@ -386,6 +391,8 @@ public class BlockBox extends Box implements InlinePaintable {
         _listCounter = listCounter;
     }
 
+    @Nullable
+    @CheckReturnValue
     public PersistentBFC getPersistentBFC() {
         return _persistentBFC;
     }
@@ -394,6 +401,8 @@ public class BlockBox extends Box implements InlinePaintable {
         _persistentBFC = persistentBFC;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Box getStaticEquivalent() {
         return _staticEquivalent;
     }
@@ -406,6 +415,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return _replacedElement != null;
     }
 
+    @Override
     public void calcCanvasLocation() {
         if (isFloated()) {
             FloatManager manager = _floatedBoxData.getManager();
@@ -449,6 +459,7 @@ public class BlockBox extends Box implements InlinePaintable {
         setAbsY(manager.getMaster().getAbsY() + getY() - offset.y);
     }
 
+    @Override
     public void calcChildLocations() {
         super.calcChildLocations();
 
@@ -473,20 +484,18 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
-    public void positionAbsolute(CssContext cssCtx, int direction) {
+    public void positionAbsolute(CssContext cssCtx, Position direction) {
         CalculatedStyle style = getStyle();
-
-        Rectangle boundingBox = null;
-
         int cbContentHeight = getContainingBlock().getContentAreaEdge(0, 0, cssCtx).height;
 
+        Rectangle boundingBox;
         if (getContainingBlock() instanceof BlockBox) {
             boundingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
         } else {
             boundingBox = getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
         }
 
-        if ((direction & POSITION_HORIZONTALLY) != 0) {
+        if (direction == Position.HORIZONTALLY || direction == Position.BOTH) {
             setX(0);
             if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
                 setX((int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx));
@@ -497,7 +506,7 @@ public class BlockBox extends Box implements InlinePaintable {
             setX(getX() + boundingBox.x);
         }
 
-        if ((direction & POSITION_VERTICALLY) != 0) {
+        if (direction == Position.VERTICALLY || direction == Position.BOTH) {
             setY(0);
             if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
                 setY((int) style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx));
@@ -507,7 +516,7 @@ public class BlockBox extends Box implements InlinePaintable {
             }
 
             // Can't do this before now because our containing block
-            // must be completed layed out
+            // must be completed laid out
             int pinnedHeight = calcPinnedHeight(cssCtx);
             if (pinnedHeight != -1 && getCSSHeight(cssCtx) == -1) {
                 setHeight(pinnedHeight);
@@ -519,7 +528,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
         calcCanvasLocation();
 
-        if ((direction & POSITION_VERTICALLY) != 0 &&
+        if ((direction == Position.VERTICALLY || direction == Position.BOTH) &&
                 getStyle().isTopAuto() && getStyle().isBottomAuto()) {
             alignToStaticEquivalent();
         }
@@ -538,14 +547,16 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
+    @Nullable
     public ReplacedElement getReplacedElement() {
         return _replacedElement;
     }
 
-    public void setReplacedElement(ReplacedElement replacedElement) {
+    public void setReplacedElement(@Nullable ReplacedElement replacedElement) {
         _replacedElement = replacedElement;
     }
 
+    @Override
     public void reset(LayoutContext c) {
         super.reset(c);
         setTopMarginCalculated(false);
@@ -557,7 +568,7 @@ public class BlockBox extends Box implements InlinePaintable {
             getReplacedElement().detach(c);
             setReplacedElement(null);
         }
-        if (getChildrenContentType() == BlockBox.CONTENT_INLINE) {
+        if (getChildrenContentType() == ContentType.INLINE) {
             removeAllChildren();
         }
 
@@ -582,7 +593,7 @@ public class BlockBox extends Box implements InlinePaintable {
                     CSSName.RIGHT, paddingEdge.width, c);
 
             int result = paddingEdge.width - left - right - getLeftMBP() - getRightMBP();
-            return result < 0 ? 0 : result;
+            return Math.max(result, 0);
         }
 
         return -1;
@@ -600,7 +611,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
 
             int result = paddingEdge.height - top - bottom;
-            return result < 0 ? 0 : result;
+            return Math.max(result, 0);
         }
 
         return -1;
@@ -680,7 +691,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 resolveAutoMargins(c, cssWidth, padding, border);
             }
 
-            recalcMargin(c);
+            recalculateMargin(c);
             RectPropertySet margin = getMargin(c);
 
             // CLEAN: cast to int
@@ -736,7 +747,7 @@ public class BlockBox extends Box implements InlinePaintable {
                     setReplacedElement(re);
                 } else if (cssWidth == -1 && pinnedContentWidth == -1 &&
                         style.isCanBeShrunkToFit()) {
-                    setNeedShrinkToFitCalculatation(true);
+                    setNeedShrinkToFitCalculation(true);
                 }
 
                 if (! isReplaced()) {
@@ -771,7 +782,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private void addBoxID(LayoutContext c) {
-        if (! isAnonymous()) {
+        if (!isAnonymous()) {
             String name = c.getNamespaceHandler().getAnchorName(getElement());
             if (name != null) {
                 c.addBoxId(name, this);
@@ -843,8 +854,8 @@ public class BlockBox extends Box implements InlinePaintable {
 
         boolean didSetMarkerData = false;
         if (getStyle().isListItem()) {
-            createMarkerData(c);
-            c.setCurrentMarkerData(getMarkerData());
+            MarkerData markerData = initMarkerData(c);
+            c.setCurrentMarkerData(markerData);
             didSetMarkerData = true;
         }
 
@@ -857,7 +868,7 @@ public class BlockBox extends Box implements InlinePaintable {
         if (! isReplaced())
             layoutChildren(c, contentStart);
         else {
-            setState(Box.DONE);
+            setState(State.DONE);
         }
         c.translate(-getTx(), -getTy());
 
@@ -920,10 +931,10 @@ public class BlockBox extends Box implements InlinePaintable {
 
 
     private void calcShrinkToFitWidthIfNeeded(LayoutContext c) {
-        if (isNeedShrinkToFitCalculatation()) {
+        if (isNeedShrinkToFitCalculation()) {
             setContentWidth(calcShrinkToFitWidth(c) - getLeftMBP() - getRightMBP());
             applyCSSMinMaxWidth(c);
-            setNeedShrinkToFitCalculatation(false);
+            setNeedShrinkToFitCalculation(false);
         }
     }
 
@@ -954,13 +965,13 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     public void ensureChildren(LayoutContext c) {
-        if (getChildrenContentType() == CONTENT_UNKNOWN) {
+        if (getChildrenContentType() == UNKNOWN) {
             BoxBuilder.createChildren(c, this);
         }
     }
 
     protected void layoutChildren(LayoutContext c, int contentStart) {
-        setState(Box.CHILDREN_FLUX);
+        setState(State.CHILDREN_FLUX);
         ensureChildren(c);
 
         if (getFirstLetterStyle() != null) {
@@ -971,12 +982,12 @@ public class BlockBox extends Box implements InlinePaintable {
         }
 
         switch (getChildrenContentType()) {
-            case CONTENT_INLINE:
+            case INLINE -> {
                 layoutInlineChildren(c, contentStart, calcInitialBreakAtLine(c), true);
-                break;
-            case CONTENT_BLOCK:
+            }
+            case BLOCK -> {
                 BlockBoxing.layoutContent(c, this, contentStart);
-                break;
+            }
         }
 
         if (getFirstLetterStyle() != null) {
@@ -986,7 +997,7 @@ public class BlockBox extends Box implements InlinePaintable {
             c.getFirstLinesTracker().removeLast();
         }
 
-        setState(Box.DONE);
+        setState(State.DONE);
     }
 
     protected void layoutInlineChildren(
@@ -1003,8 +1014,8 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private void justifyText() {
-        for (Iterator i = getChildIterator(); i.hasNext(); ) {
-            LineBox line = (LineBox)i.next();
+        for (Box box : getChildren()) {
+            LineBox line = (LineBox) box;
             line.justify();
         }
     }
@@ -1037,16 +1048,16 @@ public class BlockBox extends Box implements InlinePaintable {
                 setNeedPageClear(true);
             } else {
                 LineBox lastLineBox = (LineBox)getChild(cCount-1);
-                List pages = c.getRootLayer().getPages();
-                PageBox lastPage = (PageBox)pages.get(firstPage.getPageNo()+1);
+                List<PageBox> pages = c.getRootLayer().getPages();
+                PageBox lastPage = pages.get(firstPage.getPageNo()+1);
                 while (lastPage.getPageNo() != pages.size() - 1 &&
                         lastPage.getBottom() < lastLineBox.getAbsY()) {
-                    lastPage = (PageBox)pages.get(lastPage.getPageNo()+1);
+                    lastPage = pages.get(lastPage.getPageNo()+1);
                 }
 
                 noContentLBs = 0;
                 i = cCount-1;
-                while (i >= 0 && ((LineBox)getChild(i)).getAbsY() >= lastPage.getTop()) {
+                while (i >= 0 && getChild(i).getAbsY() >= lastPage.getTop()) {
                     LineBox lB = (LineBox)getChild(i);
                     if (lB.getAbsY() < lastPage.getTop()) {
                         break;
@@ -1074,26 +1085,26 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
-    public int getChildrenContentType() {
+    @NonNull
+    @CheckReturnValue
+    public ContentType getChildrenContentType() {
         return _childrenContentType;
     }
 
-    public void setChildrenContentType(int contentType) {
+    public void setChildrenContentType(ContentType contentType) {
         _childrenContentType = contentType;
     }
 
-    public List getInlineContent() {
+    public List<Styleable> getInlineContent() {
         return _inlineContent;
     }
 
-    public void setInlineContent(List inlineContent) {
+    public final void setInlineContent(List<Styleable> inlineContent) {
         _inlineContent = inlineContent;
-        if (inlineContent != null) {
-            for (Iterator i = inlineContent.iterator(); i.hasNext();) {
-                Styleable child = (Styleable) i.next();
-                if (child instanceof Box) {
-                    ((Box) child).setContainingBlock(this);
-                }
+
+        for (Styleable child : inlineContent) {
+            if (child instanceof Box) {
+                ((Box) child).setContainingBlock(this);
             }
         }
     }
@@ -1103,7 +1114,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     protected boolean isMayCollapseMarginsWithChildren() {
-        return (! isRoot()) && getStyle().isMayCollapseMarginsWithChildren();
+        return !isRoot() && getStyle().isMayCollapseMarginsWithChildren();
     }
 
     // This will require a rethink if we ever truly layout incrementally
@@ -1111,7 +1122,7 @@ public class BlockBox extends Box implements InlinePaintable {
     // bottom margins by looking back up the tree.
     private void collapseMargins(LayoutContext c) {
         if (! isTopMarginCalculated() || ! isBottomMarginCalculated()) {
-            recalcMargin(c);
+            recalculateMargin(c);
             RectPropertySet margin = getMargin(c);
 
             if (! isTopMarginCalculated() && ! isBottomMarginCalculated() && isVerticalMarginsAdjoin(c)) {
@@ -1190,9 +1201,9 @@ public class BlockBox extends Box implements InlinePaintable {
 
                 if (isMayCollapseMarginsWithChildren() && isNoTopPaddingOrBorder(c)) {
                     ensureChildren(c);
-                    if (getChildrenContentType() == CONTENT_BLOCK) {
-                        for (Iterator i = getChildIterator(); i.hasNext();) {
-                            BlockBox child = (BlockBox) i.next();
+                    if (getChildrenContentType() == ContentType.BLOCK) {
+                        for (Box box : getChildren()) {
+                            BlockBox child = (BlockBox) box;
                             child.collapseTopMargin(c, false, result);
 
                             if (child.isSkipWhenCollapsingMargins()) {
@@ -1228,7 +1239,7 @@ public class BlockBox extends Box implements InlinePaintable {
                 if (isMayCollapseMarginsWithChildren() &&
                         ! getStyle().isTable() && isNoBottomPaddingOrBorder(c)) {
                     ensureChildren(c);
-                    if (getChildrenContentType() == CONTENT_BLOCK) {
+                    if (getChildrenContentType() == ContentType.BLOCK) {
                         for (int i = getChildCount() - 1; i >= 0; i--) {
                             BlockBox child = (BlockBox) getChild(i);
 
@@ -1273,9 +1284,9 @@ public class BlockBox extends Box implements InlinePaintable {
         setBottomMarginCalculated(true);
 
         ensureChildren(c);
-        if (getChildrenContentType() == CONTENT_BLOCK) {
-            for (Iterator i = getChildIterator(); i.hasNext();) {
-                BlockBox child = (BlockBox) i.next();
+        if (getChildrenContentType() == ContentType.BLOCK) {
+            for (Box box : getChildren()) {
+                BlockBox child = (BlockBox) box;
                 child.collapseEmptySubtreeMargins(c, result);
             }
         }
@@ -1296,12 +1307,12 @@ public class BlockBox extends Box implements InlinePaintable {
         }
 
         ensureChildren(c);
-        if (getChildrenContentType() == CONTENT_INLINE) {
+        if (getChildrenContentType() == ContentType.INLINE) {
             return false;
-        } else if (getChildrenContentType() == CONTENT_BLOCK) {
-            for (Iterator i = getChildIterator(); i.hasNext();) {
-                BlockBox child = (BlockBox) i.next();
-                if (child.isSkipWhenCollapsingMargins() || ! child.isVerticalMarginsAdjoin(c)) {
+        } else if (getChildrenContentType() == ContentType.BLOCK) {
+            for (Box box : getChildren()) {
+                BlockBox child = (BlockBox) box;
+                if (child.isSkipWhenCollapsingMargins() || !child.isVerticalMarginsAdjoin(c)) {
                     return false;
                 }
             }
@@ -1387,11 +1398,7 @@ public class BlockBox extends Box implements InlinePaintable {
             Box cb = getContainingBlock();
             if (cb.isStyled() && (cb instanceof BlockBox)) {
                 return ((BlockBox)cb).isAutoHeight();
-            } else if (cb instanceof BlockBox && ((BlockBox)cb).isInitialContainingBlock()) {
-                return false;
-            } else {
-                return true;
-            }
+            } else return !(cb instanceof BlockBox) || !cb.isInitialContainingBlock();
         }
     }
 
@@ -1461,7 +1468,7 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
 
-    private void recalcMargin(LayoutContext c) {
+    private void recalculateMargin(LayoutContext c) {
         if (isTopMarginCalculated() && isBottomMarginCalculated()) {
             return;
         }
@@ -1478,7 +1485,7 @@ public class BlockBox extends Box implements InlinePaintable {
             return;
         }
 
-        RectPropertySet styleMargin = getStyleMargin(c, false);
+        RectPropertySet styleMargin = getStyleMarginNoCache(c);
         RectPropertySet workingMargin = getMargin(c);
 
         // A shrink-to-fit calculation may have set incorrect values for
@@ -1545,16 +1552,9 @@ public class BlockBox extends Box implements InlinePaintable {
 
                 ensureChildren(c);
 
-                if (getChildrenContentType() == CONTENT_BLOCK ||
-                        getChildrenContentType() == CONTENT_INLINE) {
-                    switch (getChildrenContentType()) {
-                        case CONTENT_BLOCK:
-                            calcMinMaxWidthBlockChildren(c);
-                            break;
-                        case CONTENT_INLINE:
-                            calcMinMaxWidthInlineChildren(c);
-                            break;
-                    }
+                switch (getChildrenContentType()) {
+                    case BLOCK -> calcMinMaxWidthBlockChildren(c);
+                    case INLINE -> calcMinMaxWidthInlineChildren(c);
                 }
 
                 if (minimumMaxWidth > _maxWidth) {
@@ -1580,10 +1580,10 @@ public class BlockBox extends Box implements InlinePaintable {
         int maxImageWidth = getCSSFitToWidth(c);
         if (maxImageWidth > -1 && re.getIntrinsicWidth() > maxImageWidth)
         {
-            double oldWidth = (double)re.getIntrinsicWidth();
-            double scale = ((double)maxImageWidth)/oldWidth;
+            double oldWidth = re.getIntrinsicWidth();
+            double scale = maxImageWidth /oldWidth;
             re = c.getReplacedElementFactory().createReplacedElement(
-                    c, this, c.getUac(), maxImageWidth, (int)Math.rint(scale * (double)re.getIntrinsicHeight()));
+                    c, this, c.getUac(), maxImageWidth, (int)Math.rint(scale * re.getIntrinsicHeight()));
         }
         return re;
     }
@@ -1606,11 +1606,7 @@ public class BlockBox extends Box implements InlinePaintable {
                     (int) margin.left() + (int) border.left() + (int) padding.left() +
                             (int) margin.right() + (int) border.right() + (int) padding.right();
             if (_maxWidth > cssMaxWidth) {
-                if (cssMaxWidth > _minWidth) {
-                    _maxWidth = cssMaxWidth;
-                } else {
-                    _maxWidth = _minWidth;
-                }
+                _maxWidth = Math.max(cssMaxWidth, _minWidth);
             }
         }
     }
@@ -1619,8 +1615,8 @@ public class BlockBox extends Box implements InlinePaintable {
         int childMinWidth = 0;
         int childMaxWidth = 0;
 
-        for (Iterator i = getChildIterator(); i.hasNext();) {
-            BlockBox child = (BlockBox) i.next();
+        for (Box box : getChildren()) {
+            BlockBox child = (BlockBox) box;
             child.calcMinMaxWidth(c);
             if (child.getMinWidth() > childMinWidth) {
                 childMinWidth = child.getMinWidth();
@@ -1639,8 +1635,8 @@ public class BlockBox extends Box implements InlinePaintable {
                 CSSName.TEXT_INDENT, getContentWidth(), c);
 
         if (getStyle().isListItem() && getStyle().isListMarkerInside()) {
-            createMarkerData(c);
-            textIndent += getMarkerData().getLayoutWidth();
+            MarkerData markerData = initMarkerData(c);
+            textIndent += markerData.getLayoutWidth();
         }
 
         int childMinWidth = 0;
@@ -1649,9 +1645,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
         InlineBox trimmableIB = null;
 
-        for (Iterator i = _inlineContent.iterator(); i.hasNext();) {
-            Styleable child = (Styleable) i.next();
-
+        for (Styleable child : _inlineContent) {
             if (child.getStyle().isAbsolute() || child.getStyle().isFixed() || child.getStyle().isRunning()) {
                 continue;
             }
@@ -1773,16 +1767,14 @@ public class BlockBox extends Box implements InlinePaintable {
 
     // FIXME Should be expanded into generic restyle facility
     public void styleText(LayoutContext c, CalculatedStyle style) {
-        if (getChildrenContentType() == CONTENT_INLINE) {
-            LinkedList styles = new LinkedList();
+        if (getChildrenContentType() == ContentType.INLINE) {
+            Deque<CalculatedStyle> styles = new LinkedList<>();
             styles.add(style);
-            for (Iterator i = _inlineContent.iterator(); i.hasNext();) {
-                Styleable child = (Styleable) i.next();
-                if (child instanceof InlineBox) {
-                    InlineBox iB = (InlineBox) child;
+            for (Styleable child : _inlineContent) {
+                if (child instanceof InlineBox iB) {
 
                     if (iB.isStartsHere()) {
-                        CascadedStyle cs = null;
+                        CascadedStyle cs;
                         if (iB.getElement() != null) {
                             if (iB.getPseudoElementOrClass() == null) {
                                 cs = c.getCss().getCascadedStyle(iB.getElement(), false);
@@ -1790,13 +1782,13 @@ public class BlockBox extends Box implements InlinePaintable {
                                 cs = c.getCss().getPseudoElementStyle(
                                         iB.getElement(), iB.getPseudoElementOrClass());
                             }
-                            styles.add(((CalculatedStyle) styles.getLast()).deriveStyle(cs));
+                            styles.add(styles.getLast().deriveStyle(cs));
                         } else {
                             styles.add(style.createAnonymousStyle(IdentValue.INLINE));
                         }
                     }
 
-                    iB.setStyle(((CalculatedStyle) styles.getLast()));
+                    iB.setStyle(styles.getLast());
                     iB.applyTextTransform();
 
                     if (iB.isEndsHere()) {
@@ -1807,17 +1799,16 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
+    @Override
     protected void calcChildPaintingInfo(
             final CssContext c, final PaintingInfo result, final boolean useCache) {
         if (getPersistentBFC() != null) {
-            (this).getPersistentBFC().getFloatManager().performFloatOperation(
-                    new FloatManager.FloatOperation() {
-                        public void operate(Box floater) {
-                            PaintingInfo info = floater.calcPaintingInfo(c, useCache);
-                            moveIfGreater(
-                                    result.getOuterMarginCorner(),
-                                    info.getOuterMarginCorner());
-                        }
+            getPersistentBFC().getFloatManager().performFloatOperation(
+                    floater -> {
+                        PaintingInfo info = floater.calcPaintingInfo(c, useCache);
+                        moveIfGreater(
+                                result.getOuterMarginCorner(),
+                                info.getOuterMarginCorner());
                     });
         }
         super.calcChildPaintingInfo(c, result, useCache);
@@ -1855,12 +1846,12 @@ public class BlockBox extends Box implements InlinePaintable {
         return _dimensionsCalculated;
     }
 
-    protected void setNeedShrinkToFitCalculatation(boolean needShrinkToFitCalculatation) {
-        _needShrinkToFitCalculatation = needShrinkToFitCalculatation;
+    protected void setNeedShrinkToFitCalculation(boolean needShrinkToFitCalculation) {
+        _needShrinkToFitCalculation = needShrinkToFitCalculation;
     }
 
-    private boolean isNeedShrinkToFitCalculatation() {
-        return _needShrinkToFitCalculatation;
+    private boolean isNeedShrinkToFitCalculation() {
+        return _needShrinkToFitCalculation;
     }
 
     public void initStaticPos(LayoutContext c, BlockBox parent, int childOffset) {
@@ -1934,8 +1925,8 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     public int findOffset(Box box) {
-        int ccount = getChildCount();
-        for (int i = 0; i < ccount; i++) {
+        int count = getChildCount();
+        for (int i = 0; i < count; i++) {
             if (getChild(i) == box) {
                 return i;
             }
@@ -1950,20 +1941,20 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private static class LastLineBoxContext {
-        public int current;
-        public LineBox line;
+        private int current;
+        private LineBox line;
 
-        public LastLineBoxContext(int i) {
-            this.current = i;
+        private LastLineBoxContext(int i) {
+            current = i;
         }
     }
 
     private void findLastLineBox(LastLineBoxContext context) {
-        int type = getChildrenContentType();
-        int ccount = getChildCount();
-        if (ccount > 0) {
-            if (type == CONTENT_INLINE) {
-                for (int i = ccount - 1; i >= 0; i--) {
+        ContentType type = getChildrenContentType();
+        int count = getChildCount();
+        if (count > 0) {
+            if (type == ContentType.INLINE) {
+                for (int i = count - 1; i >= 0; i--) {
                     LineBox child = (LineBox) getChild(i);
                     if (child.getHeight() > 0) {
                         context.line = child;
@@ -1972,8 +1963,8 @@ public class BlockBox extends Box implements InlinePaintable {
                         }
                     }
                 }
-            } else if (type == CONTENT_BLOCK) {
-                for (int i = ccount - 1; i >= 0; i--) {
+            } else if (type == ContentType.BLOCK) {
+                for (int i = count - 1; i >= 0; i--) {
                     ((BlockBox) getChild(i)).findLastLineBox(context);
                     if (context.current == 0) {
                         break;
@@ -1984,18 +1975,18 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private LineBox findLastLineBox() {
-        int type = getChildrenContentType();
-        int ccount = getChildCount();
-        if (ccount > 0) {
-            if (type == CONTENT_INLINE) {
-                for (int i = ccount - 1; i >= 0; i--) {
+        ContentType type = getChildrenContentType();
+        int count = getChildCount();
+        if (count > 0) {
+            if (type == ContentType.INLINE) {
+                for (int i = count - 1; i >= 0; i--) {
                     LineBox result = (LineBox) getChild(i);
                     if (result.getHeight() > 0) {
                         return result;
                     }
                 }
-            } else if (type == CONTENT_BLOCK) {
-                for (int i = ccount - 1; i >= 0; i--) {
+            } else if (type == ContentType.BLOCK) {
+                for (int i = count - 1; i >= 0; i--) {
                     LineBox result = ((BlockBox) getChild(i)).findLastLineBox();
                     if (result != null) {
                         return result;
@@ -2008,18 +1999,18 @@ public class BlockBox extends Box implements InlinePaintable {
     }
 
     private LineBox findFirstLineBox() {
-        int type = getChildrenContentType();
-        int ccount = getChildCount();
-        if (ccount > 0) {
-            if (type == CONTENT_INLINE) {
-                for (int i = 0; i < ccount; i++) {
+        ContentType type = getChildrenContentType();
+        int count = getChildCount();
+        if (count > 0) {
+            if (type == ContentType.INLINE) {
+                for (int i = 0; i < count; i++) {
                     LineBox result = (LineBox) getChild(i);
                     if (result.getHeight() > 0) {
                         return result;
                     }
                 }
-            } else if (type == CONTENT_BLOCK) {
-                for (int i = 0; i < ccount; i++) {
+            } else if (type == ContentType.BLOCK) {
+                for (int i = 0; i < count; i++) {
                     LineBox result = ((BlockBox) getChild(i)).findFirstLineBox();
                     if (result != null) {
                         return result;
@@ -2048,11 +2039,12 @@ public class BlockBox extends Box implements InlinePaintable {
         return _floatedBoxData != null;
     }
 
+    @Nullable
     public FloatedBoxData getFloatedBoxData() {
         return _floatedBoxData;
     }
 
-    public void setFloatedBoxData(FloatedBoxData floatedBoxData) {
+    public void setFloatedBoxData(@Nullable FloatedBoxData floatedBoxData) {
         _floatedBoxData = floatedBoxData;
     }
 
@@ -2072,6 +2064,7 @@ public class BlockBox extends Box implements InlinePaintable {
         _fromCaptionedTable = fromTable;
     }
 
+    @Override
     protected boolean isInlineBlock() {
         return isInline();
     }
@@ -2085,39 +2078,29 @@ public class BlockBox extends Box implements InlinePaintable {
         return flowRoot.isRoot();
     }
 
-    public Box getDocumentParent() {
-        Box staticEquivalent = getStaticEquivalent();
-        if (staticEquivalent != null) {
-            return staticEquivalent;
-        } else {
-            return getParent();
-        }
-    }
-
     public boolean isContainsInlineContent(LayoutContext c) {
         ensureChildren(c);
-        switch (getChildrenContentType()) {
-            case CONTENT_INLINE:
-                return true;
-            case CONTENT_EMPTY:
-                return false;
-            case CONTENT_BLOCK:
-                for (Iterator i = getChildIterator(); i.hasNext(); ) {
-                    BlockBox box = (BlockBox)i.next();
+        return switch (getChildrenContentType()) {
+            case INLINE -> true;
+            case EMPTY -> false;
+            case BLOCK -> {
+                for (Box value : getChildren()) {
+                    BlockBox box = (BlockBox) value;
                     if (box.isContainsInlineContent(c)) {
-                        return true;
+                        yield true;
                     }
                 }
-                return false;
-        }
+                yield false;
+            }
+            case UNKNOWN -> throw new RuntimeException("internal error: no children");
+        };
 
-        throw new RuntimeException("internal error: no children");
     }
 
     public boolean checkPageContext(LayoutContext c) {
         if (! getStyle().isIdent(CSSName.PAGE, IdentValue.AUTO)) {
             String pageName = getStyle().getStringProperty(CSSName.PAGE);
-            if ( (! pageName.equals(c.getPageName())) && isInDocumentFlow() &&
+            if ( !pageName.equals(c.getPageName()) && isInDocumentFlow() &&
                     isContainsInlineContent(c)) {
                 c.setPendingPageName(pageName);
                 return true;
@@ -2190,377 +2173,3 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.102  2010/01/13 00:42:11  peterbrant
- * Calculate clearance before possibly establishing new BFC.  It needs to be calculated relative to the existing BFC and not the new one.
- *
- * Revision 1.101  2010/01/12 14:33:27  peterbrant
- * Ignore auto margins when calculating table min/max width.  Also, when deciding whether or not to proceed with the auto margin calculation for a table,  make sure we compare consistently with how the table min width is actually set.
- *
- * Revision 1.100  2009/11/08 23:52:48  peterbrant
- * Treat percentage widths as auto when calculating min/max widths
- *
- * Revision 1.99  2008/12/14 19:20:05  peterbrant
- * Skip running blocks when calculating min/max widths
- *
- * Revision 1.98  2008/12/14 13:53:31  peterbrant
- * Implement -fs-keep-with-inline: keep property that instructs FS to try to avoid breaking a box so that only borders and padding appear on a page
- *
- * Revision 1.97  2008/09/06 18:21:50  peterbrant
- * Need to account for list-marker-position: inside when calculating inline min/max widths
- *
- * Revision 1.96  2008/07/27 00:21:47  peterbrant
- * Implement CMYK color support for PDF output, starting with patch from Mykola Gurov / Banish java.awt.Color from FS core layout classes
- *
- * Revision 1.95  2008/07/14 11:12:35  peterbrant
- * Fix two bugs when -fs-table-paginate is paginate.  Block boxes in cells in a <thead> that were also early on the page could be positioned incorrectly.  Line boxes contained within inline-block or inline-table content in a paginated table were generally placed incorrectly.
- *
- * Revision 1.94  2008/06/18 17:44:48  peterbrant
- * Fix a pair of NPEs when absolutely positioned content is positioned off the page
- *
- * Revision 1.93  2008/05/24 16:36:22  peterbrant
- * If our minimum width is greater than the calculated CSS width, don't try to allocate any margin space to auto margins.
- *
- * Revision 1.92  2007/10/15 22:33:44  peterbrant
- * Only try to satisfy widows and orphans if page breaking is allowed
- *
- * Revision 1.91  2007/09/19 22:50:43  peterbrant
- * Fix nested percentage height calculations (per report and test case from Simon Buettner)
- *
- * Revision 1.90  2007/08/29 22:18:17  peterbrant
- * Experiment with text justification
- *
- * Revision 1.89  2007/08/28 22:31:26  peterbrant
- * Implement widows and orphans properties
- *
- * Revision 1.88  2007/08/27 19:28:50  peterbrant
- * Enable extra page clearance calculation
- *
- * Revision 1.87  2007/08/24 18:36:08  peterbrant
- * Further progress on AcroForm support
- *
- * Revision 1.86  2007/08/23 20:52:31  peterbrant
- * Begin work on AcroForm support
- *
- * Revision 1.85  2007/08/19 22:22:49  peterbrant
- * Merge R8pbrant changes to HEAD
- *
- * Revision 1.84.2.13  2007/08/19 21:55:20  peterbrant
- * Try to keep block boxes out of no man's land when paginating a table (commented out)
- *
- * Revision 1.84.2.12  2007/08/19 20:14:16  peterbrant
- * Support nested paginated tables
- *
- * Revision 1.84.2.11  2007/08/17 23:53:32  peterbrant
- * Get rid of layer hack for overflow: hidden
- *
- * Revision 1.84.2.10  2007/08/17 19:11:30  peterbrant
- * When paginating a table, move table past page break if header would overlap the page break
- *
- * Revision 1.84.2.9  2007/08/17 17:11:00  peterbrant
- * Try to avoid awkward row splits when paginating a table by making sure there is at least one line box on the same page as the start of the row
- *
- * Revision 1.84.2.8  2007/08/13 22:41:13  peterbrant
- * First pass at exporting the render tree as text
- *
- * Revision 1.84.2.7  2007/08/09 20:18:15  peterbrant
- * Bug fixes to improved pagination support
- *
- * Revision 1.84.2.6  2007/08/09 17:03:15  peterbrant
- * Finish running block implementation
- *
- * Revision 1.84.2.5  2007/08/08 21:44:09  peterbrant
- * Implement more flexible page numbering
- *
- * Revision 1.84.2.4  2007/08/08 18:28:25  peterbrant
- * Further progress on CSS3 paged media
- *
- * Revision 1.84.2.3  2007/08/07 17:06:32  peterbrant
- * Implement named pages / Implement page-break-before/after: left/right / Experiment with efficient selection
- *
- * Revision 1.84.2.2  2007/07/11 22:48:30  peterbrant
- * Further progress on running headers and footers
- *
- * Revision 1.84.2.1  2007/07/09 22:18:03  peterbrant
- * Begin work on running headers and footers and named pages
- *
- * Revision 1.84  2007/06/16 22:51:24  tobega
- * We now support counters!
- *
- * Revision 1.83  2007/06/13 15:04:55  peterbrant
- * Remove obsolete counter related code
- *
- * Revision 1.82  2007/06/07 16:56:29  peterbrant
- * When vertically aligning table cell content, call layout again on cells as necessary to make sure pagination properties are respected at the cell's final position (and to make sure line boxes can't straddle page breaks).
- *
- * Revision 1.81  2007/06/05 19:29:53  peterbrant
- * More progress on counter support
- *
- * Revision 1.80  2007/06/02 06:56:44  peterbrant
- * Table page clearance should be taken into account when checking whether or not the top margin should be reset when a box is moved to a new page
- *
- * Revision 1.79  2007/04/25 18:09:41  peterbrant
- * Always reset block box margin if it is the first thing on a page
- *
- * Revision 1.78  2007/04/23 21:13:16  peterbrant
- * Calculate table cell height as if it included borders and padding (matches FF and Opera behavior)
- *
- * Revision 1.77  2007/04/16 01:10:05  peterbrant
- * Vertical margin and padding with percentage values may be incorrect if box participated in a shrink-to-fit calculation.  Fix margin calculation.
- *
- * Revision 1.76  2007/04/15 00:34:40  peterbrant
- * Allow inline-block / inline-table content to be relatively positioned
- *
- * Revision 1.75  2007/04/12 12:29:10  peterbrant
- * Properly handle floated tables with captions
- *
- * Revision 1.74  2007/03/17 22:55:51  peterbrant
- * Remove distinction between box IDs and named anchors
- *
- * Revision 1.73  2007/03/12 21:11:20  peterbrant
- * Documentation update
- *
- * Revision 1.72  2007/03/08 01:41:50  peterbrant
- * Don't calculate clearance for floated boxes (clear on floated boxes is handled directly by FloatManager) / Make sure we have a root layer before checking whether we have a fixed background or not
- *
- * Revision 1.71  2007/03/07 20:34:51  peterbrant
- * Set a provisional content width on table cells when calulating min/max width to make sure percentage values in children resolve to something other than zero / Make sure style changes correctly account for text-transform
- *
- * Revision 1.70  2007/03/02 00:45:15  peterbrant
- * Calculate baseline correctly for inline-block and inline-table elements
- *
- * Revision 1.69  2007/02/24 01:57:30  peterbrant
- * toString() changes
- *
- * Revision 1.68  2007/02/23 15:50:37  peterbrant
- * Fix incorrect absolute box positioning with print medium
- *
- * Revision 1.67  2007/02/22 18:21:19  peterbrant
- * Add support for overflow: visible/hidden
- *
- * Revision 1.66  2007/02/22 16:10:54  peterbrant
- * Remove unused API
- *
- * Revision 1.65  2007/02/22 15:30:42  peterbrant
- * Internal links should be able to target block boxes too (plus other minor cleanup)
- *
- * Revision 1.64  2007/02/21 23:49:41  peterbrant
- * Can't calculate clearance until margins have been collapsed / Clearance must be calculated relative to the box's border edge, not margin edge
- *
- * Revision 1.63  2007/02/21 21:47:26  peterbrant
- * Implement (limited) support for collapsing through blocks with adjoining top and bottom margins / <body> should collapse with children
- *
- * Revision 1.62  2007/02/21 17:17:04  peterbrant
- * Calculate position of next child and block height independently.  They may not
- * move in lockstep in the face of negative vertical margins.
- *
- * Revision 1.61  2007/02/20 23:46:06  peterbrant
- * Include pseudo element in toString()
- *
- * Revision 1.60  2007/02/11 23:10:59  peterbrant
- * Make sure bounds information is calculated for fixed layers
- *
- * Revision 1.59  2007/02/07 16:33:25  peterbrant
- * Initial commit of rewritten table support and associated refactorings
- *
- * Revision 1.58  2006/10/04 23:52:57  peterbrant
- * Implement support for margin: auto (centering blocks in their containing block)
- *
- * Revision 1.57  2006/10/04 21:35:49  peterbrant
- * Allow dimensions of absolutely positioned content to be specified with all four corners, not just one of left/right, top/bottom
- *
- * Revision 1.56  2006/10/04 19:49:08  peterbrant
- * Improve calculation of available width when calculating shrink-to-fit width
- *
- * Revision 1.55  2006/09/08 15:41:58  peterbrant
- * Calculate containing block width accurately when collapsing margins / Provide collapsed bottom
- * margin to floats / Revive :first-line and :first-letter / Minor simplication in InlineBoxing
- * (get rid of now-superfluous InlineBoxInfo)
- *
- * Revision 1.54  2006/09/07 16:24:50  peterbrant
- * Need to calculate (preliminary) box dimensions when collapsing margins
- *
- * Revision 1.53  2006/09/06 22:42:30  peterbrant
- * Implement min/max-height (non-replaced content only)
- *
- * Revision 1.52  2006/09/06 22:21:43  peterbrant
- * Fixes to shrink-to-fit implementation / Implement min/max-width (non-replaced content) only
- *
- * Revision 1.51  2006/09/05 23:03:44  peterbrant
- * Initial draft of shrink-to-fit support
- *
- * Revision 1.50  2006/09/01 23:49:38  peterbrant
- * Implement basic margin collapsing / Various refactorings in preparation for shrink-to-fit / Add hack to treat auto margins as zero
- *
- * Revision 1.49  2006/08/30 18:25:41  peterbrant
- * Further refactoring / Bug fix for problem reported by Mike Curtis
- *
- * Revision 1.48  2006/08/29 17:29:12  peterbrant
- * Make Style object a thing of the past
- *
- * Revision 1.47  2006/08/27 01:16:20  peterbrant
- * decimal-leading-zero patch from Thomas Palmer
- *
- * Revision 1.46  2006/08/27 01:15:00  peterbrant
- * Revert makeTextMarker() change to commit with proper attribution
- *
- * Revision 1.45  2006/08/27 00:36:47  peterbrant
- * Initial commit of (initial) R7 work
- *
- * Revision 1.44  2006/03/01 00:45:03  peterbrant
- * Provide LayoutContext when calling detach() and friends
- *
- * Revision 1.43  2006/02/22 02:20:19  peterbrant
- * Links and hover work again
- *
- * Revision 1.42  2006/02/21 20:55:45  peterbrant
- * Handle image marker failover and list-style-type: none
- *
- * Revision 1.41  2006/02/21 20:41:15  peterbrant
- * Default to decimal for text list markers
- *
- * Revision 1.40  2006/02/09 19:12:25  peterbrant
- * Fix bad interaction between page-break-inside: avoid and top: auto/bottom: auto for absolute blocks
- *
- * Revision 1.39  2006/02/02 02:47:35  peterbrant
- * Support non-AWT images
- *
- * Revision 1.38  2006/02/01 01:30:13  peterbrant
- * Initial commit of PDF work
- *
- * Revision 1.37  2006/01/27 01:15:35  peterbrant
- * Start on better support for different output devices
- *
- * Revision 1.36  2006/01/10 19:56:01  peterbrant
- * Fix inappropriate box resizing when width: auto
- *
- * Revision 1.35  2006/01/03 23:52:40  peterbrant
- * Remove unhelpful comment
- *
- * Revision 1.34  2006/01/03 17:04:50  peterbrant
- * Many pagination bug fixes / Add ability to position absolute boxes in margin area
- *
- * Revision 1.33  2006/01/03 02:12:21  peterbrant
- * Various pagination fixes / Fix fixed positioning
- *
- * Revision 1.32  2006/01/01 02:38:18  peterbrant
- * Merge more pagination work / Various minor cleanups
- *
- * Revision 1.31  2005/12/30 01:32:39  peterbrant
- * First merge of parts of pagination work
- *
- * Revision 1.30  2005/12/21 02:36:29  peterbrant
- * - Calculate absolute positions incrementally (prep work for pagination)
- * - Light cleanup
- * - Fix bug where floats nested in floats could cause the outer float to be positioned in the wrong place
- *
- * Revision 1.29  2005/12/17 02:24:14  peterbrant
- * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
- *
- * Revision 1.28  2005/12/15 20:04:48  peterbrant
- * Implement visibility: hidden
- *
- * Revision 1.27  2005/12/13 20:46:06  peterbrant
- * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
- *
- * Revision 1.26  2005/12/13 02:41:33  peterbrant
- * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
- *
- * Revision 1.25  2005/12/09 21:41:20  peterbrant
- * Finish support for relative inline layers
- *
- * Revision 1.24  2005/12/09 01:24:56  peterbrant
- * Initial commit of relative inline layers
- *
- * Revision 1.23  2005/12/05 00:13:53  peterbrant
- * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
- *
- * Revision 1.22  2005/11/25 22:38:39  peterbrant
- * Clean imports
- *
- * Revision 1.21  2005/11/25 16:57:19  peterbrant
- * Initial commit of inline content refactoring
- *
- * Revision 1.20  2005/11/12 21:55:27  tobega
- * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
- *
- * Revision 1.19  2005/11/08 22:53:46  tobega
- * added getLineHeight method to CalculatedStyle and hacked in some list-item support
- *
- * Revision 1.18  2005/11/08 20:03:57  peterbrant
- * Further progress on painting order / improved positioning implementation
- *
- * Revision 1.17  2005/11/05 18:45:06  peterbrant
- * General cleanup / Remove obsolete code
- *
- * Revision 1.16  2005/10/27 00:09:02  tobega
- * Sorted out Context into RenderingContext and LayoutContext
- *
- * Revision 1.15  2005/10/21 13:17:15  pdoubleya
- * Rename some methods in RectPropertySet, cleanup.
- *
- * Revision 1.14  2005/10/21 12:01:20  pdoubleya
- * Added cachable rect property for margin, cleanup minor in styling.
- *
- * Revision 1.13  2005/10/21 05:52:10  tobega
- * A little more experimenting with flattened render tree
- *
- * Revision 1.12  2005/10/18 20:57:04  tobega
- * Patch from Peter Brant
- *
- * Revision 1.11  2005/10/16 23:57:16  tobega
- * Starting experiment with flat representation of render tree
- *
- * Revision 1.10  2005/10/06 03:20:22  tobega
- * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
- *
- * Revision 1.9  2005/10/02 21:29:59  tobega
- * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
- *
- * Revision 1.8  2005/09/26 22:40:20  tobega
- * Applied patch from Peter Brant concerning margin collapsing
- *
- * Revision 1.7  2005/01/29 20:24:23  pdoubleya
- * Clean/reformat code. Removed commented blocks, checked copyright.
- *
- * Revision 1.6  2004/12/16 15:53:10  joshy
- * fixes for absolute layout
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.5  2004/12/11 23:36:49  tobega
- * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
- *
- * Revision 1.4  2004/12/01 01:57:02  joshy
- * more updates for float support.
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.3  2004/11/18 16:45:12  joshy
- * improved the float code a bit.
- * now floats are automatically forced to be blocks
- *
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.2  2004/10/23 13:50:26  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
- * Added CVS log comments at bottom.
- *
- *
- */
-

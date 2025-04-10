@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.css.style.derived;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -9,53 +10,44 @@ import org.xhtmlrenderer.css.style.CssContext;
  * some rectangular area, and per-side thickness.
  */
 public class RectPropertySet {
-    //                                                                  HACK
-    public static final RectPropertySet ALL_ZEROS = new RectPropertySet(CSSName.MARGIN_SHORTHAND, 0, 0, 0, 0);
-    
-    protected float _top;
-    protected float _right;
-    protected float _bottom;
-    protected float _left;
+    public static final RectPropertySet ALL_ZEROS = new RectPropertySet(0, 0, 0, 0);
 
-    protected RectPropertySet() {
-        _top = _right = _bottom = _left = 0f;
-    }
+    private float _top;
+    private float _right;
+    private float _bottom;
+    private float _left;
 
     public RectPropertySet(
-            CSSName cssName,
             float top,
             float right,
             float bottom,
             float left
     ) {
-        this();
         this._top = top;
         this._right = right;
         this._bottom = bottom;
         this._left = left;
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
     public static RectPropertySet newInstance(
             CalculatedStyle style,
-            CSSName shortHandProperty,
             CSSName.CSSSideProperties sideProperties,
             float cbWidth,
             CssContext ctx
     ) {
         // HACK isLengthValue is part of margin auto hack
-        RectPropertySet rect =
-                new RectPropertySet(
-                        shortHandProperty,
-                        ! style.isLengthOrNumber(sideProperties.top) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.top, cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties.right) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.right, cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties.bottom) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.bottom, cbWidth, ctx),
-                        ! style.isLengthOrNumber(sideProperties.left) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.left, cbWidth, ctx)
-                );
-        return rect;
+        return new RectPropertySet(
+                ! style.isLengthOrNumber(sideProperties.top()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.top(), cbWidth, ctx),
+                ! style.isLengthOrNumber(sideProperties.right()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.right(), cbWidth, ctx),
+                ! style.isLengthOrNumber(sideProperties.bottom()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.bottom(), cbWidth, ctx),
+                ! style.isLengthOrNumber(sideProperties.left()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.left(), cbWidth, ctx)
+        );
     }
 
+    @Override
     public String toString() {
-        return "RectPropertySet[top=" + _top + ",right=" + _right + ",bottom=" + _bottom + ",left=" + _left + "]";
+        return "RectPropertySet[top=%s,right=%s,bottom=%s,left=%s]".formatted(_top, _right, _bottom, _left);
     }
 
     public float top() {
@@ -103,34 +95,19 @@ public class RectPropertySet {
     }
 
     public RectPropertySet copyOf() {
-        RectPropertySet newRect = new RectPropertySet();
-        newRect._top = _top;
-        newRect._right = _right;
-        newRect._bottom = _bottom;
-        newRect._left = _left;
-        return newRect;
+        return new RectPropertySet(_top, _right, _bottom, _left);
     }
-    
+
     public boolean isAllZeros() {
         return _top == 0.0f && _right == 0.0f && _bottom == 0.0f && _left == 0.0f;
     }
-    
+
     public boolean hasNegativeValues() {
         return _top < 0 || _right < 0 || _bottom < 0 || _left < 0;
     }
-    
-    public void resetNegativeValues() {
-        if (top() < 0) {
-            setTop(0);
-        }
-        if (right() < 0) {
-            setRight(0);
-        }
-        if (bottom() < 0) {
-            setBottom(0);
-        }
-        if (left() < 0) {
-            setLeft(0);
-        }
+
+    @CheckReturnValue
+    public RectPropertySet resetNegativeValues() {
+        return new RectPropertySet(Math.max(0, top()), Math.max(0, right()), Math.max(0, bottom()), Math.max(0, left()));
     }
 }

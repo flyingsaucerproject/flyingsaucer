@@ -19,55 +19,57 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.LinkedList;
-import java.util.List;
-
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class BoxRangeHelper {
-    private LinkedList _clipRegionStack = new LinkedList();
-    
-    private OutputDevice _outputDevice;
-    private List _rangeList;
-    
-    private int _rangeIndex = 0;
-    private BoxRangeData _current = null;
-    
-    public BoxRangeHelper(OutputDevice outputDevice, List rangeList) {
+    private final LinkedList<BoxRangeData> _clipRegionStack = new LinkedList<>();
+
+    private final OutputDevice _outputDevice;
+    private final List<BoxRangeData> _rangeList;
+
+    private int _rangeIndex;
+    @Nullable
+    private BoxRangeData _current;
+
+    public BoxRangeHelper(OutputDevice outputDevice, List<BoxRangeData> rangeList) {
         _outputDevice = outputDevice;
         _rangeList = rangeList;
-        
-        if (rangeList.size() > 0) {
-            _current = (BoxRangeData)rangeList.get(0);
+
+        if (!rangeList.isEmpty()) {
+            _current = rangeList.get(0);
         }
     }
-    
+
     public void checkFinished() {
-        if (_clipRegionStack.size() != 0) {
+        if (!_clipRegionStack.isEmpty()) {
             throw new XRRuntimeException("internal error");
         }
     }
-    
+
     public void pushClipRegion(RenderingContext c, int contentIndex) {
         while (_current != null && _current.getRange().getStart() == contentIndex) {
             _current.setClip(_outputDevice.getClip());
             _clipRegionStack.add(_current);
-            
+
             _outputDevice.clip(_current.getBox().getChildrenClipEdge(c));
-            
+
             if (_rangeIndex == _rangeList.size() - 1) {
                 _current = null;
             } else {
-                _current = (BoxRangeData)_rangeList.get(++_rangeIndex);
+                _current = _rangeList.get(++_rangeIndex);
             }
         }
     }
-    
-    public void popClipRegions(RenderingContext c, int contentIndex) {
-        while (_clipRegionStack.size() > 0) {
-            BoxRangeData data = (BoxRangeData)_clipRegionStack.getLast();
+
+    public void popClipRegions(int contentIndex) {
+        while (!_clipRegionStack.isEmpty()) {
+            BoxRangeData data = _clipRegionStack.getLast();
             if (data.getRange().getEnd() == contentIndex) {
                 _outputDevice.setClip(data.getClip());
                 _clipRegionStack.removeLast();

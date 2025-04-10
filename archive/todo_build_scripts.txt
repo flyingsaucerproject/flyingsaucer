@@ -1,6 +1,0 @@
-Notes on TODO items for the Ant build scripts
-
-- remove unused targets
-  - need to search per target across all .xml files
-- clean properties
-  - grown too large!

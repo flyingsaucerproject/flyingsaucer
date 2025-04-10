@@ -19,47 +19,38 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
- * A bean which every box uses to provide its aggregate bounds (which may be 
+ * A bean which every box uses to provide its aggregate bounds (which may be
  * larger than the bounds of the box itself when there is overhanging content)
  * and its outer margin corner (which is used to calculate the size of the
  * canvas).  The aggregate bounds calculation does not take the value of the
  * overflow property into account.
  */
 public class PaintingInfo {
-    private Dimension _outerMarginCorner;
-    private Rectangle _aggregateBounds;
-    
-    public PaintingInfo() {
+    private final Dimension _outerMarginCorner;
+    private final Rectangle _aggregateBounds;
+
+    public PaintingInfo(Dimension outerMarginCorner, Rectangle aggregateBounds) {
+        _outerMarginCorner = outerMarginCorner;
+        _aggregateBounds = aggregateBounds;
     }
-    
+
     public Rectangle getAggregateBounds() {
         return _aggregateBounds;
     }
-    
-    public void setAggregateBounds(Rectangle aggregateBounds) {
-        _aggregateBounds = aggregateBounds;
-    }
-    
+
     public Dimension getOuterMarginCorner() {
         return _outerMarginCorner;
     }
-    
-    public void setOuterMarginCorner(Dimension outerMarginCorner) {
-        _outerMarginCorner = outerMarginCorner;
-    }
-    
+
     public PaintingInfo copyOf() {
-        PaintingInfo result = new PaintingInfo();
-        result.setOuterMarginCorner(new Dimension(_outerMarginCorner));
-        result.setAggregateBounds(new Rectangle(_aggregateBounds));
-        
-        return result;
+        return new PaintingInfo(
+                new Dimension(_outerMarginCorner), new Rectangle(_aggregateBounds)
+        );
     }
-    
+
     public void translate(int tx, int ty) {
         _aggregateBounds.translate(tx, ty);
         _outerMarginCorner.setSize(

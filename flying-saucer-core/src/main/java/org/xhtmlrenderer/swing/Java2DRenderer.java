@@ -19,16 +19,10 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -40,6 +34,19 @@ import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
 
 /**
  * <p>Renders an XML files, formatted with CSS, as an image. Input is a document in the form of file or URL,
@@ -53,7 +60,7 @@ import org.xhtmlrenderer.util.ImageUtil;
  * BufferedImage image = rend.getImage();
  * </pre>
  *
- * <p>The document is not loaded, and layout and render don't take place, until {@link #getImage(int)}  is called.
+ * <p>The document is not loaded, and layout and render don't take place, until {@link #getImage()}  is called.
  * Subsequent calls to {@link #getImage()} don't result in a reload; create a new Java2DRenderer instance to do so.</p>
  *
  * <p>As with {@link org.xhtmlrenderer.swing.RootPanel}, you can access the
@@ -61,96 +68,78 @@ import org.xhtmlrenderer.util.ImageUtil;
  * to control the rendering process; use {@link #getSharedContext()}.</p>
  *
  * <p>By default, this renderer will render to an RGB image which does not support transparency. To use another type
- * of BufferedImage, either set the image type using {@link #setBufferedImageType(int)} before calling
+ * of BufferedImage, either set the image type in constructor before calling
  * {@link #getImage()}, or else override the {@link #createBufferedImage(int, int)} to have full control over
  * the image we render to.</p>
  *
  * <p>Not thread-safe.</p>
- *
- * @see ITextRenderer
  */
 public class Java2DRenderer {
-	private static final int DEFAULT_HEIGHT = 1000;
-	private static final int DEFAULT_DOTS_PER_POINT = 1;
-	private static final int DEFAULT_DOTS_PER_PIXEL = 1;
-	private static final int DEFAULT_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
+    private static final int DEFAULT_HEIGHT = 1000;
+    private static final int DEFAULT_DOTS_PER_POINT = 1;
+    private static final int DEFAULT_DOTS_PER_PIXEL = 1;
+    private static final int DEFAULT_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
 
-	private SharedContext sharedContext;
-	private Java2DOutputDevice outputDevice;
+    private final SharedContext sharedContext;
+    private Java2DOutputDevice outputDevice;
 
-	private Document doc;
-	private Box root;
+    @Nullable
+    private Document doc;
+    @Nullable
+    private Box root;
 
-	private float dotsPerPoint;
-	private BufferedImage outputImage;
-	private int bufferedImageType;
+    private BufferedImage outputImage;
+    private final int bufferedImageType;
 
+    /**
+     * Whether we've completed rendering; image will only be rendered once.
+     */
+    private boolean rendered;
+    @Nullable
+    private String sourceDocument;
+    @Nullable
+    private String sourceDocumentBase;
+    private final int width;
+    private final int height;
+    private static final int NO_HEIGHT = -1;
 
-	/**
-	 * Whether we've completed rendering; image will only be rendered once.
-	 */
-	private boolean rendered;
-	private String sourceDocument;
-	private String sourceDocumentBase;
-	private int width;
-	private int height;
-	private static final int NO_HEIGHT = -1;
-	private Map renderingHints;
+    public Java2DRenderer(String url, String baseUrl, int width, int height) {
+        this(url, baseUrl, width, height, DEFAULT_IMAGE_TYPE);
+    }
 
+    /**
+     * Creates a new instance for a given URL. Does not render until {@link #getImage()} is called for
+     * the first time.
+     *
+     * @param url The location of the document to be rendered.
+     * @param baseUrl The base url for the document, against which  relative paths are resolved.
+     * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+     * @param height Target height, in pixels, for the image; required to provide vertical bounds for the layout.
+     */
+    public Java2DRenderer(String url, String baseUrl, int width, int height, int bufferedImageType) {
+        // bypass scaling routines based on DPI -- see PDFRenderer and compare--dotsPerPoint is not implemented
+        // in all subordinate classes and interfaces for Java2D, so leaving it out
+        // leaving this constructor call here as a TODO
+        this(width, height, bufferedImageType);
 
-	/**
-	 * Base constructor
-	 */
-	private Java2DRenderer() {
-		this.bufferedImageType = DEFAULT_IMAGE_TYPE;
-	}
+        this.sourceDocument = url;
+        this.sourceDocumentBase = baseUrl;
+    }
 
-	/**
-	 * Creates a new instance with specific scaling paramters; these are currently ignored.
-	 *
-	 * @param dotsPerPoint Layout XML at so many dots per point
-	 * @param dotsPerPixel Layout XML at so many dots per pixel
-	 */
-	private Java2DRenderer(float dotsPerPoint, int dotsPerPixel) {
-		this();
-		init(dotsPerPoint, dotsPerPixel);
-	}
+    /**
+     * Creates a new instance for a given File. Does not render until {@link #getImage()} is called for
+     * the first time.
+     *
+     * @param file The file to be rendered.
+     * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+     * @param height Target height, in pixels, for the image
+     */
+    public Java2DRenderer(File file, int width, int height) throws IOException {
+        this(file.toURI().toURL().toExternalForm(), width, height);
+    }
 
-	/**
-	 * Creates a new instance for a given URL. Does not render until {@link #getImage(int)} is called for
-	 * the first time.
-	 *
-	 * @param url The location of the document to be rendered.
-	 * @param baseurl The base url for the document, against which  relative paths are resolved.
-	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-	 */
-	public Java2DRenderer(String url, String baseUrl, int width, int height) {
-		// bypass scaling routines based on DPI -- see PDFRenderer and compare--dotsPerPoint is not implemented
-		// in all subordinate classes and interfaces for Java2D, so leaving it out
-		// leaving this constructor call here as a TODO
-		this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
-
-		this.sourceDocument = url;
-		this.sourceDocumentBase = baseUrl;
-		this.width = width;
-		this.height = height;
-	}
-
-	/**
-	 * Creates a new instance for a given File. Does not render until {@link #getImage(int)} is called for
-	 * the first time.
-	 *
-	 * @param file The file to be rendered.
-	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-	 * @param height Target height, in pixels, for the image
-	 */
-	public Java2DRenderer(File file, int width, int height) throws IOException {
-		this(file.toURI().toURL().toExternalForm(), width, height);
-	}
-   
-   
         /**
-         * Creates a new instance pointing to the given Document. Does not render until {@link #getImage(int)} is called for
+         * Creates a new instance pointing to the given Document. Does not render until {@link #getImage()} is called for
          * the first time.
          *
          * @param doc The document to be rendered.
@@ -158,18 +147,16 @@ public class Java2DRenderer {
          * @param height Target height, in pixels, for the image.
          */
         public Java2DRenderer(Document doc, int width, int height) {
-            this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
+            this(width, height, DEFAULT_IMAGE_TYPE);
             this.doc = doc;
-            this.width = width;
-            this.height = height;
         }
 
-	public Java2DRenderer(Document doc, int width) {
-		this(doc, width, NO_HEIGHT);
-	}
+    public Java2DRenderer(Document doc, int width) {
+        this(doc, width, NO_HEIGHT);
+    }
 
         /**
-         * Creates a new instance pointing to the given Document. Does not render until {@link #getImage(int)} is called for
+         * Creates a new instance pointing to the given Document. Does not render until {@link #getImage()} is called for
          * the first time.
          *
          * @param doc The document to be rendered.
@@ -182,220 +169,198 @@ public class Java2DRenderer {
             this.sourceDocumentBase = baseUrl;
         }
 
-	/**
-	 * Creates a new instance for a given File. Does not render until {@link #getImage(int)} is called for
-	 * the first time.
-	 *
-	 * @param file The file to be rendered.
-	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-	 * Heght is calculated based on content
-	 */
-	public Java2DRenderer(File file, int width) throws IOException {
-		this(file.toURI().toURL().toExternalForm(), width);
-	}
+    /**
+     * Creates a new instance for a given File. Does not render until {@link #getImage()} is called for
+     * the first time.
+     *
+     * @param file The file to be rendered.
+     * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+     * Height is calculated based on content
+     */
+    public Java2DRenderer(File file, int width) throws IOException {
+        this(file.toURI().toURL().toExternalForm(), width, NO_HEIGHT);
+    }
 
+    public static Java2DRenderer fromFile(File file, int width, int bufferedImageType) throws IOException {
+        String url = file.toURI().toURL().toExternalForm();
+        return new Java2DRenderer(url, url, width, NO_HEIGHT, bufferedImageType);
+    }
 
-	/**
-	 * Renderer for a given URL (which is also used as the base) and a specified width; height is calculated
-	 * automatically.
-	 *
-	 * @param url The location of the document to be rendered.
-	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-	 * Heght is calculated based on content
-	 */
-	public Java2DRenderer(String url, int width) {
-		this(url, url, width, NO_HEIGHT);
-	}
+    /**
+     * Renderer for a given URL (which is also used as the base) and a specified width; height is calculated
+     * automatically.
+     *
+     * @param url The location of the document to be rendered.
+     * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+     * Height is calculated based on content
+     */
+    public Java2DRenderer(String url, int width) {
+        this(url, url, width, NO_HEIGHT);
+    }
 
-	/**
-	 * Renderer for a given URL and a specified width; height is calculated
-	 * automatically.
-	 *
-	 * @param url The location of the document to be rendered.
-	 * @param baseurl The base url for the document, against which  relative paths are resolved.
-	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-	 * Heght is calculated based on content
-	 */
-	public Java2DRenderer(String url, String baseurl, int width) {
-		this(url, baseurl, width, NO_HEIGHT);
-	}
+    /**
+     * Renderer for a given URL and a specified width; height is calculated
+     * automatically.
+     *
+     * @param url The location of the document to be rendered.
+     * @param baseurl The base url for the document, against which  relative paths are resolved.
+     * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+     * Height is calculated based on content
+     */
+    public Java2DRenderer(String url, String baseurl, int width) {
+        this(url, baseurl, width, NO_HEIGHT);
+    }
 
-	/**
-	 * Renderer for a given URL and a specified width; height is calculated
-	 * automatically.
-	 *
-	 * @param url The location of the document to be rendered.
-	 * @param baseurl The base url for the document, against which  relative paths are resolved.
-	 * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
-	 * @param height Target height, in pixels, for the image
-	 */
-	public Java2DRenderer(String url, int width, int height) {
-		this(url, url, width, height);
-	}
+    /**
+     * Renderer for a given URL and a specified width; height is calculated
+     * automatically.
+     *
+     * @param url The location of the document to be rendered.
+     * @param width Target width, in pixels, for the image; required to provide horizontal bounds for the layout.
+     * @param height Target height, in pixels, for the image
+     */
+    public Java2DRenderer(String url, int width, int height) {
+        this(url, url, width, height);
+    }
 
-	/**
-	 * Sets the rendering hints to apply to the Graphics2D instance used by the renderer; see
-	 * {@link java.awt.Graphics2D#setRenderingHints(java.util.Map)}. The Map need not specify values for all
-	 * properties; any settings in this map will be applied as override to the default settings, and will
-	 * not replace the entire Map for the Graphics2D instance.
-	 *
-	 * @param hints values to override in default rendering hints for Graphics2D we are rendering to
-	 */
-	public void setRenderingHints(Map hints) {
-		renderingHints = hints;
-	}
+    /**
+     * Returns the SharedContext to be used by renderer. Is instantiated along with the class, so can be accessed
+     * before {@link #getImage()} is called to tune the rendering process.
+     *
+     * @return the SharedContext instance that will be used by this renderer
+     */
+    public SharedContext getSharedContext() {
+        return sharedContext;
+    }
 
-	/**
-	 * Sets the type for the BufferedImage used as output for this renderer; must be one of the values from
-	 * {@link java.awt.image.BufferedImage} allowed in that class' constructor as a type argument. See docs for
-	 * the type parameter in {@link java.awt.image.BufferedImage#BufferedImage(int, int, int)}. Defaults to RGB with
-	 * no support for transparency. The type is used when the image is first created, so to change the default type
-	 * do so before calling {@link #getImage()}.
-	 *
-	 * @param bufferedImageType the BufferedImage type to be used to create the image on which the document
-	 * will be rendered.
-	 */
-	public void setBufferedImageType(int bufferedImageType) {
-		this.bufferedImageType = bufferedImageType;
-	}
-
-	/**
-	 * Returns the SharedContext to be used by renderer. Is instantiated along with the class, so can be accessed
-	 * before {@link #getImage()} is called to tune the rendering process.
-	 *
-	 * @return the SharedContext instance that will be used by this renderer
-	 */
-	public SharedContext getSharedContext() {
-		return sharedContext;
-	}
-
-	/**
-	 * Renders the XML document if necessary and returns the resulting image. If already rendered, same image
-	 * reference will be returned.
-	 *
-	 * {@link #getImage(int)} with the target width.
-	 * 
-	 * @return The XML rendered as a BufferedImage.
-	 */
-	public BufferedImage getImage() {
-		if (!rendered) {
+    /**
+     * Renders the XML document if necessary and returns the resulting image. If already rendered, same image
+     * reference will be returned.
+     *
+     * @return The XML rendered as a BufferedImage.
+     */
+    public BufferedImage getImage() {
+        if (!rendered) {
             setDocument((doc == null ? loadDocument(sourceDocument) : doc), sourceDocumentBase, new XhtmlNamespaceHandler());
 
-			layout(this.width);
+            layout(this.width);
 
-			height = this.height == -1 ? root.getHeight() : this.height;
-			outputImage = createBufferedImage(this.width, height);
-			outputDevice = new Java2DOutputDevice(outputImage);
-			Graphics2D newG = (Graphics2D) outputImage.getGraphics();
-			if ( renderingHints != null ) {
-				newG.addRenderingHints(renderingHints);
-			}
+            int height = this.height == -1 ? root.getHeight() : this.height;
+            outputImage = createBufferedImage(this.width, height);
+            outputDevice = new Java2DOutputDevice(outputImage);
+            withGraphics(outputImage, newG -> {
+                RenderingContext rc = sharedContext.newRenderingContextInstance(outputDevice, new Java2DFontContext(newG));
+                sharedContext.getTextRenderer().setup(rc.getFontContext());
+                root.getLayer().paint(rc);
+            });
 
-			RenderingContext rc = sharedContext.newRenderingContextInstance();
-			rc.setFontContext(new Java2DFontContext(newG));
-			rc.setOutputDevice(outputDevice);
-			sharedContext.getTextRenderer().setup(rc.getFontContext());
+            rendered = true;
+        }
 
-			root.getLayer().paint(rc);
+        return outputImage;
+    }
 
-			newG.dispose();
-			rendered = true;
-		}
+    /**
+     * Returns a BufferedImage using the specified width and height. By default, this returns an image compatible
+     * with the screen (if not in "headless" mode) using the BufferedImage type specified in constructor,
+     * or else RGB if none is specified.
+     *
+     * @param width target width
+     * @param height target height
+     * @return new BI
+     */
+    protected BufferedImage createBufferedImage(int width, int height) {
+        BufferedImage image = ImageUtil.createCompatibleBufferedImage(width, height, this.bufferedImageType);
+        ImageUtil.clearImage(image);
+        return image;
+    }
 
-		return outputImage;
-	}
+    private void setDocument(Document doc, String url, NamespaceHandler nsh) {
+        this.doc = doc;
 
-	/**
-	 * Returns a BufferedImage using the specified width and height. By default this returns an image compatible
-	 * with the screen (if not in "headless" mode) using the BufferedImage type specified in
-	 * {@link #setBufferedImageType(int)}, or else RGB if none if specified.
-	 *
-	 * @param width target width
-	 * @param height target height
-	 * @return new BI
-	 */
-	protected BufferedImage createBufferedImage(int width, int height) {
-		BufferedImage image = ImageUtil.createCompatibleBufferedImage(width, height, this.bufferedImageType);
-		ImageUtil.clearImage(image);
-		return image;
-	}
+        sharedContext.reset();
+        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
+            sharedContext.getCss().flushStyleSheets();
+        } else {
+            sharedContext.getCss().flushAllStyleSheets();
+        }
+        sharedContext.setBaseURL(url);
+        sharedContext.setNamespaceHandler(nsh);
+        sharedContext.getCss().setDocumentContext(
+                sharedContext,
+                sharedContext.getNamespaceHandler(),
+                doc,
+                new NullUserInterface()
+        );
+    }
 
-	private void setDocument(Document doc, String url, NamespaceHandler nsh) {
-		this.doc = doc;
+    private void layout(int width) {
+        Rectangle rect = new Rectangle(0, 0, width, DEFAULT_HEIGHT);
+        sharedContext.setTemporaryCanvas(rect);
+        LayoutContext c = newLayoutContext();
+        BlockBox root = BoxBuilder.createRootBox(c, doc);
+        root.setContainingBlock(new ViewportBox(rect));
+        root.layout(c);
+        this.root = root;
+    }
 
-		sharedContext.reset();
-		if (Configuration.isTrue("xr.cache.stylesheets", true)) {
-			sharedContext.getCss().flushStyleSheets();
-		} else {
-			sharedContext.getCss().flushAllStyleSheets();
-		}
-		sharedContext.setBaseURL(url);
-		sharedContext.setNamespaceHandler(nsh);
-		sharedContext.getCss().setDocumentContext(
-				sharedContext,
-				sharedContext.getNamespaceHandler(),
-				doc,
-				new NullUserInterface()
-		);
-	}
+    private Document loadDocument(final String uri) {
+        return sharedContext.getUac().getXMLResource(uri).getDocument();
+    }
 
-	private void layout(int width) {
-		Rectangle rect = new Rectangle(0, 0, width, DEFAULT_HEIGHT);
-		sharedContext.set_TempCanvas(rect);
-		LayoutContext c = newLayoutContext();
-		BlockBox root = BoxBuilder.createRootBox(c, doc);
-		root.setContainingBlock(new ViewportBox(rect));
-		root.layout(c);
-		this.root = root;
-	}
+    private LayoutContext newLayoutContext() {
+        Java2DFontContext fontContext = new Java2DFontContext(outputDevice.getGraphics());
+        LayoutContext result = sharedContext.newLayoutContextInstance(fontContext);
+        sharedContext.getTextRenderer().setup(fontContext);
 
-	private Document loadDocument(final String uri) {
-		return sharedContext.getUac().getXMLResource(uri).getDocument();
-	}
+        return result;
+    }
 
-	private LayoutContext newLayoutContext() {
-		LayoutContext result = sharedContext.newLayoutContextInstance();
-		result.setFontContext(new Java2DFontContext(outputDevice.getGraphics()));
+    private Java2DRenderer(int width, int height, int bufferedImageType) {
+        this.width = width;
+        this.height = height;
+        this.bufferedImageType = bufferedImageType;
 
-		sharedContext.getTextRenderer().setup(result.getFontContext());
+        outputImage = ImageUtil.createCompatibleBufferedImage(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_POINT);
+        outputDevice = new Java2DOutputDevice(outputImage);
 
-		return result;
-	}
+        sharedContext = new SharedContext(
+                new NaiveUserAgent(),
+                72 * (float) DEFAULT_DOTS_PER_POINT,
+                DEFAULT_DOTS_PER_PIXEL
+        );
+        sharedContext.setPrint(false);
+        sharedContext.setInteractive(false);
+    }
 
-	private void init(float dotsPerPoint, int dotsPerPixel) {
-		this.dotsPerPoint = dotsPerPoint;
+    private static final class NullUserInterface implements UserInterface {
 
-		outputImage = ImageUtil.createCompatibleBufferedImage(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_POINT);
-		outputDevice = new Java2DOutputDevice(outputImage);
+        @Override
+        public boolean isHover(Element e) {
+            return false;
+        }
 
-		UserAgentCallback userAgent = new NaiveUserAgent();
-		sharedContext = new SharedContext(userAgent);
+        @Override
+        public boolean isActive(Element e) {
+            return false;
+        }
 
-		AWTFontResolver fontResolver = new AWTFontResolver();
-		sharedContext.setFontResolver(fontResolver);
+        @Override
+        public boolean isFocus(Element e) {
+            return false;
+        }
+    }
 
-		SwingReplacedElementFactory replacedElementFactory = new SwingReplacedElementFactory();
-		sharedContext.setReplacedElementFactory(replacedElementFactory);
+    public static BufferedImage htmlAsImage(String html, int widthInPixels) throws SAXException {
+        try (InputStream in = new ByteArrayInputStream(html.getBytes(UTF_8))) {
+            return htmlAsImage(in, widthInPixels);
+        } catch (IOException | ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-		sharedContext.setTextRenderer(new Java2DTextRenderer());
-		sharedContext.setDPI(72 * this.dotsPerPoint);
-		sharedContext.setDotsPerPixel(dotsPerPixel);
-		sharedContext.setPrint(false);
-		sharedContext.setInteractive(false);
-	}
-
-	private static final class NullUserInterface implements UserInterface {
-
-		public boolean isHover(Element e) {
-			return false;
-		}
-
-		public boolean isActive(Element e) {
-			return false;
-		}
-
-		public boolean isFocus(Element e) {
-			return false;
-		}
-	}
+    public static BufferedImage htmlAsImage(InputStream source, int widthInPixels) throws SAXException, IOException, ParserConfigurationException {
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(source);
+        return new Java2DRenderer(document, widthInPixels).getImage();
+    }
 }

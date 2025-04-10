@@ -19,57 +19,69 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Point;
-
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
+import java.awt.*;
+
 public class BookmarkElement implements ITextReplacedElement {
     private Point _location = new Point(0, 0);
-    private String _anchorName;
-    
+    @Nullable
+    private final String _anchorName;
+
+    @Override
     public int getIntrinsicWidth() {
         return 0;
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return 0;
     }
 
+    @Override
     public Point getLocation() {
         return _location;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }
-    
+
+    @Override
     public void detach(LayoutContext c) {
         c.removeBoxId(getAnchorName());
     }
 
+    @Nullable
     public String getAnchorName() {
         return _anchorName;
     }
 
-    public void setAnchorName(String anchorName) {
+    public BookmarkElement(@Nullable String anchorName) {
         _anchorName = anchorName;
     }
-    
+
+    @Override
     public boolean isRequiresInteractivePaint() {
         // N/A
         return false;
     }
 
+    @Override
     public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     }
 
-	public int getBaseline() {
-		return 0;
-	}
+    @Override
+    public int getBaseline() {
+        return 0;
+    }
 
-	public boolean hasBaseline() {
-		return false;
-	}
+    @Override
+    public boolean hasBaseline() {
+        return false;
+    }
 }

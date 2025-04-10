@@ -19,7 +19,9 @@
  */
 package org.xhtmlrenderer.log4j;
 
-import org.apache.log4j.Logger;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.apache.logging.log4j.LogManager;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRLogger;
 
@@ -27,15 +29,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
+
+@SuppressWarnings("SpellCheckingInspection")
 public class Log4JXRLogger implements XRLogger {
 
     private static final String DEFAULT_LOGGER_NAME = "org.xhtmlrenderer.other";
 
-    private static final Map LOGGER_NAME_MAP;
+    private static final Map<String, String> LOGGER_NAME_MAP = new HashMap<>();
 
     static {
-        LOGGER_NAME_MAP = new HashMap();
-
         LOGGER_NAME_MAP.put(XRLog.CONFIG, "org.xhtmlrenderer.config");
         LOGGER_NAME_MAP.put(XRLog.EXCEPTION, "org.xhtmlrenderer.exception");
         LOGGER_NAME_MAP.put(XRLog.GENERAL, "org.xhtmlrenderer.general");
@@ -51,59 +55,62 @@ public class Log4JXRLogger implements XRLogger {
     }
 
     private String defaultLoggerName = DEFAULT_LOGGER_NAME;
-    private Map loggerNameMap = LOGGER_NAME_MAP;
+    private Map<String, String> loggerNameMap = LOGGER_NAME_MAP;
 
+    @Override
     public void log(String where, Level level, String msg) {
-        Logger.getLogger(getLoggerName(where)).log(toLog4JLevel(level), msg);
+        LogManager.getLogger(getLoggerName(where)).log(toLog4JLevel(level), msg);
     }
 
-    public void log(String where, Level level, String msg, Throwable th) {
-        Logger.getLogger(getLoggerName(where)).log(toLog4JLevel(level), msg, th);
+    @Override
+    public void log(String where, Level level, String msg, @Nullable Throwable th) {
+        LogManager.getLogger(getLoggerName(where)).log(toLog4JLevel(level), msg, th);
     }
 
-    private org.apache.log4j.Level toLog4JLevel(Level level) {
+    @CheckReturnValue
+    private org.apache.logging.log4j.Level toLog4JLevel(Level level) {
         if (level == Level.SEVERE) {
-            return org.apache.log4j.Level.ERROR;
+            return org.apache.logging.log4j.Level.ERROR;
         } else if (level == Level.WARNING) {
-            return org.apache.log4j.Level.WARN;
+            return org.apache.logging.log4j.Level.WARN;
         } else if (level == Level.INFO) {
-            return org.apache.log4j.Level.INFO;
+            return org.apache.logging.log4j.Level.INFO;
         } else if (level == Level.CONFIG) {
-            return org.apache.log4j.Level.INFO;
+            return org.apache.logging.log4j.Level.INFO;
         } else if (level == Level.FINE || level == Level.FINER || level == Level.FINEST) {
-            return org.apache.log4j.Level.DEBUG;
+            return org.apache.logging.log4j.Level.DEBUG;
         } else {
-            return org.apache.log4j.Level.INFO;
+            return org.apache.logging.log4j.Level.INFO;
         }
     }
 
+    @CheckReturnValue
     private String getLoggerName(String xrLoggerName) {
-        String result = (String) loggerNameMap.get(xrLoggerName);
-        if (result != null) {
-            return result;
-        } else {
-            return defaultLoggerName;
-        }
+        String result = loggerNameMap.get(xrLoggerName);
+        return requireNonNullElse(result, defaultLoggerName);
     }
 
+    @Override
     public void setLevel(String logger, Level level) {
         throw new UnsupportedOperationException("log4j should be not be configured here");
     }
 
-    public Map getLoggerNameMap() {
+    @CheckReturnValue
+    public Map<String, String> getLoggerNameMap() {
         return loggerNameMap;
     }
 
-    public void setLoggerNameMap(Map loggerNameMap) {
-        this.loggerNameMap = loggerNameMap;
+    public void setLoggerNameMap(Map<String, String> loggerNameMap) {
+        this.loggerNameMap = requireNonNull(loggerNameMap);
     }
 
+    @CheckReturnValue
     public String getDefaultLoggerName() {
         return defaultLoggerName;
     }
 
     public void setDefaultLoggerName(String defaultLoggerName) {
-        this.defaultLoggerName = defaultLoggerName;
+        this.defaultLoggerName = requireNonNull(defaultLoggerName);
     }
 
 }

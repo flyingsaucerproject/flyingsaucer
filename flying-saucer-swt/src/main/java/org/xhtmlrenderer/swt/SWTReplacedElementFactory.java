@@ -19,10 +19,8 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -30,27 +28,23 @@ import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
-import org.xhtmlrenderer.simple.extend.DefaultFormSubmissionListener;
 import org.xhtmlrenderer.util.ImageUtil;
+import org.xhtmlrenderer.util.XRLog;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
- * 
  * @author Vianney le Clément
- * 
  */
 public class SWTReplacedElementFactory implements ReplacedElementFactory {
     /**
      * Cache of image components (ReplacedElements) for quick lookup, keyed by
      * Element.
      */
-    private Map _imageComponents;
-    private FormSubmissionListener _formSubmissionListener;
-
-    public SWTReplacedElementFactory() {
-        _formSubmissionListener = new DefaultFormSubmissionListener();
-    }
+    private final Map<Element, ReplacedElement> _imageComponents = new HashMap<>();
 
     /**
      * Dispose missing image if created.
@@ -59,18 +53,17 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
         reset();
     }
 
+    @Nullable
+    @CheckReturnValue
+    @Override
     public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight) {
         Element e = box.getElement();
-        if (e == null) {
-            return null;
-        }
 
-        // images
-        if (c.getNamespaceHandler().isImageElement(e)) {
+        if (e != null && c.getNamespaceHandler().isImageElement(e)) {
             return replaceImage(uac, c, e, cssWidth, cssHeight);
         }
-        
+
         return null;
     }
 
@@ -78,90 +71,84 @@ public class SWTReplacedElementFactory implements ReplacedElementFactory {
      * Handles replacement of image elements in the document. May return the
      * same ReplacedElement for a given image on multiple calls. Image will be
      * automatically scaled to cssWidth and cssHeight assuming these are
-     * non-zero positive values. The element is assume to have a src attribute
-     * (e.g. it's an &lt;img&gt; element)
-     * 
+     * non-zero positive values. The element is assumed to have a src attribute
+     * (e.g. it's a &lt;img&gt; element)
+     *
      * @param uac Used to retrieve images on demand from some source.
-     * @param context
      * @param elem The element with the image reference
      * @param cssWidth Target width of the image
      * @param cssHeight Target height of the image
      * @return A ReplacedElement for the image; will not be null.
      */
-    protected ReplacedElement replaceImage(UserAgentCallback uac,
-            LayoutContext context, Element elem, int cssWidth, int cssHeight) {
-        ReplacedElement re = null;
+    @Nullable
+    @CheckReturnValue
+    protected ReplacedElement replaceImage(UserAgentCallback uac, LayoutContext context, Element elem, int cssWidth, int cssHeight) {
         String imageSrc = context.getNamespaceHandler().getImageSourceURI(elem);
-        
-        if (imageSrc == null || imageSrc.length() == 0) {
-            XRLog.layout(Level.WARNING, "No source provided for img element.");
-            re = new ImageReplacedElement(new SWTFSImage(), cssWidth, cssHeight);
-        } else if (ImageUtil.isEmbeddedBase64Image(imageSrc)) {
-            SWTFSImage fsImage = (SWTFSImage) uac.getImageResource(imageSrc).getImage();
-            if (fsImage != null) {
-                re = new ImageReplacedElement(fsImage, cssWidth, cssHeight);
-            }
-        } else {
-            // lookup in cache, or instantiate
-            re = lookupImageReplacedElement(elem);
-            if (re == null) {
-                FSImage fsImage = uac.getImageResource(imageSrc).getImage();
-                if (fsImage != null) {
-                    re = new ImageReplacedElement(new SWTFSImage(
-                        (SWTFSImage) fsImage), cssWidth, cssHeight);
-                } else {
-                    // TODO: Should return "broken" image icon, e.g. "not found"
-                    re = new ImageReplacedElement(new SWTFSImage(), cssWidth,
-                        cssHeight);
-                }
-                storeImageReplacedElement(elem, re);
-            }
+
+        if (imageSrc == null || imageSrc.isEmpty()) {
+            XRLog.layout(Level.WARNING, "No source provided for img element " + elem);
+            return new ImageReplacedElement(new SWTFSImage(), cssWidth, cssHeight);
         }
+
+        if (ImageUtil.isEmbeddedBase64Image(imageSrc)) {
+            SWTFSImage fsImage = (SWTFSImage) uac.getImageResource(imageSrc).getImage();
+            return fsImage == null ? null : new ImageReplacedElement(fsImage, cssWidth, cssHeight);
+        }
+
+        // lookup in cache, or instantiate
+        ReplacedElement re = lookupImageReplacedElement(elem);
+        if (re != null) {
+            return re;
+        }
+
+        FSImage fsImage = uac.getImageResource(imageSrc).getImage();
+        if (fsImage != null) {
+            re = new ImageReplacedElement(new SWTFSImage((SWTFSImage) fsImage), cssWidth, cssHeight);
+        } else {
+            // TODO: Should return "broken" image icon, e.g. "not found"
+            re = new ImageReplacedElement(new SWTFSImage(), cssWidth, cssHeight);
+        }
+        storeImageReplacedElement(elem, re);
         return re;
     }
 
     /**
      * Adds a ReplacedElement containing an image to a cache of images for quick
      * lookup.
-     * 
+     *
      * @param e The element under which the image is keyed.
      * @param cc The replaced element containing the image, or another
      *            ReplacedElement to be used in its place (like a placeholder if
      *            the image can't be loaded).
      */
     protected void storeImageReplacedElement(Element e, ReplacedElement cc) {
-        if (_imageComponents == null) {
-            _imageComponents = new HashMap();
-        }
         _imageComponents.put(e, cc);
     }
 
     /**
      * Retrieves a ReplacedElement for an image from cache, or null if not
      * found.
-     * 
+     *
      * @param e The element by which the image is keyed
      * @return The ReplacedElement for the image, or null if there is none.
      */
+    @Nullable
+    @CheckReturnValue
     protected ReplacedElement lookupImageReplacedElement(Element e) {
-        if (_imageComponents == null) {
-            return null;
-        }
-        return (ReplacedElement) _imageComponents.get(e);
+        return _imageComponents.get(e);
     }
 
+    @Override
     public void remove(Element e) {
-        if (_imageComponents != null) {
-            _imageComponents.remove(e);
-        }
+        _imageComponents.remove(e);
     }
 
+    @Override
     public void setFormSubmissionListener(FormSubmissionListener listener) {
-        _formSubmissionListener = listener;
     }
 
+    @Override
     public void reset() {
-        _imageComponents = null;
-    }
+        _imageComponents.clear();    }
 
 }

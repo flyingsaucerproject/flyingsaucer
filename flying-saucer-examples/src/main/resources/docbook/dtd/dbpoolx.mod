@@ -8,8 +8,6 @@
      Organization for the Advancement of Structured Information
      Standards (OASIS).
 
-     $Id$
-
      Permission to use, copy, modify and distribute the DocBook XML DTD
      and its accompanying documentation for any purpose and without fee
      is hereby granted in perpetuity, provided that the above copyright
@@ -917,7 +915,7 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 		|%ndxterm.class;
 		%local.bibliocomponent.mix;">
 
-<!-- I don't think this is well placed, but it needs to be here because of -->
+<!-- I don't think this is well-placed, but it needs to be here because of -->
 <!-- the reference to bibliocomponent.mix -->
 <!ENTITY % local.info.class "">
 <!ENTITY % info.class

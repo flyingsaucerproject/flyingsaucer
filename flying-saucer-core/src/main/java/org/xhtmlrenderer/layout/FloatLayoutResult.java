@@ -24,27 +24,24 @@ import org.xhtmlrenderer.render.BlockBox;
 /**
  * A bean containing the result of laying out a floated block.  If the floated
  * block can't fit on the current line, it will be marked pending with the result
- * that it will be layed out again once the line has been saved.
- *   
+ * that it will be laid out again once the line has been saved.
+ *
  * FIXME: This class can go away
  */
 public class FloatLayoutResult {
-    private boolean _pending;
-    private BlockBox _block;
-    
+    private final boolean _pending;
+    private final BlockBox _block;
+
+    public FloatLayoutResult(boolean pending, BlockBox block) {
+        _pending = pending;
+        _block = block;
+    }
+
     public boolean isPending() {
         return _pending;
     }
 
-    public void setPending(boolean pending) {
-        _pending = pending;
-    }
-
     public BlockBox getBlock() {
         return _block;
-    }
-
-    public void setBlock(BlockBox block) {
-        _block = block;
     }
 }

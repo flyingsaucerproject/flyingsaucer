@@ -2,11 +2,12 @@ build
 *.iml
 **/**.iml
 *.ipr
-.idea
 dist
 target
 **/*.releaseBackup
 *.releaseBackup
+**/*.versionsBackup
+*.versionsBackup
 release.properties
 */.classpath
 */.project

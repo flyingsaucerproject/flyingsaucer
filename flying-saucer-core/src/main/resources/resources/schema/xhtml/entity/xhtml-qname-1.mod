@@ -4,7 +4,6 @@
 
      This is XHTML, a reformulation of HTML as a modular XML application.
      Copyright 1998-2001 W3C (MIT, INRIA, Keio), All Rights Reserved.
-     Revision: $Id$ SMI
 
      This DTD module is identified by the PUBLIC and SYSTEM identifiers:
 
@@ -19,8 +18,7 @@
 
      This module is contained in two parts, labeled Section 'A' and 'B':
 
-       Section A declares parameter entities to support namespace-
-       qualified names, namespace declarations, and name prefixing
+       Section A declares parameter entities to support namespace-qualified names, namespace declarations, and name prefixing
        for XHTML and extensions.
 
        Section B declares parameter entities used to provide
@@ -46,7 +44,7 @@
 <!ENTITY % NS.prefixed "IGNORE" >
 <!ENTITY % XHTML.prefixed "%NS.prefixed;" >
 
-<!-- 2. Declare a parameter entity (eg., %XHTML.xmlns;) containing
+<!-- 2. Declare a parameter entity (e.g., %XHTML.xmlns;) containing
         the URI reference used to identify the XHTML namespace:
 -->
 <!ENTITY % XHTML.xmlns  "http://www.w3.org/1999/xhtml" >
@@ -54,7 +52,7 @@
 <!-- 3. Declare parameter entities (eg., %XHTML.prefix;) containing
         the default namespace prefix string(s) to use when prefixing
         is enabled. This may be overridden in the DTD driver or the
-        internal subset of an document instance. If no default prefix
+        internal subset of a document instance. If no default prefix
         is desired, this may be declared as an empty string.
 
      NOTE: As specified in [XMLNAMES], the namespace prefix serves

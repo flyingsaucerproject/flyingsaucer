@@ -19,51 +19,49 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A managed list of {@link CalculatedStyle} objects.  It is used when keeping
- * track of the styles which apply to a :first-line or :first-letter pseudo 
- * element.
+ * track of the styles which apply to a :first-line or :first-letter pseudo-element.
  */
 public class StyleTracker {
-    private List _styles = new ArrayList();
-    
+    private final List<CascadedStyle> _styles = new ArrayList<>();
+
     public void addStyle(CascadedStyle style) {
         _styles.add(style);
     }
 
     public void removeLast() {
-        if (_styles.size() != 0) {
+        if (!_styles.isEmpty()) {
             _styles.remove(_styles.size()-1);
         }
     }
 
     public boolean hasStyles() {
-        return _styles.size() != 0;
+        return !_styles.isEmpty();
     }
 
     public void clearStyles() {
         _styles.clear();
     }
-    
+
     public CalculatedStyle deriveAll(CalculatedStyle start) {
         CalculatedStyle result = start;
-        for (Iterator i = getStyles().iterator(); i.hasNext(); ) {
-            result = result.deriveStyle((CascadedStyle)i.next());
+        for (CascadedStyle o : getStyles()) {
+            result = result.deriveStyle(o);
         }
         return result;
     }
 
-    public List getStyles() {
+    public List<CascadedStyle> getStyles() {
         return _styles;
     }
-    
+
     public StyleTracker copyOf() {
         StyleTracker result = new StyleTracker();
         result._styles.addAll(this._styles);

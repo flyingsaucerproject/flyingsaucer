@@ -19,50 +19,58 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Point;
-
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 
+import java.awt.*;
+
 public class EmptyReplacedElement implements ReplacedElement {
-    private int _width;
-    private int _height;
-    
+    private final int _width;
+    private final int _height;
+
     private Point _location = new Point(0, 0);
-    
+
     public EmptyReplacedElement(int width, int height) {
         _width = width;
         _height = height;
     }
-    
+
+    @Override
     public void detach(LayoutContext c) {
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return _height;
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return _width;
     }
 
+    @Override
     public Point getLocation() {
         return _location;
     }
 
+    @Override
     public boolean isRequiresInteractivePaint() {
         return false;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         _location = new Point(0, 0);
     }
 
-	public int getBaseline() {
-		return 0;
-	}
+    @Override
+    public int getBaseline() {
+        return 0;
+    }
 
-	public boolean hasBaseline() {
-		return false;
-	}
+    @Override
+    public boolean hasBaseline() {
+        return false;
+    }
 }

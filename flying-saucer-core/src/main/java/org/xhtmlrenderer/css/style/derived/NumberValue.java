@@ -25,26 +25,25 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
 
 public class NumberValue extends DerivedValue {
-    private float _floatValue;
+    private final float _floatValue;
 
     public NumberValue(CSSName cssName, PropertyValue value) {
         super(cssName, value.getPrimitiveType(), value.getCssText(), value.getCssText());
         _floatValue = value.getFloatValue();
     }
 
+    @Override
     public float asFloat() {
         return _floatValue;
     }
-    
+
+    @Override
     public float getFloatProportionalTo(CSSName cssName, float baseValue, CssContext ctx) {
         return _floatValue;
     }
-    
+
+    @Override
     public boolean hasAbsoluteUnit() {
         return true;
     }
 }
-
-/*
- * $Id$
- */

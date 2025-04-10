@@ -19,38 +19,27 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Shape;
-
 import org.xhtmlrenderer.render.BlockBox;
 
+import java.awt.*;
+
 public class BoxRangeData {
-    private BlockBox _box;
-    private BoxRange _range;
-    
+    private final BlockBox _box;
+    private final BoxRange _range;
+
     private Shape _clip;
-    
-    public BoxRangeData() {
-    }
-    
+
     public BoxRangeData(BlockBox box, BoxRange range) {
         _box = box;
         _range = range;
     }
-    
+
     public BlockBox getBox() {
         return _box;
-    }
-    
-    public void setBox(BlockBox box) {
-        _box = box;
     }
 
     public BoxRange getRange() {
         return _range;
-    }
-
-    public void setRange(BoxRange range) {
-        _range = range;
     }
 
     public Shape getClip() {
@@ -60,8 +49,9 @@ public class BoxRangeData {
     public void setClip(Shape clip) {
         _clip = clip;
     }
-    
+
+    @Override
     public String toString() {
-        return "[range= " + _range + ", box=" + _box + ", clip=" + _clip + "]";
+        return "[range= %s, box=%s, clip=%s]".formatted(_range, _box, _clip);
     }
 }

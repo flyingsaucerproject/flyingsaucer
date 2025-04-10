@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import javax.swing.JComponent;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
@@ -28,19 +26,19 @@ import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 public abstract class InputField extends FormField {
 
-    public InputField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    protected InputField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
-    public abstract JComponent create();
-    
+    @Override
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromString(getAttribute("value"));
     }
 
+    @Override
     protected String[] getFieldValues() {
         return new String [] {
-                hasAttribute("value") ? getAttribute("value") : "" 
+                hasAttribute("value") ? getAttribute("value") : ""
         };
     }
 }

@@ -18,9 +18,15 @@
  */
 package org.xhtmlrenderer.simple.extend;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.util.regex.Pattern;
+
+import static java.util.Locale.ROOT;
+import static org.w3c.dom.Node.ELEMENT_NODE;
 
 /**
  * Handles xhtml documents, including presentational html attributes (see css 2.1 spec, 6.4.4).
@@ -30,59 +36,60 @@ import org.w3c.dom.Node;
  * @author Torbjoern Gannholm
  */
 public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
-    /**
-     * {@inheritDoc}
-     */
+    private static final Pattern RE_MANGLED_COLOR = Pattern.compile("[0-9a-f]{6}");
+
+    @Override
+    @CheckReturnValue
     public boolean isImageElement(Element e) {
-        return (e != null && e.getNodeName().equalsIgnoreCase("img"));
+        return e.getNodeName().equalsIgnoreCase("img");
     }
-    
-    /**
-     * {@inheritDoc}
-     */
+
+    @Override
+    @CheckReturnValue
     public boolean isFormElement(Element e) {
-        return (e != null && e.getNodeName().equalsIgnoreCase("form"));
+        return e.getNodeName().equalsIgnoreCase("form");
     }
 
+    @Override
+    @CheckReturnValue
     public String getImageSourceURI(Element e) {
-        String uri = null;
-        if (e != null) {
-            uri = e.getAttribute("src");
-        }
-        return uri;
+        return e.getAttribute("src");
     }
 
+    @Override
+    @CheckReturnValue
     public String getNonCssStyling(Element e) {
-        if (e.getNodeName().equals("table")) {
-            return applyTableStyles(e);            
-        } else if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
-            return applyTableCellStyles(e);
-        } else if (e.getNodeName().equals("tr")) {
-            return applyTableRowStyles(e);
-        } else if (e.getNodeName().equals("img")) {
-            return applyImgStyles(e);
-        } else if (e.getNodeName().equals("p") || e.getNodeName().equals("div")) {
-            return applyBlockAlign(e);
-        }
-        return "";
+        return switch (e.getNodeName()) {
+            case "table" -> applyTableStyles(e);
+            case "td", "th" -> applyTableCellStyles(e);
+            case "tr" -> applyTableRowStyles(e);
+            case "img" -> applyImgStyles(e);
+            case "p", "div" -> applyBlockAlign(e);
+            default -> "";
+        };
     }
-    
+
     private String applyBlockAlign(Element e) {
-        StringBuffer style = new StringBuffer();
-        applyTextAlign(e, style);
-        return style.toString();
+        String s = e.getAttribute("align").trim().toLowerCase(ROOT);
+        return switch (s) {
+            case "left",
+                 "right",
+                 "center",
+                 "justify" -> "text-align: " + s + ";";
+            default -> "";
+        };
     }
-    
+
     private String applyImgStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         applyFloatingAlign(e, style);
         return style.toString();
     }
 
     private String applyTableCellStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         String s;
-        //check for cellpadding
+        // check for cell padding
         Element table = findTable(e);
         if (table != null) {
             s = getAttribute(table, "cellpadding");
@@ -107,11 +114,11 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
             style.append("height: ");
             style.append(convertToLength(s));
             style.append(";");
-        }        
+        }
         applyTableContentAlign(e, style);
         s = getAttribute(e, "bgcolor");
         if (s != null) {
-            s = s.toLowerCase();
+            s = s.toLowerCase(ROOT);
             style.append("background-color: ");
             if (looksLikeAMangledColor(s)) {
                 style.append('#');
@@ -131,7 +138,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     }
 
     private String applyTableStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         String s;
         s = getAttribute(e, "width");
         if (s != null) {
@@ -153,7 +160,7 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         }
         s = getAttribute(e, "bgcolor");
         if (s != null) {
-            s = s.toLowerCase();
+            s = s.toLowerCase(ROOT);
             style.append("background-color: ");
             if (looksLikeAMangledColor(s)) {
                 style.append('#');
@@ -172,100 +179,65 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
         applyFloatingAlign(e, style);
         return style.toString();
     }
-    
+
     private String applyTableRowStyles(Element e) {
-        StringBuffer style = new StringBuffer();
+        StringBuilder style = new StringBuilder();
         applyTableContentAlign(e, style);
         return style.toString();
     }
-    
-    private void applyFloatingAlign(Element e, StringBuffer style) {
-        String s;
-        s = getAttribute(e, "align");
+
+    private void applyFloatingAlign(Element e, StringBuilder style) {
+        String s = getAttribute(e, "align");
         if (s != null) {
-            s = s.toLowerCase().trim();
-            if (s.equals("left")) {
-                style.append("float: left;");
-            } else if (s.equals("right")) {
-                style.append("float: right;");
-            } else if (s.equals("center")) {
-                style.append("margin-left: auto; margin-right: auto;");
+            s = s.toLowerCase(ROOT).trim();
+            switch (s) {
+                case "left":
+                    style.append("float: left;");
+                    break;
+                case "right":
+                    style.append("float: right;");
+                    break;
+                case "center":
+                    style.append("margin-left: auto; margin-right: auto;");
+                    break;
             }
         }
     }
-    
-    private void applyTextAlign(Element e, StringBuffer style) {
-        String s;
-        s = getAttribute(e, "align");
-        if (s != null) {
-            s = s.toLowerCase().trim();
-            if (s.equals("left") || s.equals("right") || 
-                    s.equals("center") || s.equals("justify")) {
-                style.append("text-align: ");
-                style.append(s);
-                style.append(";");
-            }
-        }
-    }
-    
-    private void applyTableContentAlign(Element e, StringBuffer style) {
-        String s;
-        s = getAttribute(e, "align");
+
+    private void applyTableContentAlign(Element e, StringBuilder style) {
+        String s = getAttribute(e, "align");
         if (s != null) {
             style.append("text-align: ");
-            style.append(s.toLowerCase());
+            style.append(s.toLowerCase(ROOT));
             style.append(";");
         }
         s = getAttribute(e, "valign");
         if (s != null) {
             style.append("vertical-align: ");
-            style.append(s.toLowerCase());
+            style.append(s.toLowerCase(ROOT));
             style.append(";");
         }
     }
-    
-    private boolean looksLikeAMangledColor(String s) {
-        if (s.length() != 6) {
-            return false;
-        }
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            boolean valid = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
-            if (! valid) {
-                return false;
-            }
-        }
-        return true;
+
+    boolean looksLikeAMangledColor(String s) {
+        return RE_MANGLED_COLOR.matcher(s).matches();
     }
-    
-    private Element findTable(Element cell) {
-        Node n = cell.getParentNode();
-        Element next;
-        if (n.getNodeType() == Node.ELEMENT_NODE) {
-            next = (Element)n;
-            if (next.getNodeName().equals("tr")) {
-                n = next.getParentNode();
-                if (n.getNodeType() == Node.ELEMENT_NODE) {
-                    next = (Element)n;
-                    String name = next.getNodeName();
-                    if (name.equals("table")) {
-                        return next;
-                    }
-                    
-                    if (name.equals("tbody") || name.equals("tfoot") || name.equals("thead")) {
-                        n = next.getParentNode();
-                        if (n.getNodeType() == Node.ELEMENT_NODE) {
-                            next =(Element)n;
-                            if (next.getNodeName().equals("table")) {
-                                return next;
-                            }
-                        }
-                    }
-                }
-            }
+
+    @Nullable
+    Element findTable(Node cell) {
+        return ancestor(cell, "table", 5);
+    }
+
+    @Nullable
+    Element ancestor(Node element, String tagName, int maxDepth) {
+        Node parent = element.getParentNode();
+        if (parent == null || maxDepth <= 0) {
+            return null;
         }
-        
-        return null;
+
+        return parent.getNodeType() == ELEMENT_NODE && parent.getNodeName().equals(tagName) ?
+            (Element) parent :
+            ancestor(parent, tagName, maxDepth - 1);
     }
 }
 

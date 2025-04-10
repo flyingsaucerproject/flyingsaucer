@@ -20,8 +20,8 @@
  */
 package org.xhtmlrenderer.layout.breaker;
 
-import java.text.BreakIterator;
-
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -33,6 +33,8 @@ import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.render.FSFont;
 
+import java.text.BreakIterator;
+
 /**
  * A utility class that scans the text of a single inline box, looking for the
  * next break point.
@@ -42,7 +44,7 @@ public class Breaker {
 
     private static final String DEFAULT_LANGUAGE = System.getProperty("org.xhtmlrenderer.layout.breaker.default-language", "en");
 
-	public static void breakFirstLetter(LayoutContext c, LineBreakContext context,
+    public static void breakFirstLetter(LayoutContext c, LineBreakContext context,
             int avail, CalculatedStyle style) {
         FSFont font = style.getFSFont(c);
         context.setEnd(getFirstLetterEnd(context.getMaster(), context.getStart()));
@@ -79,8 +81,8 @@ public class Breaker {
 
         // ====== handle nowrap
         if (whitespace == IdentValue.NOWRAP) {
-        	context.setEnd(context.getLast());
-        	context.setWidth(c.getTextRenderer().getWidth(
+            context.setEnd(context.getLast());
+            context.setWidth(c.getTextRenderer().getWidth(
                     c.getFontContext(), font, context.getCalculatedSubstring()));
             return;
         }
@@ -97,7 +99,7 @@ public class Breaker {
                 context.setNeedsNewLine(true);
                 context.setEndsOnNL(true);
             } else if (whitespace == IdentValue.PRE) {
-            	context.setEnd(context.getLast());
+                context.setEnd(context.getLast());
                 context.setWidth(c.getTextRenderer().getWidth(
                         c.getFontContext(), font, context.getCalculatedSubstring()));
             }
@@ -110,30 +112,35 @@ public class Breaker {
         }
 
         context.setEndsOnNL(false);
-        doBreakText(c, context, avail, style, false);
+
+        boolean tryToBreakAnywhere = style.getWordBreak() == IdentValue.BREAK_ALL;
+
+        doBreakText(c, context, avail, style, tryToBreakAnywhere);
     }
 
     private static int getWidth(LayoutContext c, FSFont f, String text) {
-    	return c.getTextRenderer().getWidth(c.getFontContext(), f, text);
+        return c.getTextRenderer().getWidth(c.getFontContext(), f, text);
     }
 
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Element element, CalculatedStyle style) {
-    	return c.getSharedContext().getLineBreakingStrategy().getBreakPointsProvider(text, getLanguage(c, element), style);
+        return c.getSharedContext().getLineBreakingStrategy().getBreakPointsProvider(text, getLanguage(c, element), style);
     }
 
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Text textNode, CalculatedStyle style) {
-    	return c.getSharedContext().getLineBreakingStrategy().getBreakPointsProvider(text, getLanguage(c, textNode), style);
+        return c.getSharedContext().getLineBreakingStrategy().getBreakPointsProvider(text, getLanguage(c, textNode), style);
     }
 
-    private static String getLanguage(LayoutContext c, Element element) {
-    	String language = c.getNamespaceHandler().getLang(element);
-    	if (language == null || language.isEmpty()) {
-    		language = DEFAULT_LANGUAGE;
-    	}
-    	return language;
+    @CheckReturnValue
+    private static String getLanguage(LayoutContext c, @Nullable Element element) {
+        String language = element == null ? null : c.getNamespaceHandler().getLang(element);
+        if (language == null || language.isEmpty()) {
+            language = DEFAULT_LANGUAGE;
+        }
+        return language;
     }
 
-    private static String getLanguage(LayoutContext c, Text textNode) {
+    @CheckReturnValue
+    private static String getLanguage(LayoutContext c, @Nullable Text textNode) {
         if (textNode != null) {
             Node parentNode = textNode.getParentNode();
             if (parentNode instanceof Element) {
@@ -150,7 +157,7 @@ public class Breaker {
         String currentString = context.getStartSubstring();
         BreakPointsProvider iterator = getBreakPointsProvider(currentString, c, context.getTextNode(), style);
         if (tryToBreakAnywhere) {
-        	iterator = new BreakAnywhereLineBreakStrategy(currentString);
+            iterator = new BreakAnywhereLineBreakStrategy(currentString);
         }
         BreakPoint bp = iterator.next();
         BreakPoint lastBreakPoint = null;
@@ -162,18 +169,18 @@ public class Breaker {
             int widthWithHyphen = previousWidth + currentWidth;
             previousWidth = widthWithHyphen;
             previousPosition = bp.getPosition();
-        	if (widthWithHyphen > avail) break;
-        	right = previousPosition;
-        	lastBreakPoint = bp;
-        	bp = iterator.next();
-        };
+            if (widthWithHyphen > avail) break;
+            right = previousPosition;
+            lastBreakPoint = bp;
+            bp = iterator.next();
+        }
 
         // add hyphen if needed
         if (bp != null && bp.getPosition() != BreakIterator.DONE // it fits
-        		&& right >= 0 // some break point found
-        		&& !lastBreakPoint.getHyphen().isEmpty()) {
-        	context.setMaster(new StringBuilder(context.getMaster()).insert(context.getStart() + right, lastBreakPoint.getHyphen()).toString());
-        	right += lastBreakPoint.getHyphen().length();
+                && right >= 0 // some break point found
+                && !lastBreakPoint.getHyphen().isEmpty()) {
+            context.setMaster(new StringBuilder(context.getMaster()).insert(context.getStart() + right, lastBreakPoint.getHyphen()).toString());
+            right += lastBreakPoint.getHyphen().length();
         }
 
         if (bp != null && bp.getPosition() == BreakIterator.DONE) {
@@ -197,7 +204,7 @@ public class Breaker {
             return;
         }
 
-       	// unbreakable string
+        // unbreakable string
         context.setEnd(context.getStart() + currentString.length());
         context.setUnbreakable(true);
         context.setWidth(getWidth(c, f, context.getCalculatedSubstring()));

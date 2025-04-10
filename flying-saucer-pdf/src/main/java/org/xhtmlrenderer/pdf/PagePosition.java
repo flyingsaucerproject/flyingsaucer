@@ -20,58 +20,43 @@
 package org.xhtmlrenderer.pdf;
 
 public class PagePosition {
-    private String _id;
-    private int _pageNo;
-    private float _x;
-    private float _width;
-    private float _y;
-    private float _height;
-    
+    private final String _id;
+    private final int _pageNo;
+    private final float _x;
+    private final float _width;
+    private final float _y;
+    private final float _height;
+
+    public PagePosition(String id, int pageNo, float x, float width, float y, float height) {
+        _id = id;
+        _pageNo = pageNo;
+        _x = x;
+        _width = width;
+        _y = y;
+        _height = height;
+    }
+
     public int getPageNo() {
         return _pageNo;
     }
-    
-    public void setPageNo(int pageNo) {
-        _pageNo = pageNo;
-    }
-    
+
     public float getX() {
         return _x;
     }
-    
-    public void setX(float x) {
-        _x = x;
-    }
-    
+
     public float getWidth() {
         return _width;
     }
-    
-    public void setWidth(float width) {
-        _width = width;
-    }
-    
+
     public float getY() {
         return _y;
     }
-    
-    public void setY(float y) {
-        _y = y;
-    }
-    
+
     public float getHeight() {
         return _height;
-    }
-    
-    public void setHeight(float height) {
-        _height = height;
     }
 
     public String getId() {
         return _id;
-    }
-
-    public void setId(String id) {
-        _id = id;
     }
 }

@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
-import java.util.*;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -30,6 +28,14 @@ import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.Token;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
+
+import java.util.*;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static org.w3c.dom.css.CSSValue.CSS_INHERIT;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
 
 public class PrimitivePropertyBuilders {
     // none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset
@@ -109,29 +115,36 @@ public class PrimitivePropertyBuilders {
 
     private static BitSet setFor(IdentValue[] values) {
         BitSet result = new BitSet(IdentValue.getIdentCount());
-        for (int i = 0; i < values.length; i++) {
-            IdentValue ident = values[i];
+        for (IdentValue ident : values) {
             result.set(ident.FS_ID);
         }
         return result;
     }
 
-    private static abstract class SingleIdent extends AbstractPropertyBuilder {
+    private static void assertFoundSingleValue(CSSName cssName, List<? extends CSSPrimitiveValue> values) {
+        if (values.size() != 1) {
+            throw new CSSParseException("Found " + values.size() + " value(s) for " +
+                    cssName + " when " + 1 + " value(s) were expected", -1);
+        }
+    }
+
+    private abstract static class SingleIdent extends AbstractPropertyBuilder {
         protected abstract BitSet getAllowed();
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
-            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
+            CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentType(cssName, value);
-                IdentValue ident = checkIdent(cssName, value);
+                IdentValue ident = checkIdent(value);
 
                 checkValidity(cssName, getAllowed(), ident);
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
 
         }
@@ -141,18 +154,19 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.TRANSPARENT });
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
-            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
+            CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentOrColorType(cssName, value);
 
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                     FSRGBColor color = Conversions.getColor(value.getStringValue());
                     if (color != null) {
-                        return Collections.singletonList(
+                        return singletonList(
                                 new PropertyDeclaration(
                                         cssName,
                                         new PropertyValue(color),
@@ -160,36 +174,38 @@ public class PrimitivePropertyBuilders {
                                         origin));
                     }
 
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
                     checkValidity(cssName, ALLOWED, ident);
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
         }
     }
 
     private static class GenericBorderStyle extends SingleIdent {
+        @Override
         protected BitSet getAllowed() {
             return BORDER_STYLES;
         }
     }
 
     private static class GenericBorderWidth extends AbstractPropertyBuilder {
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentOrLengthType(cssName, value);
 
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
                     checkValidity(cssName, BORDER_WIDTHS, ident);
 
-                    return Collections.singletonList(
+                    return singletonList(
                             new PropertyDeclaration(
                                     cssName, Conversions.getBorderWidth(ident.toString()), important, origin));
                 } else {
@@ -199,20 +215,22 @@ public class PrimitivePropertyBuilders {
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
         }
     }
 
     private static class GenericBorderCornerRadius extends AbstractPropertyBuilder  {
-    	public List buildDeclarations(CSSName cssName, List values, int origin,
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin,
                 boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, 2, values.size());
+            assertFoundUpToValues(cssName, values, 2);
 
-            PropertyValue first = (PropertyValue)values.get(0);
+            PropertyValue first = (PropertyValue) values.get(0);
             PropertyValue second = null;
             if (values.size() == 2) {
-                second = (PropertyValue)values.get(1);
+                second = (PropertyValue) values.get(1);
             }
 
             checkInheritAllowed(first, inheritAllowed);
@@ -222,35 +240,36 @@ public class PrimitivePropertyBuilders {
             }
 
             checkLengthOrPercentType(cssName, first);
-             if (second == null) {
-                 return createTwoValueResponse(cssName, first, first, origin, important);
-             } else {
-                 checkLengthOrPercentType(cssName, second);
-                 return createTwoValueResponse(cssName, first, second, origin, important);
-             }
+            if (second == null) {
+                return createTwoValueResponse(cssName, first, first, origin, important);
+            } else {
+                checkLengthOrPercentType(cssName, second);
+                return createTwoValueResponse(cssName, first, second, origin, important);
+            }
         }
     }
 
-    private static abstract class LengthWithIdent extends AbstractPropertyBuilder {
+    private abstract static class LengthWithIdent extends AbstractPropertyBuilder {
         protected abstract BitSet getAllowed();
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentOrLengthType(cssName, value);
 
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
                     checkValidity(cssName, getAllowed(), ident);
                 } else if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
                     throw new CSSParseException(cssName + " may not be negative", -1);
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
 
         }
@@ -260,26 +279,27 @@ public class PrimitivePropertyBuilders {
         }
     }
 
-    private static abstract class LengthLikeWithIdent extends AbstractPropertyBuilder {
+    private abstract static class LengthLikeWithIdent extends AbstractPropertyBuilder {
         protected abstract BitSet getAllowed();
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentLengthOrPercentType(cssName, value);
 
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
                     checkValidity(cssName, getAllowed(), ident);
                 } else if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
                     throw new CSSParseException(cssName + " may not be negative", -1);
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
 
         }
@@ -290,12 +310,13 @@ public class PrimitivePropertyBuilders {
     }
 
     private static class LengthLike extends AbstractPropertyBuilder {
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkLengthOrPercentType(cssName, value);
 
                 if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
@@ -303,7 +324,7 @@ public class PrimitivePropertyBuilders {
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
 
         }
@@ -314,17 +335,20 @@ public class PrimitivePropertyBuilders {
     }
 
     private static class NonNegativeLengthLike extends LengthLike {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
     }
 
     private static class ColOrRowSpan extends AbstractPropertyBuilder {
-        public List buildDeclarations(CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values,
+                                                           Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkNumberType(cssName, value);
 
                 if (value.getFloatValue() < 1) {
@@ -332,18 +356,19 @@ public class PrimitivePropertyBuilders {
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
         }
     }
 
     private static class PlainInteger extends AbstractPropertyBuilder {
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkInteger(cssName, value);
 
                 if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
@@ -351,7 +376,7 @@ public class PrimitivePropertyBuilders {
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
 
         }
@@ -362,12 +387,13 @@ public class PrimitivePropertyBuilders {
     }
 
     private static class Length extends AbstractPropertyBuilder {
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkLengthType(cssName, value);
 
                 if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
@@ -375,7 +401,7 @@ public class PrimitivePropertyBuilders {
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
 
         }
@@ -387,9 +413,10 @@ public class PrimitivePropertyBuilders {
 
     /*
     private static class SingleString extends AbstractPropertyBuilder {
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            checkSingleValue(cssName, values)
             CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
             if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
@@ -407,9 +434,10 @@ public class PrimitivePropertyBuilders {
     private static abstract class SingleStringWithIdent extends AbstractPropertyBuilder {
         protected abstract BitSet getAllowed();
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            checkSingleValue(cssName, values);
             CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
             if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
@@ -444,6 +472,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.AUTO });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -454,6 +483,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.NORMAL });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -464,6 +494,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.NONE });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -473,25 +504,27 @@ public class PrimitivePropertyBuilders {
         // <uri> | none | inherit
         private static final BitSet ALLOWED = setFor(new IdentValue[] { IdentValue.NONE });
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
-            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
+            CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentOrURIType(cssName, value);
 
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
                     checkValidity(cssName, ALLOWED, ident);
                 }
             }
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
         }
     }
 
     public static class BackgroundAttachment extends SingleIdent {
+        @Override
         protected BitSet getAllowed() {
             return BACKGROUND_ATTACHMENTS;
         }
@@ -502,11 +535,10 @@ public class PrimitivePropertyBuilders {
 
     public static class BackgroundImage extends GenericURIWithNone {
         @Override
-        public List buildDeclarations(CSSName cssName,
-                                                           List values, int origin,
-                                                           boolean important, boolean inheritAllowed) {
+        public List<PropertyDeclaration> buildDeclarations(
+            CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
 
-            checkValueCount(cssName, 1, values.size());
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
 
             if (!value.toString().startsWith(
@@ -527,19 +559,21 @@ public class PrimitivePropertyBuilders {
                 IdentValue.AUTO, IdentValue.CONTAIN, IdentValue.COVER
         });
 
-        public List buildDeclarations(CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, 2, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values,
+                                                           Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundUpToValues(cssName, values, 2);
 
-            CSSPrimitiveValue first = (CSSPrimitiveValue)values.get(0);
+            CSSPrimitiveValue first = values.get(0);
             CSSPrimitiveValue second = null;
             if (values.size() == 2) {
-                second = (CSSPrimitiveValue)values.get(1);
+                second = values.get(1);
             }
 
             checkInheritAllowed(first, inheritAllowed);
             if (values.size() == 1 &&
-                    first.getCssValueType() == CSSPrimitiveValue.CSS_INHERIT) {
-                return Collections.singletonList(
+                    first.getCssValueType() == CSS_INHERIT) {
+                return singletonList(
                         new PropertyDeclaration(cssName, first, important, origin));
             }
 
@@ -550,11 +584,11 @@ public class PrimitivePropertyBuilders {
             checkIdentLengthOrPercentType(cssName, first);
             if (second == null) {
                 if (first.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    IdentValue firstIdent = checkIdent(cssName, first);
+                    IdentValue firstIdent = checkIdent(first);
                     checkValidity(cssName, ALL_ALLOWED, firstIdent);
 
                     if (firstIdent == IdentValue.CONTAIN || firstIdent == IdentValue.COVER) {
-                        return Collections.singletonList(
+                        return singletonList(
                                 new PropertyDeclaration(cssName, first, important, origin));
                     } else {
                         return createTwoValueResponse(CSSName.BACKGROUND_SIZE, first, first, origin, important);
@@ -566,7 +600,7 @@ public class PrimitivePropertyBuilders {
                 checkIdentLengthOrPercentType(cssName, second);
 
                 if (first.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    IdentValue firstIdent = checkIdent(cssName, first);
+                    IdentValue firstIdent = checkIdent(first);
                     if (firstIdent != IdentValue.AUTO) {
                         throw new CSSParseException("The only ident value allowed here is 'auto'", -1);
                     }
@@ -575,7 +609,7 @@ public class PrimitivePropertyBuilders {
                 }
 
                 if (second.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    IdentValue secondIdent = checkIdent(cssName, second);
+                    IdentValue secondIdent = checkIdent(second);
                     if (secondIdent != IdentValue.AUTO) {
                         throw new CSSParseException("The only ident value allowed here is 'auto'", -1);
                     }
@@ -589,20 +623,21 @@ public class PrimitivePropertyBuilders {
     }
 
     public static class BackgroundPosition extends AbstractPropertyBuilder {
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, 2, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundUpToValues(cssName, values, 2);
 
-            CSSPrimitiveValue first = (CSSPrimitiveValue)values.get(0);
+            CSSPrimitiveValue first = values.get(0);
             CSSPrimitiveValue second = null;
             if (values.size() == 2) {
-                second = (CSSPrimitiveValue)values.get(1);
+                second = values.get(1);
             }
 
             checkInheritAllowed(first, inheritAllowed);
             if (values.size() == 1 &&
-                    first.getCssValueType() == CSSPrimitiveValue.CSS_INHERIT) {
-                return Collections.singletonList(
+                    first.getCssValueType() == CSS_INHERIT) {
+                return singletonList(
                         new PropertyDeclaration(cssName, first, important, origin));
             }
 
@@ -613,11 +648,11 @@ public class PrimitivePropertyBuilders {
             checkIdentLengthOrPercentType(cssName, first);
             if (second == null) {
                 if (isLength(first) || first.getPrimitiveType() == CSSPrimitiveValue.CSS_PERCENTAGE) {
-                    List responseValues = new ArrayList(2);
+                    List<CSSPrimitiveValue> responseValues = new ArrayList<>(2);
                     responseValues.add(first);
                     responseValues.add(new PropertyValue(
                             CSSPrimitiveValue.CSS_PERCENTAGE, 50.0f, "50%"));
-                    return Collections.singletonList(new PropertyDeclaration(
+                    return singletonList(new PropertyDeclaration(
                                 CSSName.BACKGROUND_POSITION,
                                 new PropertyValue(responseValues), important, origin));
                 }
@@ -628,7 +663,7 @@ public class PrimitivePropertyBuilders {
 
             IdentValue firstIdent = null;
             if (first.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                firstIdent = checkIdent(cssName, first);
+                firstIdent = checkIdent(first);
                 checkValidity(cssName, getAllowed(), firstIdent);
             }
 
@@ -636,12 +671,12 @@ public class PrimitivePropertyBuilders {
             if (second == null) {
                 secondIdent = IdentValue.CENTER;
             } else if (second.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                secondIdent = checkIdent(cssName, second);
+                secondIdent = checkIdent(second);
                 checkValidity(cssName, getAllowed(), secondIdent);
             }
 
             if (firstIdent == null && secondIdent == null) {
-                return Collections.singletonList(new PropertyDeclaration(
+                return singletonList(new PropertyDeclaration(
                         CSSName.BACKGROUND_POSITION, new PropertyValue(values), important, origin));
             } else if (firstIdent != null && secondIdent != null) {
                 if (firstIdent == IdentValue.TOP || firstIdent == IdentValue.BOTTOM ||
@@ -661,7 +696,7 @@ public class PrimitivePropertyBuilders {
             } else {
                 checkIdentPosition(cssName, firstIdent, secondIdent);
 
-                List responseValues = new ArrayList(2);
+                List<CSSPrimitiveValue> responseValues = new ArrayList<>(2);
 
                 if (firstIdent == null) {
                     responseValues.add(first);
@@ -671,7 +706,7 @@ public class PrimitivePropertyBuilders {
                     responseValues.add(second);
                 }
 
-                return Collections.singletonList(new PropertyDeclaration(
+                return singletonList(new PropertyDeclaration(
                         CSSName.BACKGROUND_POSITION,
                         new PropertyValue(responseValues), important, origin));
             }
@@ -688,7 +723,7 @@ public class PrimitivePropertyBuilders {
             float percent = 0.0f;
 
             if (ident == IdentValue.CENTER) {
-                percent = 50.f;
+                percent = 50.0f;
             } else if (ident == IdentValue.BOTTOM || ident == IdentValue.RIGHT) {
                 percent = 100.0f;
             }
@@ -702,14 +737,14 @@ public class PrimitivePropertyBuilders {
                     CSSPrimitiveValue.CSS_PERCENTAGE, percent, percent + "%");
         }
 
-        private List createTwoPercentValueResponse(
-                float percent1, float percent2, boolean important, int origin) {
+        private List<PropertyDeclaration> createTwoPercentValueResponse(
+                float percent1, float percent2, boolean important, Origin origin) {
             PropertyValue value1 = new PropertyValue(
                     CSSPrimitiveValue.CSS_PERCENTAGE, percent1, percent1 + "%");
             PropertyValue value2 = new PropertyValue(
                     CSSPrimitiveValue.CSS_PERCENTAGE, percent2, percent2 + "%");
 
-            List values = new ArrayList(2);
+            List<PropertyValue> values = new ArrayList<>(2);
             values.add(value1);
             values.add(value2);
 
@@ -717,7 +752,7 @@ public class PrimitivePropertyBuilders {
                     CSSName.BACKGROUND_POSITION,
                     new PropertyValue(values), important, origin);
 
-            return Collections.singletonList(result);
+            return singletonList(result);
         }
 
         private BitSet getAllowed() {
@@ -726,6 +761,7 @@ public class PrimitivePropertyBuilders {
     }
 
     public static class BackgroundRepeat extends SingleIdent {
+        @Override
         protected BitSet getAllowed() {
             return BACKGROUND_REPEATS;
         }
@@ -736,6 +772,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.COLLAPSE, IdentValue.SEPARATE });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -797,6 +834,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.TOP, IdentValue.BOTTOM });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -807,6 +845,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.NONE, IdentValue.LEFT, IdentValue.RIGHT, IdentValue.BOTH });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -831,6 +870,7 @@ public class PrimitivePropertyBuilders {
                         IdentValue.WAIT, IdentValue.HELP,
                         IdentValue.PROGRESS});
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -852,6 +892,7 @@ public class PrimitivePropertyBuilders {
                         IdentValue.TABLE_COLUMN, IdentValue.TABLE_CELL,
                         IdentValue.TABLE_CAPTION, IdentValue.NONE });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -862,6 +903,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.SHOW, IdentValue.HIDE });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -872,6 +914,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.LEFT, IdentValue.RIGHT, IdentValue.NONE });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -880,13 +923,14 @@ public class PrimitivePropertyBuilders {
     public static class FontFamily extends AbstractPropertyBuilder {
         // [[ <family-name> | <generic-family> ] [, <family-name>| <generic-family>]* ] | inherit
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             if (values.size() == 1) {
-                CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+                CSSPrimitiveValue value = values.get(0);
                 checkInheritAllowed(value, inheritAllowed);
-                if (value.getCssValueType() == CSSPrimitiveValue.CSS_INHERIT) {
-                    return Collections.singletonList(
+                if (value.getCssValueType() == CSS_INHERIT) {
+                    return singletonList(
                             new PropertyDeclaration(cssName, value, important, origin));
                 }
             }
@@ -894,11 +938,11 @@ public class PrimitivePropertyBuilders {
             // Both Opera and Firefox parse "Century Gothic" Arial sans-serif as
             // [Century Gothic], [Arial sans-serif] (i.e. the comma is assumed
             // after a string).  Seems wrong per the spec, but FF (at least)
-            // does it in standards mode so we do too.
-            List consecutiveIdents = new ArrayList();
-            List normalized = new ArrayList(values.size());
-            for (Iterator i = values.iterator(); i.hasNext(); ) {
-                PropertyValue value = (PropertyValue)i.next();
+            // does it in standards mode, so we do too.
+            List<String> consecutiveIdents = new ArrayList<>();
+            List<String> normalized = new ArrayList<>(values.size());
+            for (CSSPrimitiveValue cssPrimitiveValue : values) {
+                PropertyValue value = (PropertyValue) cssPrimitiveValue;
 
                 Token operator = value.getOperator();
                 if (operator != null && operator != Token.TK_COMMA) {
@@ -906,7 +950,7 @@ public class PrimitivePropertyBuilders {
                 }
 
                 if (operator != null) {
-                    if (consecutiveIdents.size() > 0) {
+                    if (!consecutiveIdents.isEmpty()) {
                         normalized.add(concat(consecutiveIdents, ' '));
                         consecutiveIdents.clear();
                     }
@@ -915,7 +959,7 @@ public class PrimitivePropertyBuilders {
                 checkInheritAllowed(value, false);
                 short type = value.getPrimitiveType();
                 if (type == CSSPrimitiveValue.CSS_STRING) {
-                    if (consecutiveIdents.size() > 0) {
+                    if (!consecutiveIdents.isEmpty()) {
                         normalized.add(concat(consecutiveIdents, ' '));
                         consecutiveIdents.clear();
                     }
@@ -926,23 +970,22 @@ public class PrimitivePropertyBuilders {
                     throw new CSSParseException("Invalid font-family definition", -1);
                 }
             }
-            if (consecutiveIdents.size() > 0) {
+            if (!consecutiveIdents.isEmpty()) {
                 normalized.add(concat(consecutiveIdents, ' '));
             }
 
             String text = concat(normalized, ',');
             PropertyValue result = new PropertyValue(
-                    CSSPrimitiveValue.CSS_STRING, text, text);  // HACK cssText can be wrong
-            result.setStringArrayValue((String[]) normalized.toArray(new String[normalized.size()]));
+                    CSSPrimitiveValue.CSS_STRING, text, text, normalized.toArray(new String[0]), null);  // HACK cssText can be wrong
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, result, important, origin));
         }
 
-        private String concat(List strings, char separator) {
-            StringBuffer buf = new StringBuffer(64);
-            for (Iterator i = strings.iterator(); i.hasNext(); ) {
-                String s = (String)i.next();
+        private String concat(List<String> strings, char separator) {
+            StringBuilder buf = new StringBuilder(64);
+            for (Iterator<String> i = strings.iterator(); i.hasNext(); ) {
+                String s = i.next();
                 buf.append(s);
                 if (i.hasNext()) {
                     buf.append(separator);
@@ -962,35 +1005,38 @@ public class PrimitivePropertyBuilders {
             ALLOWED.or(RELATIVE_FONT_SIZES);
         }
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentLengthOrPercentType(cssName, value);
 
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
                     checkValidity(cssName, ALLOWED, ident);
                 } else if (value.getFloatValue() < 0.0f) {
                     throw new CSSParseException("font-size may not be negative", -1);
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
 
         }
     }
 
     public static class FontStyle extends SingleIdent {
+        @Override
         protected BitSet getAllowed() {
             return FONT_STYLES;
         }
     }
 
     public static class FontVariant extends SingleIdent {
+        @Override
         protected BitSet getAllowed() {
             return FONT_VARIANTS;
         }
@@ -998,18 +1044,19 @@ public class PrimitivePropertyBuilders {
 
     public static class FontWeight extends AbstractPropertyBuilder {
         // normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentOrNumberType(cssName, value);
 
                 short type = value.getPrimitiveType();
                 if (type == CSSPrimitiveValue.CSS_IDENT) {
                     checkIdentType(cssName, value);
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
 
                     checkValidity(cssName, getAllowed(), ident);
                 } else if (type == CSSPrimitiveValue.CSS_NUMBER) {
@@ -1021,13 +1068,13 @@ public class PrimitivePropertyBuilders {
                     PropertyValue replacement = new PropertyValue(
                             CSSPrimitiveValue.CSS_IDENT, weight.toString(), weight.toString());
                     replacement.setIdentValue(weight);
-                    return Collections.singletonList(
+                    return singletonList(
                             new PropertyDeclaration(cssName, replacement, important, origin));
 
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
         }
 
@@ -1046,12 +1093,14 @@ public class PrimitivePropertyBuilders {
     }
 
     public static class FSPageHeight extends LengthLikeWithAuto {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
     }
 
     public static class FSPageWidth extends LengthLikeWithAuto {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
@@ -1062,12 +1111,14 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.START, IdentValue.AUTO });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
     }
 
     public static class FSPageOrientation extends SingleIdent {
+        @Override
         protected BitSet getAllowed() {
             return PAGE_ORIENTATIONS;
         }
@@ -1078,23 +1129,25 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.AUTO, IdentValue.EMBED });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
     }
 
     public static class FSPDFFontEncoding extends AbstractPropertyBuilder {
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
-            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
+            CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentOrString(cssName, value);
 
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                     // Convert to string
-                    return Collections.singletonList(
+                    return singletonList(
                             new PropertyDeclaration(
                                     cssName,
                                     new PropertyValue(
@@ -1106,7 +1159,7 @@ public class PrimitivePropertyBuilders {
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
         }
     }
@@ -1121,6 +1174,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.PAGINATE, IdentValue.AUTO });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1130,18 +1184,21 @@ public class PrimitivePropertyBuilders {
        private static final BitSet ALLOWED = setFor(
                new IdentValue[] { IdentValue.LINE, IdentValue.BLOCK });
 
+       @Override
        protected BitSet getAllowed() {
            return ALLOWED;
        }
     }
 
     public static class FSFitImagesToWidth extends LengthLikeWithAuto {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
      }
 
     public static class Height extends LengthLikeWithAuto {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
@@ -1151,6 +1208,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.DYNAMIC, IdentValue.STATIC });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1161,6 +1219,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.AUTO, IdentValue.KEEP });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1171,6 +1230,7 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.NONE, IdentValue.CREATE });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1187,22 +1247,23 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.NORMAL });
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentLengthNumberOrPercentType(cssName, value);
 
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
                     checkValidity(cssName, ALLOWED, ident);
                 } else if (value.getFloatValue() < 0.0) {
                     throw new CSSParseException("line-height may not be negative", -1);
                 }
             }
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
         }
     }
@@ -1211,12 +1272,14 @@ public class PrimitivePropertyBuilders {
     }
 
     public static class ListStylePosition extends SingleIdent {
+        @Override
         protected BitSet getAllowed() {
             return LIST_STYLE_POSITIONS;
         }
     }
 
     public static class ListStyleType extends SingleIdent {
+        @Override
         protected BitSet getAllowed() {
             return LIST_STYLE_TYPES;
         }
@@ -1235,12 +1298,14 @@ public class PrimitivePropertyBuilders {
     }
 
     public static class MaxHeight extends LengthLikeWithNone {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
     }
 
     public static class MaxWidth extends LengthLikeWithNone {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
@@ -1253,14 +1318,15 @@ public class PrimitivePropertyBuilders {
     }
 
     public static class Orphans extends PlainInteger {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
     }
 
     public static class Opacity extends AbstractPropertyBuilder {
-        public List buildDeclarations(CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
             checkNumberType(cssName, value);
@@ -1283,6 +1349,7 @@ public class PrimitivePropertyBuilders {
 
         // We only support visible or hidden for now
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1308,18 +1375,20 @@ public class PrimitivePropertyBuilders {
                         IdentValue.AVOID, IdentValue.LEFT,
                         IdentValue.RIGHT });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
     }
 
     public static class Page extends AbstractPropertyBuilder {
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
-            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
+            CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentType(cssName, value);
 
                 if (! value.getStringValue().equals("auto")) {
@@ -1329,7 +1398,7 @@ public class PrimitivePropertyBuilders {
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
 
 
@@ -1344,6 +1413,7 @@ public class PrimitivePropertyBuilders {
                         IdentValue.AVOID, IdentValue.LEFT,
                         IdentValue.RIGHT });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1355,6 +1425,7 @@ public class PrimitivePropertyBuilders {
                 new IdentValue[] {
                         IdentValue.AVOID, IdentValue.AUTO });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1367,23 +1438,24 @@ public class PrimitivePropertyBuilders {
                         IdentValue.STATIC, IdentValue.RELATIVE,
                         IdentValue.ABSOLUTE, IdentValue.FIXED });
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                     checkIdentType(cssName, value);
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
 
                     checkValidity(cssName, getAllowed(), ident);
-                } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+                } else if (value.getPropertyValueType() == VALUE_TYPE_FUNCTION) {
                     FSFunction function = value.getFunction();
-                    if (function.getName().equals("running")) {
-                        List params = function.getParameters();
+                    if (function.is("running")) {
+                        List<PropertyValue> params = function.getParameters();
                         if (params.size() == 1) {
-                            PropertyValue param = (PropertyValue)params.get(0);
+                            PropertyValue param = params.get(0);
                             if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT) {
                                 throw new CSSParseException("The running function takes an identifier as a parameter", -1);
                             }
@@ -1398,7 +1470,7 @@ public class PrimitivePropertyBuilders {
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
 
         }
@@ -1415,6 +1487,7 @@ public class PrimitivePropertyBuilders {
     }
 
     public static class TabSize extends PlainInteger {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
@@ -1429,6 +1502,7 @@ public class PrimitivePropertyBuilders {
                 new IdentValue[] {
                         IdentValue.AUTO, IdentValue.FIXED });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1441,6 +1515,7 @@ public class PrimitivePropertyBuilders {
                         IdentValue.LEFT, IdentValue.RIGHT,
                         IdentValue.CENTER, IdentValue.JUSTIFY });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1458,39 +1533,40 @@ public class PrimitivePropertyBuilders {
             return ALLOWED;
         }
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             if (values.size() == 1) {
-                CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+                CSSPrimitiveValue value = values.get(0);
                 boolean goWithSingle = false;
-                if (value.getCssValueType() == CSSPrimitiveValue.CSS_INHERIT) {
+                if (value.getCssValueType() == CSS_INHERIT) {
                     goWithSingle = true;
                 } else {
                     checkIdentType(CSSName.TEXT_DECORATION, value);
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
                     if (ident == IdentValue.NONE) {
                         goWithSingle = true;
                     }
                 }
 
                 if (goWithSingle) {
-                    return Collections.singletonList(
+                    return singletonList(
                             new PropertyDeclaration(cssName, value, important, origin));
                 }
             }
 
-            for (Iterator i = values.iterator(); i.hasNext(); ) {
-                PropertyValue value = (PropertyValue)i.next();
+            for (CSSPrimitiveValue cssPrimitiveValue : values) {
+                PropertyValue value = (PropertyValue) cssPrimitiveValue;
                 checkInheritAllowed(value, false);
                 checkIdentType(cssName, value);
-                IdentValue ident = checkIdent(cssName, value);
+                IdentValue ident = checkIdent(value);
                 if (ident == IdentValue.NONE) {
                     throw new CSSParseException("Value none may not be used in this position", -1);
                 }
                 checkValidity(cssName, getAllowed(), ident);
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, new PropertyValue(values), important, origin));
 
         }
@@ -1506,6 +1582,7 @@ public class PrimitivePropertyBuilders {
                         IdentValue.CAPITALIZE, IdentValue.UPPERCASE,
                         IdentValue.LOWERCASE, IdentValue.NONE });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1521,6 +1598,7 @@ public class PrimitivePropertyBuilders {
                         IdentValue.TEXT_TOP, IdentValue.MIDDLE,
                         IdentValue.BOTTOM, IdentValue.TEXT_BOTTOM });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1532,6 +1610,7 @@ public class PrimitivePropertyBuilders {
                 new IdentValue[] {
                         IdentValue.VISIBLE, IdentValue.HIDDEN, IdentValue.COLLAPSE });
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1544,6 +1623,19 @@ public class PrimitivePropertyBuilders {
                         IdentValue.NORMAL, IdentValue.PRE, IdentValue.NOWRAP,
                         IdentValue.PRE_WRAP, IdentValue.PRE_LINE});
 
+        @Override
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+    }
+
+    public static class WordBreak extends SingleIdent {
+        // normal | break-all
+        private static final BitSet ALLOWED = setFor(
+                new IdentValue[] {
+                        IdentValue.NORMAL, IdentValue.BREAK_ALL});
+
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1555,6 +1647,7 @@ public class PrimitivePropertyBuilders {
                 new IdentValue[] {
                         IdentValue.NORMAL, IdentValue.BREAK_WORD});
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1566,6 +1659,7 @@ public class PrimitivePropertyBuilders {
                 new IdentValue[] {
                         IdentValue.NONE, IdentValue.MANUAL, IdentValue.AUTO});
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
@@ -1577,18 +1671,21 @@ public class PrimitivePropertyBuilders {
                 new IdentValue[] {
                         IdentValue.BORDER_BOX, IdentValue.CONTENT_BOX});
 
+        @Override
         protected BitSet getAllowed() {
             return ALLOWED;
         }
     }
 
     public static class Widows extends PlainInteger {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
     }
 
     public static class Width extends LengthLikeWithAuto {
+        @Override
         protected boolean isNegativeValuesAllowed() {
             return false;
         }
@@ -1602,35 +1699,37 @@ public class PrimitivePropertyBuilders {
         private static final BitSet ALLOWED = setFor(
                 new IdentValue[] { IdentValue.AUTO });
 
-        public List buildDeclarations(
-                CSSName cssName, List values, int origin, boolean important, boolean inheritAllowed) {
-            checkValueCount(cssName, 1, values.size());
-            CSSPrimitiveValue value = (CSSPrimitiveValue)values.get(0);
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
+            CSSPrimitiveValue value = values.get(0);
             checkInheritAllowed(value, inheritAllowed);
-            if (value.getCssValueType() != CSSPrimitiveValue.CSS_INHERIT) {
+            if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentOrIntegerType(cssName, value);
 
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                    IdentValue ident = checkIdent(cssName, value);
+                    IdentValue ident = checkIdent(value);
                     checkValidity(cssName, ALLOWED, ident);
                 }
             }
 
-            return Collections.singletonList(
+            return singletonList(
                     new PropertyDeclaration(cssName, value, important, origin));
         }
     }
 
+
 	private static List<PropertyDeclaration> createTwoValueResponse(
 			CSSName cssName, CSSPrimitiveValue value1,
 			CSSPrimitiveValue value2,
-			int origin, boolean important) {
+			Origin origin, boolean important) {
 
 		List<CSSPrimitiveValue> values = Arrays.asList(value1, value2);
 
 		PropertyDeclaration result = new PropertyDeclaration(cssName,
-				new PropertyValue(values), important, origin);
+				new PropertyValue(asList(value1, value2)), important, origin);
 
-        return Collections.singletonList(result);
+        return singletonList(result);
     }
 }

@@ -19,15 +19,17 @@
  */
 package org.xhtmlrenderer.css.extend;
 
+import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Node;
 
 /**
  * In XML, an application may or may not know how to find the ID and/or class
- * and/or attribute defaults of an element. <p/>
- * <p/>
+ * and/or attribute defaults of an element. <p>
+ * <p>
  * To enable matching of identity conditions, class conditions, language, and
  * attribute defaults you need to provide an AttributeResolver to the StyleMap.
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * NOTE: The application is required to look in a document's internal subset for
  * default attribute values, but the application is not required to use its
  * built-in knowledge of a namespace or look in the external subset.
@@ -37,97 +39,65 @@ package org.xhtmlrenderer.css.extend;
 public interface AttributeResolver {
 
     /**
-     * May return null. Required to return null if attribute does not exist and
+     * Required to return null if attribute does not exist, and
      * not null if attribute exists.
      */
-    public String getAttributeValue(Object e, String attrName);
-    
+    @Nullable
+    String getAttributeValue(Node e, String attrName);
+
     /**
-     * May return null. Required to return null if attribute does not exist and
+     * Required to return null if attribute does not exist and
      * not null if attribute exists.
      */
-    public String getAttributeValue(Object e, String namespaceURI, String attrName);
+    @Nullable
+    String getAttributeValue(Node e, String namespaceURI, String attrName);
+
+    @Nullable
+    String getClass(Node e);
+
+    @Nullable
+    String getID(Node e);
 
     /**
-     * may return null
-     *
-     * @param e PARAM
-     * @return The class value
-     */
-    public String getClass(Object e);
-
-    /**
-     * may return null
-     *
-     * @param e PARAM
-     * @return The iD value
-     */
-    public String getID(Object e);
-
-    /**
-     * may return null
-     *
-     * @param e PARAM
      * @return The non css styling (specificity 0,0,0,0 on author styles, according to css 2.1)
      */
-    public String getNonCssStyling(Object e);
+    @Nullable
+    String getNonCssStyling(Node e);
 
     /**
-     * may return null
-     *
-     * @param e PARAM
      * @return The elementStyling value
      *         (corresponding to xhtml style attribute, specificity 1,0,0,0 according to css 2.1)
      */
-    public String getElementStyling(Object e);
+    @Nullable
+    String getElementStyling(Node e);
 
-    /**
-     * may return null
-     *
-     * @param e PARAM
-     * @return The lang value
-     */
-    public String getLang(Object e);
+    @Nullable
+    String getLang(Node e);
 
     /**
      * Gets the link attribute of the AttributeResolver object
-     *
-     * @param e PARAM
-     * @return The link value
      */
-    public boolean isLink(Object e);
+    boolean isLink(Node e);
 
     /**
      * Gets the visited attribute of the AttributeResolver object
-     *
-     * @param e PARAM
-     * @return The visited value
      */
-    public boolean isVisited(Object e);
+    boolean isVisited(Node e);
 
     /**
      * Gets the hover attribute of the AttributeResolver object
-     *
-     * @param e PARAM
-     * @return The hover value
      */
-    public boolean isHover(Object e);
+    boolean isHover(Node e);
 
     /**
      * Gets the active attribute of the AttributeResolver object
-     *
-     * @param e PARAM
-     * @return The active value
      */
-    public boolean isActive(Object e);
+    boolean isActive(Node e);
 
     /**
      * Gets the focus attribute of the AttributeResolver object
-     *
-     * @param e PARAM
-     * @return The focus value
      */
-    public boolean isFocus(Object e);
+    boolean isFocus(Node e);
 
 }
 

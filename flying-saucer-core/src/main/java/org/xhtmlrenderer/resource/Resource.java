@@ -19,23 +19,18 @@
  */
 package org.xhtmlrenderer.resource;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xml.sax.InputSource;
 
 /**
- *
  * @author Patrick Wright
  */
 public interface Resource {
+    @Nullable
+    @CheckReturnValue
     InputSource getResourceInputSource();
-    long getResourceLoadTimeStamp();    
-}
 
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.1  2005/02/03 20:39:35  pdoubleya
- * Added to CVS.
- *
- *
- */
+    @CheckReturnValue
+    long getResourceLoadTimeStamp();
+}

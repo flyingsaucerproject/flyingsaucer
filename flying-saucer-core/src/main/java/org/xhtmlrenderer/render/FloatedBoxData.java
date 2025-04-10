@@ -19,40 +19,48 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.layout.FloatManager;
 import org.xhtmlrenderer.layout.Layer;
 
 /**
  * A bean containing additional information used by floated boxes.  The
- * <code>marginFromSibiling</code> property contains the margin from our 
+ * {@code marginFromSibling} property contains the margin from our
  * previous inflow block level sibling (if it exists).  It is necessary to
  * correctly position the box when collapsing vertical margins.
  */
 public class FloatedBoxData {
+    @Nullable
     private Layer _drawingLayer;
+    @Nullable
     private FloatManager _manager;
     private int _marginFromSibling;
-    
+
+    @Nullable
+    @CheckReturnValue
     public Layer getDrawingLayer() {
         return _drawingLayer;
     }
-    
+
     public void setDrawingLayer(Layer drawingLayer) {
         _drawingLayer = drawingLayer;
     }
-    
+
+    @Nullable
+    @CheckReturnValue
     public FloatManager getManager() {
         return _manager;
     }
-    
-    public void setManager(FloatManager manager) {
+
+    public void setManager(@Nullable FloatManager manager) {
         _manager = manager;
     }
-    
+
     public int getMarginFromSibling() {
         return _marginFromSibling;
     }
-    
+
     public void setMarginFromSibling(int marginFromSibling) {
         _marginFromSibling = marginFromSibling;
     }

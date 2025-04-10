@@ -19,123 +19,72 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
-import java.util.ArrayList;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-
+import static java.util.Locale.ROOT;
 
 /**
  * A reference to a stylesheet. If no stylesheet is set, the matcher will try to
  * find the stylesheet by uri, first from the StylesheetFactory cache, then by
  * loading the uri if it is not cached. <p>
  *
- * Therefore, either a stylesheet must be set, or a uri must be set <p>
+ * Therefore, either a stylesheet must be set, or an uri must be set <p>
  *
  * Origin defaults to USER_AGENT and media defaults to "all"
  *
  * @author   Torbjoern Gannholm
  */
 public class StylesheetInfo {
-
-    /** Description of the Field */
-    private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also might save a lookup if it's already looked up
-            /** Description of the Field */
-    private String title;
-    /** Description of the Field */
-    private String uri;
-    /** Description of the Field */
-    private int origin = USER_AGENT;
-    /** Description of the Field */
-    private String type;
-    
-    private List mediaTypes = new ArrayList();
-    
-    private String content;
-
-    /** Origin of stylesheet - user agent  */
-    public final static int USER_AGENT = 0;
-
-    /** Origin of stylesheet - user  */
-    public final static int USER = 1;
-
-    /** Origin of stylesheet - author  */
-    public final static int AUTHOR = 2;
-    
+    private final String uri;
+    private final Origin origin;
+    private final List<String> mediaTypes;
+    @Nullable
+    private final String content;
 
     /**
-     * @param m  a single media identifier
+     * Origin of stylesheet
+     */
+    public enum Origin {
+        USER_AGENT,
+        USER,
+        AUTHOR
+    }
+
+    public StylesheetInfo(Origin origin, String uri, List<String> mediaTypes,
+                          @Nullable String content) {
+        this.origin = origin;
+        this.uri = uri;
+        this.mediaTypes = mediaTypes;
+        this.content = content;
+    }
+
+    /**
+     * Checks if this stylesheet applies to given medium
+     *
+     * @param media  a single media identifier
      * @return   true if the stylesheet referenced applies to the medium
      */
-    public boolean appliesToMedia(String m) {
-        return m.toLowerCase().equals("all") || 
-            mediaTypes.contains("all") || mediaTypes.contains(m.toLowerCase());
+    public boolean appliesToMedia(String media) {
+        String mLowerCase = media.toLowerCase(ROOT);
+        return mLowerCase.equals("all") ||
+            mediaTypes.contains("all") || mediaTypes.contains(mLowerCase);
     }
 
-    /**
-     * Sets the uri attribute of the StylesheetInfo object
-     *
-     * @param uri  The new uri value
-     */
-    public void setUri( String uri ) {
-        this.uri = uri;
-    }
-
-    /**
-     * Sets the media attribute of the StylesheetInfo object
-     *
-     * @param media  The new media value
-     */
-    public void setMedia( String media ) {
-        String[] mediaTypes = media.split(",");
-        List l = new ArrayList(mediaTypes.length);
-        for (int i = 0; i < mediaTypes.length; i++) {
-            l.add(mediaTypes[i].trim().toLowerCase());
+    public static List<String> mediaTypes(String media) {
+        if (media.isEmpty()) {
+            //default for HTML is "screen", but that is silly and firefox seems to assume "all"
+            return List.of("all");
         }
-        this.mediaTypes = l;
-    }
-    
-    public void setMedia(List mediaTypes) {
-        this.mediaTypes = mediaTypes;
-    }
-    
-    public void addMedium(String medium) {
-        mediaTypes.add(medium);
-    }
 
-    /**
-     * Sets the origin attribute of the StylesheetInfo object
-     *
-     * @param origin  The new origin value
-     */
-    public void setOrigin( int origin ) {
-        this.origin = origin;
-    }
-
-    /**
-     * Sets the type attribute of the StylesheetInfo object
-     *
-     * @param type  The new type value
-     */
-    public void setType( String type ) {
-        this.type = type;
-    }
-
-    /**
-     * Sets the title attribute of the StylesheetInfo object
-     *
-     * @param title  The new title value
-     */
-    public void setTitle( String title ) {
-        this.title = title;
-    }
-
-    /**
-     * Sets the stylesheet attribute of the StylesheetInfo object
-     *
-     * @param stylesheet  The new stylesheet value
-     */
-    public void setStylesheet( Stylesheet stylesheet ) {
-        this.stylesheet = stylesheet;
+        return Stream.of(media.split(","))
+                .map(mediaType -> mediaType.trim().toLowerCase(ROOT))
+                .toList();
     }
 
     /**
@@ -143,6 +92,7 @@ public class StylesheetInfo {
      *
      * @return   The uri value
      */
+    @CheckReturnValue
     public String getUri() {
         return uri;
     }
@@ -152,7 +102,9 @@ public class StylesheetInfo {
      *
      * @return   The media value
      */
-    public List getMedia() {
+    @NonNull
+    @CheckReturnValue
+    public List<String> getMedia() {
         return mediaTypes;
     }
 
@@ -161,47 +113,18 @@ public class StylesheetInfo {
      *
      * @return   The origin value
      */
-    public int getOrigin() {
+    public Origin getOrigin() {
         return origin;
     }
 
-    /**
-     * Gets the type attribute of the StylesheetInfo object
-     *
-     * @return   The type value
-     */
-    public String getType() {
-        return type;
+    @CheckReturnValue
+    public Optional<String> getContent() {
+        return Optional.ofNullable(content);
     }
 
-    /**
-     * Gets the title attribute of the StylesheetInfo object
-     *
-     * @return   The title value
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Gets the stylesheet attribute of the StylesheetInfo object
-     *
-     * @return   The stylesheet value
-     */
-    public Stylesheet getStylesheet() {
-        return stylesheet;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-    
-    public boolean isInline() {
-        return this.content != null;
+    @Override
+    public String toString() {
+        return "CSS %s".formatted(uri);
     }
 }
 

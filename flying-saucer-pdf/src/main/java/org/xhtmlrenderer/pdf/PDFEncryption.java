@@ -22,26 +22,22 @@ package org.xhtmlrenderer.pdf;
 import com.lowagie.text.pdf.PdfWriter;
 import org.xhtmlrenderer.util.ArrayUtil;
 
+import static com.lowagie.text.pdf.PdfWriter.STANDARD_ENCRYPTION_128;
+
 public class PDFEncryption {
-    private byte[] _userPassword;
-    private byte[] _ownerPassword;
-    private int _allowedPrivileges = PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_COPY | PdfWriter.ALLOW_FILL_IN;
-    private int _encryptionType = PdfWriter.STANDARD_ENCRYPTION_128;
-    
-    public PDFEncryption() {
-    }
+    private final byte[] _userPassword;
+    private final byte[] _ownerPassword;
+    private final int _allowedPrivileges;
+    private final int _encryptionType;
 
     public PDFEncryption(byte[] userPassword, byte[] ownerPassword) {
-        _userPassword = ArrayUtil.cloneOrEmpty(userPassword);
-        _ownerPassword = ArrayUtil.cloneOrEmpty(ownerPassword);
+        this(userPassword, ownerPassword, PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_COPY | PdfWriter.ALLOW_FILL_IN);
     }
 
     public PDFEncryption(byte[] userPassword, byte[] ownerPassword, int allowedPrivileges) {
-        _userPassword = ArrayUtil.cloneOrEmpty(userPassword);
-        _ownerPassword = ArrayUtil.cloneOrEmpty(ownerPassword);
-        _allowedPrivileges = allowedPrivileges;
+        this(userPassword, ownerPassword, allowedPrivileges, STANDARD_ENCRYPTION_128);
     }
-    
+
     public PDFEncryption(byte[] userPassword, byte[] ownerPassword, int allowedPrivileges, int encryptionType) {
         _userPassword = ArrayUtil.cloneOrEmpty(userPassword);
         _ownerPassword = ArrayUtil.cloneOrEmpty(ownerPassword);
@@ -53,34 +49,17 @@ public class PDFEncryption {
         return ArrayUtil.cloneOrEmpty(_userPassword);
     }
 
-    public void setUserPassword(byte[] userPassword) {
-        _userPassword = ArrayUtil.cloneOrEmpty(userPassword);
-    }
-
     public byte[] getOwnerPassword() {
         return ArrayUtil.cloneOrEmpty(_ownerPassword);
-    }
-
-    public void setOwnerPassword(byte[] ownerPassword) {
-        _ownerPassword = ArrayUtil.cloneOrEmpty(ownerPassword);
     }
 
     public int getAllowedPrivileges() {
         return _allowedPrivileges;
     }
-        
-    public void setAllowedPrivileges(int allowedPrivileges) {
-        _allowedPrivileges = allowedPrivileges;
-    }
-    
+
     public int getEncryptionType() {
         return _encryptionType;
     }
-
-    public void setEncryptionType(int encryptionType ) {
-        _encryptionType  = encryptionType;
-    }
-    
 }
 
 

@@ -19,10 +19,12 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
+import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
@@ -44,25 +46,32 @@ public class MutableFSImage extends AWTFSImage {
         img = ImageUtil.createTransparentImage(10, 10);
     }
 
+    @Override
     public synchronized BufferedImage getImage() {
         return img;
     }
 
+    @Override
     public synchronized int getWidth() {
         return img.getWidth(null);
     }
 
+    @Override
     public synchronized int getHeight() {
         return img.getHeight(null);
     }
 
-    public synchronized void scale(int width, int height) {
+    @NonNull
+    @CheckReturnValue
+    @Override
+    public synchronized FSImage scale(int width, int height) {
         img.getScaledInstance(width, height, Image.SCALE_DEFAULT);
+        return this;
     }
 
     public synchronized void setImage(String uri, BufferedImage newImg, final boolean wasScaled) {
         assert EventQueue.isDispatchThread() : "setImage() must be called on EDT";
-        
+
         img = newImg;
         loaded = true;
         XRLog.general(Level.FINE, "Mutable image " + uri + " loaded, repaint requested");

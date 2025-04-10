@@ -19,13 +19,13 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
  * An ImageReplacedElement is a {@link ReplacedElement} that contains a {@link java.awt.Image}. It's used as a
@@ -33,7 +33,7 @@ import org.xhtmlrenderer.util.ImageUtil;
  */
 public class ImageReplacedElement implements ReplacedElement {
     protected Image _image;
-    
+
     private Point _location = new Point(0, 0);
 
     protected ImageReplacedElement() {
@@ -41,7 +41,7 @@ public class ImageReplacedElement implements ReplacedElement {
 
     /**
      * Creates a new ImageReplacedElement and scales it to the size specified if either width or height has a valid
-     * value (values are > -1), otherwise original size is preserved. The idea is that the image was loaded at
+     * value (values are greater than -1), otherwise original size is preserved. The idea is that the image was loaded at
      * a certain size (that's the Image instance here) and that at the time we create the ImageReplacedElement
      * we have a target W/H we want to use.
      *
@@ -50,22 +50,22 @@ public class ImageReplacedElement implements ReplacedElement {
      * @param targetHeight The height we'd like the image to have, in pixels.
      */
     public ImageReplacedElement(Image image, int targetWidth, int targetHeight) {
-		if (targetWidth > 0 || targetHeight > 0) {
+        if (targetWidth > 0 || targetHeight > 0) {
             int w = image.getWidth(null);
             int h = image.getHeight(null);
 
-		    int newW = targetWidth;
-		    int newH = targetHeight;
+            int newW = targetWidth;
+            int newH = targetHeight;
 
-		    if (newW == -1) {
-		        newW = (int)(w * ((double)newH / h));
-		    }
+            if (newW == -1) {
+                newW = (int)(w * ((double)newH / h));
+            }
 
-	        if (newH == -1) {
-	            newH = (int)(h * ((double)newW / w));
-	        }
+            if (newH == -1) {
+                newH = (int)(h * ((double)newW / w));
+            }
 
-			if (w != newW || h != newH) {
+            if (w != newW || h != newH) {
                 if (image instanceof BufferedImage) {
                     image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
                 } else {
@@ -82,49 +82,50 @@ public class ImageReplacedElement implements ReplacedElement {
         _image = image;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void detach(LayoutContext c) {
         // nothing to do in this case
     }
 
-    /** {@inheritDoc} */
+    @Override
     public int getIntrinsicHeight() {
         return _image.getHeight(null);
     }
 
-    /** {@inheritDoc} */
+    @Override
     public int getIntrinsicWidth() {
         return _image.getWidth(null);
     }
 
-    /** {@inheritDoc} */
+    @Override
     public Point getLocation() {
         return _location;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean isRequiresInteractivePaint() {
         return true;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }
 
     /**
-     * The image we're replacing.
-     * @return see desc
+     * The image we're replacing
      */
     public Image getImage() {
         return _image;
     }
 
-	public int getBaseline() {
-		return 0;
-	}
+    @Override
+    public int getBaseline() {
+        return 0;
+    }
 
-	public boolean hasBaseline() {
-		return false;
-	}
+    @Override
+    public boolean hasBaseline() {
+        return false;
+    }
 }

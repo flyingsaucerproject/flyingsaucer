@@ -11,7 +11,7 @@
                action="window.status=null;"/>
     </handlers>
   </binding>
-  
+
   <binding id="email">
   	<handlers>
       <handler event="click" button="0"
@@ -39,7 +39,7 @@
       </constructor>
     </implementation>
   </binding>
-  
+
   <binding id="footnoteref">
   	<implementation>
   		<method name="showfootnote">
@@ -65,7 +65,7 @@
   			</body>
 			</method>
   	</implementation>
-  	
+
   	<handlers>
   		<handler event="mouseover"
                action="this.showfootnote(true);"/>

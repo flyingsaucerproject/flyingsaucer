@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
+import org.jspecify.annotations.Nullable;
+
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -27,21 +29,15 @@ import javax.swing.text.PlainDocument;
  * When applied to a Swing component, limits the total number of
  * characters that can be entered.
  */
-class SizeLimitedDocument extends PlainDocument
-{
-    private static final long serialVersionUID = 1L;
+class SizeLimitedDocument extends PlainDocument {
+    private final int _maximumLength;
 
-    private int _maximumLength;
-    
     public SizeLimitedDocument(int maximumLength) {
         _maximumLength = maximumLength;
     }
-    
-    public int getMaximumLength() {
-        return _maximumLength;
-    }
 
-    public void insertString(int offset, String str, AttributeSet attr)
+    @Override
+    public void insertString(int offset, @Nullable String str, AttributeSet attr)
         throws BadLocationException {
         if (str == null) {
             return;

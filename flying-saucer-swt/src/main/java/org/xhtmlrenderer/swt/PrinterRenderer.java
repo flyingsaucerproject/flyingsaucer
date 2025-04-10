@@ -19,20 +19,15 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.Shell;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -48,16 +43,22 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.awt.*;
+import java.util.List;
+import java.util.logging.Level;
+
+import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_PRINT;
+
 /**
- * A renderer for a SWT Printer. Instances must be disposed with
+ * A renderer for an SWT Printer. Instances must be disposed with
  * {@link PrinterRenderer#dispose()}.
- * 
+ *
  * @author Vianney le Clément
  */
 public class PrinterRenderer implements UserInterface {
 
     private final Printer _printer;
-    private SharedContext _sharedContext;
+    private final SharedContext _sharedContext;
 
     public PrinterRenderer(Printer printer) {
         this(printer, new NaiveUserAgent(printer));
@@ -66,15 +67,12 @@ public class PrinterRenderer implements UserInterface {
     public PrinterRenderer(Printer printer, UserAgentCallback uac) {
         _printer = printer;
         _sharedContext = new SharedContext(uac, new SWTFontResolver(printer),
-            new SWTReplacedElementFactory(), new SWTTextRenderer(), printer
-                .getDPI().y);
-        _sharedContext.setPrint(true);
-        _sharedContext.setInteractive(false);
+            new SWTReplacedElementFactory(), new SWTTextRenderer(), printer.getDPI().y);
     }
 
     /**
-     * Dispose resources used by this {@link PrinterRenderer}. This does NOT
-     * dispose the attached {@link Printer}.
+     * Dispose resources.
+     * This does NOT dispose the attached {@link Printer}.
      */
     public void dispose() {
         // dispose used fonts
@@ -93,26 +91,15 @@ public class PrinterRenderer implements UserInterface {
      * @return a new {@link LayoutContext}
      */
     protected LayoutContext newLayoutcontext(GC gc) {
-        LayoutContext result = _sharedContext.newLayoutContextInstance();
-
-        result.setFontContext(new SWTFontContext(gc));
-        _sharedContext.getTextRenderer().setup(result.getFontContext());
-
+        SWTFontContext fontContext = new SWTFontContext(gc);
+        LayoutContext result = _sharedContext.newLayoutContextInstance(fontContext);
+        _sharedContext.getTextRenderer().setup(fontContext);
         return result;
     }
 
-    /**
-     * @param gc
-     * @return a new {@link RenderingContext}
-     */
     protected RenderingContext newRenderingContext(GC gc) {
-        RenderingContext result = _sharedContext.newRenderingContextInstance();
-
-        result.setFontContext(new SWTFontContext(gc));
-        result.setOutputDevice(new SWTOutputDevice(gc));
-
+        RenderingContext result = _sharedContext.newRenderingContextInstance(new SWTOutputDevice(gc), new SWTFontContext(gc));
         _sharedContext.getTextRenderer().setup(result.getFontContext());
-
         return result;
     }
 
@@ -162,12 +149,12 @@ public class PrinterRenderer implements UserInterface {
 
             Layer root = rootBox.getLayer();
             Dimension intrinsic_size = root.getPaintingDimension(layout);
-            root.trimEmptyPages(layout, intrinsic_size.height);
-            root.assignPagePaintingPositions(layout, Layer.PAGED_MODE_PRINT);
+            root.trimEmptyPages(intrinsic_size.height);
+            root.assignPagePaintingPositions(layout, PAGED_MODE_PRINT);
 
             // RENDER
             c = newRenderingContext(gc);
-            List pages = root.getPages();
+            List<PageBox> pages = root.getPages();
             c.setPageCount(pages.size());
             if (startPage < 0) {
                 startPage = 0;
@@ -181,23 +168,23 @@ public class PrinterRenderer implements UserInterface {
             Shape working = c.getOutputDevice().getClip();
 
             for (int i = startPage; i <= endPage; i++) {
-                PageBox page = (PageBox) pages.get(i);
+                PageBox page = pages.get(i);
                 c.setPage(i, page);
 
                 if (!_printer.startPage()) {
                     return;
                 }
-                
-                page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
-                page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
-                page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
+
+                page.paintBackground(c, 0, PAGED_MODE_PRINT);
+                page.paintMarginAreas(c, 0, PAGED_MODE_PRINT);
+                page.paintBorder(c, 0, PAGED_MODE_PRINT);
 
                 Rectangle content = page.getPrintClippingBounds(c);
                 c.getOutputDevice().clip(content);
 
                 int top = -page.getPaintingTop()
-                        + page.getMarginBorderPadding(c, CalculatedStyle.TOP);
-                int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+                        + page.getMarginBorderPadding(c, Edge.TOP);
+                int left = page.getMarginBorderPadding(c, Edge.LEFT);
 
                 c.getOutputDevice().translate(left, top);
                 root.paint(c);
@@ -223,6 +210,7 @@ public class PrinterRenderer implements UserInterface {
         print(loadDocument(url), url, nsh, jobName, startPage, endPage);
     }
 
+    @Nullable
     protected Document loadDocument(final String uri) {
         XMLResource xmlResource = _sharedContext.getUac().getXMLResource(uri);
         if (xmlResource == null) {
@@ -231,14 +219,17 @@ public class PrinterRenderer implements UserInterface {
         return xmlResource.getDocument();
     }
 
+    @Override
     public boolean isActive(Element e) {
         return false;
     }
 
+    @Override
     public boolean isFocus(Element e) {
         return false;
     }
 
+    @Override
     public boolean isHover(Element e) {
         return false;
     }

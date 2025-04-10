@@ -1,5 +1,5 @@
 FLYING SAUCER XML/CSS RENDERER LICENSE COMMENTS
-Copyright (C) 2015 Patrick Wright 
+Copyright (C) 2015 Patrick Wright
 https://code.google.com/p/flying-saucer/
 
 All source code to Flying Saucer itself is licensed under the GNU Lesser General
@@ -7,14 +7,14 @@ Public License (LGPL); you can redistribute it and/or modify it under the terms
 of the GNU Lesser General Public License as published by the Free Software
 Foundation, either version 2.1 of the License, or (at your option) any later version.
 A copy of the LGPL can be found
-on the website of the Free Software Foundation, at 
+on the website of the Free Software Foundation, at
 http://www.gnu.org/copyleft/lesser.html, and in our distributions under
 LICENSE-LGPL-2.1.txt or LICENSE-LGPL-3.txt.
 
-Flying Saucer relies on several other free or open source projects in 
+Flying Saucer relies on several other free or open source projects in
 order to build and run. Where binary Java JAR files are included, we include
-only the unmodified binary releases as provided by those other projects. 
-Source code for the respective projects can be found on the project 
+only the unmodified binary releases as provided by those other projects.
+Source code for the respective projects can be found on the project
 websites, listed below.
 
 Java projects that are used for building and running Flying Saucer are:
@@ -31,16 +31,10 @@ http://ant.apache.org/
 License: Apache Software License Version 2.0
 Not packaged with release; development using version 1.6.x
 
-iText (PDF generation)
-http://itextpdf.com/
-License: Mozilla Public License Version 1.1
-Using version 2.1.7.
-Included as lib/iText-2.1.7.jar
-
-iText 5 (PDF generation only used in flying-saucer-pdf-itext5)
-http://itextpdf.com/
-License: Affero General Public License
-Using version 5.3.0.
+OpenPDF (PDF generation)
+https://github.com/LibrePDF/OpenPDF
+License: Mozilla Public License Version 2.0
+License: GNU Lesser General Public License 2.1
 
 SVGSalamander (SVG rendering in demo)
 https://svgsalamander.java.net/
@@ -68,13 +62,13 @@ Xilize Text to HTML library
 http://xilize.sourceforge.net/
 License: GPL
 Used version 3.x, only to produce documentation
-Shipped with our source bundle as a convenience for developers rebuilding 
+Shipped with our source bundle as a convenience for developers rebuilding
 documentation; we do not use nor link to the Xilize libraries at runtime
 
 BeanShell
 http://www.beanshell.org
 License: LGPL (dual-license with SPL)
-Use version 2.x as Xilize has a dependency on it; used only to produce 
+Use version 2.x as Xilize has a dependency on it; used only to produce
 documentation.
 
 XML-APIs (extracted from Apache Xerces-2)

@@ -19,17 +19,17 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Point;
-
+import com.lowagie.text.pdf.PdfTemplate;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.util.*;
+import org.xhtmlrenderer.util.Util;
 
-import com.lowagie.text.pdf.PdfTemplate;
+import java.awt.*;
 
 public abstract class AbstractFormField implements ITextReplacedElement {
     protected static final String DEFAULT_CHECKED_STATE = "Yes";
@@ -43,6 +43,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     private int _width;
     private int _height;
 
+    @Nullable
     private String _fieldName;
 
     protected abstract String getFieldType();
@@ -111,31 +112,37 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     protected boolean isReadOnly(Element e) {
         return !Util.isNullOrEmpty(e.getAttribute("readonly"));
     }
-    
+
     protected boolean isSelected(Element e) {
         return Util.isNullOrEmpty(e.getAttribute("selected"));
     }
 
+    @Override
     public void detach(LayoutContext c) {
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return getHeight();
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return getWidth();
     }
 
+    @Override
     public Point getLocation() {
         return new Point(getX(), getY());
     }
 
+    @Override
     public boolean isRequiresInteractivePaint() {
         // N/A
         return false;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         setX(x);
         setY(y);
@@ -165,41 +172,27 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     }
 
     protected String spaces(int count) {
-        StringBuffer result = new StringBuffer(count);
-        for (int i = 0; i < count; i++) {
-            result.append(' ');
-        }
-        return result.toString();
+        return " ".repeat(Math.max(0, count));
     }
-    
-    protected void setStrokeColor(PdfTemplate template, FSColor color)
-    {
-        if (color instanceof FSRGBColor)
-        {
-            FSRGBColor rgb = (FSRGBColor)color;
+
+    protected void setStrokeColor(PdfTemplate template, FSColor color) {
+        if (color instanceof FSRGBColor rgb) {
             template.setRGBColorStroke(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
         }
-        else if (color instanceof FSCMYKColor)
-        {
-            FSCMYKColor cmyk = (FSCMYKColor)color;
+        else if (color instanceof FSCMYKColor cmyk) {
             template.setCMYKColorStroke(
-                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255), 
+                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255),
                     (int)(cmyk.getYellow()*255), (int)(cmyk.getBlack()*255));
         }
     }
-    
-    protected void setFillColor(PdfTemplate template, FSColor color)
-    {
-        if (color instanceof FSRGBColor)
-        {
-            FSRGBColor rgb = (FSRGBColor)color;
+
+    protected void setFillColor(PdfTemplate template, FSColor color) {
+        if (color instanceof FSRGBColor rgb) {
             template.setRGBColorFill(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
         }
-        else if (color instanceof FSCMYKColor)
-        {
-            FSCMYKColor cmyk = (FSCMYKColor)color;
+        else if (color instanceof FSCMYKColor cmyk) {
             template.setCMYKColorFill(
-                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255), 
+                    (int)(cmyk.getCyan()*255), (int)(cmyk.getMagenta()*255),
                     (int)(cmyk.getYellow()*255), (int)(cmyk.getBlack()*255));
         }
     }

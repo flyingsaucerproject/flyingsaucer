@@ -19,29 +19,26 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 public class FSCMYKColor implements FSColor {
     private final float _cyan;
     private final float _magenta;
     private final float _yellow;
     private final float _black;
-    
-    public FSCMYKColor(float c, float m, float y, float k) {
+
+    public FSCMYKColor(float cyan, float magenta, float yellow, float black) {
+        _cyan = validateColor(cyan, "Cyan");
+        _magenta = validateColor(magenta, "Magenta");
+        _yellow = validateColor(yellow, "Yellow");
+        _black = validateColor(black, "Black");
+    }
+
+    private float validateColor(float c, String name) {
         if (c < 0 || c > 1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(String.format("%s %s is out of range [0, 1]", name, c));
         }
-        if (m < 0 || m > 1) {
-            throw new IllegalArgumentException();
-        }
-        if (y < 0 || y > 1) {
-            throw new IllegalArgumentException();
-        }
-        if (k < 0 || k > 1) {
-            throw new IllegalArgumentException();
-        }
-        _cyan = c;
-        _magenta = m;
-        _yellow = y;
-        _black = k;
+        return c;
     }
 
     public float getCyan() {
@@ -60,17 +57,22 @@ public class FSCMYKColor implements FSColor {
         return _black;
     }
 
+    @Override
     public String toString() {
         return "cmyk(" + _cyan + ", " + _magenta + ", " + _yellow + ", " + _black + ")";
     }
-    
+
+    @CheckReturnValue
+    @Override
     public FSColor lightenColor() {
         return new FSCMYKColor(_cyan * 0.8f, _magenta * 0.8f, _yellow * 0.8f, _black);
     }
-    
+
+    @CheckReturnValue
+    @Override
     public FSColor darkenColor() {
         return new FSCMYKColor(
-                Math.min(1.0f, _cyan / 0.8f), Math.min(1.0f, _magenta / 0.8f), 
+                Math.min(1.0f, _cyan / 0.8f), Math.min(1.0f, _magenta / 0.8f),
                 Math.min(1.0f, _yellow / 0.8f), _black);
     }
 }

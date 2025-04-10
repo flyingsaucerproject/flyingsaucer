@@ -20,50 +20,55 @@
  */
 package org.xhtmlrenderer.css.style.derived;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.w3c.dom.css.CSSValue;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Objects.requireNonNullElseGet;
+import static org.w3c.dom.css.CSSValue.CSS_INHERIT;
+
 public class DerivedValueFactory {
-    private static final Map CACHED_COLORS = new HashMap();
-    
+    private static final Map<String, FSDerivedValue> CACHED_COLORS = new HashMap<>();
+
+    @CheckReturnValue
     public static FSDerivedValue newDerivedValue(
-            CalculatedStyle style, CSSName cssName, PropertyValue value) {
-        if (value.getCssValueType() == CSSValue.CSS_INHERIT) {
+            @Nullable CalculatedStyle style, CSSName cssName, PropertyValue value) {
+        if (value.getCssValueType() == CSS_INHERIT) {
             return style.getParent().valueByName(cssName);
         }
-        switch (value.getPropertyValueType()) {
-            case PropertyValue.VALUE_TYPE_LENGTH:
-                return new LengthValue(style, cssName, value);
-            case PropertyValue.VALUE_TYPE_IDENT:
-                IdentValue ident = value.getIdentValue();
-                if (ident == null) {
-                    ident = IdentValue.getByIdentString(value.getStringValue());
-                }
-                return ident;
-            case PropertyValue.VALUE_TYPE_STRING:
-                return new StringValue(cssName, value);
-            case PropertyValue.VALUE_TYPE_NUMBER:
-                return new NumberValue(cssName, value);
-            case PropertyValue.VALUE_TYPE_COLOR:
-                FSDerivedValue color = (FSDerivedValue)CACHED_COLORS.get(value.getCssText());
-                if (color == null) {
-                    color = new ColorValue(cssName, value);
-                    CACHED_COLORS.put(value.getCssText(), color);
-                }
-                return color;
-            case PropertyValue.VALUE_TYPE_LIST:
-                return new ListValue(cssName, value);
-            case PropertyValue.VALUE_TYPE_FUNCTION:
-                return new FunctionValue(cssName, value);
-            default:
-                throw new IllegalArgumentException();
+        return switch (value.getPropertyValueType()) {
+            case VALUE_TYPE_LENGTH -> new LengthValue(style, cssName, value);
+            case VALUE_TYPE_IDENT -> getIdentValue(value);
+            case VALUE_TYPE_STRING -> new StringValue(cssName, value);
+            case VALUE_TYPE_NUMBER -> new NumberValue(cssName, value);
+            case VALUE_TYPE_COLOR -> getColor(cssName, value, value.getCssText());
+            case VALUE_TYPE_LIST -> new ListValue(cssName, value);
+            case VALUE_TYPE_FUNCTION -> new FunctionValue(cssName, value);
+        };
+    }
+
+    @CheckReturnValue
+    private static IdentValue getIdentValue(PropertyValue value) {
+        return requireNonNullElseGet(
+                value.getIdentValue(),
+                () -> IdentValue.getByIdentString(value.getStringValue())
+        );
+    }
+
+    @CheckReturnValue
+    private static FSDerivedValue getColor(CSSName cssName, PropertyValue value, String cssText) {
+        FSDerivedValue color = CACHED_COLORS.get(cssText);
+        if (color == null) {
+            color = new ColorValue(cssName, value);
+            CACHED_COLORS.put(cssText, color);
         }
+        return color;
     }
 }

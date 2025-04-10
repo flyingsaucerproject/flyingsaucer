@@ -21,21 +21,29 @@
 
 package org.xhtmlrenderer.simple;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
-import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.NamespaceHandler;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.mediaTypes;
 
 /**
  * Handles a general XML document
@@ -44,17 +52,23 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
  */
 public class NoNamespaceHandler implements NamespaceHandler {
 
-    static final String _namespace = "http://www.w3.org/XML/1998/namespace";
+    private static final String _namespace = "http://www.w3.org/XML/1998/namespace";
 
+    @Override
+    @CheckReturnValue
     public String getNamespace() {
         return _namespace;
     }
 
-    public String getAttributeValue(org.w3c.dom.Element e, String attrName) {
+    @Override
+    @CheckReturnValue
+    public String getAttributeValue(Element e, String attrName) {
         return e.getAttribute(attrName);
     }
-    
-    public String getAttributeValue(Element e, String namespaceURI, String attrName) {
+
+    @Override
+    @CheckReturnValue
+    public String getAttributeValue(Element e, @Nullable String namespaceURI, String attrName) {
         if (namespaceURI == TreeResolver.NO_NAMESPACE) {
             return e.getAttribute(attrName);
         } else if (namespaceURI == null) {
@@ -69,7 +83,7 @@ public class NoNamespaceHandler implements NamespaceHandler {
                         return attr.getValue();
                     }
                 }
-                
+
                 return "";
             }
         } else {
@@ -77,61 +91,89 @@ public class NoNamespaceHandler implements NamespaceHandler {
         }
     }
 
-    public String getClass(org.w3c.dom.Element e) {
+    @Override
+    @Nullable
+    @CheckReturnValue
+    public String getClass(Element e) {
         return null;
     }
 
-    public String getID(org.w3c.dom.Element e) {
+    @Override
+    @Nullable
+    @CheckReturnValue
+    public String getID(Element e) {
         return null;
     }
 
-    public String getLang(org.w3c.dom.Element e) {
-        if(e == null) {
-            return "";
-        }
+    @Override
+    @CheckReturnValue
+    public String getLang(Element e) {
         return e.getAttribute("lang");
     }
 
-    public String getElementStyling(org.w3c.dom.Element e) {
+    @Override
+    @Nullable
+    @CheckReturnValue
+    public String getElementStyling(Element e) {
         return null;
     }
 
+    @Override
+    @Nullable
+    @CheckReturnValue
     public String getNonCssStyling(Element e) {
         return null;
     }
 
-    public String getLinkUri(org.w3c.dom.Element e) {
+    @Override
+    @Nullable
+    @CheckReturnValue
+    public String getLinkUri(Element e) {
         return null;
     }
 
-    public String getDocumentTitle(org.w3c.dom.Document doc) {
-        return null;
-    }
-    
-    public String getAnchorName(Element e) {
+    @Override
+    @Nullable
+    @CheckReturnValue
+    public String getDocumentTitle(Document doc) {
         return null;
     }
 
+    @Override
+    @Nullable
+    @CheckReturnValue
+    public String getAnchorName(@Nullable Element e) {
+        return null;
+    }
+
+    @Override
+    @CheckReturnValue
     public boolean isImageElement(Element e) {
         return false;
     }
 
+    @Override
+    @Nullable
+    @CheckReturnValue
     public String getImageSourceURI(Element e) {
         return null;
     }
-    
+
+    @Override
+    @CheckReturnValue
     public boolean isFormElement(Element e) {
         return false;
     }
 
-    private Pattern _typePattern = Pattern.compile("type\\s?=\\s?");
-    private Pattern _hrefPattern = Pattern.compile("href\\s?=\\s?");
-    private Pattern _titlePattern = Pattern.compile("title\\s?=\\s?");
-    private Pattern _alternatePattern = Pattern.compile("alternate\\s?=\\s?");
-    private Pattern _mediaPattern = Pattern.compile("media\\s?=\\s?");
+    private static final Pattern _typePattern = Pattern.compile("type\\s?=\\s?");
+    private static final Pattern _hrefPattern = Pattern.compile("href\\s?=\\s?");
+    private static final Pattern _alternatePattern = Pattern.compile("alternate\\s?=\\s?");
+    private static final Pattern _mediaPattern = Pattern.compile("media\\s?=\\s?");
 
-    public StylesheetInfo[] getStylesheets(org.w3c.dom.Document doc) {
-        List list = new ArrayList();
+    @Override
+    @CheckReturnValue
+    public List<StylesheetInfo> getStylesheets(Document doc) {
+        List<StylesheetInfo> list = new ArrayList<>();
         //get the processing-instructions (actually for XmlDocuments)
         //type and href are required to be set
         NodeList nl = doc.getChildNodes();
@@ -139,10 +181,10 @@ public class NoNamespaceHandler implements NamespaceHandler {
             Node node = nl.item(i);
             if (node.getNodeType() != Node.PROCESSING_INSTRUCTION_NODE) continue;
             ProcessingInstruction piNode = (ProcessingInstruction) node;
-            if (!piNode.getTarget().equals("xml-stylesheet")) continue;
-            StylesheetInfo info;
-            info = new StylesheetInfo();
-            info.setOrigin(StylesheetInfo.AUTHOR);
+            if (!piNode.getTarget().equals("xml-stylesheet")) {
+                continue;
+            }
+
             String pi = piNode.getData();
             Matcher m = _alternatePattern.matcher(pi);
             if (m.matches()) {
@@ -151,42 +193,55 @@ public class NoNamespaceHandler implements NamespaceHandler {
                 //TODO: handle alternate stylesheets
                 if (alternate.equals("yes")) continue;//DON'T get alternate stylesheets for now
             }
-            m = _typePattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String type = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                //TODO: handle other stylesheet types
-                if (!type.equals("text/css")) continue;//for now
-                info.setType(type);
-            }
-            m = _hrefPattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String href = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                info.setUri(href);
-            }
-            m = _titlePattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String title = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                info.setTitle(title);
-            }
-            m = _mediaPattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String media = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                info.setMedia(media);
-            } else {
-                info.addMedium("screen");
-            }
+            String type = detectType(pi);
+            //TODO: handle other stylesheet types
+            if (!Objects.equals(type, "text/css")) continue; // for now
+
+            StylesheetInfo info = new StylesheetInfo(AUTHOR, detectUri(pi), mediaTypes(detectMediaTypes(pi)), null);
             list.add(info);
         }
 
-        return (StylesheetInfo[])list.toArray(new StylesheetInfo[list.size()]);
+        return list;
     }
 
-    public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
+    @Nullable
+    @CheckReturnValue
+    private String detectType(String pi) {
+        Matcher m = _typePattern.matcher(pi);
+        if (m.find()) {
+            int start = m.end();
+            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+        }
         return null;
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private String detectUri(String pi) {
+        Matcher m = _hrefPattern.matcher(pi);
+        if (m.find()) {
+            int start = m.end();
+            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+        }
+        return null;
+    }
+
+    @NonNull
+    @CheckReturnValue
+    private String detectMediaTypes(String pi) {
+        Matcher m = _mediaPattern.matcher(pi);
+        if (m.find()) {
+            int start = m.end();
+            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+        } else {
+            return "screen";
+        }
+    }
+
+    @Override
+    @CheckReturnValue
+    public Optional<StylesheetInfo> getDefaultStylesheet() {
+        return Optional.empty();
     }
 
 }

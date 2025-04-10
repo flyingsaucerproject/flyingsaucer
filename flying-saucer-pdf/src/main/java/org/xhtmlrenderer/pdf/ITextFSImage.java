@@ -19,26 +19,30 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.lowagie.text.Image;
+import org.jspecify.annotations.NonNull;
 import org.xhtmlrenderer.extend.FSImage;
 
-import com.lowagie.text.Image;
-
 public class ITextFSImage implements FSImage, Cloneable {
-    private Image _image;
+    private final Image _image;
 
     public ITextFSImage(Image image) {
         _image = image;
     }
 
+    @Override
     public int getWidth() {
         return (int)_image.getPlainWidth();
     }
 
+    @Override
     public int getHeight() {
         return (int)_image.getPlainHeight();
     }
 
-    public void scale(int width, int height) {
+    @NonNull
+    @Override
+    public FSImage scale(int width, int height) {
         if (width > 0 || height > 0) {
             int currentWith = getWidth();
             int currentHeight = getHeight();
@@ -54,15 +58,19 @@ public class ITextFSImage implements FSImage, Cloneable {
             }
 
             if (currentWith != targetWidth || currentHeight != targetHeight) {
-                _image.scaleAbsolute(targetWidth, targetHeight);
+                Image image = Image.getInstance(_image);
+                image.scaleAbsolute(targetWidth, targetHeight);
+                return new ITextFSImage(image);
             }
         }
+        return this;
     }
 
     public Image getImage() {
         return _image;
     }
 
+    @Override
     public Object clone() {
         return new ITextFSImage(Image.getInstance(_image));
     }

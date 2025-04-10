@@ -26,11 +26,11 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.DerivedValue;
 
 public class ColorValue extends DerivedValue {
-    private FSColor _color;
+    private final FSColor _color;
 
     public ColorValue(CSSName name, PropertyValue value) {
         super(name, value.getPrimitiveType(), value.getCssText(), value.getCssText());
-        
+
         _color = value.getFSColor();
     }
 
@@ -39,7 +39,8 @@ public class ColorValue extends DerivedValue {
      *
      * @return The rGBColorValue value
      */
+    @Override
     public FSColor asColor() {
         return _color;
-    }   
+    }
 }

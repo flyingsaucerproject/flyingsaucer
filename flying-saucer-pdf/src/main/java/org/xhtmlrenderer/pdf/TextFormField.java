@@ -20,30 +20,32 @@
 package org.xhtmlrenderer.pdf;
 
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.*;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfAnnotation;
+import com.lowagie.text.pdf.PdfAppearance;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfFormField;
+import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.TextField;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.util.*;
-
-import com.lowagie.text.Rectangle;
+import org.xhtmlrenderer.util.Util;
 
 import java.io.IOException;
 
-public class TextFormField extends AbstractFormField
-{
+public class TextFormField extends AbstractFormField {
   private static final String FIELD_TYPE = "Text";
 
   private static final int DEFAULT_SIZE = 15;
 
-  private int _baseline;
+  private final int _baseline;
 
   private boolean multiline = false;
 
-  public TextFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
-  {
+  public TextFormField(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
     initDimensions(c, box, cssWidth, cssHeight);
 
     float fontSize = box.getStyle().getFSFont(c).getSize2D();
@@ -51,39 +53,34 @@ public class TextFormField extends AbstractFormField
     _baseline = (int) (getHeight() / 2 + (fontSize * 0.3f));
   }
 
-  protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight)
-  {
-    if (cssWidth != -1)
-    {
+  @Override
+  protected void initDimensions(LayoutContext c, BlockBox box, int cssWidth, int cssHeight) {
+    if (cssWidth != -1) {
       setWidth(cssWidth);
     }
-    else
-    {
+    else {
       setWidth(c.getTextRenderer().getWidth(
           c.getFontContext(),
           box.getStyle().getFSFont(c),
           spaces(getSize(box.getElement()))));
     }
 
-    if (cssHeight != -1)
-    {
+    if (cssHeight != -1) {
       setHeight(cssHeight);
       multiline = true;
     }
-    else
-    {
-      setHeight((int) (box.getStyle().getLineHeight(c)));
+    else {
+      setHeight((int) box.getStyle().getLineHeight(c));
     }
   }
 
-  protected String getFieldType()
-  {
+  @Override
+  protected String getFieldType() {
     return FIELD_TYPE;
   }
 
-  public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box)
-  {
-
+  @Override
+  public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     PdfWriter writer = outputDevice.getWriter();
 
     Element elem = box.getElement();
@@ -95,27 +92,20 @@ public class TextFormField extends AbstractFormField
     field.setText(value);
     field.setMaxCharacterLength(getMaxLength(elem));
 
-    try
-    {
+    try {
       PdfFormField formField = field.getTextField();
-      if( multiline) {
+      if (multiline) {
         formField.setFieldFlags(PdfFormField.FF_MULTILINE);
       }
       createAppearance(c, outputDevice, box, formField, value);
 
-      if (isReadOnly(elem))
-      {
+      if (isReadOnly(elem)) {
         formField.setFieldFlags(PdfFormField.FF_READ_ONLY);
       }
       writer.addAnnotation(formField);
-    } catch (IOException ioe)
-    {
+    } catch (IOException | DocumentException ioe) {
       System.out.println(ioe);
-    } catch (DocumentException de)
-    {
-      System.out.println(de);
     }
-
   }
 
   private void createAppearance(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box, PdfFormField field, String value)
@@ -188,26 +178,18 @@ public class TextFormField extends AbstractFormField
     }
   }
 
-  protected String getValue(Element e)
-  {
-    String result = e.getAttribute("value");
-    if (Util.isNullOrEmpty(result))
-    {
-      return "";
-    }
-    else
-    {
-      return result;
-    }
+  @Override
+  protected String getValue(Element e) {
+    return e.getAttribute("value");
   }
 
-  public int getBaseline()
-  {
+  @Override
+  public int getBaseline() {
     return _baseline;
   }
 
-  public boolean hasBaseline()
-  {
+  @Override
+  public boolean hasBaseline() {
     return true;
   }
 }

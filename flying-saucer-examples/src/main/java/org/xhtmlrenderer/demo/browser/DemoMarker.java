@@ -19,28 +19,6 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-
-
-/**
- * Description of the Class
- *
- * @author   empty
- */
 public class DemoMarker {
-
-    /** Constructor for the DemoMarker object */
     public DemoMarker() { }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.2  2004/10/23 14:38:58  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
- * Added CVS log comments at bottom.
- *
- *
- */
-

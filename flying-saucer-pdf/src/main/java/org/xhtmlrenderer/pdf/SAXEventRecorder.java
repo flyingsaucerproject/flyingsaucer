@@ -19,110 +19,79 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class SAXEventRecorder implements ContentHandler {
-    private List _events = new LinkedList();
-    
+    private final List<Event> _events = new LinkedList<>();
+
     private interface Event {
-        public void replay(ContentHandler handler) throws SAXException;
-    }
-    
-    public void characters(final char[] ch, final int start, final int length) throws SAXException {
-        _events.add(new Event() {
-            public void replay(ContentHandler handler) throws SAXException {
-                handler.characters(ch, start, length);
-            }
-        });
+        void replay(ContentHandler handler) throws SAXException;
     }
 
-    public void endDocument() throws SAXException {
-        _events.add(new Event() {
-            public void replay(ContentHandler handler) throws SAXException {
-                handler.endDocument();
-            }
-        });
+    @Override
+    public void characters(final char[] ch, final int start, final int length) {
+        _events.add(handler -> handler.characters(ch, start, length));
     }
 
-    public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-        _events.add(new Event() {
-            public void replay(ContentHandler handler) throws SAXException {
-                handler.endElement(uri, localName, qName);
-            }
-        });
-        
+    @Override
+    public void endDocument() {
+        _events.add(handler -> handler.endDocument());
     }
 
-    public void endPrefixMapping(final String prefix) throws SAXException {
-        _events.add(new Event() {
-            public void replay(ContentHandler handler) throws SAXException {
-                handler.endPrefixMapping(prefix);
-            }
-        });
+    @Override
+    public void endElement(final String uri, final String localName, final String qName) {
+        _events.add(handler -> handler.endElement(uri, localName, qName));
+
     }
 
-    public void ignorableWhitespace(final char[] ch, final int start, final int length) throws SAXException {
-        _events.add(new Event() {
-            public void replay(ContentHandler handler) throws SAXException {
-                handler.ignorableWhitespace(ch, start, length);
-            }
-        });
+    @Override
+    public void endPrefixMapping(final String prefix) {
+        _events.add(handler -> handler.endPrefixMapping(prefix));
     }
 
-    public void processingInstruction(final String target, final String data) throws SAXException {
-        _events.add(new Event() {
-            public void replay(ContentHandler handler) throws SAXException {
-                handler.processingInstruction(target, data);
-            }
-        });
+    @Override
+    public void ignorableWhitespace(final char[] ch, final int start, final int length) {
+        _events.add(handler -> handler.ignorableWhitespace(ch, start, length));
     }
 
+    @Override
+    public void processingInstruction(final String target, final String data) {
+        _events.add(handler -> handler.processingInstruction(target, data));
+    }
+
+    @Override
     public void setDocumentLocator(final Locator locator) {
     }
 
-    public void skippedEntity(final String name) throws SAXException {
-        _events.add(new Event() {
-            public void replay(ContentHandler handler) throws SAXException {
-                handler.skippedEntity(name);
-            }
-        });        
+    @Override
+    public void skippedEntity(final String name) {
+        _events.add(handler -> handler.skippedEntity(name));
     }
 
-    public void startDocument() throws SAXException {
-        _events.add(new Event() {
-            public void replay(ContentHandler handler) throws SAXException {
-                handler.startDocument();
-            }
-        });        
+    @Override
+    public void startDocument() {
+        _events.add(handler -> handler.startDocument());
     }
 
+    @Override
     public void startElement(
-            final String uri, final String localName, final String qName, final Attributes atts) throws SAXException {
-        _events.add(new Event() {
-            public void replay(ContentHandler handler) throws SAXException {
-                handler.startElement(uri, localName, qName, atts);
-            }
-        });        
+            final String uri, final String localName, final String qName, final Attributes attributes) {
+        _events.add(handler -> handler.startElement(uri, localName, qName, attributes));
     }
 
-    public void startPrefixMapping(final String prefix, final String uri) throws SAXException {
-        _events.add(new Event() {
-            public void replay(ContentHandler handler) throws SAXException {
-                handler.startPrefixMapping(prefix, uri);
-            }
-        });        
+    @Override
+    public void startPrefixMapping(final String prefix, final String uri) {
+        _events.add(handler -> handler.startPrefixMapping(prefix, uri));
     }
-    
+
     public void replay(ContentHandler handler) throws SAXException {
-        for (Iterator i = _events.iterator(); i.hasNext(); ) {
-            Event e = (Event)i.next();
+        for (Event e : _events) {
             e.replay(handler);
         }
     }

@@ -30,7 +30,7 @@
 <h2>Where do I Start?</h2>
 <p>With R5, we created a new package structure with a minimum number of easy-to-use classes to get you started: <code>org.xhtmlrenderer.simple</code>. </p>
 
-<p>Drop an <code>XHTMLPanel</code> in your Swing application, call <code>setDocument()</code> and you'll be rendering right away. Want scrolling ans standard keyboard bindings for navigation? Add your <code>XHTMLPanel</code> to an <code>FSScrollPane</code>. Need to create a <code>BufferedImage</code> from your XML and CSS? Use our <code>Graphics2DRenderer</code> in the same package, with one method call--<code>renderToImage()</code>. The new simple package clears the decks and puts you in control of your rendering.</p>
+<p>Drop an <code>XHTMLPanel</code> in your Swing application, call <code>setDocument()</code> and you'll be rendering right away. Want scrolling and standard keyboard bindings for navigation? Add your <code>XHTMLPanel</code> to an <code>FSScrollPane</code>. Need to create a <code>BufferedImage</code> from your XML and CSS? Use our <code>Graphics2DRenderer</code> in the same package, with one method call--<code>renderToImage()</code>. The new simple package clears the decks and puts you in control of your rendering.</p>
 
 <h2>How to Help Us</h2>
 <p>Please download and try the new code out. There are many improvements since our last release, R4, and our test pages are looking better and better--and rendering faster. A lot of work still to be done, and this is where you can help. Join our mailing lists by going to <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList</a>. The users mailing list is a good place to start if you just want to ask questions and join the discussion. You can also request an observer role by logging in to java.net and going to our home page at <a href="https://xhtmlrenderer.dev.java.net/">https://xhtmlrenderer.dev.java.net/</a>; as an observer, you can add issues to our issue tracker at <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectIssues">https://xhtmlrenderer.dev.java.net/servlets/ProjectIssues</a>. </p>
@@ -50,7 +50,7 @@
 <h2>Renderer Configuration</h2>
 <p>Flying Saucer loads a configuration file from <code>resources/conf/xhtmlrenderer.conf</code>. A default version of this is packaged in the core-renderer JAR file. There are docs in the shipping version. You can modify that version and re-pack it in the JAR, or include a different version earlier in your CLASSPATH. You can also leave the default version alone and override any of the properties by writing a text file with new property assignments (propname = value) and saving it in your user home directory, under <code>.flyingsaucer/local.xhtmlrenderer.conf</code>.</p> 
 
-<p>Properties are loaded statically during the first execution of any of the Flying Saucer classes, and kept in memory until restart.</p>
+<p>Properties are loaded statically during the first execution of the Flying Saucer classes, and kept in memory until restart.</p>
 
 <h2>CSS Default Stylesheet</h2>
 <p>Flying Saucer ships with default CSS styles for all XHTML elements, following samples provided by the W3C. This default CSS file is packaged in the JAR under <code>/resources/css/default.css</code>. You can write your own and specify its location in the FS configuration file (see above). Be careful when changing this file--it's meant to render pages with no styling with a reasonable look and layout. Don't break anything!</p>

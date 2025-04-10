@@ -19,25 +19,30 @@
  */
 package org.xhtmlrenderer.css.extend.lib;
 
-import org.w3c.dom.Element;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 
+import static java.util.Objects.requireNonNullElseGet;
+
 /**
+ * works for a w3c DOM tree
  * @author scott
- *         <p/>
- *         works for a w3c DOM tree
  */
 public class DOMTreeResolver implements TreeResolver {
-    public Object getParentElement(Object element) {
-        Node parent = ((org.w3c.dom.Element) element).getParentNode();
+    @Nullable
+    @Override
+    public Node getParentElement(Node element) {
+        Node parent = element.getParentNode();
         if (parent.getNodeType() != Node.ELEMENT_NODE) parent = null;
         return parent;
     }
 
-    public Object getPreviousSiblingElement(Object element) {
-        Node sibling = ((Element) element).getPreviousSibling();
+    @Nullable
+    @Override
+    public Node getPreviousSiblingElement(Node element) {
+        Node sibling = element.getPreviousSibling();
         while (sibling != null && sibling.getNodeType() != Node.ELEMENT_NODE) {
             sibling = sibling.getPreviousSibling();
         }
@@ -47,14 +52,16 @@ public class DOMTreeResolver implements TreeResolver {
         return sibling;
     }
 
-    public String getElementName(Object element) {
-        String name = ((Element) element).getLocalName();
-        if (name == null) name = ((Element) element).getNodeName();
+    @Override
+    public String getElementName(Node element) {
+        String name = element.getLocalName();
+        if (name == null) name = element.getNodeName();
         return name;
     }
 
-    public boolean isFirstChildElement(Object element) {
-        org.w3c.dom.Node parent = ((org.w3c.dom.Element) element).getParentNode();
+    @Override
+    public boolean isFirstChildElement(Node element) {
+        Node parent = element.getParentNode();
         Node currentChild = parent.getFirstChild();
         while (currentChild != null && currentChild.getNodeType() != Node.ELEMENT_NODE) {
             currentChild = currentChild.getNextSibling();
@@ -62,8 +69,9 @@ public class DOMTreeResolver implements TreeResolver {
         return currentChild == element;
     }
 
-    public boolean isLastChildElement(Object element) {
-        org.w3c.dom.Node parent = ((org.w3c.dom.Element) element).getParentNode();
+    @Override
+    public boolean isLastChildElement(Node element) {
+        Node parent = element.getParentNode();
         Node currentChild = parent.getLastChild();
         while (currentChild != null && currentChild.getNodeType() != Node.ELEMENT_NODE) {
             currentChild = currentChild.getPreviousSibling();
@@ -71,34 +79,29 @@ public class DOMTreeResolver implements TreeResolver {
         return currentChild == element;
     }
 
-    public boolean matchesElement(Object element, String namespaceURI, String name) {
-        Element e = (Element)element;
-        String localName = e.getLocalName();
-        String eName;
-
-        if (localName == null) {
-            eName = e.getNodeName();
-        } else {
-            eName = localName;
-        }
+    @Override
+    public boolean matchesElement(Node element, String namespaceURI, String name) {
+        String localName = element.getLocalName();
+        String eName = requireNonNullElseGet(localName, element::getNodeName);
 
         if (namespaceURI != null) {
-            return name.equals(localName) && namespaceURI.equals(e.getNamespaceURI());
+            return name.equals(localName) && namespaceURI.equals(element.getNamespaceURI());
         } else if (namespaceURI == TreeResolver.NO_NAMESPACE) {
-            return name.equals(eName) && e.getNamespaceURI() == null;
+            return name.equals(eName) && element.getNamespaceURI() == null;
         } else /* if (namespaceURI == null) */ {
             return name.equals(eName);
         }
     }
-    
-    public int getPositionOfElement(Object element) {
-        org.w3c.dom.Node parent = ((org.w3c.dom.Element) element).getParentNode();
+
+    @Override
+    public int getPositionOfElement(Node element) {
+        Node parent = element.getParentNode();
         NodeList nl = parent.getChildNodes();
 
         int elt_count = 0;
         int i = 0;
         while (i < nl.getLength()) {
-            if (nl.item(i).getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+            if (nl.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 if(nl.item(i) == element) {
                     return elt_count;
                 } else {
@@ -107,7 +110,7 @@ public class DOMTreeResolver implements TreeResolver {
             }
             i++;
         }
-        
+
         //should not happen
         return -1;
     }

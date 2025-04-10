@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjoern Gannholm 
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjoern Gannholm
  * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -23,19 +23,19 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.render.BlockBox;
 
 /**
- * The porition of a {@link BlockFormattingContext} which is saved with a box
+ * The portion of a {@link BlockFormattingContext} which is saved with a box
  * which defines a BFC.
  *
  * XXX This class can go away
  */
 public class PersistentBFC {
-    private FloatManager _floatManager = new FloatManager();
-    
+    private final FloatManager _floatManager;
+
     public PersistentBFC(BlockBox master, LayoutContext c) {
         master.setPersistentBFC(this);
-        _floatManager.setMaster(master);
+        _floatManager = new FloatManager(master);
     }
-    
+
     public FloatManager getFloatManager() {
         return _floatManager;
     }

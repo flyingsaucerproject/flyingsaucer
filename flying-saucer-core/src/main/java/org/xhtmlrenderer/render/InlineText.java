@@ -20,8 +20,8 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Rectangle;
-
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Text;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.layout.FunctionData;
@@ -29,72 +29,82 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.util.Uu;
 
+import java.awt.*;
+
 /**
- * A lightweight object which contains a chunk of text from an inline element.  
- * It will never extend across a line break nor will it extend across an element 
+ * A lightweight object which contains a chunk of text from an inline element.
+ * It will never extend across a line break nor will it extend across an element
  * nested within its inline element.
  */
 public class InlineText {
+    @Nullable
     private InlineLayoutBox _parent;
-    
+
     private int _x;
-    
+
     private String _masterText;
     private int _start;
     private int _end;
-    
+
     private int _width;
-    
+
+    @Nullable
     private FunctionData _functionData;
-    
+
     private boolean _containedLF = false;
-    
+
     private short _selectionStart;
     private short _selectionEnd;
-    
-    private float[] _glyphPositions;
-    
+
+    private float @Nullable [] _glyphPositions;
+
     private boolean _trimmedLeadingSpace;
     private boolean _trimmedTrailingSpace;
-    private Text _textNode;
+    private final Text _textNode;
+
     public void trimTrailingSpace(LayoutContext c) {
         if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
-            setWidth(c.getTextRenderer().getWidth(c.getFontContext(), 
+            setWidth(c.getTextRenderer().getWidth(c.getFontContext(),
                     getParent().getStyle().getFSFont(c),
                     getSubstring()));
-            setTrimmedTrailingSpace(true);
-        } 
+            setTrimmedTrailingSpace();
+        }
     }
-    
+
     public boolean isEmpty() {
         return _start == _end && ! _containedLF;
     }
-    
+
+    @CheckReturnValue
     public String getSubstring() {
         if (getMasterText() != null) {
             if (_start == -1 || _end == -1) {
-                throw new RuntimeException("negative index in InlineBox");
+                throw new RuntimeException("negative index in InlineBox (start: %s, end: %s) for element %s".formatted(_start, _end, this));
             }
             if (_end < _start) {
-                throw new RuntimeException("end is less than setStartStyle");
+                throw new RuntimeException("end is less than start (%s < %s) for element %s".formatted(_end, _start, this));
             }
             return getMasterText().substring(_start, _end);
         } else {
-            throw new RuntimeException("No master text set!");
+            throw new RuntimeException("No master text set for element " + this);
         }
     }
-    
-    public void setSubstring(int start, int end) {
+
+    public InlineText(String masterText, Text textNode, int start, int end, int width) {
+        _masterText = masterText;
+        _textNode = textNode;
+        _width = width;
+
         if (end < start) {
             Uu.p("setting substring to: " + start + " " + end);
-            throw new RuntimeException("set substring length too long: " + this);
+            throw new RuntimeException("end is less than start (%s < %s) for element %s".formatted(end, start, this));
         } else if (end < 0 || start < 0) {
-            throw new RuntimeException("Trying to set negative index to inline box");
+            throw new RuntimeException("Trying to set negative index to inline box (start: %s, end: %s)".formatted(start, end));
         }
         _start = start;
         _end = end;
-        
+
         if (_end > 0 && _masterText.charAt(_end-1) == WhitespaceStripper.EOLC) {
             _containedLF = true;
             _end--;
@@ -103,10 +113,6 @@ public class InlineText {
 
     public String getMasterText() {
         return _masterText;
-    }
-
-    public void setMasterText(String masterText) {
-        _masterText = masterText;
     }
 
     public int getX() {
@@ -121,18 +127,19 @@ public class InlineText {
         return _width;
     }
 
-    public void setWidth(int width) {
+    public final void setWidth(int width) {
         _width = width;
     }
-    
+
     public void paint(RenderingContext c) {
         c.getOutputDevice().drawText(c, this);
     }
-    
+
     public void paintSelection(RenderingContext c) {
         c.getOutputDevice().drawSelection(c, this);
     }
 
+    @Nullable
     public InlineLayoutBox getParent() {
         return _parent;
     }
@@ -152,7 +159,7 @@ public class InlineText {
     public void setFunctionData(FunctionData functionData) {
         _functionData = functionData;
     }
-    
+
     public void updateDynamicValue(RenderingContext c) {
         String value = _functionData.getContentFunction().calculate(
                 c, _functionData.getFunction(), this);
@@ -163,9 +170,10 @@ public class InlineText {
                 c.getFontContext(), getParent().getStyle().getFSFont(c),
                 value);
     }
-    
+
+    @Override
     public String toString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append("InlineText: ");
         if (_containedLF || isDynamicFunction()) {
             result.append("(");
@@ -180,19 +188,19 @@ public class InlineText {
         result.append('(');
         result.append(getSubstring());
         result.append(')');
-        
+
         return result.toString();
     }
-    
+
     public boolean updateSelection(RenderingContext c, Rectangle selection) {
         ensureGlyphPositions(c);
         float[] positions = _glyphPositions;
         int y = getParent().getAbsY();
         int offset = getParent().getAbsX() + getX();
-        
+
         int prevSelectionStart = _selectionStart;
         int prevSelectionEnd = _selectionEnd;
-        
+
         boolean found = false;
         _selectionStart = 0;
         _selectionEnd = 0;
@@ -212,7 +220,7 @@ public class InlineText {
                 }
             }
         }
-        
+
         return prevSelectionStart != _selectionStart || prevSelectionEnd != _selectionEnd;
     }
 
@@ -223,21 +231,21 @@ public class InlineText {
                     getParent().getStyle().getFSFont(c),
                     getSubstring());
             _glyphPositions = c.getTextRenderer().getGlyphPositions(
-                    c.getOutputDevice(), 
+                    c.getOutputDevice(),
                     getParent().getStyle().getFSFont(c),
                     glyphVector);
-        } 
+        }
     }
-    
+
     public boolean clearSelection() {
         boolean result = _selectionStart != 0 || _selectionEnd != 0;
-        
+
         _selectionStart = 0;
         _selectionEnd = 0;
-        
+
         return result;
     }
-    
+
     public boolean isSelected() {
         return _selectionStart != _selectionEnd;
     }
@@ -249,24 +257,23 @@ public class InlineText {
     public short getSelectionStart() {
         return _selectionStart;
     }
-    
+
     public String getSelection() {
         return getSubstring().substring(_selectionStart, _selectionEnd);
     }
-    
+
     public void selectAll() {
         _selectionStart = 0;
         _selectionEnd = (short)getSubstring().length();
     }
-    
+
     public String getTextExportText() {
         char[] ch = getSubstring().toCharArray();
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         if (isTrimmedLeadingSpace()) {
             result.append(' ');
         }
-        for (int i = 0; i < ch.length; i++) {
-            char c = ch[i];
+        for (char c : ch) {
             if (c != '\n') {
                 result.append(c);
             }
@@ -285,20 +292,20 @@ public class InlineText {
         _trimmedLeadingSpace = trimmedLeadingSpace;
     }
 
-    private void setTrimmedTrailingSpace(boolean trimmedTrailingSpace) {
-        _trimmedTrailingSpace = trimmedTrailingSpace;
+    private void setTrimmedTrailingSpace() {
+        _trimmedTrailingSpace = true;
     }
 
     private boolean isTrimmedTrailingSpace() {
         return _trimmedTrailingSpace;
     }
-    
+
     public void countJustifiableChars(CharCounts counts) {
         String s = getSubstring();
         int len = s.length();
         int spaces = 0;
         int other = 0;
-        
+
         for (int i = 0; i < len; i++) {
             char c = s.charAt(i);
             if (c == ' ' || c == '\u00a0' || c == '\u3000') {
@@ -307,11 +314,11 @@ public class InlineText {
                 other++;
             }
         }
-        
+
         counts.setSpaceCount(counts.getSpaceCount() + spaces);
         counts.setNonSpaceCount(counts.getNonSpaceCount() + other);
     }
-    
+
     public float calcTotalAdjustment(JustificationInfo info) {
         String s = getSubstring();
         int len = s.length();
@@ -320,12 +327,12 @@ public class InlineText {
         for (int i = 0; i < len; i++) {
             char c = s.charAt(i);
             if (c == ' ' || c == '\u00a0' || c == '\u3000') {
-                result += info.getSpaceAdjust();
+                result += info.spaceAdjust();
             } else {
-                result += info.getNonSpaceAdjust();
+                result += info.nonSpaceAdjust();
             }
         }
-        
+
         return result;
     }
     public int getStart(){
@@ -343,10 +350,6 @@ public class InlineText {
 
     public Text getTextNode() {
         return this._textNode;
-    }
-
-    public void setTextNode(Text node) {
-        this._textNode = node;
     }
 }
 

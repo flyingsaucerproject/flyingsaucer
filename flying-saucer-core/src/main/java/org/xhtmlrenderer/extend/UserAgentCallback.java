@@ -19,16 +19,16 @@
  */
 package org.xhtmlrenderer.extend;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
-
 
 /**
  * <p>To be implemented by any user agent using the panel. "User agent" is a
  * term defined by the W3C in the documentation for XHTML and CSS; in most
  * cases, you can think of this as the rendering component for a browser.</p>
- * <p/>
+ * <p>
  *
  * <p>This interface defines a simple callback mechanism for Flying Saucer to
  * interact with a user agent. The FS toolkit provides a default implementation
@@ -42,7 +42,7 @@ import org.xhtmlrenderer.resource.XMLResource;
  * retrieved from external sources; that's one of the purposes of the UAC.</p>
  *
  * <p>To understand how to create your own UAC, it's best to look at some of the
- * implemetations shipped with the library, like the {@link org.xhtmlrenderer.swing.NaiveUserAgent}.
+ * implementations shipped with the library, like the {@link org.xhtmlrenderer.swing.NaiveUserAgent}.
  * </p>
  *
  * @author Torbjoern Gannholm
@@ -70,22 +70,23 @@ public interface UserAgentCallback {
      * @param uri Location of the XML
      * @return A XMLResource for the content at the URI.
      */
+    @Nullable
     XMLResource getXMLResource(String uri);
-    
+
     /**
      * Retrieves a binary resource located at a given URI and returns its contents
-     * as a byte array or <code>null</code> if the resource could not be loaded.
+     * as a byte array or {@code null} if the resource could not be loaded.
      */
-    byte[] getBinaryResource(String uri);
+    byte @Nullable [] getBinaryResource(String uri);
 
     /**
      * Normally, returns true if the user agent has visited this URI. UserAgent should consider
      * if it should answer truthfully or not for privacy reasons.
-     *  
+     *
      * @param uri A URI which may have been visited by this user agent.
      * @return The visited value
      */
-    boolean isVisited(String uri);
+    boolean isVisited(@Nullable String uri);
 
     /**
      * Does not need to be a correct URL, only an identifier that the
@@ -93,21 +94,23 @@ public interface UserAgentCallback {
      *
      * @param url A URL against which relative references can be resolved.
      */
-    void setBaseURL(String url);
+    void setBaseURL(@Nullable String url);
 
     /**
      * @return the base uri, possibly in the implementations private uri-space
      */
+    @Nullable
     String getBaseURL();
 
     /**
-     * Used to find a uri that may be relative to the BaseURL.
+     * Used to find an uri that may be relative to the BaseURL.
      * The returned value will always only be used via methods in the same
      * implementation of this interface, therefore may be a private uri-space.
      *
      * @param uri an absolute or relative (to baseURL) uri to be resolved.
      * @return the full uri in uri-spaces known to the current implementation.
      */
-    String resolveURI(String uri);
+    @Nullable
+    String resolveURI(@Nullable String uri);
 }
 

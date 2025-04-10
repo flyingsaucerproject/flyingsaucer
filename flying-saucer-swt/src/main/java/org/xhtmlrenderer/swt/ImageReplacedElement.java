@@ -19,20 +19,20 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.awt.Point;
-
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 
+import java.awt.*;
+
 /**
- * ReplacedElement for <code>&lt;img&gt;</code> tags.
- * 
+ * ReplacedElement for {@code <img>} tags.
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class ImageReplacedElement implements ReplacedElement {
     private final SWTFSImage _image;
-    private Point _location = new Point(0, 0);
+    private final Point _location = new Point(0, 0);
 
     public ImageReplacedElement(SWTFSImage img, int targetWidth,
             int targetHeight) {
@@ -49,36 +49,43 @@ public class ImageReplacedElement implements ReplacedElement {
         return _image;
     }
 
+    @Override
     public void detach(LayoutContext c) {
         // nothing to do
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return _image.getHeight();
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return _image.getWidth();
     }
 
+    @Override
     public Point getLocation() {
         return _location;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         _location.setLocation(x, y);
     }
 
+    @Override
     public boolean isRequiresInteractivePaint() {
         return true;
     }
 
+    @Override
     public int getBaseline() {
         return 0;
     }
 
+    @Override
     public boolean hasBaseline() {
         return false;
     }
-
 }

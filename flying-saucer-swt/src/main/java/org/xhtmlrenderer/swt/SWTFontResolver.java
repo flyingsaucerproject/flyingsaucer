@@ -19,11 +19,12 @@
  */
 package org.xhtmlrenderer.swt;
 
-import java.util.*;
-import java.util.logging.Level;
-
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
@@ -31,22 +32,26 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
 /**
  * Resolve font the SWT way.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTFontResolver implements FontResolver {
     private final Device _device;
 
     private final float _pointsPerPixel;
 
-    private Map _instance_hash;
+    private final Map<String, SWTFSFont> _instance_hash = new HashMap<>();
 
-    private Map _default_fonts;
+    private final Map<String, String> _default_fonts = new HashMap<>();
 
-    private SWTFSFont _system_font;
+    private final SWTFSFont _system_font;
 
     private static final String[] _defaults_serif = { "serif", "Serif", "times new roman", "times" };
 
@@ -56,51 +61,45 @@ public class SWTFontResolver implements FontResolver {
     public SWTFontResolver(Device device) {
         _device = device;
         _pointsPerPixel = 72f / device.getDPI().y;
-        init();
-    }
-
-    private void init() {
-        _instance_hash = new HashMap();
 
         // system fonts
         String system_font_family = _device.getSystemFont().getFontData()[0].getName();
-        _default_fonts = new HashMap();
 
         // system font is likely to be a good default sans serif font
         _default_fonts.put("sans-serif", system_font_family);
 
-        for (int i = 0; i < _defaults_serif.length; i++) {
-            if (_device.getFontList(_defaults_serif[i], true).length > 0) {
-                _default_fonts.put("serif", _defaults_serif[i]);
+        for (String s : _defaults_serif) {
+            if (_device.getFontList(s, true).length > 0) {
+                _default_fonts.put("serif", s);
                 break;
             }
         }
-        if (_default_fonts.get("serif") == null) {
-            _default_fonts.put("serif", system_font_family);
-        }
+        _default_fonts.putIfAbsent("serif", system_font_family);
 
-        for (int i = 0; i < _defaults_monospace.length; i++) {
-            if (_device.getFontList(_defaults_monospace[i], true).length > 0) {
-                _default_fonts.put("monospace", _defaults_monospace[i]);
+        for (String s : _defaults_monospace) {
+            if (_device.getFontList(s, true).length > 0) {
+                _default_fonts.put("monospace", s);
                 break;
             }
         }
-        if (_default_fonts.get("monospace") == null) {
-            _default_fonts.put("monospace", system_font_family);
-        }
+        _default_fonts.putIfAbsent("monospace", system_font_family);
 
         // last resort font
         Font systemFont = _device.getSystemFont();
         _system_font = new SWTFSFont(systemFont, systemFont.getFontData()[0].getHeight(), true);
     }
 
+    @Override
     public void flushCache() {
-        for (Iterator iter = _instance_hash.values().iterator(); iter.hasNext();) {
-            ((SWTFSFont) iter.next()).dispose();
+        for (SWTFSFont swtfsFont : _instance_hash.values()) {
+            swtfsFont.dispose();
         }
         _instance_hash.clear();
     }
 
+    @Nullable
+    @CheckReturnValue
+    @Override
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
         if (spec.families != null) {
             for (int i = 0; i < spec.families.length; i++) {
@@ -119,14 +118,17 @@ public class SWTFontResolver implements FontResolver {
             return font;
         }
 
-        XRLog.cascade(Level.WARNING, "Falling back to default system font. " + spec.toString());
+        XRLog.cascade(Level.WARNING, "Falling back to default system font. " + spec);
 
         // last resort: use system font
         return _system_font;
     }
 
-    private SWTFSFont resolveFont(SharedContext ctx, String font, float size, IdentValue weight,
-            IdentValue style, IdentValue variant) {
+    @Nullable
+    private SWTFSFont resolveFont(SharedContext ctx, String font, float size,
+                                  @Nullable IdentValue weight,
+                                  @Nullable IdentValue style,
+                                  @Nullable IdentValue variant) {
         // strip off the "s if they are there
         if (font.startsWith("\"")) {
             font = font.substring(1);
@@ -140,14 +142,14 @@ public class SWTFontResolver implements FontResolver {
         // convert size from pixel to point and make some changes
         size *= _pointsPerPixel;
         if (variant != null && variant == IdentValue.SMALL_CAPS) {
-            size *= 0.6;
+            size *= 0.6F;
         }
         size *= ctx.getTextRenderer().getFontScale();
         int nSize = Math.round(size);
 
         // normalize the font name
         if (_default_fonts.containsKey(font)) {
-            font = (String) _default_fonts.get(font);
+            font = _default_fonts.get(font);
         }
 
         // assemble a font instance hash name
@@ -155,7 +157,7 @@ public class SWTFontResolver implements FontResolver {
         // check if the font instance exists in the hash table
         if (_instance_hash.containsKey(font_instance_name)) {
             // if so then return it
-            return (SWTFSFont) _instance_hash.get(font_instance_name);
+            return _instance_hash.get(font_instance_name);
         }
 
         // if not then does the font exist
@@ -175,7 +177,7 @@ public class SWTFontResolver implements FontResolver {
             SWTFSFont fnt = new SWTFSFont(new Font(_device, fd[0].getName(), nSize, style_bits),
                     size2D);
 
-            // add the font to the hash so we don't have to do this again
+            // add the font to the hash, so we don't have to do this again
             _instance_hash.put(font_instance_name, fnt);
             return fnt;
         }

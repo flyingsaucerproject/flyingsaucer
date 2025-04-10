@@ -4,18 +4,12 @@ package org.xhtmlrenderer.pdf;
  * No-op implementation of a {@link org.xhtmlrenderer.pdf.PDFCreationListener}. Override methods as needed.
  */
 public class DefaultPDFCreationListener implements PDFCreationListener {
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void preOpen(ITextRenderer iTextRenderer) { }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void preWrite(ITextRenderer iTextRenderer, int pageCount) {}
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void onClose(ITextRenderer renderer) { }
 }

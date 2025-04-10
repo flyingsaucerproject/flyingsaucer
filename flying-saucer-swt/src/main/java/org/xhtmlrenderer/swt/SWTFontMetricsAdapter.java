@@ -25,29 +25,32 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 
 /**
  * Adapt SWT's font metrics to Flying Saucer's ones.
- * 
+ *
  * @author Vianney le Clément
- * 
+ *
  */
 public class SWTFontMetricsAdapter implements FSFontMetrics {
     private final FontMetrics _fm;
 
     public SWTFontMetricsAdapter(SWTFontContext context, SWTFSFont font) {
-        GC gc = ((SWTFontContext) context).getGC();
-        gc.setFont(((SWTFSFont) font).getSWTFont());
+        GC gc = context.getGC();
+        gc.setFont(font.getSWTFont());
         _fm = gc.getFontMetrics();
     }
 
+    @Override
     public float getAscent() {
         return _fm.getAscent() + _fm.getLeading();
     }
 
+    @Override
     public float getDescent() {
         return _fm.getDescent();
     }
 
     // FIXME better metrics!
 
+    @Override
     public float getStrikethroughOffset() {
         /*
          * Strike-through offset should be half an ex. We approximate an ex here
@@ -56,16 +59,18 @@ public class SWTFontMetricsAdapter implements FSFontMetrics {
         return -getAscent() / 4;
     }
 
+    @Override
     public float getStrikethroughThickness() {
         return Math.max(1, ((float) _fm.getHeight()) / 20);
     }
 
+    @Override
     public float getUnderlineOffset() {
         return 1;
     }
 
+    @Override
     public float getUnderlineThickness() {
         return Math.max(1, ((float) _fm.getHeight()) / 20);
     }
-
 }

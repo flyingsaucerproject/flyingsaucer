@@ -19,38 +19,39 @@
  */
 package org.xhtmlrenderer.extend;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
 public interface ReplacedElementFactory {
-    
+
     /**
      * <b>NOTE:</b> Only block equivalent elements can be replaced.
-     * 
-     * @param cssWidth The CSS width of the element in dots (or <code>-1</code> if
-     * width is <code>auto</code>)
-     * @param cssHeight The CSS height of the element in dots (or <code>-1</code>
-     * if the height should be treated as <code>auto</code>)
-     * @return The <code>ReplacedElement</code> or <code>null</code> if no
-     * <code>ReplacedElement</code> applies 
+     *
+     * @param cssWidth The CSS width of the element in dots (or {@code -1} if
+     * width is {@code auto})
+     * @param cssHeight The CSS height of the element in dots (or {@code -1}
+     * if the height should be treated as {@code auto})
+     * @return The {@code ReplacedElement} or {@code null} if no
+     * {@code ReplacedElement} applies
      */
-    public ReplacedElement createReplacedElement(
+    @Nullable
+    ReplacedElement createReplacedElement(
             LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight);
-    
+
     /**
-     * Instructs the <code>ReplacedElementFactory</code> to discard any cached
+     * Instructs the {@code ReplacedElementFactory} to discard any cached
      * data (typically because a new page is about to be loaded).
      */
-    public void reset();
-    
+    void reset();
+
     /**
-     * Removes any reference to <code>Element</code> <code>e</code>.
-     * @param e
+     * Removes any reference to {@code Element} {@code e}.
      */
-    public void remove(Element e);
+    void remove(Element e);
 
     /**
      * Identifies the FSL which will be used for callbacks when a form submit action is executed; you can use a
@@ -58,5 +59,5 @@ public interface ReplacedElementFactory {
      *
      * @param listener the listener instance to receive callbacks on form submission.
      */
-    public void setFormSubmissionListener(FormSubmissionListener listener);
+    void setFormSubmissionListener(FormSubmissionListener listener);
 }

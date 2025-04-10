@@ -19,63 +19,33 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import java.util.logging.*;
-import javax.swing.JTextArea;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
+import javax.swing.*;
 
-/**
- * Description of the Class
- *
- * @author   empty
- */
+
 public class ValidationHandler implements ErrorHandler {
-    /** Description of the Field */
     protected JTextArea jta;
-    /** Description of the Field */
-    public static Logger logger = Logger.getLogger( "app.browser" );
 
-    /**
-     * Description of the Method
-     *
-     * @param ex  PARAM
-     */
-    public void error( SAXParseException ex ) {
+    @Override
+    public void error(SAXParseException ex ) {
         print( "error: " + print( ex ) );
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param ex  PARAM
-     */
-    public void fatalError( SAXParseException ex ) {
+    @Override
+    public void fatalError(SAXParseException ex ) {
         print( "fatal error: " + print( ex ) );
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param ex  PARAM
-     */
-    public void warning( SAXParseException ex ) {
+    @Override
+    public void warning(SAXParseException ex ) {
         print( "warning: " + print( ex ) );
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param ex  PARAM
-     * @return    Returns
-     */
-    public String print( SAXParseException ex ) {
-        StringBuffer sb = new StringBuffer();
-        sb.append( "Exception: " + ex.getMessage() );
-        sb.append( "failed at column : " + ex.getColumnNumber() +
-                " on line " + ex.getLineNumber() );
-        sb.append( "entity:\n" + ex.getPublicId() + "\n" + ex.getSystemId() );
-        return sb.toString();
+    public String print(SAXParseException ex) {
+        return String.format("Exception: %sfailed at column : %d on line %dentity:%n%s%n%s",
+                ex.getMessage(), ex.getColumnNumber(), ex.getLineNumber(), ex.getPublicId(), ex.getSystemId());
     }
 
     /**
@@ -87,11 +57,6 @@ public class ValidationHandler implements ErrorHandler {
         this.jta = jta;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param str  PARAM
-     */
     protected void print( String str ) {
         if ( jta != null ) {
             jta.append( str );
@@ -99,16 +64,3 @@ public class ValidationHandler implements ErrorHandler {
     }
 
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.2  2004/10/23 14:38:58  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
- * Added CVS log comments at bottom.
- *
- *
- */
-

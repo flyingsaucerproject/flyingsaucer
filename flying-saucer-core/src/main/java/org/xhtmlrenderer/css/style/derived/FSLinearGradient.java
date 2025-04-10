@@ -1,14 +1,10 @@
 package org.xhtmlrenderer.css.style.derived;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.regex.Pattern;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -64,7 +60,7 @@ public class FSLinearGradient
         @Override
         public int compareTo(final StopValue arg0)
         {
-            if (this.dotsValue == arg0.dotsValue)
+            if (Objects.equals(this.dotsValue, arg0.dotsValue))
                 return 0;
             if (this.dotsValue < arg0.dotsValue)
                 return -1;
@@ -142,8 +138,8 @@ public class FSLinearGradient
 	    float perpendicularSlope = -1 / slope;
 
 	    // Compute start corner relative to center, in Cartesian space (+y = up).
-	    float halfHeight = h / 2;
-	    float halfWidth = w / 2;
+	    float halfHeight = h / 2.0f;
+	    float halfWidth = w / 2.0f;
 	    float xEnd, yEnd;
 
 	    if (angleDeg < 90)
@@ -202,6 +198,24 @@ public class FSLinearGradient
 		return;
 	}
 
+    public static boolean looksLikeALength(String val) {
+        String RCSS_NUMBER = "(-)?((\\d){1,10}((\\.)(\\d){1,10})?)";
+        String RCSS_LENGTH = "((0$)|((" + RCSS_NUMBER + ")+" + "((em)|(ex)|(px)|(cm)|(mm)|(in)|(pt)|(pc)|(%))))";
+        var CSS_LENGTH_PATTERN = Pattern.compile(RCSS_LENGTH);
+        return CSS_LENGTH_PATTERN.matcher(val).matches();
+    }
+
+
+    public static boolean looksLikeABGPosition(String val) {
+        var BACKGROUND_POSITIONS_IDENTS = new ArrayList<String>();
+        BACKGROUND_POSITIONS_IDENTS.add("top");
+        BACKGROUND_POSITIONS_IDENTS.add("center");
+        BACKGROUND_POSITIONS_IDENTS.add("bottom");
+        BACKGROUND_POSITIONS_IDENTS.add("right");
+        BACKGROUND_POSITIONS_IDENTS.add("left");
+        return BACKGROUND_POSITIONS_IDENTS.contains(val) || looksLikeALength(val);
+    }
+
     public FSLinearGradient(final FSFunction func, final CalculatedStyle style, final int width, final int height, final CssContext ctx)
     {
         final List<PropertyValue> params = func.getParameters();
@@ -221,7 +235,7 @@ public class FSLinearGradient
             // linear-gradient( to top right, blue, red);
             for ( ; i < params.size(); i++)
             {
-                if (params.get(i).getStringValue() == null || !Idents.looksLikeABGPosition(params.get(i).getStringValue()))
+                if (params.get(i).getStringValue() == null || !looksLikeABGPosition(params.get(i).getStringValue()))
                     break;
             }
 

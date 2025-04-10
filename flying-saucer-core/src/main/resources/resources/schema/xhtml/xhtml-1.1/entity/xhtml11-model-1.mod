@@ -4,7 +4,6 @@
 
      This is XHTML 1.1, a reformulation of HTML as a modular XML application.
      Copyright 1998-2001 W3C (MIT, INRIA, Keio), All Rights Reserved.
-     Revision: $Id$ SMI
 
      This DTD module is identified by the PUBLIC and SYSTEM identifiers:
 
@@ -23,7 +22,7 @@
      XHTML has three basic content models:
 
          %Inline.mix;  character-level elements
-         %Block.mix;   block-like elements, eg., paragraphs and lists
+         %Block.mix;   block-like elements, e.g., paragraphs and lists
          %Flow.mix;    any block or inline elements
 
      Any parameter entities declared in this module may be used
@@ -216,7 +215,7 @@
 <!ENTITY % Block.extra "" >
 
 <!-- %Block.class; includes all block elements,
-     used as an component in mixes
+     used as a component in mixes
 -->
 <!ENTITY % Block.class
      "%BlkStruct.class;

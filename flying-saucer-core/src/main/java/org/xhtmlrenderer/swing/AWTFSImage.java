@@ -20,27 +20,27 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.util.ImageUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static org.xhtmlrenderer.util.ImageUtil.convertToBufferedImage;
+
 public abstract class AWTFSImage implements FSImage {
     private static final FSImage NULL_FS_IMAGE = new NullImage();
 
-    public static FSImage createImage(Image img) {
+    @CheckReturnValue
+    public static FSImage createImage(@Nullable Image img) {
         if (img == null) {
             return NULL_FS_IMAGE;
-        } else {
-            BufferedImage bimg;
-            if (img instanceof BufferedImage) {
-                bimg = ImageUtil.makeCompatible((BufferedImage) img);
-            } else {
-                bimg = ImageUtil.convertToBufferedImage(img, BufferedImage.TYPE_INT_ARGB);
-            }
-            return new NewAWTFSImage(bimg);
         }
+        BufferedImage bufferedImage = convertToBufferedImage(img, BufferedImage.TYPE_INT_ARGB);
+        return new NewAWTFSImage(bufferedImage);
     }
 
     protected AWTFSImage() {
@@ -50,25 +50,31 @@ public abstract class AWTFSImage implements FSImage {
 
 
     static class NewAWTFSImage extends AWTFSImage {
-        private BufferedImage img;
+        private final BufferedImage img;
 
         public NewAWTFSImage(BufferedImage img) {
             this.img = img;
         }
 
+        @Override
         public int getWidth() {
             return img.getWidth(null);
         }
 
+        @Override
         public int getHeight() {
             return img.getHeight(null);
         }
 
+        @Override
         public BufferedImage getImage() {
             return img;
         }
 
-        public void scale(int width, int height) {
+        @NonNull
+        @CheckReturnValue
+        @Override
+        public FSImage scale(int width, int height) {
             if (width > 0 || height > 0) {
                 int currentWith = getWidth();
                 int currentHeight = getHeight();
@@ -84,26 +90,34 @@ public abstract class AWTFSImage implements FSImage {
                 }
 
                 if (currentWith != targetWidth || currentHeight != targetHeight) {
-                    img = ImageUtil.getScaledInstance(img, targetWidth, targetHeight);
+                    return new NewAWTFSImage(ImageUtil.getScaledInstance(img, targetWidth, targetHeight));
                 }
             }
+            return this;
         }
     }
 
-    private static class NullImage extends AWTFSImage {
+    private static final class NullImage extends AWTFSImage {
         private static final BufferedImage EMPTY_IMAGE = ImageUtil.createTransparentImage(1, 1);
 
+        @Override
         public int getWidth() {
             return 0;
         }
 
+        @Override
         public int getHeight() {
             return 0;
         }
 
-        public void scale(int width, int height) {
+        @NonNull
+        @CheckReturnValue
+        @Override
+        public FSImage scale(int width, int height) {
+            return this;
         }
 
+        @Override
         public BufferedImage getImage() {
             return EMPTY_IMAGE;
         }

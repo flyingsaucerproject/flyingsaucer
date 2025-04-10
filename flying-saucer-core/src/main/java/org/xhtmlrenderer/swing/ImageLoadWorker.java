@@ -26,6 +26,7 @@ import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 
@@ -37,16 +38,17 @@ import java.util.logging.Level;
  * will be returned instead and the problem will be logged.
  */
 class ImageLoadWorker extends Thread {
-    private static volatile int counter = 0;
+    private static final AtomicInteger counter = new AtomicInteger(0);
     private final ImageLoadQueue queue;
 
     public ImageLoadWorker(ImageLoadQueue queue) {
         this.queue = queue;
         setDaemon(true);
         setPriority(Thread.MIN_PRIORITY);
-        setName("ImageLoadWorker(" + counter++ + ")");
+        setName("ImageLoadWorker(" + counter.incrementAndGet() + ")");
     }
 
+    @Override
     public void run() {
         try {
             while (true) {
@@ -57,7 +59,7 @@ class ImageLoadWorker extends Thread {
                 }
                 final ImageResource ir = ImageResourceLoader.loadImageResourceFromUri(loadItem._uri);
                 FSImage awtfsImage = ir.getImage();
-                BufferedImage newImg = (BufferedImage) ((AWTFSImage) awtfsImage).getImage();
+                BufferedImage newImg = ((AWTFSImage) awtfsImage).getImage();
                 XRLog.load(Level.FINE, this + ", loaded " + loadItem._uri);
 
                 loadItem._imageResourceLoader.loaded(ir, newImg.getWidth(), newImg.getHeight());
@@ -74,14 +76,10 @@ class ImageLoadWorker extends Thread {
 
                 // msfImage belongs to the Swing AWT thread
                 final BufferedImage newImg1 = newImg;
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        loadItem._mfsImage.setImage(loadItem._uri, newImg1, wasScaled);
-                    }
-                });
+                EventQueue.invokeLater(() -> loadItem._mfsImage.setImage(loadItem._uri, newImg1, wasScaled));
             }
-        } catch (InterruptedException e) {
-            //
+        } catch (InterruptedException ignore) {
+            Thread.currentThread().interrupt();
         }
     }
 }

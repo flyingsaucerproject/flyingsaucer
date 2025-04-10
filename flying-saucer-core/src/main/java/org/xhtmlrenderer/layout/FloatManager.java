@@ -19,16 +19,20 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.xhtmlrenderer.layout.FloatManager.Direction.LEFT;
+import static org.xhtmlrenderer.layout.FloatManager.Direction.RIGHT;
 
 /**
  * A class that manages all floated boxes in a given block formatting context.
@@ -36,13 +40,15 @@ import org.xhtmlrenderer.render.LineBox;
  * non-floated (block) boxes.
  */
 public class FloatManager {
-    private static final int LEFT = 1;
-    private static final int RIGHT = 2;
+    enum Direction {LEFT, RIGHT}
 
-    private List _leftFloats = new ArrayList();
-    private List _rightFloats = new ArrayList();
+    private final List<BoxOffset> _leftFloats = new ArrayList<>();
+    private final List<BoxOffset> _rightFloats = new ArrayList<>();
+    private final Box _master;
 
-    private Box _master;
+    public FloatManager(Box master) {
+        _master = master;
+    }
 
     public void floatBox(LayoutContext c, Layer layer, BlockFormattingContext bfc, BlockBox box) {
         if (box.getStyle().isFloatedLeft()) {
@@ -63,10 +69,10 @@ public class FloatManager {
         }
     }
 
-    private void save(BlockBox current, Layer layer, BlockFormattingContext bfc, int direction) {
+    private void save(BlockBox current, Layer layer, BlockFormattingContext bfc, Direction direction) {
         Point p = bfc.getOffset();
         getFloats(direction).add(new BoxOffset(current, p.x, p.y));
-        layer.addFloat(current, bfc);
+        layer.addFloat(current);
         current.getFloatedBoxData().setManager(this);
 
         current.calcCanvasLocation();
@@ -74,7 +80,7 @@ public class FloatManager {
     }
 
     private void position(CssContext cssCtx, BlockFormattingContext bfc,
-                          BlockBox current, int direction) {
+                          BlockBox current, Direction direction) {
         moveAllTheWayOver(current, direction);
 
         alignToLastOpposingFloat(cssCtx, bfc, current, direction);
@@ -102,26 +108,26 @@ public class FloatManager {
         }
     }
 
-    private List getFloats(int direction) {
+    private List<BoxOffset> getFloats(Direction direction) {
         return direction == LEFT ? _leftFloats : _rightFloats;
     }
 
-    private List getOpposingFloats(int direction) {
+    private List<BoxOffset> getOpposingFloats(Direction direction) {
         return direction == LEFT ? _rightFloats : _leftFloats;
     }
 
     private void alignToLastFloat(CssContext cssCtx,
-                                  BlockFormattingContext bfc, BlockBox current, int direction) {
+                                  BlockFormattingContext bfc, BlockBox current, Direction direction) {
 
-        List floats = getFloats(direction);
-        if (floats.size() > 0) {
+        List<BoxOffset> floats = getFloats(direction);
+        if (!floats.isEmpty()) {
             Point offset = bfc.getOffset();
-            BoxOffset lastOffset = (BoxOffset) floats.get(floats.size() - 1);
-            BlockBox last = lastOffset.getBox();
+            BoxOffset lastOffset = floats.get(floats.size() - 1);
+            BlockBox last = lastOffset.box();
 
             Rectangle currentBounds = current.getMarginEdge(cssCtx, -offset.x, -offset.y);
 
-            Rectangle lastBounds = last.getMarginEdge(cssCtx, -lastOffset.getX(), -lastOffset.getY());
+            Rectangle lastBounds = last.getMarginEdge(cssCtx, -lastOffset.x(), -lastOffset.y());
 
             boolean moveOver = false;
 
@@ -150,17 +156,17 @@ public class FloatManager {
     }
 
     private void alignToLastOpposingFloat(CssContext cssCtx,
-                                          BlockFormattingContext bfc, BlockBox current, int direction) {
+                                          BlockFormattingContext bfc, BlockBox current, Direction direction) {
 
-        List floats = getOpposingFloats(direction);
-        if (floats.size() > 0) {
+        List<BoxOffset> floats = getOpposingFloats(direction);
+        if (!floats.isEmpty()) {
             Point offset = bfc.getOffset();
-            BoxOffset lastOffset = (BoxOffset) floats.get(floats.size() - 1);
+            BoxOffset lastOffset = floats.get(floats.size() - 1);
 
             Rectangle currentBounds = current.getMarginEdge(cssCtx, -offset.x, -offset.y);
 
-            Rectangle lastBounds = lastOffset.getBox().getMarginEdge(cssCtx,
-                    -lastOffset.getX(), -lastOffset.getY());
+            Rectangle lastBounds = lastOffset.box().getMarginEdge(cssCtx,
+                    -lastOffset.x(), -lastOffset.y());
 
             if (currentBounds.y < lastBounds.y) {
                 currentBounds.translate(0, lastBounds.y - currentBounds.y);
@@ -172,7 +178,7 @@ public class FloatManager {
         }
     }
 
-    private void moveAllTheWayOver(BlockBox current, int direction) {
+    private void moveAllTheWayOver(BlockBox current, Direction direction) {
         if (direction == LEFT) {
             current.setX(0);
         } else if (direction == RIGHT) {
@@ -185,14 +191,12 @@ public class FloatManager {
                 (current.getX() + current.getWidth()) <= current.getContainingBlock().getContentWidth();
     }
 
-    private int findLowestY(CssContext cssCtx, List floats) {
+    private int findLowestY(CssContext cssCtx, List<BoxOffset> floats) {
         int result = 0;
 
-        for (Iterator i = floats.iterator(); i.hasNext();) {
-            BoxOffset floater = (BoxOffset) i.next();
-
-            Rectangle bounds = floater.getBox().getMarginEdge(
-                    cssCtx, -floater.getX(), -floater.getY());
+        for (BoxOffset floater : floats) {
+            Rectangle bounds = floater.box().getMarginEdge(
+                    cssCtx, -floater.x(), -floater.y());
             if (bounds.y + bounds.height > result) {
                 result = bounds.y + bounds.height;
             }
@@ -211,14 +215,13 @@ public class FloatManager {
     }
 
     private boolean overlaps(CssContext cssCtx, BlockFormattingContext bfc,
-                             BlockBox current, List floats) {
+                             BlockBox current, List<BoxOffset> floats) {
         Point offset = bfc.getOffset();
         Rectangle bounds = current.getMarginEdge(cssCtx, -offset.x, -offset.y);
 
-        for (Iterator i = floats.iterator(); i.hasNext();) {
-            BoxOffset floater = (BoxOffset) i.next();
-            Rectangle floaterBounds = floater.getBox().getMarginEdge(cssCtx,
-                    -floater.getX(), -floater.getY());
+        for (BoxOffset floater : floats) {
+            Rectangle floaterBounds = floater.box().getMarginEdge(cssCtx,
+                    -floater.x(), -floater.y());
 
             if (floaterBounds.intersects(bounds)) {
                 return true;
@@ -229,8 +232,8 @@ public class FloatManager {
     }
 
     private void moveFloatBelow(CssContext cssCtx, BlockFormattingContext bfc,
-                                   Box current, List floats) {
-        if (floats.size() == 0) {
+                                   Box current, List<BoxOffset> floats) {
+        if (floats.isEmpty()) {
             return;
         }
 
@@ -244,8 +247,8 @@ public class FloatManager {
     }
 
     private void moveClear(CssContext cssCtx, BlockFormattingContext bfc,
-                           Box current, List floats) {
-        if (floats.size() == 0) {
+                           Box current, List<BoxOffset> floats) {
+        if (floats.isEmpty()) {
             return;
         }
 
@@ -272,10 +275,10 @@ public class FloatManager {
         removeFloat(floater, getFloats(RIGHT));
     }
 
-    private void removeFloat(BlockBox floater, List floats) {
-        for (Iterator i = floats.iterator(); i.hasNext();) {
-            BoxOffset boxOffset = (BoxOffset) i.next();
-            if (boxOffset.getBox().equals(floater)) {
+    private void removeFloat(BlockBox floater, List<BoxOffset> floats) {
+        for (Iterator<BoxOffset> i = floats.iterator(); i.hasNext();) {
+            BoxOffset boxOffset = i.next();
+            if (boxOffset.box().equals(floater)) {
                 i.remove();
                 floater.getFloatedBoxData().setManager(null);
             }
@@ -287,11 +290,10 @@ public class FloatManager {
         calcFloatLocations(getFloats(RIGHT));
     }
 
-    private void calcFloatLocations(List floats) {
-        for (Iterator i = floats.iterator(); i.hasNext();) {
-            BoxOffset boxOffset = (BoxOffset) i.next();
-            boxOffset.getBox().calcCanvasLocation();
-            boxOffset.getBox().calcChildLocations();
+    private void calcFloatLocations(List<BoxOffset> floats) {
+        for (BoxOffset boxOffset : floats) {
+            boxOffset.box().calcCanvasLocation();
+            boxOffset.box().calcChildLocations();
         }
     }
 
@@ -312,13 +314,13 @@ public class FloatManager {
         int leftDelta;
         int rightDelta;
 
-        if (left.getBox() != null) {
+        if (left.box() != null) {
             leftDelta = calcDelta(cssCtx, line, left);
         } else {
             leftDelta = 0;
         }
 
-        if (right.getBox() != null) {
+        if (right.box() != null) {
             rightDelta = calcDelta(cssCtx, line, right);
         } else {
             rightDelta = 0;
@@ -328,7 +330,7 @@ public class FloatManager {
     }
 
     private int calcDelta(CssContext cssCtx, LineBox line, BoxDistance boxDistance) {
-        BlockBox floated = boxDistance.getBox();
+        BlockBox floated = boxDistance.box();
         Rectangle rect = floated.getBorderEdge(floated.getAbsX(), floated.getAbsY(), cssCtx);
         int bottom = rect.y + rect.height;
         return bottom - line.getAbsY();
@@ -336,18 +338,18 @@ public class FloatManager {
 
     public int getLeftFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
             LineBox line, int containingBlockContentWidth) {
-        return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _leftFloats, LEFT).getDistance();
+        return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _leftFloats, LEFT).distance();
     }
 
     public int getRightFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
             LineBox line, int containingBlockContentWidth) {
-        return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _rightFloats, RIGHT).getDistance();
+        return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, _rightFloats, RIGHT).distance();
     }
 
     private BoxDistance getFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
                                  LineBox line, int containingBlockContentWidth,
-                                 List floatsList, int direction) {
-        if (floatsList.size() == 0) {
+                                 List<BoxOffset> floatsList, Direction direction) {
+        if (floatsList.isEmpty()) {
             return new BoxDistance(null, 0);
         }
 
@@ -359,16 +361,15 @@ public class FloatManager {
 
         applyLineHeightHack(cssCtx, line, lineBounds);
         BlockBox farthestOverBox = null;
-        for (int i = 0; i < floatsList.size(); i++) {
-            BoxOffset floater = (BoxOffset) floatsList.get(i);
-            Rectangle fr = floater.getBox().getMarginEdge(cssCtx, -floater.getX(), -floater.getY());
+        for (BoxOffset floater : floatsList) {
+            Rectangle fr = floater.box().getMarginEdge(cssCtx, -floater.x(), -floater.y());
             if (lineBounds.intersects(fr)) {
                 if (direction == LEFT && fr.x + fr.width > farthestOver) {
                     farthestOver = fr.x + fr.width;
                 } else if (direction == RIGHT && fr.x < farthestOver) {
                     farthestOver = fr.x;
                 }
-                farthestOverBox = floater.getBox();
+                farthestOverBox = floater.box();
             }
         }
 
@@ -377,10 +378,6 @@ public class FloatManager {
         } else {
             return new BoxDistance(farthestOverBox,lineBounds.x + lineBounds.width - farthestOver);
         }
-    }
-
-    public void setMaster(Box owner) {
-        _master = owner;
     }
 
     public Box getMaster() {
@@ -393,26 +390,26 @@ public class FloatManager {
                 floater.getStyle().isFloatedLeft() ? getFloats(LEFT) : getFloats(RIGHT));
     }
 
-    private Point getOffset(BlockBox floater, List floats) {
-        for (Iterator i = floats.iterator(); i.hasNext();) {
-            BoxOffset boxOffset = (BoxOffset) i.next();
-            BlockBox box = boxOffset.getBox();
+    @Nullable
+    @CheckReturnValue
+    private Point getOffset(BlockBox floater, List<BoxOffset> floats) {
+        for (BoxOffset boxOffset : floats) {
+            BlockBox box = boxOffset.box();
 
             if (box.equals(floater)) {
-                return new Point(boxOffset.getX(), boxOffset.getY());
+                return new Point(boxOffset.x(), boxOffset.y());
             }
         }
 
         return null;
     }
 
-    private void performFloatOperation(FloatOperation op, List floats) {
-        for (Iterator i = floats.iterator(); i.hasNext();) {
-            BoxOffset boxOffset = (BoxOffset) i.next();
-            BlockBox box = boxOffset.getBox();
+    private void performFloatOperation(FloatOperation op, List<BoxOffset> floats) {
+        for (BoxOffset boxOffset : floats) {
+            BlockBox box = boxOffset.box();
 
-            box.setAbsX(box.getX() + getMaster().getAbsX() - boxOffset.getX());
-            box.setAbsY(box.getY() + getMaster().getAbsY() - boxOffset.getY());
+            box.setAbsX(box.getX() + getMaster().getAbsX() - boxOffset.x());
+            box.setAbsY(box.getY() + getMaster().getAbsY() - boxOffset.y());
 
             op.operate(box);
         }
@@ -423,53 +420,14 @@ public class FloatManager {
         performFloatOperation(op, getFloats(RIGHT));
     }
 
-    private static class BoxOffset {
-        private BlockBox _box;
-        private int _x;
-        private int _y;
-
-        public BoxOffset(BlockBox box, int x, int y) {
-            _box = box;
-            _x = x;
-            _y = y;
-        }
-
-        public BlockBox getBox() {
-            return _box;
-        }
-
-        public int getX() {
-            return _x;
-        }
-
-        public int getY() {
-            return _y;
-        }
+    private record BoxOffset(BlockBox box, int x, int y) {
     }
 
-    private static class BoxDistance {
-        private BlockBox _box;
-        private int _distance;
-
-        public BoxDistance(BlockBox box, int distance) {
-            _box = box;
-            _distance = distance;
-        }
-
-        BlockBox getBox() {
-            return _box;
-        }
-
-        int getDistance() {
-            return _distance;
-        }
+    private record BoxDistance(@Nullable BlockBox box, int distance) {
     }
 
     public interface FloatOperation {
-        public void operate(Box floater);
+        void operate(Box floater);
     }
 }
 
-/*
- * $Id$
- */

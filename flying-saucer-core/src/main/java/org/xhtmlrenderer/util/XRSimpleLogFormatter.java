@@ -49,9 +49,6 @@ public class XRSimpleLogFormatter extends Formatter {
         EXMSG_FMT = Configuration.valueFor("xr.simple-log-format-throwable", "{1}:\n  {5}\n{8}").trim() + "\n";
     }
 
-    /**
-     * Constructor for the XRSimpleLogFormatter object
-     */
     public XRSimpleLogFormatter() {
         super();
         mformat = new MessageFormat(MSG_FMT);
@@ -60,10 +57,8 @@ public class XRSimpleLogFormatter extends Formatter {
 
     /**
      * Format the given log record and return the formatted string.
-     *
-     * @param record PARAM
-     * @return Returns
      */
+    @Override
     public String format(LogRecord record) {
         Throwable th = record.getThrown();
         String thName = "";
@@ -96,9 +91,6 @@ public class XRSimpleLogFormatter extends Formatter {
 
     /**
      * Localize and format the message string from a log record.
-     *
-     * @param record PARAM
-     * @return Returns
      */
     @Override
     public String formatMessage(LogRecord record) {
@@ -107,9 +99,6 @@ public class XRSimpleLogFormatter extends Formatter {
 
     /**
      * Return the header string for a set of formatted records.
-     *
-     * @param h PARAM
-     * @return The head value
      */
     @Override
     public String getHead(Handler h) {
@@ -118,40 +107,10 @@ public class XRSimpleLogFormatter extends Formatter {
 
     /**
      * Return the tail string for a set of formatted records.
-     *
-     * @param h PARAM
-     * @return The tail value
      */
     @Override
     public String getTail(Handler h) {
         return super.getTail(h);
     }
 
-}// end class
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.6  2005/04/07 16:15:47  pdoubleya
- * Typo.
- *
- * Revision 1.5  2005/01/29 20:18:37  pdoubleya
- * Clean/reformat code. Removed commented blocks, checked copyright.
- *
- * Revision 1.4  2004/10/23 14:06:57  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
- * Added CVS log comments at bottom.
- *
- * Revision 1.3  2004/10/18 12:08:37  pdoubleya
- * Incorrect Configuration key fixed.
- *
- * Revision 1.2  2004/10/14 12:53:26  pdoubleya
- * Added handling for exception messages with stack trace and separate message format.
- *
- * Revision 1.1  2004/10/14 11:13:22  pdoubleya
- * Added to CVS.
- *
- */
-
+}

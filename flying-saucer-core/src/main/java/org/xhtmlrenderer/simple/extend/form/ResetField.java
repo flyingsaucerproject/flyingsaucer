@@ -19,30 +19,27 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.swing.*;
+
 class ResetField extends AbstractButtonField {
-    public ResetField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    ResetField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
-    
+
+    @Override
     public JComponent create() {
         JButton button = new JButton();
 
         String value;
         if (hasAttribute("value")) {
             value = getAttribute("value");
-            if (value.length() == 0)
+            if (value.isEmpty())
                 value = " ";    //otherwise we get a very short button
         }
         else {
@@ -52,25 +49,25 @@ class ResetField extends AbstractButtonField {
         applyComponentStyle(button);
 
         button.setText(value);
-        
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                XRLog.layout("Reset pressed: Restore");
-                
-                getParentForm().reset();
-            }
+
+        button.addActionListener(event -> {
+            XRLog.layout("Reset pressed: Restore");
+
+            getParentForm().reset();
         });
 
         return button;
     }
-    
+
+    @Override
     public boolean includeInSubmission(JComponent source) {
         return false;
     }
 
+    @Override
     protected String[] getFieldValues() {
         return new String[] {
-                hasAttribute("value") ? getAttribute("value") : "Reset" // TODO: Don't hardcode 
+                hasAttribute("value") ? getAttribute("value") : "Reset" // TODO: Don't hardcode
         };
     }
 }

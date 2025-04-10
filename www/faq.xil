@@ -48,7 +48,7 @@ An application using ${fs} can be as simple as a chat program or as complicated 
 * report generation and viewing 
 * a stock ticker / weather reporter
 
-${fs} has become a favorite recently for people who need to render clean XHTML to PDF; we support PDF output via the iText library.
+${fs} has become a favorite recently for people who need to render clean XHTML to PDF; we support PDF output via the OpenPDF/iText library.
 
 h3(fs_heading){clear:none}. What XHTML/CSS features does ${fs} currently support?
 
@@ -143,7 +143,7 @@ That's not possible out of the box.  The DOM interface doesn't provide position 
 
 h3(fs_heading){clear:none}. How can I "watermark" PDF's created through FS?
 
-Either use the background property inside of @@page@ or @PdfStamper@ after the PDF is already created. @PdfStamper@ is part of the iText API.
+Either use the background property inside of @@page@ or @PdfStamper@ after the PDF is already created. @PdfStamper@ is part of the OpenPDF/iText API.
 
 h3(fs_heading){clear:none}. I've created a replacedelementfactory for a custom XML element (e.g. MathML), but it's not getting replaced within the document.
 
@@ -164,11 +164,7 @@ String[] inputs = new String[] { "input1.html", "input2.html",
 "input3.html" };
 String output = "output.pdf";
 
-OutputStream os = null;
-try
-{
-   os = new FileOutputStream(new File(root, output));
-
+try (OutputStream os = new FileOutputStream(new File(root, output))) {
    ITextRenderer renderer = new ITextRenderer();
 
    renderer.setDocument(new File(root, inputs[0]));
@@ -176,31 +172,13 @@ try
 
    renderer.createPDF(os, false);
 
-   for (int i = 1; i < inputs.length; i++)
-   {
+   for (int i = 1; i < inputs.length; i++) {
        renderer.setDocument(new File(root, inputs[i]));
        renderer.layout();
        renderer.writeNextDocument();
    }
 
    renderer.finishPDF();
-
-   os.close();
-   os = null;
-}
-finally
-{
-   if (os != null)
-   {
-       try
-       {
-           os.close();
-       }
-       catch (IOException e)
-       {
-           // ignore
-       }
-   }
 }
 }}
 
@@ -255,9 +233,9 @@ h3(fs_heading){clear:none}. How do I set up my CLASSPATH?
 You only need the 
 
 * @core-renderer.jar@ (required) 
-* @${itext.jar}@  
+* @${flying-saucer-pdf.jar}@  
 
-The first two are required; iText is needed for PDF rendering. 
+The first two are required; OpenPDF/iText is needed for PDF rendering. 
 
 In earlier releases, you needed to include a CSS parser in the CLASSPATH. This is no longer necessary, as ${fs} now includes a fast, compliant CSS parser.
 

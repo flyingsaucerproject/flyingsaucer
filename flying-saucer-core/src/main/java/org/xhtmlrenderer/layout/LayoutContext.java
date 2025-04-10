@@ -19,14 +19,8 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.context.ContentFunctionFactory;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -47,6 +41,16 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.PageBox;
 
+import java.awt.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.emptyList;
+
 /**
  * This class tracks state which changes over the course of a layout run.
  * Generally speaking, if possible, state information should be stored in the box
@@ -54,42 +58,51 @@ import org.xhtmlrenderer.render.PageBox;
  * {@link SharedContext}.
  */
 public class LayoutContext implements CssContext {
-    private SharedContext _sharedContext;
+    private final SharedContext _sharedContext;
 
+    @Nullable
     private Layer _rootLayer;
 
     private StyleTracker _firstLines;
     private StyleTracker _firstLetters;
+    @Nullable
     private MarkerData _currentMarkerData;
 
-    private LinkedList _bfcs;
-    private LinkedList _layers;
+    private final Deque<BlockFormattingContext> _blockFormattingContexts = new ArrayDeque<>();
+    private final Deque<Layer> _layers = new ArrayDeque<>();
 
-    private FontContext _fontContext;
+    private final FontContext _fontContext;
 
-    private ContentFunctionFactory _contentFunctionFactory = new ContentFunctionFactory();
+    private final ContentFunctionFactory _contentFunctionFactory = new ContentFunctionFactory();
 
     private int _extraSpaceTop;
     private int _extraSpaceBottom;
 
-    private Map _counterContextMap = new HashMap();
+    private final Map<CalculatedStyle, CounterContext> _counterContextMap = new HashMap<>();
 
+    @Nullable
     private String _pendingPageName;
+    @Nullable
     private String _pageName;
 
-    private int _noPageBreak = 0;
+    private int _noPageBreak;
 
+    @Nullable
     private Layer _rootDocumentLayer;
+    @Nullable
     private PageBox _page;
 
     private boolean _mayCheckKeepTogether = true;
 
+    @Nullable
     private BreakAtLineContext _breakAtLineContext;
 
     public TextRenderer getTextRenderer() {
         return _sharedContext.getTextRenderer();
     }
 
+    @CheckReturnValue
+    @Override
     public StyleReference getCss() {
         return _sharedContext.getCss();
     }
@@ -107,13 +120,11 @@ public class LayoutContext implements CssContext {
     }
 
     //the stuff that needs to have a separate instance for each run.
-    LayoutContext(SharedContext sharedContext) {
+    LayoutContext(SharedContext sharedContext, FontContext fontContext) {
         _sharedContext = sharedContext;
-        _bfcs = new LinkedList();
-        _layers = new LinkedList();
-
         _firstLines = new StyleTracker();
         _firstLetters = new StyleTracker();
+        this._fontContext = fontContext;
     }
 
     public void reInit(boolean keepLayers) {
@@ -121,11 +132,11 @@ public class LayoutContext implements CssContext {
         _firstLetters = new StyleTracker();
         _currentMarkerData = null;
 
-        _bfcs = new LinkedList();
+        _blockFormattingContexts.clear();
 
         if (! keepLayers) {
             _rootLayer = null;
-            _layers = new LinkedList();
+            _layers.clear();
         }
 
         _extraSpaceTop = 0;
@@ -133,22 +144,9 @@ public class LayoutContext implements CssContext {
     }
 
     public LayoutState captureLayoutState() {
-        LayoutState result = new LayoutState();
-
-        result.setFirstLines(_firstLines);
-        result.setFirstLetters(_firstLetters);
-        result.setCurrentMarkerData(_currentMarkerData);
-
-        result.setBFCs(_bfcs);
-
-        if (isPrint()) {
-            result.setPageName(getPageName());
-            result.setExtraSpaceBottom(getExtraSpaceBottom());
-            result.setExtraSpaceTop(getExtraSpaceTop());
-            result.setNoPageBreak(getNoPageBreak());
-        }
-
-        return result;
+        return isPrint() ?
+                new LayoutState(_firstLines, _firstLetters, _currentMarkerData, _blockFormattingContexts, getPageName(), getExtraSpaceBottom(), getExtraSpaceTop(), getNoPageBreak()) :
+                new LayoutState(_firstLines, _firstLetters, _currentMarkerData, _blockFormattingContexts);
     }
 
     public void restoreLayoutState(LayoutState layoutState) {
@@ -157,7 +155,8 @@ public class LayoutContext implements CssContext {
 
         _currentMarkerData = layoutState.getCurrentMarkerData();
 
-        _bfcs = layoutState.getBFCs();
+        _blockFormattingContexts.clear();
+        _blockFormattingContexts.addAll(layoutState.getBFCs());
 
         if (isPrint()) {
             setPageName(layoutState.getPageName());
@@ -168,17 +167,9 @@ public class LayoutContext implements CssContext {
     }
 
     public LayoutState copyStateForRelayout() {
-        LayoutState result = new LayoutState();
-
-        result.setFirstLetters(_firstLetters.copyOf());
-        result.setFirstLines(_firstLines.copyOf());
-        result.setCurrentMarkerData(_currentMarkerData);
-
-        if (isPrint()) {
-            result.setPageName(getPageName());
-        }
-
-        return result;
+        return isPrint() ?
+                new LayoutState(_firstLines.copyOf(), _firstLetters.copyOf(), _currentMarkerData, emptyList(), getPageName(), 0, 0, 0) :
+                new LayoutState(_firstLines.copyOf(), _firstLetters.copyOf(), _currentMarkerData, emptyList());
     }
 
     public void restoreStateForRelayout(LayoutState layoutState) {
@@ -193,28 +184,26 @@ public class LayoutContext implements CssContext {
     }
 
     public BlockFormattingContext getBlockFormattingContext() {
-        return (BlockFormattingContext) _bfcs.getLast();
+        return _blockFormattingContexts.getLast();
     }
 
     public void pushBFC(BlockFormattingContext bfc) {
-        _bfcs.add(bfc);
+        _blockFormattingContexts.add(bfc);
     }
 
     public void popBFC() {
-        _bfcs.removeLast();
+        _blockFormattingContexts.removeLast();
     }
 
     public void pushLayer(Box master) {
-        Layer layer = null;
+        Layer layer;
 
         if (_rootLayer == null) {
             layer = new Layer(master);
             _rootLayer = layer;
         } else {
             Layer parent = getLayer();
-
             layer = new Layer(parent, master);
-
             parent.addChild(layer);
         }
 
@@ -234,9 +223,10 @@ public class LayoutContext implements CssContext {
     }
 
     public Layer getLayer() {
-        return (Layer) _layers.getLast();
+        return _layers.getLast();
     }
 
+    @Nullable
     public Layer getRootLayer() {
         return _rootLayer;
     }
@@ -245,7 +235,7 @@ public class LayoutContext implements CssContext {
         getBlockFormattingContext().translate(x, y);
     }
 
-    /* code to keep track of all of the id'd boxes */
+    /* code to keep track of all the id'd boxes */
     public void addBoxId(String id, Box box) {
         _sharedContext.addBoxId(id, box);
     }
@@ -258,26 +248,34 @@ public class LayoutContext implements CssContext {
         return _sharedContext.isInteractive();
     }
 
+    @Override
     public float getMmPerDot() {
         return _sharedContext.getMmPerPx();
     }
 
+    @Override
     public int getDotsPerPixel() {
         return _sharedContext.getDotsPerPixel();
     }
 
+    @Override
     public float getFontSize2D(FontSpecification font) {
         return _sharedContext.getFont(font).getSize2D();
     }
 
+    @Override
     public float getXHeight(FontSpecification parentFont) {
         return _sharedContext.getXHeight(getFontContext(), parentFont);
     }
 
+    @Nullable
+    @CheckReturnValue
+    @Override
     public FSFont getFont(FontSpecification font) {
         return _sharedContext.getFont(font);
     }
 
+    @CheckReturnValue
     public UserAgentCallback getUac() {
         return _sharedContext.getUac();
     }
@@ -294,11 +292,13 @@ public class LayoutContext implements CssContext {
         return _firstLetters;
     }
 
+    @Nullable
+    @CheckReturnValue
     public MarkerData getCurrentMarkerData() {
         return _currentMarkerData;
     }
 
-    public void setCurrentMarkerData(MarkerData currentMarkerData) {
+    public void setCurrentMarkerData(@Nullable MarkerData currentMarkerData) {
         _currentMarkerData = currentMarkerData;
     }
 
@@ -308,10 +308,6 @@ public class LayoutContext implements CssContext {
 
     public FontContext getFontContext() {
         return _fontContext;
-    }
-
-    public void setFontContext(FontContext fontContext) {
-        _fontContext = fontContext;
     }
 
     public ContentFunctionFactory getContentFunctionFactory() {
@@ -338,69 +334,72 @@ public class LayoutContext implements CssContext {
         _extraSpaceTop = extraSpaceTop;
     }
 
-    public void resolveCounters(CalculatedStyle style, Integer startIndex) {
+    public void resolveCounters(CalculatedStyle style, @Nullable Integer startIndex) {
         //new context for child elements
         CounterContext cc = new CounterContext(style, startIndex);
         _counterContextMap.put(style, cc);
     }
 
     public void resolveCounters(CalculatedStyle style) {
-    	resolveCounters(style, null);
+        resolveCounters(style, null);
     }
 
     public CounterContext getCounterContext(CalculatedStyle style) {
-        return (CounterContext) _counterContextMap.get(style);
+        return _counterContextMap.get(style);
     }
 
+    @CheckReturnValue
+    @Override
     public FSFontMetrics getFSFontMetrics(FSFont font) {
         return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
     }
 
     public class CounterContext {
-        private Map _counters = new HashMap();
+        private final Map<String, Integer> _counters = new HashMap<>();
         /**
-         * This is different because it needs to work even when the counter- properties cascade
+         * This is different because it needs to work even when the counter-properties cascade,
          * and it should also logically be redefined on each level (think list-items within list-items)
          */
+        @Nullable
         private CounterContext _parent;
 
         /**
          * A CounterContext should really be reflected in the element hierarchy, but CalculatedStyles
          * reflect the ancestor hierarchy just as well and also handles pseudo-elements seamlessly.
-         *
-         * @param style
          */
-        CounterContext(CalculatedStyle style, Integer startIndex) {
-        	// Numbering restarted via <ol start="x">
-			if (startIndex != null) {
-				_counters.put("list-item", startIndex);
-			}
-            _parent = (LayoutContext.CounterContext) _counterContextMap.get(style.getParent());
+        CounterContext(CalculatedStyle style, @Nullable Integer startIndex) {
+            // Numbering restarted via <ol start="x">
+            if (startIndex != null) {
+                _counters.put("list-item", startIndex);
+            }
+            _parent = _counterContextMap.get(style.getParent());
             if (_parent == null) _parent = new CounterContext();//top-level context, above root element
             //first the explicitly named counters
-            List resets = style.getCounterReset();
-            if (resets != null) for (Iterator i = resets.iterator(); i.hasNext();) {
-                CounterData cd = (CounterData) i.next();
-                _parent.resetCounter(cd);
+            List<CounterData> resets = style.getCounterReset();
+            if (resets != null) {
+                for (CounterData cd : resets) {
+                    _parent.resetCounter(cd);
+                }
             }
 
-            List increments = style.getCounterIncrement();
-            if (increments != null) for (Iterator i = increments.iterator(); i.hasNext();) {
-                CounterData cd = (CounterData) i.next();
-                if (!_parent.incrementCounter(cd)) {
-                    _parent.resetCounter(new CounterData(cd.getName(), 0));
-                    _parent.incrementCounter(cd);
+            List<CounterData> increments = style.getCounterIncrement();
+            if (increments != null) {
+                for (CounterData cd : increments) {
+                    if (!_parent.incrementCounter(cd)) {
+                        _parent.resetCounter(new CounterData(cd.getName(), 0));
+                        _parent.incrementCounter(cd);
+                    }
                 }
             }
 
             // then the implicit list-item counter
-			if (style.isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM)) {
-				// Numbering restarted via <li value="x">
-				if (startIndex != null) {
-					_parent._counters.put("list-item", startIndex);
-				}
-				_parent.incrementListItemCounter(1);
-			}
+            if (style.isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM)) {
+                // Numbering restarted via <li value="x">
+                if (startIndex != null) {
+                    _parent._counters.put("list-item", startIndex);
+                }
+                _parent.incrementListItemCounter(1);
+            }
         }
 
         private CounterContext() {
@@ -408,7 +407,6 @@ public class LayoutContext implements CssContext {
         }
 
         /**
-         * @param cd
          * @return true if a counter was found and incremented
          */
         private boolean incrementCounter(CounterData cd) {
@@ -416,27 +414,27 @@ public class LayoutContext implements CssContext {
                 incrementListItemCounter(cd.getValue());
                 return true;
             } else {
-                Integer currentValue = (Integer) _counters.get(cd.getName());
+                Integer currentValue = _counters.get(cd.getName());
                 if (currentValue == null) {
                     if (_parent == null) return false;
                     return _parent.incrementCounter(cd);
                 } else {
-                    _counters.put(cd.getName(), new Integer(currentValue.intValue() + cd.getValue()));
+                    _counters.put(cd.getName(), currentValue + cd.getValue());
                     return true;
                 }
             }
         }
 
         private void incrementListItemCounter(int increment) {
-            Integer currentValue = (Integer) _counters.get("list-item");
+            Integer currentValue = _counters.get("list-item");
             if (currentValue == null) {
-                currentValue = new Integer(0);
+                currentValue = 0;
             }
-            _counters.put("list-item", new Integer(currentValue.intValue() + increment));
+            _counters.put("list-item", currentValue + increment);
         }
 
         private void resetCounter(CounterData cd) {
-            _counters.put(cd.getName(), new Integer(cd.getValue()));
+            _counters.put(cd.getName(), cd.getValue());
         }
 
         public int getCurrentCounterValue(String name) {
@@ -447,41 +445,44 @@ public class LayoutContext implements CssContext {
                 _parent.resetCounter(new CounterData(name, 0));
                 return 0;
             } else {
-                return value.intValue();
+                return value;
             }
         }
 
+        @Nullable
         private Integer getCounter(String name) {
-            Integer value = (Integer) _counters.get(name);
+            Integer value = _counters.get(name);
             if (value != null) return value;
             if (_parent == null) return null;
             return _parent.getCounter(name);
         }
 
-        public List getCurrentCounterValues(String name) {
+        public List<Integer> getCurrentCounterValues(String name) {
             //only the counters of the parent are in scope
             //_parent is never null for a publicly accessible CounterContext
-            List values = new ArrayList();
+            List<Integer> values = new ArrayList<>();
             _parent.getCounterValues(name, values);
-            if (values.size() == 0) {
+            if (values.isEmpty()) {
                 _parent.resetCounter(new CounterData(name, 0));
-                values.add(new Integer(0));
+                values.add(0);
             }
             return values;
         }
 
-        private void getCounterValues(String name, List values) {
+        private void getCounterValues(String name, List<Integer> values) {
             if (_parent != null) _parent.getCounterValues(name, values);
-            Integer value = (Integer) _counters.get(name);
+            Integer value = _counters.get(name);
             if (value != null) values.add(value);
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public String getPageName() {
         return _pageName;
     }
 
-    public void setPageName(String currentPageName) {
+    public void setPageName(@Nullable String currentPageName) {
         _pageName = currentPageName;
     }
 
@@ -497,14 +498,18 @@ public class LayoutContext implements CssContext {
         return _noPageBreak == 0;
     }
 
+    @Nullable
+    @CheckReturnValue
     public String getPendingPageName() {
         return _pendingPageName;
     }
 
-    public void setPendingPageName(String pendingPageName) {
+    public void setPendingPageName(@Nullable String pendingPageName) {
         _pendingPageName = pendingPageName;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Layer getRootDocumentLayer() {
         return _rootDocumentLayer;
     }
@@ -513,6 +518,8 @@ public class LayoutContext implements CssContext {
         _rootDocumentLayer = rootDocumentLayer;
     }
 
+    @Nullable
+    @CheckReturnValue
     public PageBox getPage() {
         return _page;
     }
@@ -529,11 +536,13 @@ public class LayoutContext implements CssContext {
         _mayCheckKeepTogether = mayKeepTogether;
     }
 
+    @Nullable
+    @CheckReturnValue
     public BreakAtLineContext getBreakAtLineContext() {
         return _breakAtLineContext;
     }
 
-    public void setBreakAtLineContext(BreakAtLineContext breakAtLineContext) {
+    public void setBreakAtLineContext(@Nullable BreakAtLineContext breakAtLineContext) {
         _breakAtLineContext = breakAtLineContext;
     }
 }

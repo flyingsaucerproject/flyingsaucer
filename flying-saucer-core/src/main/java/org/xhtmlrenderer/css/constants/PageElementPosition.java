@@ -19,50 +19,38 @@
  */
 package org.xhtmlrenderer.css.constants;
 
-import java.util.HashMap;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.util.Map;
 
-public class PageElementPosition {
-    private static final Map ALL = new HashMap();
-    private static int _maxAssigned = 0;
-    
-    public final int FS_ID;
-    
-    private final String _ident;
-    
-    public static final PageElementPosition START = addValue("start");
-    public static final PageElementPosition FIRST = addValue("first");
-    public static final PageElementPosition LAST = addValue("last");
-    public static final PageElementPosition LAST_EXCEPT = addValue("last-except");
+public enum PageElementPosition {
+    START("start"),
+    FIRST("first"),
+    LAST("last"),
+    LAST_EXCEPT("last-except");
 
-    private PageElementPosition(String ident) {
+    private static final Map<String, PageElementPosition> ALL = Map.of(
+            START._ident, START,
+            FIRST._ident, FIRST,
+            LAST._ident, LAST,
+            LAST_EXCEPT._ident, LAST_EXCEPT
+    );
+
+    @Nullable
+    @CheckReturnValue
+    public static PageElementPosition byIdent(String ident) {
+        return ALL.get(ident);
+    }
+
+    private final String _ident;
+
+    PageElementPosition(String ident) {
         this._ident = ident;
-        this.FS_ID = _maxAssigned++;
     }
-    
-    private final static PageElementPosition addValue(String ident) {
-        PageElementPosition val = new PageElementPosition(ident);
-        ALL.put(ident, val);
-        return val;
-    }
-    
+
+    @Override
     public String toString() {
         return _ident;
-    }
-    
-    public static PageElementPosition valueOf(String ident) {
-        return (PageElementPosition)ALL.get(ident);
-    }
-    
-    public int hashCode() {
-        return FS_ID;
-    }
-    
-    public boolean equals(Object o) {
-        if (o == null || ! (o instanceof PageElementPosition)) {
-            return false;
-        }
-        
-        return FS_ID == ((PageElementPosition)o).FS_ID;
     }
 }

@@ -19,6 +19,10 @@
  */
 package org.xhtmlrenderer.css.style;
 
+import static org.xhtmlrenderer.css.style.Length.LengthType.FIXED;
+import static org.xhtmlrenderer.css.style.Length.LengthType.PERCENT;
+import static org.xhtmlrenderer.css.style.Length.LengthType.VARIABLE;
+
 // A simplified version of KHTML's Length type.  It's very convenient to be able
 // to treat length values (including auto) in a uniform matter when calculating
 // table column widths.  Our own LengthValue is too heavyweight for this purpose and
@@ -27,94 +31,70 @@ public class Length {
     // Should use something more reasonable here (e.g. a few feet based on the current
     // DPI)
     public static final int MAX_WIDTH = Integer.MAX_VALUE / 2;
-    
-    public static final int VARIABLE = 1;
-    public static final int FIXED = 2;
-    public static final int PERCENT = 3;
-    
-    private int _type = VARIABLE;
-    private long _value = 0;
-    
-    public Length() {
+
+    public static final Length ZERO = new Length();
+
+    public enum LengthType {
+        VARIABLE,
+        FIXED,
+        PERCENT,
     }
-    
-    public Length(long value, int type) {
+
+    private final LengthType _type;
+    private final long _value;
+
+    private Length() {
+        this(0, VARIABLE);
+    }
+
+    public Length(long value, LengthType type) {
         _value = value;
         _type = type;
     }
-    
-    public void setValue(long value) {
-        _value = value;
-    }
-    
+
     public long value() {
         return _value;
     }
-    
-    public void setType(int type) {
-        _type = type;
-    }
-    
-    public int type() {
+
+    public LengthType type() {
         return _type;
     }
-    
+
     public boolean isVariable() {
         return _type == VARIABLE;
     }
-    
+
     public boolean isFixed() {
         return _type == FIXED;
     }
-    
+
     public boolean isPercent() {
         return _type == PERCENT;
     }
-    
+
     public long width(int maxWidth) {
-        switch (_type) {
-            case FIXED:
-                return _value;
-            case PERCENT:
-                return maxWidth*_value/100;
-            case VARIABLE:
-                return maxWidth;
-            default:
-                return -1;
-        }
+        return switch (_type) {
+            case FIXED -> _value;
+            case PERCENT -> maxWidth * _value / 100;
+            case VARIABLE -> maxWidth;
+        };
     }
-    
+
     public long minWidth(int maxWidth) {
-        switch (_type) {
-            case FIXED:
-                return _value;
-            case PERCENT:
-                return maxWidth*_value/100;
-            default:
-                return 0;
-        }
+        return switch (_type) {
+            case FIXED -> _value;
+            case PERCENT -> maxWidth * _value / 100;
+            default -> 0;
+        };
     }
-    
+
+    @Override
     public String toString() {
-        StringBuffer result = new StringBuffer();
-        result.append("(type=");
-        switch (_type) {
-        case FIXED:
-            result.append("fixed");
-            break;
-        case PERCENT:
-            result.append("percent");
-            break;
-        case VARIABLE:
-            result.append("variable");
-            break;
-        default:
-            result.append("unknown");
-        }
-        result.append(", value=");
-        result.append(_value);
-        result.append(")");
-        
-        return result.toString();
+        String type = switch (_type) {
+            case FIXED -> "fixed";
+            case PERCENT -> "percent";
+            case VARIABLE -> "variable";
+        };
+        return "Length (type=%s, value=%d)".formatted(type, _value);
     }
 }

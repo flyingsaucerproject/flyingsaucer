@@ -19,18 +19,15 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.xhtmlrenderer.resource.ImageResource;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.ImageUtil;
+import org.xhtmlrenderer.util.XRLog;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
-
-import org.xhtmlrenderer.extend.ReplacedElement;
-import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.util.ImageUtil;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.resource.ImageResource;
-
-import javax.swing.*;
 
 
 /**
@@ -48,19 +45,16 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
     private final int _targetHeight;
     private final int _targetWidth;
 
-    private boolean _doScaleImage;
+    private final boolean _doScaleImage;
     private boolean _loaded;
     private final ImageResource _imageResource;
 
 
     /**
      * Creates a new ImageReplacedElement and scales it to the size specified if either width or height has a valid
-     * value (values are > -1), otherwise original size is preserved. The idea is that the image was loaded at
+     * value (values are greater than -1), otherwise original size is preserved. The idea is that the image was loaded at
      * a certain size (that's the Image instance here) and that at the time we create the ImageReplacedElement
      * we have a target W/H we want to use.
-     *
-     * @param imageResource
-     * @param repaintListener
      */
     public DeferredImageReplacedElement(ImageResource imageResource, RepaintListener repaintListener, int w, int h) {
         this._imageResource = imageResource;
@@ -78,40 +72,30 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
         _image = ImageUtil.createCompatibleBufferedImage(_targetWidth, _targetHeight);
     }
 
-    /** {@inheritDoc} */
-    public void detach(LayoutContext c) {
-        // nothing to do in this case
-    }
-
-    /** {@inheritDoc} */
+    @Override
     public int getIntrinsicHeight() {
         return  _loaded ? _image.getHeight(null) : _targetHeight;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public int getIntrinsicWidth() {
         return _loaded ? _image.getWidth(null) : _targetWidth;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public Point getLocation() {
         return _location;
     }
 
-    /** {@inheritDoc} */
-    public boolean isRequiresInteractivePaint() {
-        return true;
-    }
-
-    /** {@inheritDoc} */
+    @Override
     public void setLocation(int x, int y) {
         _location = new Point(x, y);
     }
 
     /**
      * The image we're replacing.
-     * @return see desc
      */
+    @Override
     public Image getImage() {
         if (!_loaded && _imageResource.isLoaded()) {
             Image image = ((AWTFSImage) _imageResource.getImage()).getImage();
@@ -151,22 +135,11 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
             }
             _loaded = true;
             XRLog.load(Level.FINE, "Icon: replaced image " + _imageResource.getImageUri() + ", repaint requested");
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    repaintListener.repaintRequested(_doScaleImage);
-                }
-            });
+            SwingUtilities.invokeLater(() -> repaintListener.repaintRequested(_doScaleImage));
 
         }
 
         return _image;
     }
 
-	public int getBaseline() {
-		return 0;
-	}
-
-    public boolean hasBaseline() {
-		return false;
-	}
 }

@@ -18,31 +18,27 @@
  */
 package org.xhtmlrenderer.layout.breaker;
 
-import java.text.BreakIterator;
-
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+
+import java.text.BreakIterator;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class DefaultLineBreakingStrategy implements LineBreakingStrategy {
 
-	@Override
-	public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
-		final BreakIterator i = new UrlAwareLineBreakIterator();
-		i.setText(text);
-		
-		return new BreakPointsProvider() {
-			
-			@Override
-			public BreakPoint next() {
-				int next = i.next();
-				if (next < 0) return BreakPoint.getDonePoint();
-				return new BreakPoint(next);
-			}
-		};
-	}
-	
-	
+    @Override
+    public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
+        BreakIterator iterator = new UrlAwareLineBreakIterator(text);
+        return new DefaultBreakPointsProvider(iterator);
+    }
 
+    private record DefaultBreakPointsProvider(BreakIterator iterator) implements BreakPointsProvider {
+        @Override
+            public BreakPoint next() {
+                int next = iterator.next();
+                if (next < 0) return BreakPoint.getDonePoint();
+                return new BreakPoint(next);
+            }
+        }
 }

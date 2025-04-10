@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2017 Lukas Zaruba, lukas.zaruba@gmail.com
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -18,52 +18,51 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.xhtmlrenderer.layout.breaker.BreakPoint;
+import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 
 import java.text.BreakIterator;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.junit.Test;
-import org.xhtmlrenderer.layout.breaker.BreakPoint;
-import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class NonBreakPointsTest {
-	
-	@Test
-	public void testGeneral() throws Exception {
-		test("text s mezerami", 5, 7, 15);
-	}
-	
-	@Test
-	public void testNBSP() throws Exception {
-		test("text s\u00A0mezerami", 5, 15);
-	}
-	
-	private void test(String text, int ... expected) {
-		BreakIterator breakIt = new UrlAwareLineBreakIterator();
-		breakIt.setText(text);
-		TreeSet<BreakPoint> points = new TreeSet<BreakPoint>();
-		int p = BreakIterator.DONE;
-		while ((p = breakIt.next()) != BreakIterator.DONE) {
-			points.add(new BreakPoint(p));
-		}
-		assertBreakPoints(points, expected);
-	}
-	
-	private void assertBreakPoints(Collection<BreakPoint> calculated, int ... expected) {
-		if (calculated.size() != expected.length) throw new AssertionError("Expected " + expected.length + 
-				" break points, got " + calculated.size() + ": " + calculated);
-		Iterator<BreakPoint> it = calculated.iterator();
-		for (int point : expected) {
-			assertEquals(point, it.next().getPosition());
-		}
-	}
-	
-	
+
+    @Test
+    public void general() {
+        test("text s mezerami", 5, 7, 15);
+    }
+
+    @Test
+    public void nbsp() {
+        test("text s\u00A0mezerami", 5, 15);
+    }
+
+    private void test(String text, int ... expected) {
+        BreakIterator breakIt = new UrlAwareLineBreakIterator(text);
+        TreeSet<BreakPoint> points = new TreeSet<>();
+        int p;
+        while ((p = breakIt.next()) != BreakIterator.DONE) {
+            points.add(new BreakPoint(p));
+        }
+        assertBreakPoints(points, expected);
+    }
+
+    private void assertBreakPoints(Collection<BreakPoint> calculated, int ... expected) {
+        assertThat(calculated).hasSize(expected.length);
+
+        Iterator<BreakPoint> it = calculated.iterator();
+        for (int point : expected) {
+            assertThat(it.next().getPosition()).isEqualTo(point);
+        }
+    }
+
+
 
 }

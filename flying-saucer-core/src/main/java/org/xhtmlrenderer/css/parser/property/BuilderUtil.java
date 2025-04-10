@@ -34,7 +34,7 @@ public class BuilderUtil {
                 return;
         }
 
-        throw new CSSParseException(String.format("Function ({0}) not supported here", func.getName()), -1);
+        throw new CSSParseException(String.format("Function %s not supported here", func.getName()), -1);
 
     }
 

@@ -19,68 +19,40 @@
  */
 package org.xhtmlrenderer.resource;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+import org.xhtmlrenderer.util.InputSources;
 import org.xml.sax.InputSource;
 
-import java.io.BufferedInputStream;
 import java.io.InputStream;
 
 /**
  * @author Patrick Wright
  */
 public abstract class AbstractResource implements Resource {
-    private InputSource inputSource;
-    private long createTimeStamp;
-    private long elapsedLoadTime;
+    @Nullable
+    private final InputSource inputSource;
+    private final long createTimeStamp;
 
-    private AbstractResource() {
+    protected AbstractResource(@Nullable InputSource source) {
+        this.inputSource = source;
         this.createTimeStamp = System.currentTimeMillis();
     }
 
-    /**
-     * Creates a new instance of AbstractResource
-     */
-    public AbstractResource(InputSource source) {
-        this();
-        this.inputSource = source;
+    protected AbstractResource(@Nullable InputStream is) {
+        this(InputSources.fromStream(is));
     }
 
-    public AbstractResource(InputStream is) {
-        this(is==null?(InputSource)null:new InputSource(new BufferedInputStream(is)));
-    }
-
+    @Nullable
+    @CheckReturnValue
+    @Override
     public InputSource getResourceInputSource() {
         return this.inputSource;
     }
 
+    @CheckReturnValue
+    @Override
     public long getResourceLoadTimeStamp() {
         return this.createTimeStamp;
     }
-
-    public long getElapsedLoadTime() {
-        return elapsedLoadTime;
-    }
-
-    /*package*/
-    void setElapsedLoadTime(long elapsedLoadTime) {
-        this.elapsedLoadTime = elapsedLoadTime;
-    }
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.4  2005/06/15 10:56:14  tobega
- * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
- *
- * Revision 1.3  2005/06/01 21:36:40  tobega
- * Got image scaling working, and did some refactoring along the way
- *
- * Revision 1.2  2005/02/05 11:33:33  pdoubleya
- * Added load() to XMLResource, and accept overloaded input: InputSource, stream, URL.
- *
- * Revision 1.1  2005/02/03 20:39:35  pdoubleya
- * Added to CVS.
- *
- *
- */

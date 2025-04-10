@@ -1,42 +1,24 @@
 package org.xhtmlrenderer.pdf.borderradius;
 
-import java.io.ByteArrayOutputStream;
+import com.codeborne.pdftest.PDF;
+import org.junit.jupiter.api.Test;
+import org.xhtmlrenderer.pdf.Html2Pdf;
+
 import java.net.URL;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import static com.codeborne.pdftest.assertj.Assertions.assertThat;
+import static java.util.Objects.requireNonNull;
 
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.pdf.ITextRenderer;
-import org.xhtmlrenderer.resource.FSEntityResolver;
+public class BorderRadiusNonRegressionTest {
 
-import junit.framework.TestCase;
-
-public class BorderRadiusNonRegressionTest extends TestCase {
-	
-	/**
-	 * This used to throw a ClassCastException (before this fix).
-	 */
-	public void testBorderRadiusWithBorderWidthZero() throws Exception {
-		testNoException("borderRadiusWithBorderWidthZero.html");
-	}
-	
-	private void testNoException(String htmlPath) throws Exception {
-		URL htmlUrl = getClass().getResource(htmlPath);
-		
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		builder.setEntityResolver(FSEntityResolver.instance());
-		
-		Document doc = builder.parse(htmlUrl.openStream());
-		
-		ITextRenderer renderer = new ITextRenderer();
-		renderer.getSharedContext().setMedia("pdf");
-		
-		renderer.setDocument(doc, htmlUrl.toString());
-		renderer.layout();
-		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		renderer.createPDF(bos);
-	}
-
+    /**
+     * This used to throw a ClassCastException (before this fix).
+     */
+    @Test
+    public void borderRadiusWithBorderWidthZero() {
+        URL htmlUrl = requireNonNull(getClass().getResource("borderRadiusWithBorderWidthZero.html"), 
+                "test resource not found: borderRadiusWithBorderWidthZero.html");
+        byte[] pdf = Html2Pdf.fromUrl(htmlUrl);
+        assertThat(new PDF(pdf)).containsText("Some content");
+    }
 }

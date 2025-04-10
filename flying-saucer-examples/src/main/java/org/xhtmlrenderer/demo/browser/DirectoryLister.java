@@ -19,30 +19,26 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.util.GeneralUtil;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static java.util.Objects.requireNonNullElseGet;
 
-/**
- * Description of the Class
- *
- * @author empty
- */
+
 public class DirectoryLister {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryLister.class);
 
-    /**
-     * Description of the Method
-     *
-     * @param file PARAM
-     * @return Returns
-     */
+    @CheckReturnValue
     public static String list(File file) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("<html>");
         sb.append("<head>");
@@ -60,47 +56,43 @@ public class DirectoryLister {
         sb.append("</head>");
         sb.append("<body>");
         sb.append("<h2>Index of ");
-        sb.append(file.toString());
+        sb.append(file);
         sb.append("</h2>");
         sb.append("<hr />");
 
         if (file.isDirectory()) {
-            String loc = null;
+            File parent = file.getAbsoluteFile().getParentFile();
             try {
-                File parent = file.getParentFile();
-                if ( parent != null ) {
-                    loc = GeneralUtil.htmlEscapeSpace(file.getAbsoluteFile().getParentFile().toURL().toExternalForm()).toString();
-                    sb.append("<a class='dir' href='" + loc + "'>Up to higher level directory</a>");
+                if (parent != null) {
+                    String loc = GeneralUtil.htmlEscapeSpace(parent.toURI().toURL().toExternalForm()).toString();
+                    sb.append("<a class='dir' href='").append(loc).append("'>Up to higher level directory</a>");
                 }
             } catch (MalformedURLException e) {
                 // skip
+                log.warn("Cannot convert parent folder name to URL: {}, caused by: {}", parent, e.toString());
             }
             sb.append("<table style='width: 75%'>");
-            File[] files = file.listFiles();
-            String cls = "";
-            String img = "";
-            for (int i = 0; i < files.length; i++) {
-                File f = files[i];
-                if ( f.isHidden() ) continue;
+            File[] files = requireNonNullElseGet(file.listFiles(), () -> new File[0]);
+            for (File f : files) {
+                if (f.isHidden()) continue;
                 long len = f.length();
-                String lenDesc = ( len > 1024 ? new DecimalFormat("#,###KB").format(len / 1024) : "");
+                String lenDesc = (len > 1024 ? new DecimalFormat("#,###KB").format(len / 1024) : "");
                 String lastMod = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a").format(new Date(f.lastModified()));
                 sb.append("<tr>");
-                if (files[i].isDirectory()) {
+
+                String cls;
+                if (f.isDirectory()) {
                     cls = "dir";
                 } else {
                     cls = "file";
                 }
                 try {
-                    loc = GeneralUtil.htmlEscapeSpace(files[i].toURL().toExternalForm()).toString();
-                    sb.append("<td><a class='" + cls + "' href='" + loc + "'>" +
-                            files[i].getName() +
-                            "</a></td>" +
-                            "<td>" + lenDesc + "</td>" +
-                            "<td>" + lastMod + "</td>"
-                    );
+                    String loc = GeneralUtil.htmlEscapeSpace(f.toURI().toURL().toExternalForm()).toString();
+                    sb.append("<td><a class='").append(cls).append("' href='").append(loc).append("'>").append(f.getName()).append("</a></td>");
+                    sb.append("<td>").append(lenDesc).append("</td>").append("<td>").append(lastMod).append("</td>");
                 } catch (MalformedURLException e) {
-                    sb.append(files[i].getAbsolutePath());
+                    log.warn("Cannot convert file name to URL: {}, caused by: {}", f, e.toString());
+                    sb.append(f.getAbsolutePath());
                 }
                 sb.append("</tr>");
             }
@@ -114,43 +106,3 @@ public class DirectoryLister {
     }
 
 }
-
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.12  2008/05/30 16:07:06  pdoubleya
- * Issue 228: when setting document from a file, use file.getAbsoluteFile().getParentFile() to find the parent, in case the file provided has no directory or path; otherwise, file.getParentFile() returns null, and we have no way of determining a base URI. Covers at least the (reproducible) part of the issue.
- *
- * Revision 1.11  2007/01/29 21:41:46  pdoubleya
- * revert checkin
- *
- * Revision 1.9  2006/07/31 14:20:54  pdoubleya
- * Bunch of cleanups and fixes. Now using a toolbar for actions, added Home button, next/prev navigation actions to facilitate demo file browsing, loading demo pages from a list, about dlg and link to user's manual.
- *
- * Revision 1.8  2005/06/25 15:33:44  tobega
- * fixed Directory listings in browser
- *
- * Revision 1.7  2005/06/16 07:24:44  tobega
- * Fixed background image bug.
- * Caching images in browser.
- * Enhanced LinkListener.
- * Some house-cleaning, playing with Idea's code inspection utility.
- *
- * Revision 1.6  2005/06/15 10:56:13  tobega
- * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
- *
- * Revision 1.5  2004/12/12 03:33:07  tobega
- * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
- *
- * Revision 1.4  2004/12/12 02:55:10  tobega
- * Making progress
- *
- * Revision 1.3  2004/10/23 14:38:58  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
- * Added CVS log comments at bottom.
- *
- *
- */
-

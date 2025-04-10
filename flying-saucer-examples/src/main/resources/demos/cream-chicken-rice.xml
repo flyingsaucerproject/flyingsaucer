@@ -16,7 +16,7 @@
       <p><b>XML/CSS support includes</b>: You can render XML directly using CSS as this page shows. David Horton prepared
       a CSS stylesheet that takes a custom XML format for cooking recipes and lays it out on the page. What you see below
       is actually XML embedded within an XHTML page; you could also just pass in the XML to Flying Saucer, using the
-      xml-stylesheet directory to point to your CSS file. Without even bothering to convert the XML to XHTML--you can render 
+      xml-stylesheet directory to point to your CSS file. Without even bothering to convert the XML to XHTML--you can render
       it. Our project website also includes a downloadable demo of rendering DocBook XML directly via CSS.</p>
       <br />
 

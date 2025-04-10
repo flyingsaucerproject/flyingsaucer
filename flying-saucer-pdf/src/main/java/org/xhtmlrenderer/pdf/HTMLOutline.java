@@ -19,6 +19,15 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.traversal.DocumentTraversal;
+import org.w3c.dom.traversal.NodeFilter;
+import org.w3c.dom.traversal.NodeIterator;
+import org.xhtmlrenderer.pdf.ITextOutputDevice.Bookmark;
+import org.xhtmlrenderer.render.Box;
+
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -26,34 +35,21 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.traversal.DocumentTraversal;
-import org.w3c.dom.traversal.NodeFilter;
-import org.w3c.dom.traversal.NodeIterator;
-
-import org.xhtmlrenderer.pdf.ITextOutputDevice.Bookmark;
-import org.xhtmlrenderer.render.Box;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 class HTMLOutline {
 
-    private static final Pattern HEADING =
-            Pattern.compile("h([1-6])", Pattern.CASE_INSENSITIVE);
+    private static final Pattern HEADING = Pattern.compile("h(\\d+)", CASE_INSENSITIVE);
 
     /** <a href="https://www.w3.org/TR/html51/sections.html#sectioning-roots">sectioning roots</a> */
-    private static final Pattern ROOT =
-            Pattern.compile("blockquote|details|fieldset|figure|td",
-                            Pattern.CASE_INSENSITIVE);
+    private static final Pattern ROOT = Pattern.compile("blockquote|details|fieldset|figure|td", CASE_INSENSITIVE);
 
     private static final Pattern WS = Pattern.compile("\\s+");
 
     private static final int MAX_NAME_LENGTH = 200;
 
     private final HTMLOutline parent;
-
     private final int level;
-
     private final Bookmark bookmark;
 
     private HTMLOutline() {
@@ -151,7 +147,7 @@ class HTMLOutline {
 
         HTMLOutline root = new HTMLOutline();
         HTMLOutline current = root;
-        Map<Element,Bookmark> map = new IdentityHashMap();
+        Map<Element, Bookmark> map = new IdentityHashMap<>();
 
         for (Element element = (Element) iterator.nextNode();
                 element != null; element = (Element) iterator.nextNode()) {
@@ -161,7 +157,7 @@ class HTMLOutline {
                 if (level < 1) {
                     continue; // Illegal value
                 }
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignore) {
                 continue; // Invalid value
             }
 
@@ -175,7 +171,7 @@ class HTMLOutline {
         }
         initBoxRefs(map, box);
         return root.bookmark.getChildren();
-    } // generate(Element, Box) : List<Bookmark>
+    }
 
     private static void initBoxRefs(Map<Element,Bookmark> map, Box box) {
         Bookmark bookmark = map.get(box.getElement());
@@ -199,27 +195,29 @@ class HTMLOutline {
         return name;
     }
 
-    static String getOutlineLevel(Element element) {
+    private static String getOutlineLevel(Element element) {
         String bookmark = element.getAttribute("data-pdf-bookmark").trim();
-        if (bookmark.isEmpty()) {
-            Matcher heading = HEADING.matcher(element.getTagName());
-            if (heading.matches()) {
-                bookmark = heading.group(1);
-            } else if (ROOT.matcher(element.getTagName()).matches()) {
-                bookmark = "exclude";
-            } else {
-                bookmark = "none";
-            }
+        return bookmark.isEmpty() ?
+                getOutlineLevelFromTagName(element.getTagName()) :
+                bookmark;
+    }
+
+    static String getOutlineLevelFromTagName(String tagName) {
+        Matcher heading = HEADING.matcher(tagName);
+        if (heading.matches()) {
+            return heading.group(1);
+        } else if (ROOT.matcher(tagName).matches()) {
+            return "exclude";
+        } else {
+            return "none";
         }
-        return bookmark;
     }
 
 
     private static class NestedSectioningFilter implements NodeFilter {
+        private static final NestedSectioningFilter INSTANCE = new NestedSectioningFilter();
 
-        static final NestedSectioningFilter INSTANCE = new NestedSectioningFilter();
-
-        static NodeIterator iterator(Element root) {
+        private static NodeIterator iterator(Element root) {
             Document ownerDocument = root.getOwnerDocument();
             return (ownerDocument instanceof DocumentTraversal)
                 ? ((DocumentTraversal) ownerDocument).createNodeIterator(root, SHOW_ELEMENT, INSTANCE, true)
@@ -236,8 +234,5 @@ class HTMLOutline {
                     ? FILTER_REJECT
                     : FILTER_ACCEPT;
         }
-
-    } // class NestedSectioningFilter
-
-
-} // class HTMLOutline
+    }
+}

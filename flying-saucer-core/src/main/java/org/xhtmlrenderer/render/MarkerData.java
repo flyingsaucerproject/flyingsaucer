@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 
 /**
@@ -26,51 +28,53 @@ import org.xhtmlrenderer.extend.FSImage;
  * font information from the block (for selecting the correct font when drawing
  * a text marker) or the data necessary to draw other types of markers.  It
  * also includes a reference to the first line box in the block box (which in
- * turn may be nested inside of other block boxes).  All markers are drawn 
+ * turn may be nested inside of other block boxes).  All markers are drawn
  * relative to the baseline of this line box.
  */
 public class MarkerData {
-    private StrutMetrics _structMetrics;
-    
-    private TextMarker _textMarker;
-    private GlyphMarker _glyphMarker;
-    private ImageMarker _imageMarker;
-    
+    private final StrutMetrics _structMetrics;
+
+    @Nullable
+    private final TextMarker _textMarker;
+    @Nullable
+    private final GlyphMarker _glyphMarker;
+    @Nullable
+    private final ImageMarker _imageMarker;
+
+    @Nullable
     private LineBox _referenceLine;
+    @Nullable
     private LineBox _previousReferenceLine;
 
-    public TextMarker getTextMarker() {
-        return _textMarker;
+    public MarkerData(StrutMetrics structMetrics, @Nullable ImageMarker imageMarker, @Nullable GlyphMarker glyphMarker, @Nullable TextMarker textMarker) {
+        _structMetrics = structMetrics;
+        _imageMarker = imageMarker;
+        _glyphMarker = glyphMarker;
+        _textMarker = textMarker;
     }
 
-    public void setTextMarker(TextMarker markerText) {
-        _textMarker = markerText;
-    }
-
+    @Nullable
+    @CheckReturnValue
     public GlyphMarker getGlyphMarker() {
         return _glyphMarker;
     }
 
-    public void setGlyphMarker(GlyphMarker glyphMarker) {
-        _glyphMarker = glyphMarker;
+    @Nullable
+    @CheckReturnValue
+    public TextMarker getTextMarker() {
+        return _textMarker;
     }
 
+    @Nullable
+    @CheckReturnValue
     public ImageMarker getImageMarker() {
         return _imageMarker;
-    }
-
-    public void setImageMarker(ImageMarker imageMarker) {
-        _imageMarker = imageMarker;
     }
 
     public StrutMetrics getStructMetrics() {
         return _structMetrics;
     }
 
-    public void setStructMetrics(StrutMetrics structMetrics) {
-        _structMetrics = structMetrics;
-    }
-    
     public int getLayoutWidth() {
         if (_textMarker != null) {
             return _textMarker.getLayoutWidth();
@@ -83,6 +87,8 @@ public class MarkerData {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public LineBox getReferenceLine() {
         return _referenceLine;
     }
@@ -91,73 +97,69 @@ public class MarkerData {
         _previousReferenceLine = _referenceLine;
         _referenceLine = referenceLine;
     }
-    
+
     public void restorePreviousReferenceLine(LineBox current) {
         if (current == _referenceLine) {
             _referenceLine = _previousReferenceLine;
         }
     }
-    
+
     public static class ImageMarker {
-        private int _layoutWidth;
-        private FSImage _image;
-        
+        private final FSImage _image;
+        private final int _layoutWidth;
+
+        public ImageMarker(FSImage image, int layoutWidth) {
+            _image = image;
+            _layoutWidth = layoutWidth;
+        }
+
+        @CheckReturnValue
         public FSImage getImage() {
             return _image;
         }
-        public void setImage(FSImage image) {
-            _image = image;
-        }
+        @CheckReturnValue
         public int getLayoutWidth() {
             return _layoutWidth;
         }
-        public void setLayoutWidth(int layoutWidth) {
+    }
+
+    public static class GlyphMarker {
+        private final int _diameter;
+        private final int _layoutWidth;
+
+        public GlyphMarker(int diameter, int layoutWidth) {
+            _diameter = diameter;
             _layoutWidth = layoutWidth;
         }
-    }
-    
-    public static class GlyphMarker {
-        private int _diameter;
-        private int _layoutWidth;
-        
+
+        @CheckReturnValue
         public int getDiameter() {
             return _diameter;
         }
-        
-        public void setDiameter(int diameter) {
-            _diameter = diameter;
-        }
-        
+
+        @CheckReturnValue
         public int getLayoutWidth() {
             return _layoutWidth;
         }
-        
-        public void setLayoutWidth(int layoutWidth) {
-            _layoutWidth = layoutWidth;
-        }
     }
-    
+
     public static class TextMarker {
-        private String _text;
-        private int _layoutWidth;
-        
-        public TextMarker() {
+        private final String _text;
+        private final int _layoutWidth;
+
+        public TextMarker(String text, int width) {
+            _text = text;
+            _layoutWidth = width;
         }
 
+        @CheckReturnValue
         public String getText() {
             return _text;
         }
 
-        public void setText(String text) {
-            _text = text;
-        }
-
+        @CheckReturnValue
         public int getLayoutWidth() {
             return _layoutWidth;
         }
-
-        public void setLayoutWidth(int width) {
-            _layoutWidth = width;
-        }
-    }    
+    }
 }

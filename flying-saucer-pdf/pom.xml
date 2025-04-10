@@ -6,7 +6,8 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.21-opengrabeso</version>
+    <version>9.11.6-opengrabeso</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>flying-saucer-pdf</artifactId>
@@ -16,13 +17,6 @@
   <name>Flying Saucer PDF Rendering</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports PDF output.</description>
 
-  <properties>
-    <bouncycastle.version>1.67</bouncycastle.version>
-    <junit.version>4.13.1</junit.version>
-    <openpdf.version>1.3.11</openpdf.version>
-    <itext.version>2.1.7</itext.version>
-  </properties>
-
   <licenses>
     <license>
       <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
@@ -30,97 +24,45 @@
     </license>
   </licenses>
 
-  <profiles>
-    <profile>
-      <id>itext</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-      	<!--
-      		Note: The iText Bouncy Castle dependencies have been moved to a new group and version on maven central.
-      		This caused some of the artifacts to be resolved twice. By excluding dependencies from the old group
-      		and adding corresponding dependencies from the updated group, the artifacts are only resolved once.
-      	 -->
-        <dependency>
-          <groupId>com.lowagie</groupId>
-          <artifactId>itext</artifactId>
-          <version>${itext.version}</version>
-          <exclusions>
-            <exclusion>
-              <groupId>bouncycastle</groupId>
-              <artifactId>bcmail-jdk14</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>bouncycastle</groupId>
-              <artifactId>bcprov-jdk14</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>bouncycastle</groupId>
-              <artifactId>bctsp-jdk14</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcmail-jdk14</artifactId>
-            <version>${bouncycastle.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bctsp-jdk14</artifactId>
-            <version>1.46</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk14</artifactId>
-            <version>${bouncycastle.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.xhtmlrenderer</groupId>
-          <artifactId>flying-saucer-core</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>${junit.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>openpdf</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.github.librepdf</groupId>
-          <artifactId>openpdf</artifactId>
-          <version>${openpdf.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.xhtmlrenderer</groupId>
-          <artifactId>flying-saucer-core</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>${junit.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
+  <dependencies>
+    <dependency>
+      <groupId>org.xhtmlrenderer</groupId>
+      <artifactId>flying-saucer-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.librepdf</groupId>
+      <artifactId>openpdf</artifactId>
+      <version>${openpdf.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>5.17.0</version>
+    </dependency>
+  </dependencies>
 
   <build>
     <resources>
       <resource>
         <directory>../</directory>
-        <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+        <targetPath>META-INF</targetPath>
         <includes>
           <include>LICENSE*</include>
         </includes>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>flying.saucer.pdf</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

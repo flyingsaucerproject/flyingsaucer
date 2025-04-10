@@ -13,12 +13,12 @@ Does Flying Saucer support legacy HTML?
 
     Flying Saucer is not an HTML component. It is a rendering component for XHTML content, but it cannot support the malformed HTML 4.0 of general webpages, and it has no support for purely stylistic markup like FONT and CENTER. You have to use valid XHTML and CSS. For most embedded uses this is fine since the application author usually has control over the documents to be loaded. If you really need full IE/Mozilla/Safari like fidelity for general purpose webpages you should look into a webbrowser wrapper like JRex or JDIC's Browser component.
 
-Is flying saucer a webbrowser?
-    The core renderer just handles XHTML and CSS. It doesn't know anything about form submission, managing cookies, or tracking the browsing history. It just renders XHTML/CSS to the screen. However, Flying Saucer does include a Browser application which provides these features an more. You can use this as a good starting point for your own applications.
+Is flying saucer a web browser?
+    The core renderer just handles XHTML and CSS. It doesn't know anything about form submission, managing cookies, or tracking the browsing history. It just renders XHTML/CSS to the screen. However, Flying Saucer does include a Browser application which provides these features and more. You can use this as a good starting point for your own applications.
     
-What kind of applications can i use flying saucer for?
+What kind of applications can I use flying saucer for?
     
-    Flying Saucer can be used for any java application that requires some sort of styled text. This can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. Flying Saucer is very forward thinking and is designed to be a part of the next generation of applications that combine rich clients with web content.  Some examples of application types are:
+    Flying Saucer can be used for any java application that requires some sort of styled text. This can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. Flying Saucer is very forward-thinking and is designed to be a part of the next generation of applications that combine rich clients with web content.  Some examples of application types are:
         chat programs
         music stores
         a gutenberg ebook reader
@@ -37,7 +37,7 @@ What kind of applications can i use flying saucer for?
 what XHTML/CSS features does flying saucer currently support?
     
     With FS's 3rd release on August 31st it supports most of the common XHTML and CSS features. This includes
-        text and images (paragraphs, bold, italics, fonts, alignment, etc)
+        text and images (paragraphs, bold, italics, fonts, alignment, etc.)
         the box model (borders, backgrounds, padding, margins)
         forms
         tables

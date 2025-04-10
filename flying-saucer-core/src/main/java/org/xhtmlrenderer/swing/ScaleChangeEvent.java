@@ -28,26 +28,26 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
  */
 public class ScaleChangeEvent {
 
-	private XHTMLPanel pane;
-	private double scale;
+    private final XHTMLPanel pane;
+    private final double scale;
 
-	/**
-	 * Constructs a new ScaleChangeEvent
-	 *
-	 * @param pane  The panel where scale factor has changed
-	 * @param scale The new scale
-	 */
-	public ScaleChangeEvent(XHTMLPanel pane, double scale) {
-		super();
-		this.pane = pane;
-		this.scale = scale;
-	}
+    /**
+     * Constructs a new ScaleChangeEvent
+     *
+     * @param pane  The panel where scale factor has changed
+     * @param scale The new scale
+     */
+    public ScaleChangeEvent(XHTMLPanel pane, double scale) {
+        super();
+        this.pane = pane;
+        this.scale = scale;
+    }
 
-	public XHTMLPanel getComponent() {
-		return pane;
-	}
+    public XHTMLPanel getComponent() {
+        return pane;
+    }
 
-	public double getScale() {
-		return scale;
-	}
+    public double getScale() {
+        return scale;
+    }
 }

@@ -19,9 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.context.StyleReference;
@@ -29,26 +28,25 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.render.Box;
 
+import java.awt.*;
+
 /**
  * A HoverListener is used to respond to a mouse hovering over a Box in a {@link org.xhtmlrenderer.swing.BasicPanel}.
  * In particular, it applies any :hover selectors that apply to the Box in question, and resets those styles
  * as the mouse exits the Box.
  */
 public class HoverListener extends DefaultFSMouseListener {
+    @Nullable
     private Box _previouslyHovered;
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void onMouseOut(BasicPanel panel, Box box) {
         // Since we keep track of the most recently hovered element, we do not
         // need to explicitly handle mouseout events.  This way we only try to
         // restyle elements that were actually hoverable to begin with.
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void onMouseOver(BasicPanel panel, Box box) {
         LayoutContext c = panel.getLayoutContext();
 
@@ -69,7 +67,7 @@ public class HoverListener extends DefaultFSMouseListener {
         boolean targetedRepaint = true;
         Rectangle repaintRegion = null;
 
-        // If we moved out of the old block then unstyle it
+        // If we moved out of the old block then un-style it
         if (_previouslyHovered != null) {
             needRepaint = true;
             _previouslyHovered.restyle(c);
@@ -115,9 +113,11 @@ public class HoverListener extends DefaultFSMouseListener {
             }
         }
     }
-    
+
     // look up the Element that corresponds to the Box we are hovering over
-    private Element getHoveredElement(StyleReference style, Box ib) {
+    @Nullable
+    @CheckReturnValue
+    private Element getHoveredElement(StyleReference style, @Nullable Box ib) {
         if (ib == null) {
             return null;
         }
@@ -139,6 +139,7 @@ public class HoverListener extends DefaultFSMouseListener {
     /**
      * Resets the tracking information related to the currently hovered element.
      */
+    @Override
     public void reset() {
         _previouslyHovered = null;
     }

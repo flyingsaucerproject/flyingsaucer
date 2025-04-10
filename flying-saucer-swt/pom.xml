@@ -7,7 +7,8 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.1.21-opengrabeso</version>
+    <version>9.11.6-opengrabeso</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>flying-saucer-swt</artifactId>
@@ -98,7 +99,7 @@
     <resources>
       <resource>
         <directory>../</directory>
-        <targetPath>${project.build.outputDirectory}/META-INF</targetPath>
+        <targetPath>META-INF</targetPath>
         <includes>
           <include>LICENSE*</include>
         </includes>
@@ -109,7 +110,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
-            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            <manifestFile>target/classes/META-INF/MANIFEST.MF</manifestFile>
           </archive>
         </configuration>
       </plugin>
@@ -128,6 +129,7 @@
         <configuration>
           <instructions>
             <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.swt</Bundle-SymbolicName>
+            <Automatic-Module-Name>flying.saucer.swt</Automatic-Module-Name>
             <Bundle-Version>${project.version}</Bundle-Version>
             <!-- Dependency resolution seems not to work properly with default
               behavior of importing the exported packages. -->

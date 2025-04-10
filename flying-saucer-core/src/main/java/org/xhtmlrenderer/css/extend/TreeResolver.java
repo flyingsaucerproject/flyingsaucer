@@ -19,57 +19,64 @@
  */
 package org.xhtmlrenderer.css.extend;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Node;
+
 /**
+ * Gives the css matcher access to the information it needs about the tree structure.
+ * <p>
+ * Elements are the "things" in the tree structure that can be matched by the matcher.
+ *
  * @author scott
- *         <p/>
- *         Gives the css matcher access to the information it needs about the tree structure.
- *         <p/>
- *         Elements are the "things" in the tree structure that can be matched by the matcher.
  */
 public interface TreeResolver {
     // XXX Where should this go (used by parser, TreeResolver, and AttributeResolver
-    public static final String NO_NAMESPACE = "";
-    
+    String NO_NAMESPACE = "";
+
     /**
      * returns the parent element of an element, or null if this was the root element
      */
-    Object getParentElement(Object element);
+    @Nullable
+    Node getParentElement(Node element);
 
     /**
      * returns the name of the element so that it may match against the selectors
      */
-    String getElementName(Object element);
+    String getElementName(Node element);
 
     /**
      * The previous sibling element, or null if none exists
      */
-    Object getPreviousSiblingElement(Object node);
+    @Nullable
+    Node getPreviousSiblingElement(Node node);
 
     /**
      * returns true if this element is the first child element of its parent
      */
-    boolean isFirstChildElement(Object element);
-    
+    boolean isFirstChildElement(Node element);
+
     /**
      * returns true if this element is the last child element of its parent
      */
-    boolean isLastChildElement(Object element);
-    
+    boolean isLastChildElement(Node element);
+
     /**
      * Returns the index of the position of the submitted element among its element node siblings.
-     * @param element
+     * @param element The node
      * @return -1 in case of error, 0 indexed position otherwise
      */
-    int getPositionOfElement(Object element);
-    
+    @CheckReturnValue
+    int getPositionOfElement(Node element);
+
     /**
-     * Returns <code>true</code> if <code>element</code> has the local name
-     * <code>name</code> and namespace URI <code>namespaceURI</code>.
-     * @param element
+     * Returns {@code true} if {@code element} has the local name
+     * {@code name} and namespace URI {@code namespaceURI}.
+     * @param element The node
      * @param namespaceURI The namespace to match, may be null to signify any
-     * namespace.  Use {@link #NO_NAMESPACE} to signify that <code>name</code> 
-     * should only match when there is no namespace defined on <code>element</code>.
+     * namespace.  Use {@link #NO_NAMESPACE} to signify that {@code name}
+     * should only match when there is no namespace defined on {@code element}.
      * @param name The name to match, may not be null
      */
-    boolean matchesElement(Object element, String namespaceURI, String name);
+    boolean matchesElement(Node element, String namespaceURI, String name);
 }

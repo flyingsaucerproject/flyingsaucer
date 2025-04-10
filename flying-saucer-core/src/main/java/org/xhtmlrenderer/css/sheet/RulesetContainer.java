@@ -19,7 +19,9 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
+
 public interface RulesetContainer {
-    public void addContent(Ruleset ruleset);
-    public int getOrigin();
+    void addContent(Ruleset ruleset);
+    Origin getOrigin();
 }

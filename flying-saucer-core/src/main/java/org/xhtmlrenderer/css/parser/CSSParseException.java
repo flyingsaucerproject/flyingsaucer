@@ -19,53 +19,61 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import org.jspecify.annotations.Nullable;
+
 public class CSSParseException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
-    
+    @Nullable
     private final Token _found;
-    private final Token[] _expected;
+    private final Token @Nullable [] _expected;
     private int _line;
-    
+
+    @Nullable
     private final String _genericMessage;
-    
+
     private boolean _callerNotified;
-    
+
     public CSSParseException(String message, int line) {
+        this(message, line, null);
+    }
+
+    public CSSParseException(String message, int line, @Nullable Throwable cause) {
+        super(message, cause);
         _found = null;
         _expected = null;
         _line = line;
         _genericMessage = message;
     }
-    
+
     public CSSParseException(Token found, Token expected, int line) {
         _found = found;
         _expected = new Token[] { expected };
         _line = line;
         _genericMessage = null;
     }
-    
-    public CSSParseException(Token found, Token[] expected, int line) {
+
+    public CSSParseException(Token found, Token @Nullable [] expected, int line) {
         _found = found;
-        _expected = expected == null ? new Token[]{} : (Token[]) expected.clone(); 
+        _expected = expected == null ? new Token[]{} : expected.clone();
         _line = line;
         _genericMessage = null;
     }
-    
+
+    @Override
     public String getMessage() {
         if (_genericMessage != null) {
             return _genericMessage + " at line " + (_line+1) + ".";
         } else {
             String found = _found == null ? "end of file" : _found.getExternalName();
-            return "Found " + found + " where " + 
-                descr(_expected) + " was expected at line " + (_line+1) + "."; 
+            return "Found " + found + " where " +
+                descr(_expected) + " was expected at line " + (_line+1) + ".";
         }
     }
-    
+
     private String descr(Token[] tokens) {
         if (tokens.length == 1) {
             return tokens[0].getExternalName();
         } else {
-            StringBuffer result = new StringBuffer();
+            StringBuilder result = new StringBuilder();
             if (tokens.length > 2) {
                 result.append("one of ");
             }
@@ -92,11 +100,11 @@ public class CSSParseException extends RuntimeException {
     public int getLine() {
         return _line;
     }
-    
+
     public void setLine(int i) {
         _line = i;
     }
-    
+
     public boolean isEOF() {
         return _found == Token.TK_EOF;
     }
