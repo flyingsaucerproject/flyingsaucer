@@ -56,6 +56,29 @@
       #two_color { border-style: solid; border-color: red black; border-width: 4px; }
       #three_color { border-style: solid; border-color: red blue black; border-width: 4px; }
       #four_color { border-style: solid; border-color: red blue black green; border-width: 4px; }
+
+      #rounding_example {
+          padding: 4px;
+          border: 2px solid rgba(0,0,100,0.7);
+          border-radius: 8px 8px 8px 0;
+      }
+
+      #rounding_example_2 {
+          border: 2px solid rgba(0,0,100,0.7);
+          border-radius: 8px;
+      }
+
+      #rounding_example_3 {
+          padding: 4px;
+          border: 2px solid rgba(0,0,100,0.7);
+          border-radius: 8px 8px 4px 4px;
+      }
+
+      #rounding_example_4 {
+          padding: 4px;
+          border: 2px solid rgba(0,0,100,0.7);
+          border-radius: 8px 0 8px 0;
+      }
     </style>
   </head>
   <body>
@@ -131,6 +154,22 @@
         <td colspan="2">
         <div id="four_color" class="sample">2px four colors</div>
       </td>
+    </tr>
+    <tr>
+        <td>
+            <div id="rounding_example" class="sample">Asymmetric rounding</div>
+        </td>
+        <td>
+            <div id="rounding_example_2" class="sample">Simple rounding</div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div id="rounding_example_3" class="sample">More rounding</div>
+        </td>
+        <td>
+            <div id="rounding_example_4" class="sample">Even more rounding</div>
+        </td>
     </tr>
     </table>
   </body>
