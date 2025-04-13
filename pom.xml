@@ -13,7 +13,7 @@
   <name>Flying Saucer</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java. It supports Java2D, PDF, and SWT output.</description>
 
-  <url>https://github.com/OpenGrabeso/flyingsaucer/</url>
+  <url>http://code.google.com/p/flying-saucer/</url>
 
   <licenses>
     <license>
@@ -116,19 +116,19 @@
   </modules>
 
   <scm>
-    <connection>scm:git:git://github.com/OpenGrabeso/flyingsaucer.git</connection>
-    <developerConnection>scm:git:git@github.com:OpenGrabeso/flyingsaucer.git</developerConnection>
-    <url>git://github.com/OpenGrabeso/flyingsaucer.git</url>
+    <connection>scm:git:git://github.com/flyingsaucerproject/flyingsaucer.git</connection>
+    <developerConnection>scm:git:git@github.com:flyingsaucerproject/flyingsaucer.git</developerConnection>
+    <url>git://github.com/flyingsaucerproject/flyingsaucer.git</url>
     <tag>HEAD</tag>
   </scm>
 
   <distributionManagement>
-    <repository>
-      <id>github</id>
-      <name>GitHub OpenGrabeso Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/OpenGrabeso/packages</url>
-    </repository>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
   </distributionManagement>
+
   <developers>
     <developer>
       <id>pdoubleya</id>
