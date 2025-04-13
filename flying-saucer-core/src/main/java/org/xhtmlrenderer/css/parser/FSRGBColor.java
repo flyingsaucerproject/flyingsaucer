@@ -32,11 +32,20 @@ public class FSRGBColor implements FSColor {
     private final int _red;
     private final int _green;
     private final int _blue;
+    private float _alpha;
 
     public FSRGBColor(int red, int green, int blue) {
+        this(red, green, blue, 1.0f);
+    }
+
+    public FSRGBColor(int red, int green, int blue, float alpha) {
+        if (alpha < 0 || alpha > 1) {
+            throw new IllegalArgumentException();
+        }
         _red = validateColor("Red", red);
         _green = validateColor("Green", green);
         _blue = validateColor("Blue", blue);
+        _alpha = alpha;
     }
 
     private int validateColor(String name, int color) {
@@ -62,9 +71,18 @@ public class FSRGBColor implements FSColor {
         return _red;
     }
 
+    public float getAlpha() {
+    	return _alpha;
+    }
+
+
     @Override
     public String toString() {
-        return '#' + toString(_red) + toString(_green) + toString(_blue);
+    	if (_alpha != 1) {
+    		return "rgba("+_red+","+_green+","+_blue+","+_alpha+")";
+    	} else {
+    		return '#' + toString(_red) + toString(_green) + toString(_blue);
+    	}
     }
 
     private String toString(int color) {
@@ -81,7 +99,7 @@ public class FSRGBColor implements FSColor {
         if (this == o) return true;
         if (!(o instanceof FSRGBColor that)) return false;
 
-        return _blue == that._blue && _green == that._green && _red == that._red;
+        return _blue == that._blue && _green == that._green && _red == that._red && _alpha == that._alpha;
     }
 
     @Override

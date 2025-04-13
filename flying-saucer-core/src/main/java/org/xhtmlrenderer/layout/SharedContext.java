@@ -95,7 +95,6 @@ public final class SharedContext {
     private ReplacedElementFactory replacedElementFactory;
     @Nullable
     private Rectangle temporaryCanvas;
-
     private LineBreakingStrategy lineBreakingStrategy = new DefaultLineBreakingStrategy();
 
     public SharedContext() {
