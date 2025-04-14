@@ -779,6 +779,16 @@ public final class CSSName implements Comparable<CSSName> {
                     true,
                     new PrimitivePropertyBuilders.Orphans()
             );
+    
+    public final static CSSName OPACITY =
+    		addProperty(
+    				"opacity",
+    				PRIMITIVE,
+    				"1",
+                    NOT_INHERITED, // PR22 - INHERITS
+    				true,
+    				new PrimitivePropertyBuilders.Opacity()
+    		);
 
     /**
      * Unique CSSName instance for CSS2 property.

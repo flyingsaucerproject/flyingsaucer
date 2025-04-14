@@ -33,6 +33,7 @@ import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
@@ -191,6 +192,11 @@ public class SWTOutputDevice extends AbstractOutputDevice {
     }
 
     @Override
+    public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height) {
+        // TODO: implement
+    }
+
+    @Override
     public void drawOval(int x, int y, int width, int height) {
         _gc.drawOval(x, y, width, height);
     }
@@ -236,6 +242,10 @@ public class SWTOutputDevice extends AbstractOutputDevice {
                 .getControl();
             swtControl.getSWTControl().setVisible(true);
         }
+    }
+
+    public void setOpacity(float opacity) {
+    	// TODO: implement opacity settings
     }
 
     public void setColor(java.awt.Color color) {

@@ -38,7 +38,6 @@ public class BorderPainter {
     public static final int BOTTOM = 4;
     public static final int RIGHT = 8;
     public static final int ALL = TOP | LEFT | BOTTOM | RIGHT;
-
     /**
      * Generates a full round rectangle that is made of bounds and border
      * @param bounds Dimensions of the rect
@@ -46,7 +45,7 @@ public class BorderPainter {
      * @param inside Set true if you want the inner bounds of borders
      * @return A Path that is all sides of the round rectangle
      */
-    public static Path2D generateBorderBounds(Rectangle bounds, BorderPropertySet border, boolean inside) {
+    public static Shape generateBorderBounds(Rectangle bounds, BorderPropertySet border, boolean inside) {
         Path2D path = generateBorderShape(bounds, TOP, border, false, inside ? 1 : 0, 1, false);
         path.append(generateBorderShape(bounds, RIGHT, border, false, inside ? 1 : 0, 1, false), true);
         path.append(generateBorderShape(bounds, BOTTOM, border, false, inside ? 1 : 0, 1, false), true);

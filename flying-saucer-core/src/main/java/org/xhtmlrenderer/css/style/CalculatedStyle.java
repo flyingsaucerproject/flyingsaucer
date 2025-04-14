@@ -35,6 +35,7 @@ import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.style.derived.FunctionValue;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.ListValue;
@@ -43,6 +44,7 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -251,6 +253,25 @@ public class CalculatedStyle {
      */
     public IdentValue getIdent(CSSName cssName) {
         return valueByName(cssName).asIdentValue();
+    }
+
+    /**
+     * Convenience property accessor; returns a Opacity
+     * Uses the actual value (computed actual value) for this
+     * element.
+     *
+     * @return The opacity value
+     */
+    public float getOpacity() {
+    	CalculatedStyle parentStyle = getParent();
+    	float opacity = asFloat(CSSName.OPACITY);
+
+    	while(parentStyle != null) {
+    		opacity = opacity * parentStyle.asFloat(CSSName.OPACITY);
+    		parentStyle = parentStyle.getParent();
+    	}
+
+    	return opacity;
     }
 
     public IdentValue getDisplay() {
@@ -675,11 +696,9 @@ public class CalculatedStyle {
     public IdentValue getWordWrap() {
         return getIdent(CSSName.WORD_WRAP);
     }
-
-    public IdentValue getWordBreak() {
+public IdentValue getWordBreak() {
         return getIdent(CSSName.WORD_BREAK);
     }
-
     public IdentValue getHyphens() {
         return getIdent(CSSName.HYPHENS);
     }
@@ -881,6 +900,20 @@ public class CalculatedStyle {
     public boolean isRunning() {
         FSDerivedValue value = valueByName(CSSName.POSITION);
         return value instanceof FunctionValue;
+    }
+
+    public boolean isLinearGradient() {
+        FSDerivedValue value = valueByName(CSSName.BACKGROUND_IMAGE);
+        return value instanceof FunctionValue &&
+        		GeneralUtil.ciEquals(((FunctionValue) value).getFunction().getName(), "linear-gradient");
+    }
+
+    public FSLinearGradient getLinearGradient(final CssContext cssContext, final int w, final int h)
+    {
+        assert(isLinearGradient());
+
+        final FunctionValue value = (FunctionValue) valueByName(CSSName.BACKGROUND_IMAGE);
+        return new FSLinearGradient(value.getFunction(), this, w, h, cssContext);
     }
 
     public String getRunningName() {
