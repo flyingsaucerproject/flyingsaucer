@@ -18,4 +18,5 @@ Threecol Fluid,demo:demos/3col-fluid.xhtml
 Alice in Wonderland,demo:demos/alice/alice.xhtml
 Hamlet,demo:demos/hamlet.xhtml
 Game Screen,demo:demos/game/game-screen.xhtml
+Gradients,demo:demos/gradients.htm
 Unsupported,demo:demos/unsupported.xhtml
