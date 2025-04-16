@@ -1727,30 +1727,7 @@ public class CSSParser {
         int blue = 0;
         float alpha = 1;
         for (int i = 0; i < params.size(); i++) {
-            PropertyValue value = (PropertyValue)params.get(i);
-            short type = value.getPrimitiveType();
-            if (type != CSSPrimitiveValue.CSS_PERCENTAGE &&
-                    type != CSSPrimitiveValue.CSS_NUMBER) {
-                throw new CSSParseException(
-                        "Parameter " + (i+1) + " to the rgb() function is " +
-                        "not a number or percentage", getCurrentLine());
-            }
-
-            if (type != CSSPrimitiveValue.CSS_NUMBER && i==3) {
-            	throw new CSSParseException(
-            			"Parameter alpha to the rgba() function is " +
-            		    "not a number", getCurrentLine());
-            }
-
-            float f = value.getFloatValue();
-            if (type == CSSPrimitiveValue.CSS_PERCENTAGE) {
-                f = f/100 * 255;
-            }
-            if (f < 0) {
-                f = 0;
-            } else if (f > 255) {
-                f = 255;
-            }
+            float f = calculateColor(params, i);
 
             switch (i) {
                 case 0:
@@ -1769,6 +1746,34 @@ public class CSSParser {
         }
 
         return new FSRGBColor(red, green, blue, alpha);
+    }
+
+    private float calculateColor(List<PropertyValue> params, int index) {
+        PropertyValue value = params.get(index);
+        short type = value.getPrimitiveType();
+        if (type != CSS_PERCENTAGE && type != CSS_NUMBER) {
+            throw new CSSParseException(
+                    "Parameter " + (index +1) + " to the rgb() function is " +
+                    "not a number or percentage", getCurrentLine());
+        }
+
+        if (type != CSS_NUMBER && index == 3) {
+            throw new CSSParseException(
+                    "Parameter alpha to the rgba() function is " +
+                    "not a number", getCurrentLine());
+        }
+
+        float f = value.getFloatValue();
+        if (type == CSS_PERCENTAGE) {
+            f = f/100 * 255;
+        }
+        if (f < 0) {
+            return 0;
+        } else if (f > 255) {
+            return 255;
+        } else {
+            return f;
+        }
     }
 
     private float extractRgbValue(int i, PropertyValue value) {
