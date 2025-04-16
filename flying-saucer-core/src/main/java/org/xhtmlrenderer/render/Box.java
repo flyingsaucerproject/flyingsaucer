@@ -377,6 +377,7 @@ public abstract class Box implements Styleable {
         _layer = layer;
     }
 
+    @Nullable
     public Dimension positionRelative(CssContext cssCtx) {
         int initialX = getX();
         int initialY = getY();
@@ -408,8 +409,7 @@ public abstract class Box implements Styleable {
                     CSSName.BOTTOM, cbContentHeight, cssCtx)));
         }
 
-        Dimension relativeOffset = new Dimension(getX() - initialX, getY() - initialY);
-        _relativeOffset = relativeOffset;
+        _relativeOffset = new Dimension(getX() - initialX, getY() - initialY);
         return getRelativeOffset();
     }
 
