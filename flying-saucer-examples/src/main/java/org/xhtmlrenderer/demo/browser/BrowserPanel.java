@@ -67,7 +67,6 @@ public final class BrowserPanel extends JPanel implements DocumentListener {
     final JTextField url;
     final BrowserStatus status;
     public final ScalableXHTMLPanel view;
-    private final JScrollPane scroll;
     private final BrowserStartup root;
     private final BrowserPanelListener listener;
     private final JButton print_preview;
@@ -110,7 +109,7 @@ public final class BrowserPanel extends JPanel implements DocumentListener {
         view.addDocumentListener(manager);
         view.setCenteredPagedView(true);
         view.setBackground(Color.LIGHT_GRAY);
-        scroll = new FSScrollPane(view);
+        JScrollPane scroll = new FSScrollPane(view);
         print_preview = new JButton();
 
         loadCustomFonts();
