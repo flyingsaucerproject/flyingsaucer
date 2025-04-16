@@ -32,7 +32,7 @@ public class FSRGBColor implements FSColor {
     private final int _red;
     private final int _green;
     private final int _blue;
-    private float _alpha;
+    private final float _alpha;
 
     public FSRGBColor(int red, int green, int blue) {
         this(red, green, blue, 1.0f);
@@ -40,7 +40,7 @@ public class FSRGBColor implements FSColor {
 
     public FSRGBColor(int red, int green, int blue, float alpha) {
         if (alpha < 0 || alpha > 1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("alpha must be between 0 and 1, but received: " + alpha);
         }
         _red = validateColor("Red", red);
         _green = validateColor("Green", green);

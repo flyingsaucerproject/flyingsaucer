@@ -49,7 +49,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Locale.ROOT;
@@ -1722,34 +1721,33 @@ public class CSSParser {
                     getCurrentLine());
         }
 
-        int red = 0;
-        int green = 0;
-        int blue = 0;
-        float alpha = 1;
-        for (int i = 0; i < params.size(); i++) {
-            float f = calculateColor(params, i);
-
-            switch (i) {
-                case 0:
-                    red = (int) f;
-                    break;
-                case 1:
-                    green = (int) f;
-                    break;
-                case 2:
-                    blue = (int) f;
-                    break;
-                case 3:
-                	alpha = f;
-                	break;
-            }
-        }
+        int red = (int) calculateColor(params, 0);
+        int green = (int) calculateColor(params, 1);
+        int blue = (int) calculateColor(params, 2);
+        float alpha = params.size() < 4 ? 1 : calculateColor(params, 3);
 
         return new FSRGBColor(red, green, blue, alpha);
     }
 
     private float calculateColor(List<PropertyValue> params, int index) {
         PropertyValue value = params.get(index);
+        short type = validateType(index, value);
+
+        float f = switch (type) {
+            case CSS_PERCENTAGE -> value.getFloatValue() / 100 * 255;
+            default -> value.getFloatValue();
+        };
+
+        if (f < 0) {
+            return 0;
+        } else if (f > 255) {
+            return 255;
+        } else {
+            return f;
+        }
+    }
+
+    private short validateType(int index, PropertyValue value) {
         short type = value.getPrimitiveType();
         if (type != CSS_PERCENTAGE && type != CSS_NUMBER) {
             throw new CSSParseException(
@@ -1762,34 +1760,7 @@ public class CSSParser {
                     "Parameter alpha to the rgba() function is " +
                     "not a number", getCurrentLine());
         }
-
-        float f = value.getFloatValue();
-        if (type == CSS_PERCENTAGE) {
-            f = f/100 * 255;
-        }
-        if (f < 0) {
-            return 0;
-        } else if (f > 255) {
-            return 255;
-        } else {
-            return f;
-        }
-    }
-
-    private float extractRgbValue(int i, PropertyValue value) {
-        final short type = value.getPrimitiveType();
-        return switch (type) {
-            case CSS_PERCENTAGE -> fromZeroTo255(value.getFloatValue() / 100 * 255);
-            case CSS_NUMBER -> fromZeroTo255(value.getFloatValue());
-            default -> {
-                String message = String.format("Parameter %s to the rgb() function is not a number or percentage", i + 1);
-                throw new CSSParseException(message, getCurrentLine());
-            }
-        };
-    }
-
-    private static float fromZeroTo255(float f) {
-        return Math.max(0, Math.min(255, f));
+        return type;
     }
 
     //  /*
@@ -2125,9 +2096,5 @@ public class CSSParser {
         public String getName() {
             return _name;
         }
-    }
-
-    private static Set<String> setOf(String... values) {
-        return Set.of(values);
     }
 }
