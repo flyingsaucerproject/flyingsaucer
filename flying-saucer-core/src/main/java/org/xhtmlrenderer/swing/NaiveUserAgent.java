@@ -236,8 +236,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
             return createImageResource(null, loadEmbeddedBase64Image(imageLocation));
         }
 
-        final String unresolvedUri = imageLocation;
-        ImageResource cached = _imageCache.get(unresolvedUri);
+        ImageResource cached = _imageCache.get(imageLocation);
         if (cached != null) {
             //TODO: check that cached image is still valid
             return cached;
@@ -251,7 +250,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
                     throw new IOException("ImageIO.read() returned null for URI %s".formatted(uri));
                 }
                 ImageResource ir = createImageResource(uri, img);
-                _imageCache.put(unresolvedUri, ir);
+                _imageCache.put(imageLocation, ir);
                 return ir;
             }
         } catch (FileNotFoundException e) {
