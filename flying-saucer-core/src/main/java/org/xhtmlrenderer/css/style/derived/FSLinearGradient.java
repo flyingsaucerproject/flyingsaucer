@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.css.style.derived;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -23,24 +24,23 @@ import java.util.regex.Pattern;
 public class FSLinearGradient
 {
     private int x1, y1, x2, y2;
-	private final List<StopValue> stopPoints = new ArrayList<StopValue>(2);
+	private final List<StopValue> stopPoints = new ArrayList<>(2);
 
-    public static class StopValue implements Comparable<StopValue>
-    {
+    public static class StopValue implements Comparable<StopValue> {
         private final FSColor color;
         private final short lengthType;
+        @Nullable
         private final Float length;
+        @Nullable
         private Float dotsValue;
 
-        private StopValue(FSColor color, Float value, short lengthType)
-        {
+        private StopValue(FSColor color, Float value, short lengthType) {
             this.color = color;
             this.length = value;
             this.lengthType = lengthType;
         }
 
-        private StopValue(final FSColor color)
-        {
+        private StopValue(final FSColor color) {
             this.color = color;
             this.length = null;
             this.lengthType = 0;
@@ -51,8 +51,8 @@ public class FSLinearGradient
             return this.color;
         }
 
-        public float getLength()
-        {
+        @Nullable
+        public Float getLength() {
             return this.dotsValue;
         }
 
@@ -200,8 +200,7 @@ public class FSLinearGradient
 
 		stopPoints.get(0).dotsValue = 0f;
 		stopPoints.get(1).dotsValue = 1f;
-		return;
-	}
+    }
 
     public static boolean looksLikeALength(String val) {
         String RCSS_NUMBER = "(-)?((\\d){1,10}((\\.)(\\d){1,10})?)";
@@ -234,7 +233,7 @@ public class FSLinearGradient
 
         if (GeneralUtil.ciEquals(params.get(0).getStringValue(), "to"))
         {
-            // The to keyword is followed by one or two position
+            // The "to" keyword is followed by one or two position
             // idents (in any order).
             // linear-gradient( to left top, blue, red);
             // linear-gradient( to top right, blue, red);
@@ -356,19 +355,12 @@ public class FSLinearGradient
         {
             // Each stop point can have a color and optionally a length.
             final PropertyValue value = params.get(i);
-            FSRGBColor color = null;
+            FSRGBColor color = switch (value.getPrimitiveType()) {
+                case PropertyValue.CSS_IDENT -> Conversions.getColor(value.getStringValue());
+                default -> (FSRGBColor) value.getFSColor();
+            };
 
-            if (value.getPrimitiveType() == PropertyValue.CSS_IDENT)
-            {
-                color = Conversions.getColor(value.getStringValue());
-            }
-            else
-            {
-                color = (FSRGBColor) value.getFSColor();
-            }
-
-            if (color == null)
-            {
+            if (color == null) {
                 // Invalid color.
                 constructZero();
                 return;
@@ -376,14 +368,12 @@ public class FSLinearGradient
 
             if (i + 1 < params.size() &&
                     (BuilderUtil.isLength(params.get(i + 1)) ||
-                            params.get(i + 1).getPrimitiveType() == PropertyValue.CSS_PERCENTAGE))
-            {
+                            params.get(i + 1).getPrimitiveType() == PropertyValue.CSS_PERCENTAGE)) {
                 final PropertyValue val2 = params.get(i + 1);
                 stopPoints.add(new StopValue(color, val2.getFloatValue(), val2.getPrimitiveType()));
                 i++;
             }
-            else
-            {
+            else {
                 stopPoints.add(new StopValue(color));
             }
         }
@@ -440,16 +430,13 @@ public class FSLinearGradient
                 increment = (nextValue - lastValue) / k;
             }
 
-            if (stopPoints.get(j).dotsValue != null)
-            {
+            if (stopPoints.get(j).dotsValue != null) {
                 increment = 0;
-                lastValue = stopPoints.get(j).dotsValue;
             }
-            else
-            {
+            else {
                 stopPoints.get(j).dotsValue = lastValue + increment;
-                lastValue = stopPoints.get(j).dotsValue;
             }
+            lastValue = stopPoints.get(j).dotsValue;
         }
 
         Collections.sort(stopPoints);

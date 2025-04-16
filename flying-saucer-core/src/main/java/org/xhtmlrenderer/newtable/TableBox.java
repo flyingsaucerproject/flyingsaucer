@@ -439,7 +439,6 @@ public class TableBox extends BlockBox {
 
         if (limit == null) {
             XRLog.layout(Level.WARNING, "No content limit found");
-            return result;
         } else {
             if (limit.getTop() == ContentLimit.UNDEFINED ||
                     limit.getBottom() == ContentLimit.UNDEFINED) {
@@ -480,8 +479,8 @@ public class TableBox extends BlockBox {
             result.y = top;
             result.height = bottom - top;
 
-            return result;
         }
+        return result;
     }
 
     public void updateHeaderFooterPosition(RenderingContext c) {
@@ -595,6 +594,7 @@ public class TableBox extends BlockBox {
         }
     }
 
+    @Nullable
     public TableRowBox getFirstRow() {
         for (Box box : getChildren()) {
             TableSectionBox section = (TableSectionBox) box;
@@ -606,6 +606,7 @@ public class TableBox extends BlockBox {
         return null;
     }
 
+    @Nullable
     public TableRowBox getFirstBodyRow() {
         for (Box box : getChildren()) {
             TableSectionBox section = (TableSectionBox) box;
@@ -750,6 +751,7 @@ public class TableBox extends BlockBox {
         return prevSection;
     }
 
+    @Nullable
     protected TableSectionBox sectionBelow(
             TableSectionBox section, boolean skipEmptySections) {
         TableSectionBox nextSection = (TableSectionBox)section.getNextSibling();
@@ -788,18 +790,7 @@ public class TableBox extends BlockBox {
 
         // Look up the cell in the section's grid, which requires effective col
         // index
-        if (section != null) {
-            int effCol = colToEffCol(cell.getCol());
-            TableCellBox aboveCell;
-            // If we hit a span back up to a real cell.
-            do {
-                aboveCell = section.cellAt(rAbove, effCol);
-                effCol--;
-            } while (aboveCell == TableCellBox.SPANNING_CELL && effCol >= 0);
-            return (aboveCell == TableCellBox.SPANNING_CELL) ? null : aboveCell;
-        } else {
-            return null;
-        }
+        return getTableCellBox(cell, section, rAbove);
     }
 
     protected TableCellBox cellBelow(TableCellBox cell) {
@@ -820,20 +811,26 @@ public class TableBox extends BlockBox {
 
         // Look up the cell in the section's grid, which requires effective col
         // index
-        if (section != null) {
-            int effCol = colToEffCol(cell.getCol());
-            TableCellBox belowCell;
-            // If we hit a colspan back up to a real cell.
-            do {
-                belowCell = section.cellAt(rBelow, effCol);
-                effCol--;
-            } while (belowCell == TableCellBox.SPANNING_CELL && effCol >= 0);
-            return (belowCell == TableCellBox.SPANNING_CELL) ? null : belowCell;
-        } else {
-            return null;
-        }
+        return getTableCellBox(cell, section, rBelow);
     }
 
+    @Nullable
+    private TableCellBox getTableCellBox(TableCellBox cell, @Nullable TableSectionBox section, int rBelow) {
+        if (section == null) {
+            return null;
+        }
+
+        int effCol = colToEffCol(cell.getCol());
+        TableCellBox belowCell;
+        // If we hit a colspan back up to a real cell.
+        do {
+            belowCell = section.cellAt(rBelow, effCol);
+            effCol--;
+        } while (belowCell == TableCellBox.SPANNING_CELL && effCol >= 0);
+        return (belowCell == TableCellBox.SPANNING_CELL) ? null : belowCell;
+    }
+
+    @Nullable
     protected TableCellBox cellLeft(TableCellBox cell) {
         TableSectionBox section = cell.getSection();
         int effCol = colToEffCol(cell.getCol());
@@ -850,7 +847,7 @@ public class TableBox extends BlockBox {
         return (prevCell == TableCellBox.SPANNING_CELL) ? null : prevCell;
     }
 
-
+    @Nullable
     protected TableCellBox cellRight(TableCellBox cell) {
         int effCol = colToEffCol(cell.getCol() + cell.getStyle().getColSpan());
         if (effCol >= numEffCols()) {
@@ -963,6 +960,7 @@ public class TableBox extends BlockBox {
 
     private static class FixedTableLayout implements TableLayout {
         private final TableBox _table;
+        @Nullable
         private List<Length> _widths;
 
         private FixedTableLayout(TableBox table) {
