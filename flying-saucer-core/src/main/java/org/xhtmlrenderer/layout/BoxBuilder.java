@@ -1105,12 +1105,10 @@ public class BoxBuilder {
 
                         BlockBox block = (BlockBox) child;
                         if (block.getStyle().mayHaveFirstLine()) {
-                            block.setFirstLineStyle(c.getCss().getPseudoElementStyle(element,
-                                    "first-line"));
+                            block.setFirstLineStyle(c.getCss().getPseudoElementStyle(element, "first-line"));
                         }
                         if (block.getStyle().mayHaveFirstLetter()) {
-                            block.setFirstLetterStyle(c.getCss().getPseudoElementStyle(element,
-                                    "first-letter"));
+                            block.setFirstLetterStyle(c.getCss().getPseudoElementStyle(element, "first-letter"));
                         }
                         //I think we need to do this to evaluate counters correctly
                         block.ensureChildren(c);

@@ -1093,24 +1093,12 @@ public class CSSParser {
                         if (t == Token.TK_IDENT || t == Token.TK_STRING) {
                             String value = getTokenValue(t, true);
                             switch (selectorType.getType()) {
-                                case EQUALS -> {
-                                    selector.addAttributeEqualsCondition(attrNamespaceURI, attrName, value);
-                                }
-                                case DASHMATCH -> {
-                                    selector.addAttributeMatchesFirstPartCondition(attrNamespaceURI, attrName, value);
-                                }
-                                case INCLUDES -> {
-                                    selector.addAttributeMatchesListCondition(attrNamespaceURI, attrName, value);
-                                }
-                                case PREFIXMATCH -> {
-                                    selector.addAttributePrefixCondition(attrNamespaceURI, attrName, value);
-                                }
-                                case SUFFIXMATCH -> {
-                                    selector.addAttributeSuffixCondition(attrNamespaceURI, attrName, value);
-                                }
-                                case SUBSTRINGMATCH -> {
-                                    selector.addAttributeSubstringCondition(attrNamespaceURI, attrName, value);
-                                }
+                                case EQUALS -> selector.addAttributeEqualsCondition(attrNamespaceURI, attrName, value);
+                                case DASHMATCH -> selector.addAttributeMatchesFirstPartCondition(attrNamespaceURI, attrName, value);
+                                case INCLUDES -> selector.addAttributeMatchesListCondition(attrNamespaceURI, attrName, value);
+                                case PREFIXMATCH -> selector.addAttributePrefixCondition(attrNamespaceURI, attrName, value);
+                                case SUFFIXMATCH -> selector.addAttributeSuffixCondition(attrNamespaceURI, attrName, value);
+                                case SUBSTRINGMATCH -> selector.addAttributeSubstringCondition(attrNamespaceURI, attrName, value);
                             }
                             skip_whitespace();
                         } else {
@@ -1240,12 +1228,8 @@ public class CSSParser {
                     t = next();
                     addPseudoElement(t, selector);
                 }
-                case IDENT -> {
-                    addPseudoClassOrElement(t, selector);
-                }
-                case FUNCTION -> {
-                    addPseudoClassOrElementFunction(t, selector);
-                }
+                case IDENT -> addPseudoClassOrElement(t, selector);
+                case FUNCTION -> addPseudoClassOrElementFunction(t, selector);
                 default -> {
                     push(t);
                     throw new CSSParseException(t,
@@ -1495,7 +1479,6 @@ public class CSSParser {
 
                 next();
                 skip_whitespace();
-                break;
             }
 
 
@@ -1619,20 +1602,14 @@ public class CSSParser {
                 next();
                 skip_whitespace();
             }
-            case HASH -> {
-                result = hexcolor(operatorToken);
-            }
-            case FUNCTION -> {
-                result = function(operatorToken);
-            }
-            default -> {
-                throw new CSSParseException(t, new Token[] { Token.TK_NUMBER,
-                        Token.TK_PERCENTAGE, Token.TK_PX, Token.TK_EMS, Token.TK_EXS,
-                        Token.TK_PC, Token.TK_MM, Token.TK_CM, Token.TK_IN, Token.TK_PT,
-                        Token.TK_ANGLE, Token.TK_TIME, Token.TK_FREQ, Token.TK_STRING,
-                        Token.TK_IDENT, Token.TK_URI, Token.TK_HASH, Token.TK_FUNCTION },
-                        getCurrentLine());
-                }
+            case HASH -> result = hexcolor(operatorToken);
+            case FUNCTION -> result = function(operatorToken);
+            default -> throw new CSSParseException(t, new Token[] { Token.TK_NUMBER,
+                    Token.TK_PERCENTAGE, Token.TK_PX, Token.TK_EMS, Token.TK_EXS,
+                    Token.TK_PC, Token.TK_MM, Token.TK_CM, Token.TK_IN, Token.TK_PT,
+                    Token.TK_ANGLE, Token.TK_TIME, Token.TK_FREQ, Token.TK_STRING,
+                    Token.TK_IDENT, Token.TK_URI, Token.TK_HASH, Token.TK_FUNCTION },
+                    getCurrentLine());
         }
         return result;
     }

@@ -982,12 +982,8 @@ public class BlockBox extends Box implements InlinePaintable {
         }
 
         switch (getChildrenContentType()) {
-            case INLINE -> {
-                layoutInlineChildren(c, contentStart, calcInitialBreakAtLine(c), true);
-            }
-            case BLOCK -> {
-                BlockBoxing.layoutContent(c, this, contentStart);
-            }
+            case INLINE -> layoutInlineChildren(c, contentStart, calcInitialBreakAtLine(c), true);
+            case BLOCK -> BlockBoxing.layoutContent(c, this, contentStart);
         }
 
         if (getFirstLetterStyle() != null) {
@@ -1814,6 +1810,7 @@ public class BlockBox extends Box implements InlinePaintable {
         super.calcChildPaintingInfo(c, result, useCache);
     }
 
+    @Nullable
     public CascadedStyle getFirstLetterStyle() {
         return _firstLetterStyle;
     }
@@ -1822,6 +1819,7 @@ public class BlockBox extends Box implements InlinePaintable {
         _firstLetterStyle = firstLetterStyle;
     }
 
+    @Nullable
     public CascadedStyle getFirstLineStyle() {
         return _firstLineStyle;
     }
@@ -1892,6 +1890,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return bContext != null && bContext.getBlock() == this;
     }
 
+    @Nullable
     public BreakAtLineContext calcBreakAtLineContext(LayoutContext c) {
         if (! c.isPrint() || ! getStyle().isKeepWithInline()) {
             return null;
@@ -1934,6 +1933,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return -1;
     }
 
+    @Nullable
     public LineBox findLastNthLineBox(int count) {
         LastLineBoxContext context = new LastLineBoxContext(count);
         findLastLineBox(context);
@@ -1942,6 +1942,7 @@ public class BlockBox extends Box implements InlinePaintable {
 
     private static class LastLineBoxContext {
         private int current;
+        @Nullable
         private LineBox line;
 
         private LastLineBoxContext(int i) {
@@ -1974,6 +1975,7 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
+    @Nullable
     private LineBox findLastLineBox() {
         ContentType type = getChildrenContentType();
         int count = getChildCount();
@@ -1998,6 +2000,7 @@ public class BlockBox extends Box implements InlinePaintable {
         return null;
     }
 
+    @Nullable
     private LineBox findFirstLineBox() {
         ContentType type = getChildrenContentType();
         int count = getChildCount();
