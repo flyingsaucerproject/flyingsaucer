@@ -244,6 +244,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         }
     }
 
+    @Override
     public void setOpacity(float opacity) {
     	// TODO: implement opacity settings
     }

@@ -36,7 +36,6 @@ import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +53,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public Java2DOutputDevice(BufferedImage outputImage) {
         this(outputImage.createGraphics());
     }
-    
+
 @Override
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         if (inlineText.isSelected()) {
@@ -192,6 +191,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         }
     }
 
+    @Override
     public void setOpacity(float opacity) {
         if (opacity == 1)
         {

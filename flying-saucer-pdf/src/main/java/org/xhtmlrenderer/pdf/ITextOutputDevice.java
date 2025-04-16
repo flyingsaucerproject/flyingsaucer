@@ -30,6 +30,7 @@ import com.lowagie.text.pdf.PdfBorderDictionary;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfDestination;
 import com.lowagie.text.pdf.PdfDictionary;
+import com.lowagie.text.pdf.PdfGState;
 import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfIndirectReference;
 import com.lowagie.text.pdf.PdfName;
@@ -93,7 +94,6 @@ import java.util.regex.Pattern;
 import static com.lowagie.text.pdf.PdfObject.TEXT_UNICODE;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparingInt;
-import com.lowagie.text.pdf.PdfGState;
 
 /**
  * This class is largely based on {@link com.lowagie.text.pdf.PdfGraphics2D}.
@@ -414,6 +414,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         draw(bounds);
     }
 
+    @Override
     public void setOpacity(float opacity) {
     	if (opacity != _opacity) {
     		PdfGState gs = new PdfGState();
