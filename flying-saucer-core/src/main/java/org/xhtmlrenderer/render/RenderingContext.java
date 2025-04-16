@@ -42,15 +42,18 @@ import java.awt.*;
  *         November 16, 2004
  */
 public class RenderingContext implements CssContext {
-    protected SharedContext sharedContext;
+    protected final SharedContext sharedContext;
     private final OutputDevice outputDevice;
     private final FontContext fontContext;
 
     private int pageCount;
 
     private int pageNo;
+
+    @Nullable
     private PageBox page;
 
+    @Nullable
     private final Layer rootLayer;
 
     private final int initialPageNo;
@@ -135,14 +138,9 @@ public class RenderingContext implements CssContext {
     }
 
     public Rectangle getFixedRectangle() {
-        Rectangle result;
-        if (! isPrint()) {
-            result = sharedContext.getFixedRectangle();
-        } else {
-            result = new Rectangle(0, -this.page.getTop(),
-                    this.page.getContentWidth(this),
-                    this.page.getContentHeight(this)-1);
-        }
+        Rectangle result = isPrint() ?
+            new Rectangle(0, -this.page.getTop(), this.page.getContentWidth(this), this.page.getContentHeight(this) - 1) :
+            sharedContext.getFixedRectangle();
         result.translate(-1, -1);
         return result;
     }
@@ -199,6 +197,7 @@ public class RenderingContext implements CssContext {
         this.pageCount = pageCount;
     }
 
+    @Nullable
     public PageBox getPage() {
         return page;
     }
@@ -219,6 +218,7 @@ public class RenderingContext implements CssContext {
         return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
     }
 
+    @Nullable
     public Layer getRootLayer() {
         return rootLayer;
     }
