@@ -1816,12 +1816,9 @@ public class CSSParser {
 
     private void skip_whitespace_and_cdocdc() throws IOException {
         Token t;
-        while (true) {
+        do {
             t = next();
-            if (! (t == Token.TK_S || t == Token.TK_CDO || t == Token.TK_CDC)) {
-                break;
-            }
-        }
+        } while (t == Token.TK_S || t == Token.TK_CDO || t == Token.TK_CDC);
         push(t);
     }
 
@@ -1975,7 +1972,7 @@ public class CSSParser {
     private boolean isRelativeURI(String uri) {
         try {
             return !uri.isEmpty() && (uri.charAt(0) != '/' && ! new URI(uri).isAbsolute());
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException ignore) {
             return false;
         }
     }
@@ -1983,7 +1980,7 @@ public class CSSParser {
     private boolean isServerRelativeURI(String uri) {
         try {
             return !uri.isEmpty() && uri.charAt(0) == '/' && !new URI(uri).isAbsolute();
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException ignore) {
             return false;
         }
     }
