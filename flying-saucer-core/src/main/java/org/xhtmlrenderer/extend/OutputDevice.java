@@ -62,15 +62,15 @@ public interface OutputDevice {
     void setFont(FSFont font);
 
     void setColor(FSColor color);
-public void setOpacity(float opacity);
+    void setOpacity(float opacity);
 
     void drawRect(int x, int y, int width, int height);
-     void drawOval(int x, int y, int width, int height);
+    void drawOval(int x, int y, int width, int height);
 
     void drawBorderLine(Shape bounds, int side, int width, boolean solid);
 
-     void drawImage(FSImage image, int x, int y);
-    public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height);
+    void drawImage(FSImage image, int x, int y);
+    void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height);
 
     void draw(Shape s);
     void fill(Shape s);
