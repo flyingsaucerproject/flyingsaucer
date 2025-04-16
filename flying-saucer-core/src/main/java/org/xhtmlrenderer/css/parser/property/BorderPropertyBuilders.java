@@ -53,14 +53,12 @@ public class BorderPropertyBuilders {
 
             List<PropertyDeclaration> result = new ArrayList<>(3);
 
-            if (values.size() == 1 &&
-                    values.get(0).getCssValueType() == CSS_INHERIT) {
+            if (values.size() == 1 && values.get(0).getCssValueType() == CSS_INHERIT) {
                 CSSPrimitiveValue value = values.get(0);
                 addAll(result, props[0], value, origin, important);
                 addAll(result, props[1], value, origin, important);
                 addAll(result, props[2], value, origin, important);
 
-                return result;
             } else {
                 assertFoundUpToValues(cssName, values, 3);
                 boolean haveBorderStyle = false;
@@ -116,8 +114,8 @@ public class BorderPropertyBuilders {
                     addAll(result, props[2], new PropertyValue(IdentValue.FS_INITIAL_VALUE), origin, important);
                 }
 
-                return result;
             }
+            return result;
         }
 
         private boolean isBorderStyle(CSSPrimitiveValue value) {
@@ -163,9 +161,7 @@ public class BorderPropertyBuilders {
                 return null;
             }
 
-            if (type == CSSPrimitiveValue.CSS_RGBCOLOR) {
-                return value;
-            } else {
+            if (type != CSSPrimitiveValue.CSS_RGBCOLOR) {
                 FSRGBColor color = Conversions.getColor(value.getStringValue());
                 if (color != null) {
                     return new PropertyValue(color);
@@ -175,9 +171,8 @@ public class BorderPropertyBuilders {
                 if (ident == null || ident != IdentValue.TRANSPARENT) {
                     return null;
                 }
-
-                return value;
             }
+            return value;
         }
     }
 

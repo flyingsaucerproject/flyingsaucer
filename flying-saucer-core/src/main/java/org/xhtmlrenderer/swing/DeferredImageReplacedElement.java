@@ -129,10 +129,8 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
                         }
                     }
                 }
-                _image = image;
-            } else {
-                _image = image;
             }
+            _image = image;
             _loaded = true;
             XRLog.load(Level.FINE, "Icon: replaced image " + _imageResource.getImageUri() + ", repaint requested");
             SwingUtilities.invokeLater(() -> repaintListener.repaintRequested(_doScaleImage));
