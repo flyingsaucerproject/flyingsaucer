@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.*;
 import java.io.IOException;
@@ -55,8 +56,8 @@ public class CheckboxFormField extends AbstractFormField {
     Rectangle targetArea = outputDevice.createLocalTargetArea(c, box);
     String onValue = getValue(elm);
 
-    RadioCheckField field = new RadioCheckField(writer, targetArea, getFieldName(outputDevice, elm), onValue);
-
+    String fieldName = getFieldName(outputDevice, elm);
+    RadioCheckField field = new RadioCheckField(writer, targetArea, fieldName, onValue);
 
     field.setChecked(isChecked(elm));
     field.setCheckType(RadioCheckField.TYPE_CHECK);
@@ -73,7 +74,7 @@ public class CheckboxFormField extends AbstractFormField {
       }
       writer.addAnnotation(formField);
     } catch (IOException | DocumentException ioe) {
-      System.out.println(ioe);
+      throw new XRRuntimeException("Failed to paint field %s".formatted(fieldName), ioe);
     }
   }
 
