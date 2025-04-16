@@ -33,6 +33,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.Util;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.io.IOException;
 
@@ -86,7 +87,8 @@ public class TextFormField extends AbstractFormField {
     Element elem = box.getElement();
 
     Rectangle targetArea = outputDevice.createLocalTargetArea(c, box);
-    TextField field = new TextField(writer, targetArea, getFieldName(outputDevice, elem));
+    String fieldName = getFieldName(outputDevice, elem);
+    TextField field = new TextField(writer, targetArea, fieldName);
 
     String value = getValue(elem);
     field.setText(value);
@@ -104,7 +106,7 @@ public class TextFormField extends AbstractFormField {
       }
       writer.addAnnotation(formField);
     } catch (IOException | DocumentException ioe) {
-      System.out.println(ioe);
+      throw new XRRuntimeException("Failed to paint field %s".formatted(fieldName), ioe);
     }
   }
 
