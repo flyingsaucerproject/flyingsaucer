@@ -1,8 +1,5 @@
 package org.xhtmlrenderer.css.style.derived;
 
-import java.util.*;
-import java.util.regex.Pattern;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -14,6 +11,14 @@ import org.xhtmlrenderer.css.parser.property.Conversions;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.util.GeneralUtil;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class FSLinearGradient
 {
@@ -54,7 +59,7 @@ public class FSLinearGradient
         @Override
         public String toString()
         {
-            return "[" + this.color.toString() + "](" + this.dotsValue + ")";
+            return "[" + this.color + "](" + this.dotsValue + ")";
         }
 
         @Override
@@ -73,17 +78,17 @@ public class FSLinearGradient
 	{
 		return stopPoints;
 	}
-	
+
 	private float deg2rad(float deg)
 	{
 		return (float) Math.toRadians(deg);
 	}
-	
+
 	private float rad2deg(float rad)
 	{
 		return (float) Math.toDegrees(rad);
 	}
-	
+
 	// Compute the endpoints so that a gradient of the given angle
 	// covers a box of the given size.
 	// From: https://github.com/WebKit/webkit/blob/master/Source/WebCore/css/CSSGradientValue.cpp
@@ -463,7 +468,7 @@ public class FSLinearGradient
 
 	// These function get the x, y of the starting and ending points of the gradient.
 	// They assume a start at zero, so should be offset when used.
-	
+
 	public int getStartX()
 	{
 		return x1;
@@ -473,20 +478,19 @@ public class FSLinearGradient
 	{
 		return x2;
 	}
-	
+
 	public int getStartY()
 	{
 		return y1;
 	}
-	
+
 	public int getEndY()
 	{
 		return y2;
 	}
-	
+
 	@Override
-	public String toString() 
-	{
-		return "[" + x1 + ", " + y1 + "] to [" + x2 + ", " + y2 + "](" + stopPoints.toString() + ")";
+	public String toString() {
+		return "[%d, %d] to [%d, %d](%s)".formatted(x1, y1, x2, y2, stopPoints);
 	}
 }
