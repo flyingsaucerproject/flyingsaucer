@@ -42,8 +42,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -60,48 +58,26 @@ public final class BrowserPanel extends JPanel implements DocumentListener {
 
     private static final int maxLineLength = 80;
 
-    private final JButton forward;
-    private final JButton backward;
-    private final JButton reload;
-    private final JButton goHome;
-    final JTextField url;
-    final BrowserStatus status;
-    public final ScalableXHTMLPanel view;
+    private final JButton forward = new JButton();
+    private final JButton backward = new JButton();
+    private final JButton reload = new JButton();
+    private final JButton goHome = new JButton();
+    final JTextField url = new JTextField();
+    final BrowserStatus status = new BrowserStatus();
     private final BrowserStartup root;
     private final BrowserPanelListener listener;
-    private final JButton print_preview;
-    private final PanelManager manager;
-    private final JButton goToPage;
+    private final JButton print_preview = new JButton();
+    private final PanelManager manager = new PanelManager();
+    public final ScalableXHTMLPanel view = new ScalableXHTMLPanel(manager);
+    private final JButton goToPage = new JButton();
     final JToolBar toolbar;
 
     public BrowserPanel(BrowserStartup root, BrowserPanelListener listener) {
         this.root = root;
         this.listener = listener;
 
-        forward = new JButton();
-        backward = new JButton();
-        reload = new JButton();
-        goToPage = new JButton();
-        goHome = new JButton();
+        url.addFocusListener(new SelectOnFocus(url));
 
-        url = new JTextField();
-        url.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                super.focusGained(e);
-                url.selectAll();
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                super.focusLost(e);
-                url.select(0, 0);
-            }
-        });
-
-
-        manager = new PanelManager();
-        view = new ScalableXHTMLPanel(manager);
         manager.setRepaintListener(view);
         ImageResourceLoader irl = new ImageResourceLoader(view);
         manager.setImageResourceLoader(irl);
@@ -109,20 +85,16 @@ public final class BrowserPanel extends JPanel implements DocumentListener {
         view.addDocumentListener(manager);
         view.setCenteredPagedView(true);
         view.setBackground(Color.LIGHT_GRAY);
-        JScrollPane scroll = new FSScrollPane(view);
-        print_preview = new JButton();
 
         loadCustomFonts();
 
-        status = new BrowserStatus();
-
         toolbar = initToolbar();
 
-        int text_width = 200;
-        view.setPreferredSize(new Dimension(text_width, text_width));
+        int textWidth = 200;
+        view.setPreferredSize(new Dimension(textWidth, textWidth));
 
         setLayout(new BorderLayout());
-        this.add(scroll, BorderLayout.CENTER);
+        this.add(new FSScrollPane(view), BorderLayout.CENTER);
 
         createActions();
     }
@@ -203,9 +175,7 @@ public final class BrowserPanel extends JPanel implements DocumentListener {
 
             setStatus("Successfully loaded: " + url_text);
 
-            if (listener != null) {
-                listener.pageLoadSuccess(url_text, view.getDocumentTitle());
-            }
+            listener.pageLoadSuccess(url_text, view.getDocumentTitle());
         } catch (XRRuntimeException ex) {
             XRLog.general(Level.SEVERE, "Runtime exception", ex);
             setStatus("Can't load document");
@@ -277,13 +247,12 @@ public final class BrowserPanel extends JPanel implements DocumentListener {
     }
 
     private String getRootCause(Exception ex) {
-        // FIXME
         Throwable cause = ex;
-        while (cause != null) {
+        while (cause.getCause() != null) {
             cause = cause.getCause();
         }
 
-        return cause == null ? ex.getMessage() : cause.getMessage();
+        return cause.toString();
     }
 
     @Override
@@ -305,7 +274,7 @@ public final class BrowserPanel extends JPanel implements DocumentListener {
         status.text.setText(txt);
     }
 
-    protected void updateButtons() {
+    private void updateButtons() {
         root.actions.backward.setEnabled(manager.hasBack());
         root.actions.forward.setEnabled(manager.hasForward());
         url.setText(manager.getBaseURL());
