@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.12.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/33
+* in progress
+
 ## 9.12.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/32?closed=1
 * Add support for linear gradients and opacity - thanks to Ondřej Španěl and haberbyte (#493) (#22)
 * Fix border rounding issues and overlap singularities - thanks to Ondřej Španěl (#492)
