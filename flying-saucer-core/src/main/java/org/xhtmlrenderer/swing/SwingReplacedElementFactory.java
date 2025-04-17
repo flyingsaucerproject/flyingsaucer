@@ -197,7 +197,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
             });
             return new ImageReplacedElement(missingImage, cssWidth, cssHeight);
         } catch (Exception e) {
-            log.error("Failed to create image element of size %sx%s".formatted(cssWidth, cssHeight), e);
+            log.error("Failed to create image element of size {}x{}", cssWidth, cssHeight, e);
             return new EmptyReplacedElement(Math.max(cssWidth, 0), Math.max(cssHeight, 0));
         }
     }
