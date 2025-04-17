@@ -322,15 +322,14 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
 		int i = 0;
 		for (StopValue pt : gradient.getStopPoints())
 		{
-	        if (pt.getColor() instanceof FSRGBColor) {
-	            FSRGBColor rgb = (FSRGBColor) pt.getColor();
-	            colors[i] = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+	        if (pt.getColor() instanceof FSRGBColor rgb) {
+                colors[i] = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
 	        } else {
 	            throw new RuntimeException("internal error: unsupported color class " + pt.getColor().getClass().getName());
 	        }
 
 	        if (range != 0)
-	        	fractions[i] = (pt.getLength() / range);
+	        	fractions[i] = pt.getLength() / range;
 
 	        i++;
 		}
