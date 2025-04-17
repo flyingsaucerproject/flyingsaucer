@@ -51,7 +51,7 @@ public class TextFormField extends AbstractFormField {
 
     float fontSize = box.getStyle().getFSFont(c).getSize2D();
     // FIXME: findbugs possible loss of precision, cf. int / (float)2
-    _baseline = (int) (getHeight() / 2 + (fontSize * 0.3f));
+    _baseline = (int) ((float) getHeight() / 2 + (fontSize * 0.3f));
   }
 
   @Override
