@@ -144,7 +144,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
         try (InputStream in = IOUtil.getInputStream(resolvedUri)) {
             return XMLResource.load(in);
         } catch (IOException e) {
-            log.warn("Failed to load XML resource from %s".formatted(resolvedUri), e);
+            log.warn("Failed to load XML resource from {}", resolvedUri, e);
             return null;
         }
     }
