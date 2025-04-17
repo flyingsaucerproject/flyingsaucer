@@ -329,11 +329,11 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
             }
         }
         if (marginRight > 0) {
-            result.width += marginRight;
+            result.width += (int) marginRight;
         }
         if (marginLeft > 0) {
-            result.x -= marginLeft;
-            result.width += marginLeft;
+            result.x -= (int) marginLeft;
+            result.width += (int) marginLeft;
         }
         result.translate(tx, ty);
         return result;

@@ -371,7 +371,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         PageBox page = _root.getLayer().getPage(c, getPageRefY(box));
         if (page != null) {
             int distanceFromTop = page.getMarginBorderPadding(c, Edge.TOP);
-            distanceFromTop += box.getAbsY() + box.getMargin(c).top() - page.getTop();
+            distanceFromTop += (int) (box.getAbsY() + box.getMargin(c).top() - page.getTop());
             result = new PdfDestination(PdfDestination.XYZ, 0, page.getHeight(c) / _dotsPerPoint - distanceFromTop / _dotsPerPoint, 0);
             result.addPage(_writer.getPageReference(_startPageNo + page.getPageNo() + 1));
         }
