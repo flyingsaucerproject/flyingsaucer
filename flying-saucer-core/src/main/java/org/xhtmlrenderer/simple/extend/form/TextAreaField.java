@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -37,6 +38,7 @@ import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
 
 class TextAreaField extends FormField {
+    @Nullable
     private TextAreaFieldJTextArea _textarea;
 
     TextAreaField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
@@ -78,7 +80,7 @@ class TextAreaField extends FormField {
         return scrollpane;
     }
 
-    protected void applyComponentStyle(TextAreaFieldJTextArea textArea, JScrollPane scrollpane) {
+    private void applyComponentStyle(TextAreaFieldJTextArea textArea, JScrollPane scrollpane) {
         applyComponentStyle(textArea);
 
         CalculatedStyle style = getBox().getStyle();
