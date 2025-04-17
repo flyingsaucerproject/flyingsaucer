@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -80,7 +79,7 @@ public class PDFHyphenationTest {
         );
     }
 
-    private void generatePDF(String xml, OutputStream os) throws DocumentException, IOException {
+    private void generatePDF(String xml, OutputStream os) throws DocumentException {
         ITextRenderer renderer = new ITextRenderer();
         ITextUserAgent ua = new ITextUserAgent(renderer.getOutputDevice(), renderer.getSharedContext().getDotsPerPixel());
         renderer.getSharedContext().setUserAgentCallback(ua);
