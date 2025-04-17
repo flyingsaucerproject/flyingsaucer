@@ -809,17 +809,11 @@ public class InlineBoxing {
         }
     }
 
-    private static class DynamicFloatDistances implements FloatDistances {
-        private final LayoutContext c;
-        private final LineBox current;
-        private final int maxAvailableWidth;
-
-        private DynamicFloatDistances(LayoutContext c, LineBox current, int maxAvailableWidth) {
-            this.c = c;
-            this.current = current;
-            this.maxAvailableWidth = maxAvailableWidth;
-        }
-
+    private record DynamicFloatDistances(
+        LayoutContext c,
+        LineBox current,
+        int maxAvailableWidth
+    ) implements FloatDistances {
         @Override
         public int leftFloatDistance() {
             return c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
