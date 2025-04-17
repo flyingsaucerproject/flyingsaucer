@@ -1,10 +1,10 @@
 # Changelog
 
-## 9.12.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/32
-* in progress
+## 9.12.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/32?closed=1
 * Add support for linear gradients and opacity - thanks to Ondřej Španěl and haberbyte (#493) (#22)
 * Fix border rounding issues and overlap singularities - thanks to Ondřej Španěl (#492)
 * Make mockito a test scoped dependency - thanks to Pim Tegelaar (#497)
+* Refactoring (#498)
 
 ## 9.11.6 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/31?closed=1
 * #486 restore public method `setDocument` with `NamespaceHandler` argument (#488)
