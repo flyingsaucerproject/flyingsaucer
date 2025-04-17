@@ -201,7 +201,7 @@ public class TableBox extends BlockBox {
         if (! getStyle().isCollapseBorders()) {
             RectPropertySet padding = getPadding(c);
             int hSpacing = getStyle().getBorderHSpacing(c);
-            result += padding.left() + padding.right() + (numEffCols()+1) * hSpacing;
+            result += (int) (padding.left() + padding.right() + (numEffCols()+1) * hSpacing);
         }
         return result;
     }
@@ -1012,7 +1012,7 @@ public class TableBox extends BlockBox {
                     int eSpan = table.spanOfEffCol(cCol + i);
                     if ((w.isFixed() || w.isPercent()) && w.value() > 0) {
                         _widths.set(cCol + i, new Length(w.value() * eSpan, w.type()));
-                        usedWidth += effWidth * eSpan;
+                        usedWidth += (int) (effWidth * eSpan);
                     }
                     usedSpan += eSpan;
                     i++;
@@ -1041,7 +1041,7 @@ public class TableBox extends BlockBox {
                         // only set if no col element has already set it.
                         if (columnWidth.isVariable() && !w.isVariable()) {
                             _widths.set(cCol + i, new Length(w.value() * eSpan, w.type()));
-                            usedWidth += effWidth * eSpan;
+                            usedWidth += (int) (effWidth * eSpan);
                         }
 
                         usedSpan += eSpan;
@@ -1098,7 +1098,7 @@ public class TableBox extends BlockBox {
                 Length l = _widths.get(i);
                 if ( l.isFixed() ) {
                     calcWidth[i] = l.value();
-                    available -= l.value();
+                    available -= (int) l.value();
                 }
             }
 
@@ -1108,7 +1108,7 @@ public class TableBox extends BlockBox {
                 for ( int i = 0; i < nEffCols; i++ ) {
                     Length l = _widths.get(i);
                     if ( l.isPercent() ) {
-                        totalPercent += l.value();
+                        totalPercent += (int) l.value();
                     }
                 }
 
@@ -1122,7 +1122,7 @@ public class TableBox extends BlockBox {
                     Length l = _widths.get(i);
                     if ( l.isPercent() ) {
                         long w = base * l.value() / totalPercent;
-                        available -= w;
+                        available -= (int) w;
                         calcWidth[i] = w;
                     }
                 }
@@ -1173,7 +1173,7 @@ public class TableBox extends BlockBox {
             int[] columnPos = new int[nEffCols+1];
             for ( int i = 0; i < nEffCols; i++ ) {
                 columnPos[i] = pos;
-                pos += calcWidth[i] + hspacing;
+                pos += (int) (calcWidth[i] + hspacing);
             }
 
             columnPos[columnPos.length-1] = pos;
@@ -1362,12 +1362,12 @@ public class TableBox extends BlockBox {
                 while (lastCol < nEffCols && span > 0) {
                     switch (layoutStruct[lastCol].width().type()) {
                         case PERCENT:
-                            totalPercent += layoutStruct[lastCol].width().value();
+                            totalPercent += (int) layoutStruct[lastCol].width().value();
                             allColsAreFixed = false;
                             break;
                         case FIXED:
                             if (layoutStruct[lastCol].width().value() > 0) {
-                                fixedWidth += layoutStruct[lastCol].width().value();
+                                fixedWidth += (int) layoutStruct[lastCol].width().value();
                                 allColsArePercent = false;
                                 break;
                             }
@@ -1387,14 +1387,14 @@ public class TableBox extends BlockBox {
                                 layoutStruct[lastCol].setEffWidth(ZERO);
                                 allColsArePercent = false;
                             } else {
-                                totalPercent += layoutStruct[lastCol].effWidth().value();
+                                totalPercent += (int) layoutStruct[lastCol].effWidth().value();
                             }
                             allColsAreFixed = false;
                     }
 
                     span -= _table.spanOfEffCol(lastCol);
-                    minWidth += layoutStruct[lastCol].effMinWidth();
-                    maxWidth += layoutStruct[lastCol].effMaxWidth();
+                    minWidth += (int) layoutStruct[lastCol].effMinWidth();
+                    maxWidth += (int) layoutStruct[lastCol].effMaxWidth();
                     lastCol++;
                     cMinWidth -= hspacing;
                     cMaxWidth -= hspacing;
@@ -1415,7 +1415,7 @@ public class TableBox extends BlockBox {
                         int totalWidth = 0;
                         for (int pos = col; pos < lastCol; pos++) {
                             if (!layoutStruct[pos].width().isPercent()) {
-                                totalWidth += layoutStruct[pos].effMaxWidth();
+                                totalWidth += (int) layoutStruct[pos].effMaxWidth();
                             }
                         }
 
@@ -1423,7 +1423,7 @@ public class TableBox extends BlockBox {
                             if (!layoutStruct[pos].width().isPercent()) {
                                 long percent = percentMissing * layoutStruct[pos].effMaxWidth()
                                         / totalWidth;
-                                totalWidth -= layoutStruct[pos].effMaxWidth();
+                                totalWidth -= (int) layoutStruct[pos].effMaxWidth();
                                 percentMissing -= percent;
                                 if (percent > 0) {
                                     layoutStruct[pos].setEffWidth(new Length(percent, PERCENT));
@@ -1441,8 +1441,8 @@ public class TableBox extends BlockBox {
                         for (int pos = col; fixedWidth > 0 && pos < lastCol; pos++) {
                             long cWidth = Math.max(layoutStruct[pos].effMinWidth(), cMinWidth
                                     * layoutStruct[pos].width().value() / fixedWidth);
-                            fixedWidth -= layoutStruct[pos].width().value();
-                            cMinWidth -= cWidth;
+                            fixedWidth -= (int) layoutStruct[pos].width().value();
+                            cMinWidth -= (int) cWidth;
                             layoutStruct[pos].setEffMinWidth(cWidth);
                         }
                     } else if (allColsArePercent) {
@@ -1459,9 +1459,9 @@ public class TableBox extends BlockBox {
                                         * layoutStruct[pos].effWidth().value() / totalPercent);
                                 cWidth = Math.min(layoutStruct[pos].effMinWidth()
                                         + (cMinWidth - minw), cWidth);
-                                maxw -= layoutStruct[pos].effMaxWidth();
-                                minw -= layoutStruct[pos].effMinWidth();
-                                cMinWidth -= cWidth;
+                                maxw -= (int) layoutStruct[pos].effMaxWidth();
+                                minw -= (int) layoutStruct[pos].effMinWidth();
+                                cMinWidth -= (int) cWidth;
                                 layoutStruct[pos].setEffMinWidth(cWidth);
                             }
                         }
@@ -1476,10 +1476,10 @@ public class TableBox extends BlockBox {
                                     && fixedWidth <= cMinWidth) {
                                 long cWidth = Math.max(layoutStruct[pos].effMinWidth(),
                                         layoutStruct[pos].width().value());
-                                fixedWidth -= layoutStruct[pos].width().value();
-                                minw -= layoutStruct[pos].effMinWidth();
-                                maxw -= layoutStruct[pos].effMaxWidth();
-                                cMinWidth -= cWidth;
+                                fixedWidth -= (int) layoutStruct[pos].width().value();
+                                minw -= (int) layoutStruct[pos].effMinWidth();
+                                maxw -= (int) layoutStruct[pos].effMaxWidth();
+                                cMinWidth -= (int) cWidth;
                                 layoutStruct[pos].setEffMinWidth(cWidth);
                             }
                         }
@@ -1491,9 +1491,9 @@ public class TableBox extends BlockBox {
                                 cWidth = Math.min(layoutStruct[pos].effMinWidth()
                                         + (cMinWidth - minw), cWidth);
 
-                                maxw -= layoutStruct[pos].effMaxWidth();
-                                minw -= layoutStruct[pos].effMinWidth();
-                                cMinWidth -= cWidth;
+                                maxw -= (int) layoutStruct[pos].effMaxWidth();
+                                minw -= (int) layoutStruct[pos].effMinWidth();
+                                cMinWidth -= (int) cWidth;
                                 layoutStruct[pos].setEffMinWidth(cWidth);
                             }
                         }
@@ -1505,8 +1505,8 @@ public class TableBox extends BlockBox {
                         for (int pos = col; maxWidth > 0 && pos < lastCol; pos++) {
                             long cWidth = Math.max(layoutStruct[pos].effMaxWidth(), cMaxWidth
                                     * layoutStruct[pos].effMaxWidth() / maxWidth);
-                            maxWidth -= layoutStruct[pos].effMaxWidth();
-                            cMaxWidth -= cWidth;
+                            maxWidth -= (int) layoutStruct[pos].effMaxWidth();
+                            cMaxWidth -= (int) cWidth;
                             layoutStruct[pos].setEffMaxWidth(cWidth);
                         }
                     }
@@ -1542,7 +1542,7 @@ public class TableBox extends BlockBox {
                 if (layout.effWidth().isPercent()) {
                     long percent = Math.min(layout.effWidth().value(), remainingPercent);
                     long pw = (layout.effMaxWidth() * 100) / Math.max(percent, 1);
-                    remainingPercent -= percent;
+                    remainingPercent -= (int) percent;
                     maxPercent = Math.max(pw, maxPercent);
                 } else {
                     maxNonPercent += layout.effMaxWidth();
@@ -1594,21 +1594,21 @@ public class TableBox extends BlockBox {
             for (int i = 0; i < nEffCols; i++) {
                 long w = layoutStruct[i].effMinWidth();
                 layoutStruct[i].setCalcWidth(w);
-                available -= w;
+                available -= (int) w;
                 Length width = layoutStruct[i].effWidth();
                 switch (width.type()) {
                     case PERCENT -> {
                         havePercent = true;
-                        totalPercent += width.value();
+                        totalPercent += (int) width.value();
                     }
                     case FIXED -> {
                         numFixed++;
-                        totalFixed += layoutStruct[i].effMaxWidth();
+                        totalFixed += (int) layoutStruct[i].effMaxWidth();
                     }
                     case VARIABLE -> {
                         numVariable++;
-                        totalVariable += layoutStruct[i].effMaxWidth();
-                        allocVariable += w;
+                        totalVariable += (int) layoutStruct[i].effMaxWidth();
+                        allocVariable += (int) w;
                     }
                 }
             }
@@ -1619,7 +1619,7 @@ public class TableBox extends BlockBox {
                     Length width = layoutStruct[i].effWidth();
                     if (width.isPercent()) {
                         long w = Math.max(layoutStruct[i].effMinWidth(), width.minWidth(tableWidth));
-                        available += layoutStruct[i].calcWidth() - w;
+                        available += (int) (layoutStruct[i].calcWidth() - w);
                         layoutStruct[i].setCalcWidth(w);
                     }
                 }
@@ -1632,9 +1632,9 @@ public class TableBox extends BlockBox {
                             long reduction = Math.min(w, excess);
                             // the lines below might look inconsistent, but
                             // that's the way it's handled in mozilla
-                            excess -= reduction;
+                            excess -= (int) reduction;
                             long newWidth = Math.max(layoutStruct[i].effMinWidth(), w - reduction);
-                            available += w - newWidth;
+                            available += (int) (w - newWidth);
                             layoutStruct[i].setCalcWidth(newWidth);
                             // qDebug("col %d: reducing to %d px
                             // (reduction=%d)", i, newWidth, reduction );
@@ -1648,7 +1648,7 @@ public class TableBox extends BlockBox {
                 for (int i = 0; i < nEffCols; ++i) {
                     Length width = layoutStruct[i].effWidth();
                     if (width.isFixed() && width.value() > layoutStruct[i].calcWidth()) {
-                        available += layoutStruct[i].calcWidth() - width.value();
+                        available += (int) (layoutStruct[i].calcWidth() - width.value());
                         layoutStruct[i].setCalcWidth(width.value());
                     }
                 }
@@ -1664,8 +1664,8 @@ public class TableBox extends BlockBox {
                     if (width.isVariable() && totalVariable != 0) {
                         long w = Math.max(layoutStruct[i].calcWidth(), available
                                 * layoutStruct[i].effMaxWidth() / totalVariable);
-                        available -= w;
-                        totalVariable -= layoutStruct[i].effMaxWidth();
+                        available -= (int) w;
+                        totalVariable -= (int) layoutStruct[i].effMaxWidth();
                         layoutStruct[i].setCalcWidth(w);
                     }
                 }
@@ -1678,8 +1678,8 @@ public class TableBox extends BlockBox {
                     Length width = layoutStruct[i].effWidth();
                     if (width.isFixed()) {
                         long w = available * layoutStruct[i].effMaxWidth() / totalFixed;
-                        available -= w;
-                        totalFixed -= layoutStruct[i].effMaxWidth();
+                        available -= (int) w;
+                        totalFixed -= (int) layoutStruct[i].effMaxWidth();
                         layoutStruct[i].setCalcWidth(layoutStruct[i].calcWidth() + w);
                     }
                 }
@@ -1693,8 +1693,8 @@ public class TableBox extends BlockBox {
                     Length width = layoutStruct[i].effWidth();
                     if (width.isPercent()) {
                         long w = available * width.value() / totalPercent;
-                        available -= w;
-                        totalPercent -= width.value();
+                        available -= (int) w;
+                        totalPercent -= (int) width.value();
                         layoutStruct[i].setCalcWidth(layoutStruct[i].calcWidth() + w);
                         if (available == 0 || totalPercent == 0) {
                             break;
@@ -1732,7 +1732,7 @@ public class TableBox extends BlockBox {
                     for (int i = nEffCols - 1; i >= 0; i--) {
                         Length width = layoutStruct[i].effWidth();
                         if (width.isVariable())
-                            mw += layoutStruct[i].calcWidth() - layoutStruct[i].effMinWidth();
+                            mw += (int) (layoutStruct[i].calcWidth() - layoutStruct[i].effMinWidth());
                     }
 
                     for (int i = nEffCols - 1; i >= 0 && mw > 0; i--) {
@@ -1742,8 +1742,8 @@ public class TableBox extends BlockBox {
                                     - layoutStruct[i].effMinWidth();
                             long reduce = available * minMaxDiff / mw;
                             layoutStruct[i].setCalcWidth(layoutStruct[i].calcWidth() + reduce);
-                            available -= reduce;
-                            mw -= minMaxDiff;
+                            available -= (int) reduce;
+                            mw -= (int) minMaxDiff;
                             if (available >= 0)
                                 break;
                         }
@@ -1755,7 +1755,7 @@ public class TableBox extends BlockBox {
                     for (int i = nEffCols - 1; i >= 0; i--) {
                         Length width = layoutStruct[i].effWidth();
                         if (width.isFixed())
-                            mw += layoutStruct[i].calcWidth() - layoutStruct[i].effMinWidth();
+                            mw += (int) (layoutStruct[i].calcWidth() - layoutStruct[i].effMinWidth());
                     }
 
                     for (int i = nEffCols - 1; i >= 0 && mw > 0; i--) {
@@ -1765,8 +1765,8 @@ public class TableBox extends BlockBox {
                                     - layoutStruct[i].effMinWidth();
                             long reduce = available * minMaxDiff / mw;
                             layoutStruct[i].setCalcWidth(layoutStruct[i].calcWidth() + reduce);
-                            available -= reduce;
-                            mw -= minMaxDiff;
+                            available -= (int) reduce;
+                            mw -= (int) minMaxDiff;
                             if (available >= 0)
                                 break;
                         }
@@ -1778,7 +1778,7 @@ public class TableBox extends BlockBox {
                     for (int i = nEffCols - 1; i >= 0; i--) {
                         Length width = layoutStruct[i].effWidth();
                         if (width.isPercent())
-                            mw += layoutStruct[i].calcWidth() - layoutStruct[i].effMinWidth();
+                            mw += (int) (layoutStruct[i].calcWidth() - layoutStruct[i].effMinWidth());
                     }
 
                     for (int i = nEffCols - 1; i >= 0 && mw > 0; i--) {
@@ -1788,8 +1788,8 @@ public class TableBox extends BlockBox {
                                     - layoutStruct[i].effMinWidth();
                             long reduce = available * minMaxDiff / mw;
                             layoutStruct[i].setCalcWidth(layoutStruct[i].calcWidth() + reduce);
-                            available -= reduce;
-                            mw -= minMaxDiff;
+                            available -= (int) reduce;
+                            mw -= (int) minMaxDiff;
                             if (available >= 0)
                                 break;
                         }
@@ -1802,7 +1802,7 @@ public class TableBox extends BlockBox {
             int[] columnPos = new int[nEffCols + 1];
             for (int i = 0; i < nEffCols; i++) {
                 columnPos[i] = pos;
-                pos += layoutStruct[i].calcWidth() + hspacing;
+                pos += (int) (layoutStruct[i].calcWidth() + hspacing);
             }
 
             columnPos[columnPos.length - 1] = pos;
