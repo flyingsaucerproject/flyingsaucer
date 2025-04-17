@@ -47,11 +47,14 @@ import static java.util.Collections.emptyList;
 public abstract class FormField {
     private final XhtmlForm _parentForm;
     private final Element _element;
+    @Nullable
     private FormFieldState _originalState;
     private JComponent _component;
     private final LayoutContext context;
     private final BlockBox box;
+    @Nullable
     protected Integer intrinsicWidth;
+    @Nullable
     protected Integer intrinsicHeight;
 
     protected FormField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
