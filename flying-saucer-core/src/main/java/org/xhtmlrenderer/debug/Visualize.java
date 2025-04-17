@@ -2,9 +2,10 @@ package org.xhtmlrenderer.debug;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 import java.awt.geom.PathIterator;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class Visualize {
@@ -15,8 +16,8 @@ public class Visualize {
 
     static public BufferedImage shape(Shape shape, int zoom, int pointSize) {
         PathIterator it = shape.getPathIterator(null);
-        ArrayList<Double> real = new ArrayList<Double>();
-        ArrayList<Double> control = new ArrayList<Double>();
+        List<Double> real = new ArrayList<>();
+        List<Double> control = new ArrayList<>();
         while (!it.isDone()) {
             double[] a = new double[6];
             int tpe = it.currentSegment(a);
@@ -42,7 +43,7 @@ public class Visualize {
             }
             it.next();
         }
-        ArrayList<Double> all = new ArrayList<Double>(real);
+        List<Double> all = new ArrayList<>(real);
         all.addAll(control);
 
         double minXF = all.get(0), minYF = all.get(1);
