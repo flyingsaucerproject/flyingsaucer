@@ -835,6 +835,10 @@ public class BlockBox extends Box implements InlinePaintable {
         calcExtraPageClearance(c);
 
         if (c.isPrint()) {
+            if (c.getRootLayer().getPages().isEmpty()) {
+                c.getRootLayer().addPage(c);
+            }
+
             PageBox firstPage = c.getRootLayer().getFirstPage(c, this);
             if (firstPage != null && firstPage.getTop() == getAbsY() - getPageClearance()) {
                 resetTopMargin(c);
