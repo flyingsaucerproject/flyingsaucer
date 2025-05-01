@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ContentTypeDetectingInputStreamWrapperTest {
     @Test
     void isPdf() throws IOException {
-        try (var stream = new ContentTypeDetectingInputStreamWrapper(new ByteArrayInputStream("%PDF1234".getBytes(UTF_8)))) {
+        try (var stream = new ContentTypeDetectingInputStreamWrapper(new ByteArrayInputStream("%PDF1234567890".getBytes(UTF_8)))) {
             assertThat(stream.isPdf()).isTrue();
         }
     }

@@ -17,39 +17,36 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @author mwyraz
  */
 public class ContentTypeDetectingInputStreamWrapper extends BufferedInputStream {
-    protected static final int MAX_MAGIC_BYTES=4;
+    private static final byte[] MAGIC_BYTES_PDF = "%PDF".getBytes(UTF_8);
+    private static final int MAX_MAGIC_BYTES = 4;
+    private static final byte[] NO_DATA = new byte[0];
+
     private final byte[] firstBytes;
 
     public ContentTypeDetectingInputStreamWrapper(InputStream source) throws IOException {
         super(source);
-        byte[] MAGIC_BYTES=new byte[MAX_MAGIC_BYTES];
-        mark(MAX_MAGIC_BYTES);
+        this.firstBytes = readFirstBytes(this, MAX_MAGIC_BYTES);
+    }
+
+    private static byte[] readFirstBytes(InputStream in, int count) throws IOException {
+        in.mark(count);
 
         try {
-            int bytesRead=read(MAGIC_BYTES);
-            if (bytesRead<MAX_MAGIC_BYTES) { // Not enough data in stream
-                if (bytesRead<=0) MAGIC_BYTES=new byte[0]; // no data
-                else MAGIC_BYTES=Arrays.copyOf(MAGIC_BYTES, bytesRead); // fewer bytes
-            }
-            this.firstBytes = MAGIC_BYTES;
-        }
-        finally {
-            reset();
+            byte[] buffer = new byte[count];
+            int bytesRead = in.read(buffer);
+            return bytesRead >= count ?
+                buffer :
+                bytesRead <= 0 ? NO_DATA : Arrays.copyOf(buffer, bytesRead); // Not enough data in stream
+        } finally {
+            in.reset();
         }
     }
 
     private boolean streamStartsWithMagicBytes(byte[] bytes) {
-        if (firstBytes.length<bytes.length) return false;
-        for (int i = 0; i < bytes.length; i++) {
-            if (firstBytes[i]!=bytes[i]) return false;
-        }
-        return true;
+        return Arrays.equals(firstBytes, bytes);
     }
-
-    private static final byte[] MAGIC_BYTES_PDF = "%PDF".getBytes(UTF_8);
 
     public boolean isPdf() {
         return streamStartsWithMagicBytes(MAGIC_BYTES_PDF);
     }
-
 }

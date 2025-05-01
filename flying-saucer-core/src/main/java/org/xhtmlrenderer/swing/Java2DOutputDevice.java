@@ -193,14 +193,10 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
 
     @Override
     public void setOpacity(float opacity) {
-        if (opacity == 1)
-        {
-            _graphics.setComposite(AlphaComposite.SrcOver);
-        }
-        else
-        {
-            _graphics.setComposite(AlphaComposite.SrcOver.derive(opacity));
-        }
+        _graphics.setComposite(opacity == 1 ?
+            AlphaComposite.SrcOver :
+            AlphaComposite.SrcOver.derive(opacity)
+        );
 	}
 
 
@@ -232,7 +228,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void setClip(Shape s) {
         _graphics.setClip(s);
     }
-@Nullable
+
+    @Nullable
     @CheckReturnValue
     @Override
     public Shape getClip() {
