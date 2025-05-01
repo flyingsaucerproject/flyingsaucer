@@ -1458,20 +1458,11 @@ public class CSSParser {
         switch (t.getType()) {
             case ANGLE -> {
                 String unit = extractUnit(t);
-                short type;
-
-                if ("deg".equals(unit))
-                {
-                    type = CSSPrimitiveValue.CSS_DEG;
-                }
-                else if ("rad".equals(unit))
-                {
-                    type = CSSPrimitiveValue.CSS_RAD;
-                }
-                else
-                {
-                    throw new CSSParseException("Unsupported CSS unit " + unit, getCurrentLine());
-                }
+                short type = switch (unit) {
+                    case "deg" -> CSSPrimitiveValue.CSS_DEG;
+                    case "rad" -> CSSPrimitiveValue.CSS_RAD;
+                    default -> throw new CSSParseException("Unsupported CSS unit " + unit, getCurrentLine());
+                };
 
                 result = new PropertyValue(type,
                         sign * Float.parseFloat(extractNumber(t)),

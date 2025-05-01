@@ -263,12 +263,10 @@ public class CalculatedStyle {
      * @return The opacity value
      */
     public float getOpacity() {
-    	CalculatedStyle parentStyle = getParent();
     	float opacity = asFloat(CSSName.OPACITY);
 
-    	while(parentStyle != null) {
+        for (CalculatedStyle parentStyle = getParent(); parentStyle != null; parentStyle = parentStyle.getParent()) {
     		opacity = opacity * parentStyle.asFloat(CSSName.OPACITY);
-    		parentStyle = parentStyle.getParent();
     	}
 
     	return opacity;
@@ -904,8 +902,8 @@ public IdentValue getWordBreak() {
 
     public boolean isLinearGradient() {
         FSDerivedValue value = valueByName(CSSName.BACKGROUND_IMAGE);
-        return value instanceof FunctionValue &&
-        		GeneralUtil.ciEquals(((FunctionValue) value).getFunction().getName(), "linear-gradient");
+        return value instanceof FunctionValue function &&
+        		GeneralUtil.ciEquals(function.getFunction().getName(), "linear-gradient");
     }
 
     public FSLinearGradient getLinearGradient(final CssContext cssContext, final int w, final int h)

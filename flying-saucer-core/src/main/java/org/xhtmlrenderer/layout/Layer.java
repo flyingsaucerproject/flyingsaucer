@@ -228,7 +228,8 @@ public final class Layer {
 
         return result;
     }
-@CheckReturnValue
+
+    @CheckReturnValue
 	private List<Layer> getSortedLayers(Width which) {
         List<Layer> result = collectLayers(which);
         result.sort(new ZIndexComparator());
@@ -1083,7 +1084,8 @@ public final class Layer {
             return absoluteRequiredPageNo - sequenceStartAbsolutePageNo;
         }
     }
-@Nullable
+
+    @Nullable
     @CheckReturnValue
     private BlockBox findPageSequence(List<BlockBox> sequences, int absY) {
         for (int i = 0; i < sequences.size(); i++) {
@@ -1096,7 +1098,7 @@ public final class Layer {
         return null;
     }
 
-@CheckReturnValue
+    @CheckReturnValue
     public int getRelativePageNo(RenderingContext c) {
         List<BlockBox> sequences = getSortedPageSequences();
         int initial = 0;

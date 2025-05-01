@@ -75,7 +75,7 @@ import static java.nio.file.Files.newInputStream;
  * property on the command line. e.g.</p>
  * {@code java -Dxr.property-name=new_value}
  * <p>The order in which these will be read is: default properties (bundled with
- * the core, in the jar; override configuration properties; properties file in
+ * the core), in the jar; override configuration properties; properties file in
  * user.home; and system properties.</p>
  * <p>You can override as many properties as you like. </p>
  * <p> Note that overrides are driven by the property names in the default

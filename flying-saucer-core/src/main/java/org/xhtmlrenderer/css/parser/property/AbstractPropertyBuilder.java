@@ -145,6 +145,12 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
         }
     }
 
+    protected static void checkValueBetween(CSSName cssName, float value, float min, float max) {
+        if (value > max || value < min) {
+            throw new CSSParseException("%s must be between %f and %f, but received: %f".formatted(cssName, min, max, value), -1);
+        }
+    }
+
     protected boolean isLength(CSSPrimitiveValue value) {
         int unit = value.getPrimitiveType();
         return unit == CSSPrimitiveValue.CSS_EMS || unit == CSSPrimitiveValue.CSS_EXS

@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.render.BlockBox;
 
 import java.awt.*;
@@ -27,6 +29,7 @@ public class BoxRangeData {
     private final BlockBox _box;
     private final BoxRange _range;
 
+    @Nullable
     private Shape _clip;
 
     public BoxRangeData(BlockBox box, BoxRange range) {
@@ -42,6 +45,8 @@ public class BoxRangeData {
         return _range;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Shape getClip() {
         return _clip;
     }

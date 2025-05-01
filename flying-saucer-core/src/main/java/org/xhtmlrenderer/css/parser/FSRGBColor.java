@@ -39,13 +39,10 @@ public class FSRGBColor implements FSColor {
     }
 
     public FSRGBColor(int red, int green, int blue, float alpha) {
-        if (alpha < 0 || alpha > 1) {
-            throw new IllegalArgumentException("alpha must be between 0 and 1, but received: " + alpha);
-        }
         _red = validateColor("Red", red);
         _green = validateColor("Green", green);
         _blue = validateColor("Blue", blue);
-        _alpha = alpha;
+        _alpha = validateAlpha(alpha);
     }
 
     private int validateColor(String name, int color) {
@@ -55,8 +52,15 @@ public class FSRGBColor implements FSColor {
         return color;
     }
 
+    private float validateAlpha(float alpha) {
+        if (alpha < 0 || alpha > 1) {
+            throw new IllegalArgumentException(String.format("alpha %s is out of range [0, 1]", alpha));
+        }
+        return alpha;
+    }
+
     public FSRGBColor(int color) {
-        this(((color & 0xff0000) >> 16),((color & 0x00ff00) >> 8), color & 0xff);
+        this(((color & 0xff0000) >> 16), ((color & 0x00ff00) >> 8), color & 0xff);
     }
 
     public int getBlue() {
@@ -72,26 +76,21 @@ public class FSRGBColor implements FSColor {
     }
 
     public float getAlpha() {
-    	return _alpha;
+        return _alpha;
     }
 
 
     @Override
     public String toString() {
-    	if (_alpha != 1) {
-    		return "rgba("+_red+","+_green+","+_blue+","+_alpha+")";
-    	} else {
-    		return '#' + toString(_red) + toString(_green) + toString(_blue);
-    	}
+        if (_alpha != 1) {
+            return "rgba(" + _red + "," + _green + "," + _blue + "," + _alpha + ")";
+        } else {
+            return '#' + toString(_red) + toString(_green) + toString(_blue);
+        }
     }
 
     private String toString(int color) {
-        String result = Integer.toHexString(color);
-        if (result.length() == 1) {
-            return "0" + result;
-        } else {
-            return result;
-        }
+        return String.format("%02x", color);
     }
 
     @Override
@@ -128,42 +127,38 @@ public class FSRGBColor implements FSColor {
         return new HSBColor(hBase, sBase, bDarker).toRGB();
     }
 
-    private HSBColor toHSB() {
+    HSBColor toHSB() {
         return RGBtoHSB(getRed(), getGreen(), getBlue());
     }
 
     // Taken from java.awt.Color to avoid dependency on it
     private static HSBColor RGBtoHSB(int r, int g, int b) {
-        float hue, saturation, brightness;
-        int cmax = Math.max(r, g);
-        if (b > cmax)
-            cmax = b;
-        int cmin = Math.min(r, g);
-        if (b < cmin)
-            cmin = b;
-
-        brightness = ((float) cmax) / 255.0f;
-        if (cmax != 0)
-            saturation = ((float) (cmax - cmin)) / ((float) cmax);
-        else
-            saturation = 0;
-        if (saturation == 0)
-            hue = 0;
-        else {
-            float redc = ((float) (cmax - r)) / ((float) (cmax - cmin));
-            float greenc = ((float) (cmax - g)) / ((float) (cmax - cmin));
-            float bluec = ((float) (cmax - b)) / ((float) (cmax - cmin));
-            if (r == cmax)
-                hue = bluec - greenc;
-            else if (g == cmax)
-                hue = 2.0f + redc - bluec;
-            else
-                hue = 4.0f + greenc - redc;
-            hue = hue / 6.0f;
-            if (hue < 0)
-                hue = hue + 1.0f;
-        }
-
+        final float cmax = max(r, g, b);
+        final float cmin = min(r, g, b);
+        final float brightness = cmax / 255.0f;
+        final float saturation = cmax == 0f ? 0f : (cmax - cmin) / cmax;
+        final float hue = saturation == 0 ? 0 : calculateHue(r, g, b, cmax, cmin);
         return new HSBColor(hue, saturation, brightness);
+    }
+
+    private static float calculateHue(int r, int g, int b, float cmax, float cmin) {
+        float redc = (cmax - r) / (cmax - cmin);
+        float greenc = (cmax - g) / (cmax - cmin);
+        float bluec = (cmax - b) / (cmax - cmin);
+        final float hue1 = (r == cmax) ?
+            bluec - greenc : (g == cmax) ?
+            2.0f + redc - bluec :
+            4.0f + greenc - redc;
+
+        float hue2 = hue1 / 6.0f;
+        return hue1 < 0 ? hue2 + 1.0f : hue2;
+    }
+
+    private static float max(int a, int b, int c) {
+        return Math.max(Math.max(a, b), c);
+    }
+
+    private static float min(int a, int b, int c) {
+        return Math.min(Math.min(a, b), c);
     }
 }

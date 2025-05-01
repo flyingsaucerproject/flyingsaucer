@@ -32,7 +32,6 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -649,16 +648,12 @@ public class PrimitivePropertyBuilders {
             assertFoundSingleValue(cssName, values);
             PropertyValue value = (PropertyValue)values.get(0);
 
-            if (!value.toString().startsWith(
-                    LINEAR_GRADIENT.asString())) {
-
-                return super.buildDeclarations(cssName, values, origin,
-                        important, inheritAllowed);
+            if (!value.toString().startsWith(LINEAR_GRADIENT.asString())) {
+                return super.buildDeclarations(cssName, values, origin, important, inheritAllowed);
             }
 
             BuilderUtil.checkFunctionsAllowed(value.getFunction(), "linear-gradient");
-            return Collections.singletonList(new PropertyDeclaration(cssName,
-                    value, important, origin));
+            return singletonList(new PropertyDeclaration(cssName, value, important, origin));
         }
     }
 
@@ -1420,20 +1415,18 @@ public class PrimitivePropertyBuilders {
 
     public static class Opacity extends AbstractPropertyBuilder {
         @Override
-        public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+        public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values,
+                                                           Origin origin, boolean important, boolean inheritAllowed) {
             assertFoundSingleValue(cssName, values);
-            PropertyValue value = (PropertyValue)values.get(0);
+            PropertyValue value = (PropertyValue) values.get(0);
             checkInheritAllowed(value, inheritAllowed);
             checkNumberType(cssName, value);
+            checkValueBetween(cssName, value.getFloatValue(), 0, 1);
 
-            if (value.getFloatValue() > 1 || value.getFloatValue() < 0) {
-            	throw new CSSParseException("Opacity must be between 0 and 1.", -1);
-            }
-
-            return Collections.singletonList(new PropertyDeclaration(cssName, value, important, origin));
+            return singletonList(new PropertyDeclaration(cssName, value, important, origin));
         }
-    }
 
+    }
 
     public static class Overflow extends SingleIdent {
         // visible | hidden | scroll | auto | inherit
@@ -1778,14 +1771,14 @@ public class PrimitivePropertyBuilders {
     }
 
 
-	private static List<PropertyDeclaration> createTwoValueResponse(
-			CSSName cssName, CSSPrimitiveValue value1,
-			CSSPrimitiveValue value2,
-			Origin origin, boolean important) {
+    private static List<PropertyDeclaration> createTwoValueResponse(
+        CSSName cssName, CSSPrimitiveValue value1,
+        CSSPrimitiveValue value2,
+        Origin origin, boolean important) {
 
-		PropertyDeclaration result = new PropertyDeclaration(cssName,
-				new PropertyValue(asList(value1, value2)), important, origin);
-
-        return singletonList(result);
+        return singletonList(
+            new PropertyDeclaration(cssName,
+                new PropertyValue(asList(value1, value2)), important, origin)
+        );
     }
 }
