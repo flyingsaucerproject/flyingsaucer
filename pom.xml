@@ -300,7 +300,7 @@
     <slf4j.version>2.0.17</slf4j.version>
     <assertj.version>3.27.3</assertj.version>
     <pdftest.version>1.9.2</pdftest.version>
-    <pdfbox.version>3.0.4</pdfbox.version>
+    <pdfbox.version>3.0.5</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
     <java.version>17</java.version>
     <error_prone.version>2.38.0</error_prone.version>
