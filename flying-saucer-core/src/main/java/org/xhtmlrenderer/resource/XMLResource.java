@@ -204,24 +204,34 @@ public class XMLResource extends AbstractResource {
             return target;
         }
 
+        /**
+         * Transforms the given XML {@link Source} into a {@link org.w3c.dom.Document} using a securely
+         * configured {@link TransformerFactory}. This method prevents XML External Entity (XXE) attacks
+         * by disabling access to external DTDs and stylesheets.
+         *
+         * <p>The transformer is obtained from a reusable pool and released after the transformation is complete.
+         * If the pooled transformer is not hardened, the factory ensures protection via feature and attribute settings.</p>
+         *
+         * @param source the XML input to transform
+         * @return a DOM {@link Document} representing the transformed XML
+         * @throws XRRuntimeException if the transformation fails
+         */
         private Document transform(Source source) {
             DOMResult result = new DOMResult();
-
-            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer idTransform = transformerPool.get();
             try {
-                // Disable XXE by disallowing external entities and DTDs
-                factory.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+                // Ensure the transformer is secure (required in case it wasn't pre-hardened in the pool)
+                idTransform.setParameter(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+                idTransform.setParameter(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
 
-                Transformer idTransform = factory.newTransformer();
                 idTransform.transform(source, result);
-                return (Document) result.getNode();
             } catch (Exception ex) {
                 throw new XRRuntimeException("Can't load the XML resource (using TrAX transformer). " + ex.getMessage(), ex);
+            } finally {
+                transformerPool.release(idTransform);
             }
+            return (Document) result.getNode();
         }
-
 
     }
 
