@@ -206,16 +206,22 @@ public class XMLResource extends AbstractResource {
 
         private Document transform(Source source) {
             DOMResult result = new DOMResult();
-            Transformer idTransform = transformerPool.get();
+
+            TransformerFactory factory = TransformerFactory.newInstance();
             try {
+                // Disable XXE by disallowing external entities and DTDs
+                factory.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+                Transformer idTransform = factory.newTransformer();
                 idTransform.transform(source, result);
+                return (Document) result.getNode();
             } catch (Exception ex) {
                 throw new XRRuntimeException("Can't load the XML resource (using TrAX transformer). " + ex.getMessage(), ex);
-            } finally {
-                transformerPool.release(idTransform);
             }
-            return (Document) result.getNode();
         }
+
 
     }
 
