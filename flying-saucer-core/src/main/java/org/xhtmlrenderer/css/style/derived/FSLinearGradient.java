@@ -21,8 +21,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class FSLinearGradient
-{
+public class FSLinearGradient {
     private int x1, y1, x2, y2;
 	private final List<StopValue> stopPoints = new ArrayList<>(2);
 
@@ -63,8 +62,7 @@ public class FSLinearGradient
         }
 
         @Override
-        public int compareTo(final StopValue arg0)
-        {
+        public int compareTo(final StopValue arg0) {
             if (Objects.equals(this.dotsValue, arg0.dotsValue))
                 return 0;
             if (this.dotsValue < arg0.dotsValue)
@@ -74,8 +72,7 @@ public class FSLinearGradient
         }
     }
 
-	public List<StopValue> getStopPoints()
-	{
+	public List<StopValue> getStopPoints() {
 		return stopPoints;
 	}
 

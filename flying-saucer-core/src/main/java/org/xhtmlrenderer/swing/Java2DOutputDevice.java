@@ -55,7 +55,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
         this(outputImage.createGraphics());
     }
 
-@Override
+    @Override
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         if (inlineText.isSelected()) {
             InlineLayoutBox iB = inlineText.getParent();
@@ -309,16 +309,15 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     }
 
 	@Override
-	public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height)
-	{
-		float[] fractions = new float[gradient.getStopPoints().size()];
-		Color[] colors = new Color[gradient.getStopPoints().size()];
+	public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height) {
+        List<StopValue> stopPoints = gradient.getStopPoints();
+        float[] fractions = new float[stopPoints.size()];
+		Color[] colors = new Color[stopPoints.size()];
 
-		float range = gradient.getStopPoints().get(gradient.getStopPoints().size() - 1).getLength() -
-				gradient.getStopPoints().get(0).getLength();
+		float range = stopPoints.get(stopPoints.size() - 1).getLength() - stopPoints.get(0).getLength();
 
 		int i = 0;
-		for (StopValue pt : gradient.getStopPoints())
+		for (StopValue pt : stopPoints)
 		{
 	        if (pt.getColor() instanceof FSRGBColor rgb) {
                 colors[i] = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
