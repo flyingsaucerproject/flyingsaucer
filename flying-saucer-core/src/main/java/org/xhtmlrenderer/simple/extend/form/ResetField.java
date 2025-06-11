@@ -35,20 +35,8 @@ class ResetField extends AbstractButtonField {
     @Override
     public JComponent create() {
         JButton button = new JButton();
-
-        String value;
-        if (hasAttribute("value")) {
-            value = getAttribute("value");
-            if (value.isEmpty())
-                value = " ";    //otherwise we get a very short button
-        }
-        else {
-            value = "Reset";
-        }
-
         applyComponentStyle(button);
-
-        button.setText(value);
+        button.setText(getValueAttribute("Reset"));
 
         button.addActionListener(event -> {
             XRLog.layout("Reset pressed: Restore");

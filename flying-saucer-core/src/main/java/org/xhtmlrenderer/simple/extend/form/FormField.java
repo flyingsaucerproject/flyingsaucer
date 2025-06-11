@@ -104,6 +104,11 @@ public abstract class FormField {
         return _originalState;
     }
 
+    protected String getValueAttribute(String defaultValue) {
+        String value = getAttribute("value");
+        return value.isEmpty() ? defaultValue : value;
+    }
+
     protected boolean hasAttribute(String attributeName) {
         return !getElement().getAttribute(attributeName).isEmpty();
     }

@@ -34,15 +34,8 @@ class ButtonField extends AbstractButtonField {
     @Override
     public JComponent create() {
         JButton button = new JButton();
-
-        String value = getAttribute("value");
-
-        if (value == null || value.isEmpty())
-            value = " ";    //otherwise we get a very short button
-
         applyComponentStyle(button);
-
-        button.setText(value);
+        button.setText(getValueAttribute(" ")); // otherwise we get a very short button
 
         button.addActionListener(e -> JOptionPane.showMessageDialog(
                 null,

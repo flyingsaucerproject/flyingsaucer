@@ -35,20 +35,8 @@ class SubmitField extends AbstractButtonField {
     @Override
     public JComponent create() {
         JButton button = new JButton();
-
-        String value;
-        if (hasAttribute("value")) {
-            value = getAttribute("value");
-            if (value.isEmpty()) {
-                value = " ";    //otherwise we get a very short button
-            }
-        } else {
-            value = "Submit";
-        }
-
         applyComponentStyle(button);
-
-        button.setText(value);
+        button.setText(getValueAttribute("Submit"));
 
         button.addActionListener(event -> {
             XRLog.layout("Submit pressed: Submit");
