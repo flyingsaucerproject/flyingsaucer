@@ -27,7 +27,7 @@ import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 import javax.swing.*;
 
-class HiddenField extends InputField {
+class HiddenField extends InputField<JComponent> {
 
     HiddenField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);

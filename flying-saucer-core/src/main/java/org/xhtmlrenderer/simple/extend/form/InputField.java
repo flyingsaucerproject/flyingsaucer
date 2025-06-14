@@ -24,7 +24,9 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
-public abstract class InputField extends FormField {
+import javax.swing.*;
+
+public abstract class InputField<T extends JComponent> extends FormField<T> {
 
     protected InputField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);

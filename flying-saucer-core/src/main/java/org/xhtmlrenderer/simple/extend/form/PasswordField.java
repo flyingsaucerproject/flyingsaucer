@@ -27,13 +27,13 @@ import org.xhtmlrenderer.util.GeneralUtil;
 
 import javax.swing.*;
 
-class PasswordField extends InputField {
+class PasswordField extends InputField<JPasswordField> {
     PasswordField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JPasswordField create() {
         JPasswordField password = new JPasswordField();
 
         if (hasAttribute("size")) {
@@ -65,17 +65,13 @@ class PasswordField extends InputField {
 
     @Override
     protected void applyOriginalState() {
-        JPasswordField password = (JPasswordField) getComponent();
-
+        JPasswordField password = component();
         password.setText(getOriginalState().getValue());
     }
 
     @Override
     protected String[] getFieldValues() {
-        JPasswordField textfield = (JPasswordField) getComponent();
-
-        return new String [] {
-                new String(textfield.getPassword())
-        };
+        String password = new String(component().getPassword());
+        return new String[]{password};
     }
 }

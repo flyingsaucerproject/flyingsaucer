@@ -48,7 +48,7 @@ public class XhtmlForm {
     private static int _defaultGroupCount = 1;
 
     private final UserAgentCallback _userAgentCallback;
-    private final Map<Element, FormField> _componentCache = new LinkedHashMap<>();
+    private final Map<Element, FormField<?>> _componentCache = new LinkedHashMap<>();
     private final Map<String, ButtonGroupWrapper> _buttonGroups = new HashMap<>();
     @Nullable
     private final Element _parentFormElement;
@@ -89,7 +89,7 @@ public class XhtmlForm {
     }
 
     @Nullable
-    public FormField addComponent(Element e, LayoutContext context, BlockBox box) {
+    public FormField<?> addComponent(Element e, LayoutContext context, BlockBox box) {
 
         if (_componentCache.containsKey(e)) {
             return _componentCache.get(e);
@@ -98,7 +98,7 @@ public class XhtmlForm {
                 return null;
             }
 
-            FormField field = FormFieldFactory.create(this, context, box);
+            FormField<?> field = FormFieldFactory.create(this, context, box);
 
             if (field == null) {
                 XRLog.layout("Unknown field type: " + e.getNodeName());
@@ -115,7 +115,7 @@ public class XhtmlForm {
             buttonGroupWrapper.clearSelection();
         }
 
-        for (FormField formField : _componentCache.values()) {
+        for (FormField<?> formField : _componentCache.values()) {
             formField.reset();
         }
     }
@@ -132,8 +132,8 @@ public class XhtmlForm {
         data.append(action).append("?");
 
         boolean first = true;
-        for (Map.Entry<Element, FormField> entry : _componentCache.entrySet()) {
-            FormField field = entry.getValue();
+        for (Map.Entry<Element, FormField<?>> entry : _componentCache.entrySet()) {
+            FormField<?> field = entry.getValue();
 
             if (field.includeInSubmission(source)) {
                 for (String value : field.getFormDataStrings()) {

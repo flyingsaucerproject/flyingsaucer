@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -35,24 +36,16 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 
-class ImageField extends InputField {
+class ImageField extends InputField<JButton> {
     ImageField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JButton create() {
+        Image image = getImage();
+
         JButton button;
-        Image image = null;
-
-        if (hasAttribute("src")) {
-            FSImage fsImage = getUserAgentCallback().getImageResource(getAttribute("src")).getImage();
-
-            if (fsImage != null) {
-                image = ((AWTFSImage) fsImage).getImage();
-            }
-        }
-
         if (image == null) {
             button = new JButton("Image unreachable. " + getAttribute("alt"));
         } else {
@@ -90,9 +83,20 @@ class ImageField extends InputField {
 
         button.addActionListener(event -> {
             XRLog.layout("Image pressed: Submit");
-            getParentForm().submit(getComponent());
+            getParentForm().submit(component());
         });
 
         return button;
+    }
+
+    @Nullable
+    private Image getImage() {
+        if (hasAttribute("src")) {
+            FSImage fsImage = getUserAgentCallback().getImageResource(getAttribute("src")).getImage();
+            if (fsImage != null) {
+                return ((AWTFSImage) fsImage).getImage();
+            }
+        }
+        return null;
     }
 }

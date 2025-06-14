@@ -27,13 +27,13 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 
-class ResetField extends AbstractButtonField {
+class ResetField extends AbstractButtonField<JButton> {
     ResetField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JButton create() {
         JButton button = new JButton();
         applyComponentStyle(button);
         button.setText(getValueAttribute("Reset"));

@@ -37,13 +37,13 @@ import javax.swing.plaf.basic.BasicTextFieldUI;
 import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
 
-class TextField extends InputField {
+class TextField extends InputField<JTextField> {
     TextField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JTextField create() {
         TextFieldJTextField textfield = new TextFieldJTextField();
 
         if (hasAttribute("size")) {
@@ -79,7 +79,7 @@ class TextField extends InputField {
     protected void applyComponentStyle(JComponent component) {
         super.applyComponentStyle(component);
 
-        TextFieldJTextField field = (TextFieldJTextField)component;
+        JTextField field = component();
 
         CalculatedStyle style = getBox().getStyle();
         BorderPropertySet border = style.getBorder(null);
@@ -130,20 +130,20 @@ class TextField extends InputField {
 
     @Override
     protected void applyOriginalState() {
-        JTextField textfield = (JTextField) getComponent();
+        JTextField textField = component();
 
-        textfield.setText(getOriginalState().getValue());
+        textField.setText(getOriginalState().getValue());
 
         // Make sure we are showing the front of 'value' instead of the end.
-        textfield.setCaretPosition(0);
+        textField.setCaretPosition(0);
     }
 
     @Override
     protected String[] getFieldValues() {
-        JTextField textfield = (JTextField) getComponent();
+        JTextField textField = component();
 
         return new String[] {
-                textfield.getText()
+                textField.getText()
         };
     }
 

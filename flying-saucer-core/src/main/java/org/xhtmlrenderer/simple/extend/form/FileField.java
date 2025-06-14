@@ -29,7 +29,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-class FileField extends InputField implements ActionListener {
+class FileField extends InputField<JPanel> implements ActionListener {
     private JTextField _pathTextField;
     private JButton _browseButton;
 
@@ -38,7 +38,7 @@ class FileField extends InputField implements ActionListener {
     }
 
     @Override
-    public JComponent create() {
+    public JPanel create() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         panel.setOpaque(false);
