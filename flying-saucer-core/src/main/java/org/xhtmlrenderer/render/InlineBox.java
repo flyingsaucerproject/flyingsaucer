@@ -36,6 +36,8 @@ import org.xhtmlrenderer.layout.breaker.Breaker;
 
 import java.text.BreakIterator;
 
+import static org.xhtmlrenderer.render.Utils.appendPositioningInfo;
+
 /**
  * A class which represents a portion of an inline element. If an inline element
  * does not contain any nested elements, then a single {@code InlineBox}
@@ -450,27 +452,12 @@ public class InlineBox implements Styleable {
             result.append(") ");
         }
 
-        appendPositioningInfo(result);
+        appendPositioningInfo(getStyle(), result);
 
         result.append("(");
         result.append(shortText());
         result.append(") ");
         return result.toString();
-    }
-
-    protected void appendPositioningInfo(StringBuilder result) {
-        if (getStyle().isRelative()) {
-            result.append("(relative) ");
-        }
-        if (getStyle().isFixed()) {
-            result.append("(fixed) ");
-        }
-        if (getStyle().isAbsolute()) {
-            result.append("(absolute) ");
-        }
-        if (getStyle().isFloated()) {
-            result.append("(floated) ");
-        }
     }
 
     private String shortText() {

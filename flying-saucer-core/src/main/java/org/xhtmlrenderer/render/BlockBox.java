@@ -64,6 +64,7 @@ import static org.xhtmlrenderer.css.constants.IdentValue.DISC;
 import static org.xhtmlrenderer.css.constants.IdentValue.NONE;
 import static org.xhtmlrenderer.css.constants.IdentValue.SQUARE;
 import static org.xhtmlrenderer.render.BlockBox.ContentType.UNKNOWN;
+import static org.xhtmlrenderer.render.Utils.appendPositioningInfo;
 
 /**
  * A block box as defined in the CSS spec.  It also provides a base class for
@@ -188,25 +189,10 @@ public class BlockBox extends Box implements InlinePaintable {
 
         result.append(getExtraBoxDescription());
 
-        appendPositioningInfo(result);
+        appendPositioningInfo(getStyle(), result);
         appendPosition(result);
         appendSize(result);
         return result.toString().trim();
-    }
-
-    protected void appendPositioningInfo(StringBuilder result) {
-        if (getStyle().isRelative()) {
-            result.append("(relative) ");
-        }
-        if (getStyle().isFixed()) {
-            result.append("(fixed) ");
-        }
-        if (getStyle().isAbsolute()) {
-            result.append("(absolute) ");
-        }
-        if (getStyle().isFloated()) {
-            result.append("(floated) ");
-        }
     }
 
     @Override
