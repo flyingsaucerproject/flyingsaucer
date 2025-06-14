@@ -6,7 +6,6 @@ import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
-import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -25,17 +24,13 @@ abstract class AbstractButtonField<T extends JButton> extends InputField<JButton
     }
 
     protected void applyComponentStyle(T button) {
-
         super.applyComponentStyle(button);
 
         CalculatedStyle style = getBox().getStyle();
-        BorderPropertySet border = style.getBorder(null);
-        boolean disableOSBorder = (border.leftStyle() != null && border.rightStyle() != null || border.topStyle() != null || border.bottomStyle() != null);
-
         FSColor backgroundColor = style.getBackgroundColor();
 
         //if a border is set or a background color is set, then use a special JButton with the BasicButtonUI.
-        if (disableOSBorder || backgroundColor instanceof FSRGBColor) {
+        if (style.disableOSBorder() || backgroundColor instanceof FSRGBColor) {
             //when background color is set, need to use the BasicButtonUI, certainly when using XP l&f
             BasicButtonUI ui = new BasicButtonUI();
             button.setUI(ui);
@@ -44,7 +39,7 @@ abstract class AbstractButtonField<T extends JButton> extends InputField<JButton
                 button.setBackground(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
             }
 
-            if (disableOSBorder)
+            if (style.disableOSBorder())
                 button.setBorder(new BasicBorders.MarginBorder());
             else
                 button.setBorder(BasicBorders.getButtonBorder());
