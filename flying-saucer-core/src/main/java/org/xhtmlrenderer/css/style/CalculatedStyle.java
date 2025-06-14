@@ -204,6 +204,7 @@ public class CalculatedStyle {
         return genStyleKey();
     }
 
+    @Nullable
     public FSColor asColor(CSSName cssName) {
         FSDerivedValue prop = valueByName(cssName);
         return prop == IdentValue.TRANSPARENT ? FSRGBColor.TRANSPARENT : prop.asColor();
@@ -283,6 +284,7 @@ public class CalculatedStyle {
      *
      * @return The color value
      */
+    @Nullable
     public FSColor getColor() {
         return asColor(CSSName.COLOR);
     }
