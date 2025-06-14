@@ -394,16 +394,7 @@ public class TableBox extends BlockBox {
 
     @Override
     public void analyzePageBreaks(LayoutContext c, @Nullable ContentLimitContainer container) {
-        _contentLimitContainer = new ContentLimitContainer(container, c, getAbsY());
-
-        if (container != null) {
-            container.updateTop(c, getAbsY());
-            container.updateBottom(c, getAbsY() + getHeight());
-        }
-
-        for (Box b : getChildren()) {
-            b.analyzePageBreaks(c, _contentLimitContainer);
-        }
+        _contentLimitContainer = buildContainerAndAnalyzePageBreaks(c, container);
 
         if (container != null && _contentLimitContainer.isContainsMultiplePages() &&
                 (getExtraSpaceTop() > 0 || getExtraSpaceBottom() > 0)) {
