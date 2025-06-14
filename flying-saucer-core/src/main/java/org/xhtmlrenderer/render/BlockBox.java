@@ -960,6 +960,20 @@ public class BlockBox extends Box implements InlinePaintable {
         }
     }
 
+    protected ContentLimitContainer buildContainerAndAnalyzePageBreaks(LayoutContext c, @Nullable ContentLimitContainer container) {
+        ContentLimitContainer contentLimitContainer = new ContentLimitContainer(container, c, getAbsY());
+
+        if (container != null) {
+            container.updateTop(c, getAbsY());
+            container.updateBottom(c, getAbsY() + getHeight());
+        }
+
+        for (Box b : getChildren()) {
+            b.analyzePageBreaks(c, contentLimitContainer);
+        }
+        return contentLimitContainer;
+    }
+
     protected void layoutChildren(LayoutContext c, int contentStart) {
         setState(State.CHILDREN_FLUX);
         ensureChildren(c);
