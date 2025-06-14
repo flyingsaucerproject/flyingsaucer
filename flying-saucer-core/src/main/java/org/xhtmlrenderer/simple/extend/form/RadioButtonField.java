@@ -38,11 +38,7 @@ class RadioButtonField extends InputField<JToggleButton> {
         radio.setText("");
         radio.setOpaque(false);
 
-        String groupName = null;
-
-        if (hasAttribute("name")) {
-            groupName = getAttribute("name");
-        }
+        String groupName = hasAttribute("name") ? getAttribute("name") : null;
 
         // Add to the group for mutual exclusivity
         getParentForm().addButtonToGroup(groupName, radio);
@@ -67,9 +63,7 @@ class RadioButtonField extends InputField<JToggleButton> {
         JToggleButton button = component();
 
         if (button.isSelected()) {
-            return new String [] {
-                    hasAttribute("value") ? getAttribute("value") : ""
-            };
+            return new String [] {getAttribute("value", "")};
         } else {
             return new String [] {};
         }
