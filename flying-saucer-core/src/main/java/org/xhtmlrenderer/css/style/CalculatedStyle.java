@@ -39,6 +39,7 @@ import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.style.derived.FunctionValue;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.ListValue;
+import org.xhtmlrenderer.css.style.derived.NullableInsets;
 import org.xhtmlrenderer.css.style.derived.NumberValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
@@ -673,6 +674,26 @@ public class CalculatedStyle {
             case TOP -> (int) (margin.top() + border.top() + padding.top());
             case BOTTOM -> (int) (margin.bottom() + border.bottom() + padding.bottom());
         };
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private Integer getLengthValue(CSSName cssName) {
+        FSDerivedValue widthValue = valueByName(cssName);
+        if (widthValue instanceof LengthValue length) {
+            return (int) length.asFloat();
+        }
+
+        return null;
+    }
+
+    @CheckReturnValue
+    public NullableInsets padding() {
+        Integer paddingTop = getLengthValue(CSSName.PADDING_TOP);
+        Integer paddingLeft = getLengthValue(CSSName.PADDING_LEFT);
+        Integer paddingBottom = getLengthValue(CSSName.PADDING_BOTTOM);
+        Integer paddingRight = getLengthValue(CSSName.PADDING_RIGHT);
+        return new NullableInsets(paddingTop, paddingLeft, paddingBottom, paddingRight);
     }
 
     public IdentValue getWhitespace() {

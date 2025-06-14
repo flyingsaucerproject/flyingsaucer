@@ -50,24 +50,10 @@ abstract class AbstractButtonField<T extends JButton> extends InputField<JButton
                 button.setBorder(BasicBorders.getButtonBorder());
         }
 
-        Integer paddingTop = getLengthValue(style, CSSName.PADDING_TOP);
-        Integer paddingLeft = getLengthValue(style, CSSName.PADDING_LEFT);
-        Integer paddingBottom = getLengthValue(style, CSSName.PADDING_BOTTOM);
-        Integer paddingRight = getLengthValue(style, CSSName.PADDING_RIGHT);
-
-
-        int top = paddingTop == null ? 2 : Math.max(2, paddingTop);
-        int left = paddingLeft == null ? 12 : Math.max(12, paddingLeft);
-        int bottom = paddingBottom == null ? 2 : Math.max(2, paddingBottom);
-        int right = paddingRight == null ? 12 : Math.max(12, paddingRight);
-
-        button.setMargin(new Insets(top, left, bottom, right));
+        button.setMargin(style.padding().withDefaults(new Insets(2, 12, 2, 12)));
 
         RectPropertySet padding = style.getCachedPadding();
-        padding.setRight(0);
-        padding.setLeft(0);
-        padding.setTop(0);
-        padding.setBottom(0);
+        padding.reset();
 
         FSDerivedValue widthValue = style.valueByName(CSSName.WIDTH);
         if (widthValue instanceof LengthValue)
