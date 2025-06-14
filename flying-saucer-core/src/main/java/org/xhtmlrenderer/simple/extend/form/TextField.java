@@ -35,8 +35,6 @@ import javax.swing.plaf.basic.BasicTextFieldUI;
 import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
 
-import static org.xhtmlrenderer.util.GeneralUtil.parseIntRelaxed;
-
 class TextField extends InputField<JTextField> {
     TextField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
@@ -45,23 +43,8 @@ class TextField extends InputField<JTextField> {
     @Override
     public JTextField create() {
         TextFieldJTextField textField = new TextFieldJTextField();
-
-        // Size of 0 doesn't make any sense, so use default value
-        int size = parseIntRelaxed(getAttribute("size"), 15);
-        textField.setColumns(size);
-
-        if (hasAttribute("maxlength")) {
-            textField.setDocument(
-                    new SizeLimitedDocument(
-                            parseIntRelaxed(getAttribute("maxlength"))));
-        }
-
-        if (getAttribute("readonly").equalsIgnoreCase("readonly")) {
-            textField.setEditable(false);
-        }
-
+        prepareTextField(textField);
         applyComponentStyle(textField);
-
         return textField;
     }
 

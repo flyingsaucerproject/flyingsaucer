@@ -26,6 +26,8 @@ import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 import javax.swing.*;
 
+import static org.xhtmlrenderer.util.GeneralUtil.parseIntRelaxed;
+
 public abstract class InputField<T extends JComponent> extends FormField<T> {
 
     protected InputField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
@@ -40,5 +42,21 @@ public abstract class InputField<T extends JComponent> extends FormField<T> {
     @Override
     protected String[] getFieldValues() {
         return new String[]{getAttribute("value", "")};
+    }
+
+    protected void prepareTextField(JTextField textField) {
+        // Size of 0 doesn't make any sense, so use default value
+        int size = parseIntRelaxed(getAttribute("size"), 15);
+        textField.setColumns(size);
+
+        if (hasAttribute("maxlength")) {
+            textField.setDocument(
+                new SizeLimitedDocument(
+                    parseIntRelaxed(getAttribute("maxlength"))));
+        }
+
+        if (getAttribute("readonly").equalsIgnoreCase("readonly")) {
+            textField.setEditable(false);
+        }
     }
 }

@@ -26,8 +26,6 @@ import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 import javax.swing.*;
 
-import static org.xhtmlrenderer.util.GeneralUtil.parseIntRelaxed;
-
 class PasswordField extends InputField<JPasswordField> {
     PasswordField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
@@ -36,21 +34,7 @@ class PasswordField extends InputField<JPasswordField> {
     @Override
     public JPasswordField create() {
         JPasswordField password = new JPasswordField();
-
-        // Size of 0 doesn't make any sense, so use default value
-        int size = parseIntRelaxed(getAttribute("size"), 15);
-        password.setColumns(size);
-
-        if (hasAttribute("maxlength")) {
-            password.setDocument(
-                    new SizeLimitedDocument(
-                            parseIntRelaxed(getAttribute("maxlength"))));
-        }
-
-        if (getAttribute("readonly").equalsIgnoreCase("readonly")) {
-            password.setEditable(false);
-        }
-
+        prepareTextField(password);
         return password;
     }
 
