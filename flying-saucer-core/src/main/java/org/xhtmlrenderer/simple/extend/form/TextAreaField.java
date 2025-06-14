@@ -37,7 +37,7 @@ import javax.swing.plaf.basic.BasicTextAreaUI;
 import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
 
-class TextAreaField extends FormField {
+class TextAreaField extends FormField<JScrollPane> {
     @Nullable
     private TextAreaFieldJTextArea _textarea;
 
@@ -46,7 +46,7 @@ class TextAreaField extends FormField {
     }
 
     @Override
-    public JComponent create() {
+    public JScrollPane create() {
         int rows = 4;
         int cols = 10;
 
@@ -71,16 +71,16 @@ class TextAreaField extends FormField {
         _textarea.setWrapStyleWord(true);
         _textarea.setLineWrap(true);
 
-        JScrollPane scrollpane = new JScrollPane(_textarea);
-        scrollpane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollpane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane scrollPane = new JScrollPane(_textarea);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        applyComponentStyle(_textarea, scrollpane);
+        applyComponentStyle(_textarea, scrollPane);
 
-        return scrollpane;
+        return scrollPane;
     }
 
-    private void applyComponentStyle(TextAreaFieldJTextArea textArea, JScrollPane scrollpane) {
+    private void applyComponentStyle(TextAreaFieldJTextArea textArea, JScrollPane scrollPane) {
         applyComponentStyle(textArea);
 
         CalculatedStyle style = getBox().getStyle();
@@ -104,7 +104,7 @@ class TextAreaField extends FormField {
             //when background color is set, need to use the BasicButtonUI, certainly when using XP l&f
             BasicTextUI ui = new BasicTextAreaUI();
             textArea.setUI(ui);
-            scrollpane.setBorder(null);
+            scrollPane.setBorder(null);
         }
 
         textArea.setMargin(new Insets(top, left, bottom, right));
@@ -139,7 +139,7 @@ class TextAreaField extends FormField {
 
     @Override
     protected String[] getFieldValues() {
-        JTextArea textarea = (JTextArea) ((JScrollPane) getComponent()).getViewport().getView();
+        JTextArea textarea = (JTextArea) component().getViewport().getView();
 
         return new String[] {
                 textarea.getText()

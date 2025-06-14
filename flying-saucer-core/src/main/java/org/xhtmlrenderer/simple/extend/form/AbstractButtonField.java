@@ -18,13 +18,13 @@ import javax.swing.plaf.basic.BasicBorders;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 
-public abstract class AbstractButtonField extends InputField {
+abstract class AbstractButtonField<T extends JButton> extends InputField<JButton> {
 
-    public AbstractButtonField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
+    protected AbstractButtonField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
-    protected void applyComponentStyle(JButton button) {
+    protected void applyComponentStyle(T button) {
 
         super.applyComponentStyle(button);
 

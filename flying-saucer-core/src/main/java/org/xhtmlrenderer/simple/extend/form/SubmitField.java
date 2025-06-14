@@ -27,13 +27,13 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 
-class SubmitField extends AbstractButtonField {
+class SubmitField extends AbstractButtonField<JButton> {
     SubmitField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JButton create() {
         JButton button = new JButton();
         applyComponentStyle(button);
         button.setText(getValueAttribute("Submit"));
@@ -41,7 +41,7 @@ class SubmitField extends AbstractButtonField {
         button.addActionListener(event -> {
             XRLog.layout("Submit pressed: Submit");
 
-            getParentForm().submit(getComponent());
+            getParentForm().submit(component());
         });
 
         return button;
@@ -49,7 +49,7 @@ class SubmitField extends AbstractButtonField {
 
     @Override
     public boolean includeInSubmission(JComponent source) {
-        return (source == getComponent());
+        return (source == component());
     }
 
     @Override

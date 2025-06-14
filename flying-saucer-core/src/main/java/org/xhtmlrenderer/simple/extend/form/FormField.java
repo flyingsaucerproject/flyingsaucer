@@ -43,13 +43,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
 
-public abstract class FormField {
+public abstract class FormField<T extends JComponent> {
     private final XhtmlForm _parentForm;
     private final Element _element;
     @Nullable
     private FormFieldState _originalState;
-    private JComponent _component;
+    @Nullable
+    private T _component;
     private final LayoutContext context;
     private final BlockBox box;
     @Nullable
@@ -70,8 +72,14 @@ public abstract class FormField {
         return _element;
     }
 
-    public JComponent getComponent() {
+    @Nullable
+    public T getComponent() {
         return _component;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <Subtype extends T> Subtype component() {
+        return (Subtype) requireNonNull(_component);
     }
 
     public XhtmlForm getParentForm() {
@@ -138,7 +146,7 @@ public abstract class FormField {
     }
 
     @Nullable
-    public abstract JComponent create();
+    public abstract T create();
 
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromString("");
@@ -228,6 +236,7 @@ public abstract class FormField {
         return null;
     }
 
+    @Nullable
     protected static Integer getLengthValue(CalculatedStyle style, CSSName cssName) {
         FSDerivedValue widthValue = style.valueByName(cssName);
         if (widthValue instanceof LengthValue) {

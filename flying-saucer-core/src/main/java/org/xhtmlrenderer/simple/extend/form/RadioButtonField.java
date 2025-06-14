@@ -26,13 +26,13 @@ import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 import javax.swing.*;
 
-class RadioButtonField extends InputField {
+class RadioButtonField extends InputField<JToggleButton> {
     RadioButtonField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JToggleButton create() {
         JToggleButton radio = new JRadioButton();
 
         radio.setText("");
@@ -58,14 +58,13 @@ class RadioButtonField extends InputField {
 
     @Override
     protected void applyOriginalState() {
-        JToggleButton button = (JToggleButton) getComponent();
-
+        JToggleButton button = component();
         button.setSelected(getOriginalState().isChecked());
     }
 
     @Override
     protected String[] getFieldValues() {
-        JToggleButton button = (JToggleButton) getComponent();
+        JToggleButton button = component();
 
         if (button.isSelected()) {
             return new String [] {
