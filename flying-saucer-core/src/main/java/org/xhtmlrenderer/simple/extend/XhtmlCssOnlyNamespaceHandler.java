@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.regex.Pattern;
 
 import static java.util.Locale.ROOT;
 import static java.util.Objects.requireNonNull;
@@ -54,7 +53,6 @@ import static org.xhtmlrenderer.util.TextUtil.readTextContent;
 public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
     private static final String NAMESPACE = "http://www.w3.org/1999/xhtml";
-    private static final Pattern RE_INTEGER = Pattern.compile("\\d+");
 
     @Nullable
     private static volatile StylesheetInfo _defaultStylesheet;
@@ -87,16 +85,7 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     @Nullable
     @CheckReturnValue
     public String getID(Element e) {
-        String result = e.getAttribute("id").trim();
-        return result.isEmpty() ? null : result;
-    }
-
-    protected String convertToLength(String value) {
-        return isInteger(value) ? value + "px" : value;
-    }
-
-    boolean isInteger(String value) {
-        return RE_INTEGER.matcher(value).matches();
+        return getAttribute(e, "id");
     }
 
     @Nullable
@@ -112,68 +101,28 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     @Override
     @CheckReturnValue
     public String getElementStyling(Element e) {
-        StringBuilder style = new StringBuilder();
+        StyleBuilder style = new StyleBuilder();
         switch (e.getNodeName()) {
             case "td":
             case "th": {
-                String s;
-                s = getAttribute(e, "colspan");
-                if (s != null) {
-                    style.append("-fs-table-cell-colspan: ");
-                    style.append(s);
-                    style.append(";");
-                }
-                s = getAttribute(e, "rowspan");
-                if (s != null) {
-                    style.append("-fs-table-cell-rowspan: ");
-                    style.append(s);
-                    style.append(";");
-                }
+                style.append(e, "colspan", "-fs-table-cell-colspan: ");
+                style.append(e, "rowspan", "-fs-table-cell-rowspan: ");
                 break;
             }
             case "img": {
-                appendWidth(e, style);
-                appendHeight(e, style);
+                style.appendWidth(e);
+                style.appendHeight(e);
                 break;
             }
             case "colgroup":
             case "col": {
-                String s;
-                s = getAttribute(e, "span");
-                if (s != null) {
-                    style.append("-fs-table-cell-colspan: ");
-                    style.append(s);
-                    style.append(";");
-                }
-                s = getAttribute(e, "width");
-                if (s != null) {
-                    style.append("width: ");
-                    style.append(convertToLength(s));
-                    style.append(";");
-                }
+                style.append(e, "span", "-fs-table-cell-colspan: ");
+                style.appendWidth(e);
                 break;
             }
         }
-        style.append(e.getAttribute("style"));
+        style.appendRawStyle(e.getAttribute("style"));
         return style.toString();
-    }
-
-    protected void appendWidth(Element e, StringBuilder style) {
-        String s = getAttribute(e, "width");
-        if (s != null) {
-            style.append("width: ");
-            style.append(convertToLength(s));
-            style.append(";");
-        }
-    }
-
-    protected void appendHeight(Element e, StringBuilder style) {
-        String s = getAttribute(e, "height");
-        if (s != null) {
-            style.append("height: ");
-            style.append(convertToLength(s));
-            style.append(";");
-        }
     }
 
     /**
@@ -196,22 +145,18 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return null;
     }
 
-    private static String collapseWhiteSpace(String text) {
-        StringBuilder result = new StringBuilder();
-        int l = text.length();
-        for (int i = 0; i < l; i++) {
+    static String collapseWhiteSpace(String text) {
+        int length = text.length();
+        char last = '?';
+
+        StringBuilder result = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
             char c = text.charAt(i);
-            if (Character.isWhitespace(c)) {
-                result.append(' ');
-                while (++i < l) {
-                    c = text.charAt(i);
-                    if (! Character.isWhitespace(c)) {
-                        i--;
-                        break;
-                    }
-                }
-            } else {
+            if (Character.isWhitespace(c)) c = ' ';
+
+            if (c != ' ' || last != ' ') {
                 result.append(c);
+                last = c;
             }
         }
         return result.toString();

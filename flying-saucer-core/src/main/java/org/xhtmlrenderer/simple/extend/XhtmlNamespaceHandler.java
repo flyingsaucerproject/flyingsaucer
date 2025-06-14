@@ -81,125 +81,59 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
     }
 
     private String applyImgStyles(Element e) {
-        StringBuilder style = new StringBuilder();
-        applyFloatingAlign(e, style);
+        StyleBuilder style = new StyleBuilder();
+        style.applyFloatingAlign(e);
         return style.toString();
     }
 
     private String applyTableCellStyles(Element e) {
-        StringBuilder style = new StringBuilder();
-        String s;
+        StyleBuilder style = new StyleBuilder();
+
         // check for cell padding
         Element table = findTable(e);
         if (table != null) {
-            s = getAttribute(table, "cellpadding");
-            if (s != null) {
-                style.append("padding: ");
-                style.append(convertToLength(s));
-                style.append(";");
-            }
-            s = getAttribute(table, "border");
-            if (s != null && ! s.equals("0")) {
-                style.append("border: 1px outset black;");
+            style.appendLength(table, "cellpadding", "padding: ");
+
+            String s = getAttribute(table, "border");
+            if (s != null && !s.equals("0")) {
+                style.appendRawStyle("border: 1px outset black;");
             }
         }
-        appendWidth(e, style);
-        appendHeight(e, style);
-
-        applyTableContentAlign(e, style);
+        style.appendWidth(e);
+        style.appendHeight(e);
+        style.applyTableContentAlign(e);
         appendBackgroundColor(e, style);
         appendBackgroundImage(e, style);
         return style.toString();
     }
 
-    private void appendBackgroundColor(Element e, StringBuilder style) {
-        String s = getAttribute(e, "bgcolor");
-        if (s != null) {
-            s = s.toLowerCase(ROOT);
-            style.append("background-color: ");
-            if (looksLikeAMangledColor(s)) {
-                style.append('#');
-                style.append(s);
-            } else {
-                style.append(s);
-            }
-            style.append(';');
+    private void appendBackgroundColor(Element e, StyleBuilder style) {
+        String s = e.getAttribute("bgcolor").trim();
+        if (!s.isEmpty()) {
+            String color = looksLikeAMangledColor(s) ? '#' + s : s;
+            style.appendStyle("background-color: ", color);
         }
     }
 
-    private void appendBackgroundImage(Element e, StringBuilder style) {
-        String s = getAttribute(e, "background");
-        if (s != null) {
-            style.append("background-image: url(");
-            style.append(s);
-            style.append(");");
-        }
+    private void appendBackgroundImage(Element e, StyleBuilder style) {
+        style.appendUrl(e, "background", "background-image: ");
     }
 
     private String applyTableStyles(Element e) {
-        StringBuilder style = new StringBuilder();
-        String s;
-        s = getAttribute(e, "width");
-        if (s != null) {
-            style.append("width: ");
-            style.append(convertToLength(s));
-            style.append(";");
-        }
-        s = getAttribute(e, "border");
-        if (s != null) {
-            style.append("border: ");
-            style.append(convertToLength(s));
-            style.append(" inset black;");
-        }
-        s = getAttribute(e, "cellspacing");
-        if (s != null) {
-            style.append("border-collapse: separate; border-spacing: ");
-            style.append(convertToLength(s));
-            style.append(";");
-        }
+        StyleBuilder style = new StyleBuilder();
+        style.appendLength(e, "width", "width: ");
+        style.appendLength(e, "border", "border: ", " inset black;");
+        style.appendLength(e, "cellspacing", "border-collapse: separate; border-spacing: ");
         appendBackgroundColor(e, style);
         appendBackgroundImage(e, style);
-        applyFloatingAlign(e, style);
+        style.applyFloatingAlign(e);
         return style.toString();
     }
 
     private String applyTableRowStyles(Element e) {
-        StringBuilder style = new StringBuilder();
-        applyTableContentAlign(e, style);
+        StyleBuilder style = new StyleBuilder();
+        style.applyTableContentAlign(e);
         return style.toString();
-    }
-
-    private void applyFloatingAlign(Element e, StringBuilder style) {
-        String s = getAttribute(e, "align");
-        if (s != null) {
-            s = s.toLowerCase(ROOT).trim();
-            switch (s) {
-                case "left":
-                    style.append("float: left;");
-                    break;
-                case "right":
-                    style.append("float: right;");
-                    break;
-                case "center":
-                    style.append("margin-left: auto; margin-right: auto;");
-                    break;
-            }
-        }
-    }
-
-    private void applyTableContentAlign(Element e, StringBuilder style) {
-        String s = getAttribute(e, "align");
-        if (s != null) {
-            style.append("text-align: ");
-            style.append(s.toLowerCase(ROOT));
-            style.append(";");
-        }
-        s = getAttribute(e, "valign");
-        if (s != null) {
-            style.append("vertical-align: ");
-            style.append(s.toLowerCase(ROOT));
-            style.append(";");
-        }
     }
 
     boolean looksLikeAMangledColor(String s) {
