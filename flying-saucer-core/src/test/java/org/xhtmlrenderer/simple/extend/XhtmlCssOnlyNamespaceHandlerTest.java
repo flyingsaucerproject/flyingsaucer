@@ -16,6 +16,7 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.USER_AGENT;
+import static org.xhtmlrenderer.simple.extend.XhtmlCssOnlyNamespaceHandler.collapseWhiteSpace;
 
 class XhtmlCssOnlyNamespaceHandlerTest {
     private final XhtmlCssOnlyNamespaceHandler handler = new XhtmlCssOnlyNamespaceHandler();
@@ -46,13 +47,12 @@ class XhtmlCssOnlyNamespaceHandlerTest {
     }
 
     @Test
-    void isInteger() {
-        assertThat(handler.isInteger("")).isFalse();
-        assertThat(handler.isInteger("_")).isFalse();
-        assertThat(handler.isInteger("0")).isTrue();
-        assertThat(handler.isInteger("01234")).isTrue();
-        assertThat(handler.isInteger("123a")).isFalse();
-        assertThat(handler.isInteger("a234b")).isFalse();
+    void collapseWhiteSpace_samples() {
+        assertThat(collapseWhiteSpace("")).isEqualTo("");
+        assertThat(collapseWhiteSpace(" ")).isEqualTo(" ");
+        assertThat(collapseWhiteSpace("     ")).isEqualTo(" ");
+        assertThat(collapseWhiteSpace(" a  \t  b  \n  c  \r  d  \u000B  e    \f   f  ")).isEqualTo(" a b c d e f ");
+        assertThat(collapseWhiteSpace("| \t  \n |  \r \u000B \u001E \f    |  \u001E   \u001F   |")).isEqualTo("| | | |");
     }
 
     private Document read(String name) throws IOException, SAXException, ParserConfigurationException {
