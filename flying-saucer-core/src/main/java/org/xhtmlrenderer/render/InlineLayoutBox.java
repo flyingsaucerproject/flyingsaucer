@@ -293,6 +293,21 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
         // x, y pins the content area of the box so subtract off top border and padding
         // too
 
+        MarginLeftRight margin = getMarginLeftRight(cssCtx);
+
+        BorderPropertySet border = getBorder(cssCtx);
+        RectPropertySet padding = getPadding(cssCtx);
+
+        return new Rectangle(
+                (int)(left + margin.left),
+                (int)(top - border.top() - padding.top()),
+                (int)(getInlineWidth(cssCtx) - margin.left - margin.right),
+                getHeight());
+    }
+
+    private record MarginLeftRight(float left, float right) {}
+
+    private MarginLeftRight getMarginLeftRight(CssContext cssCtx) {
         float marginLeft = 0;
         float marginRight = 0;
         if (_startsHere || _endsHere) {
@@ -304,36 +319,19 @@ public final class InlineLayoutBox extends Box implements InlinePaintable {
                 marginRight = margin.right();
             }
         }
-        BorderPropertySet border = getBorder(cssCtx);
-        RectPropertySet padding = getPadding(cssCtx);
-
-        return new Rectangle(
-                (int)(left + marginLeft),
-                (int)(top - border.top() - padding.top()),
-                (int)(getInlineWidth(cssCtx) - marginLeft - marginRight),
-                getHeight());
+        return new MarginLeftRight(marginLeft, marginRight);
     }
 
     @Override
     public Rectangle getMarginEdge(int left, int top, CssContext cssCtx, int tx, int ty) {
         Rectangle result = getBorderEdge(left, top, cssCtx);
-        float marginLeft = 0;
-        float marginRight = 0;
-        if (_startsHere || _endsHere) {
-            RectPropertySet margin = getMargin(cssCtx);
-            if (_startsHere) {
-                marginLeft = margin.left();
-            }
-            if (_endsHere) {
-                marginRight = margin.right();
-            }
+        MarginLeftRight margin = getMarginLeftRight(cssCtx);
+        if (margin.right > 0) {
+            result.width += (int) margin.right;
         }
-        if (marginRight > 0) {
-            result.width += (int) marginRight;
-        }
-        if (marginLeft > 0) {
-            result.x -= (int) marginLeft;
-            result.width += (int) marginLeft;
+        if (margin.left > 0) {
+            result.x -= (int) margin.left;
+            result.width += (int) margin.left;
         }
         result.translate(tx, ty);
         return result;
