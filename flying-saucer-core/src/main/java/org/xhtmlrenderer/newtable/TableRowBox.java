@@ -129,10 +129,9 @@ public class TableRowBox extends BlockBox {
     }
 
     @Override
-    public void analyzePageBreaks(LayoutContext c, ContentLimitContainer container) {
+    public void analyzePageBreaks(LayoutContext c, @Nullable ContentLimitContainer container) {
         if (getTable().getStyle().isPaginateTable()) {
-            _contentLimitContainer = new ContentLimitContainer(c, getAbsY());
-            _contentLimitContainer.setParent(container);
+            _contentLimitContainer = new ContentLimitContainer(container, c, getAbsY());
 
             if (container != null) {
                 container.updateTop(c, getAbsY());
