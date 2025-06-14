@@ -51,9 +51,9 @@ class SizePropertyBuilderTest {
         List<PropertyDeclaration> result = builder.buildDeclarations(cssName, List.of(width, height, landscape), Origin.USER_AGENT, false);
 
         assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
-                new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, Origin.USER_AGENT),
-                new PropertyDeclaration(getByPropertyName("-fs-page-height"), height, false, Origin.USER_AGENT),
-                new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), landscape, false, Origin.USER_AGENT)
+            new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), landscape, false, Origin.USER_AGENT),
+            new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, Origin.USER_AGENT),
+            new PropertyDeclaration(getByPropertyName("-fs-page-height"), height, false, Origin.USER_AGENT)
         );
     }
 
