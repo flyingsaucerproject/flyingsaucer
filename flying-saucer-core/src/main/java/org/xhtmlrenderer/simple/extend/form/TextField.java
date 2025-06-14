@@ -44,35 +44,35 @@ class TextField extends InputField<JTextField> {
 
     @Override
     public JTextField create() {
-        TextFieldJTextField textfield = new TextFieldJTextField();
+        TextFieldJTextField textField = new TextFieldJTextField();
 
         if (hasAttribute("size")) {
             int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
 
             // Size of 0 doesn't make any sense, so use default value
             if (size == 0) {
-                textfield.setColumns(15);
+                textField.setColumns(15);
             } else {
-                textfield.setColumns(size);
+                textField.setColumns(size);
             }
         } else {
-            textfield.setColumns(15);
+            textField.setColumns(15);
         }
 
         if (hasAttribute("maxlength")) {
-            textfield.setDocument(
+            textField.setDocument(
                     new SizeLimitedDocument(
                             GeneralUtil.parseIntRelaxed(getAttribute("maxlength"))));
         }
 
         if (hasAttribute("readonly") &&
                 getAttribute("readonly").equalsIgnoreCase("readonly")) {
-            textfield.setEditable(false);
+            textField.setEditable(false);
         }
 
-        applyComponentStyle(textfield);
+        applyComponentStyle(textField);
 
-        return textfield;
+        return textField;
     }
 
     @Override
