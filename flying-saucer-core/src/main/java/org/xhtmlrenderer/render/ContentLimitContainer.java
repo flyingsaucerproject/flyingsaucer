@@ -28,7 +28,7 @@ import java.util.List;
 
 public class ContentLimitContainer {
     @Nullable
-    private ContentLimitContainer _parent;
+    private final ContentLimitContainer _parent;
 
     private final int _initialPageNo;
     private final List<ContentLimit> _contentLimits = new ArrayList<>();
@@ -36,8 +36,9 @@ public class ContentLimitContainer {
     @Nullable
     private PageBox _lastPage;
 
-    public ContentLimitContainer(LayoutContext c, int startAbsY) {
+    public ContentLimitContainer(@Nullable ContentLimitContainer parent, LayoutContext c, int startAbsY) {
         _initialPageNo = getPage(c, startAbsY).getPageNo();
+        _parent = parent;
     }
 
     public int getInitialPageNo() {
@@ -105,6 +106,8 @@ public class ContentLimitContainer {
         return page;
     }
 
+    @Nullable
+    @CheckReturnValue
     private PageBox getLastPage() {
         ContentLimitContainer c = this;
         while (c.getParent() != null) {
@@ -125,10 +128,6 @@ public class ContentLimitContainer {
     @CheckReturnValue
     public ContentLimitContainer getParent() {
         return _parent;
-    }
-
-    public void setParent(@Nullable ContentLimitContainer parent) {
-        _parent = parent;
     }
 
     public boolean isContainsMultiplePages() {
