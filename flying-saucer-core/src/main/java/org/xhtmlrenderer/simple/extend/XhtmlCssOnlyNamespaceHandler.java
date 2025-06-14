@@ -132,19 +132,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 break;
             }
             case "img": {
-                String s;
-                s = getAttribute(e, "width");
-                if (s != null) {
-                    style.append("width: ");
-                    style.append(convertToLength(s));
-                    style.append(";");
-                }
-                s = getAttribute(e, "height");
-                if (s != null) {
-                    style.append("height: ");
-                    style.append(convertToLength(s));
-                    style.append(";");
-                }
+                appendWidth(e, style);
+                appendHeight(e, style);
                 break;
             }
             case "colgroup":
@@ -167,6 +156,24 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         style.append(e.getAttribute("style"));
         return style.toString();
+    }
+
+    protected void appendWidth(Element e, StringBuilder style) {
+        String s = getAttribute(e, "width");
+        if (s != null) {
+            style.append("width: ");
+            style.append(convertToLength(s));
+            style.append(";");
+        }
+    }
+
+    protected void appendHeight(Element e, StringBuilder style) {
+        String s = getAttribute(e, "height");
+        if (s != null) {
+            style.append("height: ");
+            style.append(convertToLength(s));
+            style.append(";");
+        }
     }
 
     /**

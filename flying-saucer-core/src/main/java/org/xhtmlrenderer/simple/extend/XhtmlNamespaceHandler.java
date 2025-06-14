@@ -103,20 +103,17 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
                 style.append("border: 1px outset black;");
             }
         }
-        s = getAttribute(e, "width");
-        if (s != null) {
-            style.append("width: ");
-            style.append(convertToLength(s));
-            style.append(";");
-        }
-        s = getAttribute(e, "height");
-        if (s != null) {
-            style.append("height: ");
-            style.append(convertToLength(s));
-            style.append(";");
-        }
+        appendWidth(e, style);
+        appendHeight(e, style);
+
         applyTableContentAlign(e, style);
-        s = getAttribute(e, "bgcolor");
+        appendBackgroundColor(e, style);
+        appendBackgroundImage(e, style);
+        return style.toString();
+    }
+
+    private void appendBackgroundColor(Element e, StringBuilder style) {
+        String s = getAttribute(e, "bgcolor");
         if (s != null) {
             s = s.toLowerCase(ROOT);
             style.append("background-color: ");
@@ -128,13 +125,15 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
             }
             style.append(';');
         }
-        s = getAttribute(e, "background");
+    }
+
+    private void appendBackgroundImage(Element e, StringBuilder style) {
+        String s = getAttribute(e, "background");
         if (s != null) {
             style.append("background-image: url(");
             style.append(s);
             style.append(");");
         }
-        return style.toString();
     }
 
     private String applyTableStyles(Element e) {
@@ -158,24 +157,8 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
             style.append(convertToLength(s));
             style.append(";");
         }
-        s = getAttribute(e, "bgcolor");
-        if (s != null) {
-            s = s.toLowerCase(ROOT);
-            style.append("background-color: ");
-            if (looksLikeAMangledColor(s)) {
-                style.append('#');
-                style.append(s);
-            } else {
-                style.append(s);
-            }
-            style.append(';');
-        }
-        s = getAttribute(e, "background");
-        if (s != null) {
-            style.append("background-image: url(");
-            style.append(s);
-            style.append(");");
-        }
+        appendBackgroundColor(e, style);
+        appendBackgroundImage(e, style);
         applyFloatingAlign(e, style);
         return style.toString();
     }
