@@ -22,12 +22,9 @@ package org.xhtmlrenderer.simple.extend.form;
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.style.FSDerivedValue;
-import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
@@ -230,21 +227,12 @@ public abstract class FormField<T extends JComponent> {
     }
 
     @Nullable
+    @CheckReturnValue
     public Font getFont() {
         FSFont font = getStyle().getFSFont(getContext());
         if (font instanceof AWTFSFont) {
             return ((AWTFSFont) font).getAWTFont();
         }
-        return null;
-    }
-
-    @Nullable
-    protected static Integer getLengthValue(CalculatedStyle style, CSSName cssName) {
-        FSDerivedValue widthValue = style.valueByName(cssName);
-        if (widthValue instanceof LengthValue) {
-            return (int) widthValue.asFloat();
-        }
-
         return null;
     }
 }

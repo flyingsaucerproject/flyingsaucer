@@ -94,6 +94,13 @@ public class RectPropertySet {
         this._left = _left;
     }
 
+    public void reset() {
+        setRight(0);
+        setLeft(0);
+        setTop(0);
+        setBottom(0);
+    }
+
     public RectPropertySet copyOf() {
         return new RectPropertySet(_top, _right, _bottom, _left);
     }

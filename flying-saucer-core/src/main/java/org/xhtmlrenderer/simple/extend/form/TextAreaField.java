@@ -88,16 +88,7 @@ class TextAreaField extends FormField<JScrollPane> {
         boolean disableOSBorder = (border.leftStyle() != null && border.rightStyle() != null || border.topStyle() != null || border.bottomStyle() != null);
 
         RectPropertySet padding = style.getCachedPadding();
-
-        Integer paddingTop = getLengthValue(style, CSSName.PADDING_TOP);
-        Integer paddingLeft = getLengthValue(style, CSSName.PADDING_LEFT);
-        Integer paddingBottom = getLengthValue(style, CSSName.PADDING_BOTTOM);
-        Integer paddingRight = getLengthValue(style, CSSName.PADDING_RIGHT);
-
-        int top = paddingTop == null ? 2 : Math.max(2, paddingTop);
-        int left = paddingLeft == null ? 3 : Math.max(3, paddingLeft);
-        int bottom = paddingBottom == null ? 2 : Math.max(2, paddingBottom);
-        int right = paddingRight == null ? 3 : Math.max(3, paddingRight);
+        Insets margin = style.padding().withDefaults(new Insets(2, 3, 2, 3));
 
         //if a border is set or a background color is set, then use a special JButton with the BasicButtonUI.
         if (disableOSBorder) {
@@ -107,21 +98,18 @@ class TextAreaField extends FormField<JScrollPane> {
             scrollPane.setBorder(null);
         }
 
-        textArea.setMargin(new Insets(top, left, bottom, right));
+        textArea.setMargin(margin);
 
-        padding.setRight(0);
-        padding.setLeft(0);
-        padding.setTop(0);
-        padding.setBottom(0);
+        padding.reset();
 
         FSDerivedValue widthValue = style.valueByName(CSSName.WIDTH);
         if (widthValue instanceof LengthValue) {
-            intrinsicWidth = getBox().getContentWidth() + left + right;
+            intrinsicWidth = getBox().getContentWidth() + margin.left + margin.right;
         }
 
         FSDerivedValue heightValue = style.valueByName(CSSName.HEIGHT);
         if (heightValue instanceof LengthValue) {
-            intrinsicHeight = getBox().getHeight() + top + bottom;
+            intrinsicHeight = getBox().getHeight() + margin.top + margin.bottom;
         }
     }
 
