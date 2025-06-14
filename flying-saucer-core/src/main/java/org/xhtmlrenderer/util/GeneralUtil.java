@@ -138,9 +138,13 @@ public class GeneralUtil {
      *         characters, or simply evaluates to 0 after parsing (e.g. "0")
      */
     public static int parseIntRelaxed(String s) {
+        return parseIntRelaxed(s, 0);
+    }
+
+    public static int parseIntRelaxed(String s, int defaultValue) {
         // An edge-case short circuit...
         if (s.isEmpty() || s.trim().isEmpty()) {
-            return 0;
+            return defaultValue;
         }
 
         StringBuilder buffer = new StringBuilder();
@@ -160,7 +164,7 @@ public class GeneralUtil {
         }
 
         if (buffer.isEmpty()) {
-            return 0;
+            return defaultValue;
         }
 
         try {

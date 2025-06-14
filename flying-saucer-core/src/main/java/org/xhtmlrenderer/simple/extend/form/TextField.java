@@ -28,13 +28,14 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
-import org.xhtmlrenderer.util.GeneralUtil;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
+
+import static org.xhtmlrenderer.util.GeneralUtil.parseIntRelaxed;
 
 class TextField extends InputField<JTextField> {
     TextField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
@@ -45,27 +46,17 @@ class TextField extends InputField<JTextField> {
     public JTextField create() {
         TextFieldJTextField textField = new TextFieldJTextField();
 
-        if (hasAttribute("size")) {
-            int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
-
-            // Size of 0 doesn't make any sense, so use default value
-            if (size == 0) {
-                textField.setColumns(15);
-            } else {
-                textField.setColumns(size);
-            }
-        } else {
-            textField.setColumns(15);
-        }
+        // Size of 0 doesn't make any sense, so use default value
+        int size = parseIntRelaxed(getAttribute("size"), 15);
+        textField.setColumns(size);
 
         if (hasAttribute("maxlength")) {
             textField.setDocument(
                     new SizeLimitedDocument(
-                            GeneralUtil.parseIntRelaxed(getAttribute("maxlength"))));
+                            parseIntRelaxed(getAttribute("maxlength"))));
         }
 
-        if (hasAttribute("readonly") &&
-                getAttribute("readonly").equalsIgnoreCase("readonly")) {
+        if (getAttribute("readonly").equalsIgnoreCase("readonly")) {
             textField.setEditable(false);
         }
 

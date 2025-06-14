@@ -122,6 +122,10 @@ public abstract class FormField<T extends JComponent> {
         return getElement().getAttribute(attributeName);
     }
 
+    protected String getAttribute(String attributeName, String defaultValue) {
+        return hasAttribute(attributeName) ? getAttribute(attributeName) : defaultValue;
+    }
+
     private void initialize() {
         _component = create();
 

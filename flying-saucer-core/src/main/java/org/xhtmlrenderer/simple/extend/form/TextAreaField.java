@@ -29,12 +29,13 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
-import org.xhtmlrenderer.util.GeneralUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTextAreaUI;
 import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
+
+import static org.xhtmlrenderer.util.GeneralUtil.parseIntRelaxed;
 
 class TextAreaField extends FormField<JScrollPane> {
     @Nullable
@@ -46,24 +47,8 @@ class TextAreaField extends FormField<JScrollPane> {
 
     @Override
     public JScrollPane create() {
-        int rows = 4;
-        int cols = 10;
-
-        if (hasAttribute("rows")) {
-            int parsedRows = GeneralUtil.parseIntRelaxed(getAttribute("rows"));
-
-            if (parsedRows > 0) {
-                rows = parsedRows;
-            }
-        }
-
-        if (hasAttribute("cols")) {
-            int parsedCols = GeneralUtil.parseIntRelaxed(getAttribute("cols"));
-
-            if (parsedCols > 0) {
-                cols = parsedCols;
-            }
-        }
+        int rows = parseIntRelaxed(getAttribute("rows"), 4);
+        int cols = parseIntRelaxed(getAttribute("cols"), 10);
 
         _textarea = new TextAreaFieldJTextArea(rows, cols);
 

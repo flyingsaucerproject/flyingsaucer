@@ -25,7 +25,6 @@ import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
-import org.xhtmlrenderer.util.GeneralUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -35,6 +34,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.xhtmlrenderer.util.GeneralUtil.parseIntRelaxed;
 
 class SelectField extends FormField<JComponent> {
     SelectField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
@@ -53,17 +54,13 @@ class SelectField extends FormField<JComponent> {
             select.setCellRenderer(new CellRenderer());
             select.addListSelectionListener(new HeadingItemListener());
 
-            if (hasAttribute("multiple") && getAttribute("multiple").equalsIgnoreCase("true")) {
+            if (getAttribute("multiple").equalsIgnoreCase("true")) {
                 select.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
             } else {
                 select.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             }
 
-            int size = 0;
-
-            if (hasAttribute("size")) {
-                size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
-            }
+            int size = parseIntRelaxed(getAttribute("size"));
 
             if (size == 0) {
                 // Default to the number of items in the list or 20 - whichever is less
@@ -189,14 +186,12 @@ class SelectField extends FormField<JComponent> {
     }
 
     private boolean shouldRenderAsList() {
-        if (hasAttribute("multiple") && getAttribute("multiple").equalsIgnoreCase("true")) {
+        if (getAttribute("multiple").equalsIgnoreCase("true")) {
             return true;
-        } else if (hasAttribute("size")) {
-            int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
+        } else {
+            int size = parseIntRelaxed(getAttribute("size"));
             return size > 0;
         }
-
-        return false;
     }
 
     /**
@@ -287,7 +282,7 @@ class SelectField extends FormField<JComponent> {
             for (int i = e.getFirstIndex(); i <= e.getLastIndex(); i++) {
                 if (!list.isSelectedIndex(i)) continue;
                 NameValuePair pair = model.getElementAt(i);
-                if ( pair!=null && pair.value() == null) {
+                if (pair != null && pair.value() == null) {
                     // We have a heading, remove it. As this handler is called
                     // as a result of the resulting removal, and we do process
                     // the events while the value is adjusting, we don't need

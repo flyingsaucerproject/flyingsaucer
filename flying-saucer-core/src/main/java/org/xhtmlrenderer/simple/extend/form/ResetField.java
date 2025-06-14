@@ -55,7 +55,7 @@ class ResetField extends AbstractButtonField<JButton> {
     @Override
     protected String[] getFieldValues() {
         return new String[] {
-                hasAttribute("value") ? getAttribute("value") : "Reset" // TODO: Don't hardcode
+                getAttribute("value", "Reset") // TODO: Don't hardcode
         };
     }
 }

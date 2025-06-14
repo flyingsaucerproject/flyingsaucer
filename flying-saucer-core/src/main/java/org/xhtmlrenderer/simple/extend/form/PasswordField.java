@@ -23,9 +23,10 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
-import org.xhtmlrenderer.util.GeneralUtil;
 
 import javax.swing.*;
+
+import static org.xhtmlrenderer.util.GeneralUtil.parseIntRelaxed;
 
 class PasswordField extends InputField<JPasswordField> {
     PasswordField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
@@ -36,27 +37,17 @@ class PasswordField extends InputField<JPasswordField> {
     public JPasswordField create() {
         JPasswordField password = new JPasswordField();
 
-        if (hasAttribute("size")) {
-            int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
-
-            // Size of 0 doesn't make any sense, so use default value
-            if (size == 0) {
-                password.setColumns(15);
-            } else {
-                password.setColumns(size);
-            }
-        } else {
-            password.setColumns(15);
-        }
+        // Size of 0 doesn't make any sense, so use default value
+        int size = parseIntRelaxed(getAttribute("size"), 15);
+        password.setColumns(size);
 
         if (hasAttribute("maxlength")) {
             password.setDocument(
                     new SizeLimitedDocument(
-                            GeneralUtil.parseIntRelaxed(getAttribute("maxlength"))));
+                            parseIntRelaxed(getAttribute("maxlength"))));
         }
 
-        if (hasAttribute("readonly") &&
-                getAttribute("readonly").equalsIgnoreCase("readonly")) {
+        if (getAttribute("readonly").equalsIgnoreCase("readonly")) {
             password.setEditable(false);
         }
 

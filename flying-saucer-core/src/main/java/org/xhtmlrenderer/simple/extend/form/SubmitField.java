@@ -55,7 +55,7 @@ class SubmitField extends AbstractButtonField<JButton> {
     @Override
     protected String[] getFieldValues() {
         return new String[] {
-                hasAttribute("value") ? getAttribute("value") : "Submit" // TODO: Don't hardcode
+                getAttribute("value", "Submit") // TODO: Don't hardcode
         };
     }
 }

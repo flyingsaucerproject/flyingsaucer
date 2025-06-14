@@ -39,8 +39,6 @@ public abstract class InputField<T extends JComponent> extends FormField<T> {
 
     @Override
     protected String[] getFieldValues() {
-        return new String [] {
-                hasAttribute("value") ? getAttribute("value") : ""
-        };
+        return new String[]{getAttribute("value", "")};
     }
 }
