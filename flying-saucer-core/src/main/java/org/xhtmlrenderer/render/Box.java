@@ -838,13 +838,7 @@ public abstract class Box implements Styleable {
         BorderPropertySet border = getBorder(cssCtx);
         RectPropertySet margin = getMargin(cssCtx);
         RectPropertySet padding = getPadding(cssCtx);
-
-        return switch (edge) {
-            case LEFT -> (int) (margin.left() + border.left() + padding.left());
-            case RIGHT -> (int) (margin.right() + border.right() + padding.right());
-            case TOP -> (int) (margin.top() + border.top() + padding.top());
-            case BOTTOM -> (int) (margin.bottom() + border.bottom() + padding.bottom());
-        };
+        return edge.getMarginBorderPadding(margin, border, padding);
     }
 
     protected void moveIfGreater(Dimension result, Dimension test) {

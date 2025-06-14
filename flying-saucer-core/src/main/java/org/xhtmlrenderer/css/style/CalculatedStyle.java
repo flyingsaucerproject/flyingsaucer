@@ -665,7 +665,16 @@ public class CalculatedStyle {
         LEFT,
         RIGHT,
         TOP,
-        BOTTOM,
+        BOTTOM;
+
+        public int getMarginBorderPadding(RectPropertySet margin, BorderPropertySet border, RectPropertySet padding) {
+            return switch (this) {
+                case LEFT -> (int) (margin.left() + border.left() + padding.left());
+                case RIGHT -> (int) (margin.right() + border.right() + padding.right());
+                case TOP -> (int) (margin.top() + border.top() + padding.top());
+                case BOTTOM -> (int) (margin.bottom() + border.bottom() + padding.bottom());
+            };
+        }
     }
 
     public int getMarginBorderPadding(CssContext cssCtx, int cbWidth, Edge edge) {
@@ -673,12 +682,7 @@ public class CalculatedStyle {
         RectPropertySet margin = getMarginRect(cbWidth, cssCtx);
         RectPropertySet padding = getPaddingRect(cbWidth, cssCtx);
 
-        return switch (edge) {
-            case LEFT -> (int) (margin.left() + border.left() + padding.left());
-            case RIGHT -> (int) (margin.right() + border.right() + padding.right());
-            case TOP -> (int) (margin.top() + border.top() + padding.top());
-            case BOTTOM -> (int) (margin.bottom() + border.bottom() + padding.bottom());
-        };
+        return edge.getMarginBorderPadding(margin, border, padding);
     }
 
     @Nullable
