@@ -197,6 +197,7 @@ public abstract class FormField<T extends JComponent> {
         return context;
     }
 
+    @Nullable
     public CalculatedStyle getStyle() {
         return getBox().getStyle();
     }
@@ -207,7 +208,7 @@ public abstract class FormField<T extends JComponent> {
             comp.setFont(font);
         }
 
-        CalculatedStyle style = getStyle();
+        CalculatedStyle style = requireNonNull(getStyle());
 
         FSColor foreground = style.getColor();
         if (foreground != null) {
@@ -228,6 +229,7 @@ public abstract class FormField<T extends JComponent> {
         throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
     }
 
+    @Nullable
     public Font getFont() {
         FSFont font = getStyle().getFSFont(getContext());
         if (font instanceof AWTFSFont) {

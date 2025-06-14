@@ -20,12 +20,14 @@
  */
 package org.xhtmlrenderer.css.style.derived;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.style.DerivedValue;
 
 public class ColorValue extends DerivedValue {
+    @Nullable
     private final FSColor _color;
 
     public ColorValue(CSSName name, PropertyValue value) {
@@ -39,6 +41,7 @@ public class ColorValue extends DerivedValue {
      *
      * @return The rGBColorValue value
      */
+    @Nullable
     @Override
     public FSColor asColor() {
         return _color;

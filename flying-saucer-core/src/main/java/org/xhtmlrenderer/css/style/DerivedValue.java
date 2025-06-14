@@ -86,6 +86,7 @@ public abstract class DerivedValue implements FSDerivedValue {
         throw new XRRuntimeException("asFloat() needs to be overridden in subclass.");
     }
 
+    @Nullable
     @Override
     public FSColor asColor() {
         throw new XRRuntimeException("asColor() needs to be overridden in subclass.");
