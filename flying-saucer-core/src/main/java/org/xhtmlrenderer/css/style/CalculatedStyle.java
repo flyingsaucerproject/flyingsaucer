@@ -58,6 +58,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import static org.xhtmlrenderer.css.constants.CSSName.PADDING_SIDE_PROPERTIES;
+import static org.xhtmlrenderer.css.constants.CSSName.cssProperty;
 import static org.xhtmlrenderer.css.style.CssKnowledge.BLOCK_EQUIVALENTS;
 import static org.xhtmlrenderer.css.style.CssKnowledge.BORDERS_NOT_ALLOWED;
 import static org.xhtmlrenderer.css.style.CssKnowledge.LAID_OUT_IN_INLINE_CONTEXT;
@@ -552,7 +553,7 @@ public class CalculatedStyle {
                             "Check CSSName declarations.");
                 }
                 if (initialValue.charAt(0) == '=') {
-                    CSSName ref = CSSName.getByPropertyName(initialValue.substring(1));
+                    CSSName ref = cssProperty(initialValue.substring(1));
                     val = valueByName(ref);
                 } else {
                     val = cssName.initialDerivedValue();
