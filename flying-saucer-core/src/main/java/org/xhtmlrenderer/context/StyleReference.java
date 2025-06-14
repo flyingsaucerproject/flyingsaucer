@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.css.constants.CSSName.cssProperty;
+
 
 /**
  * @author Torbjoern Gannholm
@@ -141,7 +143,7 @@ public class StyleReference {
             PropertyDeclaration pd = i.next();
 
             String propName = pd.getPropertyName();
-            CSSName cssName = CSSName.getByPropertyName(propName);
+            CSSName cssName = cssProperty(propName);
             props.put(propName, cs.propertyByName(cssName).getValue());
         }
         return props;

@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_IDENT;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_MM;
-import static org.xhtmlrenderer.css.constants.CSSName.getByPropertyName;
+import static org.xhtmlrenderer.css.constants.CSSName.cssProperty;
 import static org.xhtmlrenderer.css.constants.IdentValue.AUTO;
 
 class SizePropertyBuilderTest {
@@ -22,16 +22,16 @@ class SizePropertyBuilderTest {
     private final PropertyValue width = new PropertyValue(CSS_MM, 0, "43mm");
     private final PropertyValue height = new PropertyValue(CSS_MM, 0, "25mm");
     private final PropertyValue landscape = new PropertyValue(CSS_IDENT, 0, "landscape");
-    private final CSSName cssName = getByPropertyName("size");
+    private final CSSName cssName = cssProperty("size");
 
     @Test
     void buildDeclarationsFromOneValue() {
         List<PropertyDeclaration> result = builder.buildDeclarations(cssName, List.of(width), Origin.USER, false);
 
         assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
-                new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), new PropertyValue(AUTO), false, Origin.USER),
-                new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, Origin.USER),
-                new PropertyDeclaration(getByPropertyName("-fs-page-height"), width, false, Origin.USER)
+                new PropertyDeclaration(cssProperty("-fs-page-orientation"), new PropertyValue(AUTO), false, Origin.USER),
+                new PropertyDeclaration(cssProperty("-fs-page-width"), width, false, Origin.USER),
+                new PropertyDeclaration(cssProperty("-fs-page-height"), width, false, Origin.USER)
         );
     }
 
@@ -40,9 +40,9 @@ class SizePropertyBuilderTest {
         List<PropertyDeclaration> result = builder.buildDeclarations(cssName, List.of(width, height), Origin.USER_AGENT, false);
 
         assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
-                new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), new PropertyValue(AUTO), false, Origin.USER_AGENT),
-                new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, Origin.USER_AGENT),
-                new PropertyDeclaration(getByPropertyName("-fs-page-height"), height, false, Origin.USER_AGENT)
+                new PropertyDeclaration(cssProperty("-fs-page-orientation"), new PropertyValue(AUTO), false, Origin.USER_AGENT),
+                new PropertyDeclaration(cssProperty("-fs-page-width"), width, false, Origin.USER_AGENT),
+                new PropertyDeclaration(cssProperty("-fs-page-height"), height, false, Origin.USER_AGENT)
         );
     }
 
@@ -51,9 +51,9 @@ class SizePropertyBuilderTest {
         List<PropertyDeclaration> result = builder.buildDeclarations(cssName, List.of(width, height, landscape), Origin.USER_AGENT, false);
 
         assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
-            new PropertyDeclaration(getByPropertyName("-fs-page-orientation"), landscape, false, Origin.USER_AGENT),
-            new PropertyDeclaration(getByPropertyName("-fs-page-width"), width, false, Origin.USER_AGENT),
-            new PropertyDeclaration(getByPropertyName("-fs-page-height"), height, false, Origin.USER_AGENT)
+            new PropertyDeclaration(cssProperty("-fs-page-orientation"), landscape, false, Origin.USER_AGENT),
+            new PropertyDeclaration(cssProperty("-fs-page-width"), width, false, Origin.USER_AGENT),
+            new PropertyDeclaration(cssProperty("-fs-page-height"), height, false, Origin.USER_AGENT)
         );
     }
 
