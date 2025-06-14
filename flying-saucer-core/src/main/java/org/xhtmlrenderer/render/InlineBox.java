@@ -300,9 +300,7 @@ public class InlineBox implements Styleable {
                 lastWord = minWordWidth;
             }
 
-            if (minWordWidth > _minWidth) {
-                _minWidth = minWordWidth;
-            }
+            adjustMinWidth(minWordWidth);
             maxWidth += wordWidth;
 
             last = current;
@@ -333,7 +331,6 @@ public class InlineBox implements Styleable {
             } else {
                 maxWidth += spaceWidth;
             }
-            spaceCount = 0;
         }
         if (minWordWidth > 0) {
             if (! haveFirstWord) {
@@ -341,28 +338,28 @@ public class InlineBox implements Styleable {
             }
             lastWord = minWordWidth;
         }
-        if (minWordWidth > _minWidth) {
-            _minWidth = minWordWidth;
-        }
+        adjustMinWidth(minWordWidth);
         maxWidth += wordWidth;
 
         if (isStartsHere()) {
             int leftMBP = getStyle().getMarginBorderPadding(c, cbWidth, Edge.LEFT);
-            if (firstWord + leftMBP > _minWidth) {
-                _minWidth = firstWord + leftMBP;
-            }
+            adjustMinWidth(firstWord + leftMBP);
             maxWidth += leftMBP;
         }
 
         if (isEndsHere()) {
             int rightMBP = getStyle().getMarginBorderPadding(c, cbWidth, Edge.RIGHT);
-            if (lastWord + rightMBP > _minWidth) {
-                _minWidth = lastWord + rightMBP;
-            }
+            adjustMinWidth(lastWord + rightMBP);
             maxWidth += rightMBP;
         }
 
         return maxWidth;
+    }
+
+    private void adjustMinWidth(int minWordWidth) {
+        if (minWordWidth > _minWidth) {
+            _minWidth = minWordWidth;
+        }
     }
 
     @CheckReturnValue
