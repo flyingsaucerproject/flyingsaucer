@@ -376,6 +376,11 @@ public class CalculatedStyle {
         }
     }
 
+    public boolean disableOSBorder() {
+        BorderPropertySet border = getBorder(null);
+        return border.leftStyle() != null || border.rightStyle() != null || border.topStyle() != null || border.bottomStyle() != null;
+    }
+
     public FontSpecification getFont(CssContext ctx) {
         if (_font == null) {
             _font = new FontSpecification();

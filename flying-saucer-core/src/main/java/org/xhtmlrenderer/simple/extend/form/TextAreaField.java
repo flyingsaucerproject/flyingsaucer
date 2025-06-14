@@ -24,7 +24,6 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
-import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -84,14 +83,11 @@ class TextAreaField extends FormField<JScrollPane> {
         applyComponentStyle(textArea);
 
         CalculatedStyle style = getBox().getStyle();
-        BorderPropertySet border = style.getBorder(null);
-        boolean disableOSBorder = (border.leftStyle() != null && border.rightStyle() != null || border.topStyle() != null || border.bottomStyle() != null);
-
         RectPropertySet padding = style.getCachedPadding();
         Insets margin = style.padding().withDefaults(new Insets(2, 3, 2, 3));
 
         //if a border is set or a background color is set, then use a special JButton with the BasicButtonUI.
-        if (disableOSBorder) {
+        if (style.disableOSBorder()) {
             //when background color is set, need to use the BasicButtonUI, certainly when using XP l&f
             BasicTextUI ui = new BasicTextAreaUI();
             textArea.setUI(ui);
