@@ -357,7 +357,6 @@ public class ITextFontResolver implements FontResolver {
             for (String family : families) {
                 FSFont font = resolveFont(family, size, weight, style);
                 if (font != null) {
-                    log.debug("Resolved font {}:{}:{} -> {}", family, weight, style, font);
                     return font;
                 }
             }
@@ -405,14 +404,16 @@ public class ITextFontResolver implements FontResolver {
         FontDescription result = _fontCache.get(cacheKey);
 
         if (result != null) {
-            log.debug("Resolved font {}:{}:{} -> {}", fontFamily, weight, style, result);
+            log.debug("Resolved font (from cache) {}:{}:{} -> {}", fontFamily, weight, style, result);
             return new ITextFSFont(result, size);
         }
 
         FontFamily family = getFonts().get(normalizedFontFamily);
         if (family != null) {
-            result = family.match(convertWeightToInt(weight), style);
+            int desiredWeight = convertWeightToInt(weight);
+            result = family.match(desiredWeight, style);
             if (result != null) {
+                log.debug("Resolved font {}:{}({}):{} -> {}", fontFamily, weight, desiredWeight, style, result);
                 _fontCache.put(cacheKey, result);
                 return new ITextFSFont(result, size);
             }
