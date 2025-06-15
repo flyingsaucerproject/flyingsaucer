@@ -46,65 +46,67 @@ public final class ValueConstants {
      *
      * @param type The CSSValue type to check.
      */
-    //TODO: method may be unnecessary (tobe)
     public static boolean isAbsoluteUnit(short type) {
         // TODO: check this list...
 
         // note, all types are included here to make sure none are missed
-        switch (type) {
+        return switch (type) {
+
             // proportional length or size
-            case CSSPrimitiveValue.CSS_PERCENTAGE:
-                return false;
-                // refer to values known to the DerivedValue instance (tobe)
-            case CSSPrimitiveValue.CSS_EMS:
-            case CSSPrimitiveValue.CSS_EXS:
-                // length
-            case CSSPrimitiveValue.CSS_IN:
-            case CSSPrimitiveValue.CSS_CM:
-            case CSSPrimitiveValue.CSS_MM:
-            case CSSPrimitiveValue.CSS_PT:
-            case CSSPrimitiveValue.CSS_PC:
-            case CSSPrimitiveValue.CSS_PX:
+            case CSSPrimitiveValue.CSS_PERCENTAGE -> false;
 
-                // color
-            case CSSPrimitiveValue.CSS_RGBCOLOR:
+            // refer to values known to the DerivedValue instance (tobe)
+            case CSSPrimitiveValue.CSS_EMS,
+                 CSSPrimitiveValue.CSS_EXS -> true;
 
-                // ?
-            case CSSPrimitiveValue.CSS_ATTR:
-            case CSSPrimitiveValue.CSS_DIMENSION:
-            case CSSPrimitiveValue.CSS_NUMBER:
-            case CSSPrimitiveValue.CSS_RECT:
+            // length
+            case CSSPrimitiveValue.CSS_IN,
+                 CSSPrimitiveValue.CSS_CM,
+                 CSSPrimitiveValue.CSS_MM,
+                 CSSPrimitiveValue.CSS_PT,
+                 CSSPrimitiveValue.CSS_PC,
+                 CSSPrimitiveValue.CSS_PX -> true;
 
-                // counters
-            case CSSPrimitiveValue.CSS_COUNTER:
+            // color
+            case CSSPrimitiveValue.CSS_RGBCOLOR -> true;
 
-                // angles
-            case CSSPrimitiveValue.CSS_DEG:
-            case CSSPrimitiveValue.CSS_GRAD:
-            case CSSPrimitiveValue.CSS_RAD:
+            // ?
+            case CSSPrimitiveValue.CSS_ATTR,
+                 CSSPrimitiveValue.CSS_DIMENSION,
+                 CSSPrimitiveValue.CSS_NUMBER,
+                 CSSPrimitiveValue.CSS_RECT -> true;
 
-                // aural - freq
-            case CSSPrimitiveValue.CSS_HZ:
-            case CSSPrimitiveValue.CSS_KHZ:
+            // counters
+            case CSSPrimitiveValue.CSS_COUNTER -> true;
 
-                // time
-            case CSSPrimitiveValue.CSS_S:
-            case CSSPrimitiveValue.CSS_MS:
+            // angles
+            case CSSPrimitiveValue.CSS_DEG,
+                 CSSPrimitiveValue.CSS_GRAD,
+                 CSSPrimitiveValue.CSS_RAD -> true;
 
-                // URI
-            case CSSPrimitiveValue.CSS_URI:
+            // aural - freq
+            case CSSPrimitiveValue.CSS_HZ,
+                 CSSPrimitiveValue.CSS_KHZ -> true;
 
-            case CSSPrimitiveValue.CSS_IDENT:
-            case CSSPrimitiveValue.CSS_STRING:
-                return true;
-            case CSSPrimitiveValue.CSS_UNKNOWN:
+            // time
+            case CSSPrimitiveValue.CSS_S,
+                 CSSPrimitiveValue.CSS_MS -> true;
+
+            // URI
+            case CSSPrimitiveValue.CSS_URI,
+
+                 CSSPrimitiveValue.CSS_IDENT,
+                 CSSPrimitiveValue.CSS_STRING -> true;
+
+            case CSSPrimitiveValue.CSS_UNKNOWN -> {
                 XRLog.cascade(Level.WARNING, "Asked whether type was absolute, given CSS_UNKNOWN as the type. " +
-                        "Might be one of those funny values like background-position.");
+                    "Might be one of those funny values like background-position.");
                 GeneralUtil.dumpShortException(new Exception("Taking a thread dump..."));
-                // fall-through
-            default:
-                return false;
-        }
+                yield false;
+            }
+
+            default -> false;
+        };
     }
 
     /**
