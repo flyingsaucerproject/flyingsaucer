@@ -52,7 +52,6 @@ import static java.util.Objects.requireNonNull;
 
 public final class DOMInspector extends JPanel {
     private StyleReference styleReference;
-    @SuppressWarnings("NotNullFieldNotInitialized")
     private DOMSelectionListener nodeSelectionListener;
     private final JSplitPane splitPane;
     private Document doc;
