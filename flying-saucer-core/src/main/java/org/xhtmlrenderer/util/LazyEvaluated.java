@@ -27,6 +27,6 @@ public class LazyEvaluated<T> {
     }
 
     public static <T> LazyEvaluated<T> lazy(Supplier<T> supplier) {
-        return new LazyEvaluated<T>(supplier);
+        return new LazyEvaluated<>(supplier);
     }
 }
