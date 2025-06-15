@@ -23,6 +23,7 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.net.MalformedURLException;
 
 /**
  * This example shows the most basic use of Flying Saucer, to
@@ -33,19 +34,17 @@ import java.io.File;
  * @author Patrick Wright
  */
 public class CenteredPreviewRender {
-    private String fileName;
+    private final File file;
 
-    public static void main(String[] args) throws Exception {
-        try {
-            new CenteredPreviewRender().run(args);
-        } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
-        }
+    public CenteredPreviewRender(File file) {
+        this.file = file;
     }
 
-    private void run(String[] args) {
-        loadAndCheckArgs(args);
+    public static void main(String[] args) throws MalformedURLException {
+        new CenteredPreviewRender(loadAndCheckArgs(args)).run();
+    }
 
+    private void run() throws MalformedURLException {
         // Create a JPanel subclass to render the page
         XHTMLPanel panel = new XHTMLPanel();
         panel.setInteractive(false);
@@ -56,11 +55,7 @@ public class CenteredPreviewRender {
         // Set the XHTML document to render. We use the simplest form
         // of the API call, which uses a File reference. There
         // are a variety of overloads for setDocument().
-        try {
-            panel.setDocument(new File(fileName));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        panel.setDocument(file);
 
         // Put our panel in a scrolling pane. You can use
         // a regular JScrollPane here, or our FSScrollPane.
@@ -76,12 +71,12 @@ public class CenteredPreviewRender {
         frame.setVisible(true);
     }
 
-    private void loadAndCheckArgs(String[] args) {
-        String name = args.length > 0 ? args[0] : new File("flying-saucer-examples/src/test/resources/hello.html").getAbsolutePath();
+    private static File loadAndCheckArgs(String[] args) {
+        File file = args.length > 0 ? new File(args[0]) : new File("flying-saucer-examples/src/test/resources/hello.html");
 
-        if (! new File(name).exists()) {
-            throw new IllegalArgumentException("File " + name + " does not exist.");
+        if (!file.exists()) {
+            throw new IllegalArgumentException("File " + file.getAbsolutePath() + " does not exist.");
         }
-        this.fileName = name;
+        return file;
     }
 }
