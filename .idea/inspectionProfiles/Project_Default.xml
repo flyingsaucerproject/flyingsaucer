@@ -7,6 +7,7 @@
       <option name="m_ignoreCatchBlocksWithComments" value="false" />
       <option name="m_ignoreNonEmptyCatchBlock" value="false" />
     </inspection_tool>
+    <inspection_tool class="CheckImageSize" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ClassInitializer" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="CodeBlock2Expr" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ConstantValue" enabled="true" level="WARNING" enabled_by_default="true">
