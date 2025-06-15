@@ -188,7 +188,7 @@ final class ElementPropertiesPanel extends JPanel {
                 label.setFont(propLabelFont);
             } else if (col == 2) {
                 PropertiesTableModel model = (PropertiesTableModel) getModel();
-                Map.Entry<String, CSSPrimitiveValue> me = (Map.Entry<String, CSSPrimitiveValue>) model._properties.entrySet().toArray()[row];
+                Map.Entry<String, CSSPrimitiveValue> me = model._properties.get(row);
                 CSSPrimitiveValue cpv = me.getValue();
                 if (cpv.getCssText().startsWith("rgb")) {
                     label.setBackground(org.xhtmlrenderer.css.util.ConversionUtil.rgbToColor(cpv.getRGBColorValue()));
@@ -202,10 +202,10 @@ final class ElementPropertiesPanel extends JPanel {
         //String _colNames[] = {"Property Name", "Text", "Value", "Important-Inherit"};
         private final String[] _colNames = {"Property Name", "Text", "Value"};
 
-        private final Map<String, CSSPrimitiveValue> _properties;
+        private final List<Map.Entry<String, CSSPrimitiveValue>> _properties;
 
         PropertiesTableModel(Map<String, CSSPrimitiveValue> cssProperties) {
-            _properties = cssProperties;
+            _properties = new ArrayList<>(cssProperties.entrySet());
         }
 
         /**
@@ -239,7 +239,7 @@ final class ElementPropertiesPanel extends JPanel {
         @CheckReturnValue
         @Override
         public Object getValueAt(int row, int col) {
-            Map.Entry<String, CSSPrimitiveValue> me = (Map.Entry<String, CSSPrimitiveValue>) _properties.entrySet().toArray()[row];
+            Map.Entry<String, CSSPrimitiveValue> me = _properties.get(row);
             CSSPrimitiveValue cpv = me.getValue();
 
             return switch (col) {
