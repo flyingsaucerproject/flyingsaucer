@@ -15,7 +15,7 @@ h2              { font-size: 1.5em; margin: .75em 0 }
 h3              { font-size: 1.17em; margin: .83em 0 }
 h4, p,
 blockquote, ul,
-fieldset, 
+fieldset,
 ol, dl, dir,
 menu            { margin: 1.12em 0 }
 h5              { font-size: .83em; margin: 1.5em 0 }
@@ -71,16 +71,16 @@ a:link, a:visited { text-decoration: underline }
 img {
     display: inline-block;
     border-width: 1px 1px 1px 1px;
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 a {
     color: #0000ff;
 }
 
-h5, h6, b, strong { 
-  font-weight: bold; 
+h5, h6, b, strong {
+  font-weight: bold;
 }
 
 /* Match default behavior of Firefox and Opera */
@@ -103,8 +103,8 @@ table[rules]:not([rules="none"]) {
   border-collapse: collapse;
 }
 */
-   
-/* caption inherits from table not table-outer */  
+
+/* caption inherits from table not table-outer */
 caption {
   display: table-caption;
   text-align: center;
@@ -156,10 +156,10 @@ table > tr {
   vertical-align: middle;
 }
 
-td { 
+td {
   display: table-cell;
   vertical-align: inherit;
-  text-align: inherit; 
+  text-align: inherit;
   padding: 1px;
 }
 

@@ -7,15 +7,15 @@
     font-family: Tahoma, Verdana, Arial;
     font-size: 20pt;
     font-weight: bold;
-    margin: 0pt;    
-    padding: 0pt;   
+    margin: 0;
+    padding: 0;
     margin-bottom: 10pt;
     }
     #fsimg {
     float: left;
     border-style: none;
     text-decoration: none;
-    margin: 10pt 15pt 10pt 0pt;    
+    margin: 10pt 15pt 10pt 0;
     }
     #pageintro {
     font-family: tahoma, verdana, arial;
@@ -32,23 +32,23 @@
     }
 
 
-    .left-link { 
-    width: 10em; 
+    .left-link {
+    width: 10em;
     margin: 10px;
     padding: 5px;
     position: absolute;
-    top: 0px;
-    left: 0px; 
+    top: 0;
+    left: 0;
     }
 
     .right-link {
-    width: 10em; 
+    width: 10em;
     margin: 10px;
     padding: 5px;
 
     position: absolute;
-    top: 0px;
-    right: 0px; 
+    top: 0;
+    right: 0;
     text-align: right;
 		cursor: wait;
 	}
@@ -63,7 +63,7 @@
     font-family: sans-serif;
     text-decoration: none;
     font-weight: normal;
-    border: 0px solid red;
+    border: 0 solid red;
     }
 
     .left-link a:hover, .right-link a:hover {
@@ -83,7 +83,7 @@
     }
 
     html {
-    background: #efefff; 
+    background: #efefff;
     }
 
     #fslogo {
@@ -92,8 +92,8 @@
     font-family: tahoma, verdana, arial;
     font-size: 20pt;
     font-weight: bold;
-    margin: 0pt;    
-    padding: 0pt;   
+    margin: 0;
+    padding: 0;
     margin-bottom: 10pt;
     }
     #pagebyline {

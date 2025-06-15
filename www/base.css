@@ -3,7 +3,7 @@
 #fs h1, #fs h2 {
     border-style: none none solid;
     border-color: rgb( 0, 0, 0 );
-    border-width: 0px;
+    border-width: 0;
     background: rgb( 255, 255, 255 ) none repeat scroll left top;
     margin-top: 30px;
     padding-bottom: 3px;
@@ -29,7 +29,7 @@
 }
 
 body, #fs {
-    background: rgb( 255, 255, 255 ) none repeat scroll 0% 50%;
+    background: rgb( 255, 255, 255 ) none repeat scroll 0 50%;
     margin-right: 4px;
     margin-left: 20px;
     font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -37,11 +37,11 @@ body, #fs {
 
 /* the menu box itself */
 #menu {
-    padding: 0px 0px;
+    padding: 0 0;
     float: right;
-    border: 0px solid blue;
+    border: 0 solid blue;
     font-size: 90%;
-    margin: 0px;
+    margin: 0;
     margin-left: 5px;
 }
 
@@ -53,7 +53,7 @@ body, #fs {
 /* the top menu of each section */
 #menu li {
     list-style-type: none;
-    border: 0px solid blue;
+    border: 0 solid blue;
     background-color: #BFE4FF;
     color: #6096BF;
     margin-top: 10px;
@@ -61,29 +61,29 @@ body, #fs {
 }
 
 #menu li b {
-    border: 0px solid red;
+    border: 0 solid red;
     padding-left: 10px;
 }
 
 /* the box around each section */
 #menu ul, #menu h4 {
     margin-top: 3px;
-    border: 0px solid red;
+    border: 0 solid red;
     background-color: #E6F4FF;
 }
 
 /* the items in each section */
 #menu ul li {
-    border: 0px solid gray;
+    border: 0 solid gray;
     text-align: right;
     padding: 1px 2px;
-    margin: 0px;
+    margin: 0;
     padding-right: 6px;
     background-color: #E6F4FF;
 }
 
 #menu ul li a {
-    border: 0px dashed blue;
+    border: 0 dashed blue;
     color: black;
     text-decoration: none;
 }
@@ -105,7 +105,7 @@ pre {
     border: 1px dotted rgb( 255, 204, 0 );
     margin: 10px;
     padding: 6px;
-    background: rgb( 255, 255, 204 ) none repeat scroll 0% 50%;
+    background: rgb( 255, 255, 204 ) none repeat scroll 0 50%;
 }
 
 .invalid {
@@ -124,7 +124,7 @@ hr.news {
     font-weight: bold;
     font-size: 8pt;
     border: 1px solid blue;
-    margin: 0px 10px 15px 0px;
+    margin: 0 10px 15px 0;
     float: left;
     padding: 10px 5px 10px 5px;
     text-align: center;
@@ -140,19 +140,19 @@ h2 { width: 500px;
 ul#m2 { border: 1px solid black;
   float: right;
   }
-block { border: 0px solid black;
+block { border: 0 solid black;
   display: block;
   padding-left: 4em;
   }
 .axial { border: 1px solid black; display: none;}
 p.screenshot { text-align: center; }
-p.screenshot img { border-width: 0px; }
-div.thumbnailx { 
-  float: left; 
+p.screenshot img { border-width: 0; }
+div.thumbnailx {
+  float: left;
   width: 140px;
   min-height: 120px;
-  border: 1px solid #999; 
-  margin: 0 15px 15px 0;  
+  border: 1px solid #999;
+  margin: 0 15px 15px 0;
   padding: 10px 15px 10px 15px;
 }
 
@@ -162,25 +162,25 @@ div.thumbnail {
   float: left;
   width: 140px;
   padding: 10px;
-  border: 1px solid #999; 
-  margin: 0 10px 15px 0;  
+  border: 1px solid #999;
+  margin: 0 10px 15px 0;
   min-height: 120px;
 }
-  
+
 div.thumbnail p {
    text-align: center;
 }
 
 div.thumbnail img {
-  border: none;	
+  border: none;
 }
 
 a#fs_logo {
   background: url('/images/new_saucer.png') no-repeat top left transparent;
-  float: left; 
-  width: 180px; 
+  float: left;
+  width: 180px;
   height: 180px;
-  display: block;  
+  display: block;
 }
 
 a#fs_logo:hover {
@@ -188,7 +188,7 @@ a#fs_logo:hover {
 }
 
 table.properties  {
-  border-collapse: collapse;	
+  border-collapse: collapse;
 }
 table.properties td {
   border: 1px solid black;

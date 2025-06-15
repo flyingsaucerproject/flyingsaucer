@@ -20,7 +20,7 @@ itemizedlist > * {
 	margin-left: -1em;
 }
 itemizedlist[spacing="compact"]>listitem + listitem {
-	padding-top: 0em;
+	padding-top: 0;
 }
 /* 2 deep nested lists */
 itemizedlist itemizedlist {
@@ -33,7 +33,7 @@ itemizedlist itemizedlist itemizedlist {
 	padding-top: .5em;
 }
 itemizedlist[spacing="compact"]>listitem>itemizedlist {
-	padding-top: 0em;
+	padding-top: 0;
 }
 /*
  * The list of possible mark names is not defined by Docbook, but "opencircle"
@@ -52,7 +52,7 @@ listitem[override="square"], itemizedlist[mark="square"] {
 }
 itemizedlist>listitem {
 	display:list-item;
-	margin-left: 0em;
+	margin-left: 0;
 }
 
 /* ordered lists */
@@ -76,15 +76,15 @@ orderedlist[numeration="upperalpha"], listitem[override="upperalpha"] {
 	list-style-type: upper-alpha;
 }
 orderedlist[spacing="compact"]>listitem + listitem {
-	padding-top: 0em;
+	padding-top: 0;
 }
 orderedlist[spacing="compact"]>listitem>orderedlist {
-	padding-top: 0em;
+	padding-top: 0;
 }
 orderedlist>listitem {
 	display:list-item;
 	padding-top: .5em;
-	margin-left: 0em;
+	margin-left: 0;
 }
 
 /* call-out lists: We've got no way of properly implementing call-out lists with CSS, so just
@@ -104,7 +104,7 @@ listitem+listitem {
 	padding-top: .5em;
 }
 
-/* variable lists */ 
+/* variable lists */
 varlistentry>listitem {
 	margin-left: 2em;
 }
