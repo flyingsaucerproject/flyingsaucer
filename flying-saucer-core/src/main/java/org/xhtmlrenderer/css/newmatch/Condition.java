@@ -368,7 +368,7 @@ abstract class Condition {
         }
     }
 
-    private static class NthChildCondition extends Condition {
+    static class NthChildCondition extends Condition {
 
         private static final Pattern pattern = Pattern.compile("([-+]?)(\\d*)n(\\s*([-+])\\s*(\\d+))?");
 
@@ -383,8 +383,11 @@ abstract class Condition {
         @Override
         boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
             // getPositionOfElement() starts at 0, CSS spec starts at 1
-            int position = treeRes.getPositionOfElement(e)+1;
+            int position = treeRes.getPositionOfElement(e) + 1;
+            return matches(position);
+        }
 
+        boolean matches(int position) {
 
             //<An+B> from https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child
             //Represents elements whose numeric position in a series of siblings matches the pattern An+B,
@@ -435,32 +438,32 @@ abstract class Condition {
         static NthChildCondition fromString(String number) {
             number = number.trim().toLowerCase(ROOT);
 
-            if ("even".equals(number)) {
-                return new NthChildCondition(2, 0);
-            } else if ("odd".equals(number)) {
-                return new NthChildCondition(2, 1);
-            } else {
-                try {
-                    return new NthChildCondition(0, Integer.parseInt(number));
-                } catch (NumberFormatException e) {
-                    Matcher m = pattern.matcher(number);
+            return switch (number) {
+                case "even" -> new NthChildCondition(2, 0);
+                case "odd" -> new NthChildCondition(2, 1);
+                default -> {
+                    try {
+                        yield new NthChildCondition(0, Integer.parseInt(number));
+                    } catch (NumberFormatException e) {
+                        Matcher m = pattern.matcher(number);
 
-                    if (!m.matches()) {
-                        throw new CSSParseException("Invalid nth-child selector: " + number, -1, e);
-                    } else {
-                        int a = m.group(2).isEmpty() ? 1 : Integer.parseInt(m.group(2));
-                        int b = (m.group(5) == null) ? 0 : Integer.parseInt(m.group(5));
-                        if ("-".equals(m.group(1))) {
-                            a *= -1;
-                        }
-                        if ("-".equals(m.group(4))) {
-                            b *= -1;
-                        }
+                        if (!m.matches()) {
+                            throw new CSSParseException("Invalid nth-child selector: " + number, -1, e);
+                        } else {
+                            int a = m.group(2).isEmpty() ? 1 : Integer.parseInt(m.group(2));
+                            int b = (m.group(5) == null) ? 0 : Integer.parseInt(m.group(5));
+                            if ("-".equals(m.group(1))) {
+                                a *= -1;
+                            }
+                            if ("-".equals(m.group(4))) {
+                                b *= -1;
+                            }
 
-                        return new NthChildCondition(a, b);
+                            yield new NthChildCondition(a, b);
+                        }
                     }
                 }
-            }
+            };
         }
     }
 
