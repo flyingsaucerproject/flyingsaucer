@@ -1,7 +1,10 @@
 # Changelog
 
-## 9.12.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/33
-* in progress
+## 9.12.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/33?closed=1
+* Disable external entity access in XMLResource - thanks to Andreas Røsdal (#515)
+* Adds a page to the root layer if there is none - thanks to @nicolaecismaru (#501)
+* Refactoring (#503) (#516) (#517)
+* Bump openpdf from 2.0.3 to 2.0.5  (#508) (#511)
 
 ## 9.12.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/32?closed=1
 * Add support for linear gradients and opacity - thanks to Ondřej Španěl and haberbyte (#493) (#22)
