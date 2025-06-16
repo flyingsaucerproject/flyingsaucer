@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.12.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/34
+* in progress
+
 ## 9.12.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/33?closed=1
 * Disable external entity access in XMLResource - thanks to Andreas Røsdal (#515)
 * Adds a page to the root layer if there is none - thanks to @nicolaecismaru (#501)
