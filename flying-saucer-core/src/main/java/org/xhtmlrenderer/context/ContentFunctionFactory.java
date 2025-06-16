@@ -226,8 +226,8 @@ public class ContentFunctionFactory {
             for (Box child : lineBox.getChildren()) {
                 if (child == iB) {
                     dynamic = true;
-                } else if (dynamic && child instanceof InlineLayoutBox) {
-                    ((InlineLayoutBox) child).lookForDynamicFunctions(c);
+                } else if (dynamic && child instanceof InlineLayoutBox inlineLayoutBox) {
+                    inlineLayoutBox.lookForDynamicFunctions(c);
                 }
             }
             if (dynamic) {
