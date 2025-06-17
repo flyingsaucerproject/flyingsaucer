@@ -63,4 +63,10 @@ public class NaiveUserAgentTest {
         assertThat(resolve("jar:file:/path/jarfile.jar!/foo/", "/other.xhtml")).isEqualTo("jar:file:/path/jarfile.jar!/other.xhtml");
     }
 
+    @Test
+    void resolveClasspathUrl() {
+        NaiveUserAgent agent=new NaiveUserAgent();
+        assertThat(agent.resolveClasspathUrl("classpath:transgrey.png").toString()).matches("file:.+/transgrey.png");
+        assertThat(agent.resolveClasspathUrl("classpath:/transgrey.png").toString()).matches("file:.+/transgrey.png");
+    }
 }

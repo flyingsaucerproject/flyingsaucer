@@ -45,6 +45,7 @@ import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
 import static java.net.HttpURLConnection.HTTP_MOVED_TEMP;
@@ -74,6 +75,8 @@ import static org.xhtmlrenderer.util.ImageUtil.loadEmbeddedBase64Image;
 public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
 
     private static final int DEFAULT_IMAGE_CACHE_SIZE = 16;
+    private static final Pattern CLASSPATH_PREFIX = Pattern.compile("classpath:/?");
+
     /**
      * a (simple) LRU cache
      */
@@ -371,7 +374,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
                         // on the implementation below.
                         return result.toURL().toString();
                     } catch (MalformedURLException e) {
-                        URL resource = Thread.currentThread().getContextClassLoader().getResource(uri.substring("classpath".length() + 1));
+                        URL resource = resolveClasspathUrl(uri);
                         if (resource != null) {
                             return resource.toString();
                         }
@@ -397,6 +400,13 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         }
         XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + _baseURL, t);
         return null;
+    }
+
+    @Nullable
+    @CheckReturnValue
+    URL resolveClasspathUrl(String uri) {
+        String path = CLASSPATH_PREFIX.matcher(uri).replaceFirst("");
+        return Thread.currentThread().getContextClassLoader().getResource(path);
     }
 
     /**
