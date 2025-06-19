@@ -10,6 +10,7 @@ import org.xhtmlrenderer.util.ConstantConverter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.xhtmlrenderer.css.constants.IdentValue.DECIMAL_LEADING_ZERO;
 import static org.xhtmlrenderer.css.constants.IdentValue.LOWER_ROMAN;
+import static org.xhtmlrenderer.css.constants.IdentValue.UPPER_LATIN;
 import static org.xhtmlrenderer.css.constants.IdentValue.UPPER_ROMAN;
 import static org.xhtmlrenderer.layout.CounterFunction.createCounterText;
 
@@ -93,6 +94,17 @@ class CounterFunctionTest {
         assertThat(createCounterText(style, 8888)).isEqualTo("8888");
     }
 
+    @Test
+    void evaluate_lowerRoman() {
+        CounterFunction function = new CounterFunction(7, LOWER_ROMAN);
+        assertThat(function.evaluate()).isEqualTo("vii");
+    }
+
+    @Test
+    void evaluate_upperLatin() {
+        CounterFunction function = new CounterFunction(8, UPPER_LATIN);
+        assertThat(function.evaluate()).isEqualTo("H");
+    }
     private static class IdentValueConverter extends ConstantConverter<IdentValue> {
     }
 }
