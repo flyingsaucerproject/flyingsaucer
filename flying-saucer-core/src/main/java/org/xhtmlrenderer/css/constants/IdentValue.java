@@ -188,6 +188,7 @@ public class IdentValue implements FSDerivedValue {
     public static final IdentValue TRANSPARENT = addValue("transparent");
     public static final IdentValue UNDERLINE = addValue("underline");
     public static final IdentValue UPPER_ALPHA = addValue("upper-alpha");
+    public static final IdentValue UPPER_GREEK = addValue("upper-greek");
     public static final IdentValue UPPER_LATIN = addValue("upper-latin");
     public static final IdentValue UPPER_ROMAN = addValue("upper-roman");
     public static final IdentValue UPPERCASE = addValue("uppercase");
