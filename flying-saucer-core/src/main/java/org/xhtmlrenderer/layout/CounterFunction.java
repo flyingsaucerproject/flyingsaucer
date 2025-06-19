@@ -25,6 +25,9 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import static java.util.Locale.ROOT;
 
 public class CounterFunction implements CssFunction {
+    private static final String GREEK_UPPER_LETTERS="ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ";
+    private static final String GREEK_LOWER_LETTERS="αβγδεζηθικλμνξοπρστυφχψω";
+
     private final IdentValue _listStyleType;
     private final int _counterValue;
 
@@ -46,6 +49,10 @@ public class CounterFunction implements CssFunction {
             return toLatin(listCounter - 1).toUpperCase(ROOT);
         } else if (listStyle == IdentValue.LOWER_ROMAN) {
             return toRoman(listCounter).toLowerCase(ROOT);
+        } else if (listStyle == IdentValue.LOWER_GREEK) {
+            return toGreekLower(listCounter - 1);
+        } else if (listStyle == IdentValue.UPPER_GREEK) {
+            return toGreekUpper(listCounter - 1);
         } else if (listStyle == IdentValue.UPPER_ROMAN) {
             return toRoman(listCounter).toUpperCase(ROOT);
         } else if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
@@ -57,6 +64,14 @@ public class CounterFunction implements CssFunction {
 
     private static String toLatin(int zeroBasedIndex) {
         return zeroBasedIndex < 0 ? "" : toLatin(zeroBasedIndex / 26 - 1) + (char) ('A' + zeroBasedIndex % 26);
+    }
+
+    private static String toGreekUpper(int zeroBasedIndex) {
+        return zeroBasedIndex < 0 ? "" : toGreekUpper(zeroBasedIndex / 24 - 1) + GREEK_UPPER_LETTERS.charAt(zeroBasedIndex % 24);
+    }
+
+    private static String toGreekLower(int zeroBasedIndex) {
+        return zeroBasedIndex < 0 ? "" : toGreekLower(zeroBasedIndex / 24 - 1) + GREEK_LOWER_LETTERS.charAt(zeroBasedIndex % 24);
     }
 
     private static String toRoman(int val) {

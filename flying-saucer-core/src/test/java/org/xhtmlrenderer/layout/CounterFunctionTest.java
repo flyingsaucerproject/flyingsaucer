@@ -9,7 +9,9 @@ import org.xhtmlrenderer.util.ConstantConverter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.xhtmlrenderer.css.constants.IdentValue.DECIMAL_LEADING_ZERO;
+import static org.xhtmlrenderer.css.constants.IdentValue.LOWER_GREEK;
 import static org.xhtmlrenderer.css.constants.IdentValue.LOWER_ROMAN;
+import static org.xhtmlrenderer.css.constants.IdentValue.UPPER_GREEK;
 import static org.xhtmlrenderer.css.constants.IdentValue.UPPER_LATIN;
 import static org.xhtmlrenderer.css.constants.IdentValue.UPPER_ROMAN;
 import static org.xhtmlrenderer.layout.CounterFunction.createCounterText;
@@ -27,6 +29,8 @@ class CounterFunctionTest {
         assertThat(createCounterText(style, 27)).isEqualTo("aa");
         assertThat(createCounterText(style, 28)).isEqualTo("ab");
         assertThat(createCounterText(style, 26*26 - 1)).isEqualTo("yy");
+        assertThat(createCounterText(style, 26*26)).isEqualTo("yz");
+        assertThat(createCounterText(style, 26*27)).isEqualTo("zz");
     }
 
     @ParameterizedTest
@@ -39,6 +43,7 @@ class CounterFunctionTest {
         assertThat(createCounterText(style, 28)).isEqualTo("AB");
         assertThat(createCounterText(style, 27 * 2)).isEqualTo("BB");
         assertThat(createCounterText(style, 27 * 3)).isEqualTo("CC");
+        assertThat(createCounterText(style, 26 * 26)).isEqualTo("YZ");
         assertThat(createCounterText(style, 26 * 27)).isEqualTo("ZZ");
     }
 
@@ -105,6 +110,78 @@ class CounterFunctionTest {
         CounterFunction function = new CounterFunction(8, UPPER_LATIN);
         assertThat(function.evaluate()).isEqualTo("H");
     }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = ':', textBlock = """
+        1:α
+        2:β
+        3:γ
+        4:δ
+        5:ε
+        6:ζ
+        7:η
+        8:θ
+        9:ι
+        10:κ
+        11:λ
+        12:μ
+        13:ν
+        14:ξ
+        15:ο
+        16:π
+        17:ρ
+        18:σ
+        19:τ
+        20:υ
+        21:φ
+        22:χ
+        23:ψ
+        24:ω
+        25:αα
+        26:αβ
+        48:αω
+        600:ωω
+        """)
+    void evaluate_lowerGreek(int index, String expected) {
+        CounterFunction function = new CounterFunction(index, LOWER_GREEK);
+        assertThat(function.evaluate()).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = ':', textBlock = """
+        1:Α
+        2:Β
+        3:Γ
+        4:Δ
+        5:Ε
+        6:Ζ
+        7:Η
+        8:Θ
+        9:Ι
+        10:Κ
+        11:Λ
+        12:Μ
+        13:Ν
+        14:Ξ
+        15:Ο
+        16:Π
+        17:Ρ
+        18:Σ
+        19:Τ
+        20:Υ
+        21:Φ
+        22:Χ
+        23:Ψ
+        24:Ω
+        25:ΑΑ
+        48:ΑΩ
+        600:ΩΩ
+        """)
+    void evaluate_upperGreek(int index, String expected) {
+        CounterFunction function = new CounterFunction(index, UPPER_GREEK);
+        assertThat(function.evaluate()).isEqualTo(expected);
+    }
+
     private static class IdentValueConverter extends ConstantConverter<IdentValue> {
     }
 }
