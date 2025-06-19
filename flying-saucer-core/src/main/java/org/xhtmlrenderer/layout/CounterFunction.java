@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2007 Wisconsin Court System
+ * Copyright (c) 2007-2025 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,41 +19,24 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.css.constants.IdentValue;
-
-import java.util.Iterator;
-import java.util.List;
 
 import static java.util.Locale.ROOT;
 
-public class CounterFunction {
+public class CounterFunction implements CssFunction {
     private final IdentValue _listStyleType;
-    private int _counterValue;
-    private List<Integer> _counterValues;
-    private String _separator;
+    private final int _counterValue;
 
-    public CounterFunction(int counterValue, IdentValue listStyleType) {
+    CounterFunction(int counterValue, IdentValue listStyleType) {
         _counterValue = counterValue;
         _listStyleType = listStyleType;
     }
 
-    public CounterFunction(List<Integer> counterValues, String separator, IdentValue listStyleType) {
-        _counterValues = counterValues;
-        _separator = separator;
-        _listStyleType = listStyleType;
-    }
-
+    @CheckReturnValue
+    @Override
     public String evaluate() {
-        if (_counterValues == null) {
-            return createCounterText(_listStyleType, _counterValue);
-        }
-        StringBuilder sb = new StringBuilder();
-        for (Iterator<Integer> i = _counterValues.iterator(); i.hasNext();) {
-            Integer value = i.next();
-            sb.append(createCounterText(_listStyleType, value));
-            if (i.hasNext()) sb.append(_separator);
-        }
-        return sb.toString();
+        return createCounterText(_listStyleType, _counterValue);
     }
 
     public static String createCounterText(IdentValue listStyle, int listCounter) {

@@ -684,7 +684,8 @@ public class BoxBuilder {
     }
 
     @Nullable
-    private static CounterFunction makeCounterFunction(FSFunction function, LayoutContext c, CalculatedStyle style) {
+    @CheckReturnValue
+    private static CssFunction makeCounterFunction(FSFunction function, LayoutContext c, CalculatedStyle style) {
         if (function.is("counter")) {
             List<PropertyValue> params = function.getParameters();
             if (params.isEmpty() || params.size() > 2) {
@@ -756,7 +757,7 @@ public class BoxBuilder {
 
             List<Integer> counterValues = c.getCounterContext(style).getCurrentCounterValues(counter);
 
-            return new CounterFunction(counterValues, separator, listStyleType);
+            return new CountersFunction(counterValues, separator, listStyleType);
         } else {
             return null;
         }
@@ -788,11 +789,10 @@ public class BoxBuilder {
                 if (mode == CONTENT_LIST_DOCUMENT && isAttrFunction(value.getFunction())) {
                     content = getAttributeValue(value.getFunction(), element);
                 } else {
-                    CounterFunction cFunc = null;
-
-                    if (mode == CONTENT_LIST_DOCUMENT) {
-                        cFunc = makeCounterFunction(value.getFunction(), c, style);
-                    }
+                    CssFunction cFunc = switch (mode) {
+                        case CONTENT_LIST_DOCUMENT -> makeCounterFunction(value.getFunction(), c, style);
+                        default -> null;
+                    };
 
                     if (cFunc != null) {
                         //TODO: counter functions may be called with non-ordered list-style-types, e.g. disc
