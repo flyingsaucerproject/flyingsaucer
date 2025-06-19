@@ -58,30 +58,22 @@ public class CounterFunction {
 
     public static String createCounterText(IdentValue listStyle, int listCounter) {
         if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
-            return toLatin(listCounter).toLowerCase(ROOT);
+            return toLatin(listCounter - 1).toLowerCase(ROOT);
         } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
-            return toLatin(listCounter).toUpperCase(ROOT);
+            return toLatin(listCounter - 1).toUpperCase(ROOT);
         } else if (listStyle == IdentValue.LOWER_ROMAN) {
             return toRoman(listCounter).toLowerCase(ROOT);
         } else if (listStyle == IdentValue.UPPER_ROMAN) {
             return toRoman(listCounter).toUpperCase(ROOT);
         } else if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
             return (listCounter >= 10 ? "" : "0") + listCounter;
-        } else { // listStyle == IdentValue.DECIMAL or anything else
+        } else {
             return Integer.toString(listCounter);
         }
     }
 
-
-    private static String toLatin(int index) {
-        StringBuilder result = new StringBuilder(5);
-        int val = index - 1;
-        while (val >= 0) {
-            int letter = val % 26;
-            val = val / 26 - 1;
-            result.insert(0, (char) (letter + 65));
-        }
-        return result.toString();
+    private static String toLatin(int zeroBasedIndex) {
+        return zeroBasedIndex < 0 ? "" : toLatin(zeroBasedIndex / 26 - 1) + (char) ('A' + zeroBasedIndex % 26);
     }
 
     private static String toRoman(int val) {
