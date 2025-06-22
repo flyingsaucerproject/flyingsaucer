@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URL;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
@@ -25,7 +26,8 @@ public class SvgTest {
     @Test
     void pageWithSVG() throws IOException, ParserConfigurationException, SAXException {
         String fileName = "page-with-svg.html";
-        try (InputStream htmlStream = requireNonNull(getClass().getClassLoader().getResourceAsStream(fileName))) {
+        URL template = requireNonNull(getClass().getClassLoader().getResource(fileName));
+        try (InputStream htmlStream = template.openStream()) {
             String htmlContent = new String(htmlStream.readAllBytes(), UTF_8);
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -37,7 +39,7 @@ public class SvgTest {
             ITextUserAgent userAgent = new ITextUserAgent(renderer.getOutputDevice(), Math.round(renderer.getOutputDevice().getDotsPerPoint()));
             renderer.getSharedContext().setUserAgentCallback(userAgent);
 
-            renderer.setDocument(document, null);
+            renderer.setDocument(document, template.toString());
 
             File result = new File("target", fileName + ".pdf");
             try (FileOutputStream outputStream = new FileOutputStream(result)) {
