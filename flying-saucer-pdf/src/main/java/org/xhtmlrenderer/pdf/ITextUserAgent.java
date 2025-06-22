@@ -24,7 +24,14 @@ import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfReader;
+import org.apache.batik.transcoder.Transcoder;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
@@ -33,7 +40,9 @@ import org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -42,6 +51,7 @@ import static org.xhtmlrenderer.util.IOUtil.readBytes;
 import static org.xhtmlrenderer.util.ImageUtil.isEmbeddedBase64Image;
 
 public class ITextUserAgent extends NaiveUserAgent {
+    private static final Logger log = LoggerFactory.getLogger(ITextUserAgent.class);
     private static final int IMAGE_CACHE_CAPACITY = 32;
 
     private final ITextOutputDevice _outputDevice;
@@ -95,16 +105,36 @@ public class ITextUserAgent extends NaiveUserAgent {
                     float initialHeight = rect.getHeight() * _outputDevice.getDotsPerPoint();
                     PDFAsImage image = new PDFAsImage(uri, initialWidth, initialHeight);
                     return new ImageResource(uriStr, image);
+                } else if (cis.isSvg()) {
+                    Image image = Image.getInstance(readCsv(cis));
+                    scaleToOutputResolution(image);
+                    return new ImageResource(uriStr, new ITextFSImage(image));
                 } else {
                     Image image = Image.getInstance(readBytes(cis));
                     scaleToOutputResolution(image);
                     return new ImageResource(uriStr, new ITextFSImage(image));
                 }
             }
+        } catch (TranscoderException e) {
+            log.error("Could not load SVG image from '{}'", uriStr, e);
+            XRLog.exception("Could not load image from '%s'".formatted(uriStr), e);
         } catch (BadElementException | IOException | URISyntaxException e) {
-            XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
+            log.warn("Could not load image from '{}'", uriStr, e);
+            XRLog.exception("Could not load image from '%s'".formatted(uriStr), e);
         }
         return null;
+    }
+
+    private byte[] readCsv(InputStream in) throws IOException, TranscoderException {
+        Transcoder transcoder = new PNGTranscoder();
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, 200.0f); // TODO use required width and height
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, 200.0f);
+
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            transcoder.transcode(new TranscoderInput(in), new TranscoderOutput(out));
+            out.flush();
+            return out.toByteArray();
+        }
     }
 
     private ImageResource loadEmbeddedBase64ImageResource(final String uri) {
