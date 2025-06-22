@@ -345,14 +345,16 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
         if (_baseURL == null) {//first try to set a base URL
             try {
                 URI result = new URI(uri);
-                if (result.isAbsolute()) setBaseURL(result.toString());
+                if (result.isAbsolute() && !"file".equals(result.getScheme())) {
+                    setBaseURL(result.toString());
+                }
             } catch (URISyntaxException e) {
                 XRLog.exception("The default NaiveUserAgent could not use the URL as base url: " + uri, e);
             }
 
             if (_baseURL == null) { // still not set -> fallback to current working directory
                 try {
-                    setBaseURL(new File(".").toURI().toURL().toExternalForm());
+                    setBaseURL(new File(System.getProperty("user.dir")).toURI().toURL().toExternalForm());
                 } catch (MalformedURLException e) {
                     XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for '%s': %s".formatted(uri, e));
                     return null;
