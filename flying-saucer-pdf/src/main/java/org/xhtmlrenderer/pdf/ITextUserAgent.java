@@ -34,10 +34,10 @@ import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper.detectContentType;
 import static org.xhtmlrenderer.util.IOUtil.readBytes;
 import static org.xhtmlrenderer.util.ImageUtil.isEmbeddedBase64Image;
 
@@ -85,22 +85,20 @@ public class ITextUserAgent extends NaiveUserAgent {
         if (isEmbeddedBase64Image(uriStr)) {
             return loadEmbeddedBase64ImageResource(uriStr);
         }
-        try (InputStream is = resolveAndOpenStream(uriStr)) {
-            if (is != null) {
-                try (ContentTypeDetectingInputStreamWrapper cis = new ContentTypeDetectingInputStreamWrapper(is)) {
-                    if (cis.isPdf()) {
-                        URI uri = new URI(uriStr);
-                        PdfReader reader = _outputDevice.getReader(uri);
-                        Rectangle rect = reader.getPageSizeWithRotation(1);
-                        float initialWidth = rect.getWidth() * _outputDevice.getDotsPerPoint();
-                        float initialHeight = rect.getHeight() * _outputDevice.getDotsPerPoint();
-                        PDFAsImage image = new PDFAsImage(uri, initialWidth, initialHeight);
-                        return new ImageResource(uriStr, image);
-                    } else {
-                        Image image = Image.getInstance(readBytes(cis));
-                        scaleToOutputResolution(image);
-                        return new ImageResource(uriStr, new ITextFSImage(image));
-                    }
+        try (ContentTypeDetectingInputStreamWrapper cis = detectContentType(resolveAndOpenStream(uriStr))) {
+            if (cis != null) {
+                if (cis.isPdf()) {
+                    URI uri = new URI(uriStr);
+                    PdfReader reader = _outputDevice.getReader(uri);
+                    Rectangle rect = reader.getPageSizeWithRotation(1);
+                    float initialWidth = rect.getWidth() * _outputDevice.getDotsPerPoint();
+                    float initialHeight = rect.getHeight() * _outputDevice.getDotsPerPoint();
+                    PDFAsImage image = new PDFAsImage(uri, initialWidth, initialHeight);
+                    return new ImageResource(uriStr, image);
+                } else {
+                    Image image = Image.getInstance(readBytes(cis));
+                    scaleToOutputResolution(image);
+                    return new ImageResource(uriStr, new ITextFSImage(image));
                 }
             }
         } catch (BadElementException | IOException | URISyntaxException e) {

@@ -1,5 +1,8 @@
 package org.xhtmlrenderer.util;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +21,20 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class ContentTypeDetectingInputStreamWrapper extends BufferedInputStream {
     private static final byte[] MAGIC_BYTES_PDF = "%PDF".getBytes(UTF_8);
+    private static final byte[] MAGIC_BYTES_XML = "<?xm".getBytes(UTF_8);
+    private static final byte[] MAGIC_BYTES_SVG = "<svg".getBytes(UTF_8);
     private static final int MAX_MAGIC_BYTES = 4;
     private static final byte[] NO_DATA = new byte[0];
 
+    @Nullable
+    @CheckReturnValue
+    public static ContentTypeDetectingInputStreamWrapper detectContentType(@Nullable InputStream is) throws IOException {
+        return is == null ? null : new ContentTypeDetectingInputStreamWrapper(is);
+    }
+
     private final byte[] firstBytes;
 
-    public ContentTypeDetectingInputStreamWrapper(InputStream source) throws IOException {
+    private ContentTypeDetectingInputStreamWrapper(InputStream source) throws IOException {
         super(source);
         this.firstBytes = readFirstBytes(this, MAX_MAGIC_BYTES);
     }
@@ -48,5 +59,11 @@ public class ContentTypeDetectingInputStreamWrapper extends BufferedInputStream 
 
     public boolean isPdf() {
         return streamStartsWithMagicBytes(MAGIC_BYTES_PDF);
+    }
+
+    public boolean isSvg() {
+        // TODO Ignore leading comments in file, e.g.
+        // <!--<?xml version="1.0" encoding="UTF-8" standalone="no"?>-->
+        return streamStartsWithMagicBytes(MAGIC_BYTES_XML) || streamStartsWithMagicBytes(MAGIC_BYTES_SVG);
     }
 }
