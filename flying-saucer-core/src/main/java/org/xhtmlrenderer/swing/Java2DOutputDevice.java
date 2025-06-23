@@ -291,19 +291,23 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void fill(Shape s) {
         _graphics.fill(s);
     }
-@Override
+
+    @Override
     public void draw(Shape s) {
         _graphics.draw(s);
     }
-@Override
+
+    @Override
     public void drawImage(FSImage image, int x, int y) {
         _graphics.drawImage(((AWTFSImage)image).getImage(), x, y, null);
     }
-@Override
+
+    @Override
     public boolean isSupportsSelection() {
         return true;
     }
-@Override
+
+    @Override
     public boolean isSupportsCMYKColors() {
         return true;
     }
