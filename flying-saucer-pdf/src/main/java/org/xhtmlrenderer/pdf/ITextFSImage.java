@@ -19,59 +19,38 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.Image;
 import org.jspecify.annotations.NonNull;
 import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.extend.Size;
 
-public class ITextFSImage implements FSImage, Cloneable {
-    private final Image _image;
+public class ITextFSImage implements FSImage {
+    protected final byte[] image;
+    protected final Size size;
+    protected final String uri;
 
-    public ITextFSImage(Image image) {
-        _image = image;
+    public ITextFSImage(byte[] image, Size size, String uri) {
+        this.image = image;
+        this.size = size;
+        this.uri = uri;
     }
 
     @Override
     public int getWidth() {
-        return (int)_image.getPlainWidth();
+        return size.width();
     }
 
     @Override
     public int getHeight() {
-        return (int)_image.getPlainHeight();
+        return size.height();
     }
 
     @NonNull
     @Override
     public FSImage scale(int width, int height) {
-        if (width > 0 || height > 0) {
-            int currentWith = getWidth();
-            int currentHeight = getHeight();
-            int targetWidth = width;
-            int targetHeight = height;
-
-            if (targetWidth == -1) {
-                targetWidth = (int)(currentWith * ((double)targetHeight / currentHeight));
-            }
-
-            if (targetHeight == -1) {
-                targetHeight = (int)(currentHeight * ((double)targetWidth / currentWith));
-            }
-
-            if (currentWith != targetWidth || currentHeight != targetHeight) {
-                Image image = Image.getInstance(_image);
-                image.scaleAbsolute(targetWidth, targetHeight);
-                return new ITextFSImage(image);
-            }
-        }
-        return this;
+        return new ITextFSImage(image, size.scale(width, height), uri);
     }
 
-    public Image getImage() {
-        return _image;
-    }
-
-    @Override
-    public Object clone() {
-        return new ITextFSImage(Image.getInstance(_image));
+    public byte[] getImage() {
+        return image;
     }
 }
