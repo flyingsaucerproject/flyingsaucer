@@ -107,7 +107,6 @@ public class ITextUserAgent extends NaiveUserAgent {
                     return new ImageResource(uriStr, image);
                 } else if (cis.isSvg()) {
                     Image image = Image.getInstance(readCsv(cis));
-                    scaleToOutputResolution(image);
                     return new ImageResource(uriStr, new ITextFSImage(image));
                 } else {
                     Image image = Image.getInstance(readBytes(cis));

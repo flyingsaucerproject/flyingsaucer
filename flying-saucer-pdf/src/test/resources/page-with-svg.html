@@ -26,20 +26,23 @@
 </div>
 
 <h3>SVG Star:</h3>
-<img src="classpath:/star.svg"/>
+<img src="classpath:/star.svg" width="100px"/>
 
 <h3>Img:classpath:</h3>
 <div class="container">
     <img src="classpath:/go-home.svg"/>
 </div>
 
-<h3>Img:</h3>
-<div class="container">
-<!--    TODO How to make it work (load the image from the same folder where the html template is located)?-->
-    <img src="/go-home.svg"/>
+
+<h3>Background image PNG:</h3>
+<div class="container" style="background: center url('classpath:/flyingsaucer.png') no-repeat; background-size: 50%;">
 </div>
 
-<h3>Footer</h3>
-</body>
+<h3>Background image SVG:</h3>
+<div class="container" style="background: center url('classpath:/go-home.svg') no-repeat; background-size: 40%;">
+</div>
 
+<h3>The end.</h3>
+
+</body>
 </html>
