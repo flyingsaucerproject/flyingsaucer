@@ -24,10 +24,13 @@ import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfReader;
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.util.XMLResourceDescriptor;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.Size;
 import org.xhtmlrenderer.resource.ImageResource;
@@ -37,11 +40,13 @@ import org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static java.lang.Integer.parseInt;
 import static java.util.Objects.requireNonNull;
 import static org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper.detectContentType;
 import static org.xhtmlrenderer.util.IOUtil.readBytes;
@@ -104,7 +109,7 @@ public class ITextUserAgent extends NaiveUserAgent {
                     return new ImageResource(uriStr, image);
                 } else {
                     byte[] image = readBytes(cis);
-                    return new ImageResource(uriStr, new ITextFSImage(image, getOriginalSize(image), uriStr));
+                    return new ImageResource(uriStr, new ITextFSImage(image, getOriginalImageSize(image), uriStr));
                 }
             }
         } catch (TranscoderException e) {
@@ -129,12 +134,29 @@ public class ITextUserAgent extends NaiveUserAgent {
 
     private SvgImage readCsv(String uri, InputStream in) throws IOException, TranscoderException {
         byte[] svgBytes = readBytes(in);
-        // TODO use required width and height (or at least proportions of the original SVG)
-        return new SvgImage(svgBytes, new Size(200, 200), uri);
+        return new SvgImage(svgBytes, getOriginalSvgSize(svgBytes), uri);
     }
 
-    private Size getOriginalSize(byte[] image) throws IOException {
-        Image img = Image.getInstance(image);
+    Size getOriginalSvgSize(byte[] svgImage) throws IOException {
+        SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
+        try (ByteArrayInputStream in = new ByteArrayInputStream(svgImage)) {
+            Document document = factory.createDocument(null, in);
+            String width = document.getDocumentElement().getAttribute("width");
+            String height = document.getDocumentElement().getAttribute("height");
+            if (!width.isEmpty() && !height.isEmpty()) {
+                return new Size(parseInt(width), parseInt(height));
+            }
+            String[] viewBox = document.getDocumentElement().getAttribute("viewBox").split(" ", 4);
+            if (viewBox.length >= 4) {
+                return new Size(parseInt(viewBox[2]), parseInt(viewBox[3]));
+            }
+
+            return new Size(300, 150); // default size in most browsers
+        }
+    }
+
+    Size getOriginalImageSize(byte[] pngImage) throws IOException {
+        Image img = Image.getInstance(pngImage);
         return new Size((int) img.getPlainWidth(), (int) img.getPlainHeight());
     }
 }
