@@ -134,13 +134,13 @@ public class ITextUserAgent extends NaiveUserAgent {
 
     private SvgImage readCsv(String uri, InputStream in) throws IOException, TranscoderException {
         byte[] svgBytes = readBytes(in);
-        return new SvgImage(svgBytes, getOriginalSvgSize(svgBytes), uri);
+        return new SvgImage(svgBytes, getOriginalSvgSize(uri, svgBytes), uri);
     }
 
-    Size getOriginalSvgSize(byte[] svgImage) throws IOException {
+    Size getOriginalSvgSize(String uri, byte[] svgImage) throws IOException {
         SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
         try (ByteArrayInputStream in = new ByteArrayInputStream(svgImage)) {
-            Document document = factory.createDocument(null, in);
+            Document document = factory.createDocument(uri, in);
             String width = document.getDocumentElement().getAttribute("width");
             String height = document.getDocumentElement().getAttribute("height");
             if (!width.isEmpty() && !height.isEmpty()) {

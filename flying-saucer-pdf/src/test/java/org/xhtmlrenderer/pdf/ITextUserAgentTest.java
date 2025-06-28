@@ -19,7 +19,7 @@ class ITextUserAgentTest {
 
     @Test
     void svg_withWidthAndHeightAttributes() throws IOException {
-        assertThat(agent.getOriginalSvgSize("""
+        assertThat(agent.getOriginalSvgSize("https://some.test.com", """
             <svg xmlns="http://www.w3.org/2000/svg" width="300" height="200">
             </svg>
             """.getBytes(UTF_8))).isEqualTo(new Size(300, 200));
@@ -27,7 +27,7 @@ class ITextUserAgentTest {
 
     @Test
     void svg_withViewBoxAttribute() throws IOException {
-        assertThat(agent.getOriginalSvgSize("""
+        assertThat(agent.getOriginalSvgSize("https://some.test.com", """
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500">
             </svg>
             """.getBytes(UTF_8))).isEqualTo(new Size(600, 500));
@@ -35,7 +35,7 @@ class ITextUserAgentTest {
 
     @Test
     void svg_withoutSpecifiedSize() throws IOException {
-        assertThat(agent.getOriginalSvgSize("""
+        assertThat(agent.getOriginalSvgSize("https://some.test.com", """
             <svg xmlns="http://www.w3.org/2000/svg">
             </svg>
             """.getBytes(UTF_8))).isEqualTo(new Size(300, 150));
