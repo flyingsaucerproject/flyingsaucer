@@ -1,7 +1,10 @@
 # Changelog
 
-## 9.12.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/34
-* in progress
+## 9.13.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/34?closed=1
+* Support SVG images (#523)
+* support "classpath:" URLs with leading slash (#523)
+* support "lower-greek" and "upper-greek" list styles (#522)
+* bump log4j from 2.24.3 to 2.25.0 (#520)
 
 ## 9.12.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/33?closed=1
 * Disable external entity access in XMLResource - thanks to Andreas Røsdal (#515)
