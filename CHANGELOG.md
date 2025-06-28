@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.13.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/36
+* in progress
+
 ## 9.13.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/34?closed=1
 * Support SVG images (#523)
 * support "classpath:" URLs with leading slash (#523)
