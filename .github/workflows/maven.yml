@@ -11,7 +11,7 @@ jobs:
     strategy:
         matrix:
             # The last 2 LTS releases + latest version
-            java: [ 17, 21, 24 ]
+            java: [ 21, 24 ]
     name: Java ${{matrix.java}}
     steps:
       - uses: actions/checkout@v4
