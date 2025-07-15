@@ -6,16 +6,10 @@ import org.xhtmlrenderer.extend.Size;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.io.IOUtils.resourceToByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ITextUserAgentTest {
     private final ITextUserAgent agent = new ITextUserAgent(new ITextOutputDevice(1.0f), 1);
-
-    @Test
-    void pngSize() throws IOException {
-        assertThat(agent.getOriginalImageSize(resourceToByteArray("/flyingsaucer.png"))).isEqualTo(new Size(109, 92));
-    }
 
     @Test
     void svg_withWidthAndHeightAttributes() throws IOException {

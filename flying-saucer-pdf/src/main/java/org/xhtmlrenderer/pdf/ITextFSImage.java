@@ -19,38 +19,49 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import com.lowagie.text.Image;
 import org.jspecify.annotations.NonNull;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.Size;
 
-public class ITextFSImage implements FSImage {
-    protected final byte[] image;
-    protected final Size size;
-    protected final String uri;
+public class ITextFSImage implements FSImage, Cloneable {
+    private final Image image;
 
-    public ITextFSImage(byte[] image, Size size, String uri) {
+    public ITextFSImage(Image image) {
         this.image = image;
-        this.size = size;
-        this.uri = uri;
     }
 
     @Override
     public int getWidth() {
-        return size.width();
+        return (int) image.getPlainWidth();
     }
 
     @Override
     public int getHeight() {
-        return size.height();
+        return (int) image.getPlainHeight();
     }
 
     @NonNull
     @Override
     public FSImage scale(int width, int height) {
-        return new ITextFSImage(image, size.scale(width, height), uri);
+        Size current = new Size(getWidth(), getHeight());
+        Size target = current.scale(width, height);
+
+        if (!target.equals(current)) {
+            Image scaledImage = Image.getInstance(image);
+            scaledImage.scaleAbsolute(target.width(), target.height());
+            return new ITextFSImage(scaledImage);
+        }
+        return this;
     }
 
-    public byte[] getImage() {
+    public Image getImage() {
         return image;
+    }
+
+    @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public Object clone() {
+        return new ITextFSImage(Image.getInstance(image));
     }
 }

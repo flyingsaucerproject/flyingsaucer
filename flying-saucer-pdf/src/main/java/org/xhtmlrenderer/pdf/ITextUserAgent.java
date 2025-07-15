@@ -82,11 +82,16 @@ public class ITextUserAgent extends NaiveUserAgent {
             _imageCache.put(unresolvedUri, resource);
         }
         if (resource != null) {
-            FSImage image = resource.getImage();
+            FSImage image = makeSafeCopy(resource.getImage());
             return new ImageResource(resource.getImageUri(), image);
         } else {
             return new ImageResource(uriStr, null);
         }
+    }
+
+    @Nullable
+    private FSImage makeSafeCopy(@Nullable FSImage image) {
+        return image instanceof ITextFSImage mutable ? (FSImage) mutable.clone() : image;
     }
 
     @Nullable
@@ -108,8 +113,9 @@ public class ITextUserAgent extends NaiveUserAgent {
                     SvgImage image = readCsv(uriStr, cis);
                     return new ImageResource(uriStr, image);
                 } else {
-                    byte[] image = readBytes(cis);
-                    return new ImageResource(uriStr, new ITextFSImage(image, getOriginalImageSize(image), uriStr));
+                    Image image = Image.getInstance(readBytes(cis));
+                    scaleToOutputResolution(image);
+                    return new ImageResource(uriStr, new ITextFSImage(image));
                 }
             }
         } catch (TranscoderException e) {
@@ -124,10 +130,12 @@ public class ITextUserAgent extends NaiveUserAgent {
 
     private ImageResource loadEmbeddedBase64ImageResource(final String uri) {
         try {
-            byte[] image = requireNonNull(ImageUtil.getEmbeddedBase64Image(uri));
-            return new ImageResource(uri, new ITextFSImage(image, new Size(-1, -1), uri));
-        } catch (BadElementException e) {
-            XRLog.exception("Can't read XHTML embedded image.", e);
+            byte[] bytes = requireNonNull(ImageUtil.getEmbeddedBase64Image(uri));
+            Image image = Image.getInstance(bytes);
+            scaleToOutputResolution(image);
+            return new ImageResource(uri, new ITextFSImage(image));
+        } catch (BadElementException | IOException e) {
+            XRLog.exception("Can't read embedded base64 image from " + uri, e);
         }
         return new ImageResource(null, null);
     }
@@ -155,8 +163,10 @@ public class ITextUserAgent extends NaiveUserAgent {
         }
     }
 
-    Size getOriginalImageSize(byte[] pngImage) throws IOException {
-        Image img = Image.getInstance(pngImage);
-        return new Size((int) img.getPlainWidth(), (int) img.getPlainHeight());
+    private void scaleToOutputResolution(Image image) {
+        float factor = dotsPerPixel;
+        if (factor != 1.0f) {
+            image.scaleAbsolute(image.getPlainWidth() * factor, image.getPlainHeight() * factor);
+        }
     }
 }
