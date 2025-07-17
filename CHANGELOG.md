@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.13.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/37
+* in progress
+
 ## 9.13.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/36?closed=1
 * #530 fix `page-break-inside:` - thanks to xlaussel (#536)
 * #537 #540 fix size of base64-encoded images (#541)
