@@ -16,7 +16,29 @@
   <packaging>jar</packaging>
 
   <name>Flying Saucer FOP for word-break capability</name>
-  <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact provides implementation of the word-break capability using Apache FOP library</description>
+  <description>Flying Saucer is a CSS 2.1 renderer written in Java. This artifact provides implementation of the word-break capability using Apache FOP library</description>
+
+  <url>${project.parent.url}</url>
+
+  <scm>
+    <connection>${project.parent.scm.connection}</connection>
+    <developerConnection>${project.parent.scm.developerConnection}</developerConnection>
+    <url>${project.parent.scm.url}</url>
+    <tag>${project.parent.scm.tag}</tag>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>pdoubleya</id>
+      <name>Patrick Wright</name>
+      <email>pdoubleya@gmail.com</email>
+    </developer>
+    <developer>
+      <id>peter.brant</id>
+      <name>Peter Brant</name>
+      <email>peter.brant@gmail.com</email>
+    </developer>
+  </developers>
 
   <licenses>
     <license>

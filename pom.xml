@@ -13,7 +13,7 @@
   <name>Flying Saucer</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java. It supports Java2D, PDF, and SWT output.</description>
 
-  <url>http://code.google.com/p/flying-saucer/</url>
+  <url>https://github.com/flyingsaucerproject/flyingsaucer</url>
 
   <licenses>
     <license>
@@ -175,6 +175,17 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.8.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+          <autoPublish>true</autoPublish>
+          <waitUntil>published</waitUntil>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
