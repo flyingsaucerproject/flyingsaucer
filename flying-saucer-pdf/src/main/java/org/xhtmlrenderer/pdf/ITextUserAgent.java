@@ -24,8 +24,15 @@ import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfReader;
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.util.XMLResourceDescriptor;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.extend.Size;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.Configuration;
@@ -33,15 +40,20 @@ import org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static java.lang.Integer.parseInt;
+import static java.util.Objects.requireNonNull;
+import static org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper.detectContentType;
 import static org.xhtmlrenderer.util.IOUtil.readBytes;
 import static org.xhtmlrenderer.util.ImageUtil.isEmbeddedBase64Image;
 
 public class ITextUserAgent extends NaiveUserAgent {
+    private static final Logger log = LoggerFactory.getLogger(ITextUserAgent.class);
     private static final int IMAGE_CACHE_CAPACITY = 32;
 
     private final ITextOutputDevice _outputDevice;
@@ -70,10 +82,7 @@ public class ITextUserAgent extends NaiveUserAgent {
             _imageCache.put(unresolvedUri, resource);
         }
         if (resource != null) {
-            FSImage image = resource.getImage();
-            if (image instanceof ITextFSImage) {
-                image = (FSImage) ((ITextFSImage) resource.getImage()).clone();
-            }
+            FSImage image = makeSafeCopy(resource.getImage());
             return new ImageResource(resource.getImageUri(), image);
         } else {
             return new ImageResource(uriStr, null);
@@ -81,44 +90,77 @@ public class ITextUserAgent extends NaiveUserAgent {
     }
 
     @Nullable
+    private FSImage makeSafeCopy(@Nullable FSImage image) {
+        return image instanceof ITextFSImage mutable ? (FSImage) mutable.clone() : image;
+    }
+
+    @Nullable
     private ImageResource loadImageResource(String uriStr) {
         if (isEmbeddedBase64Image(uriStr)) {
             return loadEmbeddedBase64ImageResource(uriStr);
         }
-        try (InputStream is = resolveAndOpenStream(uriStr)) {
-            if (is != null) {
-                try (ContentTypeDetectingInputStreamWrapper cis = new ContentTypeDetectingInputStreamWrapper(is)) {
-                    if (cis.isPdf()) {
-                        URI uri = new URI(uriStr);
-                        PdfReader reader = _outputDevice.getReader(uri);
-                        Rectangle rect = reader.getPageSizeWithRotation(1);
-                        float initialWidth = rect.getWidth() * _outputDevice.getDotsPerPoint();
-                        float initialHeight = rect.getHeight() * _outputDevice.getDotsPerPoint();
-                        PDFAsImage image = new PDFAsImage(uri, initialWidth, initialHeight);
-                        return new ImageResource(uriStr, image);
-                    } else {
-                        Image image = Image.getInstance(readBytes(cis));
-                        scaleToOutputResolution(image);
-                        return new ImageResource(uriStr, new ITextFSImage(image));
-                    }
+        try (ContentTypeDetectingInputStreamWrapper cis = detectContentType(resolveAndOpenStream(uriStr))) {
+            if (cis != null) {
+                if (cis.isPdf()) {
+                    URI uri = new URI(uriStr);
+                    PdfReader reader = _outputDevice.getReader(uri);
+                    Rectangle rect = reader.getPageSizeWithRotation(1);
+                    float initialWidth = rect.getWidth() * _outputDevice.getDotsPerPoint();
+                    float initialHeight = rect.getHeight() * _outputDevice.getDotsPerPoint();
+                    PDFAsImage image = new PDFAsImage(uri, initialWidth, initialHeight);
+                    return new ImageResource(uriStr, image);
+                } else if (cis.isSvg()) {
+                    SvgImage image = readCsv(uriStr, cis);
+                    return new ImageResource(uriStr, image);
+                } else {
+                    Image image = Image.getInstance(readBytes(cis));
+                    scaleToOutputResolution(image);
+                    return new ImageResource(uriStr, new ITextFSImage(image));
                 }
             }
+        } catch (TranscoderException e) {
+            log.error("Could not load SVG image from '{}'", uriStr, e);
+            XRLog.exception("Could not load image from '%s'".formatted(uriStr), e);
         } catch (BadElementException | IOException | URISyntaxException e) {
-            XRLog.exception("Can't read image file; unexpected problem for URI '" + uriStr + "'", e);
+            log.warn("Could not load image from '{}'", uriStr, e);
+            XRLog.exception("Could not load image from '%s'".formatted(uriStr), e);
         }
         return null;
     }
 
     private ImageResource loadEmbeddedBase64ImageResource(final String uri) {
         try {
-            byte[] buffer = ImageUtil.getEmbeddedBase64Image(uri);
-            Image image = Image.getInstance(buffer);
+            byte[] bytes = requireNonNull(ImageUtil.getEmbeddedBase64Image(uri));
+            Image image = Image.getInstance(bytes);
             scaleToOutputResolution(image);
-            return new ImageResource(null, new ITextFSImage(image));
+            return new ImageResource(uri, new ITextFSImage(image));
         } catch (BadElementException | IOException e) {
-            XRLog.exception("Can't read XHTML embedded image.", e);
+            XRLog.exception("Can't read embedded base64 image from " + uri, e);
         }
         return new ImageResource(null, null);
+    }
+
+    private SvgImage readCsv(String uri, InputStream in) throws IOException, TranscoderException {
+        byte[] svgBytes = readBytes(in);
+        return new SvgImage(svgBytes, getOriginalSvgSize(uri, svgBytes), uri);
+    }
+
+    Size getOriginalSvgSize(String uri, byte[] svgImage) throws IOException {
+        SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
+        try (ByteArrayInputStream in = new ByteArrayInputStream(svgImage)) {
+            Document document = factory.createDocument(uri, in);
+            String width = document.getDocumentElement().getAttribute("width");
+            String height = document.getDocumentElement().getAttribute("height");
+            if (!width.isEmpty() && !height.isEmpty()) {
+                return new Size(parseInt(width), parseInt(height));
+            }
+            String[] viewBox = document.getDocumentElement().getAttribute("viewBox").split(" ", 4);
+            if (viewBox.length >= 4) {
+                return new Size(parseInt(viewBox[2]), parseInt(viewBox[3]));
+            }
+
+            return new Size(300, 150); // default size in most browsers
+        }
     }
 
     private void scaleToOutputResolution(Image image) {

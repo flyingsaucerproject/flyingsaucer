@@ -863,10 +863,10 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     @Override
     public void drawImage(FSImage fsImage, int x, int y) {
-        if (fsImage instanceof PDFAsImage) {
-            drawPDFAsImage((PDFAsImage) fsImage, x, y);
-        } else {
-            Image image = ((ITextFSImage) fsImage).getImage();
+        if (fsImage instanceof PDFAsImage pdfAsImage) {
+            drawPDFAsImage(pdfAsImage, x, y);
+        } else if (fsImage instanceof ITextFSImage iTextImage) {
+            Image image = iTextImage.getImage();
 
             if (fsImage.getHeight() <= 0 || fsImage.getWidth() <= 0) {
                 return;
@@ -889,6 +889,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
             } catch (DocumentException e) {
                 throw new XRRuntimeException(e.getMessage(), e);
             }
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported image type: " + fsImage.getClass().getName());
         }
     }
 

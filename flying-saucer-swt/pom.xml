@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.12.2-SNAPSHOT</version>
+    <version>9.13.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -17,6 +17,28 @@
 
   <name>Flying Saucer SWT Support</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java.  This artifact supports SWT output.</description>
+
+  <url>${project.parent.url}</url>
+
+  <scm>
+    <connection>${project.parent.scm.connection}</connection>
+    <developerConnection>${project.parent.scm.developerConnection}</developerConnection>
+    <url>${project.parent.scm.url}</url>
+    <tag>${project.parent.scm.tag}</tag>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>pdoubleya</id>
+      <name>Patrick Wright</name>
+      <email>pdoubleya@gmail.com</email>
+    </developer>
+    <developer>
+      <id>peter.brant</id>
+      <name>Peter Brant</name>
+      <email>peter.brant@gmail.com</email>
+    </developer>
+  </developers>
 
   <licenses>
     <license>

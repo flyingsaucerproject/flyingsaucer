@@ -1,5 +1,7 @@
-# Flying Saucer [![Download](https://api.bintray.com/packages/flyingsaucerproject/maven/org.xhtmlrenderer%3Aflying-saucer/images/download.svg)](https://bintray.com/flyingsaucerproject/maven/org.xhtmlrenderer%3Aflying-saucer/_latestVersion) [![License: LGPL v2.1](https://img.shields.io/badge/license-LGPL--2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
-
+# Flying Saucer
+[![Maven Central](https://img.shields.io/maven-central/v/org.xhtmlrenderer/flying-saucer-pdf)](https://central.sonatype.com/artifact/org.xhtmlrenderer/flying-saucer-pdf)
+[![License: LGPL v2.1](https://img.shields.io/badge/license-LGPL--2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
+[![CI](https://github.com/flyingsaucerproject/flyingsaucer/actions/workflows/maven.yml/badge.svg)](https://github.com/flyingsaucerproject/flyingsaucer/actions/workflows/maven.yml)
 
 ## OVERVIEW
 
@@ -77,6 +79,5 @@ This is also the reason why Issues are currently deactivated on GitHub.
 
 ### HISTORIC LINKS
 
-* [Website](https://code.google.com/archive/p/flying-saucer/)
+* [Website](https://github.com/flyingsaucerproject/flyingsaucer)
 * [Google Code project page (archived/read-only)](https://code.google.com/archive/p/flying-saucer/)
-* [Google Code Issues (archived/read-only)](https://code.google.com/archive/p/flying-saucer/issues)

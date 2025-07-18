@@ -3,7 +3,30 @@ name: Build
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '.idea/**'
+      - '.run/**'
+      - '**/*.iml'
+      - '**/*.md'
+      - 'notes/**/*'
+      - '**/.editorconfig'
+      - '**/.gitattributes'
+      - '**/.gitignore'
+      - 'LICENSE*'
+      - '.keepalive'
+
   pull_request:
+    paths-ignore:
+      - '.idea/**'
+      - '.run/**'
+      - '**/*.iml'
+      - '**/*.md'
+      - 'notes/**/*'
+      - '**/.editorconfig'
+      - '**/.gitattributes'
+      - '**/.gitignore'
+      - 'LICENSE*'
+      - '.keepalive'
 
 jobs:
   build:

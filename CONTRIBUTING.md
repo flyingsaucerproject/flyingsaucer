@@ -28,12 +28,12 @@ Steps to release version 9.5.0 (for example)
 3. git commit -am "Release 9.5.0"
 4. git tag v9.5.0 
 5. git push --tags origin main
-6. mvn clean deploy   // uploads the `*.jar` files to https://oss.sonatype.org
+6. mvn clean deploy   // uploads the `*.jar` files to https://central.sonatype.com/
 7. mvn versions:set -DnewVersion=9.5.1-SNAPSHOT 
 8. git commit -am "Working on 9.5.1"
 9. git push origin main
 
-10. Login to https://oss.sonatype.org/#stagingRepositories 
+10. Login to https://central.sonatype.com/ 
     * Click "Release" (no need to fill description)
     * After ~5 minutes, the new jar will be available in Central Maven repo
 11. Open https://github.com/flyingsaucerproject/flyingsaucer/milestone -> 9.5.0 -> "Edit milestone" -> "Close milestone"

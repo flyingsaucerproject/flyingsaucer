@@ -1,7 +1,18 @@
 # Changelog
 
-## 9.12.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/34
+## 9.13.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/37
 * in progress
+
+## 9.13.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/36?closed=1
+* #530 fix `page-break-inside:` - thanks to xlaussel (#536)
+* #537 #540 fix size of base64-encoded images (#541)
+* #539 restore original design of ITextFSImage (#541)
+
+## 9.13.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/34?closed=1
+* Support SVG images (#523)
+* support "classpath:" URLs with leading slash (#523)
+* support "lower-greek" and "upper-greek" list styles (#522)
+* bump log4j from 2.24.3 to 2.25.0 (#520)
 
 ## 9.12.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/33?closed=1
 * Disable external entity access in XMLResource - thanks to Andreas Røsdal (#515)

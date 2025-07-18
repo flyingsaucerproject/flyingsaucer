@@ -6,14 +6,14 @@
 
   <groupId>org.xhtmlrenderer</groupId>
   <artifactId>flying-saucer-parent</artifactId>
-  <version>9.12.2-SNAPSHOT</version>
+  <version>9.13.2-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
   <name>Flying Saucer</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java. It supports Java2D, PDF, and SWT output.</description>
 
-  <url>http://code.google.com/p/flying-saucer/</url>
+  <url>https://github.com/flyingsaucerproject/flyingsaucer</url>
 
   <licenses>
     <license>
@@ -124,8 +124,8 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <id>central</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -157,7 +157,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.6.1</version>
         <executions>
           <execution>
             <id>enforce</id>
@@ -177,14 +177,14 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.7.0</version>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.8.0</version>
         <extensions>true</extensions>
         <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>false</autoReleaseAfterClose>
+          <publishingServerId>central</publishingServerId>
+          <autoPublish>true</autoPublish>
+          <waitUntil>published</waitUntil>
         </configuration>
       </plugin>
       <plugin>
@@ -264,7 +264,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.2.7</version>
+        <version>3.2.8</version>
         <executions>
           <execution>
             <id>sign-artifacts</id>
@@ -295,15 +295,16 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <openpdf.version>2.0.5</openpdf.version>
+    <batik.version>1.19</batik.version>
     <commons-io.version>2.19.0</commons-io.version>
-    <junit.version>5.13.2</junit.version>
+    <junit.version>5.13.3</junit.version>
     <slf4j.version>2.0.17</slf4j.version>
     <assertj.version>3.27.3</assertj.version>
-    <pdftest.version>1.9.2</pdftest.version>
+    <pdftest.version>2.0.0</pdftest.version>
     <pdfbox.version>3.0.5</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
     <java.version>21</java.version>
-    <error_prone.version>2.39.0</error_prone.version>
+    <error_prone.version>2.40.0</error_prone.version>
   </properties>
 
 </project>
