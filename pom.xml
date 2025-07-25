@@ -296,15 +296,15 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <openpdf.version>2.0.5</openpdf.version>
     <batik.version>1.19</batik.version>
-    <commons-io.version>2.19.0</commons-io.version>
-    <junit.version>5.13.3</junit.version>
+    <commons-io.version>2.20.0</commons-io.version>
+    <junit.version>5.13.4</junit.version>
     <slf4j.version>2.0.17</slf4j.version>
     <assertj.version>3.27.3</assertj.version>
     <pdftest.version>2.0.0</pdftest.version>
     <pdfbox.version>3.0.5</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
     <java.version>21</java.version>
-    <error_prone.version>2.40.0</error_prone.version>
+    <error_prone.version>2.41.0</error_prone.version>
   </properties>
 
 </project>
