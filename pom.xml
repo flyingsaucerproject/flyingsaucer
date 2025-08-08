@@ -299,7 +299,7 @@
     <commons-io.version>2.20.0</commons-io.version>
     <junit.version>5.13.4</junit.version>
     <slf4j.version>2.0.17</slf4j.version>
-    <assertj.version>3.27.3</assertj.version>
+    <assertj.version>3.27.4</assertj.version>
     <pdftest.version>2.0.0</pdftest.version>
     <pdfbox.version>3.0.5</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
