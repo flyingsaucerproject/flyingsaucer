@@ -1,54 +1,54 @@
 # Changelog
 
-## 9.13.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/37
-* in progress
+## 9.13.2 (11.08.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/37?closed=1
+* enable anti-aliasing by default
 
-## 9.13.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/36?closed=1
+## 9.13.1 (17.07.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/36?closed=1
 * #530 fix `page-break-inside:` - thanks to xlaussel (#536)
 * #537 #540 fix size of base64-encoded images (#541)
 * #539 restore original design of ITextFSImage (#541)
 
-## 9.13.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/34?closed=1
+## 9.13.0 (28.06.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/34?closed=1
 * Support SVG images (#523)
 * support "classpath:" URLs with leading slash (#523)
 * support "lower-greek" and "upper-greek" list styles (#522)
 * bump log4j from 2.24.3 to 2.25.0 (#520)
 
-## 9.12.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/33?closed=1
+## 9.12.1 (17.06.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/33?closed=1
 * Disable external entity access in XMLResource - thanks to Andreas Røsdal (#515)
 * Adds a page to the root layer if there is none - thanks to @nicolaecismaru (#501)
 * Refactoring (#503) (#516) (#517)
 * Bump openpdf from 2.0.3 to 2.0.5  (#508) (#511)
 
-## 9.12.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/32?closed=1
+## 9.12.0 (17.04.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/32?closed=1
 * Add support for linear gradients and opacity - thanks to Ondřej Španěl and haberbyte (#493) (#22)
 * Fix border rounding issues and overlap singularities - thanks to Ondřej Španěl (#492)
 * Make mockito a test scoped dependency - thanks to Pim Tegelaar (#497)
 * Refactoring (#498)
 
-## 9.11.6 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/31?closed=1
+## 9.11.6 (08.04.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/31?closed=1
 * #486 restore public method `setDocument` with `NamespaceHandler` argument (#488)
 * refactoring: removed null checks & simplified code (#487)
 
-## 9.11.5 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/30?closed=1
+## 9.11.5 (29.03.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/30?closed=1
 * #481 Inversion between right and left for the border-radius CSS property (#483) (#484)
 * #482 Slightly decrease memory consumption in CSS parser
 
-## 9.11.4 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/29?closed=1
+## 9.11.4 (21.02.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/29?closed=1
 * #471 restore method `setScaleToFit`  --  thanks to Wang Xinli (#472)
 
-## 9.11.3 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/28?closed=1
+## 9.11.3 (29.01.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/28?closed=1
 * Add support for percent-encoded data URLs  --  thanks to Romain Moreau (#457)
 * #466 restore class `ToPDF`
 * bump PdfBox from 3.0.3 to 3.0.4 (#468)
 
-## 9.11.2 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/27?closed=1
+## 9.11.2 (02.12.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/27?closed=1
 * restore class XHTMLPrintable (#451)
 
-## 9.11.1 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/26?closed=1
+## 9.11.1 (22.11.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/26?closed=1
 * #447 Broken page headers in version 9.11.0 (#450)
 
-## 9.11.0 - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/25?closed=1
+## 9.11.0 (12.11.2024) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/25?closed=1
 * Add support for `word-break:break-all` CSS property  --  thanks to Kyle Stephens (#438)
 * #440 Fix relative background image (#441)
 * Fix PDFAsImage scaling  --  thanks to JamesScrase-PortSwigger (#442)
