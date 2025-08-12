@@ -41,6 +41,7 @@ New releases of Flying Saucer are distributed through Maven. The available artif
 
 Flying Saucer from version 9.5.0, requires Java 11 or later.
 Flying Saucer from version 9.6.0, requires Java 17 or later.
+Flying Saucer from version 10.0.0, requires Java 21 or later.
 
 ## GETTING STARTED
 
