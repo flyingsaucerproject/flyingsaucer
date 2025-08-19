@@ -19,8 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.BaseFont;
+import org.openpdf.text.DocumentException;
+import org.openpdf.text.pdf.BaseFont;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.css.constants.IdentValue;

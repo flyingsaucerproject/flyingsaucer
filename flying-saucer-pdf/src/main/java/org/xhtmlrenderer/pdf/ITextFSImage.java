@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.Image;
+import org.openpdf.text.Image;
 import org.jspecify.annotations.NonNull;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.Size;
