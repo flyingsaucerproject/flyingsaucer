@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.pdf;
 
 import org.openpdf.text.DocumentException;
+import org.openpdf.text.pdf.PdfName;
 import org.openpdf.text.pdf.PdfPageEvent;
 import org.openpdf.text.pdf.PdfWriter;
 import org.jspecify.annotations.Nullable;
@@ -254,8 +255,9 @@ public class ITextRenderer {
         _pdfEncryption = pdfEncryption;
     }
 
-    public void setPDFVersion(String _v) {
-        if (!validPdfVersions.contains(_v)) {
+
+    public void setPDFVersion(@Nullable String _v) {
+        if (_v != null && !validPdfVersions.contains(_v)) {
             throw new IllegalArgumentException("""
                     Invalid PDF version character: "%s"; use one of constants in %s.
                     """.formatted(_v, validPdfVersions).trim());
@@ -263,8 +265,9 @@ public class ITextRenderer {
         _pdfVersion = _v;
     }
 
+    @Nullable
     public String getPDFVersion() {
-        return _pdfVersion == null ? "0" : _pdfVersion;
+        return _pdfVersion;
     }
 
     public void setPDFXConformance(int pdfXConformance) {
