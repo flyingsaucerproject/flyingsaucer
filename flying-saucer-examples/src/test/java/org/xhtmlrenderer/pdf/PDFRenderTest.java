@@ -1,7 +1,7 @@
 package org.xhtmlrenderer.pdf;
 
 import com.codeborne.pdftest.PDF;
-import com.lowagie.text.DocumentException;
+import org.openpdf.text.DocumentException;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

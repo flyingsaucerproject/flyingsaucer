@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.DocumentException;
+import org.openpdf.text.DocumentException;
 
 import java.io.File;
 import java.io.IOException;

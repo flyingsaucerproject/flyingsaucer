@@ -151,7 +151,7 @@ public class BrowserActions {
     @CheckReturnValue
     private boolean isOpenPdfInClasspath() {
         try {
-            Class.forName("com.lowagie.text.DocumentException");
+            Class.forName("org.openpdf.text.DocumentException");
             return true;
         } catch (ClassNotFoundException ignore) {
             return false;

@@ -1,8 +1,8 @@
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.RandomAccessFileOrArray;
+import org.openpdf.text.DocumentException;
+import org.openpdf.text.pdf.BaseFont;
+import org.openpdf.text.pdf.RandomAccessFileOrArray;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.pdf.FontDescription.Decorations;

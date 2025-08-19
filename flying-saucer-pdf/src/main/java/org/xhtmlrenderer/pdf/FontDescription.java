@@ -1,6 +1,6 @@
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.pdf.BaseFont;
+import org.openpdf.text.pdf.BaseFont;
 import org.xhtmlrenderer.css.constants.IdentValue;
 
 public class FontDescription {
