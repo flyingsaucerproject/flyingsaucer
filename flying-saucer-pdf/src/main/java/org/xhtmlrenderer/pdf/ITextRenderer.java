@@ -61,8 +61,9 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -95,7 +96,7 @@ public class ITextRenderer {
     // check for null before calling writer.setPdfVersion()
     // use one of the values in PDFWriter.VERSION...
     @Nullable
-    private Character _pdfVersion;
+    private String _pdfVersion;
 
     @Nullable
     private PdfPageEvent pdfPageEvent;
@@ -105,14 +106,15 @@ public class ITextRenderer {
 
     private boolean scaleToFit;
 
-    private final char[] validPdfVersions = {
+    private final Set<String> validPdfVersions = new TreeSet<>(Set.of( // treeset for exception message with non-random order. Treeset is ordered
             PdfWriter.VERSION_1_2,
             PdfWriter.VERSION_1_3,
             PdfWriter.VERSION_1_4,
             PdfWriter.VERSION_1_5,
             PdfWriter.VERSION_1_6,
-            PdfWriter.VERSION_1_7
-    };
+            PdfWriter.VERSION_1_7,
+            PdfWriter.VERSION_2_0
+    ));
 
     @Nullable
     private Integer _pdfXConformance;
@@ -252,17 +254,17 @@ public class ITextRenderer {
         _pdfEncryption = pdfEncryption;
     }
 
-    public void setPDFVersion(char _v) {
-        if (Arrays.binarySearch(validPdfVersions, _v) < 0) {
+    public void setPDFVersion(String _v) {
+        if (!validPdfVersions.contains(_v)) {
             throw new IllegalArgumentException("""
-                    Invalid PDF version character: "%s"; use one of constants PdfWriter.VERSION_1_N.
-                    """.formatted(_v).trim());
+                    Invalid PDF version character: "%s"; use one of constants in %s.
+                    """.formatted(_v, validPdfVersions).trim());
         }
         _pdfVersion = _v;
     }
 
-    public char getPDFVersion() {
-        return _pdfVersion == null ? '0' : _pdfVersion;
+    public String getPDFVersion() {
+        return _pdfVersion == null ? "0" : _pdfVersion;
     }
 
     public void setPDFXConformance(int pdfXConformance) {
