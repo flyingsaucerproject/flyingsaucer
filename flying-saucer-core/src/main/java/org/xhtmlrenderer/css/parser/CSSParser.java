@@ -907,8 +907,8 @@ public class CSSParser {
                  IDENT,
                  VERTICAL_BAR -> {
                 NamespacePair pair = typed_value(false);
-                selector.setNamespaceURI(pair.getNamespaceURI());
-                selector.setName(pair.getName());
+                selector.setNamespaceURI(pair.namespaceURI());
+                selector.setName(pair.name());
 
                 LOOP: while (true) {
                     t = la();
@@ -1079,8 +1079,8 @@ public class CSSParser {
             if (t == Token.TK_IDENT || t == Token.TK_ASTERISK || t == Token.TK_VERTICAL_BAR) {
                 boolean existenceMatch = true;
                 NamespacePair pair = typed_value(true);
-                String attrNamespaceURI = pair.getNamespaceURI();
-                String attrName = pair.getName();
+                String attrNamespaceURI = pair.namespaceURI();
+                String attrName = pair.name();
                 skip_whitespace();
                 t = la();
                 switch (t.getType()) {
@@ -2057,21 +2057,6 @@ public class CSSParser {
         _supportCMYKColors = b;
     }
 
-    private static class NamespacePair {
-        private final String _namespaceURI;
-        private final String _name;
-
-        private NamespacePair(String namespaceURI, String name) {
-            _namespaceURI = namespaceURI;
-            _name = name;
-        }
-
-        public String getNamespaceURI() {
-            return _namespaceURI;
-        }
-
-        public String getName() {
-            return _name;
-        }
+    private record NamespacePair(String namespaceURI, String name) {
     }
 }
