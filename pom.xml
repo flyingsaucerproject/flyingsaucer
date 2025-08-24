@@ -6,7 +6,7 @@
 
   <groupId>org.xhtmlrenderer</groupId>
   <artifactId>flying-saucer-parent</artifactId>
-  <version>9.13.2</version>
+  <version>9.13.3</version>
 
   <packaging>pom</packaging>
 
@@ -235,7 +235,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.11.2</version>
+        <version>3.11.3</version>
         <configuration>
           <doclint>all,-accessibility,-syntax,-html,-reference,-missing</doclint>
         </configuration>
@@ -303,8 +303,9 @@
     <pdftest.version>2.0.0</pdftest.version>
     <pdfbox.version>3.0.5</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
-    <java.version>17</java.version>
+    <java.version>21</java.version>
     <error_prone.version>2.41.0</error_prone.version>
+    <swt.version>3.130.0</swt.version>
   </properties>
 
 </project>

@@ -21,6 +21,8 @@ package org.xhtmlrenderer.css.parser;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.MarginBoxName;
@@ -65,6 +67,8 @@ import static org.xhtmlrenderer.css.parser.Token.Type.AT_RULE;
 
 @SuppressWarnings("MissingCasesInEnumSwitch")
 public class CSSParser {
+
+    private static final Logger log = LoggerFactory.getLogger(CSSParser.class);
 
     @Nullable
     private Token _saved;
@@ -903,8 +907,8 @@ public class CSSParser {
                  IDENT,
                  VERTICAL_BAR -> {
                 NamespacePair pair = typed_value(false);
-                selector.setNamespaceURI(pair.getNamespaceURI());
-                selector.setName(pair.getName());
+                selector.setNamespaceURI(pair.namespaceURI());
+                selector.setName(pair.name());
 
                 LOOP: while (true) {
                     t = la();
@@ -1075,8 +1079,8 @@ public class CSSParser {
             if (t == Token.TK_IDENT || t == Token.TK_ASTERISK || t == Token.TK_VERTICAL_BAR) {
                 boolean existenceMatch = true;
                 NamespacePair pair = typed_value(true);
-                String attrNamespaceURI = pair.getNamespaceURI();
-                String attrName = pair.getName();
+                String attrNamespaceURI = pair.namespaceURI();
+                String attrName = pair.name();
                 skip_whitespace();
                 t = la();
                 switch (t.getType()) {
@@ -1928,16 +1932,9 @@ public class CSSParser {
 
                 // Relative URIs are resolved relative to CSS file, not XHTML file
                 if (isRelativeURI(uriResult) && _uri != null) {
-                    int lastSlash = _uri.lastIndexOf('/');
-                    if (lastSlash != -1) {
-                        uriResult = _uri.substring(0, lastSlash + 1) + uriResult;
-                    }
-                } else if (isServerRelativeURI(uriResult) && _uri != null) {
-                    int uriOffset = _uri.indexOf("://") + 3;
-                    int firstSlashAfterProtocol = _uri.substring(uriOffset).indexOf('/');
-                    if (firstSlashAfterProtocol != -1) {
-                        uriResult = _uri.substring(0, uriOffset + firstSlashAfterProtocol) + uriResult;
-                    }
+                    uriResult = getPartBeforeLastSlash(_uri) + uriResult;
+                } else if (isServerRelativeURI(uriResult) && _uri != null && isAbsoluteUri(_uri)) {
+                    uriResult = getPartBeforeFirstSlash(_uri) + uriResult;
                 }
 
                 yield uriResult;
@@ -1960,18 +1957,33 @@ public class CSSParser {
         };
     }
 
-    private boolean isRelativeURI(String uri) {
+    private String getPartBeforeFirstSlash(String uri) {
         try {
-            return !uri.isEmpty() && (uri.charAt(0) != '/' && ! new URI(uri).isAbsolute());
-        } catch (URISyntaxException ignore) {
-            return false;
+            URI u = new URI(uri);
+            return u.getRawAuthority() == null ? u.getScheme() : u.getScheme() + "://" + u.getRawAuthority();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid uri: " + uri, e);
         }
     }
 
+    private String getPartBeforeLastSlash(String uri) {
+        int lastSlash = uri.lastIndexOf('/');
+        return lastSlash == -1 ? "" : uri.substring(0, lastSlash + 1);
+    }
+
+    private boolean isRelativeURI(String uri) {
+        return !uri.isEmpty() && !uri.startsWith("/") && !isAbsoluteUri(uri);
+    }
+
     private boolean isServerRelativeURI(String uri) {
+        return uri.startsWith("/") && !isAbsoluteUri(uri);
+    }
+
+    private boolean isAbsoluteUri(String uri) {
         try {
-            return !uri.isEmpty() && uri.charAt(0) == '/' && !new URI(uri).isAbsolute();
-        } catch (URISyntaxException ignore) {
+            return new URI(uri).isAbsolute();
+        } catch (URISyntaxException e) {
+            log.debug("Invalid uri: {}", uri, e);
             return false;
         }
     }
@@ -2045,21 +2057,6 @@ public class CSSParser {
         _supportCMYKColors = b;
     }
 
-    private static class NamespacePair {
-        private final String _namespaceURI;
-        private final String _name;
-
-        private NamespacePair(String namespaceURI, String name) {
-            _namespaceURI = namespaceURI;
-            _name = name;
-        }
-
-        public String getNamespaceURI() {
-            return _namespaceURI;
-        }
-
-        public String getName() {
-            return _name;
-        }
+    private record NamespacePair(String namespaceURI, String name) {
     }
 }
