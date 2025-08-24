@@ -303,7 +303,7 @@
     <pdftest.version>2.0.0</pdftest.version>
     <pdfbox.version>3.0.5</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
-    <java.version>17</java.version>
+    <java.version>21</java.version>
     <error_prone.version>2.41.0</error_prone.version>
     <swt.version>3.130.0</swt.version>
   </properties>
