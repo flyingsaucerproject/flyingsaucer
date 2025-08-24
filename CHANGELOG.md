@@ -2,6 +2,7 @@
 
 ## 9.13.3 (24.08.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/38?closed=1
 * #550 fix image URL when it's not relative to CSS url (#558)
+* load latest SWT binaries from Maven central repo (#559)
 
 ## 9.13.2 (11.08.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/37?closed=1
 * enable anti-aliasing by default
