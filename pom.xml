@@ -305,6 +305,7 @@
     <bouncycastle.version>1.77</bouncycastle.version>
     <java.version>17</java.version>
     <error_prone.version>2.41.0</error_prone.version>
+    <swt.version>3.130.0</swt.version>
   </properties>
 
 </project>
