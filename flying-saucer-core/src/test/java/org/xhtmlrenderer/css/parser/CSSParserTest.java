@@ -52,11 +52,14 @@ class CSSParserTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-        " background.png                  | /css/v1/sample.css                 | /css/v1/background.png",
-        " background.png                  | sample.css                         | background.png",
-        " https://some.com/background.png | /css/v1/sample.css                 | https://some.com/background.png",
-        " /img/background.png             | https://some.com/css/v1/sample.css | https://some.com/img/background.png",
-        " /img/background.png             | /css/v1/sample.css                 | /img/background.png",
+        " background.png                                             | /css/v1/sample.css                 | /css/v1/background.png",
+        " background.png                                             | sample.css                         | background.png",
+        " https://some.com/background.png                            | /css/v1/sample.css                 | https://some.com/background.png",
+        " /img/background.png                                        | https://some.com/css/v1/sample.css | https://some.com/img/background.png",
+        " /img/background.png                                        | /css/v1/sample.css                 | /img/background.png",
+        " data:image/svg+xml;charset=utf8,%3Csvg xmlns=              | /css/v1/sample.css                 | data:image/svg+xml;charset=utf8,%3Csvg xmlns=",
+        " blob:https://site.com/258186e7-a0a1-40e5-bcf8-5ac35f965454 | /css/v1/sample.css                 | blob:https://site.com/258186e7-a0a1-40e5-bcf8-5ac35f965454",
+        " blob:                                                      | /css/v1/sample.css                 | blob:",
     }, delimiterString = "|")
     void imageUrl(String imageUrl, String cssUrl, String expectedFullImageUrl) throws IOException {
         String css = "div { background-image: url('%s') }".formatted(imageUrl);

@@ -1981,7 +1981,8 @@ public class CSSParser {
 
     private boolean isAbsoluteUri(String uri) {
         try {
-            return new URI(uri).isAbsolute();
+            return uri.startsWith("http:") || uri.startsWith("https:") ||
+                uri.startsWith("data:") || uri.startsWith("blob:") || new URI(uri).isAbsolute();
         } catch (URISyntaxException e) {
             log.debug("Invalid uri: {}", uri, e);
             return false;
