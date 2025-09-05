@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.0.0 (05.09.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/35?closed=1
+* Require Java 21 by Andreas Røsdal (#527)
+* #554 update to OpenPDF 3.0.0 by Dennis Roppelt (#556) 
+
 ## 9.13.3 (24.08.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/38?closed=1
 * #550 fix image URL when it's not relative to CSS url (#558)
 * load latest SWT binaries from Maven central repo (#559)
