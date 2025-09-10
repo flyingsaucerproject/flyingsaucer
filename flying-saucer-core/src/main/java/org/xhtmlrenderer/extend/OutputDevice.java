@@ -35,7 +35,7 @@ import org.xhtmlrenderer.render.TextDecoration;
 
 import java.awt.*;
 
-public interface OutputDevice {
+public interface OutputDevice<T extends FSImage> {
     void drawText(RenderingContext c, InlineText inlineText);
     void drawSelection(RenderingContext c, InlineText inlineText);
 
@@ -69,7 +69,7 @@ public interface OutputDevice {
 
     void drawBorderLine(Shape bounds, int side, int width, boolean solid);
 
-    void drawImage(FSImage image, int x, int y);
+    void drawImage(T image, int x, int y);
     void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height);
 
     void draw(Shape s);

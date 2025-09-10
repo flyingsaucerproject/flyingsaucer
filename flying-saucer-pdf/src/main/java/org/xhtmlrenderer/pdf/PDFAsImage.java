@@ -60,7 +60,7 @@ public class PDFAsImage implements FSImage {
 
     @NonNull
     @Override
-    public FSImage scale(int width, int height) {
+    public PDFAsImage scale(int width, int height) {
         float targetWidth = width;
         float targetHeight = height;
 

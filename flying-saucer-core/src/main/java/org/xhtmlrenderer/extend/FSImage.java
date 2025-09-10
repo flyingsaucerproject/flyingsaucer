@@ -22,7 +22,7 @@ package org.xhtmlrenderer.extend;
 public interface FSImage {
     int getWidth();
     int getHeight();
-    FSImage scale(int width, int height);
+    <T extends FSImage> T scale(int width, int height);
 
     default boolean hasSize(int width, int height) {
         return getWidth() == width && getHeight() == height;
