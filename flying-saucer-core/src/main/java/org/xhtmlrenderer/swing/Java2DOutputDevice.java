@@ -26,8 +26,6 @@ import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.style.derived.FSLinearGradient.StopValue;
 import org.xhtmlrenderer.extend.FSGlyphVector;
-import org.xhtmlrenderer.extend.FSImage;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
@@ -44,7 +42,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDevice {
+public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage> {
     private final Graphics2D _graphics;
 
     public Java2DOutputDevice(Graphics2D graphics) {
@@ -298,8 +296,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     }
 
     @Override
-    public void drawImage(FSImage image, int x, int y) {
-        _graphics.drawImage(((AWTFSImage)image).getImage(), x, y, null);
+    public void drawImage(AWTFSImage image, int x, int y) {
+        _graphics.drawImage(image.getImage(), x, y, null);
     }
 
     @Override

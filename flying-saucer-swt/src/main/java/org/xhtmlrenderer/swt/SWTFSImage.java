@@ -115,7 +115,7 @@ public class SWTFSImage implements FSImage {
     @NonNull
     @CheckReturnValue
     @Override
-    public FSImage scale(int width, int height) {
+    public SWTFSImage scale(int width, int height) {
         if (width < 0 && height < 0) {
             return this;
         } else if (width < 0) {

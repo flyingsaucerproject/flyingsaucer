@@ -56,7 +56,6 @@ import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
@@ -102,7 +101,7 @@ import static org.openpdf.text.pdf.PdfObject.TEXT_UNICODE;
  * See <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/
  * projects/itext/</a> for license information.
  */
-public class ITextOutputDevice extends AbstractOutputDevice implements OutputDevice {
+public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
     private static final int FILL = 1;
     private static final int STROKE = 2;
     private static final int CLIP = 3;

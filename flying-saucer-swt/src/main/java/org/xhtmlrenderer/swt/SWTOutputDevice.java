@@ -34,7 +34,6 @@ import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
-import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
@@ -56,7 +55,7 @@ import java.awt.geom.PathIterator;
  *
  */
 @NullUnmarked
-public class SWTOutputDevice extends AbstractOutputDevice {
+public class SWTOutputDevice extends AbstractOutputDevice<SWTFSImage> {
 
     private final GC _gc;
     private Path _clippingPath = null;
@@ -169,8 +168,8 @@ public class SWTOutputDevice extends AbstractOutputDevice {
     }
 
     @Override
-    public void drawImage(FSImage image, int x, int y) {
-        Image img = ((SWTFSImage) image).getImage();
+    public void drawImage(SWTFSImage image, int x, int y) {
+        Image img = image.getImage();
         if (img == null) {
             int width = image.getWidth();
             int height = image.getHeight();

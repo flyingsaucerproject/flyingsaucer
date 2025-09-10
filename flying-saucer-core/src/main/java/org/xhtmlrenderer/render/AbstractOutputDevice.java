@@ -48,8 +48,9 @@ import java.util.List;
  * An abstract implementation of an {@link OutputDevice}.  It provides complete
  * implementations for many {@code OutputDevice} methods.
  */
-public abstract class AbstractOutputDevice implements OutputDevice {
+public abstract class AbstractOutputDevice<T extends FSImage> implements OutputDevice<T> {
 
+    @Nullable
     private FontSpecification _fontSpec;
 
     protected abstract void drawLine(int x1, int y1, int x2, int y2);
@@ -221,7 +222,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         FSColor backgroundColor = style.getBackgroundColor();
 
         FSLinearGradient backgroundLinearGradient = null;
-        FSImage backgroundImage = null;
+        T backgroundImage = null;
 
         if (style.isLinearGradient())
         {
@@ -230,7 +231,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
         else
         {
-        	backgroundImage = getBackgroundImage(c, style);
+        	backgroundImage = (T) getBackgroundImage(c, style);
         }
 
         // If the image width or height is zero, then there's nothing to draw.
@@ -284,7 +285,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
 
             if (backgroundImage != null)
             {
-                backgroundImage = scaleBackgroundImage(c, style, localBGImageContainer, backgroundImage);
+                backgroundImage = (T) scaleBackgroundImage(c, style, localBGImageContainer, backgroundImage);
             }
 
             float imageWidth = backgroundImage.getWidth();
@@ -355,7 +356,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         return result;
     }
 
-    private void paintTiles(FSImage image, int left, int top, int right, int bottom) {
+    private void paintTiles(T image, int left, int top, int right, int bottom) {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -366,7 +367,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
     }
 
-    private void paintVerticalBand(FSImage image, int left, int top, int bottom) {
+    private void paintVerticalBand(T image, int left, int top, int bottom) {
         int height = image.getHeight();
 
         for (int y = top; y < bottom; y+= height) {
@@ -374,7 +375,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
     }
 
-    private void paintHorizontalBand(FSImage image, int left, int top, int right) {
+    private void paintHorizontalBand(T image, int left, int top, int right) {
         int width = image.getWidth();
 
         for (int x = left; x < right; x+= width) {

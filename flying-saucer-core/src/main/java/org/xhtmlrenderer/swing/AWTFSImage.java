@@ -74,7 +74,7 @@ public abstract class AWTFSImage implements FSImage {
         @NonNull
         @CheckReturnValue
         @Override
-        public FSImage scale(int width, int height) {
+        public AWTFSImage scale(int width, int height) {
             if (width > 0 || height > 0) {
                 int currentWith = getWidth();
                 int currentHeight = getHeight();
@@ -113,7 +113,7 @@ public abstract class AWTFSImage implements FSImage {
         @NonNull
         @CheckReturnValue
         @Override
-        public FSImage scale(int width, int height) {
+        public NullImage scale(int width, int height) {
             return this;
         }
 

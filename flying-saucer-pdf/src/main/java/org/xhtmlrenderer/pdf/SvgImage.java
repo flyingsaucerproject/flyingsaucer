@@ -1,14 +1,13 @@
 package org.xhtmlrenderer.pdf;
 
 import com.google.errorprone.annotations.CheckReturnValue;
-import org.openpdf.text.Image;
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.jspecify.annotations.NonNull;
-import org.xhtmlrenderer.extend.FSImage;
+import org.openpdf.text.Image;
 import org.xhtmlrenderer.extend.Size;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -42,7 +41,7 @@ public class SvgImage extends ITextFSImage {
     @NonNull
     @CheckReturnValue
     @Override
-    public FSImage scale(int width, int height) {
+    public SvgImage scale(int width, int height) {
         return new SvgImage(image, size.scale(width, height), uri);
     }
 
