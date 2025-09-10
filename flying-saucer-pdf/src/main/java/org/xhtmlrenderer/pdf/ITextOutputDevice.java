@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import org.jspecify.annotations.Nullable;
 import org.openpdf.text.DocumentException;
 import org.openpdf.text.Image;
 import org.openpdf.text.pdf.CMYKColor;
@@ -40,7 +41,8 @@ import org.openpdf.text.pdf.PdfReader;
 import org.openpdf.text.pdf.PdfString;
 import org.openpdf.text.pdf.PdfTextArray;
 import org.openpdf.text.pdf.PdfWriter;
-import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -91,9 +93,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import static org.openpdf.text.pdf.PdfObject.TEXT_UNICODE;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparingInt;
+import static org.openpdf.text.pdf.PdfObject.TEXT_UNICODE;
 
 /**
  * This class is largely based on {@link org.openpdf.text.pdf.PdfGraphics2D}.
@@ -110,6 +112,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     private static final BasicStroke STROKE_ONE = new BasicStroke(1);
 
     private static final boolean ROUND_RECT_DIMENSIONS_DOWN = Configuration.isTrue("xr.pdf.round.rect.dimensions.down", false);
+    private static final Logger log = LoggerFactory.getLogger(ITextOutputDevice.class);
 
     @Nullable
     private PdfContentByte _currentPage;
@@ -685,7 +688,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
                 break;
 
             case PathIterator.SEG_QUADTO:
-                System.out.println("Quad to " + coords[0] + " " + coords[1] + " " + coords[2] + " " + coords[3]);
+                log.trace("Quad to {} {} {} {}", coords[0], coords[1], coords[2], coords[3]);
                 cb.curveTo(coords[0], coords[1], coords[2], coords[3]);
                 break;
             }

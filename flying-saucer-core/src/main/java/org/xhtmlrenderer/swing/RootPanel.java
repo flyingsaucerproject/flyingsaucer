@@ -299,10 +299,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
 
             XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
 
-            /*
-            System.out.println(root.dump(c, "", BlockBox.DUMP_LAYOUT));
-            */
-
             // if there is a fixed child then we need to set opaque to false
             // so that the entire viewport will be repainted. this is slower
             // but that's the hit you get from using fixed layout
