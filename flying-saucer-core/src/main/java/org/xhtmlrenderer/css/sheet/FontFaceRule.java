@@ -73,4 +73,9 @@ public class FontFaceRule implements RulesetContainer {
         return _ruleset.getPropertyDeclarations().stream()
             .anyMatch(declaration -> property.equals(declaration.getPropertyName()));
     }
+
+    @Override
+    public String toString() {
+        return "%s{origin: %s, %s}".formatted(getClass().getSimpleName(), _origin, _ruleset);
+    }
 }

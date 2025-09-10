@@ -22,11 +22,14 @@ package org.xhtmlrenderer.util;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import static java.lang.System.lineSeparator;
 import static java.util.Locale.ROOT;
 import static java.util.Locale.US;
 
@@ -34,6 +37,8 @@ import static java.util.Locale.US;
  * @author Patrick Wright
  */
 public class GeneralUtil {
+    private static final Logger log = LoggerFactory.getLogger(GeneralUtil.class);
+
     @CheckReturnValue
     public static boolean ciEquals(final @Nullable String a, final @Nullable String b) {
         return a == null && b == null ||
@@ -91,12 +96,15 @@ public class GeneralUtil {
         if (s == null || s.trim().equals("null")) {
             s = "{no ex. message}";
         }
-        System.out.println(s + ", " + ex.getClass());
+
         StackTraceElement[] stackTrace = ex.getStackTrace();
+        StringBuilder sb = new StringBuilder(stackTrace.length * 50);
         for (int i = 0; i < stackTrace.length && i < 5; i++) {
             StackTraceElement ste = stackTrace[i];
-            System.out.println("  " + ste.getClassName() + "." + ste.getMethodName() + "(ln " + ste.getLineNumber() + ")");
+            sb.append("  ").append(ste.getClassName()).append(".").append(ste.getMethodName()).append("(ln ").append(ste.getLineNumber()).append(")").append(lineSeparator());
         }
+
+        log.info("{}, {}{}{}", s, ex.getClass(), lineSeparator(), sb);
     }
 
     @CheckReturnValue

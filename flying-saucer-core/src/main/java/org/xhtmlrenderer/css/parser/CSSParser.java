@@ -159,7 +159,7 @@ public class CSSParser {
 //      [ namespace [S|CDO|CDC]* ]*
 //      [ [ ruleset | media | page | font_face ] [S|CDO|CDC]* ]*
     private void stylesheet(Stylesheet stylesheet) throws IOException {
-        //System.out.println("stylesheet()");
+        log.trace("stylesheet({} {})", stylesheet.getURI(), stylesheet.getOrigin());
         Token t = la();
         try {
             if (t == Token.TK_CHARSET_SYM) {
@@ -252,7 +252,7 @@ public class CSSParser {
 //    [STRING|URI] S* [ medium [ COMMA S* medium]* ]? ';' S*
 //  ;
     private void import_rule(Stylesheet stylesheet) throws IOException {
-        //System.out.println("import()");
+        log.trace("import({})", stylesheet);
         try {
             Token t = next();
             if (t == Token.TK_IMPORT_SYM) {
@@ -279,8 +279,7 @@ public class CSSParser {
                             try {
                                 URI parent = new URI(stylesheet.getURI());
                                 String tokenValue = getTokenValue(t);
-                                String resolvedUri = parent.resolve(tokenValue).toString();
-                                uri = resolvedUri;
+                                uri = parent.resolve(tokenValue).toString();
                             } catch (URISyntaxException use) {
                                 throw new CSSParseException("Invalid URL, " + use.getMessage(), getCurrentLine(), use);
                             }
@@ -389,7 +388,7 @@ public class CSSParser {
 //  : MEDIA_SYM S* medium [ COMMA S* medium ]* LBRACE S* ruleset* '}' S*
 //  ;
     private void media(Stylesheet stylesheet) throws IOException {
-        //System.out.println("media()");
+        log.trace("media({})", stylesheet);
         Token t = next();
         try {
             if (t == Token.TK_MEDIA_SYM) {
@@ -454,7 +453,7 @@ public class CSSParser {
 //  : IDENT S*
 //  ;
     private String medium() throws IOException {
-        //System.out.println("medium()");
+        log.trace("medium()");
         Token t = next();
         if (t == Token.TK_IDENT) {
             String result = getTokenValue(t);
@@ -471,7 +470,7 @@ public class CSSParser {
 //      '{' S* declaration [ ';' S* declaration ]* '}' S*
 //    ;
     private void font_face(Stylesheet stylesheet) throws IOException {
-//        System.out.println(font_face()");
+        log.trace("font_face({})", stylesheet);
         Token t = next();
         try {
             FontFaceRule fontFaceRule = new FontFaceRule(stylesheet.getOrigin());
@@ -521,7 +520,7 @@ public class CSSParser {
 //    '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
 //
     private void page(Stylesheet stylesheet) throws IOException {
-        //System.out.println("page()");
+        log.trace("page({})", stylesheet);
         Token t = next();
         try {
             if (t == Token.TK_PAGE_SYM) {
@@ -625,7 +624,7 @@ public class CSSParser {
 //    : ':' IDENT
 //    ;
     private String pseudo_page() throws IOException {
-        //System.out.println("pseudo_page()");
+        log.trace("pseudo_page()");
         Token t = next();
         if (t == Token.TK_COLON) {
             t = next();
@@ -648,7 +647,7 @@ public class CSSParser {
 //    : '/' S* | COMMA S* | /* empty */
 //    ;
     private void operator() throws IOException {
-        //System.out.println("operator()");
+        log.trace("operator()");
         Token t = la();
         switch (t.getType()) {
             case VIRGULE:
@@ -665,7 +664,7 @@ public class CSSParser {
 //    | S
 //    ;
     private Token combinator() throws IOException {
-        //System.out.println("combinator()");
+        log.trace("combinator()");
         Token t = next();
         if (t == Token.TK_PLUS || t == Token.TK_GREATER) {
             skip_whitespace();
@@ -683,7 +682,7 @@ public class CSSParser {
 //    : '-' | PLUS
 //    ;
     private int unary_operator() throws IOException {
-        //System.out.println("unary_operator()");
+        log.trace("unary_operator()");
         Token t = next();
         if (! (t == Token.TK_MINUS || t == Token.TK_PLUS)) {
             push(t);
@@ -701,7 +700,7 @@ public class CSSParser {
 //    : IDENT S*
 //    ;
     private String property() throws IOException {
-        //System.out.println("property()");
+        log.trace("property()");
         Token t = next();
         String result;
         if (t == Token.TK_IDENT) {
@@ -720,7 +719,7 @@ public class CSSParser {
 //    : [ declaration ';' S* ]*
     private void declaration_list(
             Ruleset ruleset, boolean expectEOF, boolean expectAtRule, boolean inFontFace) throws IOException {
-        //System.out.println("declaration_list()");
+        log.trace("declaration_list(expectEOF: {}, expectAtRule: {}, inFontFace: {})", expectEOF, expectAtRule, inFontFace);
         Token t;
         LOOP:
         while (true) {
@@ -757,7 +756,7 @@ public class CSSParser {
 //      LBRACE S* [ declaration ';' S* ]* '}' S*
 //    ;
     private void ruleset(RulesetContainer container) throws IOException {
-        //System.out.println("ruleset()");
+        log.trace("ruleset()");
         try {
             Ruleset ruleset = new Ruleset(container.getOrigin());
 
@@ -803,7 +802,7 @@ public class CSSParser {
 //    : simple_selector [ combinator simple_selector ]*
 //    ;
     private void selector(Ruleset ruleset) throws IOException {
-        //System.out.println("selector()");
+        log.trace("selector({})", ruleset);
         List<Selector> selectors = new ArrayList<>();
         List<Token> combinators = new ArrayList<>();
         selectors.add(simple_selector(ruleset));
@@ -897,7 +896,7 @@ public class CSSParser {
 //    | [ HASH | class | attrib | pseudo ]+
 //    ;
     private Selector simple_selector(Ruleset ruleset) throws IOException {
-        //System.out.println("simple_selector()");
+        log.trace("simple_selector({})", ruleset);
         Selector selector = new Selector();
         selector.setParent(ruleset);
         Token t = la();
@@ -1026,7 +1025,7 @@ public class CSSParser {
 //    : '.' IDENT
 //    ;
     private void class_selector(Selector selector) throws IOException {
-        //System.out.println("class_selector()");
+        log.trace("class_selector({})", selector);
         Token t = next();
         if (t == Token.TK_PERIOD) {
             t = next();
@@ -1070,7 +1069,7 @@ public class CSSParser {
 //          ]? ']'
 //    ;
     private void attrib(Selector selector) throws IOException {
-        //System.out.println("attrib()");
+        log.trace("attrib({})", selector);
         Token t = next();
         if (t == Token.TK_LBRACKET) {
             skip_whitespace();
@@ -1222,7 +1221,7 @@ public class CSSParser {
 //    : ':' ':'? [ IDENT | FUNCTION S* IDENT? S* ')' ]
 //    ;
     private void pseudo(Selector selector) throws IOException {
-        //System.out.println("pseudo()");
+        log.trace("pseudo({})", selector);
         Token t = next();
         if (t == Token.TK_COLON) {
             t = next();
@@ -1278,7 +1277,7 @@ public class CSSParser {
 //    : property ':' S* expr prio?
 //    ;
     private void declaration(Ruleset ruleset, boolean inFontFace) throws IOException {
-        //System.out.println("declaration()");
+        log.trace("declaration({}, inFontFace: {})", ruleset, inFontFace);
         try {
             Token t = la();
             if (t == Token.TK_IDENT) {
@@ -1338,7 +1337,7 @@ public class CSSParser {
 //    : IMPORTANT_SYM S*
 //    ;
     private void prio() throws IOException {
-        //System.out.println("prio()");
+        log.trace("prio()");
         Token t = next();
         if (t == Token.TK_IMPORTANT_SYM) {
             skip_whitespace();
@@ -1352,7 +1351,7 @@ public class CSSParser {
 //    : term [ operator term ]*
 //    ;
     private List<PropertyValue> expr(boolean literal) throws IOException {
-        //System.out.println("expr()");
+        log.trace("expr(literal: {})", literal);
         List<PropertyValue> result = new ArrayList<>(10);
         result.add(term(literal, null));
         LOOP: while (true) {
@@ -1450,7 +1449,7 @@ public class CSSParser {
 //    | STRING S* | IDENT S* | URI S* | hexcolor | function
 //    ;
     private PropertyValue term(boolean literal, @Nullable Token operatorToken) throws IOException {
-        //System.out.println("term()");
+        log.trace("term(literal: {}, token: {})", literal, operatorToken);
         float sign = 1;
         Token t = la();
         if (t == Token.TK_PLUS || t == Token.TK_MINUS) {
@@ -1612,7 +1611,7 @@ public class CSSParser {
 //    : FUNCTION S* expr ')' S*
 //    ;
     private PropertyValue function(Token operatorToken) throws IOException {
-        //System.out.println("function()");
+        log.trace("function(token: {})", operatorToken);
         final PropertyValue result;
         Token t = next();
         if (t == Token.TK_FUNCTION) {
@@ -1743,7 +1742,7 @@ public class CSSParser {
 //   : HASH S*
 //   ;
     private PropertyValue hexcolor(Token operatorToken) throws IOException {
-        //System.out.println("hexcolor()");
+        log.trace("hexcolor(token: {})", operatorToken);
         final PropertyValue result;
         Token t = next();
         if (t == Token.TK_HASH) {

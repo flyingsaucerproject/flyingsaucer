@@ -20,6 +20,8 @@
 package org.xhtmlrenderer.css.parser;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.css.newmatch.Selector;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.sheet.Ruleset;
@@ -32,8 +34,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.USER_AGENT;
 
 public class ParserTest {
+    private static final Logger log = LoggerFactory.getLogger(ParserTest.class);
     private final String test = String.format("div { background-image: url('something') }%n");
-    private final CSSErrorHandler errorHandler = (uri, message) -> System.out.println(message);
+    private final CSSErrorHandler errorHandler = (uri, message) -> log.error(message);
 
     @Test
     public void cssParsingPerformance() throws IOException {
@@ -47,12 +50,12 @@ public class ParserTest {
             CSSParser p = new CSSParser(errorHandler);
             Stylesheet stylesheet = p.parseStylesheet(null, USER_AGENT, new StringReader(longTest));
             long end = System.currentTimeMillis();
-            // System.out.println("Took " + (end-start) + " ms");
+            log.trace(" Parsing #{} took {} ms", i, end - start);
             total += (end-start);
 
             assertThat(stylesheet.getContents()).hasSize(count);
         }
-        System.out.println("Average " + (total/10) + " ms");
+        log.info("Average {} ms", total / 40);
 
         total = 0;
         for (int i = 0; i < 10; i++) {
@@ -60,11 +63,11 @@ public class ParserTest {
             CSSParser p = new CSSParser(errorHandler);
             Stylesheet stylesheet = p.parseStylesheet(null, USER_AGENT, new StringReader(longTest));
             long end = System.currentTimeMillis();
-            // System.out.println("Took " + (end-start) + " ms");
+            log.trace("Parsing #{} took {} ms", i, end - start);
             total += (end-start);
             assertThat(stylesheet.getContents()).hasSize(count);
         }
-        System.out.println("Average " + (total/10) + " ms");
+        log.info("Average {} ms", total / 10);
 
         CSSParser p = new CSSParser(errorHandler);
 
@@ -78,10 +81,10 @@ public class ParserTest {
                 assertThat(stylesheet.getContents()).hasSize(1);
             }
             long end = System.currentTimeMillis();
-            // System.out.println("Took " + (end-start) + " ms");
+            log.trace("Parsing #{} took {} ms", i, end - start);
             total += (end-start);
         }
-        System.out.println("Average " + (total/10) + " ms");
+        log.info("Average {} ms", total / 10);
     }
 
     @Test

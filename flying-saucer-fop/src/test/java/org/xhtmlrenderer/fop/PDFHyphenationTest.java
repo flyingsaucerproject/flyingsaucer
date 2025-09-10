@@ -19,8 +19,10 @@
 package org.xhtmlrenderer.fop;
 
 import com.codeborne.pdftest.PDF;
-import org.openpdf.text.DocumentException;
 import org.junit.jupiter.api.Test;
+import org.openpdf.text.DocumentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
 
@@ -34,6 +36,7 @@ import static com.codeborne.pdftest.assertj.Assertions.assertThat;
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class PDFHyphenationTest {
+    private static final Logger log = LoggerFactory.getLogger(PDFHyphenationTest.class);
 
     private static final String XML =
             """
@@ -70,7 +73,7 @@ public class PDFHyphenationTest {
         Path temp = Files.createTempFile("pdfTest", ".pdf");
         OutputStream os = Files.newOutputStream(temp);
         generatePDF(XML, os);
-        System.out.println("Generated file: " + temp);
+        log.info("Generated file: {}", temp);
 
         PDF pdf = new PDF(temp.toFile());
         assertThat(pdf).containsText(

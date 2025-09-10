@@ -59,4 +59,8 @@ public class MediaRule implements RulesetContainer {
     public Origin getOrigin() {
         return _origin;
     }
-}
+
+    @Override
+    public String toString() {
+        return "%s{origin: %s}".formatted(getClass().getSimpleName(), _origin);
+    }}

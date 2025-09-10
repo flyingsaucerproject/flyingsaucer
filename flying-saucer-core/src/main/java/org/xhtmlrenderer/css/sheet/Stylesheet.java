@@ -107,4 +107,8 @@ public class Stylesheet implements RulesetContainer {
         return _fontFaceRules;
     }
 
+    @Override
+    public String toString() {
+        return "%s{uri:%s, origin: %s}".formatted(getClass().getSimpleName(), _uri, _origin);
+    }
 }
