@@ -897,8 +897,8 @@ public class CSSParser {
 //    ;
     private Selector simple_selector(Ruleset ruleset) throws IOException {
         log.trace("simple_selector({})", ruleset);
-        Selector selector = new Selector();
-        selector.setParent(ruleset);
+        Selector selector = new Selector(ruleset);
+
         Token t = la();
         switch (t.getType()) {
             case ASTERISK,

@@ -42,7 +42,7 @@ import static org.xhtmlrenderer.css.newmatch.Selector.Axis.DESCENDANT_AXIS;
  * @author Torbjoern Gannholm
  */
 public class Selector {
-    private Ruleset _parent;
+    private final Ruleset _parent;
     private Selector chainedSelector;
     private Selector siblingSelector;
     private Axis _axis = DESCENDANT_AXIS;
@@ -74,7 +74,8 @@ public class Selector {
     private final int selectorID;
     private static int selectorCount;
 
-    public Selector() {
+    public Selector(Ruleset ruleset) {
+        _parent = ruleset;
         selectorID = selectorCount++;
     }
 
@@ -455,10 +456,6 @@ public class Selector {
         if (chainedSelector != null) {
             chainedSelector.setPos(pos);
         }
-    }
-
-    public void setParent(Ruleset ruleset) {
-        _parent = ruleset;
     }
 
     public void setAxis(Axis axis) {
