@@ -33,30 +33,31 @@ public class ConcurrentPdfGenerationTest {
 
     @Test
     public void concurrentPdfGeneration() throws InterruptedException {
-        ScheduledExecutorService timer = newScheduledThreadPool(1);
-        timer.scheduleWithFixedDelay(System::gc, 0, 15, MILLISECONDS);
+        try (ScheduledExecutorService timer = newScheduledThreadPool(1)) {
+            timer.scheduleWithFixedDelay(System::gc, 0, 15, MILLISECONDS);
 
-        List<Throwable> failures = new ArrayList<>();
-        ExecutorService pool = newFixedThreadPool(4);
-        for (int j = 0; j < 20; j++) {
-            final int i = j;
-            pool.submit(() -> {
-                try {
-                    byte[] pdf = generatePdf("sample.html");
-                    verifyPdf(new PDF(pdf));
-                    log.info("Check #{} ok", i);
+            List<Throwable> failures = new ArrayList<>();
+            try (ExecutorService pool = newFixedThreadPool(4)) {
+                for (int j = 0; j < 20; j++) {
+                    final int i = j;
+                    pool.submit(() -> {
+                        try {
+                            byte[] pdf = generatePdf("sample.html");
+                            verifyPdf(new PDF(pdf));
+                            log.info("Check #{} ok", i);
+                        } catch (Throwable e) {
+                            log.error("Check #{} failed: ", i, e);
+                            failures.add(e);
+                        }
+                    });
                 }
-                catch (Throwable e) {
-                    log.error("Check #{} failed: ", i, e);
-                    failures.add(e);
-                }
-            });
+
+                pool.shutdown();
+                assert pool.awaitTermination(250, SECONDS) : "Timeout!";
+            }
+
+            assertThat(failures).isEmpty();
         }
-
-        pool.shutdown();
-        assert pool.awaitTermination(250, SECONDS) : "Timeout!";
-
-        assertThat(failures).isEmpty();
     }
 
     private void verifyPdf(PDF pdf) {
