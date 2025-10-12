@@ -97,27 +97,17 @@ public class AWTFontResolver implements FontResolver {
         availableFonts.put(name, font.deriveFont(1.0f));
     }
 
+    @SuppressWarnings("MagicConstant")
     protected static Font createFont(SharedContext ctx, Font root_font, float size,
                                      @Nullable IdentValue weight,
                                      @Nullable IdentValue style,
                                      @Nullable IdentValue variant) {
-        int font_const = Font.PLAIN;
-        if (weight != null &&
-                (weight == IdentValue.BOLD ||
-                weight == IdentValue.FONT_WEIGHT_700 ||
-                weight == IdentValue.FONT_WEIGHT_800 ||
-                weight == IdentValue.FONT_WEIGHT_900)) {
-
-            font_const = font_const | Font.BOLD;
-        }
-        if (style != null && (style == IdentValue.ITALIC || style == IdentValue.OBLIQUE)) {
-            font_const = font_const | Font.ITALIC;
-        }
+        int fontStyle = resolveFontStyle(weight, style);
 
         // scale vs font scale value too
-        size *= ctx.getTextRenderer().getFontScale();
+        float fontSize = size * ctx.getTextRenderer().getFontScale();
 
-        Font fnt = root_font.deriveFont(font_const, size);
+        Font fnt = root_font.deriveFont(fontStyle, fontSize);
         if (variant != null) {
             if (variant == IdentValue.SMALL_CAPS) {
                 fnt = fnt.deriveFont((float) (((float) fnt.getSize()) * 0.6));
@@ -127,9 +117,29 @@ public class AWTFontResolver implements FontResolver {
         return fnt;
     }
 
+    /**
+     * @return {@link Font#PLAIN}, {@link Font#BOLD}, {@link Font#ITALIC} or their combinations
+     */
+    private static int resolveFontStyle(@Nullable IdentValue weight, @Nullable IdentValue style) {
+        int fontStyle = Font.PLAIN;
+
+        if (weight == IdentValue.BOLD ||
+                weight == IdentValue.FONT_WEIGHT_700 ||
+                weight == IdentValue.FONT_WEIGHT_800 ||
+                weight == IdentValue.FONT_WEIGHT_900) {
+
+            fontStyle |= Font.BOLD;
+        }
+
+        if (style == IdentValue.ITALIC || style == IdentValue.OBLIQUE) {
+            fontStyle |= Font.ITALIC;
+        }
+        return fontStyle;
+    }
+
     @Nullable
     protected Font resolveFont(SharedContext ctx, String font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
-        // strip off the "s if they are there
+        // strip off quotes if they are there
         if (font.startsWith("\"")) {
             font = font.substring(1);
         }
