@@ -65,6 +65,7 @@ public class Matcher {
     private final AttributeResolver _attRes;
     private final TreeResolver _treeRes;
     private final StylesheetFactory _styleFactory;
+    private final Object lock = new Object();
 
     private final Map<Node, Mapper> _map = synchronizedMap(new HashMap<>());
 
@@ -82,7 +83,7 @@ public class Matcher {
     }
 
     public CascadedStyle getCascadedStyle(Element e, boolean restyle) {
-        synchronized (e) {
+        synchronized (lock) {
             Mapper em = restyle ? matchElement(e) : getMapper(e);
             return em.getCascadedStyle(e);
         }
@@ -94,7 +95,7 @@ public class Matcher {
      */
     @Nullable
     public CascadedStyle getPECascadedStyle(Element e, String pseudoElement) {
-        synchronized (e) {
+        synchronized (lock) {
             Mapper em = getMapper(e);
             return em.getPECascadedStyle(pseudoElement);
         }
@@ -126,7 +127,7 @@ public class Matcher {
     }
 
     private Mapper matchElement(Node e) {
-        synchronized (e) {
+        synchronized (lock) {
             Node parent = _treeRes.getParentElement(e);
 
             if (parent != null) {
@@ -185,7 +186,7 @@ public class Matcher {
     }
 
     private Ruleset getElementStyle(Node e) {
-        synchronized (e) {
+        synchronized (lock) {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
@@ -200,7 +201,7 @@ public class Matcher {
     }
 
     private Ruleset getNonCssStyle(Node e) {
-        synchronized (e) {
+        synchronized (lock) {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
@@ -292,7 +293,7 @@ public class Matcher {
         }
 
         CascadedStyle getCascadedStyle(Node e) {
-            synchronized (e) {
+            synchronized (lock) {
                 Ruleset elementStyling = getElementStyle(e);
                 Ruleset nonCssStyling = getNonCssStyle(e);
                 List<PropertyDeclaration> propList = new ArrayList<>();
