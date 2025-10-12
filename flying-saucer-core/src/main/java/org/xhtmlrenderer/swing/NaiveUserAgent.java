@@ -275,7 +275,7 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
      */
     @CheckReturnValue
     protected ImageResource createImageResource(@Nullable String uri, @Nullable Image img) {
-        return new ImageResource(uri, AWTFSImage.createImage(img));
+        return new ImageResource(uri, AWTFSImageFactory.createImage(img));
     }
 
     /**

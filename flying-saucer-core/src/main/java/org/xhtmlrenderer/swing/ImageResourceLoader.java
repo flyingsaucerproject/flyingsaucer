@@ -90,7 +90,7 @@ public class ImageResourceLoader {
     public static ImageResource loadEmbeddedBase64ImageResource(final String uri) {
         BufferedImage bufferedImage = ImageUtil.loadEmbeddedBase64Image(uri);
         if (bufferedImage != null) {
-            FSImage image = AWTFSImage.createImage(bufferedImage);
+            FSImage image = AWTFSImageFactory.createImage(bufferedImage);
             return new ImageResource(null, image);
         } else {
             return new ImageResource(null, null);
@@ -142,7 +142,7 @@ public class ImageResourceLoader {
                         if (width > -1 && height > -1) {
                             XRLog.load(Level.FINE, this + ", scaling " + uri + " to " + width + ", " + height);
                             newImg = ImageUtil.getScaledInstance(newImg, width, height);
-                            ir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
+                            ir = new ImageResource(ir.getImageUri(), AWTFSImageFactory.createImage(newImg));
                             loaded(ir, width, height);
                         }
                     } else {
@@ -160,7 +160,7 @@ public class ImageResourceLoader {
                     BufferedImage newImg = ((AWTFSImage) awtfsImage).getImage();
 
                     newImg = ImageUtil.getScaledInstance(newImg, width, height);
-                    ir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
+                    ir = new ImageResource(ir.getImageUri(), AWTFSImageFactory.createImage(newImg));
                     loaded(ir, width, height);
                 }
             }
@@ -181,9 +181,9 @@ public class ImageResourceLoader {
 
     public static ImageResource createImageResource(final String uri, @Nullable final BufferedImage img) {
         if (img == null) {
-            return new ImageResource(uri, AWTFSImage.createImage(ImageUtil.createTransparentImage(10, 10)));
+            return new ImageResource(uri, AWTFSImageFactory.createImage(ImageUtil.createTransparentImage(10, 10)));
         } else {
-            return new ImageResource(uri, AWTFSImage.createImage(ImageUtil.makeCompatible(img)));
+            return new ImageResource(uri, AWTFSImageFactory.createImage(ImageUtil.makeCompatible(img)));
         }
     }
 
