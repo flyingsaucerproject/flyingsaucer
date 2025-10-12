@@ -67,7 +67,7 @@ class ImageLoadWorker extends Thread {
                 if (loadItem.haveTargetDimensions() && !ir.hasDimensions(loadItem._targetWidth, loadItem._targetHeight)) {
                     XRLog.load(Level.FINE, this + ", scaling " + loadItem._uri + " to " + loadItem._targetWidth + ", " + loadItem._targetHeight);
                     newImg = ImageUtil.getScaledInstance(newImg, loadItem._targetWidth, loadItem._targetHeight);
-                    ImageResource sir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
+                    ImageResource sir = new ImageResource(ir.getImageUri(), AWTFSImageFactory.createImage(newImg));
                     loadItem._imageResourceLoader.loaded(sir, newImg.getWidth(), newImg.getHeight());
                     wasScaled = true;
                 } else {

@@ -29,18 +29,15 @@ import org.xhtmlrenderer.util.ImageUtil;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static org.xhtmlrenderer.util.ImageUtil.convertToBufferedImage;
-
 public abstract class AWTFSImage implements FSImage {
-    private static final FSImage NULL_FS_IMAGE = new NullImage();
 
+    /**
+     * @deprecated Use {@link AWTFSImageFactory#createImage(Image)} instead
+     */
+    @Deprecated(forRemoval = true)
     @CheckReturnValue
     public static FSImage createImage(@Nullable Image img) {
-        if (img == null) {
-            return NULL_FS_IMAGE;
-        }
-        BufferedImage bufferedImage = convertToBufferedImage(img, BufferedImage.TYPE_INT_ARGB);
-        return new NewAWTFSImage(bufferedImage);
+        return AWTFSImageFactory.createImage(img);
     }
 
     protected AWTFSImage() {
@@ -71,7 +68,6 @@ public abstract class AWTFSImage implements FSImage {
             return img;
         }
 
-        @NonNull
         @CheckReturnValue
         @Override
         public AWTFSImage scale(int width, int height) {
@@ -97,7 +93,7 @@ public abstract class AWTFSImage implements FSImage {
         }
     }
 
-    private static final class NullImage extends AWTFSImage {
+    static final class NullImage extends AWTFSImage {
         private static final BufferedImage EMPTY_IMAGE = ImageUtil.createTransparentImage(1, 1);
 
         @Override
