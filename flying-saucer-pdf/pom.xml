@@ -39,6 +39,22 @@
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-codec</artifactId>
       <version>${batik.version}</version>
+      <exclusions>
+          <!-- Exclude legacy XML libraries (xml-apis, xerces, xalan) that duplicate java.xml.
+               Prevents JPMS module conflicts and ensures Java 11+ compatibility. -->
+        <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
