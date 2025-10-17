@@ -33,8 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
         matrix:
-            # The last 2 LTS releases + latest version
-            java: [ 21, 24 ]
+            # The last 2 LTS releases
+            java: [ 21, 25 ]
     name: Java ${{matrix.java}}
     steps:
       - uses: actions/checkout@v5
