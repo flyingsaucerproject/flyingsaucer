@@ -102,19 +102,21 @@ public class ListItemPainter {
     }
 
     private static int getListItemCenterBaseline(final RenderingContext c, final BlockBox box) {
-        return box.getAbsY()
-                + getHeightOfFirstChild(box) / 2
-                + (int) box.getMargin(c).top() / 2
-                - (int) box.getMargin(c).bottom() / 2
-                + (int) box.getPadding(c).top() / 2
-                - (int) box.getPadding(c).bottom() / 2;
+        final Box childBox = getFirstNestedChild(box);
+
+        return childBox.getAbsY()
+                + childBox.getHeight() / 2
+                + (int) childBox.getMargin(c).top() / 2
+                - (int) childBox.getMargin(c).bottom() / 2
+                + (int) childBox.getPadding(c).top() / 2
+                - (int) childBox.getPadding(c).bottom() / 2;
     }
 
-    private static int getHeightOfFirstChild(final Box box) {
-        if (box.getChildCount() > 1) {
-            return getHeightOfFirstChild(box.getChild(0));
+    private static Box getFirstNestedChild(final Box box) {
+        if (box.getChildCount() > 0) {
+            return getFirstNestedChild(box.getChild(0));
         } else {
-            return box.getHeight();
+            return box;
         }
     }
 
