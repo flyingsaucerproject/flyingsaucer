@@ -301,7 +301,7 @@
     <slf4j.version>2.0.17</slf4j.version>
     <assertj.version>3.27.6</assertj.version>
     <pdftest.version>2.1.0</pdftest.version>
-    <pdfbox.version>3.0.5</pdfbox.version>
+    <pdfbox.version>3.0.6</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
     <java.version>21</java.version>
     <error_prone.version>2.42.0</error_prone.version>
