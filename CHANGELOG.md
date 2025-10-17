@@ -1,5 +1,16 @@
 # Changelog
 
+## 10.0.1 (17.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/39?closed=1
+
+* fix: Exclude legacy XML libraries to prevent JPMS conflicts / by Andreas Røsdal (#580)
+* cleanup: Remove leftover debug `System.out` write / by Tobias G (#563)
+* cleanup: remove most of `System.out` usages / by Andrei Solntsev (#564)
+* refactor: make `OutputDevice.drawImage()` parameter generic / by Andrei Solntsev (#576)
+* refactor: don't reference subclass `NullImage` from superclass `AWTFSImage` to avoid classloading / by Andrei Solntsev (#579)
+* refactor: convert setter to constructor parameter / by Andrei Solntsev (#564)
+* dep: Bump SWT from 3.130.0 to 3.131.0 / by dependabot (#562)
+
+
 ## 10.0.0 (05.09.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/35?closed=1
 * Require Java 21 by Andreas Røsdal (#527)
 * #554 update to OpenPDF 3.0.0 by Dennis Roppelt (#556) 
