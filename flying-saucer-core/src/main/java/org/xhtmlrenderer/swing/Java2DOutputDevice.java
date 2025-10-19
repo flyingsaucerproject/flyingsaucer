@@ -181,8 +181,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage> {
             RootPanel canvas = (RootPanel)c.getCanvas();
             CellRendererPane pane = canvas.getCellRendererPane();
             pane.paintComponent(_graphics, component, canvas, contentBounds.x,  contentBounds.y, contentBounds.width, contentBounds.height,true);
-        } else if (replaced instanceof ImageReplacedElement) {
-            Image image = ((ImageReplacedElement)replaced).getImage();
+        } else if (replaced instanceof ImageReplacedElement imageReplacedElement) {
+            Image image = imageReplacedElement.getImage();
 
             Point location = replaced.getLocation();
             _graphics.drawImage(

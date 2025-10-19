@@ -150,7 +150,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
             return newIrreplaceableImageElement(cssWidth, cssHeight);
         } else if (ImageUtil.isEmbeddedBase64Image(imageSrc)) {
             BufferedImage image = ImageUtil.loadEmbeddedBase64Image(imageSrc);
-            return image == null ? null : new ImageReplacedElement(image, cssWidth, cssHeight);
+            return image == null ? null : new InstantImageReplacedElement(image, cssWidth, cssHeight);
         } else {
             // lookup in cache, or instantiate
             String ruri = uac.resolveURI(imageSrc);
@@ -159,7 +159,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
                 XRLog.load(Level.FINE, "Swing: Image " + ruri + " requested at "+ " to " + cssWidth + ", " + cssHeight);
                 ImageResource imageResource = imageResourceLoader.get(ruri, cssWidth, cssHeight);
                 if (imageResource.isLoaded()) {
-                    re = new ImageReplacedElement(((AWTFSImage) imageResource.getImage()).getImage(), cssWidth, cssHeight);
+                    re = new InstantImageReplacedElement(((AWTFSImage) imageResource.getImage()).getImage(), cssWidth, cssHeight);
                 } else {
                     re = new DeferredImageReplacedElement(imageResource, repaintListener, cssWidth, cssHeight);
                 }
@@ -195,7 +195,7 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
                 g.setFont(new Font("Serif", Font.PLAIN, 12));
                 g.drawString("Missing", 0, 12);
             });
-            return new ImageReplacedElement(missingImage, cssWidth, cssHeight);
+            return new InstantImageReplacedElement(missingImage, cssWidth, cssHeight);
         } catch (Exception e) {
             log.error("Failed to create image element of size {}x{}", cssWidth, cssHeight, e);
             return new EmptyReplacedElement(Math.max(cssWidth, 0), Math.max(cssHeight, 0));
