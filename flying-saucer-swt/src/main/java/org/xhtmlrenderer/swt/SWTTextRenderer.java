@@ -28,7 +28,6 @@ import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.util.Configuration;
@@ -40,7 +39,7 @@ import java.awt.*;
  *
  * @author Vianney le Clément
  */
-public class SWTTextRenderer implements TextRenderer {
+public class SWTTextRenderer implements TextRenderer<SWTFSFont> {
 
     private float _scale;
     private boolean _antialiasing;
@@ -68,17 +67,16 @@ public class SWTTextRenderer implements TextRenderer {
 
     @CheckReturnValue
     @Override
-    public FSFontMetrics getFSFontMetrics(FontContext context, FSFont font,
+    public FSFontMetrics getFSFontMetrics(FontContext context, SWTFSFont font,
             String string) {
-        return new SWTFontMetricsAdapter((SWTFontContext) context,
-            (SWTFSFont) font);
+        return new SWTFontMetricsAdapter((SWTFontContext) context, font);
     }
 
     @Override
-    public int getWidth(FontContext context, FSFont font, String string) {
+    public int getWidth(FontContext context, SWTFSFont font, String string) {
         GC gc = ((SWTFontContext) context).getGC();
         Font previous = gc.getFont();
-        gc.setFont(((SWTFSFont) font).getSWTFont());
+        gc.setFont(font.getSWTFont());
         int width = gc.stringExtent(string).x;
         gc.setFont(previous);
         return width;
@@ -112,19 +110,19 @@ public class SWTTextRenderer implements TextRenderer {
     }
 
     @Override
-    public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font,
+    public Rectangle getGlyphBounds(OutputDevice outputDevice, SWTFSFont font,
             FSGlyphVector fsGlyphVector, int index, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
     @Override
-    public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font,
+    public float[] getGlyphPositions(OutputDevice outputDevice, SWTFSFont font,
             FSGlyphVector fsGlyphVector) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
     @Override
-    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
+    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, SWTFSFont font, String string) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }
 

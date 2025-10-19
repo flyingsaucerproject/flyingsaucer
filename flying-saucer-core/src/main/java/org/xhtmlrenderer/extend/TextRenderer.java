@@ -26,7 +26,7 @@ import org.xhtmlrenderer.render.JustificationInfo;
 
 import java.awt.*;
 
-public interface TextRenderer {
+public interface TextRenderer<FontType extends FSFont> {
     void setup(FontContext context);
 
     void drawString(OutputDevice outputDevice, String string, float x, float y);
@@ -35,15 +35,14 @@ public interface TextRenderer {
 
     void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y);
 
-    FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string);
+    FSGlyphVector getGlyphVector(OutputDevice outputDevice, FontType font, String string);
 
-    float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector);
-    Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y);
+    float[] getGlyphPositions(OutputDevice outputDevice, FontType font, FSGlyphVector fsGlyphVector);
+    Rectangle getGlyphBounds(OutputDevice outputDevice, FontType font, FSGlyphVector fsGlyphVector, int index, float x, float y);
 
-    FSFontMetrics getFSFontMetrics(
-            FontContext context, FSFont font, String string);
+    FSFontMetrics getFSFontMetrics(FontContext context, FontType font, String string);
 
-    int getWidth(FontContext context, FSFont font, String string);
+    int getWidth(FontContext context, FontType font, String string);
 
     void setFontScale(float scale);
 
