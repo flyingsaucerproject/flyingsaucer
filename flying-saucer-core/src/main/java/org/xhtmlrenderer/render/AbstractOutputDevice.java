@@ -48,7 +48,7 @@ import java.util.List;
  * An abstract implementation of an {@link OutputDevice}.  It provides complete
  * implementations for many {@code OutputDevice} methods.
  */
-public abstract class AbstractOutputDevice<T extends FSImage> implements OutputDevice<T> {
+public abstract class AbstractOutputDevice<T extends FSImage, FontType extends FSFont> implements OutputDevice<T, FontType> {
 
     @Nullable
     private FontSpecification _fontSpec;
@@ -62,7 +62,7 @@ public abstract class AbstractOutputDevice<T extends FSImage> implements OutputD
 
         if (text != null && !text.isEmpty()) {
             setColor(iB.getStyle().getColor());
-            setFont(iB.getStyle().getFSFont(c));
+            setFont((FontType) iB.getStyle().getFSFont(c));
             setFontSpecification(iB.getStyle().getFontSpecification());
             if (inlineText.getParent().getStyle().isTextJustify()) {
                 JustificationInfo info = inlineText.getParent().getLineBox().getJustificationInfo();

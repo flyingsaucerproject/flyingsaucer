@@ -42,7 +42,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage> {
+public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage, AWTFSFont> {
     private final Graphics2D _graphics;
 
     public Java2DOutputDevice(Graphics2D graphics) {
@@ -93,7 +93,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage> {
                         iB.getHeight());
 
                 _graphics.setColor(Color.WHITE); // FIXME
-                setFont(iB.getStyle().getFSFont(c));
+                setFont((AWTFSFont) iB.getStyle().getFSFont(c));
 
                 drawSelectedText(c, inlineText, iB, glyphVector);
             }
@@ -201,10 +201,11 @@ public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage> {
 
     @Override
     public void setColor(FSColor color) {
-        if (color instanceof FSRGBColor rgb) {
-            _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(),(int) (rgb.getAlpha() * 255)));
-        } else {
-            throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
+        switch (color) {
+            case FSRGBColor rgb ->
+                _graphics.setColor(new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), (int) (rgb.getAlpha() * 255)));
+            default ->
+                throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
     }
 
@@ -271,8 +272,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage> {
     }
 
     @Override
-    public void setFont(FSFont font) {
-        _graphics.setFont(((AWTFSFont)font).font());
+    public void setFont(AWTFSFont font) {
+        _graphics.setFont(font.font());
     }
 
     @Override
