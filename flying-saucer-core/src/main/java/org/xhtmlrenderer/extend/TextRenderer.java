@@ -26,8 +26,8 @@ import org.xhtmlrenderer.render.JustificationInfo;
 
 import java.awt.*;
 
-public interface TextRenderer<OutputDeviceType extends OutputDevice, FontType extends FSFont> {
-    void setup(FontContext context);
+public interface TextRenderer<OutputDeviceType extends OutputDevice<?, FontType>, FontContextType extends FontContext, FontType extends FSFont> {
+    void setup(FontContextType context);
 
     void drawString(OutputDeviceType outputDevice, String string, float x, float y);
     void drawString(OutputDeviceType outputDevice, String string, float x, float y, JustificationInfo info);
@@ -39,9 +39,9 @@ public interface TextRenderer<OutputDeviceType extends OutputDevice, FontType ex
     float[] getGlyphPositions(OutputDeviceType outputDevice, FontType font, FSGlyphVector fsGlyphVector);
     Rectangle getGlyphBounds(OutputDeviceType outputDevice, FontType font, FSGlyphVector fsGlyphVector, int index, float x, float y);
 
-    FSFontMetrics getFSFontMetrics(FontContext context, FontType font, String string);
+    FSFontMetrics getFSFontMetrics(FontContextType context, FontType font, String string);
 
-    int getWidth(FontContext context, FontType font, String string);
+    int getWidth(FontContextType context, FontType font, String string);
 
     void setFontScale(float scale);
 

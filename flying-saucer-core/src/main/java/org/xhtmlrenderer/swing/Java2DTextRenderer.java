@@ -23,7 +23,6 @@ import com.google.errorprone.annotations.CheckReturnValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.extend.FSGlyphVector;
-import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
@@ -42,7 +41,7 @@ import java.util.Map;
  * @author   Joshua Marinacci
  * @author   Torbjoern Gannholm
  */
-public class Java2DTextRenderer implements TextRenderer<Java2DOutputDevice, AWTFSFont> {
+public class Java2DTextRenderer implements TextRenderer<Java2DOutputDevice, Java2DFontContext, AWTFSFont> {
     private static final Logger log = LoggerFactory.getLogger(Java2DTextRenderer.class);
     private float scale;
     private float threshold;
@@ -166,8 +165,8 @@ public class Java2DTextRenderer implements TextRenderer<Java2DOutputDevice, AWTF
     }
 
     @Override
-    public void setup(FontContext fontContext) {
-//        ((Java2DFontContext)fontContext).getGraphics().setRenderingHint(
+    public void setup(Java2DFontContext fontContext) {
+//        fontContext.getGraphics().setRenderingHint(
 //                RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF );
     }
 
@@ -183,8 +182,8 @@ public class Java2DTextRenderer implements TextRenderer<Java2DOutputDevice, AWTF
 
     @CheckReturnValue
     @Override
-    public FSFontMetrics getFSFontMetrics(FontContext fc, AWTFSFont font, String string ) {
-        Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();
+    public FSFontMetrics getFSFontMetrics(Java2DFontContext fc, AWTFSFont font, String string ) {
+        Graphics2D graphics = fc.getGraphics();
         Object fracHint = graphics.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fractionalFontMetricsHint);
         LineMetricsAdapter adapter = new LineMetricsAdapter(font.font().getLineMetrics(string, graphics.getFontRenderContext()));
@@ -193,8 +192,8 @@ public class Java2DTextRenderer implements TextRenderer<Java2DOutputDevice, AWTF
     }
 
     @Override
-    public int getWidth(FontContext fc, AWTFSFont font, String string) {
-        Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();
+    public int getWidth(Java2DFontContext fc, AWTFSFont font, String string) {
+        Graphics2D graphics = fc.getGraphics();
         Object fracHint = graphics.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fractionalFontMetricsHint);
         Font awtFont = font.font();

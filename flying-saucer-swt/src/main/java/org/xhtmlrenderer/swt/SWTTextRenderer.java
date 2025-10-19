@@ -25,7 +25,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.xhtmlrenderer.extend.FSGlyphVector;
-import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
@@ -38,7 +37,7 @@ import java.awt.*;
  *
  * @author Vianney le Clément
  */
-public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTFSFont> {
+public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTFontContext, SWTFSFont> {
 
     private float _scale;
     private boolean _antialiasing = false;
@@ -50,8 +49,8 @@ public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTF
     }
 
     @Override
-    public void setup(FontContext context) {
-        GC gc = ((SWTFontContext) context).getGC();
+    public void setup(SWTFontContext context) {
+        GC gc = context.getGC();
         gc.setTextAntialias(_antialiasing ? SWT.ON : SWT.OFF);
     }
 
@@ -66,14 +65,13 @@ public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTF
 
     @CheckReturnValue
     @Override
-    public FSFontMetrics getFSFontMetrics(FontContext context, SWTFSFont font,
-            String string) {
-        return new SWTFontMetricsAdapter((SWTFontContext) context, font);
+    public FSFontMetrics getFSFontMetrics(SWTFontContext context, SWTFSFont font, String string) {
+        return new SWTFontMetricsAdapter(context, font);
     }
 
     @Override
-    public int getWidth(FontContext context, SWTFSFont font, String string) {
-        GC gc = ((SWTFontContext) context).getGC();
+    public int getWidth(SWTFontContext context, SWTFSFont font, String string) {
+        GC gc = context.getGC();
         Font previous = gc.getFont();
         gc.setFont(font.getSWTFont());
         int width = gc.stringExtent(string).x;

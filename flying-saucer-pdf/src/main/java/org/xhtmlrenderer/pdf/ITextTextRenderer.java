@@ -21,18 +21,17 @@ package org.xhtmlrenderer.pdf;
 
 import org.openpdf.text.pdf.BaseFont;
 import org.xhtmlrenderer.extend.FSGlyphVector;
-import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 
 import java.awt.*;
 
-public class ITextTextRenderer implements TextRenderer<ITextOutputDevice, ITextFSFont> {
+public class ITextTextRenderer implements TextRenderer<ITextOutputDevice, ITextFontContext, ITextFSFont> {
     private static final float TEXT_MEASURING_DELTA = 0.01f;
 
     @Override
-    public void setup(FontContext context) {
+    public void setup(ITextFontContext context) {
     }
 
     @Override
@@ -46,7 +45,7 @@ public class ITextTextRenderer implements TextRenderer<ITextOutputDevice, ITextF
     }
 
     @Override
-    public FSFontMetrics getFSFontMetrics(FontContext context, ITextFSFont font, String string) {
+    public FSFontMetrics getFSFontMetrics(ITextFontContext context, ITextFSFont font, String string) {
         FontDescription description = font.getFontDescription();
         BaseFont bf = description.getFont();
         float size = font.getSize2D();
@@ -65,7 +64,7 @@ public class ITextTextRenderer implements TextRenderer<ITextOutputDevice, ITextF
     }
 
     @Override
-    public int getWidth(FontContext context, ITextFSFont font, String string) {
+    public int getWidth(ITextFontContext context, ITextFSFont font, String string) {
         BaseFont bf = font.getFontDescription().getFont();
         float result = bf.getWidthPoint(string, font.getSize2D());
         if (result - Math.floor(result) < TEXT_MEASURING_DELTA) {
