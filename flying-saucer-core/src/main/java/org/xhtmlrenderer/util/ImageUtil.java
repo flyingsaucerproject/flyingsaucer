@@ -21,6 +21,7 @@ package org.xhtmlrenderer.util;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
+import org.xhtmlrenderer.extend.Size;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -147,6 +148,11 @@ public class ImageUtil {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gs = ge.getDefaultScreenDevice();
         return gs.getDefaultConfiguration();
+    }
+
+    @CheckReturnValue
+    public static BufferedImage createCompatibleBufferedImage(Size size) {
+        return createCompatibleBufferedImage(size.width(), size.height());
     }
 
     /**

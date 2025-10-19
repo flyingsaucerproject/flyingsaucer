@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.xhtmlrenderer.extend.Size;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
@@ -42,8 +43,7 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
     private Point _location = new Point(0, 0);
 
     private final RepaintListener repaintListener;
-    private final int _targetHeight;
-    private final int _targetWidth;
+    private final Size targetSize;
 
     private final boolean _doScaleImage;
     private boolean _loaded;
@@ -60,26 +60,19 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
         this._imageResource = imageResource;
         _loaded = false;
         this.repaintListener = repaintListener;
-        if (w == -1 && h == -1) {
-            _doScaleImage = false;
-            _targetHeight = 1;
-            _targetWidth = 1;
-        } else {
-            _doScaleImage = true;
-            _targetHeight = Math.max(1, h);
-            _targetWidth = Math.max(1, w);
-        }
-        _image = ImageUtil.createCompatibleBufferedImage(_targetWidth, _targetHeight);
+        _doScaleImage = w != -1 || h != -1;
+        targetSize = new Size(Math.max(1, w), Math.max(1, h));
+        _image = ImageUtil.createCompatibleBufferedImage(targetSize);
     }
 
     @Override
     public int getIntrinsicHeight() {
-        return  _loaded ? _image.getHeight(null) : _targetHeight;
+        return  _loaded ? _image.getHeight(null) : targetSize.height();
     }
 
     @Override
     public int getIntrinsicWidth() {
-        return _loaded ? _image.getWidth(null) : _targetWidth;
+        return _loaded ? _image.getWidth(null) : targetSize.width();
     }
 
     @Override
@@ -99,11 +92,11 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
     public Image getImage() {
         if (!_loaded && _imageResource.isLoaded()) {
             Image image = ((AWTFSImage) _imageResource.getImage()).getImage();
-            if (_doScaleImage && (_targetWidth > 0 || _targetHeight > 0)) {
+            if (_doScaleImage && (targetSize.width() > 0 || targetSize.height() > 0)) {
                 int w = image.getWidth(null);
                 int h = image.getHeight(null);
-                int newW = _targetWidth;
-                int newH = _targetHeight;
+                int newW = targetSize.width();
+                int newH = targetSize.height();
 
                 if (newW == -1) {
                     newW = (int) (w * ((double) newH / h));
