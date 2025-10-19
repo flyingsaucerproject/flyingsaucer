@@ -36,7 +36,7 @@ import java.awt.*;
  * It will never extend across a line break nor will it extend across an element
  * nested within its inline element.
  */
-public class InlineText {
+public class InlineText implements InlineChild {
     @Nullable
     private InlineLayoutBox _parent;
 

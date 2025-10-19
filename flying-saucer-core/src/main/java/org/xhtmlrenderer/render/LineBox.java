@@ -143,8 +143,8 @@ public class LineBox extends Box implements InlinePaintable {
         if (getChildCount() > 0) {
             for (int i = 0; i < getChildCount(); i++) {
                 Box b = getChild(i);
-                if (b instanceof InlineLayoutBox) {
-                    ((InlineLayoutBox)b).lookForDynamicFunctions(c);
+                if (b instanceof InlineLayoutBox inlineLayoutBox) {
+                    inlineLayoutBox.lookForDynamicFunctions(c);
                 }
             }
         }
@@ -257,8 +257,8 @@ public class LineBox extends Box implements InlinePaintable {
         for (Box b : getChildren()) {
             b.setX(b.getX() + Math.round(adjust));
 
-            if (b instanceof InlineLayoutBox) {
-                adjust += ((InlineLayoutBox) b).adjustHorizontalPosition(info, adjust);
+            if (b instanceof InlineLayoutBox inlineLayoutBox) {
+                adjust += inlineLayoutBox.adjustHorizontalPosition(info, adjust);
             }
         }
 
@@ -283,8 +283,8 @@ public class LineBox extends Box implements InlinePaintable {
         CharCounts result = new CharCounts();
 
         for (Box b : getChildren()) {
-            if (b instanceof InlineLayoutBox) {
-                ((InlineLayoutBox) b).countJustifiableChars(result);
+            if (b instanceof InlineLayoutBox inlineLayoutBox) {
+                inlineLayoutBox.countJustifiableChars(result);
             }
         }
 
@@ -337,9 +337,8 @@ public class LineBox extends Box implements InlinePaintable {
     private boolean intersectsInlineBlocks(CssContext cssCtx, Shape clip) {
         for (int i = 0; i < getChildCount(); i++) {
             Box child = getChild(i);
-            if (child instanceof InlineLayoutBox) {
-                boolean possibleResult = ((InlineLayoutBox)child).intersectsInlineBlocks(
-                        cssCtx, clip);
+            if (child instanceof InlineLayoutBox inlineLayoutBox) {
+                boolean possibleResult = inlineLayoutBox.intersectsInlineBlocks(cssCtx, clip);
                 if (possibleResult) {
                     return true;
                 }
@@ -386,8 +385,8 @@ public class LineBox extends Box implements InlinePaintable {
             Box child = getChild(i);
             if (getContainingLayer() == layer) {
                 list.add(child);
-                if (child instanceof InlineLayoutBox) {
-                    ((InlineLayoutBox)child).addAllChildren(list, layer);
+                if (child instanceof InlineLayoutBox inlineLayoutBox) {
+                    inlineLayoutBox.addAllChildren(list, layer);
                 }
             }
         }
@@ -478,8 +477,8 @@ public class LineBox extends Box implements InlinePaintable {
 
         for (int offset = getChildCount() - 1; offset >= 0; offset--) {
             Box child = getChild(offset);
-            if (child instanceof InlineLayoutBox) {
-                InlineText result = ((InlineLayoutBox)child).findTrailingText();
+            if (child instanceof InlineLayoutBox inlineLayoutBox) {
+                InlineText result = inlineLayoutBox.findTrailingText();
                 if (result != null && result.isEmpty()) {
                     continue;
                 }
@@ -566,16 +565,21 @@ public class LineBox extends Box implements InlinePaintable {
     }
 
     public boolean isContainsVisibleContent() {
-        for (int i = 0; i < getChildCount(); i++) {
-            Box b = getChild(i);
-            if (b instanceof BlockBox) {
-                if (b.getWidth() > 0 || b.getHeight() > 0) {
-                    return true;
+        for (Box b : getChildren()) {
+            switch (b) {
+                case BlockBox ignored -> {
+                    if (b.getWidth() > 0 || b.getHeight() > 0) {
+                        return true;
+                    }
                 }
-            } else {
-                boolean maybeResult = ((InlineLayoutBox)b).isContainsVisibleContent();
-                if (maybeResult) {
-                    return true;
+                case InlineLayoutBox inlineLayoutBox -> {
+                    boolean maybeResult = inlineLayoutBox.isContainsVisibleContent();
+                    if (maybeResult) {
+                        return true;
+                    }
+                }
+                default -> {
+                    throw new IllegalStateException("Unexpected child type: " + b.getClass().getName());
                 }
             }
         }

@@ -184,8 +184,8 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         Container p = getParent();
         if (p instanceof JViewport) {
             Container vp = p.getParent();
-            if (vp instanceof JScrollPane) {
-                setEnclosingScrollPane((JScrollPane) vp);
+            if (vp instanceof JScrollPane scrollPane) {
+                setEnclosingScrollPane(scrollPane);
             }
         }
     }

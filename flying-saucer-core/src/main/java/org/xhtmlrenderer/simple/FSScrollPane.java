@@ -25,6 +25,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.beans.Transient;
+
+import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 
 /**
  * <p>{@code FSScrollPane} is a JScrollPane set up to support keyboard navigation of an XHTML/XML
@@ -88,13 +91,19 @@ public class FSScrollPane extends JScrollPane {
         getVerticalScrollBar().setUnitIncrement(15);
     }
 
+    @Transient
+    @Override
+    public final JScrollBar getVerticalScrollBar() {
+        return super.getVerticalScrollBar();
+    }
+
     @Override
     public void setViewportView(Component view)
     {
         setPreferredSize(new Dimension((int)view.getSize().getWidth(), (int)view.getSize().getHeight()));
-        if (view instanceof JComponent) {
-            setDefaultInputMap((JComponent) view);
-            setDefaultActionMap((JComponent) view);
+        if (view instanceof JComponent jComponent) {
+            setDefaultInputMap(jComponent);
+            setDefaultActionMap(jComponent);
         }
         addResizeListener(view);
         super.setViewportView(view);
@@ -111,11 +120,11 @@ public class FSScrollPane extends JScrollPane {
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), LINE_UP);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_DOWN_MASK), PAGE_END);
+                put(KeyStroke.getKeyStroke(KeyEvent.VK_END, CTRL_DOWN_MASK), PAGE_END);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), PAGE_END);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_DOWN_MASK), PAGE_START);
+                put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, CTRL_DOWN_MASK), PAGE_START);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), PAGE_START);
 

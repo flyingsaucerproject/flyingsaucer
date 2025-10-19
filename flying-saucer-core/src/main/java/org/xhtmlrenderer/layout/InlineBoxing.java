@@ -37,6 +37,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.FloatDistances;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineChild;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.LineBox;
@@ -79,8 +80,8 @@ public class InlineBoxing {
 
         Map<InlineBox, InlineLayoutBox> iBMap = new HashMap<>();
 
-        if (box instanceof AnonymousBlockBox) {
-            openInlineBoxes = ((AnonymousBlockBox)box).getOpenInlineBoxes();
+        if (box instanceof AnonymousBlockBox anonymousBlockBox) {
+            openInlineBoxes = anonymousBlockBox.getOpenInlineBoxes();
             if (openInlineBoxes != null) {
                 openInlineBoxes = new ArrayList<>(openInlineBoxes);
                 currentIB = addOpenInlineBoxes(
@@ -418,15 +419,14 @@ public class InlineBoxing {
 
         InlineLayoutBox currentIB = null;
 
-        if (current instanceof InlineLayoutBox) {
-            currentIB = (InlineLayoutBox)current;
+        if (current instanceof InlineLayoutBox inlineLayoutBox) {
+            currentIB = inlineLayoutBox;
             x += currentIB.getLeftMarginBorderPadding(c);
         }
 
         for (int i = 0; i < current.getChildCount(); i++) {
             Box b = current.getChild(i);
-            if (b instanceof InlineLayoutBox) {
-                InlineLayoutBox iB = (InlineLayoutBox) current.getChild(i);
+            if (b instanceof InlineLayoutBox iB) {
                 iB.setX(x);
                 x += positionHorizontally(c, iB, x);
             } else {
@@ -449,16 +449,21 @@ public class InlineBoxing {
         x += current.getLeftMarginBorderPadding(c);
 
         for (int i = 0; i < current.getInlineChildCount(); i++) {
-            Object child = current.getInlineChild(i);
-            if (child instanceof InlineLayoutBox iB) {
-                iB.setX(x);
-                x += positionHorizontally(c, iB, x);
-            } else if (child instanceof InlineText iT) {
-                iT.setX(x - start);
-                x += iT.getWidth();
-            } else if (child instanceof Box b) {
-                b.setX(x);
-                x += b.getWidth();
+            InlineChild child = current.getInlineChild(i);
+            switch (child) {
+                case InlineLayoutBox iB -> {
+                    iB.setX(x);
+                    x += positionHorizontally(c, iB, x);
+                }
+                case InlineText iT -> {
+                    iT.setX(x - start);
+                    x += iT.getWidth();
+                }
+                case BlockBox b -> {
+                    b.setX(x);
+                    x += b.getWidth();
+                }
+                default -> throw new IllegalStateException("Unexpected inline child: " + child);
             }
         }
 
@@ -549,20 +554,20 @@ public class InlineBoxing {
         for (int i = 0; i < current.getChildCount(); i++) {
             Box child = current.getChild(i);
             child.setY(child.getY() + ty);
-            if (child instanceof InlineLayoutBox) {
-                moveInlineContents((InlineLayoutBox) child, ty);
+            if (child instanceof InlineLayoutBox inlineLayoutBox) {
+                moveInlineContents(inlineLayoutBox, ty);
             }
         }
     }
 
     private static void moveInlineContents(InlineLayoutBox box, int ty) {
         for (int i = 0; i < box.getInlineChildCount(); i++) {
-            Object obj = box.getInlineChild(i);
-            if (obj instanceof Box) {
-                ((Box) obj).setY(((Box) obj).getY() + ty);
+            InlineChild obj = box.getInlineChild(i);
+            if (obj instanceof Box childBox) {
+                childBox.setY(childBox.getY() + ty);
 
-                if (obj instanceof InlineLayoutBox) {
-                    moveInlineContents((InlineLayoutBox) obj, ty);
+                if (obj instanceof InlineLayoutBox inlineLayoutBox) {
+                    moveInlineContents(inlineLayoutBox, ty);
                 }
             }
         }
@@ -715,9 +720,9 @@ public class InlineBoxing {
     private static void positionInlineChildrenVertically(LayoutContext c, InlineLayoutBox current,
                                                VerticalAlignContext vaContext) {
         for (int i = 0; i < current.getInlineChildCount(); i++) {
-            Object child = current.getInlineChild(i);
-            if (child instanceof Box) {
-                positionInlineContentVertically(c, vaContext, (Box)child);
+            InlineChild child = current.getInlineChild(i);
+            if (child instanceof Box childBox) {
+                positionInlineContentVertically(c, vaContext, childBox);
             }
         }
     }

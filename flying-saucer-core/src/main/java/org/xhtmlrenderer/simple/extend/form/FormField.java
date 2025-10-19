@@ -234,8 +234,8 @@ public abstract class FormField<T extends JComponent> {
     @CheckReturnValue
     public Font getFont() {
         FSFont font = getStyle().getFSFont(getContext());
-        if (font instanceof AWTFSFont) {
-            return ((AWTFSFont) font).getAWTFont();
+        if (font instanceof AWTFSFont awsFont) {
+            return awsFont.font();
         }
         return null;
     }

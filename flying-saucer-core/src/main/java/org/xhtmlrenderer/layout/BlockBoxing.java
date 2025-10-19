@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.render.BlockBox;
@@ -31,6 +32,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.RandomAccess;
+
+import static java.util.Objects.requireNonNullElse;
 
 /**
  * Utility class for laying block content.  It is called when a block box
@@ -193,7 +196,7 @@ public class BlockBoxing {
             Box nextChild = block.getChild(i+1);
             // if nextChild is made of several lines, then only the first line
             // is relevant for "page-break-before: avoid".
-            Box nextLine = getFirstLine(nextChild) == null ? nextChild : getFirstLine(nextChild);
+            Box nextLine = requireNonNullElse(getFirstLine(nextChild), nextChild);
             int prevChildEnd = prevChild.getAbsY() + prevChild.getHeight();
             int nextLineEnd = nextLine.getAbsY() + nextLine.getHeight();
             if ( c.getRootLayer().crossesPageBreak(c, prevChildEnd, nextLineEnd) ) {
@@ -203,10 +206,11 @@ public class BlockBoxing {
         return false;
     }
 
+    @Nullable
     private static LineBox getFirstLine(Box box) {
         for ( Box child = box; child.getChildCount()>0; child = child.getChild(0) ) {
-            if ( child instanceof LineBox ) {
-                return (LineBox) child;
+            if ( child instanceof LineBox lineBox) {
+                return lineBox;
             }
         }
         return null;

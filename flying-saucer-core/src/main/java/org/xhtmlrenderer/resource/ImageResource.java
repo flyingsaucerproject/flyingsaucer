@@ -47,7 +47,7 @@ public class ImageResource extends AbstractResource {
     }
 
     public boolean isLoaded() {
-        return !(_img instanceof MutableFSImage) || ((MutableFSImage) _img).isLoaded();
+        return !(_img instanceof MutableFSImage mutableFSImage) || mutableFSImage.isLoaded();
     }
 
     @Nullable

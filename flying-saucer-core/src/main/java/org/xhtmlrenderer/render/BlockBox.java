@@ -71,7 +71,7 @@ import static org.xhtmlrenderer.render.Utils.appendPositioningInfo;
  * other kinds of block content (for example table rows or cells).
  */
 @SuppressWarnings("MissingCasesInEnumSwitch")
-public class BlockBox extends Box implements InlinePaintable {
+public class BlockBox extends Box implements InlinePaintable, InlineChild {
 
     public enum Position {
         VERTICALLY,
@@ -474,12 +474,9 @@ public class BlockBox extends Box implements InlinePaintable {
         CalculatedStyle style = getStyle();
         int cbContentHeight = getContainingBlock().getContentAreaEdge(0, 0, cssCtx).height;
 
-        Rectangle boundingBox;
-        if (getContainingBlock() instanceof BlockBox) {
-            boundingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
-        } else {
-            boundingBox = getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
-        }
+        Rectangle boundingBox = getContainingBlock() instanceof BlockBox ?
+            getContainingBlock().getPaddingEdge(0, 0, cssCtx) :
+            getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
 
         if (direction == Position.HORIZONTALLY || direction == Position.BOTH) {
             setX(0);
@@ -1103,8 +1100,8 @@ public class BlockBox extends Box implements InlinePaintable {
         _inlineContent = inlineContent;
 
         for (Styleable child : inlineContent) {
-            if (child instanceof Box) {
-                ((Box) child).setContainingBlock(this);
+            if (child instanceof Box childBox) {
+                childBox.setContainingBlock(this);
             }
         }
     }
@@ -1170,9 +1167,8 @@ public class BlockBox extends Box implements InlinePaintable {
     private BlockBox getNextCollapsableSibling(MarginCollapseResult collapsedMargin) {
         BlockBox next = (BlockBox) getNextSibling();
         while (next != null) {
-            if (next instanceof AnonymousBlockBox) {
-                ((AnonymousBlockBox) next).provideSiblingMarginToFloats(
-                        collapsedMargin.getMargin());
+            if (next instanceof AnonymousBlockBox anonymousBlockBox) {
+                anonymousBlockBox.provideSiblingMarginToFloats(collapsedMargin.getMargin());
             }
             if (! next.isSkipWhenCollapsingMargins()) {
                 break;
@@ -1396,8 +1392,8 @@ public class BlockBox extends Box implements InlinePaintable {
         } else {
             // We have a percentage height, defer to our block parent (if applicable)
             Box cb = getContainingBlock();
-            if (cb.isStyled() && (cb instanceof BlockBox)) {
-                return ((BlockBox)cb).isAutoHeight();
+            if (cb.isStyled() && (cb instanceof BlockBox blockBox)) {
+                return blockBox.isAutoHeight();
             } else return !(cb instanceof BlockBox) || !cb.isInitialContainingBlock();
         }
     }
@@ -1864,11 +1860,11 @@ public class BlockBox extends Box implements InlinePaintable {
     public int calcBaseline(LayoutContext c) {
         for (int i = 0; i < getChildCount(); i++) {
             Box b = getChild(i);
-            if (b instanceof LineBox) {
-                return b.getAbsY() + ((LineBox) b).getBaseline();
+            if (b instanceof LineBox lineBox) {
+                return b.getAbsY() + lineBox.getBaseline();
             } else {
-                if (b instanceof TableRowBox) {
-                    return b.getAbsY() + ((TableRowBox) b).getBaseline();
+                if (b instanceof TableRowBox tableRow) {
+                    return b.getAbsY() + tableRow.getBaseline();
                 } else {
                     int result = ((BlockBox) b).calcBaseline(c);
                     if (result != NO_BASELINE) {

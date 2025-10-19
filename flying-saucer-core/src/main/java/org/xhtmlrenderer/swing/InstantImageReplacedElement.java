@@ -66,8 +66,8 @@ public class InstantImageReplacedElement implements ImageReplacedElement {
             }
 
             if (w != newW || h != newH) {
-                if (image instanceof BufferedImage) {
-                    _image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
+                if (image instanceof BufferedImage bufferedImage) {
+                    _image = ImageUtil.getScaledInstance(bufferedImage, newW, newH);
                 } else {
                     String scalingType = Configuration.valueFor("xr.image.scale", "HIGH").trim();
 

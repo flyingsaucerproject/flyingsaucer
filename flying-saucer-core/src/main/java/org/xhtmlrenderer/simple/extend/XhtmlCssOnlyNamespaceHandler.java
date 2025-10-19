@@ -217,8 +217,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         StringBuilder buf = new StringBuilder();
         Node current = style.getFirstChild();
         while (current != null) {
-            if (current instanceof CharacterData) {
-                buf.append(((CharacterData)current).getData());
+            if (current instanceof CharacterData characterData) {
+                buf.append(characterData.getData());
             }
             current = current.getNextSibling();
         }
@@ -280,12 +280,15 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
     @CheckReturnValue
     public Optional<StylesheetInfo> getDefaultStylesheet() {
         if (_defaultStylesheet == null) {
-            _defaultStylesheet = new StylesheetInfo(USER_AGENT, getDefaultStylesheetUrl().toString(), mediaTypes(""), null);
+            synchronized (this) {
+                if (_defaultStylesheet == null) {
+                    _defaultStylesheet = new StylesheetInfo(USER_AGENT, getDefaultStylesheetUrl().toString(), mediaTypes(""), null);
+                }
+            }
         }
         return Optional.ofNullable(_defaultStylesheet);
     }
 
-    @NonNull
     @CheckReturnValue
     private URL getDefaultStylesheetUrl() {
         String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
