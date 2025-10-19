@@ -233,12 +233,10 @@ public class SWTOutputDevice extends AbstractOutputDevice<SWTFSImage> {
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
         ReplacedElement replaced = box.getReplacedElement();
         java.awt.Point location = replaced.getLocation();
-        if (replaced instanceof ImageReplacedElement) {
-            drawImage(((ImageReplacedElement) replaced).getImage(), location.x,
-                location.y);
-        } else if (replaced instanceof FormControlReplacementElement) {
-            SWTFormControl swtControl = ((FormControlReplacementElement) replaced)
-                .getControl();
+        if (replaced instanceof ImageReplacedElement imageReplacedElement) {
+            drawImage(imageReplacedElement.getImage(), location.x, location.y);
+        } else if (replaced instanceof FormControlReplacementElement replacedElement) {
+            SWTFormControl swtControl = replacedElement.getControl();
             swtControl.getSWTControl().setVisible(true);
         }
     }

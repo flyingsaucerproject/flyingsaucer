@@ -39,7 +39,7 @@ import java.util.logging.Level;
  * instances of DeferredImageReplacedElement will return either the original dummy image, or the actual image
  * loaded into the ImageResource.
  */
-public class DeferredImageReplacedElement extends ImageReplacedElement {
+public class DeferredImageReplacedElement implements ImageReplacedElement {
     private Point _location = new Point(0, 0);
 
     private final RepaintListener repaintListener;
@@ -48,7 +48,7 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
     private final boolean _doScaleImage;
     private boolean _loaded;
     private final ImageResource _imageResource;
-
+    private Image _image;
 
     /**
      * Creates a new ImageReplacedElement and scales it to the size specified if either width or height has a valid
@@ -107,8 +107,8 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
                 }
 
                 if (w != newW || h != newH) {
-                    if (image instanceof BufferedImage) {
-                        image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
+                    if (image instanceof BufferedImage bufferedImage) {
+                        image = ImageUtil.getScaledInstance(bufferedImage, newW, newH);
                     } else {
                         if (true) {
                             throw new RuntimeException("image is not a buffered image! " + _imageResource.getImageUri());
@@ -132,5 +132,4 @@ public class DeferredImageReplacedElement extends ImageReplacedElement {
 
         return _image;
     }
-
 }
