@@ -1,5 +1,10 @@
 # Changelog
 
+## 10.0.2 (19.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/40?closed=1
+
+* #477 Fix location of unordered list item marker for multiline items / by Harald Amon (#584)
+* Refactoring / by Andrei Solntsev (#585)
+
 ## 10.0.1 (17.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/39?closed=1
 
 * fix: Exclude legacy XML libraries to prevent JPMS conflicts / by Andreas Røsdal (#580)
